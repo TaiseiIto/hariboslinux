@@ -34,5 +34,23 @@ SECTIONS {
 	}
 	. = second_FAT_start;
 	. += 0x00001200;
+	file_informations_start = .;
+	.file_informations :
+	{
+		BYTE(0x00);
+	}
+	. = file_informations_start;
+	. += 0x1c00;
+	file_contents_start = .;
+	.file_contents :
+	{
+		BYTE(0x00);
+	}
+	. = file_contents_start;
+	. = IPL_BASE;
+	. += 0x00168000;
+	.enf_of_floppy_disk :
+	{
+	}
 }
 
