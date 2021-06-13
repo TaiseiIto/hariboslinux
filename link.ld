@@ -16,5 +16,23 @@ SECTIONS {
 		BYTE(0x55);
 		BYTE(0xaa);
 	}
+	first_FAT_start = .;
+	.first_FAT :
+	{
+		BYTE(0xf0);
+		BYTE(0xff);
+		BYTE(0xff);
+	}
+	. = first_FAT_start;
+	. += 0x00001200;
+	second_FAT_start = .;
+	.second_FAT :
+	{
+		BYTE(0xf0);
+		BYTE(0xff);
+		BYTE(0xff);
+	}
+	. = second_FAT_start;
+	. += 0x00001200;
 }
 
