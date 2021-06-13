@@ -1,6 +1,7 @@
 # bibliography
 # https://wiki.osdev.org/FAT
 
+.text
 .code16				# real mode
 	jmp	hello_world
 	nop
