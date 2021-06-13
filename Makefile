@@ -1,15 +1,14 @@
+ASSEMBLY_FILES = haribos.s
 COMPILER = gcc
-LINKER = ld
 EMULATOR = qemu-system-i386
+LINKER = ld
 
 all: haribos.img
 
 clean:
 	rm *.o *.img
 
-haribos.o: haribos.s
-
-haribos.img: haribos.o
+haribos.img: $(ASSEMBLY_FILES:.s=.o)
 	$(LINKER) $^ -o $@ -T link.ld
 
 run: haribos.img
