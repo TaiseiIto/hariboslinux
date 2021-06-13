@@ -49,8 +49,10 @@ SECTIONS {
 	. = file_contents_start;
 	. = IPL_BASE;
 	. += 0x00168000;
+	. -= 0x00000001;
 	.enf_of_floppy_disk :
 	{
+		BYTE(0x00);
 	}
 }
 
