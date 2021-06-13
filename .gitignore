@@ -1,2 +1,3 @@
-haribos.img
+*.img
+*.o
 
