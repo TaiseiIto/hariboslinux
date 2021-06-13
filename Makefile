@@ -29,7 +29,7 @@ all: build
 build: $(IMAGE_FILE)
 
 clean:
-	rm *.o *.img
+	rm -f *.o *.img
 
 rebuild: clean
 	make build
