@@ -45,5 +45,5 @@ fin:
 	hlt
 	jmp	fin
 msg:
-.string	"\n\nHello, World\n"
+.string	"Hello, World!\r\n"
 
