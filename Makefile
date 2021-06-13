@@ -8,11 +8,13 @@ clean:
 	rm *.o *.img
 
 haribos.o: haribos.s
-	$(COMPILER) $^ -c -nostdlib -o $@
 
 haribos.img: haribos.o
 	$(LINKER) $^ -o $@ -T link.ld
 
 run: haribos.img
 	$(EMULATOR) -drive file=$^,format=raw,if=floppy -vga std
+
+%.o: %.s
+	$(COMPILER) $^ -c -nostdlib -o $@
 
