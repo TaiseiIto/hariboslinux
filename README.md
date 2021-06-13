@@ -22,6 +22,7 @@ Haribos Linuxは，Linux環境でBuild可能なHaribote OSの改造版です．
 ```
 $ make
 ```
+gccがinstallされている必要があります．
 
 ## QEMUによる実行
 Buildによって生成されたimage fileは，Virtual BoxやVM wareで動作することを確認しています．
@@ -30,4 +31,5 @@ Buildによって生成されたimage fileは，Virtual BoxやVM wareで動作�
 ```
 $ make run
 ```
+qemu-system-i386がinstallされている必要があります．
 
