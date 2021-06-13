@@ -1,10 +1,18 @@
+COMPILER = gcc
+LINKER = ld
+EMULATOR = qemu-system-i386
+
 all: haribos.img
 
-run: haribos.img
-	qemu-system-i386 -drive file=$^,format=raw,if=floppy -vga std
+clean:
+	rm *.o *.img
 
 haribos.o: haribos.s
-	gcc $^ -c -nostdlib -o $@
+	$(COMPILER) $^ -c -nostdlib -o $@
 
 haribos.img: haribos.o
-	ld $^ -o $@ -T link.ld
+	$(LINKER) $^ -o $@ -T link.ld
+
+run: haribos.img
+	$(EMULATOR) -drive file=$^,format=raw,if=floppy -vga std
+
