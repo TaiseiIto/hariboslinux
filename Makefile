@@ -17,7 +17,7 @@ all: $(IMAGE_FILE)
 clean:
 	rm *.o *.img
 
-haribos.img: $(ASSEMBLY_FILES:.s=.o)
+$(IMAGE_FILE): $(ASSEMBLY_FILES:.s=.o)
 	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(LINKER_SCRIPT)
 
 run: $(IMAGE_FILE)
