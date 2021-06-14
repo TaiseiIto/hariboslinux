@@ -31,15 +31,22 @@ build: $(IMAGE_FILE)
 clean:
 	rm -f *.o *.img
 
+docker-build:
+	docker build -t hariboslinux:latest .
+
+docker-run:
+	docker run --name hariboslinux -i -t hariboslinux bash
+
 rebuild: clean
 	make build
-
-$(IMAGE_FILE): $(ASSEMBLY_FILES:.s=.o)
-	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(LINKER_SCRIPT)
 
 # run the operating system on QEMU
 run: $(IMAGE_FILE)
 	$(EMULATOR) $(EMULATOR_DRIVE_OPTION) $(EMULATOR VIDEO OPTION)
+
+$(IMAGE_FILE): $(ASSEMBLY_FILES:.s=.o)
+	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(LINKER_SCRIPT)
+
 
 %.o: %.s
 	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@
