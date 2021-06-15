@@ -6,6 +6,12 @@ COMPILER_DONT_LINK_OPTION = -c
 COMPILER_DONT_USE_STDLIB_OPTION = -nostdlib
 COMPILER_OUTPUT_OPTION = -o
 
+# docker
+DOCKER_IMAGE_NAME = hariboslinux
+DOCKER_IMAGE_TAG = latest
+DOCKER_CONTAINER_NAME = hariboslinux
+DOCKER_CONTAINER_SHELL = /bin/sh
+
 # emulator
 # emulate intel 386 processor
 EMULATOR = qemu-system-i386
@@ -32,10 +38,19 @@ clean:
 	rm -f *.o *.img
 
 docker-build:
-	docker build -t hariboslinux:latest .
+	docker build -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
+
+docker-login:
+	docker exec -i -t $(DOCKER_CONTAINER_NAME) $(DOCKER_CONTAINER_SHELL)
 
 docker-run:
-	docker run --name hariboslinux -i -t hariboslinux /bin/sh
+	docker run --name $(DOCKER_CONTAINER_NAME) -i -t $(DOCKER_IMAGE_NAME) $(DOCKER_CONTAINER_SHELL)
+
+docker-start:
+	docker start $(DOCKER_CONTAINER_NAME)
+
+docker-stop:
+	docker stop $(DOCKER_CONTAINER_NAME)
 
 rebuild: clean
 	make build
