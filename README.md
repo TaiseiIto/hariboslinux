@@ -84,3 +84,9 @@ $ docker restart <container name>
 ```
 $ docker exec -i -t <container name>
 ```
+
+* コンテナ削除
+```
+$ docker rm <container name>
+```
+
