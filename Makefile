@@ -35,7 +35,7 @@ docker-build:
 	docker build -t hariboslinux:latest .
 
 docker-run:
-	docker run --name hariboslinux -i -t hariboslinux bash
+	docker run --name hariboslinux -i -t hariboslinux /bin/sh
 
 rebuild: clean
 	make build
