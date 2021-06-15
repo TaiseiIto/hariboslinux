@@ -10,9 +10,11 @@ RUN apk add --no-cache qemu-system-i386
 WORKDIR ~
 RUN git clone https://github.com/TaiseiIto/hariboslinux.git
 
-# make a image file of haribos floppy disk
+# make the OS image file
 WORKDIR hariboslinux
 RUN make
 
-CMD pwd
+# update the OS image file
+CMD git pull origin master
+CMD make
 
