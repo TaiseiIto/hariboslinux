@@ -33,3 +33,54 @@ $ make run
 ```
 qemu-system-i386がinstallされている必要があります．
 
+## Dockerメモ
+
+* イメージのビルド
+```
+$ docker build -t <image name>:<image tag> <Dockerfile dir>
+```
+
+* イメージ一覧
+```
+$ docker images
+```
+
+* コンテナ一覧
+```
+$ docker ps -a
+```
+
+* イメージ取得
+```
+$ docker pull <image name>
+```
+
+* イメージ削除
+```
+$ docker rmi <image name>
+```
+
+* コンテナ作成起動
+```
+$ docker run --name <container name> -i -t <image name> <command>
+```
+
+* コンテナ起動
+```
+$ docker start <container name>
+```
+
+* コンテナ終了
+```
+$ docker stop <container name>
+```
+
+* コンテナ再起動
+```
+$ docker restart <container name>
+```
+
+* コンテナへログイン
+```
+$ docker exec -i -t <container name>
+```
