@@ -42,7 +42,7 @@ clean:
 	rm -f *.o *.img
 
 docker-build:
-	$(DOCKER) build -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
+	$(DOCKER) build --no-cache -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
 
 docker-login:
 	$(DOCKER) exec -i -t $(DOCKER_CONTAINER_NAME) $(DOCKER_CONTAINER_SHELL)
