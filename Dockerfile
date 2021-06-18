@@ -14,7 +14,5 @@ RUN git clone https://github.com/TaiseiIto/hariboslinux.git
 WORKDIR hariboslinux
 RUN make
 
-# update the OS image file
-CMD git pull origin master
-CMD make
+EXPOSE 5900
 

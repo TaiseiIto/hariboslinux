@@ -44,7 +44,7 @@ docker-login:
 	docker exec -i -t $(DOCKER_CONTAINER_NAME) $(DOCKER_CONTAINER_SHELL)
 
 docker-run:
-	docker run --name $(DOCKER_CONTAINER_NAME) -i -t $(DOCKER_IMAGE_NAME) $(DOCKER_CONTAINER_SHELL)
+	docker run --name $(DOCKER_CONTAINER_NAME) -p 5900:5900 -i -t $(DOCKER_IMAGE_NAME)
 
 docker-start:
 	docker start $(DOCKER_CONTAINER_NAME)
