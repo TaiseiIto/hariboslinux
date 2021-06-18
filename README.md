@@ -6,7 +6,7 @@ Haribos Linuxは，Linux環境でBuild可能なHaribote OSの改造版です．
 ## MIT LICENSE
 [ここ](LICENSE)に示すとおり，このrepositoryはMIT LICENSEに基づいて配布されます．
 そのため，[Taisei Ito](https://github.com/TaiseiIto)はこのrepositoryを利用したことによる問題の責任を負いません．
-このrepositoryをbuildすることによって得られるOSは仮想machine上で実行することを強くお勧めします．
+このrepositoryをbuildすることによって得られるHaribos Linuxは仮想machine上で実行することを強くお勧めします．
 
 ## Haribos Linuxの動作条件
 「30日でできるOS自作入門」(ISBN4-8399-1984-4)に基づいて作るため，以下の条件を満たすhardwareで実行可能です．
@@ -17,76 +17,48 @@ Haribos Linuxは，Linux環境でBuild可能なHaribote OSの改造版です．
 
 また，Buildによって生成されるimage fileはFAT12 floppy disk raw imageです．
 
+## Docker
+### Docker image生成
+[上](#Haribos-Linuxの動作条件)に述べたような機器がない場合でもHaribos Linuxを動かせるように，[Dockerfile](Dockerfile)を用意しました．
+dockerがinstallされている状態で，以下のcommandで仮想環境のimageが準備されます．
+```
+$ make docker-build
+```
+
+### Docker container生成および起動
+さらに，以下のcommandで仮想環境のcontainerが起動します．
+```
+$ make docker-run
+```
+
+また，以下のようなcommandも用意してあります．
+
+### Docker container起動
+```
+$ make docker-stop
+```
+
+### Docker container login
+```
+$ make docker-login
+```
+
+### Docker container停止
+```
+$ make docker-stop
+```
+
 ## Build
-以下のcommandでgccを用いてOSのimage file (haribos.img) がBuildされます．
+Docker containerを起動すると，このrepositoryが`~/hariboslinux`にcloneされ，`~/hariboslinux`に移動した状態になります．
+container上で以下のcommandによりHaribos Linuxのimage file (haribos.img) がBuildされます．
 ```
 $ make
 ```
-gccがinstallされている必要があります．
 
 ## QEMUによる実行
-Buildによって生成されたimage fileは，Virtual BoxやVM wareで動作することを確認しています．
-また，QEMUでの実行に対応しています．
-以下のcommandでharibos.imgをQEMU上で実行します．
+次に，container上で以下のcommandによりQEMUを立ち上げ，QEMU上でHaribos Linuxを動かします．
 ```
 $ make run
 ```
-qemu-system-i386がinstallされている必要があります．
-
-## Dockerメモ
-
-* イメージのビルド
-```
-$ docker build -t <image name>:<image tag> <Dockerfile dir>
-```
-
-* イメージ一覧
-```
-$ docker images
-```
-
-* コンテナ一覧
-```
-$ docker ps -a
-```
-
-* イメージ取得
-```
-$ docker pull <image name>
-```
-
-* イメージ削除
-```
-$ docker rmi <image name>
-```
-
-* コンテナ作成起動
-```
-$ docker run --name <container name> -i -t <image name> <command>
-```
-
-* コンテナ起動
-```
-$ docker start <container name>
-```
-
-* コンテナ終了
-```
-$ docker stop <container name>
-```
-
-* コンテナ再起動
-```
-$ docker restart <container name>
-```
-
-* コンテナへログイン
-```
-$ docker exec -i -t <container name>
-```
-
-* コンテナ削除
-```
-$ docker rm <container name>
-```
+このcommandにより実行されるQEMUはVNC通信を行っており，dockerを動かしているホストPCからlocalhostの5900番ポートにVNC接続することで，Haribos Linuxを操作することができます．
 
