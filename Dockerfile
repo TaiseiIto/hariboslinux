@@ -5,6 +5,8 @@ RUN apk update
 RUN apk add --no-cache alpine-sdk
 # emulator
 RUN apk add --no-cache qemu-system-i386
+# editor
+RUN apk add --no-cache vim
 
 # clone the repository
 WORKDIR ~
