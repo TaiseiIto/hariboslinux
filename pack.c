@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define _countof(array) (sizeof(array) / sizeof(array[0]))
+
 typedef struct
 {
 	unsigned char jump_instructions[3];
@@ -100,7 +102,7 @@ int main(int argc, char const * const * const argv)
 		return EXIT_FAILURE;
 	}
 	boot_sector = boot_sector_image;
-	printf("jump instructions[0] : %#04X\n", boot_sector->jump_instructions[0]);
+	for(unsigned int i = 0; i < _countof(boot_sector->jump_instructions); i++)printf("jump instructions[%d] : %#04X\n", i, boot_sector->jump_instructions[i]);
 	free(boot_sector_image);
 	if((fclose(boot_sector_file)) == EOF)
 	{
