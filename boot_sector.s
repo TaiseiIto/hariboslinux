@@ -24,7 +24,6 @@
 .long	0xffffffff		# volume serial number
 .ascii	"HARIBOTEOS "		# volume label
 .ascii	"FAT12   "		# FAT file system type
-.space 18
 hello_world:
 	movw	$0,	%ax
 	movw	%ax,	%ss
