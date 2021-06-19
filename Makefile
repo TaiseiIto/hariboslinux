@@ -19,7 +19,7 @@ DOCKER_VNC_PORT_OPTION = -p 5900:5900
 EMULATOR = qemu-system-i386
 EMULATOR_BOOT_OPTION = -boot order=a
 # a raw image of the floppy disk
-EMULATOR_DRIVE_OPTION = -fda $(IMAGE_FILE)
+EMULATOR_DRIVE_OPTION = -drive file=$(IMAGE_FILE),format=raw,if=floppy
 # VESA VBE 2.0
 EMULATOR_VIDEO_OPTION = -vga std
 # virtual network computing for all ip address
