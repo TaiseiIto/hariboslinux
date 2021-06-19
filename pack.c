@@ -64,9 +64,7 @@ int main(int argc, char const * const * const argv)
 
 	// related to boot sector
 	// read from boot_sector_file
-	BootSector *boot_sector;
-	void *boot_sector_image;
-	unsigned int const boot_sector_size = 0x00000200;
+	BootSector *boot_sector_structure;
 	// Haribos Linux floppy disk boot sector binary file
 	FILE *boot_sector_file;
 
@@ -97,12 +95,12 @@ int main(int argc, char const * const * const argv)
 		fprintf(stderr, "Can't open %s\n", boot_sector_file_name);
 		return EXIT_FAILURE;
 	}
-	if((boot_sector_image = malloc(boot_sector_size)) == NULL)
+	if((boot_sector_structure = malloc(sizeof(*boot_sector_structure))) == NULL)
 	{
-		fprintf(stderr, "Can't alloc boot sector image!\n");
+		fprintf(stderr, "Can't alloc boot sector structure!\n");
 		return EXIT_FAILURE;
 	}
-	if(fread(boot_sector_image, 1, boot_sector_size, boot_sector_file) < boot_sector_size)
+	if(fread(boot_sector_structure, sizeof(*boot_sector_structure), 1, boot_sector_file) < 1)
 	{
 		fprintf(stderr, "Can't read %s\n", boot_sector_file_name);
 		return EXIT_FAILURE;
@@ -112,34 +110,33 @@ int main(int argc, char const * const * const argv)
 		fprintf(stderr, "Can't close %s\n", boot_sector_file_name);
 		return EXIT_FAILURE;
 	}
-	boot_sector = boot_sector_image;
-	for(unsigned int i = 0; i < _countof(boot_sector->jump_instructions); i++)printf("jump instructions[%d] : %#04X\n", i, boot_sector->jump_instructions[i]);
+	for(unsigned int i = 0; i < _countof(boot_sector_structure->jump_instructions); i++)printf("jump instructions[%d] : %#04X\n", i, boot_sector_structure->jump_instructions[i]);
 	printf("produce name : ");
-	for(unsigned int i = 0; i < _countof(boot_sector->product_name); i++)printf("%c", boot_sector->product_name[i]);
+	for(unsigned int i = 0; i < _countof(boot_sector_structure->product_name); i++)printf("%c", boot_sector_structure->product_name[i]);
 	printf("\n");
-	printf("%#06X bytes per sector\n", boot_sector->num_of_bytes_per_sector);
-	printf("%#04X sectors per cluster\n", boot_sector->num_of_sectors_per_cluster);
-	printf("%#06X reserved sectors\n", boot_sector->num_of_reserved_sectors);
-	printf("%#04X FATs\n", boot_sector->num_of_FATs);
-	printf("%#06X root directory entries\n", boot_sector->num_of_root_directory_entries);
-	printf("%#06X sectors in disk\n", boot_sector->num_of_sectors_in_disk);
-	printf("media type : %#04X\n", boot_sector->media_type);
-	printf("%#06X sectors per FAT\n", boot_sector->num_of_sectors_per_FAT);
-	printf("%#06X sectors per track\n", boot_sector->num_of_sectors_per_track);
-	printf("%#06X heads\n", boot_sector->num_of_heads);
-	printf("%#010X hidden sectors\n", boot_sector->num_of_hidden_sectors);
-	printf("%#010X sectors in disk\n", boot_sector->large_num_of_sectors_in_disk);
-	printf("drive number : %#04X\n", boot_sector->drive_number);
-	printf("boot signature : %#04X\n", boot_sector->boot_signature);
-	printf("volume serial number : %#010X\n", boot_sector->volume_serial_number);
+	printf("%#06X bytes per sector\n", boot_sector_structure->num_of_bytes_per_sector);
+	printf("%#04X sectors per cluster\n", boot_sector_structure->num_of_sectors_per_cluster);
+	printf("%#06X reserved sectors\n", boot_sector_structure->num_of_reserved_sectors);
+	printf("%#04X FATs\n", boot_sector_structure->num_of_FATs);
+	printf("%#06X root directory entries\n", boot_sector_structure->num_of_root_directory_entries);
+	printf("%#06X sectors in disk\n", boot_sector_structure->num_of_sectors_in_disk);
+	printf("media type : %#04X\n", boot_sector_structure->media_type);
+	printf("%#06X sectors per FAT\n", boot_sector_structure->num_of_sectors_per_FAT);
+	printf("%#06X sectors per track\n", boot_sector_structure->num_of_sectors_per_track);
+	printf("%#06X heads\n", boot_sector_structure->num_of_heads);
+	printf("%#010X hidden sectors\n", boot_sector_structure->num_of_hidden_sectors);
+	printf("%#010X sectors in disk\n", boot_sector_structure->large_num_of_sectors_in_disk);
+	printf("drive number : %#04X\n", boot_sector_structure->drive_number);
+	printf("boot signature : %#04X\n", boot_sector_structure->boot_signature);
+	printf("volume serial number : %#010X\n", boot_sector_structure->volume_serial_number);
 	printf("volume label : ");
-	for(unsigned int i = 0; i < _countof(boot_sector->volume_label); i++)printf("%c", boot_sector->volume_label[i]);
+	for(unsigned int i = 0; i < _countof(boot_sector_structure->volume_label); i++)printf("%c", boot_sector_structure->volume_label[i]);
 	printf("\n");
 	printf("file system name : ");
-	for(unsigned int i = 0; i < _countof(boot_sector->file_system_name); i++)printf("%c", boot_sector->file_system_name[i]);
+	for(unsigned int i = 0; i < _countof(boot_sector_structure->file_system_name); i++)printf("%c", boot_sector_structure->file_system_name[i]);
 	printf("\n");
 	// write floppy disk raw image
-	floppy_disk_size = boot_sector->large_num_of_sectors_in_disk * boot_sector->num_of_bytes_per_sector;
+	floppy_disk_size = boot_sector_structure->large_num_of_sectors_in_disk * boot_sector_structure->num_of_bytes_per_sector;
 	floppy_disk_raw_image = malloc(floppy_disk_size);
 	memset(floppy_disk_raw_image, 0, floppy_disk_size);
 	if((floppy_disk_raw_image_file = fopen(floppy_disk_raw_image_file_name, "wb")) == NULL)
@@ -158,7 +155,7 @@ int main(int argc, char const * const * const argv)
 		return EXIT_FAILURE;
 	}
 	free(floppy_disk_raw_image);
-	free(boot_sector_image);
+	free(boot_sector_structure);
 	return EXIT_SUCCESS;
 }
 
