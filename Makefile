@@ -34,6 +34,9 @@ LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT = link.ld
 LINKER_SCRIPT_OPTION = -T
 
+# image paccker
+IMAGE_PACKER = pack
+
 # build the operating system
 all: build
 
@@ -63,6 +66,8 @@ docker-start:
 docker-stop:
 	$(DOCKER) stop $(DOCKER_CONTAINER_NAME)
 
+
+
 rebuild: clean
 	make build
 
@@ -79,6 +84,8 @@ update-repository:
 $(IMAGE_FILE): $(ASSEMBLY_FILES:.s=.o)
 	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(LINKER_SCRIPT)
 
+$(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
+	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@
 
 %.o: %.s
 	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@
