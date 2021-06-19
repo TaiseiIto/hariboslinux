@@ -1,5 +1,3 @@
-ASSEMBLY_FILES = haribos.s
-
 # compiler
 COMPILER = gcc
 COMPILER_DONT_LINK_OPTION = -c
@@ -88,4 +86,7 @@ $(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
 
 %.o: %.s
 	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@
+
+# dont remove intermediate files
+.PRECIOUS: %.bin %.o %.s
 
