@@ -70,6 +70,12 @@ rebuild: clean
 run: $(IMAGE_FILE)
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION)
 
+update: update-repository
+	make build
+
+update-repository:
+	git pull origin main
+
 $(IMAGE_FILE): $(ASSEMBLY_FILES:.s=.o)
 	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(LINKER_SCRIPT)
 

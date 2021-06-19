@@ -68,9 +68,15 @@ $ make docker-remove-container
 $ make docker-remove-image
 ```
 
-## QEMUによる実行
+## OSのimage fileおよびその更新
 Docker containerを起動すると，このrepositoryが`~/hariboslinux`にcloneされ，`~/hariboslinux`に移動した状態になります．
 ここにはBuild済みのHaribos Linux floppy disk raw image `~/hariboslinux/haribos.img`があります．
+ただし，このimage fileは最新でない可能性があるため，最新のimage fileを取得するために以下を実行してください．
+```
+/~/hariboslinux # make update
+```
+
+## QEMUによる実行
 次に，container上で以下のcommandによりQEMUを立ち上げ，QEMU上でHaribos Linuxを動かします．
 ```
 /~/hariboslinux # make run
