@@ -30,35 +30,50 @@ $ make docker-build
 ```
 $ make docker-run
 ```
+containerの/bin/shが起動します．
+```
+/~/hariboslinux # exit
+```
+でcontainerから抜け，containerを停止します．
 
 また，以下のようなcommandも用意してあります．
 
 ### Docker container起動
 ```
-$ make docker-stop
+$ make docker-start
 ```
 
 ### Docker container login
 ```
 $ make docker-login
 ```
+containerの/bin/shに入ります．
+```
+/~/hariboslinux # exit
+```
+でcontainerから抜け，containerを停止します．
 
 ### Docker container停止
 ```
 $ make docker-stop
 ```
 
-## Build
-Docker containerを起動すると，このrepositoryが`~/hariboslinux`にcloneされ，`~/hariboslinux`に移動した状態になります．
-container上で以下のcommandによりHaribos Linuxのimage file (haribos.img) がBuildされます．
+### Docker container削除
 ```
-$ make
+$ make docker-remove-container
+```
+
+### Docker image削除
+```
+$ make docker-remove-image
 ```
 
 ## QEMUによる実行
+Docker containerを起動すると，このrepositoryが`~/hariboslinux`にcloneされ，`~/hariboslinux`に移動した状態になります．
+ここにはBuild済みのHaribos Linux floppy disk raw image `~/hariboslinux/haribos.img`があります．
 次に，container上で以下のcommandによりQEMUを立ち上げ，QEMU上でHaribos Linuxを動かします．
 ```
-$ make run
+/~/hariboslinux # make run
 ```
 このcommandにより実行されるQEMUはVNC通信を行っており，dockerを動かしているホストPCからlocalhostの5900番ポートにVNC接続することで，Haribos Linuxを操作することができます．
 
