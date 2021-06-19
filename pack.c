@@ -171,6 +171,7 @@ int main(int argc, char const * const * const argv)
 		return EXIT_FAILURE;
 	}
 	free(floppy_disk_raw_image);
+	free(boot_sectors);
 	free(boot_sector_structure);
 	return EXIT_SUCCESS;
 }
