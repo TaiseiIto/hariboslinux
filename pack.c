@@ -54,7 +54,7 @@ int main(int argc, char const * const * const argv)
 	// Haribos Linux floppy disk raw image file name
 	char const *floppy_disk_raw_image_file_name;
 	// Haribos Linux floppy disk boot sector binary file name
-	char const *boot_sector_file_name;
+	char const *boot_sectors_file_name;
 	// file names included in the floppy disk
 	char const * const *input_file_names;
 	// num of [FILE] ...
@@ -66,12 +66,13 @@ int main(int argc, char const * const * const argv)
 	// read from boot_sector_file
 	BootSector *boot_sector_structure;
 	// Haribos Linux floppy disk boot sector binary file
-	FILE *boot_sector_file;
+	FILE *boot_sectors_file;
+	void *boot_sectors;
 
 	// related to output
+	FILE *floppy_disk_raw_image_file;
 	void *floppy_disk_raw_image;
 	unsigned int floppy_disk_size;
-	FILE *floppy_disk_raw_image_file;
 
 	// check argc
 	if(argc < num_of_necessary_args)
@@ -83,16 +84,16 @@ int main(int argc, char const * const * const argv)
 	for(int argc_i = 0; argc_i < argc; argc_i++)printf("argv[%d] : %s\n", argc_i, argv[argc_i]);
 	// decode argv
 	floppy_disk_raw_image_file_name = argv[1];
-	boot_sector_file_name = argv[2];
+	boot_sectors_file_name = argv[2];
 	input_file_names = argv + num_of_necessary_args;
 	num_of_input_files = argc - num_of_necessary_args;
 	printf("floppy disk raw image file : %s\n", floppy_disk_raw_image_file_name);
-	printf("boot sector bynari file : %s\n", boot_sector_file_name);
+	printf("boot sector bynari file : %s\n", boot_sectors_file_name);
 	for(unsigned int num_of_input_files_i = 0; num_of_input_files_i < num_of_input_files; num_of_input_files_i++)printf("input file [%u] : %s\n", num_of_input_files_i, input_file_names[num_of_input_files_i]);
 	// decode boot sector
-	if((boot_sector_file = fopen(boot_sector_file_name, "rb")) == NULL)
+	if((boot_sectors_file = fopen(boot_sectors_file_name, "rb")) == NULL)
 	{
-		fprintf(stderr, "Can't open %s\n", boot_sector_file_name);
+		fprintf(stderr, "Can't open %s\n", boot_sectors_file_name);
 		return EXIT_FAILURE;
 	}
 	if((boot_sector_structure = malloc(sizeof(*boot_sector_structure))) == NULL)
@@ -100,14 +101,9 @@ int main(int argc, char const * const * const argv)
 		fprintf(stderr, "Can't alloc boot sector structure!\n");
 		return EXIT_FAILURE;
 	}
-	if(fread(boot_sector_structure, sizeof(*boot_sector_structure), 1, boot_sector_file) < 1)
+	if(fread(boot_sector_structure, sizeof(*boot_sector_structure), 1, boot_sectors_file) < 1)
 	{
-		fprintf(stderr, "Can't read %s\n", boot_sector_file_name);
-		return EXIT_FAILURE;
-	}
-	if(fclose(boot_sector_file) == EOF)
-	{
-		fprintf(stderr, "Can't close %s\n", boot_sector_file_name);
+		fprintf(stderr, "Can't read %s\n", boot_sectors_file_name);
 		return EXIT_FAILURE;
 	}
 	for(unsigned int i = 0; i < _countof(boot_sector_structure->jump_instructions); i++)printf("jump instructions[%d] : %#04X\n", i, boot_sector_structure->jump_instructions[i]);
@@ -135,10 +131,30 @@ int main(int argc, char const * const * const argv)
 	printf("file system name : ");
 	for(unsigned int i = 0; i < _countof(boot_sector_structure->file_system_name); i++)printf("%c", boot_sector_structure->file_system_name[i]);
 	printf("\n");
-	// write floppy disk raw image
+	// read boot sectors
+	boot_sectors = malloc(boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector);
+	if(fseek(boot_sectors_file, 0, SEEK_SET))
+	{
+		fprintf(stderr, "Can't seek the start point of %s\n", boot_sectors_file_name);
+		return EXIT_FAILURE;
+	}
+	if(fread(boot_sectors, 1, boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector, boot_sectors_file) < boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector)
+	{
+		fprintf(stderr, "Can't read %s\n", boot_sectors_file_name);
+		return EXIT_FAILURE;
+	}
+	if(fclose(boot_sectors_file) == EOF)
+	{
+		fprintf(stderr, "Can't close %s\n", boot_sectors_file_name);
+		return EXIT_FAILURE;
+	}
+	// init floppy disk raw image
 	floppy_disk_size = boot_sector_structure->large_num_of_sectors_in_disk * boot_sector_structure->num_of_bytes_per_sector;
 	floppy_disk_raw_image = malloc(floppy_disk_size);
 	memset(floppy_disk_raw_image, 0, floppy_disk_size);
+	// locate the boot sectors
+	memcpy(floppy_disk_raw_image, boot_sectors, boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector);
+	// write floppy disk raw image
 	if((floppy_disk_raw_image_file = fopen(floppy_disk_raw_image_file_name, "wb")) == NULL)
 	{
 		fprintf(stderr, "Can't open %s\n", floppy_disk_raw_image_file_name);
