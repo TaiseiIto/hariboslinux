@@ -46,7 +46,7 @@ docker-build:
 	$(DOCKER) build --no-cache -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
 
 docker-login:
-	$(DOCKER) exec -i -t $(DOCKER_CONTAINER_NAME) $(DOCKER_CONTAINER_SHELL)
+	$(DOCKER) attach $(DOCKER_CONTAINER_NAME)
 
 docker-run:
 	$(DOCKER) run --name $(DOCKER_CONTAINER_NAME) $(DOCKER_VNC_PORT_OPTION) -i -t $(DOCKER_IMAGE_NAME)
