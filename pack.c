@@ -89,6 +89,8 @@ typedef struct
 	unsigned int size;
 } FileInformation;
 
+void write_fat_element(void *fat, unsigned short cluster_number, unsigned short next_cluster_number);
+
 int main(int argc, char const * const * const argv)
 {
 	// related to command line arguments
@@ -110,6 +112,7 @@ int main(int argc, char const * const * const argv)
 	FILE *boot_sectors_file;
 	void *boot_sectors;
 	unsigned int boot_sectors_size;
+	unsigned int num_of_clusters_in_boot_sectors;
 
 	// related to FAT section
 	void *fat;
@@ -241,6 +244,11 @@ int main(int argc, char const * const * const argv)
 		fprintf(stderr, "Can't allocate file contents section!\n");
 		return EXIT_FAILURE;
 	}
+	write_fat_element(fat, 0x0000, 0x0ff0);
+	num_of_clusters_in_boot_sectors = boot_sectors_size / (boot_sector_structure->num_of_sectors_per_cluster * boot_sector_structure->num_of_bytes_per_sector);
+	if(boot_sectors_size % (boot_sector_structure->num_of_sectors_per_cluster * boot_sector_structure->num_of_bytes_per_sector))num_of_clusters_in_boot_sectors++;
+	for(unsigned int boot_cluster_i = 1; boot_cluster_i < num_of_clusters_in_boot_sectors; boot_cluster_i++)write_fat_element(fat, boot_cluster_i, boot_cluster_i + 1);
+	write_fat_element(fat, num_of_clusters_in_boot_sectors, 0x0fff);
 	// locate FATs
 	for(unsigned char fat_i = 0; fat_i < boot_sector_structure->num_of_FATs; fat_i++)
 	{
@@ -275,5 +283,21 @@ int main(int argc, char const * const * const argv)
 	free(root_directory_entries);
 	free(file_contents);
 	return EXIT_SUCCESS;
+}
+
+void write_fat_element(void *fat, unsigned short cluster_number, unsigned short next_cluster_number)
+{
+	if(cluster_number % 2)
+	{
+		((unsigned char *)fat)[(cluster_number - 1) / 2 * 3 + 1] &= 0x0f;
+		((unsigned char *)fat)[(cluster_number - 1) / 2 * 3 + 1] += (unsigned char)((next_cluster_number & 0x000f) << 4);
+		((unsigned char *)fat)[(cluster_number - 1) / 2 * 3 + 2] = (unsigned char)(next_cluster_number >> 4 & 0x00ff);
+	}
+	else
+	{
+		((unsigned char *)fat)[cluster_number / 2 * 3] = (unsigned char)(next_cluster_number & 0xff);
+		((unsigned char *)fat)[cluster_number / 2 * 3 + 1] &= 0xf0;
+		((unsigned char *)fat)[cluster_number / 2 * 3 + 1] += (unsigned char)(next_cluster_number >> 8 & 0x000f);
+	}
 }
 
