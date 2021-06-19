@@ -48,6 +48,12 @@ docker-build:
 docker-login:
 	$(DOCKER) attach $(DOCKER_CONTAINER_NAME)
 
+docker-remove-container:
+	$(DOCKER) rm $(DOCKER_CONTAINER_NAME)
+
+docker-remove-image:
+	$(DOCKER) rmi $(DOCKER_IMAGE_NAME)
+
 docker-run:
 	$(DOCKER) run --name $(DOCKER_CONTAINER_NAME) $(DOCKER_VNC_PORT_OPTION) -i -t $(DOCKER_IMAGE_NAME)
 
