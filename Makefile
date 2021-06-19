@@ -1,3 +1,7 @@
+# floppy disk image file of the built operating system
+IMAGE_FILE = haribos.img
+BOOT_SECTORS = boot_sector.bin
+
 # compiler
 COMPILER = gcc
 COMPILER_DONT_LINK_OPTION = -c
@@ -23,16 +27,13 @@ EMULATOR_VIDEO_OPTION = -vga std
 # virtual network computing for all ip address
 EMULATOR_VNC_OPTION = -vnc :0
 
-# floppy disk image file of the built operating system
-IMAGE_FILE = haribos.img
-
 # linker
 LINKER = ld
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
 # image paccker
-IMAGE_PACKER = pack
+IMAGE_PACKER = ./pack
 
 # build the operating system
 all: build
@@ -40,7 +41,7 @@ all: build
 %.bin: %.o
 	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
-build: boot_sector.bin
+build: $(IMAGE_FILE)
 
 clean:
 	rm -f *.bin *.o *.img
@@ -78,6 +79,9 @@ update: update-repository
 
 update-repository:
 	git pull origin main
+
+$(IMAGE_FILE): $(IMAGE_PACKER) $(BOOT_SECTORS)
+	$(IMAGE_PACKER) $@ $(BOOT_SECTORS)
 
 $(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
 	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@
