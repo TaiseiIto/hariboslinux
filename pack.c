@@ -14,7 +14,11 @@ int main(int argc, char const * const * const argv)
 	char const *boot_sector_file_name;
 	// file names included in the floppy disk
 	char const * const *input_file_names;
+	// Haribos Linux floppy disk boot sector binary file
+	FILE *boot_sector_file;
+	// num of [FILE] ...
 	unsigned int num_of_input_files;
+	// "pack", "OUTPUT" and "BOOOTSECTOR"
 	unsigned int const num_of_necessary_args = 3;
 	// check argc
 	if(argc < num_of_necessary_args)
@@ -32,6 +36,17 @@ int main(int argc, char const * const * const argv)
 	printf("output file : %s\n", output_file_name);
 	printf("boot sector bynari file : %s\n", boot_sector_file_name);
 	for(unsigned int num_of_input_files_i = 0; num_of_input_files_i < num_of_input_files; num_of_input_files_i++)printf("input file [%u] : %s\n", num_of_input_files_i, input_file_names[num_of_input_files_i]);
+	// decode boot sector
+	if((boot_sector_file = fopen(boot_sector_file_name, "rb")) == NULL)
+	{
+		fprintf(stderr, "Can't open %s\n", boot_sector_file_name);
+		return EXIT_FAILURE;
+	}
+	if((fclose(boot_sector_file)) == EOF)
+	{
+		fprintf(stderr, "Can't close %s\n", boot_sector_file_name);
+		return EXIT_FAILURE;
+	}
 	return EXIT_SUCCESS;
 }
 
