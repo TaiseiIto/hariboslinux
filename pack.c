@@ -127,6 +127,7 @@ int main(int argc, char const * const * const argv)
 	FILE *floppy_disk_raw_image_file;
 	void *floppy_disk_raw_image;
 	unsigned int floppy_disk_size;
+	char *floppy_disk_raw_image_write_point;
 
 	// check argc
 	if(argc < num_of_necessary_args)
@@ -216,7 +217,9 @@ int main(int argc, char const * const * const argv)
 	}
 	memset(floppy_disk_raw_image, 0, floppy_disk_size);
 	// locate the boot sectors
-	memcpy(floppy_disk_raw_image, boot_sectors, boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector);
+	floppy_disk_raw_image_write_point = floppy_disk_raw_image;
+	memcpy(floppy_disk_raw_image_write_point, boot_sectors, boot_sectors_size);
+	floppy_disk_raw_image_write_point += boot_sectors_size;
 	// locate input files
 	fat_size = boot_sector_structure->num_of_sectors_per_FAT * boot_sector_structure->num_of_bytes_per_sector;
 	if((fat = malloc(fat_size)) == NULL)
@@ -238,6 +241,17 @@ int main(int argc, char const * const * const argv)
 		fprintf(stderr, "Can't allocate file contents section!\n");
 		return EXIT_FAILURE;
 	}
+	// locate FATs
+	for(unsigned char fat_i = 0; fat_i < boot_sector_structure->num_of_FATs; fat_i++)
+	{
+		memcpy(floppy_disk_raw_image_write_point, fat, fat_size);
+		floppy_disk_raw_image_write_point += fat_size;
+	}
+	// locate file informations
+	memcpy(floppy_disk_raw_image_write_point, root_directory_entries, root_directory_entries_size);
+	floppy_disk_raw_image_write_point += root_directory_entries_size;
+	// locate file contents
+	memcpy(floppy_disk_raw_image_write_point, file_contents, file_contents_size);
 	// write floppy disk raw image
 	if((floppy_disk_raw_image_file = fopen(floppy_disk_raw_image_file_name, "wb")) == NULL)
 	{
