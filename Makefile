@@ -17,8 +17,9 @@ DOCKER_VNC_PORT_OPTION = -p 5900:5900
 # emulator
 # emulate intel 386 processor
 EMULATOR = qemu-system-i386
+EMULATOR_BOOT_OPTION = -boot order=a
 # a raw image of the floppy disk
-EMULATOR_DRIVE_OPTION = -drive file=$(IMAGE_FILE),format=raw,if=floppy
+EMULATOR_DRIVE_OPTION = -fda $(IMAGE_FILE)
 # VESA VBE 2.0
 EMULATOR_VIDEO_OPTION = -vga std
 # virtual network computing for all ip address
@@ -61,7 +62,7 @@ rebuild: clean
 
 # run the operating system on QEMU
 run: $(IMAGE_FILE)
-	$(EMULATOR) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION)
+	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION)
 
 $(IMAGE_FILE): $(ASSEMBLY_FILES:.s=.o)
 	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(LINKER_SCRIPT)
