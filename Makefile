@@ -31,7 +31,6 @@ IMAGE_FILE = haribos.img
 # linker
 LINKER = ld
 LINKER_OUTPUT_OPTION = -o
-LINKER_SCRIPT = link.ld
 LINKER_SCRIPT_OPTION = -T
 
 # image paccker
@@ -40,10 +39,13 @@ IMAGE_PACKER = pack
 # build the operating system
 all: build
 
-build: $(IMAGE_FILE)
+%.bin: %.o
+	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
+
+build: boot_sector.bin
 
 clean:
-	rm -f *.o *.img
+	rm -f *.bin *.o *.img
 
 docker-build:
 	$(DOCKER) build --no-cache -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
@@ -80,9 +82,6 @@ update: update-repository
 
 update-repository:
 	git pull origin main
-
-$(IMAGE_FILE): $(ASSEMBLY_FILES:.s=.o)
-	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(LINKER_SCRIPT)
 
 $(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
 	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@

@@ -1,4 +1,5 @@
 pack
+*.bin
 *.img
 *.o
 
