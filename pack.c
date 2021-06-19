@@ -48,6 +48,47 @@ typedef struct
 	char file_system_name[8];
 } __attribute__((packed)) BootSector;
 
+typedef struct
+{
+	// file name prefix
+	// The string doesn't end with '\0'.
+	// Margin is filled with spaces.
+	// if name[0] == 0, it means the end of the file information array.
+	// if name[0] == -27(0xe5), it means the file is deleted.
+	char name[8];
+
+	// file name extension
+	// The string doesn't end with '\0'.
+	// Margin is filled with spaces.
+	char extension[3];
+
+	unsigned char flags;
+	#define FILE_INFORMATION_FLAG_READ_ONLY_FILE 0x01
+	#define FILE_INFORMATION_FLAG_HIDDEN_FILE 0x02
+	#define FILE_INFORMATION_FLAG_SYSTEM_FILE 0x04
+	#define FILE_INFORMATION_FLAG_DISK_NAME 0x08
+	#define FILE_INFORMATION_FLAG_DIRECTORY 0x10
+	#define FILE_INFORMATION_FLAG_NORMAL_FILE 0x20
+
+	char reserved[10];
+
+	// From 0x0001 bit to 0x0010 bit, it means bisecond the file saved. (1 means 2 seconds)
+	// From 0x0020 bit to 0x0400 bit, it means minute the file saved.
+	// From 0x0800 bit to 0x8000 bit, it means hour the file saved.
+	unsigned short time;
+
+	// From 0x0001 bit to 0x0010 bit, it means date the file saved.
+	// From 0x0020 bit to 0x0100 bit, it means month the file saved.
+	// From 0x0200 bit to 0x8000 bit, it means year the file saved. (offset 1980)
+	unsigned short date;
+
+	// Entry cluster of the file contents
+	unsigned short cluster_number;
+
+	//bytes
+	unsigned int size;
+} FileInformation;
+
 int main(int argc, char const * const * const argv)
 {
 	// related to command line arguments
@@ -68,6 +109,19 @@ int main(int argc, char const * const * const argv)
 	// Haribos Linux floppy disk boot sector binary file
 	FILE *boot_sectors_file;
 	void *boot_sectors;
+	unsigned int boot_sectors_size;
+
+	// related to FAT section
+	void *fat;
+	unsigned int fat_size;
+
+	// related to root directory entries section
+	FileInformation *root_directory_entries;
+	unsigned int root_directory_entries_size;
+
+	//related to file contents section
+	void *file_contents;
+	unsigned int file_contents_size;
 
 	// related to output
 	FILE *floppy_disk_raw_image_file;
@@ -98,7 +152,7 @@ int main(int argc, char const * const * const argv)
 	}
 	if((boot_sector_structure = malloc(sizeof(*boot_sector_structure))) == NULL)
 	{
-		fprintf(stderr, "Can't alloc boot sector structure!\n");
+		fprintf(stderr, "Can't allocate boot sector structure!\n");
 		return EXIT_FAILURE;
 	}
 	if(fread(boot_sector_structure, sizeof(*boot_sector_structure), 1, boot_sectors_file) < 1)
@@ -132,13 +186,18 @@ int main(int argc, char const * const * const argv)
 	for(unsigned int i = 0; i < _countof(boot_sector_structure->file_system_name); i++)printf("%c", boot_sector_structure->file_system_name[i]);
 	printf("\n");
 	// read boot sectors
-	boot_sectors = malloc(boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector);
+	boot_sectors_size = boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector;
+	if((boot_sectors = malloc(boot_sectors_size)) == NULL)
+	{
+		fprintf(stderr, "Can't allocate boot sectors!\n");
+		return EXIT_FAILURE;
+	}
 	if(fseek(boot_sectors_file, 0, SEEK_SET))
 	{
 		fprintf(stderr, "Can't seek the start point of %s\n", boot_sectors_file_name);
 		return EXIT_FAILURE;
 	}
-	if(fread(boot_sectors, 1, boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector, boot_sectors_file) < boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector)
+	if(fread(boot_sectors, 1, boot_sectors_size, boot_sectors_file) < boot_sectors_size)
 	{
 		fprintf(stderr, "Can't read %s\n", boot_sectors_file_name);
 		return EXIT_FAILURE;
@@ -150,10 +209,35 @@ int main(int argc, char const * const * const argv)
 	}
 	// init floppy disk raw image
 	floppy_disk_size = boot_sector_structure->large_num_of_sectors_in_disk * boot_sector_structure->num_of_bytes_per_sector;
-	floppy_disk_raw_image = malloc(floppy_disk_size);
+	if((floppy_disk_raw_image = malloc(floppy_disk_size)) == NULL)
+	{
+		fprintf(stderr, "Can't allocate floppy disk raw image!\n");
+		return EXIT_FAILURE;
+	}
 	memset(floppy_disk_raw_image, 0, floppy_disk_size);
 	// locate the boot sectors
 	memcpy(floppy_disk_raw_image, boot_sectors, boot_sector_structure->num_of_reserved_sectors * boot_sector_structure->num_of_bytes_per_sector);
+	// locate input files
+	fat_size = boot_sector_structure->num_of_sectors_per_FAT * boot_sector_structure->num_of_bytes_per_sector;
+	if((fat = malloc(fat_size)) == NULL)
+	{
+		fprintf(stderr, "Can't allocate FAT section!\n");
+		return EXIT_FAILURE;
+	}
+	root_directory_entries_size = boot_sector_structure->num_of_root_directory_entries * sizeof(*root_directory_entries) / boot_sector_structure->num_of_bytes_per_sector;
+	if(boot_sector_structure->num_of_root_directory_entries * sizeof(*root_directory_entries) % boot_sector_structure->num_of_bytes_per_sector)root_directory_entries_size++;
+	root_directory_entries_size *= boot_sector_structure->num_of_bytes_per_sector;
+	if((root_directory_entries = malloc(root_directory_entries_size)) == NULL)
+	{
+		fprintf(stderr, "Can't allocate root directory entries section!\n");
+		return EXIT_FAILURE;
+	}
+	file_contents_size = floppy_disk_size - boot_sectors_size - boot_sector_structure->num_of_FATs * fat_size - root_directory_entries_size;
+	if((file_contents = malloc(file_contents_size)) == NULL)
+	{
+		fprintf(stderr, "Can't allocate file contents section!\n");
+		return EXIT_FAILURE;
+	}
 	// write floppy disk raw image
 	if((floppy_disk_raw_image_file = fopen(floppy_disk_raw_image_file_name, "wb")) == NULL)
 	{
@@ -173,6 +257,9 @@ int main(int argc, char const * const * const argv)
 	free(floppy_disk_raw_image);
 	free(boot_sectors);
 	free(boot_sector_structure);
+	free(fat);
+	free(root_directory_entries);
+	free(file_contents);
 	return EXIT_SUCCESS;
 }
 
