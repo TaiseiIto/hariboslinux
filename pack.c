@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define _countof(array) (sizeof(array) / sizeof(array[0]))
 
@@ -51,7 +52,7 @@ int main(int argc, char const * const * const argv)
 {
 	// related to command line arguments
 	// Haribos Linux floppy disk raw image file name
-	char const *output_file_name;
+	char const *floppy_disk_raw_image_file_name;
 	// Haribos Linux floppy disk boot sector binary file name
 	char const *boot_sector_file_name;
 	// file names included in the floppy disk
@@ -69,6 +70,11 @@ int main(int argc, char const * const * const argv)
 	// Haribos Linux floppy disk boot sector binary file
 	FILE *boot_sector_file;
 
+	// related to output
+	void *floppy_disk_raw_image;
+	unsigned int floppy_disk_size;
+	FILE *floppy_disk_raw_image_file;
+
 	// check argc
 	if(argc < num_of_necessary_args)
 	{
@@ -78,11 +84,11 @@ int main(int argc, char const * const * const argv)
 	// print argv
 	for(int argc_i = 0; argc_i < argc; argc_i++)printf("argv[%d] : %s\n", argc_i, argv[argc_i]);
 	// decode argv
-	output_file_name = argv[1];
+	floppy_disk_raw_image_file_name = argv[1];
 	boot_sector_file_name = argv[2];
 	input_file_names = argv + num_of_necessary_args;
 	num_of_input_files = argc - num_of_necessary_args;
-	printf("output file : %s\n", output_file_name);
+	printf("floppy disk raw image file : %s\n", floppy_disk_raw_image_file_name);
 	printf("boot sector bynari file : %s\n", boot_sector_file_name);
 	for(unsigned int num_of_input_files_i = 0; num_of_input_files_i < num_of_input_files; num_of_input_files_i++)printf("input file [%u] : %s\n", num_of_input_files_i, input_file_names[num_of_input_files_i]);
 	// decode boot sector
@@ -99,6 +105,11 @@ int main(int argc, char const * const * const argv)
 	if(fread(boot_sector_image, 1, boot_sector_size, boot_sector_file) < boot_sector_size)
 	{
 		fprintf(stderr, "Can't read %s\n", boot_sector_file_name);
+		return EXIT_FAILURE;
+	}
+	if(fclose(boot_sector_file) == EOF)
+	{
+		fprintf(stderr, "Can't close %s\n", boot_sector_file_name);
 		return EXIT_FAILURE;
 	}
 	boot_sector = boot_sector_image;
@@ -127,12 +138,27 @@ int main(int argc, char const * const * const argv)
 	printf("file system name : ");
 	for(unsigned int i = 0; i < _countof(boot_sector->file_system_name); i++)printf("%c", boot_sector->file_system_name[i]);
 	printf("\n");
-	free(boot_sector_image);
-	if((fclose(boot_sector_file)) == EOF)
+	// write floppy disk raw image
+	floppy_disk_size = boot_sector->large_num_of_sectors_in_disk * boot_sector->num_of_bytes_per_sector;
+	floppy_disk_raw_image = malloc(floppy_disk_size);
+	memset(floppy_disk_raw_image, 0, floppy_disk_size);
+	if((floppy_disk_raw_image_file = fopen(floppy_disk_raw_image_file_name, "wb")) == NULL)
 	{
-		fprintf(stderr, "Can't close %s\n", boot_sector_file_name);
+		fprintf(stderr, "Can't open %s\n", floppy_disk_raw_image_file_name);
 		return EXIT_FAILURE;
 	}
+	if(fwrite(floppy_disk_raw_image, 1, floppy_disk_size, floppy_disk_raw_image_file) < floppy_disk_size)
+	{
+		fprintf(stderr, "Can't write %s\n", floppy_disk_raw_image_file_name);
+		return EXIT_FAILURE;
+	}
+	if(fclose(floppy_disk_raw_image_file) == EOF)
+	{
+		fprintf(stderr, "Can't close %s\n", floppy_disk_raw_image_file_name);
+		return EXIT_FAILURE;
+	}
+	free(floppy_disk_raw_image);
+	free(boot_sector_image);
 	return EXIT_SUCCESS;
 }
 
