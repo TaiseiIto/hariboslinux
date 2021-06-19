@@ -15,8 +15,9 @@ int main(int argc, char const * const * const argv)
 	// file names included in the floppy disk
 	char const * const *input_file_names;
 	unsigned int num_of_input_files;
+	unsigned int const num_of_necessary_args = 3;
 	// check argc
-	if(argc < 3)
+	if(argc < num_of_necessary_args)
 	{
 		fprintf(stderr, "Usage: pack OUTPUT BOOTSECTOR [FILE] ...\n");
 		return EXIT_FAILURE;
@@ -26,8 +27,8 @@ int main(int argc, char const * const * const argv)
 	// decode argv
 	output_file_name = argv[1];
 	boot_sector_file_name = argv[2];
-	input_file_names = argv + 3;
-	num_of_input_files = argc - 3;
+	input_file_names = argv + num_of_necessary_args;
+	num_of_input_files = argc - num_of_necessary_args;
 	printf("output file : %s\n", output_file_name);
 	printf("boot sector bynari file : %s\n", boot_sector_file_name);
 	for(unsigned int num_of_input_files_i = 0; num_of_input_files_i < num_of_input_files; num_of_input_files_i++)printf("input file [%u] : %s\n", num_of_input_files_i, input_file_names[num_of_input_files_i]);
