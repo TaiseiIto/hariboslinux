@@ -127,7 +127,7 @@ int main(int argc, char const * const * const argv)
 
 	// related to root directory entries section
 	FileInformation *root_directory_entries;
-	// FileInformation *root_directory_entry; (unused)
+	FileInformation *root_directory_entry;
 	unsigned int root_directory_entries_size;
 
 	//related to file contents section
@@ -256,6 +256,12 @@ int main(int argc, char const * const * const argv)
 	cluster_number = 0;
 	write_fat_element(fat, cluster_number++, 0x0ff0);
 	write_fat_element(fat, cluster_number++, cluster_number_no_more_clusters);
+	root_directory_entry = root_directory_entries;
+	if(boot_sector_structure->num_of_root_directory_entries < num_of_input_files)
+	{
+		fprintf(stderr, "Too many input files!\n");
+		return EXIT_FAILURE;
+	}
 	for(unsigned int num_of_input_files_i = 0; num_of_input_files_i < num_of_input_files; num_of_input_files_i++)
 	{
 		printf("locate input file %s\n", input_file_names[num_of_input_files_i]);
@@ -269,6 +275,7 @@ int main(int argc, char const * const * const argv)
 			fprintf(stderr, "Can't close %s\n", input_file_names[num_of_input_files_i]);
 			return EXIT_FAILURE;
 		}
+		root_directory_entry++;
 	}
 	// locate FATs
 	for(unsigned char fat_i = 0; fat_i < boot_sector_structure->num_of_FATs; fat_i++)
