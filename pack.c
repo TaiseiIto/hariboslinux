@@ -266,7 +266,6 @@ int main(int argc, char const * const * const argv)
 	for(unsigned int input_file_i = 0; input_file_i < num_of_input_files; input_file_i++)
 	{
 		FILE *input_file;
-		unsigned int input_file_size = 0; // unused
 		unsigned int input_file_name_i;
 		unsigned int input_file_extension_i;
 
@@ -323,8 +322,9 @@ int main(int argc, char const * const * const argv)
 			fprintf(stderr, "Can't get stat of %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
 		}
+		printf("\tfile size : %d\n", file_stat.st_size);
 		localtime_r(&file_stat.st_ctime, &file_creation_time);
-		printf("file creation time : %04d/%02d/%02d %02d:%02d:%02d\n", file_creation_time.tm_year + 1900, file_creation_time.tm_mon + 1, file_creation_time.tm_mday, file_creation_time.tm_hour, file_creation_time.tm_min, file_creation_time.tm_sec);
+		printf("\tfile creation time : %04d/%02d/%02d %02d:%02d:%02d\n", file_creation_time.tm_year + 1900, file_creation_time.tm_mon + 1, file_creation_time.tm_mday, file_creation_time.tm_hour, file_creation_time.tm_min, file_creation_time.tm_sec);
 		root_directory_entry->date = 0;
 		root_directory_entry->date += file_creation_time.tm_year + 1900 - 1980;
 		root_directory_entry->date <<= 4;
@@ -349,7 +349,7 @@ int main(int argc, char const * const * const argv)
 			fprintf(stderr, "Can't close %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
 		}
-		root_directory_entry->size = input_file_size;
+		root_directory_entry->size = file_stat.st_size;
 		root_directory_entry++;
 	}
 	// locate FATs
