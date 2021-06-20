@@ -41,9 +41,6 @@ IMAGE_PACKER = ./pack
 # build the operating system
 all: build
 
-%.bin: %.o
-	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
-
 build: $(IMAGE_FILE)
 
 clean:
@@ -71,7 +68,7 @@ docker-stop:
 	$(DOCKER) stop $(DOCKER_CONTAINER_NAME)
 
 rebuild: clean
-	make build
+	make
 
 # run the operating system on QEMU
 run: $(IMAGE_FILE)
@@ -81,7 +78,7 @@ stop:
 	for i in $$(ps ax | grep $(EMULATOR) | grep -v grep | awk '{print $$1}'); do kill $$i; done
 
 update: update-repository
-	make build
+	make
 
 update-repository:
 	git pull origin main
@@ -91,6 +88,9 @@ $(IMAGE_FILE): $(IMAGE_PACKER) $(BOOT_SECTORS) $(FLOPPY_FILES)
 
 $(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
 	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
+
+%.bin: %.o
+	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
 %.o: %.s
 	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
