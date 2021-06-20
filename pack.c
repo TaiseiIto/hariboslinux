@@ -6,6 +6,7 @@
 // bibriography
 // https://wiki.osdev.org/FAT
 
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -273,8 +274,9 @@ int main(int argc, char const * const * const argv)
 		#define REACH_END_OF_FILE_NAME 0x01
 		#define REACH_END_OF_FILE_EXTENSION 0x02
 
-		// get file creation time
+		// get file state information
 		struct stat file_stat;
+		struct tm file_creation_time;
 
 		printf("locate input file %s\n", input_file_names[input_file_i]);
 		// write a file information
@@ -321,7 +323,8 @@ int main(int argc, char const * const * const argv)
 			fprintf(stderr, "Can't get stat of %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
 		}
-		printf("st_ctime = %d\n", (int)file_stat.st_ctime);
+		localtime_r(&file_stat.st_ctime, &file_creation_time);
+		printf("file creation time : %04d/%02d/%02d %02d:%02d:%02d\n", file_creation_time.tm_year + 1900, file_creation_time.tm_mon + 1, file_creation_time.tm_mday, file_creation_time.tm_hour, file_creation_time.tm_min, file_creation_time.tm_sec);
 		// write file contents
 		if((input_file = fopen(input_file_names[input_file_i], "rb")) == NULL)
 		{
