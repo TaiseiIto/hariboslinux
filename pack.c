@@ -131,7 +131,6 @@ int main(int argc, char const * const * const argv)
 	unsigned int root_directory_entries_size;
 
 	//related to file contents section
-	FILE *input_file;
 	void *file_contents;
 	unsigned int file_contents_size;
 
@@ -262,18 +261,63 @@ int main(int argc, char const * const * const argv)
 		fprintf(stderr, "Too many input files!\n");
 		return EXIT_FAILURE;
 	}
-	for(unsigned int num_of_input_files_i = 0; num_of_input_files_i < num_of_input_files; num_of_input_files_i++)
+	for(unsigned int input_file_i = 0; input_file_i < num_of_input_files; input_file_i++)
 	{
-		printf("locate input file %s\n", input_file_names[num_of_input_files_i]);
-		if((input_file = fopen(input_file_names[num_of_input_files_i], "rb")) == NULL)
+		FILE *input_file;
+		unsigned int input_file_size = 0;
+		unsigned int input_file_name_i;
+		unsigned int input_file_extension_i;
+		unsigned char flags;
+		#define REACH_END_OF_FILE_NAME 0x01
+		#define REACH_END_OF_FILE_EXTENSION 0x02
+		printf("locate input file %s\n", input_file_names[input_file_i]);
+		if((input_file = fopen(input_file_names[input_file_i], "rb")) == NULL)
 		{
-			fprintf(stderr, "Can't open %s\n", input_file_names[num_of_input_files_i]);
+			fprintf(stderr, "Can't open %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
 		}
 		if(fclose(input_file) == EOF)
 		{
-			fprintf(stderr, "Can't close %s\n", input_file_names[num_of_input_files_i]);
+			fprintf(stderr, "Can't close %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
+		}
+		// write a file information
+		flags = 0x00;
+		for(input_file_name_i = 0; input_file_name_i < _countof(root_directory_entry->name); input_file_name_i++)
+		{
+			if(flags & REACH_END_OF_FILE_NAME)root_directory_entry->name[input_file_name_i] = ' ';
+			else switch(input_file_names[input_file_i][input_file_name_i])
+			{
+			case '\0':
+			case '.':
+				flags |= REACH_END_OF_FILE_NAME;
+				root_directory_entry->name[input_file_name_i] = ' ';
+				break;
+			default:
+				root_directory_entry->name[input_file_name_i] = input_file_names[input_file_i][input_file_name_i];
+				break;
+			}
+		}
+		for(input_file_name_i = 0; input_file_names[input_file_i][input_file_name_i] != '\0' && input_file_names[input_file_i][input_file_name_i] != '.'; input_file_name_i++);
+		switch(input_file_names[input_file_i][input_file_name_i])
+		{
+		case '\0':
+			flags |= REACH_END_OF_FILE_EXTENSION;
+			break;
+		case '.':
+			if(input_file_names[input_file_i][++input_file_name_i] == '\0')flags |= REACH_END_OF_FILE_EXTENSION;
+			break;
+		}
+		for(input_file_extension_i = 0; input_file_extension_i < _countof(root_directory_entry->extension); input_file_extension_i++)
+		{
+			if(flags & REACH_END_OF_FILE_EXTENSION)root_directory_entry->extension[input_file_extension_i] = ' ';
+			else if(input_file_names[input_file_i][input_file_name_i] == '\0')
+			{
+				flags |= REACH_END_OF_FILE_EXTENSION;
+				root_directory_entry->extension[input_file_extension_i] = ' ';
+			}
+			else root_directory_entry->extension[input_file_extension_i] = input_file_names[input_file_i][input_file_name_i];
+			if(!(flags & REACH_END_OF_FILE_EXTENSION))input_file_name_i++;
 		}
 		root_directory_entry++;
 	}
