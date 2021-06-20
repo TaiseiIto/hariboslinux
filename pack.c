@@ -264,7 +264,7 @@ int main(int argc, char const * const * const argv)
 	for(unsigned int input_file_i = 0; input_file_i < num_of_input_files; input_file_i++)
 	{
 		FILE *input_file;
-		unsigned int input_file_size = 0;
+		// unsigned int input_file_size = 0; // unused
 		unsigned int input_file_name_i;
 		unsigned int input_file_extension_i;
 		unsigned char flags;
@@ -319,6 +319,7 @@ int main(int argc, char const * const * const argv)
 			else root_directory_entry->extension[input_file_extension_i] = input_file_names[input_file_i][input_file_name_i];
 			if(!(flags & REACH_END_OF_FILE_EXTENSION))input_file_name_i++;
 		}
+		root_directory_entry->flags = FILE_INFORMATION_FLAG_READ_ONLY_FILE | FILE_INFORMATION_FLAG_NORMAL_FILE;
 		root_directory_entry++;
 	}
 	// locate FATs
