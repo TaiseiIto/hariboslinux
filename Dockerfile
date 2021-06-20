@@ -7,6 +7,10 @@ RUN apk add --no-cache alpine-sdk
 RUN apk add --no-cache qemu-system-i386
 # editor
 RUN apk add --no-cache vim
+# set time zone UTC+9 (Japan)
+RUN apk add --no-cache tzdata
+RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+RUN apk del tzdata
 
 # clone the repository
 WORKDIR ~
