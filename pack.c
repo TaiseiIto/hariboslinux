@@ -2,6 +2,9 @@
 //
 // This program outputs Haribos Linux floppy disk raw image file named by the argument OUTPUT.
 // The output includes the files specified by the arguments [FILE] ...
+//
+// bibriography
+// https://wiki.osdev.org/FAT
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -117,9 +120,15 @@ int main(int argc, char const * const * const argv)
 	// related to FAT section
 	void *fat;
 	unsigned int fat_size;
+	unsigned short cluster_number;
+	// The below value means there are no more entries in a directory.
+	unsigned short const cluster_number_no_more_entries = 0x0000;
+	// If cluster number is greater than or equal to 0x0ff8, there are no more clusters in the file.
+	unsigned short const cluster_number_no_more_clusters = 0x0fff;
 
 	// related to root directory entries section
 	FileInformation *root_directory_entries;
+	FileInformation *root_directory_entry;
 	unsigned int root_directory_entries_size;
 
 	//related to file contents section
@@ -244,11 +253,12 @@ int main(int argc, char const * const * const argv)
 		fprintf(stderr, "Can't allocate file contents section!\n");
 		return EXIT_FAILURE;
 	}
-	write_fat_element(fat, 0x0000, 0x0ff0);
+	cluster_number = 0;
+	write_fat_element(fat, cluster_number, 0x0ff0);
 	num_of_clusters_in_boot_sectors = boot_sectors_size / (boot_sector_structure->num_of_sectors_per_cluster * boot_sector_structure->num_of_bytes_per_sector);
 	if(boot_sectors_size % (boot_sector_structure->num_of_sectors_per_cluster * boot_sector_structure->num_of_bytes_per_sector))num_of_clusters_in_boot_sectors++;
-	for(unsigned int boot_cluster_i = 1; boot_cluster_i < num_of_clusters_in_boot_sectors; boot_cluster_i++)write_fat_element(fat, boot_cluster_i, boot_cluster_i + 1);
-	write_fat_element(fat, num_of_clusters_in_boot_sectors, 0x0fff);
+	for(cluster_number = 1; cluster_number < num_of_clusters_in_boot_sectors; cluster_number++)write_fat_element(fat, cluster_number, cluster_number + 1);
+	write_fat_element(fat, cluster_number, cluster_number_no_more_clusters);
 	// locate FATs
 	for(unsigned char fat_i = 0; fat_i < boot_sector_structure->num_of_FATs; fat_i++)
 	{
