@@ -141,7 +141,7 @@ int main(int argc, char const * const * const argv)
 	char *floppy_disk_raw_image_write_point;
 
 	// check argc
-	if(argc < num_of_necessary_args)
+	if((unsigned int)argc < num_of_necessary_args)
 	{
 		fprintf(stderr, "Usage: pack OUTPUT BOOTSECTOR [FILE] ...\n");
 		return EXIT_FAILURE;
