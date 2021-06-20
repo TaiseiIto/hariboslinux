@@ -61,13 +61,13 @@ $ cd hariboslinux
 ```
 
 ### Docker image生成
-以下のcommandで仮想環境のimageが準備されます．
+以下のcommandでdocker imageが準備されます．
 ```
 $ make docker-build
 ```
 
 ### Docker container生成および起動
-さらに，以下のcommandで仮想環境のcontainerが起動します．
+さらに，以下のcommandでdocker containerが起動します．
 ```
 $ make docker-run
 ```
