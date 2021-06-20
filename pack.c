@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define _countof(array) (sizeof(array) / sizeof(array[0]))
 
@@ -267,20 +268,15 @@ int main(int argc, char const * const * const argv)
 		// unsigned int input_file_size = 0; // unused
 		unsigned int input_file_name_i;
 		unsigned int input_file_extension_i;
+
 		unsigned char flags;
 		#define REACH_END_OF_FILE_NAME 0x01
 		#define REACH_END_OF_FILE_EXTENSION 0x02
+
+		// get file creation time
+		struct stat file_stat;
+
 		printf("locate input file %s\n", input_file_names[input_file_i]);
-		if((input_file = fopen(input_file_names[input_file_i], "rb")) == NULL)
-		{
-			fprintf(stderr, "Can't open %s\n", input_file_names[input_file_i]);
-			return EXIT_FAILURE;
-		}
-		if(fclose(input_file) == EOF)
-		{
-			fprintf(stderr, "Can't close %s\n", input_file_names[input_file_i]);
-			return EXIT_FAILURE;
-		}
 		// write a file information
 		flags = 0x00;
 		for(input_file_name_i = 0; input_file_name_i < _countof(root_directory_entry->name); input_file_name_i++)
@@ -320,6 +316,23 @@ int main(int argc, char const * const * const argv)
 			if(!(flags & REACH_END_OF_FILE_EXTENSION))input_file_name_i++;
 		}
 		root_directory_entry->flags = FILE_INFORMATION_FLAG_READ_ONLY_FILE | FILE_INFORMATION_FLAG_NORMAL_FILE;
+		if(stat(input_file_names[input_file_i], &file_stat))
+		{
+			fprintf(stderr, "Can't get stat of %s\n", input_file_names[input_file_i]);
+			return EXIT_FAILURE;
+		}
+		printf("st_ctime = %d\n", (int)file_stat.st_ctime);
+		// write file contents
+		if((input_file = fopen(input_file_names[input_file_i], "rb")) == NULL)
+		{
+			fprintf(stderr, "Can't open %s\n", input_file_names[input_file_i]);
+			return EXIT_FAILURE;
+		}
+		if(fclose(input_file) == EOF)
+		{
+			fprintf(stderr, "Can't close %s\n", input_file_names[input_file_i]);
+			return EXIT_FAILURE;
+		}
 		root_directory_entry++;
 	}
 	// locate FATs
