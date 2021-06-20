@@ -27,23 +27,33 @@ Haribos Linuxは，Linux環境でBuild可能なHaribote OSの改造版です．
 * QEMU上でHaribos Linuxが動きます．
 * hostとQEMUの間でVNC通信を行うことで，Halibos Linuxを操作できます．
 
+### Docker imageの取得
 まず，以下のcommandでdocker imageを落とします．
 ```
 $ docker pull taiseiito/hariboslinux
 ```
 
+### Docker containerの起動
 次に，以下のcommandでdocker containerを起動します．
 ```
 $ docker run -p 5900:5900 -i -t taiseiito/hariboslinux
 ```
 
+### QEMUの起動
 すると，docker containerのterminalに入るので，以下のcommandでQEMUを起動します．
 ```
 /~/hariboslinux # make run
 ```
 
 QEMUは5900番ポートからVNC信号を飛ばすので，hostからlocalhostの5900番ポートにVNC接続することで，Halibos Linuxを操作できます．
-QEMUの終了はCtrl-Cなどで停止してください．
+
+### QEMUの停止
+以下のcommandでQEMUを停止します．
+```
+/~/hariboslinux # make stop
+```
+
+### Docker containerの停止
 docker container上で
 ```
 /~/hariboslinux # exit
@@ -123,4 +133,10 @@ Docker containerを起動すると，このrepositoryが`~/hariboslinux`にclone
 /~/hariboslinux # make run
 ```
 このcommandにより実行されるQEMUはVNC通信を行っており，dockerを動かしているhostからlocalhostの5900番ポートにVNC接続することで，Haribos Linuxを操作することができます．
+
+### QEMUの停止
+以下のcommandでQEMUを停止します．
+```
+/~/hariboslinux # make stop
+```
 
