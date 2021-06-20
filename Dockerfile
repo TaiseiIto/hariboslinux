@@ -3,6 +3,8 @@ RUN apk update
 
 # gcc, git, ld, make, etc.
 RUN apk add --no-cache alpine-sdk
+# git setting
+RUN git config --global pull.rebase false
 # emulator
 RUN apk add --no-cache qemu-system-i386
 # editor
