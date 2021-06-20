@@ -131,6 +131,7 @@ int main(int argc, char const * const * const argv)
 	unsigned int root_directory_entries_size;
 
 	//related to file contents section
+	FILE *input_file;
 	void *file_contents;
 	unsigned int file_contents_size;
 
@@ -255,6 +256,20 @@ int main(int argc, char const * const * const argv)
 	cluster_number = 0;
 	write_fat_element(fat, cluster_number++, 0x0ff0);
 	write_fat_element(fat, cluster_number++, cluster_number_no_more_clusters);
+	for(unsigned int num_of_input_files_i = 0; num_of_input_files_i < num_of_input_files; num_of_input_files_i++)
+	{
+		printf("locate input file %s\n", input_file_names[num_of_input_files_i]);
+		if((input_file = fopen(input_file_names[num_of_input_files_i], "rb")) == NULL)
+		{
+			fprintf(stderr, "Can't open %s\n", input_file_names[num_of_input_files_i]);
+			return EXIT_FAILURE;
+		}
+		if(fclose(input_file) == EOF)
+		{
+			fprintf(stderr, "Can't close %s\n", input_file_names[num_of_input_files_i]);
+			return EXIT_FAILURE;
+		}
+	}
 	// locate FATs
 	for(unsigned char fat_i = 0; fat_i < boot_sector_structure->num_of_FATs; fat_i++)
 	{
