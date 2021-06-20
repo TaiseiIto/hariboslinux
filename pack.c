@@ -134,7 +134,9 @@ int main(int argc, char const * const * const argv)
 
 	//related to file contents section
 	void *file_contents;
+	unsigned char *file_contents_writer;
 	unsigned int file_contents_size;
+	unsigned int cluster_size;
 
 	// related to output
 	FILE *floppy_disk_raw_image_file;
@@ -263,9 +265,11 @@ int main(int argc, char const * const * const argv)
 		fprintf(stderr, "Too many input files!\n");
 		return EXIT_FAILURE;
 	}
+	cluster_size = boot_sector_structure->num_of_sectors_per_cluster * boot_sector_structure->num_of_bytes_per_sector;
 	for(unsigned int input_file_i = 0; input_file_i < num_of_input_files; input_file_i++)
 	{
 		FILE *input_file;
+		unsigned int input_file_byte_i;
 		unsigned int input_file_name_i;
 		unsigned int input_file_extension_i;
 
@@ -322,7 +326,7 @@ int main(int argc, char const * const * const argv)
 			fprintf(stderr, "Can't get stat of %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
 		}
-		printf("\tfile size : %d\n", file_stat.st_size);
+		printf("\tfile size : %ld\n", file_stat.st_size);
 		localtime_r(&file_stat.st_ctime, &file_creation_time);
 		printf("\tfile creation time : %04d/%02d/%02d %02d:%02d:%02d\n", file_creation_time.tm_year + 1900, file_creation_time.tm_mon + 1, file_creation_time.tm_mday, file_creation_time.tm_hour, file_creation_time.tm_min, file_creation_time.tm_sec);
 		root_directory_entry->date = 0;
@@ -344,6 +348,24 @@ int main(int argc, char const * const * const argv)
 			fprintf(stderr, "Can't open %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
 		}
+		for(input_file_byte_i = 0; cluster_size < file_stat.st_size - input_file_byte_i; input_file_byte_i += cluster_size)
+		{
+			file_contents_writer = (unsigned char *)file_contents + ((cluster_number - 2) * cluster_size);
+			if(fread(file_contents_writer, 1, cluster_size, input_file) != cluster_size)
+			{
+				fprintf(stderr, "Can't read %s\n", input_file_names[input_file_i]);
+				return EXIT_FAILURE;
+			}
+			file_contents_writer += cluster_size;
+			write_fat_element(fat, cluster_number, cluster_number + 1);
+			cluster_number++;
+		}
+		if(file_stat.st_size - input_file_byte_i)if(fread(file_contents_writer, 1, file_stat.st_size - input_file_byte_i, input_file) != file_stat.st_size - input_file_byte_i)
+		{
+			fprintf(stderr, "Can't read %s\n", input_file_names[input_file_i]);
+			return EXIT_FAILURE;
+		}
+		write_fat_element(fat, cluster_number++, cluster_number_no_more_clusters);
 		if(fclose(input_file) == EOF)
 		{
 			fprintf(stderr, "Can't close %s\n", input_file_names[input_file_i]);
