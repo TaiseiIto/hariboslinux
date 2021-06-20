@@ -348,9 +348,9 @@ int main(int argc, char const * const * const argv)
 			fprintf(stderr, "Can't open %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
 		}
+		file_contents_writer = (unsigned char *)file_contents + ((cluster_number - 2) * cluster_size);
 		for(input_file_byte_i = 0; cluster_size < file_stat.st_size - input_file_byte_i; input_file_byte_i += cluster_size)
 		{
-			file_contents_writer = (unsigned char *)file_contents + ((cluster_number - 2) * cluster_size);
 			if(fread(file_contents_writer, 1, cluster_size, input_file) != cluster_size)
 			{
 				fprintf(stderr, "Can't read %s\n", input_file_names[input_file_i]);
