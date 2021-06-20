@@ -77,14 +77,14 @@ typedef struct
 
 	char reserved[10];
 
-	// From 0x0001 bit to 0x0010 bit, it means bisecond the file saved. (1 means 2 seconds)
-	// From 0x0020 bit to 0x0400 bit, it means minute the file saved.
-	// From 0x0800 bit to 0x8000 bit, it means hour the file saved.
+	// From 0x0001 bit to 0x0010 bit, it means bisecond the file created. (1 means 2 seconds)
+	// From 0x0020 bit to 0x0400 bit, it means minute the file created.
+	// From 0x0800 bit to 0x8000 bit, it means hour the file created.
 	unsigned short time;
 
-	// From 0x0001 bit to 0x0010 bit, it means date the file saved.
-	// From 0x0020 bit to 0x0100 bit, it means month the file saved.
-	// From 0x0200 bit to 0x8000 bit, it means year the file saved. (offset 1980)
+	// From 0x0001 bit to 0x0010 bit, it means date the file created.
+	// From 0x0020 bit to 0x0100 bit, it means month the file created.
+	// From 0x0200 bit to 0x8000 bit, it means year the file created. (offset 1980)
 	unsigned short date;
 
 	// Entry cluster of the file contents
@@ -325,6 +325,18 @@ int main(int argc, char const * const * const argv)
 		}
 		localtime_r(&file_stat.st_ctime, &file_creation_time);
 		printf("file creation time : %04d/%02d/%02d %02d:%02d:%02d\n", file_creation_time.tm_year + 1900, file_creation_time.tm_mon + 1, file_creation_time.tm_mday, file_creation_time.tm_hour, file_creation_time.tm_min, file_creation_time.tm_sec);
+		root_directory_entry->date = 0;
+		root_directory_entry->date += file_creation_time.tm_year + 1900 - 1980;
+		root_directory_entry->date <<= 4;
+		root_directory_entry->date += file_creation_time.tm_mon + 1;
+		root_directory_entry->date <<= 5;
+		root_directory_entry->date += file_creation_time.tm_mday;
+		root_directory_entry->time = 0;
+		root_directory_entry->time += file_creation_time.tm_hour;
+		root_directory_entry->time <<= 6;
+		root_directory_entry->time += file_creation_time.tm_min;
+		root_directory_entry->time <<= 5;
+		root_directory_entry->time += file_creation_time.tm_sec / 2;
 		// write file contents
 		if((input_file = fopen(input_file_names[input_file_i], "rb")) == NULL)
 		{
