@@ -1,6 +1,8 @@
 # floppy disk image file of the built operating system
 IMAGE_FILE = haribos.img
 BOOT_SECTORS = boot_sector.bin
+# files included in the floppy disk
+FLOPPY_FILES = test.txt
 
 # compiler
 COMPILER = gcc
@@ -80,8 +82,8 @@ update: update-repository
 update-repository:
 	git pull origin main
 
-$(IMAGE_FILE): $(IMAGE_PACKER) $(BOOT_SECTORS)
-	$(IMAGE_PACKER) $@ $(BOOT_SECTORS)
+$(IMAGE_FILE): $(IMAGE_PACKER) $(BOOT_SECTORS) $(FLOPPY_FILES)
+	$(IMAGE_PACKER) $@ $(BOOT_SECTORS) $(FLOPPY_FILES)
 
 $(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
 	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@
