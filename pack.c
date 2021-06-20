@@ -266,7 +266,7 @@ int main(int argc, char const * const * const argv)
 	for(unsigned int input_file_i = 0; input_file_i < num_of_input_files; input_file_i++)
 	{
 		FILE *input_file;
-		// unsigned int input_file_size = 0; // unused
+		unsigned int input_file_size = 0; // unused
 		unsigned int input_file_name_i;
 		unsigned int input_file_extension_i;
 
@@ -337,6 +337,7 @@ int main(int argc, char const * const * const argv)
 		root_directory_entry->time += file_creation_time.tm_min;
 		root_directory_entry->time <<= 5;
 		root_directory_entry->time += file_creation_time.tm_sec / 2;
+		root_directory_entry->cluster_number = cluster_number;
 		// write file contents
 		if((input_file = fopen(input_file_names[input_file_i], "rb")) == NULL)
 		{
@@ -348,6 +349,7 @@ int main(int argc, char const * const * const argv)
 			fprintf(stderr, "Can't close %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
 		}
+		root_directory_entry->size = input_file_size;
 		root_directory_entry++;
 	}
 	// locate FATs
