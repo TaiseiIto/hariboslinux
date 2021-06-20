@@ -360,7 +360,7 @@ int main(int argc, char const * const * const argv)
 			write_fat_element(fat, cluster_number, cluster_number + 1);
 			cluster_number++;
 		}
-		if(file_stat.st_size - input_file_byte_i)if(fread(file_contents_writer, 1, file_stat.st_size - input_file_byte_i, input_file) != file_stat.st_size - input_file_byte_i)
+		if(file_stat.st_size - input_file_byte_i)if((unsigned int)fread(file_contents_writer, 1, file_stat.st_size - input_file_byte_i, input_file) != file_stat.st_size - input_file_byte_i)
 		{
 			fprintf(stderr, "Can't read %s\n", input_file_names[input_file_i]);
 			return EXIT_FAILURE;
