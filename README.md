@@ -17,10 +17,51 @@ Haribos Linuxは，Linux環境でBuild可能なHaribote OSの改造版です．
 
 また，Buildによって生成されるimage fileはFAT12 floppy disk raw imageです．
 
-## Docker
+## Dockerでの実行
+[上](#Haribos-Linuxの動作条件)に述べたような機器がない場合でもHaribos Linuxを動かせるように，[Docker Image](https://hub.docker.com/repository/docker/taiseiito/hariboslinux)を用意しました．
+システム構成は以下の通りです．
+
+* hostには，dockerと，VNC接続ができるsoftwareがinstallされている必要があります．
+* host上でdocker containerが動きます．
+* docker container上でQEMUが動きます．
+* QEMU上でHaribos Linuxが動きます．
+* hostとQEMUの間でVNC通信を行うことで，Halibos Linuxを操作できます．
+
+まず，以下のcommandでdocker imageを落とします．
+```
+$ docker pull taiseiito/hariboslinux
+```
+
+次に，以下のcommandでdocker containerを起動します．
+```
+$ docker run -p 5900:5900 -i -t taiseiito/hariboslinux
+```
+
+すると，docker containerのterminalに入るので，以下のcommandでQEMUを起動します．
+```
+/~/hariboslinux # make run
+```
+
+QEMUは5900番ポートからVNC信号を飛ばすので，hostからlocalhostの5900番ポートにVNC接続することで，Halibos Linuxを操作できます．
+QEMUの終了はCtrl-Cなどで停止してください．
+docker container上で
+```
+/~/hariboslinux # exit
+```
+するとdocker containerが停止します．
+
+## 開発者用メモ
+docker, VNC softwareに加え，git, makeを用いて開発しています．
+
+### clone repository
+まず，このrepositoryをcloneします．
+```
+$ git clone https://github.com/TaiseiIto/hariboslinux.git
+$ cd hariboslinux
+```
+
 ### Docker image生成
-[上](#Haribos-Linuxの動作条件)に述べたような機器がない場合でもHaribos Linuxを動かせるように，[Dockerfile](Dockerfile)を用意しました．
-dockerがinstallされている状態で，以下のcommandで仮想環境のimageが準備されます．
+以下のcommandで仮想環境のimageが準備されます．
 ```
 $ make docker-build
 ```
@@ -81,5 +122,5 @@ Docker containerを起動すると，このrepositoryが`~/hariboslinux`にclone
 ```
 /~/hariboslinux # make run
 ```
-このcommandにより実行されるQEMUはVNC通信を行っており，dockerを動かしているホストPCからlocalhostの5900番ポートにVNC接続することで，Haribos Linuxを操作することができます．
+このcommandにより実行されるQEMUはVNC通信を行っており，dockerを動かしているhostからlocalhostの5900番ポートにVNC接続することで，Haribos Linuxを操作することができます．
 
