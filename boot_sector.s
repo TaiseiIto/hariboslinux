@@ -3,19 +3,19 @@
 
 	.text
 	.code16			# real mode
-	.set	sector_size,	512
-	.set	cluster_size,	1
-	.set	reserved_clusters, 1
-	.set	fats,		2
-	.set	files,		224
-	.set	sectors,	2880
+	.set	sector_size,	0x0200
+	.set	cluster_size,	0x01
+	.set	boot_clusters,	0x0001
+	.set	fats,		0x02
+	.set	files,		0x00e0
+	.set	sectors,	0x0b40
 	.set	media_type,	0xf0
-	.set	fat_size,	9
-	.set	track_size,	18
-	.set	heads,		2
-	.set	hidden_sectors,	0
-	.set	large_sectors,	2880
-	.set	drive_number,	0
+	.set	fat_size,	0x0009
+	.set	track_size,	0x0012
+	.set	heads,		0x0002
+	.set	hidden_sectors,	0x00000000
+	.set	large_sectors,	0x00000b40
+	.set	drive_number,	0x00
 	.set	boot_signature,	0x29
 	.set	volume_serial,	0xffffffff
 stack:				# bottom of stack
@@ -24,7 +24,7 @@ stack:				# bottom of stack
 	.ascii	"HARIBOTE"	# OEM identifier
 	.word	sector_size	# The number of bytes per sector
 	.byte	cluster_size	# Number of sectors per cluster
-	.word	reserved_clusters # Number of reserved sectors. The boot record sectors are included in this value. After the sectors, FAT sectors begin.
+	.word	boot_clusters	# Number of reserved sectors. The boot record sectors are included in this value. After the sectors, FAT sectors begin.
 	.byte	fats		# Number of FATs
 	.word	files		# Number of root directory entries
 	.word	sectors		# Number of sectors in the logical volume
