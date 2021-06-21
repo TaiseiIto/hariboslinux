@@ -3,6 +3,7 @@
 
 .text
 .code16				# real mode
+stack:				# bottom of stack
 	jmp	hello_world
 	nop
 .ascii	"HARIBOTE"		# OEM identifier
@@ -27,7 +28,7 @@
 hello_world:
 	movw	$0,	%ax
 	movw	%ax,	%ss
-	movw	$0x7c00,%sp
+	movw	$stack,	%sp
 	movw	%ax,	%ds
 	movw	%ax, 	%es
 	movw	$msg,	%si
