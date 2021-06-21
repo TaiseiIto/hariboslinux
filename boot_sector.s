@@ -2,23 +2,23 @@
 # https://wiki.osdev.org/FAT
 
 	.text
-	.code16			# real mode
-	.set	sector_size,	0x0200
-	.set	cluster_size,	0x01
-	.set	boot_clusters,	0x0001
-	.set	fats,		0x02
-	.set	files,		0x00e0
-	.set	sectors,	0x0b40
-	.set	media_type,	0xf0
-	.set	fat_size,	0x0009
-	.set	track_size,	0x0012
-	.set	heads,		0x0002
-	.set	hidden_sectors,	0x00000000
-	.set	large_sectors,	0x00000b40
-	.set	drive_number,	0x00
-	.set	boot_signature,	0x29
-	.set	volume_serial,	0xffffffff
-stack:				# bottom of stack
+	.code16					# real mode
+	.set	sector_size,	0x0200		# The number of bytes per sector
+	.set	cluster_size,	0x01		# Number of sectors per cluster
+	.set	boot_clusters,	0x0001		# Number of reserved sectors. The boot record sectors are included in this value. After the sectors, FAT sectors begin.
+	.set	fats,		0x02		# Number of FATs
+	.set	files,		0x00e0		# Number of root directory entries
+	.set	sectors,	0x0b40		# Number of sectors in the logical volume
+	.set	media_type,	0xf0		# Media dexcriptor type
+	.set	fat_size,	0x0009		# Number of sectors per FAT
+	.set	track_size,	0x0012		# Number of sectors per track
+	.set	heads,		0x0002		# Number of heads or sides on the storage media
+	.set	hidden_sectors,	0x00000000	# Number of hidden sectors
+	.set	large_sectors,	0x00000b40	# Number of sectors in the logical volume
+	.set	drive_number,	0x00		# Drive number
+	.set	boot_signature,	0x29		# boot sector signature
+	.set	volume_serial,	0xffffffff	# volume serial number
+stack:						# bottom of stack
 	jmp	hello_world
 	nop
 	.ascii	"HARIBOTE"	# OEM identifier
