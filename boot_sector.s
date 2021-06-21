@@ -1,7 +1,6 @@
 # bibliography
 # https://wiki.osdev.org/FAT
 
-	.text
 	.code16					# real mode
 	.set	sector_size,	0x0200		# The number of bytes per sector
 	.set	cluster_size,	0x01		# Number of sectors per cluster
@@ -18,6 +17,8 @@
 	.set	drive_number,	0x00		# Drive number
 	.set	boot_signature,	0x29		# boot sector signature
 	.set	volume_serial,	0xffffffff	# volume serial number
+
+	.text
 stack:						# bottom of stack
 	jmp	hello_world
 	nop
