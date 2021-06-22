@@ -20,7 +20,7 @@
 
 	.text
 stack:						# bottom of stack
-	jmp	hello_world
+	jmp	init_registers
 	nop
 	.ascii	"HARIBOTE"	# OEM identifier
 	.word	sector_size	# The number of bytes per sector
@@ -41,7 +41,8 @@ stack:						# bottom of stack
 	.long	volume_serial	# volume serial number
 	.ascii	"HARIBOTEOS "	# volume label
 	.ascii	"FAT12   "	# FAT file system type
-hello_world:
+
+init_registers:			# init registers except CS
 	movw	$0,	%ax
 	movw	%ax,	%bx
 	movw	%ax,	%cx
@@ -53,7 +54,9 @@ hello_world:
 	movw	%ax, 	%es
 	movw	%ax, 	%fs
 	movw	%ax, 	%gs
+	movw	$stack,	%bp
 	movw	$stack,	%sp
+
 	movw	$msg,	%si
 putloop:
 	movb	(%si),	%al
