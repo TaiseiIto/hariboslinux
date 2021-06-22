@@ -43,10 +43,17 @@ stack:						# bottom of stack
 	.ascii	"FAT12   "	# FAT file system type
 hello_world:
 	movw	$0,	%ax
+	movw	%ax,	%bx
+	movw	%ax,	%cx
+	movw	%ax,	%dx
+	movw	%ax,	%si
+	movw	%ax,	%di
 	movw	%ax,	%ss
-	movw	$stack,	%sp
 	movw	%ax,	%ds
 	movw	%ax, 	%es
+	movw	%ax, 	%fs
+	movw	%ax, 	%gs
+	movw	$stack,	%sp
 	movw	$msg,	%si
 putloop:
 	movb	(%si),	%al
