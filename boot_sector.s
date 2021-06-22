@@ -50,7 +50,7 @@ hello_world:
 	movw	$msg,	%si
 putloop:
 	movb	(%si),	%al
-	add	$1,	%si
+	inc	%si
 	cmp	$0,	%al
 	je	fin
 	movb	$0x0e,	%ah
