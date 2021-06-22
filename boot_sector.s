@@ -43,7 +43,7 @@ stack:						# bottom of stack
 	.ascii	"FAT12   "	# FAT file system type
 
 main:
-.init_registers:		# init registers except CS
+0:				# init registers except CS
 	movw	$0,	%ax
 	movw	%ax,	%bx
 	movw	%ax,	%cx
@@ -59,28 +59,29 @@ main:
 	movw	$stack,	%sp
 	push	%bp
 	movw	%sp,	%bp
-.print_hello:
+1:				# print hello_message
 	push	$hello_message
 	call	print
 	leave
-.halt_loop:
+2:				# halt loop
 	hlt
-	jmp	.halt_loop
+	jmp	2b
 
 print:
+0:
 	push	%bp
 	movw	%sp,	%bp
-	movw	4(%bp),%si
-.putloop:
+	movw	4(%bp),	%si
+1:				# put loop
 	movb	(%si),	%al
 	inc	%si
 	cmp	$0,	%al
-	je	.end
+	je	2f		# finish putting all characters
 	movb	$0x0e,	%ah
 	movw	$15,	%bx
 	int	$0x10
-	jmp	.putloop
-.end:
+	jmp	1b		# put next character
+2:
 	leave
 	ret
 
