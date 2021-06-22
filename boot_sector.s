@@ -74,12 +74,12 @@ print:
 	movw	4(%bp),	%si
 1:				# put loop
 	movb	(%si),	%al
-	inc	%si
 	cmp	$0,	%al
 	je	2f		# finish putting all characters
 	movb	$0x0e,	%ah
 	movw	$15,	%bx
 	int	$0x10
+	inc	%si
 	jmp	1b		# put next character
 2:
 	leave
