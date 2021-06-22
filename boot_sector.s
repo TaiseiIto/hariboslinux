@@ -20,7 +20,7 @@
 
 	.text
 stack:						# bottom of stack
-	jmp	init_registers
+	jmp	main
 	nop
 	.ascii	"HARIBOTE"	# OEM identifier
 	.word	sector_size	# The number of bytes per sector
@@ -42,7 +42,8 @@ stack:						# bottom of stack
 	.ascii	"HARIBOTEOS "	# volume label
 	.ascii	"FAT12   "	# FAT file system type
 
-init_registers:			# init registers except CS
+main:
+.init_registers:		# init registers except CS
 	movw	$0,	%ax
 	movw	%ax,	%bx
 	movw	%ax,	%cx
@@ -56,20 +57,33 @@ init_registers:			# init registers except CS
 	movw	%ax, 	%gs
 	movw	$stack,	%bp
 	movw	$stack,	%sp
+	push	%bp
+	movw	%sp,	%bp
+.print_hello:
+	push	$hello_message
+	call	print
+	leave
+.halt_loop:
+	hlt
+	jmp	.halt_loop
 
-	movw	$msg,	%si
-putloop:
+print:
+	push	%bp
+	movw	%sp,	%bp
+	movw	4(%bp),%si
+.putloop:
 	movb	(%si),	%al
 	inc	%si
 	cmp	$0,	%al
-	je	fin
+	je	.end
 	movb	$0x0e,	%ah
 	movw	$15,	%bx
 	int	$0x10
-	jmp	putloop
-fin:
-	hlt
-	jmp	fin
-msg:
+	jmp	.putloop
+.end:
+	leave
+	ret
+
+hello_message:
 	.string	"Hello, World!\r\n"
 
