@@ -36,7 +36,7 @@ stack:						# bottom of stack
 	.long	hidden_sectors	# Number of hidden sectors
 	.long	large_sectors	# Number of sectors in the logical volume
 	.byte	drive_number	# Drive number
-	.byte	0		# Reserved
+	.byte	0x00		# Reserved
 	.byte	boot_signature	# boot sector signature
 	.long	volume_serial	# volume serial number
 	.ascii	"HARIBOTEOS "	# volume label
@@ -44,7 +44,7 @@ stack:						# bottom of stack
 
 main:
 0:				# init registers except CS
-	movw	$0,	%ax
+	movw	$0x00,	%ax
 	movw	%ax,	%bx
 	movw	%ax,	%cx
 	movw	%ax,	%dx
@@ -71,13 +71,13 @@ print:
 0:
 	push	%bp
 	movw	%sp,	%bp
-	movw	4(%bp),	%si
+	movw	0x04(%bp),%si
 1:				# put loop
 	movb	(%si),	%al
-	cmp	$0,	%al
+	cmp	$0x00,	%al
 	je	2f		# finish putting all characters
 	movb	$0x0e,	%ah
-	movw	$15,	%bx
+	movw	$0x0f,	%bx
 	int	$0x10
 	inc	%si
 	jmp	1b		# put next character
