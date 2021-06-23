@@ -58,10 +58,10 @@ main:
 	movw	%ax, 	%gs
 	movw	$stack,	%bp
 	movw	$stack,	%sp
-	push	%bp
+	pushw	%bp
 	movw	%sp,	%bp
 1:				# print hello_message
-	push	$hello_message
+	pushw	$hello_message
 	call	print
 	leave
 2:				# halt loop
@@ -70,7 +70,7 @@ main:
 
 print:
 0:
-	push	%bp
+	pushw	%bp
 	movw	%sp,	%bp
 	movw	0x04(%bp),%si
 1:				# put loop
