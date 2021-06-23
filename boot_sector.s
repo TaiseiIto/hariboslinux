@@ -67,7 +67,9 @@ main:
 	pushw	$0x0000		# cylinder_number
 	pushw	$0x0000		# head
 	pushw	$0x0002		# sector_number
-	pushw	$0x07c0		# destination_segment
+	movw	$entry,	%dx
+	shr	$0x04,	%dx
+	pushw	%dx		# destination_segment
 	pushw	$0x0200		# destination_address
 	call read_sector
 	cmp	$0x0,	%ax
