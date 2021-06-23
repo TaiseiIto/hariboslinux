@@ -78,7 +78,7 @@ print:
 	cmp	$0x00,	%al
 	je	2f		# finish putting all characters
 	movb	$0x0e,	%ah
-	movw	$0x000f,%bx
+	movw	$0x000f,%bx	# color code
 	int	$0x10
 	inc	%si
 	jmp	1b		# put next character
