@@ -63,12 +63,28 @@ main:
 1:				# print hello_message
 	pushw	$hello_message
 	call	print
+2:				# read the second sector of the bootable floppy disk
+	pushw	$0x0000		# cylinder_number
+	pushw	$0x0000		# head
+	pushw	$0x0002		# sector_number
+	pushw	$0x07c0		# destination_segment
+	pushw	$0x0200		# destination_address
+	call read_sector
+	cmp	$0x0,	%ax
+	jne	4f
+3:				# success
+	jmp	5f
+4:				# failure
+	pushw	$error_message
+	call print
+5:				# end
 	leave
-2:				# halt loop
+6:				# halt loop
 	hlt
-	jmp	2b
+	jmp	6b
 
-print:
+				# // print string to console
+print:				# void print(char *string);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
@@ -77,7 +93,7 @@ print:
 	movb	(%si),	%al
 	cmp	$0x00,	%al
 	je	2f		# finish putting all characters
-	movb	$0x0e,	%ah
+	movb	$0x0e,	%ah	# put a character
 	movw	$0x000f,%bx	# color code
 	int	$0x10
 	inc	%si
@@ -86,6 +102,48 @@ print:
 	leave
 	ret
 
+				# // read a sector from A drive
+				# cylinder_number: 0x0000~0x004f
+				# head: 0x0000, 0x0001
+				# sector_number: 0x0000~0x0012
+				# destination: [destination_segment:destination_address]
+				# return value 0 means success
+				# return value 1 means failure
+read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsigned short head, unsigned short sector_number, unsigned short destination_segment, unsigned short destination_address);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+				# cylinder_number: 0x0c(%bp)
+				# head: 0x0a(%bp)
+				# sector_number: 0x08(%bp)
+				# destination_segment: 0x06(%bp)
+				# destination_address: 0x04(%bp)
+	movb	$0x02,	%ah	# read sectors
+	movb	$0x01,	%al	# number of read sectors
+	movb	0x0d(%bp),%cl	# cl = (((cylinder_number >> 0x08 ) & 0x03) << 6) | sector_number;
+	and	$0x03,	%cl
+	shl	$0x06,	%cl
+	add	0x08(%bp),%cl
+	movb	0x0c(%bp),%ch	# cylinder_number
+	movb	$0x00,	%dl	# read from A drive
+	movb	0x0a(%bp),%dh	# head
+	movw	0x06(%bp),%es	# destination_segment
+	movw	0x04(%bp),%bx	# destination_address
+	int	$0x13
+	jc	2f
+1:				# success
+	movw	$0x00,	%ax
+	jmp	3f
+2:				# failure
+	pushw	$error_message
+	call	print
+	movw	$0x01,	%ax
+3:
+	leave
+	ret
+
+error_message:
+	.string "ERROR!\r\n"
 hello_message:
 	.string	"Hello, World!\r\n"
 
