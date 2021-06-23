@@ -1,6 +1,12 @@
 # bibliography
 # https://wiki.osdev.org/FAT
 
+# calling convention = System V i386
+# return value: ax, dx
+# parameters: stack
+# scratch registers: ax, cx, dx
+# preserved registers: bx, si, di, bp, sp
+
 	.code16					# real mode
 	.set	sector_size,	0x0200		# The number of bytes per sector
 	.set	cluster_size,	0x01		# Number of sectors per cluster
@@ -90,6 +96,8 @@ print:				# void print(char *string);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%bx
+	pushw	%si
 	movw	0x04(%bp),%si
 1:				# put loop
 	movb	(%si),	%al
@@ -101,6 +109,8 @@ print:				# void print(char *string);
 	inc	%si
 	jmp	1b		# put next character
 2:
+	pop	%si
+	pop	%bx
 	leave
 	ret
 
@@ -115,6 +125,8 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 0:
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%bx
+	pushw	%es
 				# cylinder_number: 0x0c(%bp)
 				# head: 0x0a(%bp)
 				# sector_number: 0x08(%bp)
@@ -141,6 +153,8 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	call	print
 	movw	$0x01,	%ax
 3:
+	pop	%es
+	pop	%bx
 	leave
 	ret
 
