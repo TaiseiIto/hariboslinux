@@ -7,6 +7,7 @@ SECTIONS {
 	.text :
 	{
 		boot_sector.o(.text)
+		boot_sector.o(.data)
 	}
 	. = IPL_BASE;
 	. += 0x00000200;

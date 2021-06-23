@@ -105,12 +105,12 @@ print:				# void print(char *string);
 	ret
 
 				# // read a sector from A drive
-				# cylinder_number: 0x0000~0x004f
-				# head: 0x0000, 0x0001
-				# sector_number: 0x0000~0x0012
-				# destination: [destination_segment:destination_address]
-				# return value 0 means success
-				# return value 1 means failure
+				# // cylinder_number: 0x0000~0x004f
+				# // head: 0x0000, 0x0001
+				# // sector_number: 0x0000~0x0012
+				# // destination: [destination_segment:destination_address]
+				# // return value 0 means success
+				# // return value 1 means failure
 read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsigned short head, unsigned short sector_number, unsigned short destination_segment, unsigned short destination_address);
 0:
 	pushw	%bp
@@ -144,6 +144,7 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	leave
 	ret
 
+	.data
 error_message:
 	.string "ERROR!\r\n"
 hello_message:
