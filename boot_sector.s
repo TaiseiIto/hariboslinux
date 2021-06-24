@@ -77,7 +77,7 @@ main:
 	shr	$0x04,	%dx
 	pushw	%dx		# destination_segment
 	pushw	$0x0200		# destination_address
-	call read_sector
+	call	read_sector
 	cmp	$0x0,	%ax
 	jne	4f
 3:				# success
@@ -100,17 +100,30 @@ print:				# void print(char *string);
 	pushw	%si
 	movw	0x04(%bp),%si
 1:				# put loop
+	movb	$0x00,	%ah
 	movb	(%si),	%al
 	cmp	$0x00,	%al
 	je	2f		# finish putting all characters
-	movb	$0x0e,	%ah	# put a character
-	movw	$0x000f,%bx	# color code
-	int	$0x10
+	pushw	%ax
+	call	putchar
 	inc	%si
 	jmp	1b		# put next character
 2:
-	pop	%si
-	pop	%bx
+	popw	%si
+	popw	%bx
+	leave
+	ret
+
+				# print a character to console
+putchar:			# void putchar(char c);
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%bx
+	movb	0x04(%bp),%al
+	movb	$0x0e,	%ah
+	movw	$0x000f,%bx
+	int	$0x10
+	popw	%bx
 	leave
 	ret
 
@@ -153,8 +166,8 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	call	print
 	movw	$0x01,	%ax
 3:
-	pop	%es
-	pop	%bx
+	popw	%es
+	popw	%bx
 	leave
 	ret
 
