@@ -106,15 +106,25 @@ main:
 	jmp	6b
 7:				# end of print each byte loop
 				# print new line
-	movw	$0x000d,(%di)
-	call	putchar
-	movw	$0x000a,(%di)
-	call	putchar
-	addw	$0x0002,%sp
+	call	new_line
 	leave
 8:				# halt loop
 	hlt
 	jmp	8b
+
+				# // print CRLF
+new_line:			# void new_line(void);
+	pushw	%bp
+	movw	%sp,	%bp
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	$0x000d,(%di)	# print CR
+	call	putchar
+	movw	$0x000a,(%di)	# print LF
+	call	putchar
+	addw	$0x0002,%sp
+	leave
+	ret
 
 				# // print string to console
 print:				# void print(char *string);
