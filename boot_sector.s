@@ -119,6 +119,7 @@ main:
 
 				# // print CRLF
 new_line:			# void new_line(void);
+0:
 	pushw	%bp
 	movw	%sp,	%bp
 	subw	$0x0002,%sp
