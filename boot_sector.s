@@ -27,6 +27,7 @@
 	.text
 stack:						# bottom of stack
 entry:
+0:
 	jmp	main
 	nop
 	.ascii	"HARIBOTE"	# OEM identifier
@@ -131,13 +132,27 @@ print:				# void print(char *string);
 
 				# // print value as hexadecimal
 print_byte_hex:			# void print_byte_hex(unsigned value);
+0:
 	pushw	%bp
 	movw	%sp,	%bp
+	movw	0x04(%bp),%dx
+	shrw	$0x0004,%dx
+	cmpw	$0x000a,%dx
+	jge	2f
+1:				# the digit is less than 0x0a
+	addw	$0x0030,%dx
+	jmp	3f
+2:				# the digit is greater than or equal to 0x0a
+	addw	$0x0061,%dx
+3:				# print
+	pushw	%dx
+	call	putchar
 	leave
 	ret
 
 				# print a character to console
 putchar:			# void putchar(char c);
+0:
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%bx
