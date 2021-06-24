@@ -91,7 +91,8 @@ main:
 5:				# print bytes from 0x0200($entry) to 0x0210($entry)
 	movw	$entry,	%si
 	addw	$sector_size,%si
-	pushw	%si
+	movw	(%si),	%dx
+	pushw	%dx
 	call	print_byte_hex
 	addw	$0x02,	%sp
 6:				# end
