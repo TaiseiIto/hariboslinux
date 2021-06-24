@@ -122,6 +122,7 @@ new_line:			# void new_line(void);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%di
 	subw	$0x0002,%sp
 	movw	%sp,	%di
 	movw	$0x000d,(%di)	# print CR
@@ -129,6 +130,7 @@ new_line:			# void new_line(void);
 	movw	$0x000a,(%di)	# print LF
 	call	putchar
 	addw	$0x0002,%sp
+	pop	%di
 	leave
 	ret
 
@@ -137,7 +139,6 @@ print:				# void print(char *string);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
-	pushw	%bx
 	pushw	%si
 	pushw	%di
 	subw	$0x0002,%sp
@@ -156,7 +157,6 @@ print:				# void print(char *string);
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
-	popw	%bx
 	leave
 	ret
 
