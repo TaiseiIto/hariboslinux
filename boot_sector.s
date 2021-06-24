@@ -74,11 +74,11 @@ main:
 	pushw	$0x0000		# head
 	pushw	$0x0002		# sector_number
 	movw	$entry,	%dx
-	shr	$0x04,	%dx
+	shrw	$0x04,	%dx
 	pushw	%dx		# destination_segment
 	pushw	$0x0200		# destination_address
 	call	read_sector
-	cmp	$0x0,	%ax
+	cmpw	$0x0000,%ax
 	jne	4f
 3:				# success
 	jmp	5f
@@ -102,11 +102,11 @@ print:				# void print(char *string);
 1:				# put loop
 	movb	$0x00,	%ah
 	movb	(%si),	%al
-	cmp	$0x00,	%al
+	cmpb	$0x00,	%al
 	je	2f		# finish putting all characters
 	pushw	%ax
 	call	putchar
-	inc	%si
+	incw	%si
 	jmp	1b		# put next character
 2:
 	popw	%si
@@ -148,9 +148,9 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	movb	$0x02,	%ah	# read sectors
 	movb	$0x01,	%al	# number of read sectors
 	movb	0x0d(%bp),%cl	# cl = (((cylinder_number >> 0x08 ) & 0x03) << 6) | sector_number;
-	and	$0x03,	%cl
-	shl	$0x06,	%cl
-	add	0x08(%bp),%cl
+	andb	$0x03,	%cl
+	shlb	$0x06,	%cl
+	addb	0x08(%bp),%cl
 	movb	0x0c(%bp),%ch	# cylinder_number
 	movb	$0x00,	%dl	# read from A drive
 	movb	0x0a(%bp),%dh	# head
