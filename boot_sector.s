@@ -93,7 +93,6 @@ main:
 	movw	$entry,	%si
 	addw	$sector_size,%si
 	movw	$0x0010,%cx
-
 6:				# print each byte loop
 	cmpw	$0x0000,%cx
 	je	7f
@@ -105,7 +104,12 @@ main:
 	incw	%si
 	decw	%cx
 	jmp	6b
-7:				# end
+7:				# end of print each byte loop
+				# print new line
+	movw	$0x000d,(%di)
+	call	putchar
+	movw	$0x000a,(%di)
+	call	putchar
 	addw	$0x0002,%sp
 	leave
 8:				# halt loop
