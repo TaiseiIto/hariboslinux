@@ -138,9 +138,9 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	pushw	%di
 	subw	$0x02,	%sp
 	movw	%sp,	%di
-	movw	0x04(%bp),%dx
-	movb	$0x00,	%dh
+	movw	0x04(%bp),%dx	# print the digit of 0x10s place
 	shrw	$0x0004,%dx
+	andw	$0x000f,	%dx
 	cmpw	$0x000a,%dx
 	jge	2f
 1:				# the digit is less than 0x0a
@@ -150,6 +150,19 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	subw	$0x000a,%dx
 	addw	$0x0061,%dx
 3:				# print
+	movw	%dx,	(%di)
+	call	putchar
+	movw	0x04(%bp),%dx	# print the digit of 0x01s place
+	andw	$0x000f,%dx
+	cmpw	$0x000a,%dx
+	jge	5f
+4:				# the digit is less than 0x0a
+	addw	$0x0030,%dx
+	jmp	6f
+5:				# the digit is greater than or equal to 0x0a
+	subw	$0x000a,%dx
+	addw	$0x0061,%dx
+6:				# print
 	movw	%dx,	(%di)
 	call	putchar
 	addw	$0x02,	%sp
