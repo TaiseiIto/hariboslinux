@@ -82,29 +82,35 @@ main:
 	call	read_sector
 	addw	$0x000a,%sp
 	cmpw	$0x0000,%ax
-	jne	4f
-3:				# success
-	jmp	5f
-4:				# failure
+	je	4f
+3:				# read_sector failure
 	pushw	$error_message
 	call print
 	addw	$0x0002,%sp
-5:				# print bytes from 0x0200($entry) to 0x0210($entry)
+4:				# print bytes from 0x0200($entry) to 0x0210($entry)
 	subw	$0x0002,%sp
 	movw	%sp,	%di
 	movw	$entry,	%si
 	addw	$sector_size,%si
+	movw	$0x0010,%cx
+
+6:				# print each byte loop
+	cmpw	$0x0000,%cx
+	je	7f
 	movw	(%si),	%dx
 	movw	%dx,	(%di)
 	call	print_byte_hex
 	movw	$0x0020,(%di)	# print space
 	call	putchar
+	incw	%si
+	decw	%cx
+	jmp	6b
+7:				# end
 	addw	$0x0002,%sp
-6:				# end
 	leave
-7:				# halt loop
+8:				# halt loop
 	hlt
-	jmp	7b
+	jmp	8b
 
 				# // print string to console
 print:				# void print(char *string);
