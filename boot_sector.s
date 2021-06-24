@@ -52,7 +52,7 @@ entry:
 
 main:
 0:				# init registers except CS
-	movw	$0x00,	%ax
+	movw	$0x0000,%ax
 	movw	%ax,	%bx
 	movw	%ax,	%cx
 	movw	%ax,	%dx
@@ -70,17 +70,17 @@ main:
 1:				# print hello_message
 	pushw	$hello_message
 	call	print
-	addw	$0x02,	%sp
+	addw	$0x0002,%sp
 2:				# read the second sector of the bootable floppy disk
 	pushw	$0x0000		# cylinder_number
 	pushw	$0x0000		# head
 	pushw	$0x0002		# sector_number
 	movw	$entry,	%dx
-	shrw	$0x04,	%dx
+	shrw	$0x0004,%dx
 	pushw	%dx		# destination_segment
 	pushw	$sector_size	# destination_address
 	call	read_sector
-	addw	$0x0a,	%sp
+	addw	$0x000a,%sp
 	cmpw	$0x0000,%ax
 	jne	4f
 3:				# success
@@ -88,14 +88,18 @@ main:
 4:				# failure
 	pushw	$error_message
 	call print
-	addw	$0x02,	%sp
+	addw	$0x0002,%sp
 5:				# print bytes from 0x0200($entry) to 0x0210($entry)
+	subw	$0x0002,%sp
+	movw	%sp,	%di
 	movw	$entry,	%si
 	addw	$sector_size,%si
 	movw	(%si),	%dx
-	pushw	%dx
+	movw	%dx,	(%di)
 	call	print_byte_hex
-	addw	$0x02,	%sp
+	movw	$0x0020,(%di)	# print space
+	call	putchar
+	addw	$0x0002,%sp
 6:				# end
 	leave
 7:				# halt loop
@@ -110,7 +114,7 @@ print:				# void print(char *string);
 	pushw	%bx
 	pushw	%si
 	pushw	%di
-	subw	$0x02,	%sp
+	subw	$0x0002,%sp
 	movw	%sp,	%di
 	movw	0x04(%bp),%si
 1:				# put loop
@@ -123,7 +127,7 @@ print:				# void print(char *string);
 	incw	%si
 	jmp	1b		# put next character
 2:
-	addw	$0x02,	%sp
+	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
 	popw	%bx
@@ -136,7 +140,7 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%di
-	subw	$0x02,	%sp
+	subw	$0x0002,%sp
 	movw	%sp,	%di
 	movw	0x04(%bp),%dx	# print the digit of 0x10s place
 	shrw	$0x0004,%dx
@@ -165,7 +169,7 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 6:				# print
 	movw	%dx,	(%di)
 	call	putchar
-	addw	$0x02,	%sp
+	addw	$0x0002,%sp
 	pop	%di
 	leave
 	ret
@@ -216,12 +220,12 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	int	$0x13
 	jc	2f
 1:				# success
-	movw	$0x00,	%ax
+	movw	$0x0000,%ax
 	jmp	3f
 2:				# failure
 	pushw	$error_message
 	call	print
-	movw	$0x01,	%ax
+	movw	$0x0001,%ax
 3:
 	popw	%es
 	popw	%bx
