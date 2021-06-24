@@ -87,7 +87,12 @@ main:
 	pushw	$error_message
 	call print
 	addw	$0x0002,%sp
-4:				# print bytes from 0x0200($entry) to 0x0210($entry)
+4:				# print hello_message
+	call	new_line
+	pushw	$check_FAT_message
+	call	print
+	addw	$0x0002,%sp
+5:				# print bytes from 0x0200($entry) to 0x0210($entry)
 	subw	$0x0002,%sp
 	movw	%sp,	%di
 	movw	$entry,	%si
@@ -253,6 +258,8 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	ret
 
 	.data
+check_FAT_message:
+	.string "The first 0x10 bytes of the FAT\r\n"
 error_message:
 	.string "ERROR!\r\n"
 hello_message:
