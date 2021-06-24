@@ -69,6 +69,7 @@ main:
 1:				# print hello_message
 	pushw	$hello_message
 	call	print
+	addw	$0x02,	%sp
 2:				# read the second sector of the bootable floppy disk
 	pushw	$0x0000		# cylinder_number
 	pushw	$0x0000		# head
@@ -76,8 +77,9 @@ main:
 	movw	$entry,	%dx
 	shrw	$0x04,	%dx
 	pushw	%dx		# destination_segment
-	pushw	$0x0200		# destination_address
+	pushw	$sector_size	# destination_address
 	call	read_sector
+	addw	$0x0a,	%sp
 	cmpw	$0x0000,%ax
 	jne	4f
 3:				# success
@@ -85,11 +87,18 @@ main:
 4:				# failure
 	pushw	$error_message
 	call print
-5:				# end
+	addw	$0x02,	%sp
+5:				# print bytes from 0x0200($entry) to 0x0210($entry)
+	movw	$entry,	%si
+	addw	$sector_size,%si
+	pushw	%si
+	call	print_byte_hex
+	addw	$0x02,	%sp
+6:				# end
 	leave
-6:				# halt loop
+7:				# halt loop
 	hlt
-	jmp	6b
+	jmp	7b
 
 				# // print string to console
 print:				# void print(char *string);
@@ -98,19 +107,31 @@ print:				# void print(char *string);
 	movw	%sp,	%bp
 	pushw	%bx
 	pushw	%si
+	pushw	%di
+	subw	$0x02,	%sp
+	movw	%sp,	%di
 	movw	0x04(%bp),%si
 1:				# put loop
 	movb	$0x00,	%ah
 	movb	(%si),	%al
 	cmpb	$0x00,	%al
 	je	2f		# finish putting all characters
-	pushw	%ax
+	movw	%ax,	(%di)
 	call	putchar
 	incw	%si
 	jmp	1b		# put next character
 2:
+	addw	$0x02,	%sp
+	popw	%di
 	popw	%si
 	popw	%bx
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_byte_hex:			# void print_byte_hex(unsigned value);
+	pushw	%bp
+	movw	%sp,	%bp
 	leave
 	ret
 
