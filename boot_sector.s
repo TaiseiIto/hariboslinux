@@ -136,6 +136,7 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	pushw	%bp
 	movw	%sp,	%bp
 	movw	0x04(%bp),%dx
+	movb	$0x00,	%dh
 	shrw	$0x0004,%dx
 	cmpw	$0x000a,%dx
 	jge	2f
@@ -143,6 +144,7 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	addw	$0x0030,%dx
 	jmp	3f
 2:				# the digit is greater than or equal to 0x0a
+	subw	$0x000a,%dx
 	addw	$0x0061,%dx
 3:				# print
 	pushw	%dx
