@@ -135,6 +135,9 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x02,	%sp
+	movw	%sp,	%di
 	movw	0x04(%bp),%dx
 	movb	$0x00,	%dh
 	shrw	$0x0004,%dx
@@ -147,8 +150,10 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	subw	$0x000a,%dx
 	addw	$0x0061,%dx
 3:				# print
-	pushw	%dx
+	movw	%dx,	(%di)
 	call	putchar
+	addw	$0x02,	%sp
+	pop	%di
 	leave
 	ret
 
