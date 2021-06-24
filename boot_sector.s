@@ -52,7 +52,7 @@ entry:
 
 main:
 0:				# init registers except CS
-	movw	$0x0000,%ax
+	xorw	%ax,	%ax
 	movw	%ax,	%bx
 	movw	%ax,	%cx
 	movw	%ax,	%dx
@@ -144,7 +144,7 @@ print:				# void print(char *string);
 	movw	%sp,	%di
 	movw	0x04(%bp),%si
 1:				# put loop
-	movb	$0x00,	%ah
+	xorb	%ah,	%ah
 	movb	(%si),	%al
 	cmpb	$0x00,	%al
 	je	2f		# finish putting all characters
@@ -170,7 +170,7 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	movw	%sp,	%di
 	movw	0x04(%bp),%dx	# print the digit of 0x10s place
 	shrw	$0x0004,%dx
-	andw	$0x000f,	%dx
+	andw	$0x000f,%dx
 	cmpw	$0x000a,%dx
 	jge	2f
 1:				# the digit is less than 0x0a
@@ -239,14 +239,14 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	shlb	$0x06,	%cl
 	addb	0x08(%bp),%cl
 	movb	0x0c(%bp),%ch	# cylinder_number
-	movb	$0x00,	%dl	# read from A drive
+	xorb	%dl,	%dl	# read from A drive
 	movb	0x0a(%bp),%dh	# head
 	movw	0x06(%bp),%es	# destination_segment
 	movw	0x04(%bp),%bx	# destination_address
 	int	$0x13
 	jc	2f
 1:				# success
-	movw	$0x0000,%ax
+	xorw	%ax	,%ax
 	jmp	3f
 2:				# failure
 	pushw	$error_message
