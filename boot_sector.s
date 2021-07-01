@@ -67,6 +67,7 @@ main:
 	movw	$stack,	%sp
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%si
 	pushw	%di
 	subw	$0x000a,%sp
 	movw	%sp,	%di
@@ -79,7 +80,7 @@ main:
 	movw	$0x0002,0x04(%di)# sector_number
 	movw	$entry,	%dx
 	shrw	$0x0004,%dx
-	movw	%dx,0x02(%di)	# destination_segment
+	movw	%dx,	0x02(%di)	# destination_segment
 	movw	$sector_size,(%di)# destination_address
 	call	read_sector
 	cmpw	$0x0000,%ax
@@ -111,6 +112,7 @@ main:
 	call	new_line
 	addw	$0x000a,%sp
 	popw	%di
+	popw	%si
 	leave
 8:				# halt loop
 	hlt
