@@ -226,13 +226,16 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	pushw	%bx
 	pushw	%di
 	pushw	%es
-	subw	$0x0002,%sp
+	subw	$0x0004,%sp
 	movw	%sp,	%di
 				# cylinder_number: 0x0c(%bp)
 				# head: 0x0a(%bp)
 				# sector_number: 0x08(%bp)
 				# destination_segment: 0x06(%bp)
 				# destination_address: 0x04(%bp)
+	movw	$0x10,	%cx	# number of trials
+1:
+	movw	%cx,	0x02(%di)
 	movb	$0x02,	%ah	# read sectors
 	movb	$0x01,	%al	# number of read sectors
 	movb	0x0d(%bp),%cl	# cl = (((cylinder_number >> 0x08 ) & 0x03) << 6) | sector_number;
@@ -245,16 +248,19 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	movw	0x06(%bp),%es	# destination_segment
 	movw	0x04(%bp),%bx	# destination_address
 	int	$0x13
-	jc	2f
-1:				# success
+	jc	3f
+2:				# success
 	xorw	%ax	,%ax
-	jmp	3f
-2:				# failure
+	jmp	4f
+3:				# failure
+	movw	0x02(%di),%cx
+	dec	%cx
+	jnz	1b		# retry
 	movw	$error_message,(%di)
 	call	print
 	movw	$0x0001,%ax
-3:
-	addw	$0x0002,%sp
+4:
+	addw	$0x0004,%sp
 	popw	%es
 	popw	%di
 	popw	%bx
