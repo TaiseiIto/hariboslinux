@@ -169,33 +169,28 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	pushw	%di
 	subw	$0x0002,%sp
 	movw	%sp,	%di
-	movw	0x04(%bp),%dx	# print the digit of 0x10s place
+	xorw	%bx,	%bx	# if %bx == 0, then print the digit of 0x10s place, else print the digit of 0x01s place.
+	movw	0x04(%bp),%dx	# get the byte
 	shrw	$0x0004,%dx
+1:
 	andw	$0x000f,%dx
 	cmpw	$0x000a,%dx
-	jge	2f
-1:				# the digit is less than 0x0a
+	jge	3f
+2:				# the digit is less than 0x0a
 	addw	$0x0030,%dx
-	jmp	3f
-2:				# the digit is greater than or equal to 0x0a
+	jmp	4f
+3:				# the digit is greater than or equal to 0x0a
 	subw	$0x000a,%dx
 	addw	$0x0061,%dx
-3:				# print
+4:				# print the digit
 	movw	%dx,	(%di)
 	call	putchar
-	movw	0x04(%bp),%dx	# print the digit of 0x01s place
-	andw	$0x000f,%dx
-	cmpw	$0x000a,%dx
-	jge	5f
-4:				# the digit is less than 0x0a
-	addw	$0x0030,%dx
-	jmp	6f
-5:				# the digit is greater than or equal to 0x0a
-	subw	$0x000a,%dx
-	addw	$0x0061,%dx
-6:				# print
-	movw	%dx,	(%di)
-	call	putchar
+	cmpw	$0x0000,%bx
+	jne	5f
+	movw	0x04(%bp),%dx	# get the byte
+	inc	%bx
+	jmp	1b
+5:				# finish printing
 	addw	$0x0002,%sp
 	pop	%di
 	leave
