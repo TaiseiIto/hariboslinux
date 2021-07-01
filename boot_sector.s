@@ -222,7 +222,10 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%bx
+	pushw	%di
 	pushw	%es
+	subw	$0x0002,%sp
+	movw	%sp,	%di
 				# cylinder_number: 0x0c(%bp)
 				# head: 0x0a(%bp)
 				# sector_number: 0x08(%bp)
@@ -245,11 +248,13 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	xorw	%ax	,%ax
 	jmp	3f
 2:				# failure
-	pushw	$error_message
+	movw	$error_message,(%di)
 	call	print
 	movw	$0x0001,%ax
 3:
+	addw	$0x0002,%sp
 	popw	%es
+	popw	%di
 	popw	%bx
 	leave
 	ret
