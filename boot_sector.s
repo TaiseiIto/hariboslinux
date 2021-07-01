@@ -97,13 +97,14 @@ main:
 	addw	$sector_size,%si
 	movw	$0x0010,%cx
 6:				# print each byte loop
-	cmpw	$0x0000,%cx
-	je	7f
+	jcxz	7f
+	movw	%cx,	0x02(%di)
 	movw	(%si),	%dx
 	movw	%dx,	(%di)
 	call	print_byte_hex
 	movw	$0x0020,(%di)	# print space
 	call	putchar
+	movw	0x02(%di),%cx
 	incw	%si
 	decw	%cx
 	jmp	6b
@@ -167,9 +168,9 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%di
-	subw	$0x0002,%sp
+	subw	$0x0004,%sp
 	movw	%sp,	%di
-	xorw	%bx,	%bx	# if %bx == 0, then print the digit of 0x10s place, else print the digit of 0x01s place.
+	movw	$0x0001,%cx	# if %cx == 1, then print the digit of 0x10s place, else print the digit of 0x01s place.
 	movw	0x04(%bp),%dx	# get the byte
 	shrw	$0x0004,%dx
 1:
@@ -183,15 +184,16 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	subw	$0x000a,%dx
 	addw	$0x0061,%dx
 4:				# print the digit
+	movw	%cx,	0x02(%di)
 	movw	%dx,	(%di)
 	call	putchar
-	cmpw	$0x0000,%bx
-	jne	5f
+	movw	0x02(%di),%cx
+	jcxz	5f
 	movw	0x04(%bp),%dx	# get the byte
-	inc	%bx
+	dec	%cx
 	jmp	1b
 5:				# finish printing
-	addw	$0x0002,%sp
+	addw	$0x0004,%sp
 	pop	%di
 	leave
 	ret
