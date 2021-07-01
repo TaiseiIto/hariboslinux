@@ -67,34 +67,31 @@ main:
 	movw	$stack,	%sp
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x000a,%sp
+	movw	%sp,	%di
 1:				# print hello_message
-	pushw	$hello_message
+	movw	$hello_message,(%di)
 	call	print
-	addw	$0x0002,%sp
 2:				# read the second sector of the bootable floppy disk
-	pushw	$0x0000		# cylinder_number
-	pushw	$0x0000		# head
-	pushw	$0x0002		# sector_number
+	movw	$0x0000,0x08(%di)# cylinder_number
+	movw	$0x0000,0x06(%di)# head
+	movw	$0x0002,0x04(%di)# sector_number
 	movw	$entry,	%dx
 	shrw	$0x0004,%dx
-	pushw	%dx		# destination_segment
-	pushw	$sector_size	# destination_address
+	movw	%dx,0x02(%di)	# destination_segment
+	movw	$sector_size,(%di)# destination_address
 	call	read_sector
-	addw	$0x000a,%sp
 	cmpw	$0x0000,%ax
 	je	4f
 3:				# read_sector failure
-	pushw	$error_message
+	movw	$error_message,(%di)
 	call print
-	addw	$0x0002,%sp
 4:				# print hello_message
 	call	new_line
-	pushw	$check_FAT_message
+	movw	$check_FAT_message,(%di)
 	call	print
-	addw	$0x0002,%sp
 5:				# print bytes from 0x0200($entry) to 0x0210($entry)
-	subw	$0x0002,%sp
-	movw	%sp,	%di
 	movw	$entry,	%si
 	addw	$sector_size,%si
 	movw	$0x0010,%cx
@@ -112,6 +109,8 @@ main:
 7:				# end of print each byte loop
 				# print new line
 	call	new_line
+	addw	$0x000a,%sp
+	popw	%di
 	leave
 8:				# halt loop
 	hlt
