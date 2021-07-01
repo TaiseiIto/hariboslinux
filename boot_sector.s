@@ -132,7 +132,7 @@ new_line:			# void new_line(void);
 	movw	$0x000a,(%di)	# print LF
 	call	putchar
 	addw	$0x0002,%sp
-	pop	%di
+	popw	%di
 	leave
 	ret
 
@@ -190,11 +190,11 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	movw	0x02(%di),%cx
 	jcxz	5f
 	movw	0x04(%bp),%dx	# get the byte
-	dec	%cx
+	decw	%cx
 	jmp	1b
 5:				# finish printing
 	addw	$0x0004,%sp
-	pop	%di
+	popw	%di
 	leave
 	ret
 
@@ -254,7 +254,7 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	jmp	4f
 3:				# failure
 	movw	0x02(%di),%cx
-	dec	%cx
+	decw	%cx
 	jnz	1b		# retry
 	movw	$error_message,(%di)
 	call	print
