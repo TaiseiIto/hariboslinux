@@ -74,28 +74,28 @@ main:
 1:				# print hello_message
 	movw	$hello_message,(%di)
 	call	print
-2:				# read the second sector of the bootable floppy disk
+2:				# read the floppy disk (0x2400~0x47ff) to memory (0xa000~0xc400)
 	movw	$0x0000,0x0a(%di)# cylinder_number
-	movw	$0x0000,0x08(%di)# head
-	movw	$0x0002,0x06(%di)# sector_number
-	movw	$0x0011,0x04(%di)# num_of_sectors
+	movw	$0x0001,0x08(%di)# head
+	movw	$0x0001,0x06(%di)# sector_number
+	movw	$0x0012,0x04(%di)# num_of_sectors
 	movw	$entry,	%dx
 	shrw	$0x0004,%dx
 	movw	%dx,	0x02(%di)# destination_segment
-	movw	$sector_size,(%di)# destination_address
+	movw	$0x2400,(%di)# destination_address
 	call	read_sector
 	cmpw	$0x0000,%ax
 	je	4f
 3:				# read_sector failure
 	movw	$error_message,(%di)
 	call print
-4:				# print hello_message
+4:				# check test0.txt
 	call	new_line
-	movw	$check_FAT_message,(%di)
+	movw	$check_file_message,(%di)
 	call	print
-5:				# print bytes from 0x0200($entry) to 0x0210($entry)
+5:				# print test0.txt (floppy 0x4200~0x420f, memory 0xbe00~0xbe0f)
 	movw	$entry,	%si
-	addw	$sector_size,%si
+	addw	$0x4200,%si
 	movw	$0x0010,%cx
 6:				# print each byte loop
 	jcxz	7f
@@ -271,8 +271,8 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	ret
 
 	.data
-check_FAT_message:
-	.string "The first 0x10 bytes of the FAT\r\n"
+check_file_message:
+	.string "The first 0x10 bytes of the test0.txt\r\n"
 error_message:
 	.string "ERROR!\r\n"
 hello_message:
