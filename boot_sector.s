@@ -69,18 +69,19 @@ main:
 	movw	%sp,	%bp
 	pushw	%si
 	pushw	%di
-	subw	$0x000a,%sp
+	subw	$0x000c,%sp
 	movw	%sp,	%di
 1:				# print hello_message
 	movw	$hello_message,(%di)
 	call	print
 2:				# read the second sector of the bootable floppy disk
-	movw	$0x0000,0x08(%di)# cylinder_number
-	movw	$0x0000,0x06(%di)# head
-	movw	$0x0002,0x04(%di)# sector_number
+	movw	$0x0000,0x0a(%di)# cylinder_number
+	movw	$0x0000,0x08(%di)# head
+	movw	$0x0002,0x06(%di)# sector_number
+	movw	$0x0011,0x04(%di)# num_of_sectors
 	movw	$entry,	%dx
 	shrw	$0x0004,%dx
-	movw	%dx,	0x02(%di)	# destination_segment
+	movw	%dx,	0x02(%di)# destination_segment
 	movw	$sector_size,(%di)# destination_address
 	call	read_sector
 	cmpw	$0x0000,%ax
@@ -111,7 +112,7 @@ main:
 7:				# end of print each byte loop
 				# print new line
 	call	new_line
-	addw	$0x000a,%sp
+	addw	$0x000c,%sp
 	popw	%di
 	popw	%si
 	leave
@@ -216,10 +217,11 @@ putchar:			# void putchar(char c);
 				# // cylinder_number: 0x0000~0x004f
 				# // head: 0x0000, 0x0001
 				# // sector_number: 0x0000~0x0012
+				# // num_of_sectors: 0x0001~0x0012
 				# // destination: [destination_segment:destination_address]
 				# // return value 0 means success
 				# // return value 1 means failure
-read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsigned short head, unsigned short sector_number, unsigned short destination_segment, unsigned short destination_address);
+read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsigned short head, unsigned short sector_number, unsigned short num_of_sectors, unsigned short destination_segment, unsigned short destination_address);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
@@ -228,23 +230,24 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	pushw	%es
 	subw	$0x0004,%sp
 	movw	%sp,	%di
-				# cylinder_number: 0x0c(%bp)
-				# head: 0x0a(%bp)
-				# sector_number: 0x08(%bp)
+				# cylinder_number: 0x0e(%bp)
+				# head: 0x0c(%bp)
+				# sector_number: 0x0a(%bp)
+				# num_of_sectors: 0x08(%bp)
 				# destination_segment: 0x06(%bp)
 				# destination_address: 0x04(%bp)
 	movw	$0x10,	%cx	# number of trials
 1:
 	movw	%cx,	0x02(%di)
 	movb	$0x02,	%ah	# read sectors
-	movb	$0x01,	%al	# number of read sectors
-	movb	0x0d(%bp),%cl	# cl = (((cylinder_number >> 0x08 ) & 0x03) << 6) | sector_number;
+	movb	0x08(%bp),%al	# number of read sectors
+	movb	0x0f(%bp),%cl	# cl = (((cylinder_number >> 0x08 ) & 0x03) << 6) | sector_number;
 	andb	$0x03,	%cl
 	shlb	$0x06,	%cl
-	addb	0x08(%bp),%cl
-	movb	0x0c(%bp),%ch	# cylinder_number
+	addb	0x0a(%bp),%cl
+	movb	0x0e(%bp),%ch	# cylinder_number
 	xorb	%dl,	%dl	# read from A drive
-	movb	0x0a(%bp),%dh	# head
+	movb	0x0c(%bp),%dh	# head
 	movw	0x06(%bp),%es	# destination_segment
 	movw	0x04(%bp),%bx	# destination_address
 	int	$0x13
