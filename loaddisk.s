@@ -195,7 +195,7 @@ main:
 2:				# load disk
 				#  from cylinder 0x0000, head 0x0000, sector 0x0002
 				#  to   cylinder 0x0000, head 0x0000, sector 0x0012
-				# source disk address 0x0:0200~0x0:23ff
+				# source disk        address 0x0:0200~0x0:23ff
 				# destination memory address 0x0:7e00~0x0:9fff
 	movw	$0x0000,0x0a(%di)# cylinder_number
 	movw	$0x0000,0x08(%di)# head
@@ -233,14 +233,26 @@ main:
 	incw	%si
 	decw	%cx
 	jmp	6b
-7:				# free stack frame
+7:				# end of print each byte loop
+	call	new_line
+8:				# load disk
+				#  from cylinder 0x0001, head 0x0000, sector 0x0001
+				#  to   cylinder 0x0036, head 0x0001, sector 0x0012
+				# source disk        address 0x0:4800~0xf:77ff
+				# destination memory address 0x0:c400~0xf:f3ff
+9:				# load disk
+				#  from cylinder 0x0037, head 0x0000, sector 0x0001
+				#  to   cylinder 0x0037, head 0x0000, sector 0x0006
+				# source disk        address 0xf:7800~0xf:83ff
+				# destination memory address 0xf:f3ff~0xf:ffff
+10:				# free stack frame
 	addw	$0x000c,%sp
 	popw	%di
 	popw	%si
 	leave
-8:				#halt loop
+11:				#halt loop
 	hlt
-	jmp	8b
+	jmp	11b
 
 	.data
 check_fat_message:
