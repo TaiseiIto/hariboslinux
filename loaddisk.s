@@ -198,7 +198,7 @@ main:
 				# disk address 0x0200~0x020f
 				# memory address 0x7e00~0x7e0f
 	movw	$load_dest, %si
-	addw	$0x0200,(%si)
+	addw	$0x0200,%si
 	movw	$0x0010,%cx
 6:				# print each byte loop
 	jcxz	7f
