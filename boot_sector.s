@@ -92,11 +92,11 @@ main:
 3:				# read_sector failure
 	movw	$error_message,(%di)
 	call print
-4:				# check test0.txt
+4:				# check loaddisk.bin
 	call	new_line
 	movw	$check_file_message,(%di)
 	call	print
-5:				# print test0.txt (floppy 0x4200~0x420f, memory 0xbe00~0xbe0f)
+5:				# print loaddisk.bin (floppy 0x4200~0x420f, memory 0xbe00~0xbe0f)
 	movw	$entry,	%si
 	addw	$load_disk,%si
 	movw	$0x0010,%cx
@@ -276,7 +276,7 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 
 	.data
 check_file_message:
-	.string "The first 0x10 bytes of the test0.txt\r\n"
+	.string "The first 0x10 bytes of loaddisk.bin\r\n"
 error_message:
 	.string "ERROR!\r\n"
 hello_message:
