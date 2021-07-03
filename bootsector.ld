@@ -7,8 +7,8 @@ SECTIONS
 	. = BASE;
 	.text :
 	{
-		boot_sector.o(.text)
-		boot_sector.o(.data)
+		bootsector.o(.text)
+		bootsector.o(.data)
 	}
 	. = BASE;
 	. += 0x00000200;
