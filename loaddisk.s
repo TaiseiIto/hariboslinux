@@ -1,3 +1,22 @@
+# This program is called from bootsector.s to load the floppy disk
+#
+# Source disk address 0x0:0000~0xf:83ff
+# Destination memory address 0x0:7c00~0xf:ffff
+#
+# Source disk address 0x0:0000~0x0:01ff is already loaded into destination memory address 0x0:7c00~0x0:7dff by BIOS
+# Source disk address 0x0:2400~0x0:47ff is already loaded into destination memory address 0x0:a000~0x0:c3ff by bootsector.bin
+#
+# So this program loads source disk address 0x0:0200~0x0:23ff into destination memory address 0x0:7e00~0x0:9fff
+#                   and source disk address 0x0:4800~0xf:83ff into destination memory address 0x0:c400~0xf:ffff
+#
+# disk address 0x0:0200~0x0:23ff
+#	from cylinder 0x0000, head 0x0000, sector 0x0002
+#	to   cylinder 0x0000, head 0x0000, sector 0x0012
+#
+# disk address 0x0:4800~0xf:83ff
+#	from cylinder 0x0001, head 0x0000, sector 0x0001
+#	to   cylinder 0x0037, head 0x0000, sector 0x0006
+
 # calling convention = System V i386
 # return value: ax, dx
 # parameters: stack
@@ -173,9 +192,11 @@ main:
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
-2:				# load cylinder 0x0000, head 0x0000, sector 0x0002~0x0012
-				# source disk address 0x0200~0x23ff
-				# destination memory address 0x7e00~0x9fff
+2:				# load disk
+				#  from cylinder 0x0000, head 0x0000, sector 0x0002
+				#  to   cylinder 0x0000, head 0x0000, sector 0x0012
+				# source disk address 0x0:0200~0x0:23ff
+				# destination memory address 0x0:7e00~0x0:9fff
 	movw	$0x0000,0x0a(%di)# cylinder_number
 	movw	$0x0000,0x08(%di)# head
 	movw	$0x0002,0x06(%di)# sector_number
@@ -195,8 +216,8 @@ main:
 	movw	$check_fat_message,(%di)
 	call	print
 5:				# print FAT
-				# disk address 0x0200~0x020f
-				# memory address 0x7e00~0x7e0f
+				# disk address 0x0:0200~0x0:020f
+				# memory address 0x0:7e00~0x0:7e0f
 	movw	$load_dest, %si
 	addw	$0x0200,%si
 	movw	$0x0010,%cx

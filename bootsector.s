@@ -1,3 +1,6 @@
+# This program is OS entry point loaded and called by BIOS
+# This program loads a part of the floppy disk (cylinder 0x0000, head 0x0001, sector 0x0001~0x0012) and jumps to loaddisk.bin
+
 # bibliography
 # https://wiki.osdev.org/FAT
 
