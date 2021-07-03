@@ -240,19 +240,49 @@ main:
 				#  to   cylinder 0x0036, head 0x0001, sector 0x0012
 				# source disk        address 0x0:4800~0xf:77ff
 				# destination memory address 0x0:c400~0xf:f3ff
-9:				# load disk
+	movw	$0x0001,0x0a(%di)# cylinder_number
+	movw	$0x0000,0x08(%di)# head
+	movw	$0x0001,0x06(%di)# sector_number
+	movw	$0x0012,0x04(%di)# num_of_sectors
+	movw	$0x0c40,0x02(%di)# destination_segment
+	movw	$0x0000,(%di)	# destination_address
+9:				# load loop
+	call	read_sector
+	movw	0x02(%di),%cx	# advance destination_segment 1 track
+	addw	$0x0240,%cx
+	movw	%cx,	0x02(%di)
+	movw	0x08(%di),%cx	# advance head
+	jcxz	10f
+	jmp	11f
+10:				# advance head
+	incw	%cx
+	movw	%cx,	0x08(%di)
+	jmp	9b
+11:				# advance cylinder
+	decw	%cx		# reset head
+	movw	%cx,	0x08(%di)
+	movw	0x0a(%di),%cx	# advance cylinder
+	incw	%cx
+	cmp	$0x000a,%cx
+	je	12f		# finish loading
+	movw	%cx,	0x0a(%di)
+	jmp	9b
+12:				# load disk
 				#  from cylinder 0x0037, head 0x0000, sector 0x0001
 				#  to   cylinder 0x0037, head 0x0000, sector 0x0006
 				# source disk        address 0xf:7800~0xf:83ff
 				# destination memory address 0xf:f3ff~0xf:ffff
-10:				# free stack frame
+	call	new_line
+	movw	$hello_message,(%di)
+	call	print
+13:				# free stack frame
 	addw	$0x000c,%sp
 	popw	%di
 	popw	%si
 	leave
-11:				#halt loop
+14:				#halt loop
 	hlt
-	jmp	11b
+	jmp	14b
 
 	.data
 check_fat_message:
