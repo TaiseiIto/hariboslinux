@@ -85,7 +85,7 @@ main:
 	movw	$entry,	%dx
 	shrw	$0x0004,%dx
 	movw	%dx,	0x02(%di)# destination_segment
-	movw	$0x2400,(%di)# destination_address
+	movw	$0x2400,(%di)	# destination_address
 	call	read_sector
 	cmpw	$0x0000,%ax
 	je	4f

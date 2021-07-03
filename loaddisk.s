@@ -1,4 +1,11 @@
-	.code16			# real mode
+# calling convention = System V i386
+# return value: ax, dx
+# parameters: stack
+# scratch registers: ax, cx, dx
+# preserved registers: bx, si, di, bp, sp
+
+	.code16				# real mode
+	.set	load_dest,	0x7c00	# memory address the disk loaded to
 	.text
 entry:
 0:
@@ -158,21 +165,65 @@ main:
 0:
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%si
 	pushw	%di
-	subw	$0x0002,%sp
+	subw	$0x000c,%sp
 	movw	%sp,	%di
 1:				# print hello_message
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
-2:				# free stack frame
-	addw	$0x0002,%sp
+2:				# load cylinder 0x0000, head 0x0000, sector 0x0002~0x0012
+				# source disk address 0x0200~0x23ff
+				# destination memory address 0x7e00~0x9fff
+	movw	$0x0000,0x0a(%di)# cylinder_number
+	movw	$0x0000,0x08(%di)# head
+	movw	$0x0002,0x06(%di)# sector_number
+	movw	$0x0011,0x04(%di)# num_of_sectors
+	movw	$load_dest,%dx
+	shrw	$0x0004,%dx
+	movw	%dx,	0x02(%di)# destination_segment
+	movw	$0x0200,(%di)	# destination_address
+	call	read_sector
+	cmpw	$0x0000,%ax
+	je	4f
+3:				# read_sector failure
+	movw	$error_message,(%di)
+	call print
+4:				# check loaded FAT
+	call	new_line
+	movw	$check_fat_message,(%di)
+	call	print
+5:				# print FAT
+				# disk address 0x0200~0x020f
+				# memory address 0x7e00~0x7e0f
+	movw	$load_dest, %si
+	addw	$0x0200,(%si)
+	movw	$0x0010,%cx
+6:				# print each byte loop
+	jcxz	7f
+	movw	%cx,	0x02(%di)
+	movw	(%si),	%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex
+	movw	$0x0020,(%di)	# print space
+	call	putchar
+	movw	0x02(%di),%cx
+	incw	%si
+	decw	%cx
+	jmp	6b
+7:				# free stack frame
+	addw	$0x000c,%sp
 	popw	%di
+	popw	%si
 	leave
-3:				#halt loop
+8:				#halt loop
 	hlt
-	jmp	3b
+	jmp	8b
 
+	.data
+check_fat_message:
+	.string "The first 0x10 bytes of FAT\r\n"
 error_message:
 	.string "ERROR!\r\n"
 hello_message:
