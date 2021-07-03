@@ -1,15 +1,16 @@
 OUTPUT_FORMAT("binary");
 
-IPL_BASE = 0x00007c00;		/* memory address offset */
+BASE = 0x00007c00;		/* memory address offset */
 
-SECTIONS {
-	. = IPL_BASE;
+SECTIONS
+{
+	. = BASE;
 	.text :
 	{
 		boot_sector.o(.text)
 		boot_sector.o(.data)
 	}
-	. = IPL_BASE;
+	. = BASE;
 	. += 0x00000200;
 	. -= 0x00000002;
 	.boot_sector_sign :

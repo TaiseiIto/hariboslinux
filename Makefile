@@ -2,7 +2,7 @@
 IMAGE_FILE = haribos.img
 BOOT_SECTORS = boot_sector.bin
 # files included in the floppy disk
-FLOPPY_FILES = test0.txt test1.txt test2.txt test3.txt test4.txt
+FLOPPY_FILES = loaddisk.bin test0.txt test1.txt test2.txt test3.txt test4.txt
 
 # compiler
 COMPILER = gcc

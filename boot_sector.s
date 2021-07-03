@@ -119,9 +119,10 @@ main:
 	popw	%di
 	popw	%si
 	leave
-8:				# halt loop
-	hlt
-	jmp	8b
+8:				# jump to loaddisk.bin
+	movw	$entry,	%dx
+	addw	$load_disk,%dx
+	jmp	*%dx
 
 				# // print CRLF
 new_line:			# void new_line(void);
