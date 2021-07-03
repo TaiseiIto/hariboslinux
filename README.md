@@ -64,7 +64,7 @@ docker container上で
 docker, VNC softwareに加え，git, makeを用いて開発しています．
 
 ### clone repository
-まず，このrepositoryをcloneします．
+このrepositoryをcloneします．
 ```
 $ git clone https://github.com/TaiseiIto/hariboslinux.git
 $ cd hariboslinux
@@ -145,5 +145,11 @@ Docker containerを起動すると，このrepositoryが`~/hariboslinux`にclone
 このcommandにより，gdbを用いたDebugが可能です．
 ```
 /~/hariboslinux # make debug
+```
+
+### git setting
+git commitをするために，emailとnameを設定します．
+```
+/~/hariboslinux # make gitconfig
 ```
 

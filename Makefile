@@ -81,17 +81,23 @@ debug:
 	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
 	$(DEBUGGER)
 
+# get setting
+gitconfig:
+	./gitconfig.sh
 
+# rebuild the OS
 rebuild: clean
 	make
 
-# run the operating system on QEMU
+# run the OS on QEMU
 run: $(IMAGE_FILE)
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
 
+# stop QEMU
 stop:
 	for i in $$(ps ax | grep $(EMULATOR) | grep -v grep | awk '{print $$1}'); do kill $$i; done
 
+# update the OS
 update: update-repository
 	make
 
