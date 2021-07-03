@@ -273,7 +273,7 @@ main:
 				# source disk        address 0xf:7800~0xf:83ff
 				# destination memory address 0xf:f3ff~0xf:ffff
 	call	new_line
-	movw	$hello_message,(%di)
+	movw	$finish_loading_message,(%di)
 	call	print
 13:				# free stack frame
 	addw	$0x000c,%sp
@@ -289,5 +289,7 @@ check_fat_message:
 	.string "The first 0x10 bytes of FAT\r\n"
 error_message:
 	.string "ERROR!\r\n"
+finish_loading_message:
+	.string "finish loading!\r\n"
 hello_message:
 	.string	"Hello, loaddisk.bin!\r\n"
