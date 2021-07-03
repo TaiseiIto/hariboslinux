@@ -23,6 +23,9 @@
 	.set	drive_number,	0x00		# Drive number
 	.set	boot_signature,	0x29		# boot sector signature
 	.set	volume_serial,	0xffffffff	# volume serial number
+	.set	file_entry_size,0x00000020	# file entry size (bytes)
+	.set	load_disk,	0x4200		# address of loaddisk.bin on the floppy disk
+						# (boot_sectors + fats * fat_size) * sector_size + files * file_entry_size
 
 	.text
 stack:						# bottom of stack
@@ -95,7 +98,7 @@ main:
 	call	print
 5:				# print test0.txt (floppy 0x4200~0x420f, memory 0xbe00~0xbe0f)
 	movw	$entry,	%si
-	addw	$0x4200,%si
+	addw	$load_disk,%si
 	movw	$0x0010,%cx
 6:				# print each byte loop
 	jcxz	7f
