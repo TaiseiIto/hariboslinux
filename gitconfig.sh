@@ -1,8 +1,8 @@
 #!/bin/sh
 
-echo Your GitHub email:
+echo -n "Your GitHub email:"
 read email
-echo Your GitHub name:
+echo -n "Your GitHub name:"
 read name
 git config --global user.email $email
 git config --global user.name $name
