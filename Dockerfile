@@ -24,6 +24,9 @@ RUN git clone https://github.com/TaiseiIto/hariboslinux.git
 WORKDIR hariboslinux
 RUN make
 
+# gdb setting
+RUN echo add-auto-load-safe-path \$(pwd)/.gdbinit
+
 # VNC port
 EXPOSE 5900
 
