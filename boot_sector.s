@@ -81,7 +81,7 @@ main:
 	movw	$0x0000,0x0a(%di)# cylinder_number
 	movw	$0x0001,0x08(%di)# head
 	movw	$0x0001,0x06(%di)# sector_number
-	movw	$0x0012,0x04(%di)# num_of_sectors
+	movw	$track_size,0x04(%di)# num_of_sectors
 	movw	$entry,	%dx
 	shrw	$0x0004,%dx
 	movw	%dx,	0x02(%di)# destination_segment
