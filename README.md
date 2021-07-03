@@ -153,3 +153,15 @@ git commitをするために，emailとnameを設定します．
 /~/hariboslinux # make gitconfig
 ```
 
+## gdbの使い方
+とりあえずQEMUをgdb待機状態で起動してgdbからQEMUに接続する．
+
+```
+/~/hariboslinux # make debug
+```
+OSのentry point 0x7c00にbreak pointを置き，そこまで進む処理は.gdbinitに書かれている．
+以下のcommandでregistersの内容を確認する．
+```
+(gdb) info registers
+```
+
