@@ -2,22 +2,7 @@
 	.text
 entry:
 0:
-	pushw	%bp
-	movw	%sp,	%bp
-	pushw	%di
-	subw	$0x0002,%sp
-	movw	%sp,	%di
-1:				# print hello_message
-	call	new_line
-	movw	$hello_message,(%di)
-	call	print
-2:				# free stack frame
-	addw	$0x0002,%sp
-	popw	%di
-	leave
-3:				#halt loop
-	hlt
-	jmp	3b
+	jmp	main
 
 				# // print CRLF
 new_line:			# void new_line(void);
@@ -168,6 +153,25 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	popw	%bx
 	leave
 	ret
+
+main:
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+1:				# print hello_message
+	call	new_line
+	movw	$hello_message,(%di)
+	call	print
+2:				# free stack frame
+	addw	$0x0002,%sp
+	popw	%di
+	leave
+3:				#halt loop
+	hlt
+	jmp	3b
 
 error_message:
 	.string "ERROR!\r\n"
