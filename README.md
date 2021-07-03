@@ -140,3 +140,10 @@ Docker containerを起動すると，このrepositoryが`~/hariboslinux`にclone
 /~/hariboslinux # make stop
 ```
 
+### Debug
+以下のcommandでQEMUをgdb待機状態で起動し，さらにgdbを起動してQEMUに接続します．
+このcommandにより，gdbを用いたDebugが可能です．
+```
+/~/hariboslinux # make debug
+```
+
