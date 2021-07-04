@@ -173,6 +173,12 @@ target.xmlとi386-32bit.xmlにより，real modeでのdissasembleを行ってい
 (gdb) x/30i $eip
 ```
 
+### stackの内容を表示
+現在のstack flameを2byte単位で8要素表示
+```
+(gdb) x/8h $esp
+```
+
 ### break pointの設置
 memory番地0xbe00にbreak pointを設置する．
 ```
