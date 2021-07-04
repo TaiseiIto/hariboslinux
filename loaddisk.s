@@ -138,7 +138,7 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	pushw	%bx
 	pushw	%di
 	pushw	%es
-	subw	$0x0004,%sp
+	subw	$0x0006,%sp
 	movw	%sp,	%di
 				# cylinder_number: 0x0e(%bp)
 				# head: 0x0c(%bp)
@@ -148,7 +148,7 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 				# destination_address: 0x04(%bp)
 	movw	$0x10,	%cx	# number of trials
 1:
-	movw	%cx,	0x02(%di)
+	movw	%cx,	0x04(%di)
 	movb	$0x02,	%ah	# read sectors
 	movb	0x08(%bp),%al	# number of read sectors
 	movw	0x0e(%bp),%cx	# cylinder_number
@@ -162,17 +162,25 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	int	$0x13
 	jc	3f
 2:				# success
-	xorw	%ax	,%ax
+	xorw	%ax,	%ax
 	jmp	4f
 3:				# failure
-	movw	0x02(%di),%cx
+	shrw	$0x0008,%ax
+	movw	%ax,	0x02(%di)
+	movw	$int13_error_message,(%di)
+	call	print
+	movw	0x02(%di),%ax
+	movw	%ax,	(%di)
+	call	print_byte_hex
+	call	new_line
+	movw	0x04(%di),%cx
 	decw	%cx
 	jnz	1b		# retry
 	movw	$error_message,(%di)
 	call	print
 	movw	$0x0001,%ax
 4:
-	addw	$0x0004,%sp
+	addw	$0x0006,%sp
 	popw	%es
 	popw	%di
 	popw	%bx
@@ -292,3 +300,5 @@ finish_loading_message:
 	.string "finish loading!\r\n"
 hello_message:
 	.string	"Hello, loaddisk.bin!\r\n"
+int13_error_message:
+	.string "INT 0x13 ERROR AH = 0x"
