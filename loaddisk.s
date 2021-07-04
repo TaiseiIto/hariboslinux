@@ -1,21 +1,21 @@
 # This program is called from bootsector.s to load the floppy disk
 #
-# Source disk address 0x0:0000~0xf:83ff
-# Destination memory address 0x0:7c00~0xf:ffff
+# Source disk address 0x0:0000~0xf:81ff
+# Destination memory address 0x0:7c00~0xf:fdff
 #
 # Source disk address 0x0:0000~0x0:01ff is already loaded into destination memory address 0x0:7c00~0x0:7dff by BIOS
 # Source disk address 0x0:2400~0x0:47ff is already loaded into destination memory address 0x0:a000~0x0:c3ff by bootsector.bin
 #
 # So this program loads source disk address 0x0:0200~0x0:23ff into destination memory address 0x0:7e00~0x0:9fff
-#                   and source disk address 0x0:4800~0xf:83ff into destination memory address 0x0:c400~0xf:ffff
+#                   and source disk address 0x0:4800~0xf:81ff into destination memory address 0x0:c400~0xf:fdff
 #
 # disk address 0x0:0200~0x0:23ff
 #	from cylinder 0x0000, head 0x0000, sector 0x0002
 #	to   cylinder 0x0000, head 0x0000, sector 0x0012
 #
-# disk address 0x0:4800~0xf:83ff
+# disk address 0x0:4800~0xf:81ff
 #	from cylinder 0x0001, head 0x0000, sector 0x0001
-#	to   cylinder 0x0037, head 0x0000, sector 0x0006
+#	to   cylinder 0x0037, head 0x0000, sector 0x0005
 
 # calling convention = System V i386
 # return value: ax, dx
@@ -293,9 +293,16 @@ main:
 	jmp	9b
 13:				# load disk
 				#  from cylinder 0x0037, head 0x0000, sector 0x0001
-				#  to   cylinder 0x0037, head 0x0000, sector 0x0006
-				# source disk        address 0xf:7800~0xf:83ff
-				# destination memory address 0xf:f3ff~0xf:ffff
+				#  to   cylinder 0x0037, head 0x0000, sector 0x0005
+				# source disk        address 0xf:7800~0xf:81ff
+				# destination memory address 0xf:f400~0xf:fdff
+	movw	$0x0037,0x0a(%di)# cylinder_number
+	movw	$0x0000,0x08(%di)# head
+	movw	$0x0001,0x06(%di)# sector_number
+	movw	$0x0005,0x04(%di)# num_of_sectors
+	movw	$0xff40,0x02(%di)# destination_segment
+	movw	$0x0000,(%di)	# destination_address
+	call	read_sector
 14:				# finish loading
 	call	new_line
 	movw	$finish_loading_message,(%di)
