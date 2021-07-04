@@ -290,6 +290,8 @@ main:
 	call	new_line
 	movw	$finish_loading_message,(%di)
 	call	print
+	movw	$0xc400,(%di)
+	call	print
 14:				# free stack frame
 	addw	$0x000c,%sp
 	popw	%di
