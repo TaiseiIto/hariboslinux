@@ -299,6 +299,9 @@ main:
 	call	new_line
 	movw	$finish_loading_message,(%di)
 	call	print
+	call	new_line
+	movw	$print_test1_message,(%di)
+	call	print
 	movw	$0xc400,(%di)
 	call	print
 14:				# free stack frame
@@ -321,3 +324,5 @@ hello_message:
 	.string	"Hello, loaddisk.bin!\n"
 int13_error_message:
 	.string "INT 0x13 ERROR AH = 0x"
+print_test1_message:
+	.string "print test1.txt\n"
