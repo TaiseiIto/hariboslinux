@@ -60,13 +60,22 @@ print:				# void print(char *string);
 1:				# put loop
 	xorb	%ah,	%ah
 	movb	(%si),	%al
+	cmpb	$0x0a,	%al
+	je	2f		# print CRLF
 	cmpb	$0x00,	%al
-	je	2f		# finish putting all characters
+	je	4f		# finish putting all characters
 	movw	%ax,	(%di)
 	call	putchar
+	jmp	3f
+2:				# print CRLF
+	movw	$0x000d,(%di)
+	call	putchar
+	movw	$0x000a,(%di)
+	call	putchar
+3:
 	incw	%si
 	jmp	1b		# put next character
-2:
+4:				# finish putting all characters
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
@@ -303,12 +312,12 @@ main:
 
 	.data
 check_fat_message:
-	.string "The first 0x10 bytes of FAT\r\n"
+	.string "The first 0x10 bytes of FAT\n"
 error_message:
-	.string "ERROR!\r\n"
+	.string "ERROR!\n"
 finish_loading_message:
-	.string "finish loading!\r\n"
+	.string "finish loading!\n"
 hello_message:
-	.string	"Hello, loaddisk.bin!\r\n"
+	.string	"Hello, loaddisk.bin!\n"
 int13_error_message:
 	.string "INT 0x13 ERROR AH = 0x"
