@@ -248,11 +248,10 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	movw	%cx,	0x02(%di)
 	movb	$0x02,	%ah	# read sectors
 	movb	0x08(%bp),%al	# number of read sectors
-	movb	0x0f(%bp),%cl	# cl = (((cylinder_number >> 0x08 ) & 0x03) << 6) | sector_number;
-	andb	$0x03,	%cl
+	movw	0x0e(%bp),%cx	# cylinder_number
+	rolw	$0x08,	%cx
 	shlb	$0x06,	%cl
-	addb	0x0a(%bp),%cl
-	movb	0x0e(%bp),%ch	# cylinder_number
+	addb	0x0a(%bp),%cl	# sector_number
 	xorb	%dl,	%dl	# read from A drive
 	movb	0x0c(%bp),%dh	# head
 	movw	0x06(%bp),%es	# destination_segment
