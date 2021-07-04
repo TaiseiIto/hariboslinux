@@ -159,9 +159,27 @@ git commitをするために，emailとnameを設定します．
 ```
 /~/hariboslinux # make debug
 ```
-OSのentry point 0x7c00にbreak pointを置き，そこまで進む処理は.gdbinitに書かれている．
-以下のcommandでregistersの内容を確認する．
+loaddisk.binのentry point 0xbe00にbreak pointを置き，そこまで進む処理は.gdbinitに書かれている．
+
+### registerの内容の確認
 ```
 (gdb) info registers
 ```
 
+### 現在地以降の30命令をdisassemble
+target.xmlとi386-32bit.xmlにより，real modeでのdissasembleを行っている．
+32bit modeに移行してからは，この設定を変更する必要がある．
+```
+(gdb) x/30i $eip
+```
+
+### break pointの設置
+memory番地0xbe00にbreak pointを設置する．
+```
+(gdb) break *0xbe00
+```
+
+### break pointまで実行を進める
+```
+(gdb) continue
+```
