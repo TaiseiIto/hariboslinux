@@ -296,6 +296,7 @@ main:
 				#  to   cylinder 0x0037, head 0x0000, sector 0x0006
 				# source disk        address 0xf:7800~0xf:83ff
 				# destination memory address 0xf:f3ff~0xf:ffff
+14:				# finish loading
 	call	new_line
 	movw	$finish_loading_message,(%di)
 	call	print
@@ -304,14 +305,14 @@ main:
 	call	print
 	movw	$0xc400,(%di)
 	call	print
-14:				# free stack frame
+15:				# free stack frame
 	addw	$0x000c,%sp
 	popw	%di
 	popw	%si
 	leave
-15:				#halt loop
+16:				#halt loop
 	hlt
-	jmp	15b
+	jmp	16b
 
 	.data
 check_fat_message:
