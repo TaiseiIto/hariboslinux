@@ -268,6 +268,7 @@ int main(int argc, char const * const * const argv)
 	cluster_size = boot_sector_structure->num_of_sectors_per_cluster * boot_sector_structure->num_of_bytes_per_sector;
 	for(unsigned int input_file_i = 0; input_file_i < num_of_input_files; input_file_i++)
 	{
+		char const * const input_file_name = input_file_names[input_file_i] + strlen("diskcontents/");
 		FILE *input_file;
 		unsigned int input_file_byte_i;
 		unsigned int input_file_name_i;
@@ -287,7 +288,7 @@ int main(int argc, char const * const * const argv)
 		for(input_file_name_i = 0; input_file_name_i < _countof(root_directory_entry->name); input_file_name_i++)
 		{
 			if(flags & REACH_END_OF_FILE_NAME)root_directory_entry->name[input_file_name_i] = ' ';
-			else switch(input_file_names[input_file_i][input_file_name_i])
+			else switch(input_file_name[input_file_name_i])
 			{
 			case '\0':
 			case '.':
@@ -295,29 +296,29 @@ int main(int argc, char const * const * const argv)
 				root_directory_entry->name[input_file_name_i] = ' ';
 				break;
 			default:
-				root_directory_entry->name[input_file_name_i] = input_file_names[input_file_i][input_file_name_i];
+				root_directory_entry->name[input_file_name_i] = input_file_name[input_file_name_i];
 				break;
 			}
 		}
-		for(input_file_name_i = 0; input_file_names[input_file_i][input_file_name_i] != '\0' && input_file_names[input_file_i][input_file_name_i] != '.'; input_file_name_i++);
-		switch(input_file_names[input_file_i][input_file_name_i])
+		for(input_file_name_i = 0; input_file_name[input_file_name_i] != '\0' && input_file_name[input_file_name_i] != '.'; input_file_name_i++);
+		switch(input_file_name[input_file_name_i])
 		{
 		case '\0':
 			flags |= REACH_END_OF_FILE_EXTENSION;
 			break;
 		case '.':
-			if(input_file_names[input_file_i][++input_file_name_i] == '\0')flags |= REACH_END_OF_FILE_EXTENSION;
+			if(input_file_name[++input_file_name_i] == '\0')flags |= REACH_END_OF_FILE_EXTENSION;
 			break;
 		}
 		for(input_file_extension_i = 0; input_file_extension_i < _countof(root_directory_entry->extension); input_file_extension_i++)
 		{
 			if(flags & REACH_END_OF_FILE_EXTENSION)root_directory_entry->extension[input_file_extension_i] = ' ';
-			else if(input_file_names[input_file_i][input_file_name_i] == '\0')
+			else if(input_file_name[input_file_name_i] == '\0')
 			{
 				flags |= REACH_END_OF_FILE_EXTENSION;
 				root_directory_entry->extension[input_file_extension_i] = ' ';
 			}
-			else root_directory_entry->extension[input_file_extension_i] = input_file_names[input_file_i][input_file_name_i];
+			else root_directory_entry->extension[input_file_extension_i] = input_file_name[input_file_name_i];
 			if(!(flags & REACH_END_OF_FILE_EXTENSION))input_file_name_i++;
 		}
 		root_directory_entry->flags = FILE_INFORMATION_FLAG_READ_ONLY_FILE | FILE_INFORMATION_FLAG_NORMAL_FILE;

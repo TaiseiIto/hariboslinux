@@ -1,8 +1,8 @@
 # floppy disk image file of the built operating system
 IMAGE_FILE = haribos.img
-BOOT_SECTORS = bootsector.bin
+BOOT_SECTORS = diskcontents/bootsector.bin
 # files included in the floppy disk
-FLOPPY_FILES = loaddisk.bin diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
+FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
 
 # tcp ports
 DEBUG_PORT = 2159
@@ -54,6 +54,13 @@ build: $(IMAGE_FILE)
 
 clean:
 	rm -f $(IMAGE_PACKER) *.bin *.o *.img
+	make clean -C src
+
+diskcontents/bootsector.bin: src/bootsector.bin
+	cp $^ $@
+
+diskcontents/loaddisk.bin: src/loaddisk.bin
+	cp $^ $@
 
 docker-build:
 	$(DOCKER) build --no-cache -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
@@ -92,6 +99,12 @@ rebuild: clean
 # run the OS on QEMU
 run: $(IMAGE_FILE)
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
+
+src/bootsector.bin:
+	make -C src
+
+src/loaddisk.bin:
+	make -C src
 
 # stop QEMU
 stop:
