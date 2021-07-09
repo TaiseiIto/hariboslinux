@@ -25,10 +25,10 @@ WORKDIR hariboslinux
 RUN make
 
 # gdb setting
-RUN echo add-auto-load-safe-path `pwd`/.gdbinit > ~/.gdbinit
+RUN echo add-auto-load-safe-path `pwd`/gdb/.gdbinit > ~/.gdbinit
 
 # gdb real mode disassemble
-RUN wget https://raw.githubusercontent.com/qemu/qemu/master/gdb-xml/i386-32bit.xml
+RUN wget https://raw.githubusercontent.com/qemu/qemu/master/gdb-xml/i386-32bit.xml -P gdb
 
 # VNC port
 EXPOSE 5900

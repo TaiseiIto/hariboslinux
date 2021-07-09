@@ -1,0 +1,5 @@
+DEBUGGER = gdb
+
+all:
+	$(DEBUGGER)
+

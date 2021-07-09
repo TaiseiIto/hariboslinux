@@ -13,9 +13,6 @@ COMPILER = gcc
 COMPILER_OUTPUT_OPTION = -o
 COMPILER_WARNING_OPTION = -Wall -Wextra
 
-# debugger
-DEBUGGER = gdb
-
 # docker
 DOCKER = docker
 DOCKER_IMAGE_NAME = hariboslinux
@@ -76,7 +73,7 @@ docker-stop:
 # debug the operating system onQEMU by gdb
 debug:
 	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
-	$(DEBUGGER)
+	make -C gdb
 
 # get setting
 gitconfig:
