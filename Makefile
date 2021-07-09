@@ -45,7 +45,7 @@ LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
 # image paccker
-IMAGE_PACKER = ./pack
+IMAGE_PACKER = imagepacker/imagepacker
 
 # build the operating system
 all: build
@@ -53,7 +53,7 @@ all: build
 build: $(IMAGE_FILE)
 
 clean:
-	rm -f pack *.bin *.o *.img
+	rm -f $(IMAGE_PACKER) *.bin *.o *.img
 
 docker-build:
 	$(DOCKER) build --no-cache -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
