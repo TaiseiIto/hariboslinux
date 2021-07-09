@@ -49,10 +49,7 @@ clean:
 	rm -f diskcontents/*.bin $(IMAGE_PACKER) *.bin *.o *.img
 	make clean -C src
 
-diskcontents/bootsector.bin: src/bootsector.bin
-	cp $^ $@
-
-diskcontents/loaddisk.bin: src/loaddisk.bin
+diskcontents/%.bin: src/%.bin
 	cp $^ $@
 
 docker-build:
