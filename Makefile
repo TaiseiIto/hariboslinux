@@ -10,8 +10,6 @@ VNC_PORT = 5900
 
 # compiler
 COMPILER = gcc
-COMPILER_DONT_LINK_OPTION = -c
-COMPILER_DONT_USE_STDLIB_OPTION = -nostdlib
 COMPILER_OUTPUT_OPTION = -o
 COMPILER_WARNING_OPTION = -Wall -Wextra
 
@@ -38,11 +36,6 @@ EMULATOR_DRIVE_OPTION = -drive file=$(IMAGE_FILE),format=raw,if=floppy
 EMULATOR_VIDEO_OPTION = -vga std
 # virtual network computing for all ip address
 EMULATOR_VNC_OPTION = -vnc :0
-
-# linker
-LINKER = ld
-LINKER_OUTPUT_OPTION = -o
-LINKER_SCRIPT_OPTION = -T
 
 # image paccker
 IMAGE_PACKER = imagepacker/imagepacker
@@ -122,12 +115,6 @@ $(IMAGE_FILE): $(IMAGE_PACKER) $(BOOT_SECTORS) $(FLOPPY_FILES)
 
 $(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
 	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
-
-%.bin: %.o
-	$(LINKER) $^ $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
-
-%.o: %.s
-	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
 
 # dont remove intermediate files
 .PRECIOUS: %.bin %.o %.s
