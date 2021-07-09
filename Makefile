@@ -93,10 +93,7 @@ rebuild: clean
 run: $(IMAGE_FILE)
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
 
-src/bootsector.bin:
-	make -C src
-
-src/loaddisk.bin:
+src/%:
 	make -C src
 
 # stop QEMU
