@@ -80,7 +80,7 @@ debug:
 
 # get setting
 gitconfig:
-	./gitconfig.sh
+	./git/gitconfig.sh
 
 # rebuild the OS
 rebuild: clean
