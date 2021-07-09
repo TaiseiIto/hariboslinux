@@ -26,9 +26,130 @@
 	.code16				# real mode
 	.set	load_dest,	0x7c00	# memory address the disk loaded to
 	.text
-entry:
+main:
 0:
-	jmp	main
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%si
+	pushw	%di
+	subw	$0x000c,%sp
+	movw	%sp,	%di
+1:				# print hello_message
+	call	new_line
+	movw	$hello_message,(%di)
+	call	print
+2:				# load disk
+				#  from cylinder 0x0000, head 0x0000, sector 0x0002
+				#  to   cylinder 0x0000, head 0x0000, sector 0x0012
+				# source disk        address 0x0:0200~0x0:23ff
+				# destination memory address 0x0:7e00~0x0:9fff
+	movw	$0x0000,0x0a(%di)# cylinder_number
+	movw	$0x0000,0x08(%di)# head
+	movw	$0x0002,0x06(%di)# sector_number
+	movw	$0x0011,0x04(%di)# num_of_sectors
+	movw	$load_dest,%dx
+	shrw	$0x0004,%dx
+	movw	%dx,	0x02(%di)# destination_segment
+	movw	$0x0200,(%di)	# destination_address
+	call	read_sector
+	cmpw	$0x0000,%ax
+	je	4f
+3:				# read_sector failure
+	movw	$error_message,(%di)
+	call print
+4:				# check loaded FAT
+	call	new_line
+	movw	$check_fat_message,(%di)
+	call	print
+5:				# print FAT
+				# disk address 0x0:0200~0x0:020f
+				# memory address 0x0:7e00~0x0:7e0f
+	movw	$load_dest, %si
+	addw	$0x0200,%si
+	movw	$0x0010,%cx
+6:				# print each byte loop
+	jcxz	7f
+	movw	%cx,	0x02(%di)
+	movw	(%si),	%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex
+	movw	$0x0020,(%di)	# print space
+	call	putchar
+	movw	0x02(%di),%cx
+	incw	%si
+	decw	%cx
+	jmp	6b
+7:				# end of print each byte loop
+	call	new_line
+8:				# load disk
+				#  from cylinder 0x0001, head 0x0000, sector 0x0001
+				#  to   cylinder 0x0036, head 0x0001, sector 0x0012
+				# source disk        address 0x0:4800~0xf:77ff
+				# destination memory address 0x0:c400~0xf:f3ff
+	movw	$0x0001,0x0a(%di)# cylinder_number
+	movw	$0x0000,0x08(%di)# head
+	movw	$0x0001,0x06(%di)# sector_number
+	movw	$0x0001,0x04(%di)# num_of_sectors
+	movw	$0x0c40,0x02(%di)# destination_segment
+	movw	$0x0000,(%di)	# destination_address
+9:				# load loop
+	call	read_sector
+	movw	0x02(%di),%cx	# advance destination_segment 1 segment
+	addw	$0x0020,%cx
+	movw	%cx,	0x02(%di)
+	movw	0x06(%di),%cx	# advance sector_number
+	cmpw	$0x0012,%cx
+	je	10f
+	incw	%cx
+	movw	%cx,	0x06(%di)
+	jmp	9b
+10:
+	movw	$0x0001,0x06(%di)# reset sector_number
+	movw	0x08(%di),%cx	# advance head
+	jcxz	11f
+	jmp	12f
+11:				# advance head
+	incw	%cx
+	movw	%cx,	0x08(%di)
+	jmp	9b
+12:				# advance cylinder_number
+	decw	%cx		# reset head
+	movw	%cx,	0x08(%di)
+	movw	0x0a(%di),%cx	# advance cylinder_number
+	incw	%cx
+	cmp	$0x000a,%cx
+	je	13f		# finish loading
+	movw	%cx,	0x0a(%di)
+	jmp	9b
+13:				# load disk
+				#  from cylinder 0x0037, head 0x0000, sector 0x0001
+				#  to   cylinder 0x0037, head 0x0000, sector 0x0005
+				# source disk        address 0xf:7800~0xf:81ff
+				# destination memory address 0xf:f400~0xf:fdff
+	movw	$0x0037,0x0a(%di)# cylinder_number
+	movw	$0x0000,0x08(%di)# head
+	movw	$0x0001,0x06(%di)# sector_number
+	movw	$0x0005,0x04(%di)# num_of_sectors
+	movw	$0xff40,0x02(%di)# destination_segment
+	movw	$0x0000,(%di)	# destination_address
+	call	read_sector
+14:				# finish loading
+	call	new_line
+	movw	$finish_loading_message,(%di)
+	call	print
+	call	new_line
+	movw	$print_test1_message,(%di)
+	call	print
+	movw	$0xc400,(%di)
+	call	print
+15:				# free stack frame
+	addw	$0x000c,%sp
+	popw	%di
+	popw	%si
+	leave
+16:				#halt loop
+	hlt
+	jmp	16b
 
 				# // print CRLF
 new_line:			# void new_line(void);
@@ -195,131 +316,6 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	popw	%bx
 	leave
 	ret
-
-main:
-0:
-	pushw	%bp
-	movw	%sp,	%bp
-	pushw	%si
-	pushw	%di
-	subw	$0x000c,%sp
-	movw	%sp,	%di
-1:				# print hello_message
-	call	new_line
-	movw	$hello_message,(%di)
-	call	print
-2:				# load disk
-				#  from cylinder 0x0000, head 0x0000, sector 0x0002
-				#  to   cylinder 0x0000, head 0x0000, sector 0x0012
-				# source disk        address 0x0:0200~0x0:23ff
-				# destination memory address 0x0:7e00~0x0:9fff
-	movw	$0x0000,0x0a(%di)# cylinder_number
-	movw	$0x0000,0x08(%di)# head
-	movw	$0x0002,0x06(%di)# sector_number
-	movw	$0x0011,0x04(%di)# num_of_sectors
-	movw	$load_dest,%dx
-	shrw	$0x0004,%dx
-	movw	%dx,	0x02(%di)# destination_segment
-	movw	$0x0200,(%di)	# destination_address
-	call	read_sector
-	cmpw	$0x0000,%ax
-	je	4f
-3:				# read_sector failure
-	movw	$error_message,(%di)
-	call print
-4:				# check loaded FAT
-	call	new_line
-	movw	$check_fat_message,(%di)
-	call	print
-5:				# print FAT
-				# disk address 0x0:0200~0x0:020f
-				# memory address 0x0:7e00~0x0:7e0f
-	movw	$load_dest, %si
-	addw	$0x0200,%si
-	movw	$0x0010,%cx
-6:				# print each byte loop
-	jcxz	7f
-	movw	%cx,	0x02(%di)
-	movw	(%si),	%dx
-	movw	%dx,	(%di)
-	call	print_byte_hex
-	movw	$0x0020,(%di)	# print space
-	call	putchar
-	movw	0x02(%di),%cx
-	incw	%si
-	decw	%cx
-	jmp	6b
-7:				# end of print each byte loop
-	call	new_line
-8:				# load disk
-				#  from cylinder 0x0001, head 0x0000, sector 0x0001
-				#  to   cylinder 0x0036, head 0x0001, sector 0x0012
-				# source disk        address 0x0:4800~0xf:77ff
-				# destination memory address 0x0:c400~0xf:f3ff
-	movw	$0x0001,0x0a(%di)# cylinder_number
-	movw	$0x0000,0x08(%di)# head
-	movw	$0x0001,0x06(%di)# sector_number
-	movw	$0x0001,0x04(%di)# num_of_sectors
-	movw	$0x0c40,0x02(%di)# destination_segment
-	movw	$0x0000,(%di)	# destination_address
-9:				# load loop
-	call	read_sector
-	movw	0x02(%di),%cx	# advance destination_segment 1 segment
-	addw	$0x0020,%cx
-	movw	%cx,	0x02(%di)
-	movw	0x06(%di),%cx	# advance sector_number
-	cmpw	$0x0012,%cx
-	je	10f
-	incw	%cx
-	movw	%cx,	0x06(%di)
-	jmp	9b
-10:
-	movw	$0x0001,0x06(%di)# reset sector_number
-	movw	0x08(%di),%cx	# advance head
-	jcxz	11f
-	jmp	12f
-11:				# advance head
-	incw	%cx
-	movw	%cx,	0x08(%di)
-	jmp	9b
-12:				# advance cylinder_number
-	decw	%cx		# reset head
-	movw	%cx,	0x08(%di)
-	movw	0x0a(%di),%cx	# advance cylinder_number
-	incw	%cx
-	cmp	$0x000a,%cx
-	je	13f		# finish loading
-	movw	%cx,	0x0a(%di)
-	jmp	9b
-13:				# load disk
-				#  from cylinder 0x0037, head 0x0000, sector 0x0001
-				#  to   cylinder 0x0037, head 0x0000, sector 0x0005
-				# source disk        address 0xf:7800~0xf:81ff
-				# destination memory address 0xf:f400~0xf:fdff
-	movw	$0x0037,0x0a(%di)# cylinder_number
-	movw	$0x0000,0x08(%di)# head
-	movw	$0x0001,0x06(%di)# sector_number
-	movw	$0x0005,0x04(%di)# num_of_sectors
-	movw	$0xff40,0x02(%di)# destination_segment
-	movw	$0x0000,(%di)	# destination_address
-	call	read_sector
-14:				# finish loading
-	call	new_line
-	movw	$finish_loading_message,(%di)
-	call	print
-	call	new_line
-	movw	$print_test1_message,(%di)
-	call	print
-	movw	$0xc400,(%di)
-	call	print
-15:				# free stack frame
-	addw	$0x000c,%sp
-	popw	%di
-	popw	%si
-	leave
-16:				#halt loop
-	hlt
-	jmp	16b
 
 	.data
 check_fat_message:
