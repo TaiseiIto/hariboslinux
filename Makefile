@@ -107,6 +107,8 @@ $(IMAGE_FILE): $(IMAGE_PACKER) $(BOOT_SECTORS) $(FLOPPY_FILES)
 $(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
 	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
 
+-include *.d
+
 # dont remove intermediate files
 .PRECIOUS: %.bin %.o %.s
 
