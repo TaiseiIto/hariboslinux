@@ -23,6 +23,7 @@ main:
 	call	init_serial_port_com1
 	movw	$hello_serial_message,(%di)
 	call	print_serial
+	call	new_line_serial
 3:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
@@ -93,6 +94,21 @@ new_line:			# void new_line(void);
 	call	putchar
 	movw	$0x000a,(%di)	# print LF
 	call	putchar
+	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print LF
+new_line_serial:		# void new_line_serial(void);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	$0x000a,(%di)	# print LF
+	call	putchar_serial
 	addw	$0x0002,%sp
 	popw	%di
 	leave
@@ -199,4 +215,6 @@ hello_message:
 	.string	"Hello, initscrn.bin!\n"
 hello_serial_message:
 	.string "Hello, serial port COM1!\n"
+vram_addr_message:
+	.string "VRAM address = 0x"
 
