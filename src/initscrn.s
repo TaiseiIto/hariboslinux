@@ -23,7 +23,6 @@ main:
 	call	init_serial_port_com1
 	movw	$hello_serial_message,(%di)
 	call	print_serial
-	call	new_line_serial
 3:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
@@ -40,7 +39,7 @@ main:
 				# 0x7bfe unsigned char bits_per_pixel;
 				# 0x7bff unsigned char keyboard_state;
 
-	movw	$0x0002,%ax	# keyboard_state
+	movw	$0x0200,%ax	# keyboard_state
 	int	$0x0016
 	shlw	$0x0008,%ax
 	addw	$0x0008,%ax	# 8 bit per pixel
@@ -53,6 +52,7 @@ main:
 	pushw	%ax
 	xorw	%ax,	%ax
 	pushw	%ax
+	call	new_line_serial
 6:				# halt loop
 	hlt
 	jmp	6b
