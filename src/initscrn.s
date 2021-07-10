@@ -33,7 +33,7 @@ main:
 	int	$0x10
 5:				# push screen information and keyboard state
 				#
-				# 0x7bf6 void *VRAM_addr;
+				# 0x7bf6 void *vram_addr;
 				# 0x7bfa unsigned short screen_width;
 				# 0x7bfc unsigned short screen_height;
 				# 0x7bfe unsigned char bits_per_pixel;
@@ -48,27 +48,28 @@ main:
 	pushw	%ax
 	movw	$0x0140,%ax	# screen_width
 	pushw	%ax
-	movw	$0x000a,%ax	# VRAM_addr
+	movw	$0x000a,%ax	# vram_addr
 	pushw	%ax
 	xorw	%ax,	%ax
 	pushw	%ax
-6:				# check VRAM_addr
+6:				# allocate new stack frame
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%si
 	pushw	%di
 	subw	$0x0002,%sp
 	movw	%sp,	%di
+7:				# check vram_addr
 	call	new_line_serial
 	movw	$vram_addr_message,(%di)
 	call	print_serial
+8:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
-	leave
-7:				# halt loop
+9:				# halt loop
 	hlt
-	jmp	7b
+	jmp	9b
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
 	pushw	%bp
