@@ -66,20 +66,9 @@ main:
 				# memory address 0x0:7e00~0x0:7e0f
 	movw	$load_dest, %si
 	addw	$0x0200,%si
-	movw	$0x0010,%cx
-6:				# print each byte loop
-	jcxz	7f
-	movw	%cx,	0x02(%di)
-	movw	(%si),	%dx
-	movw	%dx,	(%di)
-	call	print_byte_hex
-	movw	$0x0020,(%di)	# print space
-	call	putchar
-	movw	0x02(%di),%cx
-	incw	%si
-	decw	%cx
-	jmp	6b
-7:				# end of print each byte loop
+	movw	%si,	0x02(%di)
+	movw	$0x0010,(%di)
+	call	dump
 	call	new_line
 8:				# load disk
 				#  from cylinder 0x0001, head 0x0000, sector 0x0001
@@ -162,7 +151,9 @@ dump:				# void dump(void *address, unsigned short num_of_bytes);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%si
 	pushw	%di
+	subw	$0x0004,%sp
 	movw	%sp,	%di
 				# address: 0x06(%bp)
 				# num_of_bytes: 0x04(%bp)
@@ -181,7 +172,9 @@ dump:				# void dump(void *address, unsigned short num_of_bytes);
 	decw	%cx
 	jmp	1b
 2:				# end of print each byte loop
+	addw	$0x0004,%sp
 	popw	%di
+	popw	%si
 	leave
 	ret
 
