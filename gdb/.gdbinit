@@ -1,5 +1,10 @@
+# tcp port
 target remote localhost:2159
+
+# real mode
 set tdesc filename target.xml
-break *0xbe00
+
+# goto initscrn.bin
+break *0xc400
 continue
 
