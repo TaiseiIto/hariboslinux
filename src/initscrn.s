@@ -36,28 +36,28 @@ main:
 init_serial_port_com1:		# void init_serial_port_com1(void)
 	pushw	%bp
 	movw	%sp,	%bp
-	xorw	%ax,	%ax	# disable all serial port interrupts
+	xorb	%al,	%al	# disable all serial port interrupts
 	movw	$com1,	%dx
 	addw	$0x0001,%dx
-	outw	%ax,	%dx
-	movw	$0x0080,%ax	# enable DLAB
+	outb	%al,	%dx
+	movb	$0x80,	%al	# enable DLAB
 	movw	$com1,	%dx
 	addw	$0x0003,%dx
-	outw	%ax,	%dx
-	movw	$0x0001,%ax	# low byte of baudrate
+	outb	%al,	%dx
+	movb	$0x01,	%al	# low byte of baudrate
 	movw	$com1,	%dx
-	outw	%ax,	%dx
-	xorw	%ax	,%ax	# high byte of baudrate
+	outb	%al,	%dx
+	xorb	%al	,%al	# high byte of baudrate
 	movw	$com1,	%dx
 	addw	$0x0001,%dx
-	outw	%ax,	%dx
-	movw	$0x0003,%ax	# 8bit per character
+	outb	%al,	%dx
+	movb	$0x03,	%al	# 8bit per character
 	movw	$com1,	%dx
 	addw	$0x0003,%dx
-	outw	%ax,	%dx
-	movw	$0x0041,%ax	# send 'A'
+	outb	%al,	%dx
+	movb	$0x41,	%al	# send 'A'
 	movw	$com1,	%dx
-	outw	%ax,	%dx
+	outb	%al,	%dx
 	leave
 	ret
 
