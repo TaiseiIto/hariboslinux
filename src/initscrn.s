@@ -21,6 +21,8 @@ main:
 	call	print
 2:				# init serial port 0x03f8 (COM1)
 	call	init_serial_port_com1
+	movw	$hello_serial_message,(%di)
+	call	print_serial
 2:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
 	int	$0x10
@@ -113,6 +115,32 @@ print:				# void print(char *string);
 	leave
 	ret
 
+				# // print string to serial port COM1
+print_serial:			# void print_serial(char *string);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%si
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	0x04(%bp),%si
+1:				# put loop
+	xorb	%ah,	%ah
+	movb	(%si),	%al
+	cmpb	$0x00,	%al
+	je	2f		# finish putting all characters
+	movw	%ax,	(%di)
+	call	putchar_serial
+	incw	%si
+	jmp	1b		# put next character
+2:				# finish putting all characters
+	addw	$0x0002,%sp
+	popw	%di
+	popw	%si
+	leave
+	ret
+
 				# print a character to console
 putchar:			# void putchar(char c);
 0:
@@ -127,7 +155,30 @@ putchar:			# void putchar(char c);
 	leave
 	ret
 
+				# print a character to console
+putchar_serial:			# void putchar_serial(char c);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%bx
+1:				# wait for device
+	movw	$com1,	%dx
+	addw	$0x0005,%dx
+	inb	%dx,	%al
+	andb	$0x20,	%al
+	jz	1b
+2:				# send the character
+	movb	0x04(%bp),%al
+	movw	$com1,	%dx
+	outb	%al,	%dx
+3:				# free stack frame
+	popw	%bx
+	leave
+	ret
+
 	.data
 hello_message:
 	.string	"Hello, initscrn.bin!\n"
+hello_serial_message:
+	.string "Hello, serial port COM1!\n"
 
