@@ -85,14 +85,24 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-9:				# free stack frame
+9:				# check color size
+	movw	$color_message,(%di)
+	call	print_serial
+	movw	$0x7bfe,%si
+	xorw	%dx,	%dx
+	movb	(%si),	%dl
+	movw	%dx,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
+10:				# check keyboard state
+11:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
 	leave
-10:				# halt loop
+12:				# halt loop
 	hlt
-	jmp	10b
+	jmp	12b
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
 	pushw	%bp
@@ -322,6 +332,8 @@ putchar_serial:			# void putchar_serial(char c);
 	ret
 
 	.data
+color_message:
+	.string "bits per pixel = 0x"
 hello_message:
 	.string	"Hello, initscrn.bin!\n"
 hello_serial_message:
