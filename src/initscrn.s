@@ -21,6 +21,7 @@ main:
 	call	print
 2:				# init serial port 0x03f8 (COM1)
 	call	init_serial_port_com1
+	call	new_line_serial
 	movw	$hello_serial_message,(%di)
 	call	print_serial
 3:				# free stack frame
