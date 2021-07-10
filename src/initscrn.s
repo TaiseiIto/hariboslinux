@@ -20,6 +20,22 @@ main:
 	movw	$hello_message,(%di)
 	call	print
 2:				# init serial port 0x03f8 (COM1)
+	call	init_serial_port_com1
+2:				# init screen
+	movw	$0x0013,%ax	# VGA 320*200*8bit color
+	int	$0x10
+3:				# free stack frame
+	addw	$0x0002,%sp
+	popw	%di
+	popw	%si
+	leave
+4:				# halt loop
+	hlt
+	jmp	4b
+
+init_serial_port_com1:		# void init_serial_port_com1(void)
+	pushw	%bp
+	movw	%sp,	%bp
 	xorw	%ax,	%ax	# disable all serial port interrupts
 	movw	$com1,	%dx
 	addw	$0x0001,%dx
@@ -42,17 +58,8 @@ main:
 	movw	$0x0041,%ax	# send 'A'
 	movw	$com1,	%dx
 	outw	%ax,	%dx
-2:				# init screen
-	movw	$0x0013,%ax	# VGA 320*200*8bit color
-	int	$0x10
-3:				# free stack frame
-	addw	$0x0002,%sp
-	popw	%di
-	popw	%si
 	leave
-4:				# halt loop
-	hlt
-	jmp	4b
+	ret
 
 				# // print CRLF
 new_line:			# void new_line(void);
