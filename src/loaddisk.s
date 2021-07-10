@@ -143,11 +143,33 @@ main:
 15:				# print cylinder 1
 				# disk address 0x0:4800~0x0:480f
 				# memory address 0x0:c400~0x0:c40f
-	movw	$load_dest, %si
+	movw	$load_dest,%si
 	addw	$0x4800,%si
-	movw	$0x0010,%cx
-16:				# print each byte loop
-	jcxz	17f
+	movw	%si,	0x02(%di)
+	movw	$0x0010,0x00(%di)
+	call	dump
+	call	new_line
+16:				# free stack frame
+	addw	$0x000c,%sp
+	popw	%di
+	popw	%si
+	leave
+17:				#halt loop
+	hlt
+	jmp	17b
+
+dump:				# void dump(void *address, unsigned short num_of_bytes);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	movw	%sp,	%di
+				# address: 0x06(%bp)
+				# num_of_bytes: 0x04(%bp)
+	movw	0x06(%bp), %si
+	movw	0x04(%bp),%cx
+1:				# print each byte loop
+	jcxz	2f
 	movw	%cx,	0x02(%di)
 	movw	(%si),	%dx
 	movw	%dx,	(%di)
@@ -157,17 +179,11 @@ main:
 	movw	0x02(%di),%cx
 	incw	%si
 	decw	%cx
-	jmp	16b
-17:				# end of print each byte loop
-	call	new_line
-18:				# free stack frame
-	addw	$0x000c,%sp
+	jmp	1b
+2:				# end of print each byte loop
 	popw	%di
-	popw	%si
 	leave
-19:				#halt loop
-	hlt
-	jmp	19b
+	ret
 
 				# // print CRLF
 new_line:			# void new_line(void);
