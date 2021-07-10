@@ -156,9 +156,8 @@ main32:				# entry point of 32 bit mode
 3:				# stack 0x00f00000~0x00100000
 	movl	$0x00f00000,%ebp
 	movl	$0x00f00000,%esp
-4:				# halt loop
-	hlt
-	jmp	4b
+4:				# jump to entry32.bin
+	jmp	$0x10,$0x00000000
 
 	.data
 gdt:
@@ -181,12 +180,12 @@ gdt:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 
-				# disk image is readable and executable
-				# base	0x00007c00
-				# limit	0x000783ff
+				# entry32.bin is readable and executable
+				# base	0x0000ce00
+				# limit	0x000731ff
 				# access_right 0x409a
-	.word	0x83ff		#  limit_low
-	.word	0x7c00		#  base_low
+	.word	0x31ff		#  limit_low
+	.word	0xce00		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
 	.byte	0x47		#  limit_high
@@ -204,3 +203,5 @@ expand_memory_message:
 	.string "expand memory beyond 0xf:ffff\n"
 hello_message:
 	.string	"Hello, mv2prtmd.bin!\n"
+	.align	0x0200
+entry32:
