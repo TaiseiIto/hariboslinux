@@ -5,6 +5,7 @@
 # preserved registers: bx, si, di, bp, sp
 
 	.code16				# real mode
+	.set	com1,	0x03f8
 	.text
 main:
 0:
@@ -19,8 +20,27 @@ main:
 	movw	$hello_message,(%di)
 	call	print
 2:				# init serial port 0x03f8 (COM1)
-	xorw	%ax,	%ax # disableall serial port interrupts
-	movw	$0x03f9,%dx
+	xorw	%ax,	%ax	# disable all serial port interrupts
+	movw	$com1,	%dx
+	addw	$0x0001,%dx
+	outw	%ax,	%dx
+	movw	$0x0080,%ax	# enable DLAB
+	movw	$com1,	%dx
+	addw	$0x0003,%dx
+	outw	%ax,	%dx
+	movw	$0x0001,%ax	# low byte of baudrate
+	movw	$com1,	%dx
+	outw	%ax,	%dx
+	xorw	%ax	,%ax	# high byte of baudrate
+	movw	$com1,	%dx
+	addw	$0x0001,%dx
+	outw	%ax,	%dx
+	movw	$0x0003,%ax	# 8bit per character
+	movw	$com1,	%dx
+	addw	$0x0003,%dx
+	outw	%ax,	%dx
+	movw	$0x0041,%ax	# send 'A'
+	movw	$com1,	%dx
 	outw	%ax,	%dx
 2:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
