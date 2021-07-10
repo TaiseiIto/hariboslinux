@@ -48,9 +48,8 @@ main:
 	addw	$0x0004,%sp
 	popw	%di
 	leave
-4:					# halt loop
-	hlt
-	jmp	4b
+4:					# jump to main32
+	jmp	main32
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
@@ -137,7 +136,48 @@ wait_for_keyboard:		# void wait_for_keyboard(void);
 	leave
 	ret
 
+	.code32
+main32:				# entry point of 32 bit mode
+0:
+	lgdt	gdtr
+1:				# halt loop
+	hlt
+	jmp	1b
+
 	.data
+gdt:
+				# null segment descriptor
+	.word	0x0000		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x00		#  access_right
+	.byte	0x00		#  limit_high
+	.byte	0x00		#  base_high
+
+				# whole memory is readable and writable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x4092
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x92		#  access_right
+	.byte	0xcf		#  limit_high
+	.byte	0x00		#  base_high
+
+				# disk image is readable and executable
+				# base	0x00007c00
+				# limit	0x000783ff
+				# access_right 0x409a
+	.word	0x83ff		#  limit_low
+	.word	0x7c00		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x9a		#  access_right
+	.byte	0x47		#  limit_high
+	.byte	0x00		#  base_high
+gdtr:
+	.word	0x0017		# 3 segment descriptors * 8 bytes per segment descriptor - 1
+	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"
 disable_master_PIC_message:
