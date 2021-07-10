@@ -363,6 +363,6 @@ hello_message:
 	.string	"Hello, loaddisk.bin!\n"
 int13_error_message:
 	.string "INT 0x13 ERROR AH = 0x"
-	.align	512
+	.align	0x0200
 initscrn:
 

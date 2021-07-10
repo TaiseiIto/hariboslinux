@@ -1,6 +1,8 @@
 OUTPUT_FORMAT("binary");
 
-BASE = 0x00007c00;		/* memory address offset */
+INCLUDE global.ld
+
+BASE = LOADDEST;		/* memory address offset */
 
 SECTIONS
 {
