@@ -65,21 +65,13 @@ main:
 	movw	$vram_addr_message,(%di)
 	call	print_serial
 	movw	$0x7bf6,%si
-	movw	0x03(%si),%dx
-	movw	%dx,	(%di)
-	call	print_byte_hex_serial
-	movw	$0x7bf6,%si
 	movw	0x02(%si),%dx
 	movw	%dx,	(%di)
-	call	print_byte_hex_serial
-	movw	$0x7bf6,%si
-	movw	0x01(%si),%dx
-	movw	%dx,	(%di)
-	call	print_byte_hex_serial
+	call	print_word_hex_serial
 	movw	$0x7bf6,%si
 	movw	(%si),%dx
 	movw	%dx,	(%di)
-	call	print_byte_hex_serial
+	call	print_word_hex_serial
 	call	new_line_serial
 8:				# free stack frame
 	addw	$0x0002,%sp
@@ -213,6 +205,27 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned value);
 	decw	%cx
 	jmp	1b
 5:				# finish printing
+	addw	$0x0004,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_word_hex_serial:		# void print_word_hex_serial(unsigned value);
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	0x04(%bp),%dx
+	movw	%dx,	0x02(%di)
+	shr	$0x0008,%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex_serial
+	movw	0x02(%di),%dx
+	andw	$0x00ff,%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex_serial
 	addw	$0x0004,%sp
 	popw	%di
 	leave
