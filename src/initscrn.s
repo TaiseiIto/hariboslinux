@@ -66,12 +66,10 @@ main:
 	call	print_serial
 	movw	$0x7bf6,%si
 	movw	0x02(%si),%dx
-	movw	%dx,	(%di)
-	call	print_word_hex_serial
-	movw	$0x7bf6,%si
+	movw	%dx,	0x02(%di)
 	movw	(%si),%dx
 	movw	%dx,	(%di)
-	call	print_word_hex_serial
+	call	print_dword_hex_serial
 	call	new_line_serial
 8:				# free stack frame
 	addw	$0x0002,%sp
@@ -175,7 +173,7 @@ print:				# void print(char *string);
 	ret
 
 				# // print value as hexadecimal
-print_byte_hex_serial:		# void print_byte_hex_serial(unsigned value);
+print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
@@ -210,8 +208,25 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned value);
 	leave
 	ret
 
+print_dword_hex_serial:		# void print_dword_hex_serial(unsigned high, unsigned short low);
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	0x06(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	movw	0x04(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
 				# // print value as hexadecimal
-print_word_hex_serial:		# void print_word_hex_serial(unsigned value);
+print_word_hex_serial:		# void print_word_hex_serial(unsigned short value);
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%di
