@@ -52,10 +52,23 @@ main:
 	pushw	%ax
 	xorw	%ax,	%ax
 	pushw	%ax
+6:				# check VRAM_addr
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%si
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
 	call	new_line_serial
-6:				# halt loop
+	movw	$vram_addr_message,(%di)
+	call	print_serial
+	addw	$0x0002,%sp
+	popw	%di
+	popw	%si
+	leave
+7:				# halt loop
 	hlt
-	jmp	6b
+	jmp	7b
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
 	pushw	%bp
