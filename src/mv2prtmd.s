@@ -145,8 +145,15 @@ main32:				# entry point of 32 bit mode
 	andl	$0x7fffffff,%edx
 	orl	$0x00000001,%edx
 	movl	%edx,	%cr0
-	jmp	2f
-2:				# halt loop
+	jmp	2f		# null jump to flush pipeline
+2:				# set segment registers except %ecs
+	movl	$0x00000008,%edx
+	movw	%dx,	%ds
+	movw	%dx,	%es
+	movw	%dx,	%fs
+	movw	%dx,	%gs
+	movw	%dx,	%ss
+3:				# halt loop
 	hlt
 	jmp	2b
 
