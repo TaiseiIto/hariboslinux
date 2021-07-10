@@ -106,7 +106,7 @@ main:
 	movw	%cx,	0x08(%di)
 	movw	0x0a(%di),%cx	# advance cylinder_number
 	incw	%cx
-	cmp	$0x000a,%cx
+	cmp	$0x0027,%cx
 	je	11f		# finish loading
 	movw	%cx,	0x0a(%di)
 	jmp	7b
