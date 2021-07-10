@@ -89,7 +89,7 @@ rebuild: clean
 run: $(IMAGE_FILE)
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
 
-src/%:
+src/%.bin: src/%.s src/%.ld
 	make -C src
 
 # stop QEMU
@@ -108,8 +108,6 @@ $(IMAGE_FILE): $(IMAGE_PACKER) $(BOOT_SECTORS) $(FLOPPY_FILES)
 
 $(IMAGE_PACKER): $(addsuffix .c, $(IMAGE_PACKER))
 	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
-
--include *.d
 
 # dont remove intermediate files
 .PRECIOUS: %.bin %.o %.s
