@@ -1,3 +1,9 @@
+# calling convention = System V i386
+# return value: ax, dx
+# parameters: stack
+# scratch registers: ax, cx, dx
+# preserved registers: bx, si, di, bp, sp
+
 	.code16				# real mode
 	.text
 main:
@@ -12,6 +18,10 @@ main:
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
+2:				# init serial port 0x03f8 (COM1)
+	xorw	%ax,	%ax # disableall serial port interrupts
+	movw	$0x03f9,%dx
+	outw	%ax,	%dx
 2:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
 	int	$0x10
