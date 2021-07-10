@@ -57,9 +57,6 @@ init_serial_port_com1:		# void init_serial_port_com1(void)
 	movw	$com1,	%dx
 	addw	$0x0003,%dx
 	outb	%al,	%dx
-	movb	$0x41,	%al	# send 'A'
-	movw	$com1,	%dx
-	outb	%al,	%dx
 	leave
 	ret
 
