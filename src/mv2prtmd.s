@@ -24,10 +24,17 @@ main:
 	movw	$0x00ff,%ax		# disable master PIC
 	movw	$0x0021,%dx
 	outb	%al,	%dx
+	call	new_line_serial
+	movw	$disable_master_PIC_message,(%di)
+	call	print_serial
 	movw	$0x00ff,%ax		# disable slave PIC
 	movw	$0x00a1,%dx
 	outb	%al,	%dx
+	movw	$disable_slave_PIC_message,(%di)
+	call	print_serial
 	cli				# disable interrupts
+	movw	$disable_interrupts_message,(%di)
+	call	print_serial
 	movw	$0x0064,0x02(%di)	# enable memory space beyond 0xf:ffff
 	movw	$0x00d1,(%di)
 	call	send_byte_to_keyboard
@@ -35,6 +42,8 @@ main:
 	movw	$0x00df,(%di)
 	call	send_byte_to_keyboard
 	call	wait_for_keyboard
+	movw	$expand_memory_message,(%di)
+	call	print_serial
 3:					# free stack frame
 	addw	$0x0004,%sp
 	popw	%di
@@ -129,5 +138,13 @@ wait_for_keyboard:		# void wait_for_keyboard(void);
 	ret
 
 	.data
+disable_interrupts_message:
+	.string "disable interrupts\n"
+disable_master_PIC_message:
+	.string "disable master PIC\n"
+disable_slave_PIC_message:
+	.string "disable slave PIC\n"
+expand_memory_message:
+	.string "expand memory beyond 0xf:ffff\n"
 hello_message:
 	.string	"Hello, mv2prtmd.bin!\n"
