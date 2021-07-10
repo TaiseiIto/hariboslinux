@@ -70,7 +70,7 @@ main:
 	movw	$0x0010,(%di)
 	call	dump
 	call	new_line
-8:				# load disk
+6:				# load disk
 				#  from cylinder 0x0001, head 0x0000, sector 0x0001
 				#  to   cylinder 0x0036, head 0x0001, sector 0x0012
 				# source disk        address 0x0:4800~0xf:77ff
@@ -81,36 +81,36 @@ main:
 	movw	$0x0001,0x04(%di)# num_of_sectors
 	movw	$0x0c40,0x02(%di)# destination_segment
 	movw	$0x0000,(%di)	# destination_address
-9:				# load loop
+7:				# load loop
 	call	read_sector
 	movw	0x02(%di),%cx	# advance destination_segment 1 segment
 	addw	$0x0020,%cx
 	movw	%cx,	0x02(%di)
 	movw	0x06(%di),%cx	# advance sector_number
 	cmpw	$0x0012,%cx
-	je	10f
+	je	8f
 	incw	%cx
 	movw	%cx,	0x06(%di)
-	jmp	9b
-10:
+	jmp	7b
+8:
 	movw	$0x0001,0x06(%di)# reset sector_number
 	movw	0x08(%di),%cx	# advance head
-	jcxz	11f
-	jmp	12f
-11:				# advance head
+	jcxz	9f
+	jmp	10f
+9:				# advance head
 	incw	%cx
 	movw	%cx,	0x08(%di)
-	jmp	9b
-12:				# advance cylinder_number
+	jmp	7b
+10:				# advance cylinder_number
 	decw	%cx		# reset head
 	movw	%cx,	0x08(%di)
 	movw	0x0a(%di),%cx	# advance cylinder_number
 	incw	%cx
 	cmp	$0x000a,%cx
-	je	13f		# finish loading
+	je	11f		# finish loading
 	movw	%cx,	0x0a(%di)
-	jmp	9b
-13:				# load disk
+	jmp	7b
+11:				# load disk
 				#  from cylinder 0x0037, head 0x0000, sector 0x0001
 				#  to   cylinder 0x0037, head 0x0000, sector 0x0005
 				# source disk        address 0xf:7800~0xf:81ff
@@ -122,14 +122,14 @@ main:
 	movw	$0xff40,0x02(%di)# destination_segment
 	movw	$0x0000,(%di)	# destination_address
 	call	read_sector
-14:				# finish loading
+12:				# finish loading
 	call	new_line
 	movw	$finish_loading_message,(%di)
 	call	print
 	call	new_line
 	movw	$check_cylinder1_message,(%di)
 	call	print
-15:				# print cylinder 1
+13:				# print cylinder 1
 				# disk address 0x0:4800~0x0:480f
 				# memory address 0x0:c400~0x0:c40f
 	movw	$load_dest,%si
@@ -138,14 +138,14 @@ main:
 	movw	$0x0010,0x00(%di)
 	call	dump
 	call	new_line
-16:				# free stack frame
+14:				# free stack frame
 	addw	$0x000c,%sp
 	popw	%di
 	popw	%si
 	leave
-17:				#halt loop
+15:				#halt loop
 	hlt
-	jmp	17b
+	jmp	15b
 
 dump:				# void dump(void *address, unsigned short num_of_bytes);
 0:
