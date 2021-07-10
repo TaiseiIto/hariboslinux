@@ -150,9 +150,8 @@ main:
 	popw	%di
 	popw	%si
 	leave
-15:				#halt loop
-	hlt
-	jmp	15b
+15:				# jump to initscrn.bin
+	jmp	initscrn
 
 dump:				# void dump(void *address, unsigned short num_of_bytes);
 0:
@@ -364,3 +363,6 @@ hello_message:
 	.string	"Hello, loaddisk.bin!\n"
 int13_error_message:
 	.string "INT 0x13 ERROR AH = 0x"
+	.align	512
+initscrn:
+
