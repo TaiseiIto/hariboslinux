@@ -53,6 +53,7 @@ main:
 	xorw	%ax,	%ax
 	pushw	%ax
 6:				# allocate new stack frame
+	subw	$0x000a,%bp
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%si
@@ -67,6 +68,7 @@ main:
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
+	leave
 9:				# halt loop
 	hlt
 	jmp	9b
