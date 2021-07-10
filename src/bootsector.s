@@ -206,7 +206,7 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	leave
 	ret
 
-				# print a character to console
+				# // print a character to console
 putchar:			# void putchar(char c);
 0:
 	pushw	%bp

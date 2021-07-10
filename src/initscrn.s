@@ -309,7 +309,7 @@ print_serial:			# void print_serial(char *string);
 	leave
 	ret
 
-				# print a character to console
+				# // print a character to console
 putchar:			# void putchar(char c);
 0:
 	pushw	%bp
@@ -323,7 +323,7 @@ putchar:			# void putchar(char c);
 	leave
 	ret
 
-				# print a character to console
+				# // print a character to console
 putchar_serial:			# void putchar_serial(char c);
 0:
 	pushw	%bp

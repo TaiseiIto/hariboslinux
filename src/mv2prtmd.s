@@ -14,7 +14,7 @@ main:
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%di
-	subw	$0x0002,%sp
+	subw	$0x0004,%sp
 	movw	%sp,	%di
 1:					# print hello message
 	call	new_line_serial
@@ -28,8 +28,15 @@ main:
 	movw	$0x00a1,%dx
 	outb	%al,	%dx
 	cli				# disable interrupts
+	movw	$0x0064,0x02(%di)	# enable memory space beyond 0xf:ffff
+	movw	$0x00d1,(%di)
+	call	send_byte_to_keyboard
+	movw	$0x0060,0x02(%di)
+	movw	$0x00df,(%di)
+	call	send_byte_to_keyboard
+	call	wait_for_keyboard
 3:					# free stack frame
-	addw	$0x0002,%sp
+	addw	$0x0004,%sp
 	popw	%di
 	leave
 4:					# halt loop
@@ -77,7 +84,7 @@ print_serial:			# void print_serial(char *string);
 	leave
 	ret
 
-				# print a character to console
+				# // print a character to console
 putchar_serial:			# void putchar_serial(char c);
 0:
 	pushw	%bp
@@ -95,6 +102,29 @@ putchar_serial:			# void putchar_serial(char c);
 	outb	%al,	%dx
 3:				# free stack frame
 	popw	%bx
+	leave
+	ret
+
+send_byte_to_keyboard:		# void send_byte_to_keyboard(unsigned short port, unsigned short data);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	call	wait_for_keyboard
+	movw	0x06(%bp),%dx
+	movb	0x04(%bp),%al
+	outb	%al,	%dx
+	leave
+	ret
+
+wait_for_keyboard:		# void wait_for_keyboard(void);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+1:
+	movw	$0x0064,%dx
+	inb	%dx,	%al
+	andb	$0x02,	%al
+	jnz	1b
 	leave
 	ret
 
