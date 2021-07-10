@@ -1,3 +1,5 @@
+# This program is called from loaddisk.s to initialise the screen
+
 # calling convention = System V i386
 # return value: ax, dx
 # parameters: stack

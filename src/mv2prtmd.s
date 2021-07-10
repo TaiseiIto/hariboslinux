@@ -1,3 +1,5 @@
+# This program is called from initscrn.s to move to protected mode
+
 # calling convention = System V i386
 # return value: ax, dx
 # parameters: stack
