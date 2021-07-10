@@ -138,18 +138,36 @@ main:
 	movw	$finish_loading_message,(%di)
 	call	print
 	call	new_line
-	movw	$print_test1_message,(%di)
+	movw	$check_cylinder1_message,(%di)
 	call	print
-	movw	$0xc400,(%di)
-	call	print
-15:				# free stack frame
+15:				# print cylinder 1
+				# disk address 0x0:4800~0x0:480f
+				# memory address 0x0:c400~0x0:c40f
+	movw	$load_dest, %si
+	addw	$0x4800,%si
+	movw	$0x0010,%cx
+16:				# print each byte loop
+	jcxz	17f
+	movw	%cx,	0x02(%di)
+	movw	(%si),	%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex
+	movw	$0x0020,(%di)	# print space
+	call	putchar
+	movw	0x02(%di),%cx
+	incw	%si
+	decw	%cx
+	jmp	16b
+17:				# end of print each byte loop
+	call	new_line
+18:				# free stack frame
 	addw	$0x000c,%sp
 	popw	%di
 	popw	%si
 	leave
-16:				#halt loop
+19:				#halt loop
 	hlt
-	jmp	16b
+	jmp	19b
 
 				# // print CRLF
 new_line:			# void new_line(void);
@@ -318,6 +336,8 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	ret
 
 	.data
+check_cylinder1_message:
+	.string "The first 0x10 bytes of cylinder 1\n"
 check_fat_message:
 	.string "The first 0x10 bytes of FAT\n"
 error_message:
@@ -328,5 +348,3 @@ hello_message:
 	.string	"Hello, loaddisk.bin!\n"
 int13_error_message:
 	.string "INT 0x13 ERROR AH = 0x"
-print_test1_message:
-	.string "print test1.txt\n"
