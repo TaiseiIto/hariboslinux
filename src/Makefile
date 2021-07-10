@@ -10,7 +10,7 @@ LINKER = ld
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
-all: bootsector.bin loaddisk.bin initscrn.bin
+all: bootsector.bin loaddisk.bin initscrn.bin mv2prtmd.bin
 
 clean:
 	rm -f *.bin *.o 

@@ -109,9 +109,8 @@ main:
 	popw	%di
 	popw	%si
 	leave
-12:				# halt loop
-	hlt
-	jmp	12b
+12:				# jump to mv2prtmd.bin
+	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
 0:
@@ -358,4 +357,6 @@ screen_size_message2:
 	.string " * 0x"
 vram_addr_message:
 	.string "VRAM address = 0x"
+	.align 0x0200
+mv2prtmd:
 

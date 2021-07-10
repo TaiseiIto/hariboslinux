@@ -2,7 +2,7 @@
 IMAGE_FILE = haribos.img
 BOOT_SECTORS = diskcontents/bootsector.bin
 # files included in the floppy disk
-FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/initscrn.bin diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
+FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
 
 # tcp ports
 DEBUG_PORT = 2159
