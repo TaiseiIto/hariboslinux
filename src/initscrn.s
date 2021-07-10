@@ -95,6 +95,14 @@ main:
 	call	print_byte_hex_serial
 	call	new_line_serial
 10:				# check keyboard state
+	movw	$keyboard_message,(%di)
+	call	print_serial
+	movw	$0x7bff,%si
+	xorw	%dx,	%dx
+	movb	(%si),	%dl
+	movw	%dx,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
 11:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
@@ -105,6 +113,7 @@ main:
 	jmp	12b
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
+0:
 	pushw	%bp
 	movw	%sp,	%bp
 	xorb	%al,	%al	# disable all serial port interrupts
@@ -233,6 +242,7 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 	ret
 
 print_dword_hex_serial:		# void print_dword_hex_serial(unsigned high, unsigned short low);
+0:
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%di
@@ -251,6 +261,7 @@ print_dword_hex_serial:		# void print_dword_hex_serial(unsigned high, unsigned s
 
 				# // print value as hexadecimal
 print_word_hex_serial:		# void print_word_hex_serial(unsigned short value);
+0:
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%di
@@ -338,6 +349,8 @@ hello_message:
 	.string	"Hello, initscrn.bin!\n"
 hello_serial_message:
 	.string "Hello, serial port COM1!\n"
+keyboard_message:
+	.string "keyboard state = 0x"
 screen_size_message1:
 	.string "screen size = 0x"
 screen_size_message2:
