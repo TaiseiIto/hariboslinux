@@ -31,9 +31,30 @@ main:
 4:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
 	int	$0x10
-5:				# halt loop
+5:				# push screen information and keyboard state
+				#
+				# 0x7bf6 void *VRAM_addr;
+				# 0x7bfa unsigned short screen_width;
+				# 0x7bfc unsigned short screen_height;
+				# 0x7bfe unsigned char bits_per_pixel;
+				# 0x7bff unsigned char keyboard_state;
+
+	movw	$0x0002,%ax	# keyboard_state
+	int	$0x0016
+	shlw	$0x0008,%ax
+	addw	$0x0008,%ax	# 8 bit per pixel
+	pushw	%ax
+	movw	$0x00c8,%ax	# screen_height
+	pushw	%ax
+	movw	$0x0140,%ax	# screen_width
+	pushw	%ax
+	movw	$0x000a,%ax	# VRAM_addr
+	pushw	%ax
+	xorw	%ax,	%ax
+	pushw	%ax
+6:				# halt loop
 	hlt
-	jmp	4b
+	jmp	6b
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
 	pushw	%bp
