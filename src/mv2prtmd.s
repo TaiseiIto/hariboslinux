@@ -20,13 +20,21 @@ main:
 	call	new_line_serial
 	movw	$hello_message,(%di)
 	call	print_serial
-2:					# free stack frame
+2:					# prepare to move to protected mode
+	movw	$0x00ff,%ax		# disable master PIC
+	movw	$0x0021,%dx
+	outb	%al,	%dx
+	movw	$0x00ff,%ax		# disable slave PIC
+	movw	$0x00a1,%dx
+	outb	%al,	%dx
+	cli				# disable interrupts
+3:					# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
 	leave
-3:					# halt loop
+4:					# halt loop
 	hlt
-	jmp	3b
+	jmp	4b
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
