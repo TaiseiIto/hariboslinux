@@ -23,15 +23,15 @@ main:
 	call	init_serial_port_com1
 	movw	$hello_serial_message,(%di)
 	call	print_serial
-2:				# init screen
-	movw	$0x0013,%ax	# VGA 320*200*8bit color
-	int	$0x10
 3:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
 	leave
-4:				# halt loop
+4:				# init screen
+	movw	$0x0013,%ax	# VGA 320*200*8bit color
+	int	$0x10
+5:				# halt loop
 	hlt
 	jmp	4b
 
