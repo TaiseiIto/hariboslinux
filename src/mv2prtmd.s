@@ -153,9 +153,12 @@ main32:				# entry point of 32 bit mode
 	movw	%dx,	%fs
 	movw	%dx,	%gs
 	movw	%dx,	%ss
-3:				# halt loop
+3:				# stack 0x00f00000~0x00100000
+	movl	$0x00f00000,%ebp
+	movl	$0x00f00000,%esp
+4:				# halt loop
 	hlt
-	jmp	2b
+	jmp	4b
 
 	.data
 gdt:
