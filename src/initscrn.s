@@ -64,6 +64,23 @@ main:
 	call	new_line_serial
 	movw	$vram_addr_message,(%di)
 	call	print_serial
+	movw	$0x7bf6,%si
+	movw	0x03(%si),%si
+	movw	%si,	(%di)
+	call	print_byte_hex_serial
+	movw	$0x7bf6,%si
+	movw	0x02(%si),%si
+	movw	%si,	(%di)
+	call	print_byte_hex_serial
+	movw	$0x7bf6,%si
+	movw	0x01(%si),%si
+	movw	%si,	(%di)
+	call	print_byte_hex_serial
+	movw	$0x7bf6,%si
+	movw	(%si),%si
+	movw	%si,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
 8:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
@@ -162,6 +179,42 @@ print:				# void print(char *string);
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_byte_hex_serial:		# void print_byte_hex_serial(unsigned value);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	$0x0001,%cx	# if %cx == 1, then print the digit of 0x10s place, else print the digit of 0x01s place.
+	movw	0x04(%bp),%dx	# get the byte
+	shrw	$0x0004,%dx
+1:
+	andw	$0x000f,%dx
+	cmpw	$0x000a,%dx
+	jge	3f
+2:				# the digit is less than 0x0a
+	addw	$0x0030,%dx
+	jmp	4f
+3:				# the digit is greater than or equal to 0x0a
+	subw	$0x000a,%dx
+	addw	$0x0061,%dx
+4:				# print the digit
+	movw	%cx,	0x02(%di)
+	movw	%dx,	(%di)
+	call	putchar_serial
+	movw	0x02(%di),%cx
+	jcxz	5f
+	movw	0x04(%bp),%dx	# get the byte
+	decw	%cx
+	jmp	1b
+5:				# finish printing
+	addw	$0x0004,%sp
+	popw	%di
 	leave
 	ret
 
