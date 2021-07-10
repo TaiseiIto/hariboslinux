@@ -65,20 +65,20 @@ main:
 	movw	$vram_addr_message,(%di)
 	call	print_serial
 	movw	$0x7bf6,%si
-	movw	0x03(%si),%si
-	movw	%si,	(%di)
+	movw	0x03(%si),%dx
+	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	movw	$0x7bf6,%si
-	movw	0x02(%si),%si
-	movw	%si,	(%di)
+	movw	0x02(%si),%dx
+	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	movw	$0x7bf6,%si
-	movw	0x01(%si),%si
-	movw	%si,	(%di)
+	movw	0x01(%si),%dx
+	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	movw	$0x7bf6,%si
-	movw	(%si),%si
-	movw	%si,	(%di)
+	movw	(%si),%dx
+	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
 8:				# free stack frame
