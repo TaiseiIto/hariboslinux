@@ -1,4 +1,4 @@
-i386-32bit.xml
+gdb/i386-32bit.xml
 *.bin
 *.img
 *.o
