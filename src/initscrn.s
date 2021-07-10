@@ -12,14 +12,17 @@ main:
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
-2:				# free stack frame
+2:				# init screen
+	movw	$0x0013,%ax	# VGA 320*200*8bit color
+	int	$0x10
+3:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
 	leave
-3:				# halt loop
+4:				# halt loop
 	hlt
-	jmp	3b
+	jmp	4b
 
 				# // print CRLF
 new_line:			# void new_line(void);
