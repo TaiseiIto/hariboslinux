@@ -140,9 +140,15 @@ wait_for_keyboard:		# void wait_for_keyboard(void);
 main32:				# entry point of 32 bit mode
 0:
 	lgdt	gdtr
-1:				# halt loop
+1:				# move to protected mode
+	movl	%cr0,	%edx
+	andl	$0x7fffffff,%edx
+	orl	$0x00000001,%edx
+	movl	%edx,	%cr0
+	jmp	2f
+2:				# halt loop
 	hlt
-	jmp	1b
+	jmp	2b
 
 	.data
 gdt:
