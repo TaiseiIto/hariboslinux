@@ -71,14 +71,18 @@ main:
 	movw	%dx,	(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
-8:				# free stack frame
+8:				# check screen size
+	call	new_line_serial
+	movw	$screen_size_message,(%di)
+	call	print_serial
+9:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
 	leave
-9:				# halt loop
+10:				# halt loop
 	hlt
-	jmp	9b
+	jmp	10b
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
 	pushw	%bp
@@ -312,6 +316,8 @@ hello_message:
 	.string	"Hello, initscrn.bin!\n"
 hello_serial_message:
 	.string "Hello, serial port COM1!\n"
+screen_size_message:
+	.string "screen size = "
 vram_addr_message:
 	.string "VRAM address = 0x"
 
