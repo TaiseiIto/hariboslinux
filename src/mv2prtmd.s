@@ -143,19 +143,22 @@ main:
 	andl	$0x7fffffff,%edx
 	orl	$0x00000001,%edx
 	movl	%edx,	%cr0
-	jmp	6f		# null jump to flush pipeline
-6:				# set segment registers except %ecs
+	jmp	$0x10,	$protected_mode
+
+protected_mode:
+0:
 	movl	$0x00000008,%edx
 	movw	%dx,	%ds
 	movw	%dx,	%es
 	movw	%dx,	%fs
 	movw	%dx,	%gs
 	movw	%dx,	%ss
-7:				# stack 0x00f00000~0x00100000
+1:				# stack 0x00f00000~0x00100000
 	movl	$0x00f00000,%ebp
 	movl	$0x00f00000,%esp
-8:				# jump to entry32.bin
-	jmp	$0x10,$entry32
+2:				# jump to entry32.bin
+	hlt
+	jmp	2b
 
 	.data
 gdt:
