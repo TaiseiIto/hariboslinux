@@ -139,10 +139,10 @@ main:
 	lgdt	gdtr
 	.code32
 5:				# move to protected mode
-	movl	%cr0,	%edx
-	andl	$0x7fffffff,%edx
-	orl	$0x00000001,%edx
-	movl	%edx,	%cr0
+	movl	%cr0,	%eax
+	andl	$0x7fffffff,%eax
+	orl	$0x00000001,%eax
+	movl	%eax,	%cr0
 	jmp	$0x10,	$protected_mode
 
 protected_mode:
