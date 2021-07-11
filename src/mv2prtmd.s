@@ -136,8 +136,8 @@ main:
 	popw	%di
 	leave
 4:
-	.code32
 	lgdt	gdtr
+	.code32
 5:				# move to protected mode
 	movl	%cr0,	%edx
 	andl	$0x7fffffff,%edx
