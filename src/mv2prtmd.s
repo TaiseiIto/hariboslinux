@@ -155,7 +155,7 @@ main:
 	movl	$0x00f00000,%ebp
 	movl	$0x00f00000,%esp
 8:				# jump to entry32.bin
-	jmp	$0x10,$0x00000000
+	jmp	$0x10,$entry32
 
 	.data
 gdt:
@@ -179,11 +179,11 @@ gdt:
 	.byte	0x00		#  base_high
 
 				# entry32.bin is readable and executable
-				# base	0x0000ce00
-				# limit	0x000731ff
+				# base	0x00000000
+				# limit	0x0007ffff
 				# access_right 0x409a
-	.word	0x31ff		#  limit_low
-	.word	0xce00		#  base_low
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
 	.byte	0x47		#  limit_high
