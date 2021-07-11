@@ -136,9 +136,11 @@ main:
 	popw	%di
 	leave
 4:
-	lgdt	gdtr
+	lgdt	(gdtr)
+
 	.code32
-5:				# move to protected mode
+main32:
+0:				# move to protected mode
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
