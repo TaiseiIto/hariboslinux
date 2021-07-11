@@ -9,48 +9,8 @@
 	.code16				# real mode
 	.set	com1,	0x03f8
 	.text
-main:
-0:
-	pushw	%bp
-	movw	%sp,	%bp
-	pushw	%di
-	subw	$0x0004,%sp
-	movw	%sp,	%di
-1:					# print hello message
-	call	new_line_serial
-	movw	$hello_message,(%di)
-	call	print_serial
-2:					# prepare to move to protected mode
-	movw	$0x00ff,%ax		# disable master PIC
-	movw	$0x0021,%dx
-	outb	%al,	%dx
-	call	new_line_serial
-	movw	$disable_master_PIC_message,(%di)
-	call	print_serial
-	movw	$0x00ff,%ax		# disable slave PIC
-	movw	$0x00a1,%dx
-	outb	%al,	%dx
-	movw	$disable_slave_PIC_message,(%di)
-	call	print_serial
-	cli				# disable interrupts
-	movw	$disable_interrupts_message,(%di)
-	call	print_serial
-	movw	$0x0064,0x02(%di)	# enable memory space beyond 0xf:ffff
-	movw	$0x00d1,(%di)
-	call	send_byte_to_keyboard
-	movw	$0x0060,0x02(%di)
-	movw	$0x00df,(%di)
-	call	send_byte_to_keyboard
-	call	wait_for_keyboard
-	movw	$expand_memory_message,(%di)
-	call	print_serial
-3:					# free stack frame
-	addw	$0x0004,%sp
-	popw	%di
-	leave
-4:					# jump to main32
-	jmp	main32
-
+entry:
+	jmp	main
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
 0:
@@ -136,27 +96,65 @@ wait_for_keyboard:		# void wait_for_keyboard(void);
 	leave
 	ret
 
-	.code32
-main32:				# entry point of 32 bit mode
+main:
 0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+1:					# print hello message
+	call	new_line_serial
+	movw	$hello_message,(%di)
+	call	print_serial
+2:					# prepare to move to protected mode
+	movw	$0x00ff,%ax		# disable master PIC
+	movw	$0x0021,%dx
+	outb	%al,	%dx
+	call	new_line_serial
+	movw	$disable_master_PIC_message,(%di)
+	call	print_serial
+	movw	$0x00ff,%ax		# disable slave PIC
+	movw	$0x00a1,%dx
+	outb	%al,	%dx
+	movw	$disable_slave_PIC_message,(%di)
+	call	print_serial
+	cli				# disable interrupts
+	movw	$disable_interrupts_message,(%di)
+	call	print_serial
+	movw	$0x0064,0x02(%di)	# enable memory space beyond 0xf:ffff
+	movw	$0x00d1,(%di)
+	call	send_byte_to_keyboard
+	movw	$0x0060,0x02(%di)
+	movw	$0x00df,(%di)
+	call	send_byte_to_keyboard
+	call	wait_for_keyboard
+	movw	$expand_memory_message,(%di)
+	call	print_serial
+3:					# free stack frame
+	addw	$0x0004,%sp
+	popw	%di
+	leave
+4:
+	.code32
 	lgdt	gdtr
-1:				# move to protected mode
+5:				# move to protected mode
 	movl	%cr0,	%edx
 	andl	$0x7fffffff,%edx
 	orl	$0x00000001,%edx
 	movl	%edx,	%cr0
-	jmp	2f		# null jump to flush pipeline
-2:				# set segment registers except %ecs
+	jmp	6f		# null jump to flush pipeline
+6:				# set segment registers except %ecs
 	movl	$0x00000008,%edx
 	movw	%dx,	%ds
 	movw	%dx,	%es
 	movw	%dx,	%fs
 	movw	%dx,	%gs
 	movw	%dx,	%ss
-3:				# stack 0x00f00000~0x00100000
+7:				# stack 0x00f00000~0x00100000
 	movl	$0x00f00000,%ebp
 	movl	$0x00f00000,%esp
-4:				# jump to entry32.bin
+8:				# jump to entry32.bin
 	jmp	$0x10,$0x00000000
 
 	.data
