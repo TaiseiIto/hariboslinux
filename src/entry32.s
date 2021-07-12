@@ -13,9 +13,11 @@ main:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
+	subl	$0x00000004,%esp
 	call	new_line_serial
-	pushl	$hello_message
+	movl	$hello_message,(%esp)
 	call	print_serial
+	addl	$0x00000004,%esp
 	leave
 0:					# halt loop
 	hlt
