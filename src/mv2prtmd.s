@@ -140,15 +140,16 @@ main:
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
-	movl	$0x00000008,%edx
-	movw	%dx,	%ds
+	movw	$0x0008,%dx
 	movw	%dx,	%es
 	movw	%dx,	%fs
 	movw	%dx,	%gs
 	movw	%dx,	%ss
+	movw	$0x0018,%dx
+	movw	%dx,	%ds
 	movl	$0x00f00000,%ebp
 	movl	$0x00f00000,%esp
-	jmp	$0x10,	$entry32
+	jmp	$0x10,	$0x0000
 
 	.data
 gdt:
@@ -171,18 +172,29 @@ gdt:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 
-				# entry32.bin is readable and executable
-				# base	0x00000000
-				# limit	0x0007ffff
+				# entry32.bin .text section is readable and executable
+				# base	0x0000ce00
+				# limit	0x000731ff
 				# access_right 0x409a
-	.word	0xffff		#  limit_low
-	.word	0x0000		#  base_low
+	.word	0x31ff		#  limit_low
+	.word	0xce00		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
 	.byte	0x47		#  limit_high
 	.byte	0x00		#  base_high
+
+				# entry32.bin .data section is readable and executable
+				# base	0x0000ce00
+				# limit	0x000731ff
+				# access_right 0x4092
+	.word	0x31ff		#  limit_low
+	.word	0xce00		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x92		#  access_right
+	.byte	0x47		#  limit_high
+	.byte	0x00		#  base_high
 gdtr:
-	.word	0x0017		# 3 segment descriptors * 8 bytes per segment descriptor - 1
+	.word	0x001f		# 4 segment descriptors * 8 bytes per segment descriptor - 1
 	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"
