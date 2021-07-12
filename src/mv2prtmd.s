@@ -6,8 +6,9 @@
 # scratch registers: ax, cx, dx
 # preserved registers: bx, si, di, bp, sp
 
+	.include	"global.s"
+
 	.code16				# real mode
-	.set	com1,	0x03f8
 	.text
 entry:
 	jmp	main

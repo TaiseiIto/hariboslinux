@@ -23,8 +23,9 @@
 # scratch registers: ax, cx, dx
 # preserved registers: bx, si, di, bp, sp
 
+	.include	"global.s"
+
 	.code16				# real mode
-	.set	load_dest,	0x7c00	# memory address the disk loaded to
 	.text
 main:
 0:
