@@ -329,7 +329,6 @@ putchar_serial:			# void putchar_serial(char c);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
-	pushw	%bx
 1:				# wait for device
 	movw	$com1,	%dx
 	addw	$0x0005,%dx
@@ -341,7 +340,6 @@ putchar_serial:			# void putchar_serial(char c);
 	movw	$com1,	%dx
 	outb	%al,	%dx
 3:				# free stack frame
-	popw	%bx
 	leave
 	ret
 
