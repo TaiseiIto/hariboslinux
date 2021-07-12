@@ -135,30 +135,21 @@ main:
 	addw	$0x0004,%sp
 	popw	%di
 	leave
-4:
+4:					# move to protected mode
 	lgdt	(gdtr)
-
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
-	jmp	$0x10,	$protected_mode
-
-	.code32
-protected_mode:
-0:
 	movl	$0x00000008,%edx
 	movw	%dx,	%ds
 	movw	%dx,	%es
 	movw	%dx,	%fs
 	movw	%dx,	%gs
 	movw	%dx,	%ss
-1:				# stack 0x00f00000~0x00100000
 	movl	$0x00f00000,%ebp
 	movl	$0x00f00000,%esp
-2:				# jump to entry32.bin
-	hlt
-	jmp	2b
+	jmp	$0x10,	$entry32
 
 	.data
 gdt:
