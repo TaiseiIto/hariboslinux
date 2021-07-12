@@ -183,7 +183,7 @@ gdt:
 	.byte	0x47		#  limit_high
 	.byte	0x00		#  base_high
 
-				# entry32.bin .data section is readable and executable
+				# entry32.bin .data section is readable and writable
 				# base	0x0000ce00
 				# limit	0x000731ff
 				# access_right 0x4092
