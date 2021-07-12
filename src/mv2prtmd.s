@@ -138,15 +138,13 @@ main:
 4:
 	lgdt	(gdtr)
 
-	.code32
-main32:
-0:				# move to protected mode
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
 	jmp	$0x10,	$protected_mode
 
+	.code32
 protected_mode:
 0:
 	movl	$0x00000008,%edx
