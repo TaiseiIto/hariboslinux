@@ -13,6 +13,7 @@ main:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
+	call	new_line_serial
 	pushl	$hello_message
 	call	print_serial
 	leave
@@ -20,6 +21,17 @@ main:
 	hlt
 	jmp	0b
 
+				# // print LF
+new_line_serial:		# void new_line_serial(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	subl	$0x00000004,%esp
+	movl	$0x0000000a,(%esp)
+	call	putchar_serial
+	addl	$0x00000004,%esp
+	leave
+	ret
 				# // print string to serial port COM1
 print_serial:			# void print_serial(char *string);
 0:
