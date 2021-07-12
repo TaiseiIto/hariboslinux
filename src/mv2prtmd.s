@@ -177,7 +177,7 @@ gdt:
 				# limit	0x000731ff
 				# access_right 0x409a
 	.word	0x31ff		#  limit_low
-	.word	0xce00		#  base_low
+	.word	entry32		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
 	.byte	0x47		#  limit_high
@@ -188,7 +188,7 @@ gdt:
 				# limit	0x000731ff
 				# access_right 0x4092
 	.word	0x31ff		#  limit_low
-	.word	0xce00		#  base_low
+	.word	entry32	#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x92		#  access_right
 	.byte	0x47		#  limit_high
