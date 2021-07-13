@@ -198,6 +198,20 @@ memory番地0xbe00にbreak pointを設置する．
 break pointに到達すると，gdbはSIGTRAP信号を受信して一時停止します．
 実行を再開する場合，
 ```
+(gdb) info breakpoints
+```
+でbreak pointsの一覧を表示し，引っ掛かったbreak pointを探します．
+引っ掛かったbreak pointの番号をnとすると，
+```
+(gdb) delete n
+```
+で当該break pointを削除し，
+```
+(gdb) continue
+```
+で実行を再開します．
+また，別の方法として，
+```
 (gdb) stepi
 ```
 で1命令だけ実行してbreak pointを抜けてから，
