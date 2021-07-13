@@ -12,10 +12,13 @@ LINKER = ld
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
-all: bootsector.bin loaddisk.bin initscrn.bin mv2prtmd.bin entry32.bin kernel.s
+all: bootsector.bin loaddisk.bin initscrn.bin mv2prtmd.bin entry32.bin kernel.o
 
 clean:
 	rm -f *.bin *.o 
+
+kernel.o: kernel.s
+	$(COMPILER) $^ $(COMPILER_CODE32_OPTION) $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
 
 rebuild: clean
 	make
