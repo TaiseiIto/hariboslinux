@@ -168,10 +168,16 @@ loaddisk.binのentry point 0xbe00にbreak pointを置き，そこまで進む処
 
 ### 現在地以降の30命令をdisassemble
 target.xmlとi386-32bit.xmlにより，real modeでのdissasembleを行っている．
-32bit modeに移行してからは，この設定を変更する必要がある．
+32bit modeに移行してからは，この設定を変更する必要がある．(変更済み．gdb/.gdbinitでtarget.xmlの読み込みをコメントアウトした．)
 ```
 (gdb) x/30i $eip
 ```
+また，仮想addressではなく，物理addressを指定するということに注意．
+例えば，現在のcode segmentが0x0000ce00番地から始まっている場合，
+```
+(gdb) x/30i 0x0000ce00+$eip
+```
+のようにして現在地以降の命令を表示する．
 
 ### stackの内容を表示
 現在のstack flameを2byte単位で8要素表示
@@ -189,3 +195,13 @@ memory番地0xbe00にbreak pointを設置する．
 ```
 (gdb) continue
 ```
+break pointに到達すると，gdbはSIGTRAP信号を受信して一時停止します．
+実行を再開する場合，
+```
+(gdb) stepi
+```
+で1命令だけ実行してbreak pointを抜けてから，
+```
+(gdb) continue
+```
+で実行を再開します．
