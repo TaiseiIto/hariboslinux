@@ -4,7 +4,8 @@ target remote localhost:2159
 # real mode
 # set tdesc filename target.xml
 
-# goto entry32.bin
-break *0xce00
+# far jump from mv2prtmd.bin to entry32.bin
+break *0xcb01
 continue
+stepi
 
