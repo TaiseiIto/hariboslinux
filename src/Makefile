@@ -2,6 +2,7 @@
 COMPILER = gcc
 COMPILER_DONT_LINK_OPTION = -c
 COMPILER_DONT_USE_STDLIB_OPTION = -nostdlib
+COMPILER_OUTPUT_ASSEMBLE_OPTIOIN = -S
 COMPILER_OUTPUT_OPTION = -o
 COMPILER_WARNING_OPTION = -Wall -Wextra
 
@@ -10,7 +11,7 @@ LINKER = ld
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
-all: bootsector.bin loaddisk.bin initscrn.bin mv2prtmd.bin entry32.bin
+all: bootsector.bin loaddisk.bin initscrn.bin mv2prtmd.bin entry32.bin kernel.s
 
 clean:
 	rm -f *.bin *.o 
@@ -23,6 +24,9 @@ rebuild: clean
 
 %.o: %.s
 	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
+
+%.s: %.c
+	$(COMPILER) $^ $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_OUTPUT_OPTION) $@
 
 # dont remove intermediate files
 .PRECIOUS: %.bin %.o %.s
