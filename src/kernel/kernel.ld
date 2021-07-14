@@ -1,7 +1,5 @@
 OUTPUT_FORMAT("binary");
 
-INCLUDE global.ld
-
 BASE = 0x00000000;
 
 SECTIONS
