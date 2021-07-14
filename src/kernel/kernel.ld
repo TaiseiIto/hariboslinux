@@ -8,10 +8,10 @@ SECTIONS
 	. = BASE + SIZEOF_HEADERS;
 	.text :
 	{
-		kernel.o(.text)
-		kernel.o(.rodata)
-		kernel.o(.data)
-		kernel.o(.bss)
+		main.o(.text)
+		main.o(.rodata)
+		main.o(.data)
+		main.o(.bss)
 	}
 }
 
