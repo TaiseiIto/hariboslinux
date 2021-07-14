@@ -19,7 +19,7 @@ clean:
 kernel.bin: kernel/kernel.bin
 	cp $^ $@
 
-kernel/kernel.bin:
+kernel/kernel.bin: kernel/kernel.ld kernel/main.c kernel/io.h kernel/io.s
 	make -C kernel
 
 rebuild: clean

@@ -92,6 +92,9 @@ rebuild: clean
 run: $(IMAGE_FILE)
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
 
+src/kernel.bin: src/kernel/kernel.ld src/kernel/main.c src/kernel/io.h src/kernel/io.s
+	make -C src
+
 src/%.bin: src/%.s src/%.ld
 	make -C src
 
