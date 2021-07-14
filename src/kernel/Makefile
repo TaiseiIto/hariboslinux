@@ -17,7 +17,7 @@ LINKER_SCRIPT_OPTION = -T
 all: kernel.bin
 
 clean:
-	rm -f *.bin *.o *.s
+	rm -f *.bin *.o main.s
 
 kernel.bin: main.o io.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
