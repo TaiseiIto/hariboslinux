@@ -149,7 +149,7 @@ main:
 	movw	%dx,	%ds
 	movl	$0x00f00000,%ebp
 	movl	$0x00f00000,%esp
-	jmp	$0x10,	$0x0000
+	jmp	$0x10,	$0x0034
 
 	.data
 gdt:
@@ -172,23 +172,23 @@ gdt:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 
-				# entry32.bin .text section is readable and executable
+				# kernel.bin .text section is readable and executable
 				# base	0x0000ce00
 				# limit	0x000731ff
 				# access_right 0x409a
 	.word	0x31ff		#  limit_low
-	.word	entry32		#  base_low
+	.word	kernel		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
 	.byte	0x47		#  limit_high
 	.byte	0x00		#  base_high
 
-				# entry32.bin .data section is readable and writable
+				# kernel.bin .data section is readable and writable
 				# base	0x0000ce00
 				# limit	0x000731ff
 				# access_right 0x4092
 	.word	0x31ff		#  limit_low
-	.word	entry32	#  base_low
+	.word	kernel	#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x92		#  access_right
 	.byte	0x47		#  limit_high
@@ -207,4 +207,4 @@ expand_memory_message:
 hello_message:
 	.string	"Hello, mv2prtmd.bin!\n"
 	.align	0x0200
-entry32:
+kernel:
