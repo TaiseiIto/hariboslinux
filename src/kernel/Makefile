@@ -19,21 +19,21 @@ all: kernel.bin
 clean:
 	rm -f *.bin *.o *.s
 
-kernel.bin: main.o
+kernel.bin: main.o io.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
+
+io.o: io.s
 
 main.o: main.s
 
 main.s: main.c
+	$(COMPILER) $^ $(COMPILER_CODE32_OPTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@
 
 rebuild: clean
 	make
 
 %.o: %.s
 	$(COMPILER) $^ $(COMPILER_CODE32_OPTION) $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
-
-%.s: %.c
-	$(COMPILER) $^ $(COMPILER_CODE32_OPTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@
 
 # dont remove intermediate files
 .PRECIOUS: %.bin %.o %.s
