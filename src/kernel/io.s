@@ -1,3 +1,9 @@
+# calling convention = System V i386
+# return value: ax, dx
+# parameters: stack
+# scratch registers: ax, cx, dx
+# preserved registers: bx, si, di, bp, sp
+
 	.set	com1,	0x03f8			# serial port COM1
 
 	.text
@@ -11,7 +17,7 @@
 	.type	putchar_serial,		@function
 
 				# // wait for next interrupt
-io_hlt:				# void __attribute__((stdcall)) io_hlt(void);
+io_hlt:				# void io_hlt(void);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -20,7 +26,7 @@ io_hlt:				# void __attribute__((stdcall)) io_hlt(void);
 	ret
 
 				# // print LF
-new_line_serial:		# void __attribute__((stdcall)) new_line_serial(void);
+new_line_serial:		# void new_line_serial(void);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -31,7 +37,7 @@ new_line_serial:		# void __attribute__((stdcall)) new_line_serial(void);
 	leave
 	ret
 				# // print string to serial port COM1
-print_serial:			# void __attribute__((stdcall)) print_serial(char *string);
+print_serial:			# void print_serial(char *string);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -54,7 +60,7 @@ print_serial:			# void __attribute__((stdcall)) print_serial(char *string);
 	ret
 
 				# // print a character to serial port COM1
-putchar_serial:			# void __attribute__((stdcall)) putchar_serial(char c);
+putchar_serial:			# void putchar_serial(char c);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
