@@ -91,13 +91,13 @@ typedef struct
 ```
 そしてmv2prtmdに移行します．
 
-[.binのsource](src/initscrn.s)
+[initscrn.binのsource](src/initscrn.s)
 
 #### initscrn.bin実行時のmemory map
 
 ### mv2prtmd.bin
 real modeからprotected modeに移行し，kernel.binに移行します．
-[.binのsource](src/mv2prtmd.s)
+[mv2prtmd.binのsource](src/mv2prtmd.s)
 
 #### mv2prtmd.bin実行時のmemory map
 
