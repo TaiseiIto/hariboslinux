@@ -60,6 +60,53 @@ docker container上で
 ```
 するとdocker containerが停止します．
 
+## bootの流れ
+
+### bootsector.bin
+hardwareが起動すると，BIODはfloppy diskの0x00000000番地から0x000001ff番地に書き込まれたbootsector.binを，memoryの0x7c00番地から0x7dff番地に読み込み，これを実行します．
+bootsector.binでは，bootの第2段階であるloaddisk.binを含むfloppy diskの0x00002400番地から0x000047ff番地までを，memoryの0xa000番地から0xc400番地に読み込み，loaddisk.binに移行します．
+[bootsector.binのsource](src/bootsector.s)
+
+#### bootsector.bin実行時のmemory map
+
+### loaddisk.bin
+floppy diskをmemoryに読み込み，initscrn.binに移行します．
+これにより，floppy diskの0x00000000番地から0x000783ff番地までが，memoryの0x00007c00番地から0x0007ffff番地に配置されます．
+[loaddisk.binのsource](src/loaddisk.s)
+
+#### .bin実行時のmemory map
+
+### initscrn.bin
+BIOSのconsole画面を破棄し，VGA画面に移行します．
+画面とkeyboardに関する以下の構造体を，0x7bf6番地に配置します．
+```
+typedef struct
+{
+	void *vram_addr;
+	unsigned short screen_width;
+	unsigned short screen_height;
+	unsigned char bits_per_pixel;
+	unsigned char keyboard_state;
+} __attribute__((packed)) BootInformation;
+```
+そしてmv2prtmdに移行します．
+
+[.binのsource](src/initscrn.s)
+
+#### initscrn.bin実行時のmemory map
+
+### mv2prtmd.bin
+real modeからprotected modeに移行し，kernel.binに移行します．
+[.binのsource](src/mv2prtmd.s)
+
+#### mv2prtmd.bin実行時のmemory map
+
+### kernel.bin
+OS本体です．
+[kernel.binのsource](src/kernel)
+
+#### kernel.bin実行時のmemory map
+
 ## 開発者用メモ
 docker, VNC softwareに加え，git, makeを用いて開発しています．
 
