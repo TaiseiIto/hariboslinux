@@ -174,24 +174,24 @@ gdt:
 
 				# kernel.bin .text section is readable and executable
 				# base	0x0000ce00
-				# limit	0x000731ff
+				# limit	0x00092dff
 				# access_right 0x409a
-	.word	0x31ff		#  limit_low
+	.word	0x2dff		#  limit_low
 	.word	kernel		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
-	.byte	0x47		#  limit_high
+	.byte	0x49		#  limit_high
 	.byte	0x00		#  base_high
 
 				# kernel.bin .data section is readable and writable
 				# base	0x0000ce00
-				# limit	0x000731ff
+				# limit	0x00092dff
 				# access_right 0x4092
-	.word	0x31ff		#  limit_low
+	.word	0x2dff		#  limit_low
 	.word	kernel	#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x92		#  access_right
-	.byte	0x47		#  limit_high
+	.byte	0x49		#  limit_high
 	.byte	0x00		#  base_high
 gdtr:
 	.word	0x001f		# 4 segment descriptors * 8 bytes per segment descriptor - 1
