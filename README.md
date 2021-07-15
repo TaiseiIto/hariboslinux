@@ -64,15 +64,17 @@ docker container上で
 
 ### bootsector.bin
 hardwareが起動すると，BIODはfloppy diskの0x00000000番地から0x000001ff番地に書き込まれたbootsector.binを，memoryの0x7c00番地から0x7dff番地に読み込み，これを実行します．
-bootsector.binでは，bootの第2段階であるloaddisk.binを含むfloppy diskの0x00002400番地から0x000047ff番地までを，memoryの0xa000番地から0xc400番地に読み込み，loaddisk.binに移行します．
+bootsector.binでは，bootの第2段階であるloaddisk.binを含むfloppy diskの0x00002400番地から0x000047ff番地までを，memoryの0xa000番地から0xc3ff番地に読み込み，loaddisk.binに移行します．
 
 [bootsector.binのsource](src/bootsector.s)
 
 #### bootsector.bin実行時のmemory map
-| start  | end    | description |
-| ------ | ------ | ----------- |
-| 0x0500 | 0x7bff | stack frame |
-| 0x7c00 | 0x7dff | boot sector |
+| start  | end    | description            |
+| ------ | ------ | ---------------------- |
+| 0x0000 | 0x03ff | interrupt vector table |
+| 0x0400 | 0x04ff | BIOS data area         |
+| 0x0500 | 0x7bff | stack frame            |
+| 0x7c00 | 0x7dff | bootsector.bin         |
 
 ### loaddisk.bin
 floppy diskをmemoryに読み込み，initscrn.binに移行します．
@@ -80,7 +82,16 @@ floppy diskをmemoryに読み込み，initscrn.binに移行します．
 
 [loaddisk.binのsource](src/loaddisk.s)
 
-#### .bin実行時のmemory map
+#### loaddisk.bin実行時のmemory map
+| start  | end    | description                    |
+| ------ | ------ | ------------------------------ |
+| 0x0000 | 0x03ff | interrupt vector table         |
+| 0x0400 | 0x04ff | BIOS data area                 |
+| 0x0500 | 0x7bff | stack frame                    |
+| 0x7c00 | 0x7dff | bootsector.bin                 |
+| 0xa000 | 0xc3ff | loaded disk data 0x2400~0x47ff |
+| 0xa200 | 0xbdff | root directory entries         |
+| 0xbe00 | 0xc3ff | loaddisk.bin                   |
 
 ### initscrn.bin
 BIOSのconsole画面を破棄し，VGA画面に移行します．
@@ -100,6 +111,21 @@ typedef struct
 [initscrn.binのsource](src/initscrn.s)
 
 #### initscrn.bin実行時のmemory map
+| start   | end     | description                      |
+| ------- | ------- | -------------------------------- |
+| 0x00000 | 0x003ff | interrupt vector table           |
+| 0x00400 | 0x004ff | BIOS data area                   |
+| 0x00500 | 0x07bf5 | stack frame                      |
+| 0x07bf6 | 0x07bff | BootInformation structure        |
+| 0x07c00 | 0x7ffff | loaded disk data 0x00000~0x783ff |
+| 0x07c00 | 0x07dff | bootsector.bin                   |
+| 0x07e00 | 0x08fff | first FAT                        |
+| 0x09000 | 0x0a1ff | second FAT                       |
+| 0x0a200 | 0x0bdff | root directory entries           |
+| 0x0be00 | 0x0c3ff | loaddisk.bin                     |
+| 0x0c400 | 0x0c9ff | initscrn.bin                     |
+| 0x0ca00 | 0x0cdff | mv2prtmd.bin                     |
+| 0x0ce00 | ?       | kernel.bin                       |
 
 ### mv2prtmd.bin
 real modeからprotected modeに移行し，kernel.binに移行します．
@@ -107,6 +133,22 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 [mv2prtmd.binのsource](src/mv2prtmd.s)
 
 #### mv2prtmd.bin実行時のmemory map
+| start   | end     | description                      |
+| ------- | ------- | -------------------------------- |
+| 0x00000 | 0x003ff | interrupt vector table           |
+| 0x00400 | 0x004ff | BIOS data area                   |
+| 0x00500 | 0x07bf5 | stack frame                      |
+| 0x07bf6 | 0x07bff | BootInformation structure        |
+| 0x07c00 | 0x7ffff | loaded disk data 0x00000~0x783ff |
+| 0x07c00 | 0x07dff | bootsector.bin                   |
+| 0x07e00 | 0x08fff | first FAT                        |
+| 0x09000 | 0x0a1ff | second FAT                       |
+| 0x0a200 | 0x0bdff | root directory entries           |
+| 0x0be00 | 0x0c3ff | loaddisk.bin                     |
+| 0x0c400 | 0x0c9ff | initscrn.bin                     |
+| 0x0ca00 | 0x0cdff | mv2prtmd.bin                     |
+| 0x0ce00 | ?       | kernel.bin                       |
+| 0xa0000 | 0xa6400 | VRAM                             |
 
 ### kernel.bin
 OS本体です．
@@ -114,6 +156,24 @@ OS本体です．
 [kernel.binのsource](src/kernel)
 
 #### kernel.bin実行時のmemory map
+| start      | end        | description                      |
+| ---------- | ---------- | -------------------------------- |
+| 0x00000000 | 0x000003ff | interrupt vector table           |
+| 0x00000400 | 0x000004ff | BIOS data area                   |
+| 0x00000500 | 0x00007bf5 | reserved                         |
+| 0x00007bf6 | 0x00007bff | BootInformation structure        |
+| 0x00007c00 | 0x0007ffff | loaded disk data 0x00000~0x783ff |
+| 0x00007c00 | 0x00007dff | bootsector.bin                   |
+| 0x00007e00 | 0x00008fff | first FAT                        |
+| 0x00009000 | 0x0000a1ff | second FAT                       |
+| 0x0000a200 | 0x0000bdff | root directory entries           |
+| 0x0000be00 | 0x0000c3ff | loaddisk.bin                     |
+| 0x0000c400 | 0x0000c9ff | initscrn.bin                     |
+| 0x0000ca00 | 0x0000cdff | mv2prtmd.bin                     |
+| 0x0000ce00 | ?          | kernel.bin                       |
+| 0x000a0000 | 0x000a6400 | VRAM                             |
+| 0x00e00000 | 0x00efffff | stack                            |
+| 0x01000000 | ?          | heap                             |
 
 ## 開発者用メモ
 docker, VNC softwareに加え，git, makeを用いて開発しています．
