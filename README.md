@@ -117,7 +117,7 @@ typedef struct
 | 0x00400 | 0x004ff | BIOS data area                   |
 | 0x00500 | 0x07bf5 | stack frame                      |
 | 0x07bf6 | 0x07bff | BootInformation structure        |
-| 0x07c00 | 0x7ffff | loaded disk data 0x00000~0x783ff |
+| 0x07c00 | 0x9fbff | loaded disk data 0x00000~0x783ff |
 | 0x07c00 | 0x07dff | bootsector.bin                   |
 | 0x07e00 | 0x08fff | first FAT                        |
 | 0x09000 | 0x0a1ff | second FAT                       |
@@ -139,7 +139,7 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | 0x00400 | 0x004ff | BIOS data area                   |
 | 0x00500 | 0x07bf5 | stack frame                      |
 | 0x07bf6 | 0x07bff | BootInformation structure        |
-| 0x07c00 | 0x7ffff | loaded disk data 0x00000~0x783ff |
+| 0x07c00 | 0x9fbff | loaded disk data 0x00000~0x783ff |
 | 0x07c00 | 0x07dff | bootsector.bin                   |
 | 0x07e00 | 0x08fff | first FAT                        |
 | 0x09000 | 0x0a1ff | second FAT                       |
@@ -162,7 +162,7 @@ OS本体です．
 | 0x00000400 | 0x000004ff | BIOS data area                   |
 | 0x00000500 | 0x00007bf5 | reserved                         |
 | 0x00007bf6 | 0x00007bff | BootInformation structure        |
-| 0x00007c00 | 0x0007ffff | loaded disk data 0x00000~0x783ff |
+| 0x00007c00 | 0x0009fbff | loaded disk data 0x00000~0x783ff |
 | 0x00007c00 | 0x00007dff | bootsector.bin                   |
 | 0x00007e00 | 0x00008fff | first FAT                        |
 | 0x00009000 | 0x0000a1ff | second FAT                       |
