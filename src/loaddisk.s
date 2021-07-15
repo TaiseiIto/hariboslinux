@@ -93,7 +93,7 @@ main:
 	movw	%cx,	0x02(%di)
 	addw	$0x0002,%cx	# compare destination_segment with the end segment of the low memory
 	cmpw	0x0c(%di),%cx
-	jae	12f
+	ja	12f
 	movw	0x06(%di),%cx	# advance sector_number
 	cmpw	$0x0012,%cx
 	je	9f
