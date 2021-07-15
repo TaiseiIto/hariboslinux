@@ -29,18 +29,21 @@
 	.text
 main:
 0:
-	int	$0x12
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%si
 	pushw	%di
-	subw	$0x000c,%sp
+	subw	$0x000e,%sp
 	movw	%sp,	%di
 1:				# print hello_message
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
-2:				# load disk
+2:				# check low memory size
+	int	$0x12		#  %ax = $0x027f (KB)
+	shlw	$0x0006,%ax	#  %ax = $0x9fc0 (the end of the low memory segment)
+	movw	%ax,	0x0c(%di)# 0x0c(%di) = $0x9fc0 (end of the low memory segment)
+3:				# load disk
 				#  from cylinder 0x0000, head 0x0000, sector 0x0002
 				#  to   cylinder 0x0000, head 0x0000, sector 0x0012
 				# source disk        address 0x0:0200~0x0:23ff
@@ -55,15 +58,15 @@ main:
 	movw	$0x0200,(%di)	# destination_address
 	call	read_sector
 	cmpw	$0x0000,%ax
-	je	4f
-3:				# read_sector failure
+	je	5f
+4:				# read_sector failure
 	movw	$error_message,(%di)
 	call print
-4:				# check loaded FAT
+5:				# check loaded FAT
 	call	new_line
 	movw	$check_fat_message,(%di)
 	call	print
-5:				# print FAT
+6:				# print FAT
 				# disk address 0x0:0200~0x0:020f
 				# memory address 0x0:7e00~0x0:7e0f
 	movw	$load_dest, %si
@@ -72,65 +75,47 @@ main:
 	movw	$0x0010,(%di)
 	call	dump
 	call	new_line
-6:				# load disk
+7:				# load disk
 				#  from cylinder 0x0001, head 0x0000, sector 0x0001
 				#  to   cylinder 0x0019, head 0x0001, sector 0x0012
-				# source disk        address 0x0:4800~0x7:4fff
-				# destination memory address 0x0:c400~0x7:cbff
+				# source disk        address 0x0:4800~0x9:4fff
+				# destination memory address 0x0:c400~0x9:cbff
 	movw	$0x0001,0x0a(%di)# cylinder_number
 	movw	$0x0000,0x08(%di)# head
 	movw	$0x0001,0x06(%di)# sector_number
 	movw	$0x0001,0x04(%di)# num_of_sectors
 	movw	$0x0c40,0x02(%di)# destination_segment
 	movw	$0x0000,(%di)	# destination_address
-7:				# load loop
+8:				# load loop
 	call	read_sector
 	movw	0x02(%di),%cx	# advance destination_segment 1 segment
 	addw	$0x0020,%cx
 	movw	%cx,	0x02(%di)
+	addw	$0x0002,%cx	# compare destination_segment with the end segment of the low memory
+	cmpw	0x0c(%di),%cx
+	jae	12f
 	movw	0x06(%di),%cx	# advance sector_number
 	cmpw	$0x0012,%cx
-	je	8f
+	je	9f
 	incw	%cx
 	movw	%cx,	0x06(%di)
-	jmp	7b
-8:
+	jmp	8b
+9:
 	movw	$0x0001,0x06(%di)# reset sector_number
 	movw	0x08(%di),%cx	# advance head
-	jcxz	9f
-	jmp	10f
-9:				# advance head
+	jcxz	10f
+	jmp	11f
+10:				# advance head
 	incw	%cx
 	movw	%cx,	0x08(%di)
-	jmp	7b
-10:				# advance cylinder_number
+	jmp	8b
+11:				# advance cylinder_number
 	decw	%cx		# reset head
 	movw	%cx,	0x08(%di)
 	movw	0x0a(%di),%cx	# advance cylinder_number
 	incw	%cx
-	cmp	$0x001a,%cx
-	je	11f		# finish loading
 	movw	%cx,	0x0a(%di)
-	jmp	7b
-11:				# load disk
-				#  from cylinder 0x001a, head 0x0000, sector 0x0001
-				#  to   cylinder 0x001a, head 0x0001, sector 0x0008
-				# source disk        address 0x7:5000~0x7:83ff
-				# destination memory address 0x7:cc00~0x7:ffff
-	movw	$0x001a,0x0a(%di)# cylinder_number
-	movw	$0x0000,0x08(%di)# head
-	movw	$0x0001,0x06(%di)# sector_number
-	movw	$0x0012,0x04(%di)# num_of_sectors
-	movw	$0x7cc0,0x02(%di)# destination_segment
-	movw	$0x0000,(%di)	# destination_address
-	call	read_sector
-	movw	$0x001a,0x0a(%di)# cylinder_number
-	movw	$0x0001,0x08(%di)# head
-	movw	$0x0001,0x06(%di)# sector_number
-	movw	$0x008,0x04(%di)# num_of_sectors
-	movw	$0x7f00,0x02(%di)# destination_segment
-	movw	$0x0000,(%di)	# destination_address
-	call	read_sector
+	jmp	8b
 12:				# finish loading
 	call	new_line
 	movw	$finish_loading_message,(%di)
@@ -148,7 +133,7 @@ main:
 	call	dump
 	call	new_line
 14:				# free stack frame
-	addw	$0x000c,%sp
+	addw	$0x000e,%sp
 	popw	%di
 	popw	%si
 	leave
