@@ -91,7 +91,7 @@ main:
 	movw	0x02(%di),%cx	# advance destination_segment 1 segment
 	addw	$0x0020,%cx
 	movw	%cx,	0x02(%di)
-	addw	$0x0002,%cx	# compare destination_segment with the end segment of the low memory
+	addw	$0x0020,%cx	# compare destination_segment with the end segment of the low memory
 	cmpw	0x0c(%di),%cx
 	ja	12f
 	movw	0x06(%di),%cx	# advance sector_number
@@ -237,7 +237,7 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 1:
 	andw	$0x000f,%dx
 	cmpw	$0x000a,%dx
-	jge	3f
+	jae	3f
 2:				# the digit is less than 0x0a
 	addw	$0x0030,%dx
 	jmp	4f
