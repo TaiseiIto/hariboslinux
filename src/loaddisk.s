@@ -29,6 +29,7 @@
 	.text
 main:
 0:
+	int	$0x12
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%si
