@@ -4,17 +4,21 @@
 # scratch registers: ax, cx, dx
 # preserved registers: bx, si, di, bp, sp
 
-	.set	com1,	0x03f8			# serial port COM1
-
 	.text
 	.globl	io_hlt
-	.globl	new_line_serial
-	.globl	print_serial
-	.globl	putchar_serial
+	.globl	io_inb
+	.globl	io_inw
+	.globl	io_inl
+	.globl	io_outb
+	.globl	io_outw
+	.globl	io_outl
 	.type	io_hlt,			@function
-	.type	new_line_serial,	@function
-	.type	print_serial,		@function
-	.type	putchar_serial,		@function
+	.type	io_inb,			@function
+	.type	io_inw,			@function
+	.type	io_inl,			@function
+	.type	io_outb,		@function
+	.type	io_outw,		@function
+	.type	io_outl,		@function
 
 				# // wait for next interrupt
 io_hlt:				# void io_hlt(void);
@@ -97,59 +101,6 @@ io_outl:			# void io_outl(unsigned short address, unsigned char value);
 	movw	0x08(%ebp),%dx
 	movl	0x0c(%ebp),%eax
 	outl	%eax,	%dx
-	leave
-	ret
- 
-				# // print LF
-new_line_serial:		# void new_line_serial(void);
-0:
-	pushl	%ebp
-	movl	%esp,	%ebp
-	subl	$0x00000004,%esp
-	movl	$0x0000000a,(%esp)
-	call	putchar_serial
-	addl	$0x00000004,%esp
-	leave
-	ret
-				# // print string to serial port COM1
-print_serial:			# void print_serial(char *string);
-0:
-	pushl	%ebp
-	movl	%esp,	%ebp
-	pushl	%esi
-	subl	$0x00000004,%esp
-	movl	0x08(%ebp),%esi
-1:				# put loop
-	xorl	%eax,	%eax
-	movb	(%esi),	%al
-	cmpb	$0x00,	%al
-	je	2f
-	movl	%eax,	(%esp)
-	call	putchar_serial
-	incl	%esi
-	jmp	1b
-2:
-	addl	$0x00000004,%esp
-	popl	%esi
-	leave
-	ret
-
-				# // print a character to serial port COM1
-putchar_serial:			# void putchar_serial(char c);
-0:
-	pushl	%ebp
-	movl	%esp,	%ebp
-1:				# wait for device
-	movl	$com1,	%edx
-	addl	$0x00000005,%edx
-	inb	%dx,	%al
-	andb	$0x20,	%al
-	jz	1b
-2:				# send the character
-	movb	0x08(%ebp),%al
-	movl	$com1,	%edx
-	outb	%al,	%dx
-3:
 	leave
 	ret
 

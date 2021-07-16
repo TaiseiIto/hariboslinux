@@ -1,9 +1,9 @@
 #include "io.h"
+#include "serial.h"
 
 void main(void)
 {
-	new_line_serial();
-	print_serial("Hello, kernel.bin!\n");
+	print_serial_polling("Hello, kernel.bin!\n");
 	while(1)io_hlt();
 }
 

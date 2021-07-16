@@ -19,15 +19,20 @@ all: kernel.bin
 clean:
 	rm -f *.bin *.o main.s
 
-kernel.bin: main.o io.o
+kernel.bin: main.o io.o serial.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
 io.o: io.s
 
 main.o: main.s
 
-main.s: main.c
-	$(COMPILER) $^ $(COMPILER_CODE32_OPTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@
+main.s: main.c io.h serial.h
+	$(COMPILER) $< $(COMPILER_CODE32_OPTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@
+
+serial.o: serial.s
+
+serial.s: serial.c serial.h
+	$(COMPILER) $< $(COMPILER_CODE32_OPTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@
 
 rebuild: clean
 	make
