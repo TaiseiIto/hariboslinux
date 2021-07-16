@@ -149,7 +149,7 @@ main:
 	movw	%dx,	%ds
 	movl	$0x00f00000,%ebp
 	movl	$0x00f00000,%esp
-	jmp	$0x10,	$0x0094
+	jmp	$0x10,	$0x00b4
 
 	.data
 gdt:
