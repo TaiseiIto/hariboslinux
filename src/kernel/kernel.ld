@@ -5,7 +5,7 @@ BASE = 0x00000000;
 
 SECTIONS
 {
-	. = BASE + SIZEOF_HEADERS;
+	. = BASE;
 	.text :
 	{
 		main.o(.text)
@@ -21,5 +21,6 @@ SECTIONS
 		io.o(.bss)
 		serial.o(.bss)
 	}
+	/DISCARD/:{*(.eh_frame)}
 }
 
