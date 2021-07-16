@@ -25,6 +25,81 @@ io_hlt:				# void io_hlt(void);
 	leave
 	ret
 
+				# // inb	$address,	%al
+io_inb:				# unsigned char io_inb(unsigned short address);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	xorl	%eax,	%eax
+	xorl	%edx,	%edx
+	movw	0x08(%ebp),%dx
+	inb	%dx,	%al
+	leave
+	ret
+
+				# // inw	$address,	%ax
+io_inw:				# unsigned short io_inw(unsigned short address);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	xorl	%eax,	%eax
+	xorl	%edx,	%edx
+	movw	0x08(%ebp),%dx
+	inw	%dx,	%ax
+	leave
+	ret
+
+				# // inl	$address,	%eax
+io_inl:				# unsigned int io_inl(unsigned short address);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	xorl	%eax,	%eax
+	xorl	%edx,	%edx
+	movw	0x08(%ebp),%dx
+	inl	%dx,	%eax
+	leave
+	ret
+
+				# // outb	%al,	$address
+io_outb:			# void io_outb(unsigned short address, unsigned char value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	xorl	%eax,	%eax
+	xorl	%edx,	%edx
+	movw	0x08(%ebp),%dx
+	movb	0x0c(%ebp),%al
+	outb	%al,	%dx
+	leave
+	ret
+ 
+				# // outw	%ax,	$address
+io_outw:			# void io_outw(unsigned short address, unsigned char value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	xorl	%eax,	%eax
+	xorl	%edx,	%edx
+	movw	0x08(%ebp),%dx
+	movw	0x0c(%ebp),%ax
+	outw	%ax,	%dx
+	leave
+	ret
+ 
+				# // outl	%eax,	$address
+io_outl:			# void io_outl(unsigned short address, unsigned char value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	xorl	%eax,	%eax
+	xorl	%edx,	%edx
+	movw	0x08(%ebp),%dx
+	movl	0x0c(%ebp),%eax
+	outl	%eax,	%dx
+	leave
+	ret
+ 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
 0:
@@ -77,5 +152,4 @@ putchar_serial:			# void putchar_serial(char c);
 3:
 	leave
 	ret
-
 
