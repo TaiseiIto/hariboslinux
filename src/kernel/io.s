@@ -24,7 +24,12 @@
 	.globl	outb
 	.globl	outw
 	.globl	outl
+	.globl	readb
+	.globl	readw
+	.globl	readl
 	.globl	writeb
+	.globl	writew
+	.globl	writel
 	.type	hlt,			@function
 	.type	inb,			@function
 	.type	inw,			@function
@@ -32,7 +37,12 @@
 	.type	outb,			@function
 	.type	outw,			@function
 	.type	outl,			@function
+	.type	readb,			@function
+	.type	readw,			@function
+	.type	readl,			@function
 	.type	writeb,			@function
+	.type	writew,			@function
+	.type	writel,			@function
 
 				# // wait for next interrupt
 hlt:				# void io_hlt(void);
