@@ -118,6 +118,57 @@ io_outl:			# void io_outl(unsigned short address, unsigned char value);
 	leave
 	ret
 
+				# // movb	$segment:($address),%al
+io_readb:			# unsigned char io_readb(unsigned short segment, void *address);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	movw	%es,	%dx	# preserve %es
+	pushl	%edx
+	movw	0x08(%ebp),%es
+	movl	0x0c(%ebp),%esi
+	movb	%es:(%esi),%al
+	popl	%edx
+	movw	%dx,	%es	# restore %es
+	popl	%esi
+	leave
+	ret
+
+				# // movw	$segment:($address),%ax
+io_readw:			# unsigned short io_readw(unsigned short segment, void *address);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	movw	%es,	%dx	# preserve %es
+	pushl	%edx
+	movw	0x08(%ebp),%es
+	movl	0x0c(%ebp),%esi
+	movw	%es:(%esi),%ax
+	popl	%edx
+	movw	%dx,	%es	# restore %es
+	popl	%esi
+	leave
+	ret
+
+				# // movl	$segment:($address),%eax
+io_readl:			# unsigned int io_readl(unsigned short segment, void *address);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	movw	%es,	%dx	# preserve %es
+	pushl	%edx
+	movw	0x08(%ebp),%es
+	movl	0x0c(%ebp),%esi
+	movl	%es:(%esi),%eax
+	popl	%edx
+	movw	%dx,	%es	# restore %es
+	popl	%esi
+	leave
+	ret
+
 				# // movb	$value,$segment:($address)
 io_writeb:			# void io_writeb(unsigned short segment, void *address, unsigned char value);
 0:
@@ -131,7 +182,44 @@ io_writeb:			# void io_writeb(unsigned short segment, void *address, unsigned ch
 	movb	0x10(%ebp),%dl
 	movb	%dl,	%es:(%edi)
 	popl	%edx
-	popl	%edi
 	movw	%dx,	%es	# restore %es
+	popl	%edi
 	leave
 	ret
+
+				# // movw	$value,$segment:($address)
+io_writew:			# void io_writew(unsigned short segment, void *address, unsigned char value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%edi
+	movw	%es,	%dx	# preserve %es
+	pushl	%edx
+	movw	0x08(%ebp),%es
+	movl	0x0c(%ebp),%edi
+	movw	0x10(%ebp),%dx
+	movw	%dx,	%es:(%edi)
+	popl	%edx
+	movw	%dx,	%es	# restore %es
+	popl	%edi
+	leave
+	ret
+
+				# // movl	$value,$segment:($address)
+io_writel:			# void io_writel(unsigned short segment, void *address, unsigned char value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%edi
+	movw	%es,	%dx	# preserve %es
+	pushl	%edx
+	movw	0x08(%ebp),%es
+	movl	0x0c(%ebp),%edi
+	movl	0x10(%ebp),%edx
+	movl	%edx,	%es:(%edi)
+	popl	%edx
+	movw	%dx,	%es	# restore %es
+	popl	%edi
+	leave
+	ret
+

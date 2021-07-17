@@ -19,6 +19,21 @@ void io_outw(unsigned short address, unsigned short value);
 // outl	$value,	$address
 void io_outl(unsigned short address, unsigned int value);
 
+// movb	$segment:($address),%al
+unsigned char io_readb(unsigned short segment, void *address);
+
+// movw	$segment:($address),%ax
+unsigned short io_readw(unsigned short segment, void *address);
+
+// movl	$segment:($address),%eax
+unsigned int io_readl(unsigned short segment, void *address);
+
 // movb	$value,$segment:($address)
 void io_writeb(unsigned short segment, void *address, unsigned char value);
+
+// movw	$value,$segment:($address)
+void io_writew(unsigned short segment, void *address, unsigned char value);
+
+// movl	$value,$segment:($address)
+void io_writel(unsigned short segment, void *address, unsigned char value);
 
