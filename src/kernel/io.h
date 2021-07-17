@@ -10,12 +10,15 @@ unsigned short io_inw(unsigned short address);
 // inl	$address,	%eax
 unsigned int io_inl(unsigned short address);
 
-// outb	%al,	$address
+// outb	$value,	$address
 void io_outb(unsigned short address, unsigned char value);
 
-// outw	%ax,	$address
+// outw	$value,	$address
 void io_outw(unsigned short address, unsigned short value);
 
-// outl	%eax,	$address
+// outl	$value,	$address
 void io_outl(unsigned short address, unsigned int value);
+
+// movb	$value,$segment:($address)
+void io_writeb(unsigned short segment, void *address, unsigned char value);
 

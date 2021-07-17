@@ -24,7 +24,7 @@
 	.globl	io_outb
 	.globl	io_outw
 	.globl	io_outl
-	.globl	write_pixel
+	.globl	io_writeb
 	.type	io_hlt,			@function
 	.type	io_inb,			@function
 	.type	io_inw,			@function
@@ -32,7 +32,7 @@
 	.type	io_outb,		@function
 	.type	io_outw,		@function
 	.type	io_outl,		@function
-	.type	write_pixel,	@function
+	.type	io_writeb,	@function
 
 				# // wait for next interrupt
 io_hlt:				# void io_hlt(void);
@@ -79,7 +79,7 @@ io_inl:				# unsigned int io_inl(unsigned short address);
 	leave
 	ret
 
-				# // outb	%al,	$address
+				# // outb	$value,	$address
 io_outb:			# void io_outb(unsigned short address, unsigned char value);
 0:
 	pushl	%ebp
@@ -92,7 +92,7 @@ io_outb:			# void io_outb(unsigned short address, unsigned char value);
 	leave
 	ret
  
-				# // outw	%ax,	$address
+				# // outw	$value,	$address
 io_outw:			# void io_outw(unsigned short address, unsigned char value);
 0:
 	pushl	%ebp
@@ -105,7 +105,7 @@ io_outw:			# void io_outw(unsigned short address, unsigned char value);
 	leave
 	ret
  
-				# // outl	%eax,	$address
+				# // outl	$value,	$address
 io_outl:			# void io_outl(unsigned short address, unsigned char value);
 0:
 	pushl	%ebp
@@ -118,3 +118,20 @@ io_outl:			# void io_outl(unsigned short address, unsigned char value);
 	leave
 	ret
 
+				# // movb	$value,$segment:($address)
+io_writeb:			# void io_writeb(unsigned short segment, void *address, unsigned char value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%edi
+	movw	%es,	%dx	# preserve %es
+	pushl	%edx
+	movw	0x08(%ebp),%es
+	movl	0x0c(%ebp),%edi
+	movb	0x10(%ebp),%dl
+	movb	%es:(%edi),%dl
+	popl	%edx
+	popl	%edi
+	movw	%dx,	%es	# restore %es
+	leave
+	ret
