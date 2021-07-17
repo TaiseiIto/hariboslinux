@@ -144,11 +144,12 @@ main:
 	movw	%dx,	%es
 	movw	%dx,	%fs
 	movw	%dx,	%gs
+	movw	$0x0020,%dx
 	movw	%dx,	%ss
 	movw	$0x0018,%dx
 	movw	%dx,	%ds
-	movl	$0x00f00000,%ebp
-	movl	$0x00f00000,%esp
+	movl	$0x00100000,%ebp
+	movl	$0x00100000,%esp
 	jmp	$0x10,	$0x0000
 
 	.data
@@ -194,6 +195,17 @@ gdt:
 	.byte	0x49		#  limit_high
 	.byte	0x00		#  base_high
 
+				# kernel stack section is readable and writable
+				# base	0x00e00000
+				# limit	0x000fffff
+				# access_right 0x4092
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0xe0		#  base_mid
+	.byte	0x92		#  access_right
+	.byte	0x4f		#  limit_high
+	.byte	0x00		#  base_high
+
 				# VRAM section is readable and writable
 				# base	0x000a0000
 				# limit	0x0001ffff
@@ -205,7 +217,7 @@ gdt:
 	.byte	0x41		#  limit_high
 	.byte	0x00		#  base_high
 gdtr:
-	.word	0x0027		# 4 segment descriptors * 8 bytes per segment descriptor - 1
+	.word	0x002f		# 4 segment descriptors * 8 bytes per segment descriptor - 1
 	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"
