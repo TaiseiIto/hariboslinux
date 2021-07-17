@@ -55,7 +55,7 @@ get_variadic_arg:		# unsigned int get_variadic_arg(unsigned int n);
 	pushl	%esi
 	movl	(%ebp),	%esi
 	movl	0x08(%ebp),%edx
-	movl	0x08(%esi,%edx,0x04),%eax
+	movl	%ss:0x08(%esi,%edx,0x04),%eax
 	popl	%esi
 	leave
 	ret
