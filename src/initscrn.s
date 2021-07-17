@@ -70,9 +70,9 @@ main:
 	call	print_serial
 	movw	$0x7bf6,%si
 	movw	0x02(%si),%dx
-	movw	%dx,	0x02(%di)
-	movw	(%si),%dx
 	movw	%dx,	(%di)
+	movw	(%si),%dx
+	movw	%dx,	0x02(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
 8:				# check screen size
@@ -251,10 +251,10 @@ print_dword_hex_serial:		# void print_dword_hex_serial(unsigned high, unsigned s
 	pushw	%di
 	subw	$0x0002,%sp
 	movw	%sp,	%di
-	movw	0x06(%bp),%dx
+	movw	0x04(%bp),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
-	movw	0x04(%bp),%dx
+	movw	0x06(%bp),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	addw	$0x0002,%sp
