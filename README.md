@@ -298,7 +298,34 @@ target.xmlとi386-32bit.xmlにより，real modeでのdissasembleを行ってい
 ### stackの内容を表示
 現在のstack flameを2byte単位で8要素表示
 ```
-(gdb) x/8h $esp
+(gdb) x/8h 0x00e00000+$esp
+```
+0x00e00000はkernel.bin実行中のstack segmentの開始address
+
+### gdbのexamine commandまとめ
+文字列を表示
+```
+(gdb) x/s address
+```
+命令を表示
+```
+(gdb) x/i address
+```
+1byte表示
+```
+(gdb) x/b address
+```
+2byte表示
+```
+(gdb) x/h address
+```
+4byte表示
+```
+(gdb) x/w address
+```
+8byte表示
+```
+(gdb) x/g address
 ```
 
 ### break pointの設置
