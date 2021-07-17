@@ -64,8 +64,16 @@ main:
 	pushw	%di
 	subw	$0x0002,%sp
 	movw	%sp,	%di
-7:				# check vram_addr
+7:				# check extended memroy size
 	call	new_line_serial
+	movw	$extended_memory_size_message,(%di)
+	call	print_serial
+	movw	$0x8800,%ax
+	int	$0x0015
+	movw	%ax,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
+8:				# check vram_addr
 	movw	$vram_addr_message,(%di)
 	call	print_serial
 	movw	$0x7bf6,%si
@@ -75,7 +83,7 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
-8:				# check screen size
+9:				# check screen size
 	movw	$screen_size_message1,(%di)
 	call	print_serial
 	movw	$0x7bfa,%si
@@ -89,7 +97,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-9:				# check color size
+10:				# check color size
 	movw	$color_message,(%di)
 	call	print_serial
 	movw	$0x7bfe,%si
@@ -98,7 +106,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-10:				# check keyboard state
+11:				# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
 	movw	$0x7bff,%si
@@ -107,12 +115,12 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-11:				# free stack frame
+12:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
 	leave
-12:				# jump to mv2prtmd.bin
+13:				# jump to mv2prtmd.bin
 	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
@@ -346,6 +354,8 @@ putchar_serial:			# void putchar_serial(char c);
 	.data
 color_message:
 	.string "bits per pixel = 0x"
+extended_memory_size_message:
+	.string "extended memory size = 0x"
 hello_message:
 	.string	"Hello, initscrn.bin!\n"
 hello_serial_message:
