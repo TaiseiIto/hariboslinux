@@ -275,7 +275,7 @@ git commitをするために，emailとnameを設定します．
 ```
 /~/hariboslinux # make debug
 ```
-loaddisk.binのentry point 0xbe00にbreak pointを置き，そこまで進む処理は.gdbinitに書かれている．
+kernel.binのentry point 0xce00にbreak pointを置き，そこまで進む処理は.gdbinitに書かれている．
 
 ### registerの内容の確認
 ```
