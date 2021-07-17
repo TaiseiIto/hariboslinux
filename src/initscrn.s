@@ -37,6 +37,7 @@ main:
 	int	$0x10
 5:				# push screen information and keyboard state
 				#
+				# 0x7bf4 unsigned short memory_size;	// MiB
 				# 0x7bf6 void *vram_addr;
 				# 0x7bfa unsigned short screen_width;
 				# 0x7bfc unsigned short screen_height;
@@ -56,8 +57,13 @@ main:
 	pushw	%ax
 	xorw	%ax,	%ax
 	pushw	%ax
+	movw	$0x8800,%ax	# memory size
+	int	$0x0015		# get extended memory size
+	shr	$0x000a,%ax	# convert KiB to MiB
+	inc	%ax		# add first 1MiB memory
+	pushw	%ax
 6:				# allocate new stack frame
-	subw	$0x000a,%bp
+	subw	$0x000c,%bp
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%si
@@ -68,9 +74,9 @@ main:
 	call	new_line_serial
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial
-	movw	$0x8800,%ax
-	int	$0x0015
-	movw	%ax,	(%di)
+	movw	$0x7bf4,%si
+	movw	(%si),%dx
+	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
 8:				# check vram_addr
