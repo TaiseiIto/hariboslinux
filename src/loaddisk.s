@@ -71,8 +71,8 @@ main:
 				# memory address 0x0:7e00~0x0:7e0f
 	movw	$load_dest, %si
 	addw	$0x0200,%si
-	movw	%si,	0x02(%di)
-	movw	$0x0010,(%di)
+	movw	%si,	(%di)
+	movw	$0x0010,0x02(%di)
 	call	dump
 	call	new_line
 7:				# load disk
@@ -128,8 +128,8 @@ main:
 				# memory address 0x0:c400~0x0:c40f
 	movw	$load_dest,%si
 	addw	$0x4800,%si
-	movw	%si,	0x02(%di)
-	movw	$0x0010,(%di)
+	movw	%si,	(%di)
+	movw	$0x0010,0x02(%di)
 	call	dump
 	call	new_line
 14:				# free stack frame
@@ -148,10 +148,10 @@ dump:				# void dump(void *address, unsigned short num_of_bytes);
 	pushw	%di
 	subw	$0x0004,%sp
 	movw	%sp,	%di
-				# address: 0x06(%bp)
-				# num_of_bytes: 0x04(%bp)
-	movw	0x06(%bp), %si
-	movw	0x04(%bp),%cx
+				# address: 0x04(%bp)
+				# num_of_bytes: 0x06(%bp)
+	movw	0x04(%bp), %si
+	movw	0x06(%bp),%cx
 1:				# print each byte loop
 	jcxz	2f
 	movw	%cx,	0x02(%di)
