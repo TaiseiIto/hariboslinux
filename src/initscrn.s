@@ -61,11 +61,8 @@ main:
 	int	$0x0015		# get extended memory size
 	addw	$0x0480,%ax	# add first 420KiB memory
 	shr	$0x000a,%ax	# convert KiB to MiB
-	jnz	7f
-6:				# memory size is bigger than or equals 64MiB
-7:				# push memory size (MiB)
 	pushw	%ax
-8:				# allocate new stack frame
+6:				# allocate new stack frame
 	subw	$0x000c,%bp
 	pushw	%bp
 	movw	%sp,	%bp
@@ -73,8 +70,17 @@ main:
 	pushw	%di
 	subw	$0x0002,%sp
 	movw	%sp,	%di
-9:				# check extended memroy size
+7:				# check extended memroy size
 	call	new_line_serial
+	movw	$0x7bf4,%si
+	movw	(%si),%dx
+	cmp	$0x0000,%dx
+	jne	9f
+8:				# memory size is bigger than or equals to 64MiB
+	movw	$big_memory_message,(%di)
+	call	print_serial
+	jmp	10f
+9:				# memory size is less than 64MiB
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial
 	movw	$0x7bf4,%si
@@ -361,6 +367,8 @@ putchar_serial:			# void putchar_serial(char c);
 	ret
 
 	.data
+big_memory_message:
+	.string "memory size is bigger then or equals to 64MiB\n"
 color_message:
 	.string "bits per pixel = 0x"
 extended_memory_size_message:
