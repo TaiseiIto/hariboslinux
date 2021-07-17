@@ -72,13 +72,13 @@ putchar_serial:			# void putchar_serial(char c);
 	leave
 	ret
 
-send_byte_to_keyboard:		# void send_byte_to_keyboard(unsigned short port, unsigned short data);
+send_byte_to_keyboard:		# void send_byte_to_keyboard(unsigned short port, unsigned char data);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
 	call	wait_for_keyboard
-	movw	0x06(%bp),%dx
-	movb	0x04(%bp),%al
+	movw	0x04(%bp),%dx
+	movb	0x06(%bp),%al
 	outb	%al,	%dx
 	leave
 	ret
@@ -121,11 +121,11 @@ main:
 	cli				# disable interrupts
 	movw	$disable_interrupts_message,(%di)
 	call	print_serial
-	movw	$0x0064,0x02(%di)	# enable memory space beyond 0xf:ffff
-	movw	$0x00d1,(%di)
+	movw	$0x0064,(%di)		# enable memory space beyond 0xf:ffff
+	movw	$0x00d1,0x02(%di)
 	call	send_byte_to_keyboard
-	movw	$0x0060,0x02(%di)
-	movw	$0x00df,(%di)
+	movw	$0x0060,(%di)
+	movw	$0x00df,0x02(%di)
 	call	send_byte_to_keyboard
 	call	wait_for_keyboard
 	movw	$expand_memory_message,(%di)
