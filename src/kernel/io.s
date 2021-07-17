@@ -17,25 +17,25 @@
 	.set	keyboard_state,		0x00007bff
 
 	.text
-	.globl	io_hlt
-	.globl	io_inb
-	.globl	io_inw
-	.globl	io_inl
-	.globl	io_outb
-	.globl	io_outw
-	.globl	io_outl
-	.globl	io_writeb
-	.type	io_hlt,			@function
-	.type	io_inb,			@function
-	.type	io_inw,			@function
-	.type	io_inl,			@function
-	.type	io_outb,		@function
-	.type	io_outw,		@function
-	.type	io_outl,		@function
-	.type	io_writeb,	@function
+	.globl	hlt
+	.globl	inb
+	.globl	inw
+	.globl	inl
+	.globl	outb
+	.globl	outw
+	.globl	outl
+	.globl	writeb
+	.type	hlt,			@function
+	.type	inb,			@function
+	.type	inw,			@function
+	.type	inl,			@function
+	.type	outb,			@function
+	.type	outw,			@function
+	.type	outl,			@function
+	.type	writeb,			@function
 
 				# // wait for next interrupt
-io_hlt:				# void io_hlt(void);
+hlt:				# void io_hlt(void);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -44,7 +44,7 @@ io_hlt:				# void io_hlt(void);
 	ret
 
 				# // inb	$address,	%al
-io_inb:				# unsigned char io_inb(unsigned short address);
+inb:				# unsigned char io_inb(unsigned short address);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -56,7 +56,7 @@ io_inb:				# unsigned char io_inb(unsigned short address);
 	ret
 
 				# // inw	$address,	%ax
-io_inw:				# unsigned short io_inw(unsigned short address);
+inw:				# unsigned short io_inw(unsigned short address);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -68,7 +68,7 @@ io_inw:				# unsigned short io_inw(unsigned short address);
 	ret
 
 				# // inl	$address,	%eax
-io_inl:				# unsigned int io_inl(unsigned short address);
+inl:				# unsigned int io_inl(unsigned short address);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -80,7 +80,7 @@ io_inl:				# unsigned int io_inl(unsigned short address);
 	ret
 
 				# // outb	$value,	$address
-io_outb:			# void io_outb(unsigned short address, unsigned char value);
+outb:				# void io_outb(unsigned short address, unsigned char value);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -93,7 +93,7 @@ io_outb:			# void io_outb(unsigned short address, unsigned char value);
 	ret
  
 				# // outw	$value,	$address
-io_outw:			# void io_outw(unsigned short address, unsigned char value);
+outw:				# void io_outw(unsigned short address, unsigned char value);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -106,7 +106,7 @@ io_outw:			# void io_outw(unsigned short address, unsigned char value);
 	ret
  
 				# // outl	$value,	$address
-io_outl:			# void io_outl(unsigned short address, unsigned char value);
+outl:				# void io_outl(unsigned short address, unsigned char value);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -119,7 +119,7 @@ io_outl:			# void io_outl(unsigned short address, unsigned char value);
 	ret
 
 				# // movb	$segment:($address),%al
-io_readb:			# unsigned char io_readb(unsigned short segment, void *address);
+readb:				# unsigned char io_readb(unsigned short segment, void *address);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -136,7 +136,7 @@ io_readb:			# unsigned char io_readb(unsigned short segment, void *address);
 	ret
 
 				# // movw	$segment:($address),%ax
-io_readw:			# unsigned short io_readw(unsigned short segment, void *address);
+readw:				# unsigned short io_readw(unsigned short segment, void *address);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -153,7 +153,7 @@ io_readw:			# unsigned short io_readw(unsigned short segment, void *address);
 	ret
 
 				# // movl	$segment:($address),%eax
-io_readl:			# unsigned int io_readl(unsigned short segment, void *address);
+readl:				# unsigned int io_readl(unsigned short segment, void *address);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -170,7 +170,7 @@ io_readl:			# unsigned int io_readl(unsigned short segment, void *address);
 	ret
 
 				# // movb	$value,$segment:($address)
-io_writeb:			# void io_writeb(unsigned short segment, void *address, unsigned char value);
+writeb:				# void io_writeb(unsigned short segment, void *address, unsigned char value);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -188,7 +188,7 @@ io_writeb:			# void io_writeb(unsigned short segment, void *address, unsigned ch
 	ret
 
 				# // movw	$value,$segment:($address)
-io_writew:			# void io_writew(unsigned short segment, void *address, unsigned char value);
+writew:				# void io_writew(unsigned short segment, void *address, unsigned char value);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -206,7 +206,7 @@ io_writew:			# void io_writew(unsigned short segment, void *address, unsigned ch
 	ret
 
 				# // movl	$value,$segment:($address)
-io_writel:			# void io_writel(unsigned short segment, void *address, unsigned char value);
+writel:				# void io_writel(unsigned short segment, void *address, unsigned char value);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp

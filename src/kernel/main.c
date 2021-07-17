@@ -10,7 +10,7 @@ void main(void)
 {
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n");
-	io_writeb(VRAM_SEGMENT, (void *)0x00000000, 0x0f);
-	while(1)io_hlt();
+	writeb(VRAM_SEGMENT, (void *)0x00000000, 0x0f);
+	while(1)hlt();
 }
 
