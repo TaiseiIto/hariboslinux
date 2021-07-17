@@ -12,6 +12,7 @@
 	.globl	io_outb
 	.globl	io_outw
 	.globl	io_outl
+	.globl	set_memory_size
 	.type	io_hlt,			@function
 	.type	io_inb,			@function
 	.type	io_inw,			@function
@@ -19,6 +20,7 @@
 	.type	io_outb,		@function
 	.type	io_outw,		@function
 	.type	io_outl,		@function
+	.type	set_memory_size,	@function
 
 				# // wait for next interrupt
 io_hlt:				# void io_hlt(void);
@@ -101,6 +103,14 @@ io_outl:			# void io_outl(unsigned short address, unsigned char value);
 	movw	0x08(%ebp),%dx
 	movl	0x0c(%ebp),%eax
 	outl	%eax,	%dx
+	leave
+	ret
+
+				# // set memory size to $0x0008,	$0x7bf4
+				# // return value : memory size (MiB)
+set_memory_size:		# unsigned short set_memory_size(void);
+	pushl	%ebp
+	movl	%esp,	%ebp
 	leave
 	ret
 
