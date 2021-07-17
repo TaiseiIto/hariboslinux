@@ -1,3 +1,7 @@
+// get nth arg in variadic arg function
+// the first arg is 0th
+unsigned int get_variadic_arg(unsigned int n);
+
 // wait for next interrupt
 void hlt(void);
 

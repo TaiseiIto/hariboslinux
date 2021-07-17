@@ -17,6 +17,7 @@
 	.set	keyboard_state,		0x00007bff
 
 	.text
+	.globl	get_variadic_arg
 	.globl	hlt
 	.globl	inb
 	.globl	inw
@@ -30,6 +31,7 @@
 	.globl	writeb
 	.globl	writew
 	.globl	writel
+	.type	get_variadic_arg,	@function
 	.type	hlt,			@function
 	.type	inb,			@function
 	.type	inw,			@function
@@ -43,6 +45,20 @@
 	.type	writeb,			@function
 	.type	writew,			@function
 	.type	writel,			@function
+
+				# // get nth arg in variadic arg function
+				# // the first arg is 0th
+get_variadic_arg:		# unsigned int get_variadic_arg(unsigned int n);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	movl	(%ebp),	%esi
+	movl	0x08(%ebp),%edx
+	movl	0x08(%esi,%edx,0x04),%eax
+	popl	%esi
+	leave
+	ret
 
 				# // wait for next interrupt
 hlt:				# void io_hlt(void);
