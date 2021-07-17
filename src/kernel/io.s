@@ -129,7 +129,7 @@ io_writeb:			# void io_writeb(unsigned short segment, void *address, unsigned ch
 	movw	0x08(%ebp),%es
 	movl	0x0c(%ebp),%edi
 	movb	0x10(%ebp),%dl
-	movb	%es:(%edi),%dl
+	movb	%dl,	%es:(%edi)
 	popl	%edx
 	popl	%edi
 	movw	%dx,	%es	# restore %es
