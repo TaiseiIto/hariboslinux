@@ -79,7 +79,9 @@ main:
 8:				# memory size is bigger than or equals to 64MiB
 	movw	$big_memory_message,(%di)
 	call	print_serial
-	jmp	10f
+	movw	$0xe881,%ax
+	int	$0x15
+	nop
 9:				# memory size is less than 64MiB
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial

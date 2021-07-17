@@ -21,4 +21,4 @@ void io_outl(unsigned short address, unsigned int value);
 
 // set memory size to $0x0008,	$0x7bf4
 // return value : memory size (MiB)
-unsigned short set_memory_size(void);
+// unsigned short set_memory_size(void);
