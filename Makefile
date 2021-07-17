@@ -30,7 +30,7 @@ EMULATOR_DEBUG_OPTION = -S -gdb tcp::$(DEBUG_PORT)
 # a raw image of the floppy disk
 EMULATOR_DRIVE_OPTION = -drive file=$(IMAGE_FILE),format=raw,if=floppy
 # memory size assigned for the emulator 
-EMULATOR_MEMORY_OPTION = -m 64M
+EMULATOR_MEMORY_OPTION = -m 4G
 # serial console
 EMULATOR_SERIAL_OPTION = -serial stdio
 # VESA VBE 2.0
