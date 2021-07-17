@@ -106,29 +106,3 @@ io_outl:			# void io_outl(unsigned short address, unsigned char value);
 	leave
 	ret
 
-# 				# // set memory size to $0x0008,	$0x7bf4
-# 				# // return value : memory size (MiB)
-# set_memory_size:		# unsigned short set_memory_size(void);
-# 0:
-# 	pushl	%ebp
-# 	movl	%esp,	%ebp
-# 	pushl	%ebx		# ebx will be scratched by int $0x15
-# 	pushl	%esi
-# 	xorl	%edx,	%edx
-# 	movl	$0x00007bf4,%esi
-# 	movw	%es:(%esi),%dx
-# 	cmpw	$0x0000,%dx
-# 	jne	2f
-# 1:				# memory size is not set
-# 	movl	$0x0000e881,%eax
-# 	int	$0x15
-# 	shrl	$0x04,	%edx
-# 	movw	%dx,%es:(%esi)
-# 2:				# memory size is already set
-# 	movl	%edx,	%eax
-# 3:
-# 	popl	%esi
-# 	popl	%ebx
-# 	leave
-# 	ret
-
