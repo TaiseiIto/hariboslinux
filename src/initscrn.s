@@ -59,8 +59,8 @@ main:
 	pushw	%ax
 	movw	$0x8800,%ax	# memory size
 	int	$0x0015		# get extended memory size
+	addw	$0x0480,%ax	# add first 420KiB memory
 	shr	$0x000a,%ax	# convert KiB to MiB
-	inc	%ax		# add first 1MiB memory
 	pushw	%ax
 6:				# allocate new stack frame
 	subw	$0x000c,%bp

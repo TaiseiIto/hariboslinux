@@ -29,6 +29,8 @@ EMULATOR_BOOT_OPTION = -boot order=a
 EMULATOR_DEBUG_OPTION = -S -gdb tcp::$(DEBUG_PORT)
 # a raw image of the floppy disk
 EMULATOR_DRIVE_OPTION = -drive file=$(IMAGE_FILE),format=raw,if=floppy
+# memory size assigned for the emulator 
+EMULATOR_MEMORY_OPTION = -m 32M
 # serial console
 EMULATOR_SERIAL_OPTION = -serial stdio
 # VESA VBE 2.0
@@ -77,7 +79,7 @@ docker-stop:
 
 # debug the operating system onQEMU by gdb
 debug:
-	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
+	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
 	make -C gdb
 
 # get setting
@@ -90,7 +92,7 @@ rebuild: clean
 
 # run the OS on QEMU
 run: $(IMAGE_FILE)
-	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
+	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
 
 src/kernel.bin: src/kernel/io.h src/kernel/io.s src/kernel/kernel.ld src/kernel/serial.c src/kernel/serial.h src/kernel/main.c 
 	make -C src
