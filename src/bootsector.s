@@ -64,14 +64,14 @@ main:
 	movw	$hello_message,(%di)
 	call	print
 2:				# read the floppy disk (0x2400~0x47ff) to memory (0xa000~0xc400)
-	movw	$0x0000,0x0a(%di)# cylinder_number
-	movw	$0x0001,0x08(%di)# head
-	movw	$0x0001,0x06(%di)# sector_number
-	movw	$track_size,0x04(%di)# num_of_sectors
+	movw	$0x0000,(%di)# cylinder_number
+	movw	$0x0001,0x02(%di)# head
+	movw	$0x0001,0x04(%di)# sector_number
+	movw	$track_size,0x06(%di)# num_of_sectors
 	movw	$entry,	%dx
 	shrw	$0x0004,%dx
-	movw	%dx,	0x02(%di)# destination_segment
-	movw	$0x2400,(%di)	# destination_address
+	movw	%dx,	0x08(%di)# destination_segment
+	movw	$0x2400,0x0a(%di)	# destination_address
 	call	read_sector
 	cmpw	$0x0000,%ax
 	je	4f
@@ -220,25 +220,25 @@ read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsi
 	pushw	%es
 	subw	$0x0004,%sp
 	movw	%sp,	%di
-				# cylinder_number: 0x0e(%bp)
-				# head: 0x0c(%bp)
-				# sector_number: 0x0a(%bp)
-				# num_of_sectors: 0x08(%bp)
-				# destination_segment: 0x06(%bp)
-				# destination_address: 0x04(%bp)
+				# cylinder_number: 0x04(%bp)
+				# head: 0x06(%bp)
+				# sector_number: 0x08(%bp)
+				# num_of_sectors: 0x0a(%bp)
+				# destination_segment: 0x0c(%bp)
+				# destination_address: 0x0e(%bp)
 	movw	$0x10,	%cx	# number of trials
 1:
 	movw	%cx,	0x02(%di)
 	movb	$0x02,	%ah	# read sectors
-	movb	0x08(%bp),%al	# number of read sectors
-	movw	0x0e(%bp),%cx	# cylinder_number
+	movb	0x0a(%bp),%al	# number of read sectors
+	movw	0x04(%bp),%cx	# cylinder_number
 	rolw	$0x08,	%cx
 	shlb	$0x06,	%cl
-	addb	0x0a(%bp),%cl	# sector_number
+	addb	0x08(%bp),%cl	# sector_number
 	xorb	%dl,	%dl	# read from A drive
-	movb	0x0c(%bp),%dh	# head
-	movw	0x06(%bp),%es	# destination_segment
-	movw	0x04(%bp),%bx	# destination_address
+	movb	0x06(%bp),%dh	# head
+	movw	0x0c(%bp),%es	# destination_segment
+	movw	0x0e(%bp),%bx	# destination_address
 	int	$0x13
 	jc	3f
 2:				# success
