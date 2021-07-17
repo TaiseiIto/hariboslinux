@@ -12,5 +12,6 @@ SECTIONS
 		loaddisk.o(.text)
 		loaddisk.o(.data)
 	}
+	/DISCARD/:{*(.eh_frame)}
 }
 

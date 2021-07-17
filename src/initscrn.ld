@@ -12,5 +12,6 @@ SECTIONS
 		initscrn.o(.text)
 		initscrn.o(.data)
 	}
+	/DISCARD/:{*(.eh_frame)}
 }
 
