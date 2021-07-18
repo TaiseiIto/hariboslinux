@@ -17,7 +17,6 @@
 	.set	keyboard_state,		0x00007bff
 
 	.text
-	.globl	get_boot_information
 	.globl	get_variadic_arg
 	.globl	hlt
 	.globl	inb
@@ -29,10 +28,11 @@
 	.globl	readb
 	.globl	readw
 	.globl	readl
+	.globl	reads
 	.globl	writeb
 	.globl	writew
 	.globl	writel
-	.type	get_boot_information,	@function
+	.globl	writes
 	.type	get_variadic_arg,	@function
 	.type	hlt,			@function
 	.type	inb,			@function
@@ -44,19 +44,13 @@
 	.type	readb,			@function
 	.type	readw,			@function
 	.type	readl,			@function
+	.type	reads,			@function
 	.type	writeb,			@function
 	.type	writew,			@function
 	.type	writel,			@function
+	.type	writes,			@function
 
-				# // get BootInformation structure at 0x00007bf8
-get_boot_information:		# BootInformation get_boot_information(void);
-0:
-	pushl	%ebp
-	movl	%esp,	%ebp
-	leave
-	ret
-
-				# // get nth arg in variadic arg function
+					# // get nth arg in variadic arg function
 				# // the first arg is 0th
 get_variadic_arg:		# unsigned int get_variadic_arg(unsigned int n);
 0:
@@ -205,6 +199,51 @@ readl:				# unsigned int io_readl(unsigned short segment, void *address);
 	leave
 	ret
 
+				# // read size bytes from $source_segment:$source to $destination 
+reads:				# void reads(unsigned short source_segment, void *source, void *destination, unsigned int size);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	pushl	%edi
+	movw	%es,	%dx
+	pushl	%edx
+1:
+	movw	0x08(%ebp),%es	# source_segment
+	movl	0x0c(%ebp),%esi # source
+	movl	0x10(%ebp),%edi # destination
+	movl	0x14(%ebp),%ecx # size
+2:				# write loop
+	jecxz	6f
+	cmpl	$0x00000004,%ecx
+	jb	4f
+3:				# read next 4 bytes
+	movl	%es:(%esi),%edx
+	movl	%edx,	(%edi)
+	addl	$0x00000004,%esi
+	addl	$0x00000004,%edi
+	subl	$0x00000004,%ecx
+	jmp	2b
+4:				# read next 2 bytes
+	cmpl	$0x00000002,%ecx
+	jb	5f
+	movw	%es:(%esi),%dx
+	movw	%dx,	(%edi)
+	addl	$0x00000002,%esi
+	addl	$0x00000002,%edi
+	subl	$0x00000002,%ecx
+	jmp	2b
+5:				# read a last byte
+	movb	%es:(%esi),%dl
+	movb	%dl,	(%edi)
+6:				# free stack frame
+	popl	%edx
+	movw	%dx,	%es
+	popl	%edi
+	popl	%esi
+	leave
+	ret
+
 				# // movb	$value,$segment:($address)
 writeb:				# void io_writeb(unsigned short segment, void *address, unsigned char value);
 0:
@@ -256,6 +295,51 @@ writel:				# void io_writel(unsigned short segment, void *address, unsigned char
 	popl	%edx
 	movw	%dx,	%es	# restore %es
 	popl	%edi
+	leave
+	ret
+
+				# // write size bytes from $source to $destination_segment:$destination
+writes:				# void writes(void *source, unsigned short destination_segment, void *destination, unsigned int size);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	pushl	%edi
+	movw	%es,	%dx
+	pushl	%edx
+1:
+	movl	0x08(%ebp),%esi	# source
+	movw	0x0c(%ebp),%es	# destination_segment
+	movl	0x10(%ebp),%edi	# destination
+	movl	0x14(%ebp),%ecx	# size
+2:				# write loop
+	jecxz	6f
+	cmpl	$0x00000004,%ecx
+	jb	4f
+3:				# write next 4 bytes
+	movl	(%esi),	%edx
+	movl	%edx,	%es:(%edi)
+	addl	$0x00000004,%esi
+	addl	$0x00000004,%edi
+	subl	$0x00000004,%ecx
+	jmp	2b
+4:				# write next 2 bytes
+	cmpl	$0x00000002,%ecx
+	jb	5f
+	movw	(%esi),	%dx
+	movw	%dx,	%es:(%edi)
+	addl	$0x00000002,%esi
+	addl	$0x00000002,%edi
+	subl	$0x00000002,%ecx
+	jmp	2b
+5:				# write a last byte
+	movb	(%esi),	%dl
+	movb	%dl,	%es:(%edi)
+6:				# free stack frame
+	popl	%edx
+	movw	%dx,	%es
+	popl	%edi
+	popl	%esi
 	leave
 	ret
 

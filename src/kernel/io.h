@@ -7,9 +7,6 @@ typedef struct
 	unsigned char keyboard_state;
 } BootInformation;
 
-// get BootInformation structure at 0x00007bf8
-BootInformation get_boot_information(void);
-
 // get nth arg in variadic arg function
 // the first arg is 0th
 unsigned int get_variadic_arg(unsigned int n);
@@ -44,6 +41,9 @@ unsigned short readw(unsigned short segment, void *address);
 // movl	$segment:($address),%eax
 unsigned int readl(unsigned short segment, void *address);
 
+// read size bytes from $source_segment:$source to $destination 
+void reads(unsigned short source_segment, void *source, void *destination, unsigned int size);
+
 // movb	$value,$segment:($address)
 void writeb(unsigned short segment, void *address, unsigned char value);
 
@@ -52,4 +52,7 @@ void writew(unsigned short segment, void *address, unsigned char value);
 
 // movl	$value,$segment:($address)
 void writel(unsigned short segment, void *address, unsigned char value);
+
+// write size bytes from $source to $destination_segment:$destination
+void writes(void *source, unsigned short destination_segment, void *destination, unsigned int size);
 

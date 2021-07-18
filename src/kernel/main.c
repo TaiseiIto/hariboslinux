@@ -7,6 +7,9 @@
 #define STACK_SEGMENT 0x20
 #define VRAM_SEGMENT 0x28
 
+// get BootInformation structure at 0x00007bf8
+BootInformation get_boot_information(void);
+
 void main(void)
 {
 	BootInformation boot_information;
@@ -31,5 +34,13 @@ void main(void)
 	new_line_serial_polling();
 	writeb(VRAM_SEGMENT, (void *)0x00000000, 0x0f);
 	while(1)hlt();
+}
+
+// get BootInformation structure at 0x00007bf8
+BootInformation get_boot_information(void)
+{
+	BootInformation boot_information;
+	reads(WHOLE_SEGMENT, (void *)0x00007bf8, (void *)&boot_information, sizeof(boot_information));
+	return boot_information;
 }
 
