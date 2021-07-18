@@ -199,8 +199,8 @@ readl:				# unsigned int io_readl(unsigned short segment, void *address);
 	leave
 	ret
 
-				# // read size bytes from $source_segment:$source to $destination 
-reads:				# void reads(unsigned short source_segment, void *source, void *destination, unsigned int size);
+				# // write size bytes from $source_segment:$source to $destination_segment:$destination
+reads:				# void writes(unsigned short source_segment, void *source, unsigned short destination_segment, void *destination, unsigned int size);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -208,18 +208,21 @@ reads:				# void reads(unsigned short source_segment, void *source, void *destin
 	pushl	%edi
 	movw	%es,	%dx
 	pushl	%edx
+	movw	%fs,	%dx
+	pushl	%edx
 1:
 	movw	0x08(%ebp),%es	# source_segment
 	movl	0x0c(%ebp),%esi # source
-	movl	0x10(%ebp),%edi # destination
-	movl	0x14(%ebp),%ecx # size
+	movw	0x10(%ebp),%fs	# destination_segment
+	movl	0x14(%ebp),%edi # destination
+	movl	0x18(%ebp),%ecx # size
 2:				# write loop
 	jecxz	6f
 	cmpl	$0x00000004,%ecx
 	jb	4f
 3:				# read next 4 bytes
 	movl	%es:(%esi),%edx
-	movl	%edx,	(%edi)
+	movl	%edx,	%fs:(%edi)
 	addl	$0x00000004,%esi
 	addl	$0x00000004,%edi
 	subl	$0x00000004,%ecx
@@ -228,15 +231,17 @@ reads:				# void reads(unsigned short source_segment, void *source, void *destin
 	cmpl	$0x00000002,%ecx
 	jb	5f
 	movw	%es:(%esi),%dx
-	movw	%dx,	(%edi)
+	movw	%dx,	%fs:(%edi)
 	addl	$0x00000002,%esi
 	addl	$0x00000002,%edi
 	subl	$0x00000002,%ecx
 	jmp	2b
 5:				# read a last byte
 	movb	%es:(%esi),%dl
-	movb	%dl,	(%edi)
+	movb	%dl,	%fs:(%edi)
 6:				# free stack frame
+	popl	%edx
+	movw	%dx,	%fs
 	popl	%edx
 	movw	%dx,	%es
 	popl	%edi
@@ -307,18 +312,21 @@ writes:				# void writes(void *source, unsigned short destination_segment, void 
 	pushl	%edi
 	movw	%es,	%dx
 	pushl	%edx
+	movw	%fs,	%dx
+	pushl	%edx
 1:
-	movl	0x08(%ebp),%esi	# source
-	movw	0x0c(%ebp),%es	# destination_segment
-	movl	0x10(%ebp),%edi	# destination
-	movl	0x14(%ebp),%ecx	# size
+	movw	0x08(%ebp),%es	# source_segment
+	movl	0x0c(%ebp),%esi	# source
+	movw	0x10(%ebp),%fs	# destination_segment
+	movl	0x14(%ebp),%edi	# destination
+	movl	0x18(%ebp),%ecx	# size
 2:				# write loop
 	jecxz	6f
 	cmpl	$0x00000004,%ecx
 	jb	4f
 3:				# write next 4 bytes
-	movl	(%esi),	%edx
-	movl	%edx,	%es:(%edi)
+	movl	%es:(%esi),	%edx
+	movl	%edx,	%fs:(%edi)
 	addl	$0x00000004,%esi
 	addl	$0x00000004,%edi
 	subl	$0x00000004,%ecx
@@ -326,16 +334,18 @@ writes:				# void writes(void *source, unsigned short destination_segment, void 
 4:				# write next 2 bytes
 	cmpl	$0x00000002,%ecx
 	jb	5f
-	movw	(%esi),	%dx
-	movw	%dx,	%es:(%edi)
+	movw	%es:(%esi),	%dx
+	movw	%dx,	%fs:(%edi)
 	addl	$0x00000002,%esi
 	addl	$0x00000002,%edi
 	subl	$0x00000002,%ecx
 	jmp	2b
 5:				# write a last byte
-	movb	(%esi),	%dl
-	movb	%dl,	%es:(%edi)
+	movb	%es:(%esi),	%dl
+	movb	%dl,	%fs:(%edi)
 6:				# free stack frame
+	popl	%edx
+	movw	%dx,	%fs
 	popl	%edx
 	movw	%dx,	%es
 	popl	%edi
