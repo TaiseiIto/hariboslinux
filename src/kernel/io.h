@@ -1,3 +1,15 @@
+typedef struct
+{
+	unsigned short memory_size;	// MiB
+	unsigned short screen_width;
+	unsigned short screen_height;
+	unsigned char bits_per_pixel;
+	unsigned char keyboard_state;
+} BootInformation;
+
+// get BootInformation structure at 0x00007bf8
+BootInformation get_boot_information(void);
+
 // get nth arg in variadic arg function
 // the first arg is 0th
 unsigned int get_variadic_arg(unsigned int n);

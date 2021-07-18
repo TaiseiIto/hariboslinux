@@ -17,6 +17,7 @@
 	.set	keyboard_state,		0x00007bff
 
 	.text
+	.globl	get_boot_information
 	.globl	get_variadic_arg
 	.globl	hlt
 	.globl	inb
@@ -31,6 +32,7 @@
 	.globl	writeb
 	.globl	writew
 	.globl	writel
+	.type	get_boot_information,	@function
 	.type	get_variadic_arg,	@function
 	.type	hlt,			@function
 	.type	inb,			@function
@@ -45,6 +47,14 @@
 	.type	writeb,			@function
 	.type	writew,			@function
 	.type	writel,			@function
+
+				# // get BootInformation structure at 0x00007bf8
+get_boot_information:		# BootInformation get_boot_information(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	leave
+	ret
 
 				# // get nth arg in variadic arg function
 				# // the first arg is 0th

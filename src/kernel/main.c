@@ -7,19 +7,12 @@
 #define STACK_SEGMENT 0x20
 #define VRAM_SEGMENT 0x28
 
-typedef struct
-{
-	unsigned short memory_size;	// MiB
-	unsigned short screen_width;
-	unsigned short screen_height;
-	unsigned char bits_per_pixel;
-	unsigned char keyboard_state;
-} BootInformation;
-
 void main(void)
 {
+	BootInformation boot_information;
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n");
+	boot_information = get_boot_information();
 	writeb(VRAM_SEGMENT, (void *)0x00000000, 0x0f);
 	while(1)hlt();
 }
