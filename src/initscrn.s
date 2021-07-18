@@ -37,8 +37,7 @@ main:
 	int	$0x10
 5:				# push screen information and keyboard state
 				#
-				# 0x7bf4 unsigned int memory_size;	// MiB
-				# 0x7bf6 void *vram_addr;
+				# 0x7bf8 unsigned int memory_size;	// MiB
 				# 0x7bfa unsigned short screen_width;
 				# 0x7bfc unsigned short screen_height;
 				# 0x7bfe unsigned char bits_per_pixel;
@@ -52,10 +51,6 @@ main:
 	movw	$0x00c8,%ax	# screen_height
 	pushw	%ax
 	movw	$0x0140,%ax	# screen_width
-	pushw	%ax
-	movw	$0x000a,%ax	# vram_addr
-	pushw	%ax
-	xorw	%ax,	%ax
 	pushw	%ax
 	movw	$0x8800,%ax	# memory size
 	int	$0x0015		# get extended memory size
@@ -87,22 +82,12 @@ main:
 9:				# memory size is less than 64MiB
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial
-	movw	$0x7bf4,%si
+	movw	$0x7bf8,%si
 	movw	(%si),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-10:				# check vram_addr
-	movw	$vram_addr_message,(%di)
-	call	print_serial
-	movw	$0x7bf6,%si
-	movw	0x02(%si),%dx
-	movw	%dx,	(%di)
-	movw	(%si),%dx
-	movw	%dx,	0x02(%di)
-	call	print_dword_hex_serial
-	call	new_line_serial
-11:				# check screen size
+10:				# check screen size
 	movw	$screen_size_message1,(%di)
 	call	print_serial
 	movw	$0x7bfa,%si
@@ -116,7 +101,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-12:				# check color size
+11:				# check color size
 	movw	$color_message,(%di)
 	call	print_serial
 	movw	$0x7bfe,%si
@@ -125,7 +110,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-13:				# check keyboard state
+12:				# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
 	movw	$0x7bff,%si
@@ -134,12 +119,12 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-14:				# free stack frame
+13:				# free stack frame
 	addw	$0x0002,%sp
 	popw	%di
 	popw	%si
 	leave
-15:				# jump to mv2prtmd.bin
+14:				# jump to mv2prtmd.bin
 	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)

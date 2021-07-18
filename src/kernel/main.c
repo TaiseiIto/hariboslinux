@@ -7,6 +7,15 @@
 #define STACK_SEGMENT 0x20
 #define VRAM_SEGMENT 0x28
 
+typedef struct
+{
+	unsigned short memory_size;	// MiB
+	unsigned short screen_width;
+	unsigned short screen_height;
+	unsigned char bits_per_pixel;
+	unsigned char keyboard_state;
+} BootInformation;
+
 void main(void)
 {
 	new_line_serial_polling();

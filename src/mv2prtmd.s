@@ -11,7 +11,62 @@
 	.code16				# real mode
 	.text
 entry:
-	jmp	main
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+1:					# print hello message
+	call	new_line_serial
+	movw	$hello_message,(%di)
+	call	print_serial
+2:					# prepare to move to protected mode
+	movw	$0x00ff,%ax		# disable master PIC
+	movw	$0x0021,%dx
+	outb	%al,	%dx
+	call	new_line_serial
+	movw	$disable_master_PIC_message,(%di)
+	call	print_serial
+	movw	$0x00ff,%ax		# disable slave PIC
+	movw	$0x00a1,%dx
+	outb	%al,	%dx
+	movw	$disable_slave_PIC_message,(%di)
+	call	print_serial
+	cli				# disable interrupts
+	movw	$disable_interrupts_message,(%di)
+	call	print_serial
+	movw	$0x0064,(%di)		# enable memory space beyond 0xf:ffff
+	movw	$0x00d1,0x02(%di)
+	call	send_byte_to_keyboard
+	movw	$0x0060,(%di)
+	movw	$0x00df,0x02(%di)
+	call	send_byte_to_keyboard
+	call	wait_for_keyboard
+	movw	$expand_memory_message,(%di)
+	call	print_serial
+3:					# free stack frame
+	addw	$0x0004,%sp
+	popw	%di
+	leave
+4:					# move to protected mode
+	lgdt	(gdtr)
+	movl	%cr0,	%eax
+	andl	$0x7fffffff,%eax
+	orl	$0x00000001,%eax
+	movl	%eax,	%cr0
+	movw	$0x0008,%dx
+	movw	%dx,	%es
+	movw	%dx,	%fs
+	movw	%dx,	%gs
+	movw	$0x0020,%dx
+	movw	%dx,	%ss
+	movw	$0x0018,%dx
+	movw	%dx,	%ds
+	movl	$0x00100000,%ebp
+	movl	$0x00100000,%esp
+	jmp	$0x10,	$0x0000
+
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
 0:
@@ -94,63 +149,6 @@ wait_for_keyboard:		# void wait_for_keyboard(void);
 	jnz	1b
 	leave
 	ret
-
-main:
-0:
-	pushw	%bp
-	movw	%sp,	%bp
-	pushw	%di
-	subw	$0x0004,%sp
-	movw	%sp,	%di
-1:					# print hello message
-	call	new_line_serial
-	movw	$hello_message,(%di)
-	call	print_serial
-2:					# prepare to move to protected mode
-	movw	$0x00ff,%ax		# disable master PIC
-	movw	$0x0021,%dx
-	outb	%al,	%dx
-	call	new_line_serial
-	movw	$disable_master_PIC_message,(%di)
-	call	print_serial
-	movw	$0x00ff,%ax		# disable slave PIC
-	movw	$0x00a1,%dx
-	outb	%al,	%dx
-	movw	$disable_slave_PIC_message,(%di)
-	call	print_serial
-	cli				# disable interrupts
-	movw	$disable_interrupts_message,(%di)
-	call	print_serial
-	movw	$0x0064,(%di)		# enable memory space beyond 0xf:ffff
-	movw	$0x00d1,0x02(%di)
-	call	send_byte_to_keyboard
-	movw	$0x0060,(%di)
-	movw	$0x00df,0x02(%di)
-	call	send_byte_to_keyboard
-	call	wait_for_keyboard
-	movw	$expand_memory_message,(%di)
-	call	print_serial
-3:					# free stack frame
-	addw	$0x0004,%sp
-	popw	%di
-	leave
-4:					# move to protected mode
-	lgdt	(gdtr)
-	movl	%cr0,	%eax
-	andl	$0x7fffffff,%eax
-	orl	$0x00000001,%eax
-	movl	%eax,	%cr0
-	movw	$0x0008,%dx
-	movw	%dx,	%es
-	movw	%dx,	%fs
-	movw	%dx,	%gs
-	movw	$0x0020,%dx
-	movw	%dx,	%ss
-	movw	$0x0018,%dx
-	movw	%dx,	%ds
-	movl	$0x00100000,%ebp
-	movl	$0x00100000,%esp
-	jmp	$0x10,	$0x0000
 
 	.data
 gdt:
