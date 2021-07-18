@@ -9,6 +9,7 @@
 
 // get BootInformation structure at 0x00007bf8
 BootInformation get_boot_information(void);
+void __stack_chk_fail(void);
 
 void main(void)
 {
@@ -42,5 +43,10 @@ BootInformation get_boot_information(void)
 	BootInformation boot_information;
 	reads(WHOLE_SEGMENT, (void *)0x00007bf8, (void *)&boot_information, sizeof(boot_information));
 	return boot_information;
+}
+
+void __stack_chk_fail(void)
+{
+	print_serial_polling("__stack_chk_fail called!\n");
 }
 
