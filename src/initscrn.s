@@ -67,7 +67,7 @@ main:
 	movw	%sp,	%di
 7:				# check extended memroy size
 	call	new_line_serial
-	movw	$0x7bf4,%si
+	movw	$0x7bf8,%si
 	movw	(%si),%dx
 	cmp	$0x0000,%dx
 	jne	9f
