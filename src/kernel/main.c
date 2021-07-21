@@ -50,12 +50,7 @@ void main(void)
 BootInformation get_boot_information(void)
 {
 	BootInformation boot_information;
-	//reads(WHOLE_SEGMENT, (void *)0x00007bf8, STACK_SEGMENT, (void *)&boot_information, sizeof(boot_information));
-	boot_information.memory_size = 1;
-	boot_information.screen_width = 2;
-	boot_information.screen_height = 3;
-	boot_information.bits_per_pixel = 4;
-	boot_information.keyboard_state = 5;
+	reads(WHOLE_SEGMENT, (void *)0x00007bf8, STACK_SEGMENT, (void *)&boot_information, sizeof(boot_information));
 	return boot_information;
 }
 
