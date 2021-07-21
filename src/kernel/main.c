@@ -42,7 +42,7 @@ void main(void)
 	print_serial_polling("keyboard state = 0x");
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
-	writeb(VRAM_SEGMENT, (void *)0x00000000, 0x0f);
+	for(unsigned char *pixel_pointer = (unsigned char *)0x00000000; (unsigned int)pixel_pointer < boot_information.screen_width * boot_information.screen_height; pixel_pointer++)writeb(VRAM_SEGMENT, (void *)pixel_pointer, 0x0f);
 	while(1)hlt();
 }
 
