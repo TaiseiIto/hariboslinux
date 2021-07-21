@@ -60,6 +60,11 @@ docker container上で
 ```
 するとdocker containerが停止します．
 
+### floppy disk imageをDocker containerからdownload
+```
+$ make download-image
+```
+
 ## bootの流れ
 
 ### bootsector.bin

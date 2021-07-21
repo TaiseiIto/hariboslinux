@@ -77,6 +77,9 @@ docker-start:
 docker-stop:
 	$(DOCKER) stop $(DOCKER_CONTAINER_NAME)
 
+download-image:
+	$(DOCKER) cp $(DOCKER_CONTAINER_NAME):/~/hariboslinux/$(IMAGE_FILE) .
+
 # debug the operating system onQEMU by gdb
 debug: $(IMAGE_FILE) stop
 	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
