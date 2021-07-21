@@ -173,8 +173,8 @@ OS本体です．
 | 0x0000ca00   | 0x0000cdff | 0x00004e00 | 0x000051ff | mv2prtmd.bin              |
 | 0x0000ce00   | ?          | 0x00005200 | ?          | kernel.bin                |
 | 0x000a0000   | 0x000a6400 |            |            | VRAM                      |
-| 0x00e00000   | 0x00efffff |            |            | stack                     |
-| 0x01000000   | ?          |            |            | heap                      |
+| 0x00100000   | 0x001fffff |            |            | stack                     |
+| 0x00200000   | ?          |            |            | heap                      |
 
 ## 開発者用メモ
 docker, VNC softwareに加え，git, makeを用いて開発しています．
