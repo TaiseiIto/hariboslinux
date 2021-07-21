@@ -22,6 +22,7 @@ void __stack_chk_fail(void);
 
 void main(void)
 {
+	unsigned int vram_write_times = 0;
 	BootInformation boot_information;
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n");
@@ -42,7 +43,14 @@ void main(void)
 	print_serial_polling("keyboard state = 0x");
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
-	for(unsigned char *pixel_pointer = (unsigned char *)0x00000000; (unsigned int)pixel_pointer < boot_information.screen_width * boot_information.screen_height; pixel_pointer++)writeb(VRAM_SEGMENT, (void *)pixel_pointer, 0x0f);
+	for(unsigned char *pixel_pointer = (unsigned char *)0x00000000; (unsigned int)pixel_pointer < boot_information.screen_width * boot_information.screen_height; pixel_pointer++)
+	{
+		writeb(VRAM_SEGMENT, (void *)pixel_pointer, 0x0f);
+		vram_write_times++;
+	}
+	print_serial_polling("VRAM write times = 0x");
+	print_dword_hex_serial_polling(vram_write_times);
+	new_line_serial_polling();
 	while(1)hlt();
 }
 

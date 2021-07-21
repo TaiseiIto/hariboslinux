@@ -19,6 +19,13 @@ void print_byte_hex_serial_polling(unsigned char value)
 	else putchar_serial_polling(low + 'a' - 10);
 }
 
+// print value as hexadecimal
+void print_dword_hex_serial_polling(unsigned int value)
+{
+	print_word_hex_serial_polling((unsigned short)(value >> 16));
+	print_word_hex_serial_polling((unsigned short)(value & 0x0000ffff));
+}
+
 // print string to serial port COM1
 void print_serial_polling(char *string)
 {
