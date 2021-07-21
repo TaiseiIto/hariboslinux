@@ -50,7 +50,7 @@ void main(void)
 BootInformation get_boot_information(void)
 {
 	BootInformation boot_information;
-	reads(WHOLE_SEGMENT, (void *)0x00007bf8, STACK_SEGMENT, (void *)&boot_information, sizeof(boot_information));
+	reads(WHOLE_SEGMENT, (void *)0x00007bf8, (void *)&boot_information, sizeof(boot_information));
 	return boot_information;
 }
 
