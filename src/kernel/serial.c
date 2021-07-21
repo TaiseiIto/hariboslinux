@@ -14,9 +14,9 @@ void print_byte_hex_serial_polling(unsigned char value)
 	char high = value >> 4 & 0x0f;
 	char low = value & 0x0f;
 	if(high < 10)putchar_serial_polling(high + '0');
-	else putchar_serial_polling(high + 'a');
+	else putchar_serial_polling(high + 'a' - 10);
 	if(low < 10)putchar_serial_polling(low + '0');
-	else putchar_serial_polling(low + 'a');
+	else putchar_serial_polling(low + 'a' - 10);
 }
 
 // print string to serial port COM1
