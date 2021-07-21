@@ -63,8 +63,8 @@ entry:
 	movw	%dx,	%ss
 	movw	$0x0018,%dx
 	movw	%dx,	%ds
-	movl	$0x00100000,%ebp
-	movl	$0x00100000,%esp
+	movl	$0x001f3200,%ebp
+	movl	$0x001f3200,%esp
 	jmp	$0x10,	$0x0000
 
 				# // print LF
@@ -194,14 +194,14 @@ gdt:
 	.byte	0x00		#  base_high
 
 				# kernel stack section is readable and writable
-				# base	0x00e00000
-				# limit	0x000fffff
+				# base	0x0000ce00
+				# limit	0x001f31ff
 				# access_right 0x4092
-	.word	0xffff		#  limit_low
-	.word	0x0000		#  base_low
-	.byte	0xe0		#  base_mid
+	.word	0x01f4		#  limit_low
+	.word	kernel		#  base_low
+	.byte	0x00		#  base_mid
 	.byte	0x92		#  access_right
-	.byte	0x4f		#  limit_high
+	.byte	0xc0		#  limit_high
 	.byte	0x00		#  base_high
 
 				# VRAM section is readable and writable
