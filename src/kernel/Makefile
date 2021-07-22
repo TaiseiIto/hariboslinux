@@ -19,8 +19,12 @@ all: kernel.bin
 clean:
 	rm -f *.bin *.o main.s
 
-kernel.bin: main.o io.o serial.o
+kernel.bin: graphic.o main.o io.o serial.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
+
+graphic.o: graphic.s
+
+graphic.s: graphic.c
 
 io.o: io.s
 

@@ -1,3 +1,4 @@
+#include "graphic.h"
 #include "io.h"
 #include "serial.h"
 
@@ -43,9 +44,10 @@ void main(void)
 	print_serial_polling("keyboard state = 0x");
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
+	init_palette();
 	for(unsigned char *pixel_pointer = (unsigned char *)0x00000000; (unsigned int)pixel_pointer < boot_information.screen_width * boot_information.screen_height; pixel_pointer++)
 	{
-		writeb(VRAM_SEGMENT, (void *)pixel_pointer, 0x0f);
+		writeb(VRAM_SEGMENT, (void *)pixel_pointer, (unsigned char)((unsigned int)pixel_pointer % 0xff));
 		vram_write_times++;
 	}
 	print_serial_polling("VRAM write times = 0x");
