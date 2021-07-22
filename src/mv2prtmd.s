@@ -157,6 +157,7 @@ wait_for_keyboard:		# void wait_for_keyboard(void);
 	ret
 
 	.data
+	.align	0x8
 gdt:
 				# null segment descriptor
 	.word	0x0000		#  limit_low
