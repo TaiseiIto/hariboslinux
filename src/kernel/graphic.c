@@ -1,3 +1,4 @@
+#include "graphic.h"
 #include "io.h"
 #include "segment.h"
 #include "serial.h"
@@ -19,6 +20,26 @@ ScreenInformation screen_information;
 // green brightnesses: 0x00, 0x0c, 0x18, 0x24, 0x30, 0x3c
 // blue brightnesses:  0x00, 0x0c, 0x18, 0x24, 0x30, 0x3c
 void init_palette(void);
+
+// fill box
+// x and y can be negative
+// 0 <= red   < 6
+// 0 <= green < 6
+// 0 <= blue  < 6
+void fill_box(short x, short y, unsigned short width, unsigned short height, unsigned char red, unsigned char green, unsigned char blue)
+{
+	for(short y_i = y; y_i < y + (short)height; y_i++)
+	{
+		if(y_i < 0)continue;
+		if(screen_information.height <= y_i)break;
+		for(short x_i = x; x_i < x + (short)width; x_i++)
+		{
+			if(x_i < 0)continue;
+			if(screen_information.width <= x_i)break;
+			put_dot((unsigned short)x_i, (unsigned short)y_i, red, green, blue);
+		}
+	}
+}
 
 // 1 byte per pixel
 // 3 primary colors(RGB)
