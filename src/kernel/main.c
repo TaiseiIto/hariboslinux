@@ -44,7 +44,7 @@ void main(void)
 	print_serial_polling("keyboard state = 0x");
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
-	init_palette();
+	init_screen();
 	for(unsigned int pixel_pointer = 0x00000000; pixel_pointer < boot_information.screen_width * boot_information.screen_height; pixel_pointer++)
 	{
 		writeb(VRAM_SEGMENT, (void *)pixel_pointer, pixel_pointer % 0xff);
