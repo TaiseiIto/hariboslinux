@@ -1,5 +1,13 @@
 #include "io.h"
 
+typedef struct
+{
+	unsigned short width;
+	unsigned short height;
+} ScreenInformation;
+
+ScreenInformation screen_information;
+
 // 1 byte per pixel
 // 3 primary colors(RGB)
 // 6 brightnesses 
@@ -50,8 +58,10 @@ void init_palette(void)
 }
 
 // init screen
-void init_screen(void)
+void init_screen(unsigned short screen_width, unsigned short screen_height)
 {
+	screen_information.width = screen_width;
+	screen_information.height = screen_height;
 	init_palette();
 }
 
