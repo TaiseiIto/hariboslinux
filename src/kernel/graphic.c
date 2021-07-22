@@ -12,21 +12,30 @@ void init_palette(void)
 	unsigned int eflags = get_eflags();
 	if(eflags & INTERRUPT_FLAG)cli();
 	outb(0x03c8, 0x00);
-	for(unsigned char color_number = 0x00; color_number < 0x06 * 0x06 * 0x06; color_number++)
+	for(unsigned short color_number = 0x0000; color_number < 0x0100; color_number++)
 	{
-		unsigned char color_number_destroyable;
-		unsigned char red;
-		unsigned char green;
-		unsigned char blue;
-		color_number_destroyable = color_number;
-		red = 0x33 * (color_number_destroyable % 6);
-		color_number_destroyable /= 6;
-		green = 0x33 * (color_number_destroyable % 6);
-		color_number_destroyable /= 6;
-		blue = 0x33 * (color_number_destroyable % 6);
-		outb(0x03c9, red);
-		outb(0x03c9, green);
-		outb(0x03c9, blue);
+		if(color_number < 0x06 * 0x06 * 0x06)
+		{
+			unsigned char color_number_destroyable;
+			unsigned char red;
+			unsigned char green;
+			unsigned char blue;
+			color_number_destroyable = (unsigned char)color_number;
+			red = 0x33 * (color_number_destroyable % 6);
+			color_number_destroyable /= 6;
+			green = 0x33 * (color_number_destroyable % 6);
+			color_number_destroyable /= 6;
+			blue = 0x33 * (color_number_destroyable % 6);
+			outb(0x03c9, red);
+			outb(0x03c9, green);
+			outb(0x03c9, blue);
+		}
+		else
+		{
+			outb(0x03c9, 0x00);
+			outb(0x03c9, 0x00);
+			outb(0x03c9, 0x00);
+		}
 	}
 	if(eflags & INTERRUPT_FLAG)sti();
 }
