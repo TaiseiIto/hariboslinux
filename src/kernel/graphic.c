@@ -1,4 +1,5 @@
 #include "io.h"
+#include "serial.h"
 
 typedef struct
 {
@@ -62,6 +63,12 @@ void init_screen(unsigned short screen_width, unsigned short screen_height)
 {
 	screen_information.width = screen_width;
 	screen_information.height = screen_height;
+	print_serial_polling("screen_information.width = 0x");
+	print_word_hex_serial_polling(screen_information.width);
+	new_line_serial_polling();
+	print_serial_polling("screen_information.height = 0x");
+	print_word_hex_serial_polling(screen_information.height);
+	new_line_serial_polling();
 	init_palette();
 }
 
