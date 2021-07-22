@@ -49,8 +49,14 @@ entry:
 	addw	$0x0004,%sp
 	popw	%di
 	leave
+	pushw	$free_stack_message
+	call	print_serial
+	addw	$0x0002,%sp
 4:					# move to protected mode
 	lgdt	(gdtr)
+	pushw	$lgdt_message
+	call	print_serial
+	addw	$0x0002,%sp
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
@@ -225,7 +231,11 @@ disable_slave_PIC_message:
 	.string "disable slave PIC\n"
 expand_memory_message:
 	.string "expand memory beyond 0xf:ffff\n"
+free_stack_message:
+	.string "free stack!\n"
 hello_message:
 	.string	"Hello, mv2prtmd.bin!\n"
+lgdt_message:
+	.string "lgdt!\n"
 	.align	0x0200
 kernel:
