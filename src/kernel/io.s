@@ -4,19 +4,9 @@
 # scratch registers: eax, ecx, edx
 # preserved registers: ebx, esi, edi, ebp, esp
 
-	.set	whole_segment,		0x08
-	.set	kernel_code_segment,	0x10
-	.set	kernel_data_segment,	0x18
-	.set	vram_segment,		0x20
-
-	.set	memory_size,		0x00007bf4
-	.set	vram_addr,		0x00007bf6
-	.set	screen_width,		0x00007bfa
-	.set	screen_height,		0x00007bfc
-	.set	bits_per_pixel,		0x00007bfe
-	.set	keyboard_state,		0x00007bff
-
 	.text
+	.globl	cli
+	.globl	get_eflags
 	.globl	get_variadic_arg
 	.globl	hlt
 	.globl	inb
@@ -29,10 +19,13 @@
 	.globl	readw
 	.globl	readl
 	.globl	reads
+	.globl	sti
 	.globl	writeb
 	.globl	writew
 	.globl	writel
 	.globl	writes
+	.type	cli,			@function
+	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
 	.type	hlt,			@function
 	.type	inb,			@function
@@ -45,12 +38,31 @@
 	.type	readw,			@function
 	.type	readl,			@function
 	.type	reads,			@function
+	.type	sti,			@function
 	.type	writeb,			@function
 	.type	writew,			@function
 	.type	writel,			@function
 	.type	writes,			@function
 
-					# // get nth arg in variadic arg function
+				# // disable all interrupts
+cli:				# void cli(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	cli	
+	leave
+	ret
+
+				# // get eflags register
+get_eflags:			# unsigned int get_eflags(void);
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushf
+	popl	%eax
+	leave
+	ret
+
+				# // get nth arg in variadic arg function
 				# // the first arg is 0th
 get_variadic_arg:		# unsigned int get_variadic_arg(unsigned int n);
 0:
@@ -241,6 +253,15 @@ reads:				# void read(unsigned short source_segment, void *source, void *destina
 	movw	%dx,	%es
 	popl	%edi
 	popl	%esi
+	leave
+	ret
+
+				# // enable all interrupts
+sti:				# void sti(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	sti	
 	leave
 	ret
 

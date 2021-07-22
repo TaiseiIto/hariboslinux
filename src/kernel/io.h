@@ -1,3 +1,9 @@
+// disable all interrupts
+void cli(void);
+
+// get eflags register
+unsigned int get_eflags(void);
+
 // get nth arg in variadic arg function
 // the first arg is 0th
 unsigned int get_variadic_arg(unsigned int n);
@@ -34,6 +40,9 @@ unsigned int readl(unsigned short segment, void *address);
 
 // read size bytes from $source_segment:$source to $destination 
 void reads(unsigned short source_segment, void *source, void *destination, unsigned int size);
+
+// enable all interrupts
+void sti(void);
 
 // movb	$value,$segment:($address)
 void writeb(unsigned short segment, void *address, unsigned char value);
