@@ -21,11 +21,11 @@ void init_palette(void)
 			unsigned char green;
 			unsigned char blue;
 			color_number_destroyable = (unsigned char)color_number;
-			red = 0x33 * (color_number_destroyable % 6);
+			red = 0x0c * (color_number_destroyable % 6);
 			color_number_destroyable /= 6;
-			green = 0x33 * (color_number_destroyable % 6);
+			green = 0x0c * (color_number_destroyable % 6);
 			color_number_destroyable /= 6;
-			blue = 0x33 * (color_number_destroyable % 6);
+			blue = 0x0c * (color_number_destroyable % 6);
 			outb(0x03c9, red);
 			outb(0x03c9, green);
 			outb(0x03c9, blue);
