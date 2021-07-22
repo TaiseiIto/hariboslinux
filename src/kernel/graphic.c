@@ -1,5 +1,7 @@
 #include "io.h"
+#include "segment.h"
 #include "serial.h"
+
 
 typedef struct
 {
@@ -70,5 +72,21 @@ void init_screen(unsigned short screen_width, unsigned short screen_height)
 	print_word_hex_serial_polling(screen_information.height);
 	new_line_serial_polling();
 	init_palette();
+}
+
+// put dot
+// 0 <= x < screen width
+// 0 <= y < screen height
+// 0 <= red   < 6
+// 0 <= green < 6
+// 0 <= blue  < 6
+void put_dot(unsigned short x, unsigned short y, unsigned char red, unsigned char green, unsigned char blue)
+{
+	if(screen_information.width <= x)return;
+	if(screen_information.height <= y)return;
+	if(0x06 <= red)return;
+	if(0x06 <= green)return;
+	if(0x06 <= blue)return;
+	writeb(VRAM_SEGMENT, (void *)(screen_information.width * y + x), 6 * (6 * blue + green) + red);
 }
 

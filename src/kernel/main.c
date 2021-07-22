@@ -1,12 +1,8 @@
 #include "graphic.h"
 #include "io.h"
+#include "segment.h"
 #include "serial.h"
 
-#define WHOLE_SEGMENT 0x08
-#define KERNEL_CODE_SEGMENT 0x10
-#define KERNEL_DATA_SEGMENT 0x18
-#define STACK_SEGMENT 0x20
-#define VRAM_SEGMENT 0x28
 
 typedef struct
 {
@@ -45,9 +41,9 @@ void main(void)
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
 	init_screen(boot_information.screen_width, boot_information.screen_height);
-	for(unsigned int pixel_pointer = 0x00000000; pixel_pointer < boot_information.screen_width * boot_information.screen_height; pixel_pointer++)
+	for(unsigned short y = 0; y < boot_information.screen_height; y++)for(unsigned short x = 0; x < boot_information.screen_width; x++)
 	{
-		writeb(VRAM_SEGMENT, (void *)pixel_pointer, pixel_pointer % 0xff);
+		put_dot(x, y, x % 0x06, y % 0x06, 0x00);
 		vram_write_times++;
 	}
 	print_serial_polling("VRAM write times = 0x");
