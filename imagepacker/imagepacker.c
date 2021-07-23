@@ -1,4 +1,4 @@
-// Usage: pack OUTPUT BOOTSECTOR [FILE] ...
+// Usage: imagepacker OUTPUT BOOTSECTOR [FILE] ...
 //
 // This program outputs Haribos Linux floppy disk raw image file named by the argument OUTPUT.
 // The output includes the files specified by the arguments [FILE] ...
@@ -107,7 +107,7 @@ int main(int argc, char const * const * const argv)
 	char const * const *input_file_names;
 	// num of [FILE] ...
 	unsigned int num_of_input_files;
-	// "pack", "OUTPUT" and "BOOOTSECTOR"
+	// "imagepacker", "OUTPUT" and "BOOOTSECTOR"
 	unsigned int const num_of_necessary_args = 3;
 
 	// related to boot sector
@@ -147,7 +147,7 @@ int main(int argc, char const * const * const argv)
 	// check argc
 	if((unsigned int)argc < num_of_necessary_args)
 	{
-		fprintf(stderr, "Usage: pack OUTPUT BOOTSECTOR [FILE] ...\n");
+		fprintf(stderr, "Usage: imagepacker OUTPUT BOOTSECTOR [FILE] ...\n");
 		return EXIT_FAILURE;
 	}
 	// print argv
