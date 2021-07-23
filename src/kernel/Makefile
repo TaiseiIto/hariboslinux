@@ -19,8 +19,18 @@ all: kernel.bin
 clean:
 	rm -f *.bin *.o main.s
 
-kernel.bin: graphic.o main.o io.o serial.o
+kernel.bin: fontdata.o graphic.o main.o io.o serial.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
+
+fontdata.o: fontdata.s
+
+fontdata.s: fontdata.c
+
+fontdata.c: font/fontdata.c
+	cp $^ $@
+
+font/fontdata.c: font/bitmap.txt font/Makefile font/translator.c
+	make -C font
 
 graphic.o: graphic.s
 
