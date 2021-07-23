@@ -51,7 +51,26 @@ int main(int argc, char **argv)
 	fprintf(output_file, "{\n");
 	while((input_char = fgetc(input_file)) != EOF)
 	{
-		switch(input_char)
+		if(flags & INPUT_CHAR_CODE1)
+		{
+			if('0' <= input_char && input_char <= '9')char_code = input_char - '0';
+			else if('a' <= input_char && input_char <= 'f')char_code = input_char - 'a';
+			else if('A' <= input_char && input_char <= 'F')char_code = input_char - 'A';
+			else fprintf(stderr, "%s is broken!\n", input_file_name);
+			flags &= ~INPUT_CHAR_CODE1;
+			flags |= INPUT_CHAR_CODE2;
+		}
+		else if(flags & INPUT_CHAR_CODE2)
+		{
+			char_code <<= 4;
+			if('0' <= input_char && input_char <= '9')char_code += input_char - '0';
+			else if('a' <= input_char && input_char <= 'f')char_code += input_char - 'a';
+			else if('A' <= input_char && input_char <= 'F')char_code += input_char - 'A';
+			else fprintf(stderr, "%s is broken!\n", input_file_name);
+			printf("char code %#04X\n", char_code);
+			flags &= ~INPUT_CHAR_CODE2;
+		}
+		else switch(input_char)
 		{
 		case '0':
 			flags |= INPUT_ZERO;
@@ -59,28 +78,9 @@ int main(int argc, char **argv)
 		case 'x':
 		case 'X':
 			if(flags & INPUT_ZERO)flags |= INPUT_CHAR_CODE1;
+			flags &= ~INPUT_ZERO;
 			break;
 		default:
-			if(flags & INPUT_CHAR_CODE1)
-			{
-				if('0' <= input_char && input_char <= '9')char_code = input_char - '0';
-				else if('a' <= input_char && input_char <= 'f')char_code = input_char - 'a';
-				else if('A' <= input_char && input_char <= 'F')char_code = input_char - 'A';
-				else fprintf(stderr, "%s is broken!\n", input_file_name);
-				flags &= ~INPUT_CHAR_CODE1;
-				flags |= INPUT_CHAR_CODE2;
-			}
-			else if(flags & INPUT_CHAR_CODE2)
-			{
-				char_code <<= 8;
-				if('0' <= input_char && input_char <= '9')char_code += input_char - '0';
-				else if('a' <= input_char && input_char <= 'f')char_code += input_char - 'a';
-				else if('A' <= input_char && input_char <= 'F')char_code += input_char - 'A';
-				else fprintf(stderr, "%s is broken!\n", input_file_name);
-				printf("char code %#04X\n", char_code);
-				flags &= ~INPUT_CHAR_CODE2;
-			}
-			flags &= ~INPUT_ZERO;
 			break;
 		}
 	}
