@@ -39,11 +39,11 @@ void main(void)
 	print_serial_polling("keyboard state = 0x");
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
-	//init_screen(boot_information.screen_width, boot_information.screen_height);
-	//for(unsigned short y = 0; y < boot_information.screen_height; y++)for(unsigned short x = 0; x < boot_information.screen_width; x++)put_dot(x, y, x % 0x06, y % 0x06, 0x00);
-	//fill_box(0x0000, 0x0000, 0x0010, 0x0010, 0x05, 0x00, 0x00);
-	//fill_box(0x0010, 0x0000, 0x0010, 0x0010, 0x00, 0x05, 0x00);
-	//fill_box(0x0020, 0x0000, 0x0010, 0x0010, 0x00, 0x00, 0x05);
+	init_screen(boot_information.screen_width, boot_information.screen_height);
+	for(unsigned short y = 0; y < boot_information.screen_height; y++)for(unsigned short x = 0; x < boot_information.screen_width; x++)put_dot(x, y, x % 0x06, y % 0x06, 0x00);
+	fill_box(0x0000, 0x0000, 0x0010, 0x0010, 0x05, 0x00, 0x00);
+	fill_box(0x0010, 0x0000, 0x0010, 0x0010, 0x00, 0x05, 0x00);
+	fill_box(0x0020, 0x0000, 0x0010, 0x0010, 0x00, 0x00, 0x05);
 	while(1)hlt();
 }
 
