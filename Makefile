@@ -97,7 +97,7 @@ rebuild: clean
 run: $(IMAGE_FILE) stop
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
 
-src/kernel.bin: src/kernel/graphic.c src/kernel/graphic.h src/kernel/io.h src/kernel/io.s src/kernel/kernel.ld src/kernel/main.c src/kernel/serial.c src/kernel/serial.h
+src/kernel.bin: src/kernel/font/bitmap.txt src/kernel/font/translator.c src/kernel/font/Makefile src/kernel/graphic.c src/kernel/graphic.h src/kernel/io.h src/kernel/io.s src/kernel/kernel.ld src/kernel/main.c src/kernel/serial.c src/kernel/serial.h
 	make -C src
 
 src/%.bin: src/%.s src/%.ld
