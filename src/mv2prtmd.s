@@ -65,9 +65,8 @@ entry:
 	movw	%dx,	%es
 	movw	%dx,	%fs
 	movw	%dx,	%gs
-	movw	$0x0020,%dx
-	movw	%dx,	%ss
 	movw	$0x0018,%dx
+	movw	%dx,	%ss
 	movw	%dx,	%ds
 	movl	$0x001f3200,%ebp
 	movl	$0x001f3200,%esp
@@ -159,7 +158,7 @@ wait_for_keyboard:		# void wait_for_keyboard(void);
 	.data
 	.align	0x8
 gdt:
-				# null segment descriptor
+				# 0x0000 null segment descriptor
 	.word	0x0000		#  limit_low
 	.word	0x0000		#  base_low
 	.byte	0x00		#  base_mid
@@ -167,7 +166,7 @@ gdt:
 	.byte	0x00		#  limit_high
 	.byte	0x00		#  base_high
 
-				# whole memory is readable and writable
+				# 0x0008 whole memory is readable and writable
 				# base	0x00000000
 				# limit	0xffffffff
 				# access_right 0x4092
@@ -178,7 +177,7 @@ gdt:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 
-				# kernel.bin .text section is readable and executable
+				# 0x0010 kernel.bin code section is readable and executable
 				# base	0x0000ce00
 				# limit	0x00092dff
 				# access_right 0x409a
@@ -189,29 +188,18 @@ gdt:
 	.byte	0x49		#  limit_high
 	.byte	0x00		#  base_high
 
-				# kernel.bin .data section is readable and writable
-				# base	0x0000ce00
-				# limit	0x00092dff
-				# access_right 0x4092
-	.word	0x2dff		#  limit_low
-	.word	kernel		#  base_low
-	.byte	0x00		#  base_mid
-	.byte	0x92		#  access_right
-	.byte	0x49		#  limit_high
-	.byte	0x00		#  base_high
-
-				# kernel stack section is readable and writable
+				# 0x0018 kernel data and stack section is readable and writable
 				# base	0x0000ce00
 				# limit	0x001f31ff
 				# access_right 0x4092
-	.word	0x01f4		#  limit_low
+	.word	0x01f3		#  limit_low
 	.word	kernel		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x92		#  access_right
 	.byte	0xc0		#  limit_high
 	.byte	0x00		#  base_high
 
-				# VRAM section is readable and writable
+				# 0x0020 VRAM section is readable and writable
 				# base	0x000a0000
 				# limit	0x0001ffff
 				# access_right 0x4092
@@ -222,7 +210,7 @@ gdt:
 	.byte	0x41		#  limit_high
 	.byte	0x00		#  base_high
 gdtr:
-	.word	0x002f		# 4 segment descriptors * 8 bytes per segment descriptor - 1
+	.word	0x0027		# 5 segment descriptors * 8 bytes per segment descriptor - 1
 	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"
