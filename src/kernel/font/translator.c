@@ -33,6 +33,7 @@ int main(int argc, char **argv)
 	#define INPUT_CHAR_CODE2 0x04
 	#define INPUT_MAP_BEGIN 0x08
 	#define INPUT_MAP 0x10
+	#define INPUT_MAP_NEWLINE 0x20
 	unsigned char map_x;
 	unsigned char map_y;
 	// "translator", "INPUT" and "OUTPUT"
@@ -102,6 +103,17 @@ int main(int argc, char **argv)
 			map_x = 0;
 			map_y = 0;
 		}
+		else if(flags & INPUT_MAP_NEWLINE)
+		{
+			switch(input_char)
+			{
+			case '\n':
+				break;
+			default:
+				fprintf(stderr, "%s is broken!\n", input_file_name);
+			}
+			flags &= ~INPUT_MAP_NEWLINE;
+		}
 		else if(flags & INPUT_MAP)
 		{
 			map.row[map_y] >>= 1;
@@ -113,12 +125,19 @@ int main(int argc, char **argv)
 				map.row[map_y] += 0xf0;
 				break;
 			default:
+				fprintf(stderr, "%s is broken!\n", input_file_name);
 				break;
 			}
 			if(CHAR_WIDTH <= ++map_x)
 			{
 				map_x = 0;
-				if(CHAR_HEIGHT <= ++map_y)flags &= ~INPUT_MAP;
+				flags |= INPUT_MAP_NEWLINE;
+				if(CHAR_HEIGHT <= ++map_y)
+				{
+					map_y = 0;
+					flags &= ~INPUT_MAP;
+					flags &= ~INPUT_MAP_NEWLINE;
+				}
 			}
 		}
 		else switch(input_char)
