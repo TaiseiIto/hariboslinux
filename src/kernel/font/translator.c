@@ -137,8 +137,8 @@ int main(int argc, char **argv)
 				if(CHAR_HEIGHT <= ++map_y)
 				{
 					fprintf(output_file, "\t{\n");
-					fprintf(output_file, "\t},\n");
 					for(unsigned int row_i = 0; row_i < _countof(map.row); row_i++)fprintf(output_file, "\t\t%#04x,\n", map.row[row_i]);
+					fprintf(output_file, "\t},\n");
 					map_y = 0;
 					flags &= ~INPUT_MAP;
 					flags &= ~INPUT_MAP_NEWLINE;
