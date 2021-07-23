@@ -2,7 +2,7 @@ BITMAP = bitmap.txt
 COMPILER = gcc
 COMPILER_OUTPUT_OPTION = -o
 COMPILER_WARNING_OPTION = -Wall -Wextra
-OUTPUT = font.c
+OUTPUT = fontdata.c
 TRANSLATOR = ./translator
 
 all: $(OUTPUT)
