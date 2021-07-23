@@ -158,7 +158,7 @@ int main(int argc, char const * const * const argv)
 	input_file_names = argv + num_of_necessary_args;
 	num_of_input_files = argc - num_of_necessary_args;
 	printf("floppy disk raw image file : %s\n", floppy_disk_raw_image_file_name);
-	printf("boot sector bynari file : %s\n", boot_sectors_file_name);
+	printf("boot sector binary file : %s\n", boot_sectors_file_name);
 	for(unsigned int num_of_input_files_i = 0; num_of_input_files_i < num_of_input_files; num_of_input_files_i++)printf("input file [%u] : %s\n", num_of_input_files_i, input_file_names[num_of_input_files_i]);
 	// decode boot sector
 	if((boot_sectors_file = fopen(boot_sectors_file_name, "rb")) == NULL)
