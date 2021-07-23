@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 	// write output file contents
 	fprintf(output_file, "#include \"font.h\"\n");
 	fprintf(output_file, "\n");
-	fprintf(output_file, "CharFont _font =\n");
+	fprintf(output_file, "CharFont _font[0x100] =\n");
 	fprintf(output_file, "{\n");
 	while((input_char = fgetc(input_file)) != EOF)
 	{
@@ -136,9 +136,9 @@ int main(int argc, char **argv)
 				flags |= INPUT_MAP_NEWLINE;
 				if(CHAR_HEIGHT <= ++map_y)
 				{
-					fprintf(output_file, "\t{\n");
-					for(unsigned int row_i = 0; row_i < _countof(map.row); row_i++)fprintf(output_file, "\t\t%#04x,\n", map.row[row_i]);
-					fprintf(output_file, "\t},\n");
+					fprintf(output_file, "\t{{");
+					for(unsigned int row_i = 0; row_i < CHAR_HEIGHT; row_i++)fprintf(output_file, row_i == CHAR_HEIGHT - 1 ? "%#04x" : "%#04x, ", map.row[row_i]);
+					fprintf(output_file, char_code == 0xff ? "}}\n" : "}},\n");
 					map_y = 0;
 					flags &= ~INPUT_MAP;
 					flags &= ~INPUT_MAP_NEWLINE;
