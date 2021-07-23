@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define _countof(array) (sizeof(array) / sizeof(array[0]))
+
 #define CHAR_WIDTH 0x08
 #define CHAR_HEIGHT 0x10
 #define FOREGROUND '*'
@@ -15,7 +17,7 @@
 // height 16 pixels
 typedef struct
 {
-	unsigned char row[0x10];
+	unsigned char row[CHAR_HEIGHT];
 } CharFont;
 
 int main(int argc, char **argv)
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
 			else if('a' <= input_char && input_char <= 'f')char_code += input_char - 'a' + 10;
 			else if('A' <= input_char && input_char <= 'F')char_code += input_char - 'A' + 10;
 			else fprintf(stderr, "%s is broken!\n", input_file_name);
-			printf("char code %#04X\n", char_code);
+			printf("char code %#04x\n", char_code);
 			flags &= ~INPUT_CHAR_CODE2;
 			flags |= INPUT_MAP_BEGIN;
 		}
@@ -134,6 +136,9 @@ int main(int argc, char **argv)
 				flags |= INPUT_MAP_NEWLINE;
 				if(CHAR_HEIGHT <= ++map_y)
 				{
+					fprintf(output_file, "\t{\n");
+					fprintf(output_file, "\t},\n");
+					for(unsigned int row_i = 0; row_i < _countof(map.row); row_i++)fprintf(output_file, "\t\t%#04x,\n", map.row[row_i]);
 					map_y = 0;
 					flags &= ~INPUT_MAP;
 					flags &= ~INPUT_MAP_NEWLINE;
