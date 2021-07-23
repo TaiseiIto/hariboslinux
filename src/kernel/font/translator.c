@@ -38,6 +38,14 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Can't open %s\n", output_file_name);
 		return EXIT_FAILURE;
 	}
+	// write output file contents
+	fprintf(output_file, "#include \"font.h\"\n");
+	fprintf(output_file, "\n");
+	fprintf(output_file, "CharFont _font =\n");
+	fprintf(output_file, "{\n");
+	fprintf(output_file, "};\n");
+	fprintf(output_file, "\n");
+	fprintf(output_file, "CharFont const * const font = &_font;");
 	// close files
 	if(fclose(input_file) == EOF)
 	{
