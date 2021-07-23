@@ -1,3 +1,4 @@
+fontdata.c
 *.s
 !io.s
 

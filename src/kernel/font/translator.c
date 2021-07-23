@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 	}
 	fprintf(output_file, "};\n");
 	fprintf(output_file, "\n");
-	fprintf(output_file, "CharFont const * const font = &_font;");
+	fprintf(output_file, "CharFont const * const font = _font;");
 	// close files
 	if(fclose(input_file) == EOF)
 	{
