@@ -8,10 +8,16 @@
 
 int main(int argc, char **argv)
 {
+	char input_char;
 	char const *input_file_name;
 	char const *output_file_name;
 	FILE *input_file;
 	FILE *output_file;
+	unsigned char char_code;
+	unsigned char flags = 0;
+	#define INPUT_ZERO 0x01
+	#define INPUT_CHAR_CODE1 0x02
+	#define INPUT_CHAR_CODE2 0x04
 	// "translator", "INPUT" and "OUTPUT"
 	unsigned int const num_of_necessary_args = 3;
 	// check argc
@@ -43,6 +49,41 @@ int main(int argc, char **argv)
 	fprintf(output_file, "\n");
 	fprintf(output_file, "CharFont _font =\n");
 	fprintf(output_file, "{\n");
+	while((input_char = fgetc(input_file)) != EOF)
+	{
+		switch(input_char)
+		{
+		case '0':
+			flags |= INPUT_ZERO;
+			break;
+		case 'x':
+		case 'X':
+			if(flags & INPUT_ZERO)flags |= INPUT_CHAR_CODE1;
+			break;
+		default:
+			if(flags & INPUT_CHAR_CODE1)
+			{
+				if('0' <= input_char && input_char <= '9')char_code = input_char - '0';
+				else if('a' <= input_char && input_char <= 'f')char_code = input_char - 'a';
+				else if('A' <= input_char && input_char <= 'F')char_code = input_char - 'A';
+				else fprintf(stderr, "%s is broken!\n", input_file_name);
+				flags &= ~INPUT_CHAR_CODE1;
+				flags |= INPUT_CHAR_CODE2;
+			}
+			else if(flags & INPUT_CHAR_CODE2)
+			{
+				char_code <<= 8;
+				if('0' <= input_char && input_char <= '9')char_code += input_char - '0';
+				else if('a' <= input_char && input_char <= 'f')char_code += input_char - 'a';
+				else if('A' <= input_char && input_char <= 'F')char_code += input_char - 'A';
+				else fprintf(stderr, "%s is broken!\n", input_file_name);
+				printf("char code %#04X\n", char_code);
+				flags &= ~INPUT_CHAR_CODE2;
+			}
+			flags &= ~INPUT_ZERO;
+			break;
+		}
+	}
 	fprintf(output_file, "};\n");
 	fprintf(output_file, "\n");
 	fprintf(output_file, "CharFont const * const font = &_font;");
