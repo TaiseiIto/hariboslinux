@@ -6,11 +6,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define CHAR_WIDTH 0x08
+#define CHAR_HEIGHT 0x10
+#define FOREGROUND '*'
+#define BACKGROUND '-'
+
+// width 8 pixels
+// height 16 pixels
+typedef struct
+{
+	unsigned char row[0x10];
+} CharFont;
+
 int main(int argc, char **argv)
 {
 	char input_char;
 	char const *input_file_name;
 	char const *output_file_name;
+	CharFont map;
 	FILE *input_file;
 	FILE *output_file;
 	unsigned char char_code;
@@ -18,6 +31,10 @@ int main(int argc, char **argv)
 	#define INPUT_ZERO 0x01
 	#define INPUT_CHAR_CODE1 0x02
 	#define INPUT_CHAR_CODE2 0x04
+	#define INPUT_MAP_BEGIN 0x08
+	#define INPUT_MAP 0x10
+	unsigned char map_x;
+	unsigned char map_y;
 	// "translator", "INPUT" and "OUTPUT"
 	unsigned int const num_of_necessary_args = 3;
 	// check argc
@@ -51,7 +68,13 @@ int main(int argc, char **argv)
 	fprintf(output_file, "{\n");
 	while((input_char = fgetc(input_file)) != EOF)
 	{
-		if(flags & INPUT_CHAR_CODE1)
+		if(flags & INPUT_ZERO)
+		{
+			if(input_char == 'x' || input_char == 'X')flags |= INPUT_CHAR_CODE1;
+			else fprintf(stderr, "%s is broken!\n", input_file_name);
+			flags &= ~INPUT_ZERO;
+		}
+		else if(flags & INPUT_CHAR_CODE1)
 		{
 			if('0' <= input_char && input_char <= '9')char_code = input_char - '0';
 			else if('a' <= input_char && input_char <= 'f')char_code = input_char - 'a' + 10;
@@ -69,16 +92,39 @@ int main(int argc, char **argv)
 			else fprintf(stderr, "%s is broken!\n", input_file_name);
 			printf("char code %#04X\n", char_code);
 			flags &= ~INPUT_CHAR_CODE2;
+			flags |= INPUT_MAP_BEGIN;
+		}
+		else if(flags & INPUT_MAP_BEGIN)
+		{
+			if(input_char != '\n')fprintf(stderr, "%s is broken!\n", input_file_name);
+			flags &= ~INPUT_MAP_BEGIN;
+			flags |= INPUT_MAP;
+			map_x = 0;
+			map_y = 0;
+		}
+		else if(flags & INPUT_MAP)
+		{
+			map.row[map_y] >>= 1;
+			switch(input_char)
+			{
+			case BACKGROUND:
+				break;
+			case FOREGROUND:
+				map.row[map_y] += 0xf0;
+				break;
+			default:
+				break;
+			}
+			if(CHAR_WIDTH <= ++map_x)
+			{
+				map_x = 0;
+				if(CHAR_HEIGHT <= ++map_y)flags &= ~INPUT_MAP;
+			}
 		}
 		else switch(input_char)
 		{
 		case '0':
 			flags |= INPUT_ZERO;
-			break;
-		case 'x':
-		case 'X':
-			if(flags & INPUT_ZERO)flags |= INPUT_CHAR_CODE1;
-			flags &= ~INPUT_ZERO;
 			break;
 		default:
 			break;
