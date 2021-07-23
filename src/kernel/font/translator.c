@@ -54,8 +54,8 @@ int main(int argc, char **argv)
 		if(flags & INPUT_CHAR_CODE1)
 		{
 			if('0' <= input_char && input_char <= '9')char_code = input_char - '0';
-			else if('a' <= input_char && input_char <= 'f')char_code = input_char - 'a';
-			else if('A' <= input_char && input_char <= 'F')char_code = input_char - 'A';
+			else if('a' <= input_char && input_char <= 'f')char_code = input_char - 'a' + 10;
+			else if('A' <= input_char && input_char <= 'F')char_code = input_char - 'A' + 10;
 			else fprintf(stderr, "%s is broken!\n", input_file_name);
 			flags &= ~INPUT_CHAR_CODE1;
 			flags |= INPUT_CHAR_CODE2;
@@ -64,8 +64,8 @@ int main(int argc, char **argv)
 		{
 			char_code <<= 4;
 			if('0' <= input_char && input_char <= '9')char_code += input_char - '0';
-			else if('a' <= input_char && input_char <= 'f')char_code += input_char - 'a';
-			else if('A' <= input_char && input_char <= 'F')char_code += input_char - 'A';
+			else if('a' <= input_char && input_char <= 'f')char_code += input_char - 'a' + 10;
+			else if('A' <= input_char && input_char <= 'F')char_code += input_char - 'A' + 10;
 			else fprintf(stderr, "%s is broken!\n", input_file_name);
 			printf("char code %#04X\n", char_code);
 			flags &= ~INPUT_CHAR_CODE2;
