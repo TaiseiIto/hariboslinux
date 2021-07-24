@@ -43,25 +43,6 @@ void main(void)
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
 	init_screen(boot_information.screen_width, boot_information.screen_height);
-	for(unsigned short y = 0; y < boot_information.screen_height; y++)for(unsigned short x = 0; x < boot_information.screen_width; x++)
-	{
-		color.red = x % 0x06;
-		color.green = y % 0x06;
-		color.blue = 0x00;
-		put_dot(x, y, color);
-	}
-	color.red = 0x05;
-	color.green = 0x00;
-	color.blue = 0x00;
-	fill_box(0x0000, 0x0000, 0x0010, 0x0010, color);
-	color.red = 0x00;
-	color.green = 0x05;
-	color.blue = 0x00;
-	fill_box(0x0010, 0x0000, 0x0010, 0x0010, color);
-	color.red = 0x00;
-	color.green = 0x00;
-	color.blue = 0x05;
-	fill_box(0x0020, 0x0000, 0x0010, 0x0010, color);
 	foreground.red = 0x05;
 	foreground.green = 0x05;
 	foreground.blue = 0x05;
