@@ -1,3 +1,4 @@
+#include "font.h"
 #include "graphic.h"
 #include "io.h"
 #include "segment.h"
@@ -93,6 +94,23 @@ void init_screen(unsigned short screen_width, unsigned short screen_height)
 	print_word_hex_serial_polling(screen_information.height);
 	new_line_serial_polling();
 	init_palette();
+}
+
+// put character at screen(x, y)
+void put_char(unsigned char character, unsigned short x, unsigned short y, Color foreground, Color background)
+{
+	for(short y_i = 0; y_i < CHAR_HEIGHT; y_i++)
+	{
+		if(y + y_i < 0)continue;
+		if(screen_information.height <= y + y_i)break;
+		for(short x_i = 0; x_i < CHAR_WIDTH; x_i++)
+		{
+			if(x + x_i < 0)continue;
+			if(screen_information.width <= x + x_i)break;
+			if(get_font_pixel(character, x_i, y_i))put_dot((unsigned short)x_i, (unsigned short)y_i, foreground);
+			else put_dot((unsigned short)x_i, (unsigned short)y_i, background);
+		}
+	}
 }
 
 // put dot

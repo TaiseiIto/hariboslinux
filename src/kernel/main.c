@@ -21,6 +21,8 @@ void main(void)
 {
 	BootInformation boot_information;
 	Color color;
+	Color foreground;
+	Color background;
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n");
 	new_line_serial_polling();
@@ -60,6 +62,13 @@ void main(void)
 	color.green = 0x00;
 	color.blue = 0x05;
 	fill_box(0x0020, 0x0000, 0x0010, 0x0010, color);
+	foreground.red + 0x05;
+	foreground.green + 0x05;
+	foreground.blue + 0x05;
+	background.red + 0x00;
+	background.green + 0x00;
+	background.blue + 0x00;
+	put_char('A', 0, 0, foreground, background);
 	while(1)hlt();
 }
 

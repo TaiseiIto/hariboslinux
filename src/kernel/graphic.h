@@ -22,7 +22,7 @@ void fill_box(short x, short y, unsigned short width, unsigned short height, Col
 void init_screen(unsigned short screen_width, unsigned short screen_height);
 
 // put character at screen(x, y)
-// void put_char(unsigned char character, unsigned short x, unsigned short y, Color foreground, Color background);
+void put_char(unsigned char character, unsigned short x, unsigned short y, Color foreground, Color background);
 
 // put dot
 // 0 <= x < screen width
