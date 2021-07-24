@@ -11,7 +11,7 @@ typedef struct
 	unsigned char row[0x10];
 } CharFont;
 
-extern CharFont const * const font;
+extern CharFont const font[0x100];
 
 // return value
 // 0 means background color should be put at the pixel(x, y) of the character
