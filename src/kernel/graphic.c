@@ -107,8 +107,8 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 		{
 			if(x + x_i < 0)continue;
 			if(screen_information.width <= x + x_i)break;
-			if(get_font_pixel(character, x_i, y_i))put_dot((unsigned short)x_i, (unsigned short)y_i, foreground);
-			else put_dot((unsigned short)x_i, (unsigned short)y_i, background);
+			if(get_font_pixel(character, x_i, y_i))put_dot((unsigned short)(x + x_i), (unsigned short)(y + y_i), foreground);
+			else put_dot((unsigned short)(x + x_i), (unsigned short)(y + y_i), background);
 		}
 	}
 }
