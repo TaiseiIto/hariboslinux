@@ -20,7 +20,7 @@ clean:
 	rm -f *.bin *.o main.s
 	make clean -C font
 
-kernel.bin: font.o fontdata.o graphic.o main.o io.o serial.o
+kernel.bin: font.o fontdata.o graphic.o main.o io.o serial.o stdio.o string.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
 font.o: font.s
@@ -50,6 +50,14 @@ main.s: main.c io.h serial.h
 serial.o: serial.s
 
 serial.s: serial.c serial.h
+
+stdio.o: stdio.s
+
+stdio.s: stdio.c
+
+string.o: string.s
+
+string.s: string.c
 
 rebuild: clean
 	make

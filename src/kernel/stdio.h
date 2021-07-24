@@ -1,7 +1,7 @@
-#ifndef _HARIB_STDIO_H_
-#define _HARIB_STDIO_H_
+#ifndef _STDIO_H_
+#define _STDIO_H_
 
-int harib_sprintf(char *str, const char *format, ...);
+int sprintf(char *str, const char *format, ...);
 
 #endif
 

@@ -1,11 +1,10 @@
-#include "harib_stdio.h"
-#include "naskfunc.h"
+#include "stdio.h"
+#include "io.h"
 #include "serial.h"
 
-int harib_sprintf(char *str, const char *format, ...)
+int sprintf(char *str, const char *format, ...)
 {
-	int arg_pos = sizeof(str) + sizeof(format);//arg_posバイト目の引数へのアクセスに使う
-	//変換指定子に書き込む変数たち
+	int arg_pos = sizeof(str) + sizeof(format);
 	char character;
 	char const *input_string;
 	int integer;
@@ -18,9 +17,9 @@ int harib_sprintf(char *str, const char *format, ...)
 			#define HARIB_SPRINTF_MINUS_FLAG 0x01
 			#define HARIB_SPRINTF_TYPE_FLAG 0x02
 			#define HARIB_SPRINTF_ZERO_FLAG 0x04
-			unsigned int length = 0;//変換指定子部分の文字列の長さ
-			int num_of_digits = 0;//書き込み済みの自然数部分の桁数
-			char *digit;//各桁の数字を書き込むためのアドレス
+			unsigned int length = 0;
+			int num_of_digits = 0;
+			char *digit;
 			format++;
 			switch(*format)
 			{
@@ -155,8 +154,7 @@ int harib_sprintf(char *str, const char *format, ...)
 				}
 				str += num_of_digits;
 				break;
-			default://不明な出力指定子
-				ERROR_MESSAGE();
+			default:
 				return -1;
 			}
 		}
