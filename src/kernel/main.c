@@ -62,12 +62,12 @@ void main(void)
 	color.green = 0x00;
 	color.blue = 0x05;
 	fill_box(0x0020, 0x0000, 0x0010, 0x0010, color);
-	foreground.red + 0x05;
-	foreground.green + 0x05;
-	foreground.blue + 0x05;
-	background.red + 0x00;
-	background.green + 0x00;
-	background.blue + 0x00;
+	foreground.red = 0x05;
+	foreground.green = 0x05;
+	foreground.blue = 0x05;
+	background.red = 0x00;
+	background.green = 0x00;
+	background.blue = 0x00;
 	put_char('A', 0, 0, foreground, background);
 	while(1)hlt();
 }
