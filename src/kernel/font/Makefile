@@ -7,6 +7,12 @@ TRANSLATOR = ./translator
 
 all: $(OUTPUT)
 
+clean:
+	rm $(OUTPUT) $(TRANSLATOR)
+
+rebuild: clean
+	make
+
 $(OUTPUT): $(BITMAP) $(TRANSLATOR)
 	$(TRANSLATOR) $(BITMAP) $@
 
