@@ -3,6 +3,7 @@ COMPILER = gcc
 COMPILER_CODE32_OPTION = -m32
 COMPILER_DONT_LINK_OPTION = -c
 COMPILER_DONT_USE_STDLIB_OPTION = -nostdlib
+COMPILER_FNO_BUILTIN_OPTION = -fno-builtin
 COMPILER_FNO_PIE_OPTION = -fno-pie
 COMPILER_OUTPUT_ASSEMBLY_OPTION = -S
 COMPILER_OUTPUT_OPTION = -o
@@ -17,7 +18,7 @@ LINKER_SCRIPT_OPTION = -T
 all: kernel.bin
 
 clean:
-	rm -f *.bin *.o main.s
+	rm -f *.bin *.o main.s font.s fontdata.s graphic.s main.s serial.s stdio.s string.s
 	make clean -C font
 
 kernel.bin: font.o fontdata.o graphic.o main.o io.o serial.o stdio.o string.o
@@ -66,7 +67,7 @@ rebuild: clean
 	$(COMPILER) $^ $(COMPILER_CODE32_OPTION) $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
 
 %.s: %.c
-	$(COMPILER) $< $(COMPILER_CODE32_OPTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@
+	$(COMPILER) $< $(COMPILER_CODE32_OPTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_BUILTIN_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@
 
 # dont remove intermediate files
 .PRECIOUS: %.bin %.o %.s
