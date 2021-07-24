@@ -26,7 +26,7 @@ void init_palette(void);
 // 0 <= red   < 6
 // 0 <= green < 6
 // 0 <= blue  < 6
-void fill_box(short x, short y, unsigned short width, unsigned short height, unsigned char red, unsigned char green, unsigned char blue)
+void fill_box(short x, short y, unsigned short width, unsigned short height, Color color)
 {
 	for(short y_i = y; y_i < y + (short)height; y_i++)
 	{
@@ -36,7 +36,7 @@ void fill_box(short x, short y, unsigned short width, unsigned short height, uns
 		{
 			if(x_i < 0)continue;
 			if(screen_information.width <= x_i)break;
-			put_dot((unsigned short)x_i, (unsigned short)y_i, red, green, blue);
+			put_dot((unsigned short)x_i, (unsigned short)y_i, color);
 		}
 	}
 }
@@ -101,13 +101,13 @@ void init_screen(unsigned short screen_width, unsigned short screen_height)
 // 0 <= red   < 6
 // 0 <= green < 6
 // 0 <= blue  < 6
-void put_dot(unsigned short x, unsigned short y, unsigned char red, unsigned char green, unsigned char blue)
+void put_dot(unsigned short x, unsigned short y, Color color)
 {
 	if(screen_information.width <= x)return;
 	if(screen_information.height <= y)return;
-	if(0x06 <= red)return;
-	if(0x06 <= green)return;
-	if(0x06 <= blue)return;
-	writeb(VRAM_SEGMENT, (void *)(screen_information.width * y + x), 6 * (6 * blue + green) + red);
+	if(0x06 <= color.red)return;
+	if(0x06 <= color.green)return;
+	if(0x06 <= color.blue)return;
+	writeb(VRAM_SEGMENT, (void *)(screen_information.width * y + x), 6 * (6 * color.blue + color.green) + color.red);
 }
 
