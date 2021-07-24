@@ -49,7 +49,7 @@ void main(void)
 	background.red = 0x00;
 	background.green = 0x00;
 	background.blue = 0x00;
-	put_char('A', 0, 0, foreground, background);
+	put_string("Hello, World!", 0, 0, foreground, background);
 	while(1)hlt();
 }
 

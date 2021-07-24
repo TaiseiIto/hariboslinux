@@ -129,3 +129,14 @@ void put_dot(unsigned short x, unsigned short y, Color color)
 	writeb(VRAM_SEGMENT, (void *)(screen_information.width * y + x), 6 * (6 * color.blue + color.green) + color.red);
 }
 
+// put string at screen(x, y)
+void put_string(char const *string, unsigned short x, unsigned short y, Color foreground, Color background)
+{
+	while(*string)
+	{
+		put_char(*string, x, y, foreground, background);
+		string++;
+		x += CHAR_WIDTH;
+	}
+}
+

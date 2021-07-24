@@ -29,5 +29,8 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 // 0 <= y < screen height
 void put_dot(unsigned short x, unsigned short y, Color color);
 
+// put string at screen(x, y)
+void put_string(char const *string, unsigned short x, unsigned short y, Color foreground, Color background);
+
 #endif
 
