@@ -4,18 +4,15 @@
 // 0 <= red   < 6
 // 0 <= green < 6
 // 0 <= blue  < 6
-typedef struct
-{
-	unsigned char red;
-	unsigned char green;
-	unsigned char blue;
-} Color;
+typedef unsigned char Color;
 
-// fill box
-// x and y can be negative
 // 0 <= red   < 6
 // 0 <= green < 6
 // 0 <= blue  < 6
+Color get_color(unsigned char red, unsigned char green, unsigned char blue);
+
+// fill box
+// x and y can be negative
 void fill_box(short x, short y, unsigned short width, unsigned short height, Color color);
 
 // init screen

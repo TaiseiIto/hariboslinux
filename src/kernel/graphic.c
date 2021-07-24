@@ -22,6 +22,11 @@ ScreenInformation screen_information;
 // blue brightnesses:  0x00, 0x0c, 0x18, 0x24, 0x30, 0x3c
 void init_palette(void);
 
+Color get_color(unsigned char red, unsigned char green, unsigned char blue)
+{
+	return 6 * (6 * blue + green) + red;
+}
+
 // fill box
 // x and y can be negative
 // 0 <= red   < 6
@@ -116,17 +121,11 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 // put dot
 // 0 <= x < screen width
 // 0 <= y < screen height
-// 0 <= red   < 6
-// 0 <= green < 6
-// 0 <= blue  < 6
 void put_dot(unsigned short x, unsigned short y, Color color)
 {
 	if(screen_information.width <= x)return;
 	if(screen_information.height <= y)return;
-	if(0x06 <= color.red)return;
-	if(0x06 <= color.green)return;
-	if(0x06 <= color.blue)return;
-	writeb(VRAM_SEGMENT, (void *)(screen_information.width * y + x), 6 * (6 * color.blue + color.green) + color.red);
+	writeb(VRAM_SEGMENT, (void *)(screen_information.width * y + x), color);
 }
 
 // put string at screen(x, y)

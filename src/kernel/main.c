@@ -20,9 +20,6 @@ void __stack_chk_fail(void);
 void main(void)
 {
 	BootInformation boot_information;
-	Color color;
-	Color foreground;
-	Color background;
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n");
 	new_line_serial_polling();
@@ -43,13 +40,7 @@ void main(void)
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
 	init_screen(boot_information.screen_width, boot_information.screen_height);
-	foreground.red = 0x05;
-	foreground.green = 0x05;
-	foreground.blue = 0x05;
-	background.red = 0x00;
-	background.green = 0x00;
-	background.blue = 0x00;
-	put_string("Hello, World!", 0, 0, foreground, background);
+	put_string("Hello, World!", 0, 0, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
 	while(1)hlt();
 }
 
