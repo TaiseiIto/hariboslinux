@@ -134,7 +134,15 @@ void put_string(char const *string, unsigned short x, unsigned short y, Color fo
 {
 	while(*string)
 	{
-		put_char(*string, x, y, foreground, background);
+		switch(*string)
+		{
+		case ' ':
+			fill_box(x, y, CHAR_WIDTH, CHAR_HEIGHT, background);
+			break;
+		default:
+			put_char(*string, x, y, foreground, background);
+			break;
+		}
 		string++;
 		x += CHAR_WIDTH;
 	}
