@@ -1,3 +1,6 @@
+#ifndef _IO_H_
+#define _IO_H_
+
 // disable all interrupts
 void cli(void);
 
@@ -56,4 +59,6 @@ void writel(unsigned short segment, void *address, unsigned char value);
 
 // write size bytes from $source to $destination_segment:$destination
 void writes(void *source, unsigned short destination_segment, void *destination, unsigned int size);
+
+#endif
 

@@ -1,3 +1,6 @@
+#ifndef _GRAPHIC_H_
+#define _GRAPHIC_H_
+
 // fill box
 // x and y can be negative
 // 0 <= red   < 6
@@ -15,4 +18,6 @@ void init_screen(unsigned short screen_width, unsigned short screen_height);
 // 0 <= green < 6
 // 0 <= blue  < 6
 void put_dot(unsigned short x, unsigned short y, unsigned char red, unsigned char green, unsigned char blue);
+
+#endif
 
