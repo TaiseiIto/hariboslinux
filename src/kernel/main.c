@@ -1,3 +1,4 @@
+#include "font.h"
 #include "graphic.h"
 #include "io.h"
 #include "segment.h"
@@ -40,7 +41,13 @@ void main(void)
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
 	init_screen(boot_information.screen_width, boot_information.screen_height);
-	put_string("Hello, World!", 0, 0, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
+	put_string("Hello, World!", 0, 0, get_color(0x00, 0x00, 0x05), get_color(0x00, 0x00, 0x00));
+	put_string("Hello, World!", 0, CHAR_HEIGHT, get_color(0x00, 0x05, 0x00), get_color(0x00, 0x00, 0x00));
+	put_string("Hello, World!", 0, 2 * CHAR_HEIGHT, get_color(0x00, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
+	put_string("Hello, World!", 0, 3 * CHAR_HEIGHT, get_color(0x05, 0x00, 0x00), get_color(0x00, 0x00, 0x00));
+	put_string("Hello, World!", 0, 4 * CHAR_HEIGHT, get_color(0x05, 0x00, 0x05), get_color(0x00, 0x00, 0x00));
+	put_string("Hello, World!", 0, 5 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x00), get_color(0x00, 0x00, 0x00));
+	put_string("Hello, World!", 0, 6 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
 	while(1)hlt();
 }
 
