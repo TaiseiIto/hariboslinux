@@ -4,7 +4,7 @@
 
 int sprintf(char *str, const char *format, ...)
 {
-	int arg_pos = sizeof(str) + sizeof(format);
+	int arg_num = 2;
 	char character;
 	char const *input_string;
 	int integer;
@@ -46,11 +46,11 @@ int sprintf(char *str, const char *format, ...)
 			switch(*format)
 			{
 			case 'c':
-				character = get_variadic_arg32(&arg_pos);
+				character = get_variadic_arg(arg_num++);
 				*str++ = character;
 				break;
 			case 'd':
-				integer = get_variadic_arg32(&arg_pos);
+				integer = get_variadic_arg(arg_num++);
 				if(integer < 0)
 				{
 					*str++ = '-';
@@ -77,11 +77,11 @@ int sprintf(char *str, const char *format, ...)
 				str += num_of_digits;
 				break;
 			case 's':
-				input_string = (char const *)get_variadic_arg32(&arg_pos);
+				input_string = (char const *)get_variadic_arg(arg_num++);
 				while(*input_string && (!length || num_of_digits++ < length))*str++ = *input_string++;
 				break;
 			case 'u':
-				unsigned_integer = get_variadic_arg32(&arg_pos);
+				unsigned_integer = get_variadic_arg(arg_num++);
 				do
 				{
 					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
@@ -101,7 +101,7 @@ int sprintf(char *str, const char *format, ...)
 				str += num_of_digits;
 				break;
 			case 'x':
-				unsigned_integer = get_variadic_arg32(&arg_pos);
+				unsigned_integer = get_variadic_arg(arg_num++);
 				if(flags & HARIB_SPRINTF_TYPE_FLAG)
 				{
 					*str++ = '0';
@@ -128,7 +128,7 @@ int sprintf(char *str, const char *format, ...)
 				str += num_of_digits;
 				break;
 			case 'X':
-				unsigned_integer = get_variadic_arg32(&arg_pos);
+				unsigned_integer = get_variadic_arg(arg_num++);
 				if(flags & HARIB_SPRINTF_TYPE_FLAG)
 				{
 					*str++ = '0';
