@@ -113,6 +113,7 @@ int main(int argc, char **argv)
 				break;
 			default:
 				fprintf(stderr, "%s is broken!\n", input_file_name);
+				break;
 			}
 			flags &= ~INPUT_MAP_NEWLINE;
 		}
@@ -124,7 +125,7 @@ int main(int argc, char **argv)
 			case BACKGROUND:
 				break;
 			case FOREGROUND:
-				map.row[map_y] += 0xf0;
+				map.row[map_y] += 0x80;
 				break;
 			default:
 				fprintf(stderr, "%s is broken!\n", input_file_name);
