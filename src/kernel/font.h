@@ -1,3 +1,6 @@
+#define CHAR_WIDTH 0x08
+#define CHAR_HEIGHT 0x10
+
 // width 8 pixels
 // height 16 pixels
 typedef struct
@@ -6,4 +9,9 @@ typedef struct
 } CharFont;
 
 extern CharFont const * const font;
+
+// return value
+// 0 means background color should be put at the pixel(x, y) of the character
+// 1 means foreground color should be put at the pixel(x, y) of the character
+unsigned char get_font_pixel(unsigned char character, unsigned char x, unsigned char y);
 

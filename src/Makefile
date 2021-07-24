@@ -19,7 +19,7 @@ clean:
 kernel.bin: kernel/kernel.bin
 	cp $^ $@
 
-kernel/kernel.bin: kernel/font/bitmap.txt kernel/font/translator.c kernel/font/Makefile kernel/graphic.c kernel/graphic.h kernel/io.h kernel/io.s kernel/kernel.ld kernel/main.c kernel/serial.c kernel/serial.h
+kernel/kernel.bin: kernel/font/bitmap.txt kernel/font/translator.c kernel/font/Makefile kernel/font.c kernel/font.h kernel/graphic.c kernel/graphic.h kernel/io.h kernel/io.s kernel/kernel.ld kernel/main.c kernel/serial.c kernel/serial.h
 	make -C kernel
 
 rebuild: clean
