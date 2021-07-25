@@ -5,7 +5,6 @@
 #include "serial.h"
 #include "stdio.h"
 
-
 typedef struct
 {
 	unsigned short memory_size;	// MiB

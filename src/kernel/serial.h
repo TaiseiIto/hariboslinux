@@ -4,6 +4,9 @@
 // print LF
 void new_line_serial_polling(void);
 
+// printf
+void printf_serial_polling(char *format, ...);
+
 // print value as hexadecimal
 void print_byte_hex_serial_polling(unsigned char value);
 

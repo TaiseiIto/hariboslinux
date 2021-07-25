@@ -3,9 +3,15 @@
 
 #define COM1 0x03f8
 
+// print LF
 void new_line_serial_polling(void)
 {
 	putchar_serial_polling('\n');
+}
+
+// printf
+void printf_serial_polling(char *format, ...)
+{
 }
 
 // print value as hexadecimal

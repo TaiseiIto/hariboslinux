@@ -4,7 +4,6 @@
 #include "segment.h"
 #include "serial.h"
 
-
 typedef struct
 {
 	unsigned short width;
