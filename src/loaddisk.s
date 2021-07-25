@@ -117,6 +117,15 @@ main:
 	movw	%cx,	(%di)
 	jmp	8b
 12:				# finish loading
+	movw	$0x0508,%si	# save last_loaded_cylinder
+	movb	(%di),	%dl
+	movb	%dl,	(%si)
+	movw	$0x0509,%si	# save last_loaded_head
+	movb	0x02(%di),	%dl
+	movb	%dl,	(%si)
+	movw	$0x050a,%si	# save last_loaded_sector
+	movb	0x04(%di),	%dl
+	movb	%dl,	(%si)
 	call	new_line
 	movw	$finish_loading_message,(%di)
 	call	print

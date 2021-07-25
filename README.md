@@ -109,6 +109,9 @@ typedef struct
 	unsigned short screen_height;
 	unsigned char bits_per_pixel;
 	unsigned char keyboard_state;
+	unsigned char last_loaded_cylinder;
+	unsigned char last_loaded_head;
+	unsigned char last_loaded_sector;
 } __attribute__((packed)) BootInformation;
 ```
 そしてmv2prtmdに移行します．
