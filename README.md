@@ -123,8 +123,8 @@ typedef struct
 | ------------ | ---------- | ---------- | ---------- | ------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x00000507 |            |            | BootInformation structure |
-| 0x00000508   | 0x00007bff |            |            | stack frame               |
+| 0x00000500   | 0x0000050a |            |            | BootInformation structure |
+| 0x0000050b   | 0x00007bff |            |            | stack frame               |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
@@ -145,8 +145,8 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | ------------ | ---------- | ---------- | ---------- | ------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x00000507 |            |            | BootInformation structure |
-| 0x00000508   | 0x00007bff |            |            | stack frame               |
+| 0x00000500   | 0x0000050a |            |            | BootInformation structure |
+| 0x0000050b   | 0x00007bff |            |            | stack frame               |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
@@ -168,8 +168,8 @@ OS本体です．
 | ------------ | ---------- | ---------- | ---------- | ------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x00000507 |            |            | BootInformation structure |
-| 0x00000508   | 0x00007bff |            |            | reserved                  |
+| 0x00000500   | 0x0000050a |            |            | BootInformation structure |
+| 0x0000050b   | 0x00007bff |            |            | reserved                  |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
