@@ -18,6 +18,7 @@ void printf_serial_polling(char const *format, ...)
 	int integer;
 	int integer_destroyable;
 	unsigned int unsigned_integer;
+	unsigned int unsigned_integer_destroyable;
 	while(*format)
 	{
 		if(*format == '%')
@@ -84,7 +85,7 @@ void printf_serial_polling(char const *format, ...)
 				break;
 			case 's':
 				input_string = (char const *)get_variadic_arg(arg_num++);
-				while(*input_string && (!length || num_of_digits++ < length))*str++ = *input_string++;
+				while(*input_string && (!length || num_of_digits++ < length))putchar_serial_polling(*input_string++);
 				break;
 			case 'u':
 				unsigned_integer = get_variadic_arg(arg_num++);
@@ -108,58 +109,54 @@ void printf_serial_polling(char const *format, ...)
 				unsigned_integer = get_variadic_arg(arg_num++);
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
-					*str++ = '0';
+					putchar_serial_polling('0');
 					if(0 < length)length--;
-					*str++ = 'x';
+					putchar_serial_polling('x');
 					if(0 < length)length--;
 				}
-				do
+				unsigned_integer_destroyable = unsigned_integer;
+				if(unsigned_integer)for(num_of_digits = 0; 0 < unsigned_integer_destroyable; unsigned_integer_destroyable /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = (unsigned_integer % 0x10 < 10) ? '0' + unsigned_integer % 0x10 : unsigned_integer % 0x10 - 10 + 'a';
-					if(num_of_digits == length)break;
-				}while(unsigned_integer /= 0x10);
-				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
-				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = '0';
+					putchar_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					length--;
 				}
-				else while(num_of_digits < length)
+				while(0 < num_of_digits)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					unsigned_integer_destroyable = unsigned_integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)unsigned_integer_destroyable /= 0x10;
+					putchar_serial_polling(unsigned_integer_destroyable % 0x10 < 10 ? '0' + unsigned_integer_destroyable % 0x10 : 'a' + unsigned_integer_destroyable % 0x10 - 10);
+					num_of_digits--;
 				}
-				str += num_of_digits;
 				break;
 			case 'X':
 				unsigned_integer = get_variadic_arg(arg_num++);
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
-					*str++ = '0';
+					putchar_serial_polling('0');
 					if(0 < length)length--;
-					*str++ = 'X';
+					putchar_serial_polling('X');
 					if(0 < length)length--;
 				}
-				do
+				unsigned_integer_destroyable = unsigned_integer;
+				if(unsigned_integer)for(num_of_digits = 0; 0 < unsigned_integer_destroyable; unsigned_integer_destroyable /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = (unsigned_integer % 0x10 < 10) ? '0' + unsigned_integer % 0x10 : unsigned_integer % 0x10 - 10 + 'A';
-					if(num_of_digits == length)break;
-				}while(unsigned_integer /= 0x10);
-				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
-				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = '0';
+					putchar_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					length--;
 				}
-				else while(num_of_digits < length)
+				while(0 < num_of_digits)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					unsigned_integer_destroyable = unsigned_integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)unsigned_integer_destroyable /= 0x10;
+					putchar_serial_polling(unsigned_integer_destroyable % 0x10 < 10 ? '0' + unsigned_integer_destroyable % 0x10 : 'A' + unsigned_integer_destroyable % 0x10 - 10);
+					num_of_digits--;
 				}
-				str += num_of_digits;
 				break;
 			default:
-				return -1;
+				break;
 			}
 		}
 		else putchar_serial_polling(*format);
