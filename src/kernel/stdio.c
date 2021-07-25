@@ -14,9 +14,9 @@ int sprintf(char *str, const char *format, ...)
 		if(*format == '%')
 		{
 			unsigned char flags = 0;
-			#define HARIB_SPRINTF_MINUS_FLAG 0x01
-			#define HARIB_SPRINTF_TYPE_FLAG 0x02
-			#define HARIB_SPRINTF_ZERO_FLAG 0x04
+			#define SPRINTF_MINUS_FLAG 0x01
+			#define SPRINTF_TYPE_FLAG 0x02
+			#define SPRINTF_ZERO_FLAG 0x04
 			unsigned int length = 0;
 			int num_of_digits = 0;
 			char *digit;
@@ -28,13 +28,13 @@ int sprintf(char *str, const char *format, ...)
 				format++;
 				continue;
 			case '#':
-				flags |= HARIB_SPRINTF_TYPE_FLAG;
+				flags |= SPRINTF_TYPE_FLAG;
 				format++;
 				break;
 			}
 			if(*format == '0')
 			{
-				flags |= HARIB_SPRINTF_ZERO_FLAG;
+				flags |= SPRINTF_ZERO_FLAG;
 				format++;
 			}
 			while('0' <= *format && *format <= '9')
@@ -56,7 +56,7 @@ int sprintf(char *str, const char *format, ...)
 					*str++ = '-';
 					integer *= -1;
 					if(0 < length)length--;
-					flags |= HARIB_SPRINTF_MINUS_FLAG;
+					flags |= SPRINTF_MINUS_FLAG;
 				}
 				do
 				{
@@ -64,15 +64,15 @@ int sprintf(char *str, const char *format, ...)
 					*str = '0' + integer % 10;
 					if(num_of_digits == length)break;
 				}while(integer /= 10);
-				if(flags & HARIB_SPRINTF_ZERO_FLAG)while(num_of_digits < length)
+				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
 				{
 					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
 					*str = '0';
 				}
 				else while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & HARIB_SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & HARIB_SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
+					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
 				}
 				str += num_of_digits;
 				break;
@@ -88,21 +88,21 @@ int sprintf(char *str, const char *format, ...)
 					*str = '0' + unsigned_integer % 10;
 					if(num_of_digits == length)break;
 				}while(unsigned_integer /= 10);
-				if(flags & HARIB_SPRINTF_ZERO_FLAG)while(num_of_digits < length)
+				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
 				{
 					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
 					*str = '0';
 				}
 				else while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & HARIB_SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & HARIB_SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
+					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
 				}
 				str += num_of_digits;
 				break;
 			case 'x':
 				unsigned_integer = get_variadic_arg(arg_num++);
-				if(flags & HARIB_SPRINTF_TYPE_FLAG)
+				if(flags & SPRINTF_TYPE_FLAG)
 				{
 					*str++ = '0';
 					if(0 < length)length--;
@@ -115,21 +115,21 @@ int sprintf(char *str, const char *format, ...)
 					*str = (unsigned_integer % 0x10 < 10) ? '0' + unsigned_integer % 0x10 : unsigned_integer % 0x10 - 10 + 'a';
 					if(num_of_digits == length)break;
 				}while(unsigned_integer /= 0x10);
-				if(flags & HARIB_SPRINTF_ZERO_FLAG)while(num_of_digits < length)
+				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
 				{
 					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
 					*str = '0';
 				}
 				else while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & HARIB_SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & HARIB_SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
+					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
 				}
 				str += num_of_digits;
 				break;
 			case 'X':
 				unsigned_integer = get_variadic_arg(arg_num++);
-				if(flags & HARIB_SPRINTF_TYPE_FLAG)
+				if(flags & SPRINTF_TYPE_FLAG)
 				{
 					*str++ = '0';
 					if(0 < length)length--;
@@ -142,15 +142,15 @@ int sprintf(char *str, const char *format, ...)
 					*str = (unsigned_integer % 0x10 < 10) ? '0' + unsigned_integer % 0x10 : unsigned_integer % 0x10 - 10 + 'A';
 					if(num_of_digits == length)break;
 				}while(unsigned_integer /= 0x10);
-				if(flags & HARIB_SPRINTF_ZERO_FLAG)while(num_of_digits < length)
+				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
 				{
 					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
 					*str = '0';
 				}
 				else while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & HARIB_SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & HARIB_SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
+					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
 				}
 				str += num_of_digits;
 				break;
