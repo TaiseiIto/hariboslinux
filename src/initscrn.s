@@ -59,7 +59,7 @@ main:
 	int	$0x0016
 	movw	$0x0507,%si
 	movb	%al,	(%si)
-6:				# check extended memory size
+6:				# check extended memroy size
 	call	new_line_serial
 	movw	$0x0500,%si
 	movw	(%si),%dx

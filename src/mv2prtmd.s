@@ -47,15 +47,7 @@ entry:
 	movw	$expand_memory_message,(%di)
 	call	print_serial
 					# memory size
-	movw	$0x8800,%ax		# memory size
-	int	$0x0015			# get extended memory size
-	addw	$0x0480,%ax		# add first 420KiB memory
-	shr	$0x000a,%ax		# convert KiB to MiB
 	movw	$0x0500,%si
-	movw	%ax,	(%si)
-	cmp	$0x0000,%ax		# check extended memory size
-	jne	3f
-	movw	$0x0500,%si		# memory size is bigger than or equals to 64MiB
 	movw	$0xe801,%ax
 	int	$0x15
 	addw	$0x0102,%dx
