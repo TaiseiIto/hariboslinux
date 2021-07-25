@@ -20,7 +20,7 @@ void print_serial_polling(char *string);
 void print_word_hex_serial_polling(unsigned short value);
 
 // print a character to serial port COM1
-void putchar_serial_polling(char character);
+void put_char_serial_polling(char character);
 
 #endif
 

@@ -18,7 +18,7 @@ LINKER_SCRIPT_OPTION = -T
 all: kernel.bin
 
 clean:
-	rm -f *.bin *.o main.s font.s fontdata.s graphic.s main.s serial.s stdio.s string.s
+	rm -f *.bin *.o main.s font.s fontdata.s graphic.s main.s stack.s serial.s stdio.s string.s
 	make clean -C font
 
 kernel.bin: font.o fontdata.o graphic.o main.o io.o serial.o stack.o stdio.o string.o

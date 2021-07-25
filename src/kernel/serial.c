@@ -6,7 +6,7 @@
 // print LF
 void new_line_serial_polling(void)
 {
-	putchar_serial_polling('\n');
+	put_char_serial_polling('\n');
 }
 
 // printf
@@ -33,7 +33,7 @@ void printf_serial_polling(char const *format, ...)
 			switch(*format)
 			{
 			case '%':
-				putchar_serial_polling('%');
+				put_char_serial_polling('%');
 				format++;
 				continue;
 			case '#':
@@ -56,13 +56,13 @@ void printf_serial_polling(char const *format, ...)
 			{
 			case 'c':
 				character = get_variadic_arg(arg_num++);
-				putchar_serial_polling(character);
+				put_char_serial_polling(character);
 				break;
 			case 'd':
 				integer = get_variadic_arg(arg_num++);
 				if(integer < 0)
 				{
-					putchar_serial_polling('-');
+					put_char_serial_polling('-');
 					integer *= -1;
 					if(0 < length)length--;
 					flags |= SPRINTF_MINUS_FLAG;
@@ -72,20 +72,20 @@ void printf_serial_polling(char const *format, ...)
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					putchar_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					put_char_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
 					length--;
 				}
 				while(0 < num_of_digits)
 				{
 					integer_destroyable = integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable /= 10;
-					putchar_serial_polling('0' + integer_destroyable % 10);
+					put_char_serial_polling('0' + integer_destroyable % 10);
 					num_of_digits--;
 				}
 				break;
 			case 's':
 				input_string = (char const *)get_variadic_arg(arg_num++);
-				while(*input_string && (!length || num_of_digits++ < length))putchar_serial_polling(*input_string++);
+				while(*input_string && (!length || num_of_digits++ < length))put_char_serial_polling(*input_string++);
 				break;
 			case 'u':
 				unsigned_integer = get_variadic_arg(arg_num++);
@@ -94,14 +94,14 @@ void printf_serial_polling(char const *format, ...)
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					putchar_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					put_char_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
 					length--;
 				}
 				while(0 < num_of_digits)
 				{
 					unsigned_integer_destroyable = unsigned_integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)unsigned_integer_destroyable /= 10;
-					putchar_serial_polling('0' + unsigned_integer_destroyable % 10);
+					put_char_serial_polling('0' + unsigned_integer_destroyable % 10);
 					num_of_digits--;
 				}
 				break;
@@ -109,9 +109,9 @@ void printf_serial_polling(char const *format, ...)
 				unsigned_integer = get_variadic_arg(arg_num++);
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
-					putchar_serial_polling('0');
+					put_char_serial_polling('0');
 					if(0 < length)length--;
-					putchar_serial_polling('x');
+					put_char_serial_polling('x');
 					if(0 < length)length--;
 				}
 				unsigned_integer_destroyable = unsigned_integer;
@@ -119,14 +119,14 @@ void printf_serial_polling(char const *format, ...)
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					putchar_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					put_char_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
 					length--;
 				}
 				while(0 < num_of_digits)
 				{
 					unsigned_integer_destroyable = unsigned_integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)unsigned_integer_destroyable /= 0x10;
-					putchar_serial_polling(unsigned_integer_destroyable % 0x10 < 10 ? '0' + unsigned_integer_destroyable % 0x10 : 'a' + unsigned_integer_destroyable % 0x10 - 10);
+					put_char_serial_polling(unsigned_integer_destroyable % 0x10 < 10 ? '0' + unsigned_integer_destroyable % 0x10 : 'a' + unsigned_integer_destroyable % 0x10 - 10);
 					num_of_digits--;
 				}
 				break;
@@ -134,9 +134,9 @@ void printf_serial_polling(char const *format, ...)
 				unsigned_integer = get_variadic_arg(arg_num++);
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
-					putchar_serial_polling('0');
+					put_char_serial_polling('0');
 					if(0 < length)length--;
-					putchar_serial_polling('X');
+					put_char_serial_polling('X');
 					if(0 < length)length--;
 				}
 				unsigned_integer_destroyable = unsigned_integer;
@@ -144,14 +144,14 @@ void printf_serial_polling(char const *format, ...)
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					putchar_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					put_char_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
 					length--;
 				}
 				while(0 < num_of_digits)
 				{
 					unsigned_integer_destroyable = unsigned_integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)unsigned_integer_destroyable /= 0x10;
-					putchar_serial_polling(unsigned_integer_destroyable % 0x10 < 10 ? '0' + unsigned_integer_destroyable % 0x10 : 'A' + unsigned_integer_destroyable % 0x10 - 10);
+					put_char_serial_polling(unsigned_integer_destroyable % 0x10 < 10 ? '0' + unsigned_integer_destroyable % 0x10 : 'A' + unsigned_integer_destroyable % 0x10 - 10);
 					num_of_digits--;
 				}
 				break;
@@ -159,7 +159,7 @@ void printf_serial_polling(char const *format, ...)
 				break;
 			}
 		}
-		else putchar_serial_polling(*format);
+		else put_char_serial_polling(*format);
 		format++;
 	}
 }
@@ -169,10 +169,10 @@ void print_byte_hex_serial_polling(unsigned char value)
 {
 	char high = value >> 4 & 0x0f;
 	char low = value & 0x0f;
-	if(high < 10)putchar_serial_polling(high + '0');
-	else putchar_serial_polling(high + 'a' - 10);
-	if(low < 10)putchar_serial_polling(low + '0');
-	else putchar_serial_polling(low + 'a' - 10);
+	if(high < 10)put_char_serial_polling(high + '0');
+	else put_char_serial_polling(high + 'a' - 10);
+	if(low < 10)put_char_serial_polling(low + '0');
+	else put_char_serial_polling(low + 'a' - 10);
 }
 
 // print value as hexadecimal
@@ -185,7 +185,7 @@ void print_dword_hex_serial_polling(unsigned int value)
 // print string to serial port COM1
 void print_serial_polling(char *string)
 {
-	while(*string)putchar_serial_polling(*string++);
+	while(*string)put_char_serial_polling(*string++);
 }
 
 // print value as hexadecimal
@@ -196,7 +196,7 @@ void print_word_hex_serial_polling(unsigned short value)
 }
 
 // print a character to serial port COM1
-void putchar_serial_polling(char character)
+void put_char_serial_polling(char character)
 {
 	while(!(inb(COM1 + 0x0005) & 0x20));
 	outb(COM1, character);
