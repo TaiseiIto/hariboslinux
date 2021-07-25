@@ -3,6 +3,7 @@
 #include "io.h"
 #include "segment.h"
 #include "serial.h"
+#include "stdio.h"
 
 
 typedef struct
@@ -21,6 +22,7 @@ void __stack_chk_fail(void);
 void main(void)
 {
 	BootInformation boot_information;
+	char string[0x100];
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n");
 	new_line_serial_polling();
@@ -41,13 +43,16 @@ void main(void)
 	print_byte_hex_serial_polling(boot_information.keyboard_state);
 	new_line_serial_polling();
 	init_screen(boot_information.screen_width, boot_information.screen_height);
-	put_string("Hello, World!", 0, 0, get_color(0x00, 0x00, 0x05), get_color(0x00, 0x00, 0x00));
-	put_string("Hello, World!", 0, CHAR_HEIGHT, get_color(0x00, 0x05, 0x00), get_color(0x00, 0x00, 0x00));
-	put_string("Hello, World!", 0, 2 * CHAR_HEIGHT, get_color(0x00, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
-	put_string("Hello, World!", 0, 3 * CHAR_HEIGHT, get_color(0x05, 0x00, 0x00), get_color(0x00, 0x00, 0x00));
-	put_string("Hello, World!", 0, 4 * CHAR_HEIGHT, get_color(0x05, 0x00, 0x05), get_color(0x00, 0x00, 0x00));
-	put_string("Hello, World!", 0, 5 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x00), get_color(0x00, 0x00, 0x00));
-	put_string("Hello, World!", 0, 6 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
+	sprintf(string, "memory size = %#06X Mib", boot_information.memory_size);
+	put_string(string, 0, 0, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
+	sprintf(string, "screen width = %#06X pixels", boot_information.screen_width);
+	put_string(string, 0, CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
+	sprintf(string, "screen height = %#06X pixels", boot_information.screen_height);
+	put_string(string, 0, 2 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
+	sprintf(string, "bits per pixel = %#04X bits", boot_information.bits_per_pixel);
+	put_string(string, 0, 3 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
+	sprintf(string, "keyboard state = %#04X", boot_information.keyboard_state);
+	put_string(string, 0, 4 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
 	while(1)hlt();
 }
 
