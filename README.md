@@ -100,12 +100,11 @@ floppy diskをmemoryに読み込み，initscrn.binに移行します．
 
 ### initscrn.bin
 BIOSのconsole画面を破棄し，VGA画面に移行します．
-画面とkeyboardに関する以下の構造体を，0x7bf4番地に配置します．
+画面とkeyboardに関する以下の構造体を，0x0500番地に配置します．
 ```
 typedef struct
 {
 	unsigned short memory_size; // MiB
-	void *vram_addr;
 	unsigned short screen_width;
 	unsigned short screen_height;
 	unsigned char bits_per_pixel;
@@ -121,8 +120,8 @@ typedef struct
 | ------------ | ---------- | ---------- | ---------- | ------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x00007bf7 |            |            | stack frame               |
-| 0x00007bf8   | 0x00007bff |            |            | BootInformation structure |
+| 0x00000500   | 0x00000507 |            |            | BootInformation structure |
+| 0x00000508   | 0x00007bff |            |            | stack frame               |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
@@ -143,8 +142,8 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | ------------ | ---------- | ---------- | ---------- | ------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x00007bf7 |            |            | stack frame               |
-| 0x00007bf8   | 0x00007bff |            |            | BootInformation structure |
+| 0x00000500   | 0x00000507 |            |            | BootInformation structure |
+| 0x00000508   | 0x00007bff |            |            | stack frame               |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
@@ -166,8 +165,8 @@ OS本体です．
 | ------------ | ---------- | ---------- | ---------- | ------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x00007bf7 |            |            | reserved                  |
-| 0x00007bf8   | 0x00007bff |            |            | BootInformation structure |
+| 0x00000500   | 0x00000507 |            |            | BootInformation structure |
+| 0x00000508   | 0x00007bff |            |            | reserved                  |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
