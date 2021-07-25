@@ -18,7 +18,7 @@ int sprintf(char *str, const char *format, ...)
 			#define SPRINTF_TYPE_FLAG 0x02
 			#define SPRINTF_ZERO_FLAG 0x04
 			unsigned int length = 0;
-			int num_of_digits = 0;
+			unsigned int num_of_digits = 0;
 			char *digit;
 			format++;
 			switch(*format)
