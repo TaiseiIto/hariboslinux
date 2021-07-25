@@ -32,7 +32,7 @@ void main(void)
 	printf_screen(0, 0, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "memory size = %#06X Mib", boot_information.memory_size);
 	printf_screen(0, CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "screen size = (%#06X, %#06X) pixels", boot_information.screen_width, boot_information.screen_height);
 	printf_screen(0, 2 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "bits per pixel = %#04X bits", boot_information.bits_per_pixel);
-	printf_screen(0, 3 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "keyboard state = %#04X bits", boot_information.keyboard_state);
+	printf_screen(0, 3 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "keyboard state = %#04X", boot_information.keyboard_state);
 	while(1)hlt();
 }
 
