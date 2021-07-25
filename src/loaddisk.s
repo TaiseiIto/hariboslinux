@@ -7,15 +7,15 @@
 # Source disk address 0x0:2400~0x0:47ff is already loaded into destination memory address 0x0:a000~0x0:c3ff by bootsector.bin
 #
 # So this program loads source disk address 0x0:0200~0x0:23ff into destination memory address 0x0:7e00~0x0:9fff
-#                   and source disk address 0x0:4800~0x7:83ff into destination memory address 0x0:c400~0x7:ffff
+#                   and source disk address 0x0:4800~0x9:7fff into destination memory address 0x0:c400~0x9:fbff
 #
 # disk address 0x0:0200~0x0:23ff
 #	from cylinder 0x0000, head 0x0000, sector 0x0002
 #	to   cylinder 0x0000, head 0x0000, sector 0x0012
 #
-# disk address 0x0:4800~0xf:81ff
+# disk address 0x0:4800~0x9:7fff
 #	from cylinder 0x0001, head 0x0000, sector 0x0001
-#	to   cylinder 0x001a, head 0x0001, sector 0x0008
+#	to   cylinder 0x0021, head 0x0001, sector 0x000a
 
 # calling convention = System V i386
 # return value: ax, dx
@@ -77,9 +77,9 @@ main:
 	call	new_line
 7:				# load disk
 				#  from cylinder 0x0001, head 0x0000, sector 0x0001
-				#  to   cylinder 0x0019, head 0x0001, sector 0x0012
-				# source disk        address 0x0:4800~0x9:4fff
-				# destination memory address 0x0:c400~0x9:cbff
+				#  to   cylinder 0x0021, head 0x0001, sector 0x000a
+				# source disk        address 0x0:4800~0x9:7fff
+				# destination memory address 0x0:c400~0x9:fbff
 	movw	$0x0001,(%di)	# cylinder_number
 	movw	$0x0000,0x02(%di)# head
 	movw	$0x0001,0x04(%di)# sector_number
