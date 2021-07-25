@@ -4,6 +4,8 @@
 #include "segment.h"
 #include "serial.h"
 
+#define TAB_LENGTH 4
+
 typedef struct
 {
 	unsigned short width;
@@ -130,19 +132,32 @@ void put_dot(unsigned short x, unsigned short y, Color color)
 // put string at screen(x, y)
 void put_string(char const *string, unsigned short x, unsigned short y, Color foreground, Color background)
 {
+	unsigned int char_pos_x = 0;
+	unsigned int char_pos_y = 0;
+	unsigned int char_pos_x_destroyable;
 	while(*string)
 	{
 		switch(*string)
 		{
+		case '\t':
+			char_pos_x_destroyable = (char_pos_x / TAB_LENGTH + 1) * TAB_LENGTH;
+			fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
+			char_pos_x = char_pos_x_destroyable;
+			break;
+		case '\n':
+			char_pos_x = 0;
+			char_pos_y++;
+			break;
 		case ' ':
-			fill_box(x, y, CHAR_WIDTH, CHAR_HEIGHT, background);
+			fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
+			char_pos_x++;
 			break;
 		default:
-			put_char(*string, x, y, foreground, background);
+			put_char(*string, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+			char_pos_x++;
 			break;
 		}
 		string++;
-		x += CHAR_WIDTH;
 	}
 }
 
