@@ -30,7 +30,6 @@ void main(void)
 	printf_serial_polling("screen height = %#06X pixels\n", boot_information.screen_height);
 	printf_serial_polling("bits per pixel = %#04X bits\n", boot_information.bits_per_pixel);
 	printf_serial_polling("keyboard state = %#04X\n", boot_information.keyboard_state);
-	new_line_serial_polling();
 	init_screen(boot_information.screen_width, boot_information.screen_height);
 	sprintf(string, "memory size = %#06X Mib", boot_information.memory_size);
 	put_string(string, 0, 0, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));

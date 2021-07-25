@@ -132,6 +132,12 @@ void printf_serial_polling(char const *format, ...)
 				break;
 			case 'X':
 				unsigned_integer = get_variadic_arg(arg_num++);
+				// debug
+				new_line_serial_polling();
+				print_serial_polling("unsigned_integer = 0x");
+				print_dword_hex_serial_polling(unsigned_integer);
+				new_line_serial_polling();
+				// debug
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
 					putchar_serial_polling('0');
