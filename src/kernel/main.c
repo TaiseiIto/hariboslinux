@@ -20,7 +20,6 @@ BootInformation get_boot_information(void);
 void main(void)
 {
 	BootInformation boot_information;
-	char string[0x100];
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
 	boot_information = get_boot_information();
@@ -30,16 +29,10 @@ void main(void)
 	printf_serial_polling("bits per pixel = %#04X bits\n", boot_information.bits_per_pixel);
 	printf_serial_polling("keyboard state = %#04X\n", boot_information.keyboard_state);
 	init_screen(boot_information.screen_width, boot_information.screen_height);
-	sprintf(string, "memory size = %#06X Mib", boot_information.memory_size);
-	put_string(string, 0, 0, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
-	sprintf(string, "screen width = %#06X pixels", boot_information.screen_width);
-	put_string(string, 0, CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
-	sprintf(string, "screen height = %#06X pixels", boot_information.screen_height);
-	put_string(string, 0, 2 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
-	sprintf(string, "bits per pixel = %#04X bits", boot_information.bits_per_pixel);
-	put_string(string, 0, 3 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
-	sprintf(string, "keyboard state = %#04X", boot_information.keyboard_state);
-	put_string(string, 0, 4 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00));
+	printf_screen(0, 0, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "memory size = %#06X Mib", boot_information.memory_size);
+	printf_screen(0, CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "screen size = (%#06X, %#06X) pixels", boot_information.screen_width, boot_information.screen_height);
+	printf_screen(0, 2 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "bits per pixel = %#04X bits", boot_information.bits_per_pixel);
+	printf_screen(0, 3 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "keyboard state = %#04X bits", boot_information.keyboard_state);
 	while(1)hlt();
 }
 
