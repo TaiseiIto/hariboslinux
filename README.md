@@ -78,7 +78,7 @@ bootsector.binでは，bootの第2段階であるloaddisk.binを含むfloppy dis
 | ------------ | ---------- | ---------- | ---------- | ---------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area         |
-| 0x00000500   | 0x00007bff |            |            | stack frame            |
+| 0x00000500   | 0x00007bff |            |            | stack                  |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin         |
 
 ### loaddisk.bin
@@ -92,7 +92,7 @@ floppy diskをmemoryに読み込み，initscrn.binに移行します．
 | ------------- | ---------- | ---------- | ---------- | ---------------------- |
 | 0x00000000    | 0x000003ff |            |            | interrupt vector table |
 | 0x00000400    | 0x000004ff |            |            | BIOS data area         |
-| 0x00000500    | 0x00007bff |            |            | stack frame            |
+| 0x00000500    | 0x00007bff |            |            | stack                  |
 | 0x00007c00    | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin         |
 | 0x0000a000    | 0x0000c3ff | 0x00002400 | 0x000047ff | loaded disk data       |
 | 0x0000a200    | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries |
@@ -124,7 +124,7 @@ typedef struct
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area            |
 | 0x00000500   | 0x0000050a |            |            | BootInformation structure |
-| 0x0000050b   | 0x00007bff |            |            | stack frame               |
+| 0x0000050b   | 0x00007bff |            |            | stack                     |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
@@ -146,7 +146,7 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area            |
 | 0x00000500   | 0x0000050a |            |            | BootInformation structure |
-| 0x0000050b   | 0x00007bff |            |            | stack frame               |
+| 0x0000050b   | 0x00007bff |            |            | stack                     |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
@@ -156,7 +156,11 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | initscrn.bin              |
 | 0x0000ca00   | 0x0000cdff | 0x00004e00 | 0x000051ff | mv2prtmd.bin              |
 | 0x0000ce00   | ?          | 0x00005200 | ?          | kernel.bin                |
-| 0x000a0000   | 0x000a6400 |            |            | VRAM                      |
+| 0x0009fc00   | 0x0009ffff |            |            | ACPI work area            |
+| 0x000a0000   | 0x000bffff |            |            | VRAM                      |
+| 0x000c0000   | 0x000c7fff |            |            | Video BIOS                |
+| 0x000c8000   | 0x000effff |            |            | BIOS expansions           |
+| 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS          |
 
 ### kernel.bin
 OS本体です．
@@ -179,9 +183,15 @@ OS本体です．
 | 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | initscrn.bin              |
 | 0x0000ca00   | 0x0000cdff | 0x00004e00 | 0x000051ff | mv2prtmd.bin              |
 | 0x0000ce00   | ?          | 0x00005200 | ?          | kernel.bin                |
-| 0x000a0000   | 0x000a6400 |            |            | VRAM                      |
-| 0x00100000   | 0x001fffff |            |            | stack                     |
-| 0x00200000   | ?          |            |            | heap                      |
+| 0x0009fc00   | 0x0009ffff |            |            | ACPI work area            |
+| 0x000a0000   | 0x000bffff |            |            | VRAM                      |
+| 0x000c0000   | 0x000c7fff |            |            | Video BIOS                |
+| 0x000c8000   | 0x000effff |            |            | BIOS expansions           |
+| 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS          |
+| 0x00100000   | 0x001fffff |            |            | kernel stack              |
+| 0x00200000   | 0x00efffff |            |            | reserved                  |
+| 0x00f00000   | 0x00ffffff |            |            | ISA memory hole           |
+| 0x01000000   | ?          |            |            | reserved                  |
 
 ## 開発者用メモ
 docker, VNC softwareに加え，git, makeを用いて開発しています．
