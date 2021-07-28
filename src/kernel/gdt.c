@@ -47,6 +47,9 @@ void init_gdt(void)
 	vram_segment.limit_high = 0x01 | SEGMENT_DESCRIPTOR_SIZE;
 	vram_segment.base_high = 0x00;
 
+	for(destination = GDT_ADDR; destination < GDT_ADDR + 0x2000 * sizeof(SegmentDescriptor); destination += sizeof(SegmentDescriptor))writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
+
+	destination = GDT_ADDR;
 	writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
 	destination += sizeof(null_segment);
 	writes(&whole_memory_segment, WHOLE_SEGMENT, destination, sizeof(whole_memory_segment));
