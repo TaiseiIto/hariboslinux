@@ -1,5 +1,6 @@
 #include "gdt.h"
 #include "io.h"
+#include "serial.h"
 
 #define GDT_ADDR ((void *)0x00200000)
 
@@ -10,7 +11,10 @@ void init_gdt(void)
 	SegmentDescriptor kernel_code_segment;
 	SegmentDescriptor kernel_data_segment;
 	SegmentDescriptor vram_segment;
-	void *destination = GDT_ADDR;
+	SegmentDescriptor gdt_segment;
+	SegmentDescriptor segment_checker;
+	void *source;
+	void *destination;
 
 	null_segment.limit_low = 0x0000;
 	null_segment.base_low = 0x0000;
@@ -47,8 +51,17 @@ void init_gdt(void)
 	vram_segment.limit_high = 0x01 | SEGMENT_DESCRIPTOR_SIZE;
 	vram_segment.base_high = 0x00;
 
+	gdt_segment.limit_low = 0xffff;
+	gdt_segment.base_low = 0x0000;
+	gdt_segment.base_mid = 0x20;
+	gdt_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
+	gdt_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE;
+	gdt_segment.base_high = 0x00;
+
+	// init new GDT
 	for(destination = GDT_ADDR; destination < GDT_ADDR + 0x2000 * sizeof(SegmentDescriptor); destination += sizeof(SegmentDescriptor))writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
 
+	// set new GDT
 	destination = GDT_ADDR;
 	writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
 	destination += sizeof(null_segment);
@@ -60,7 +73,27 @@ void init_gdt(void)
 	destination += sizeof(kernel_data_segment);
 	writes(&vram_segment, WHOLE_SEGMENT, destination, sizeof(vram_segment));
 	destination += sizeof(vram_segment);
+	writes(&gdt_segment, WHOLE_SEGMENT, destination, sizeof(gdt_segment));
+	destination += sizeof(gdt_segment);
 
+	// load new GDT
 	lgdt(0xffff, (SegmentDescriptor *)GDT_ADDR);
+
+	// check new GDT
+	print_serial_polling("check new GDT\n");
+	source = (void *)0x00000000 + sizeof(null_segment);
+	do
+	{
+		reads(GDT_SEGMENT, source, &segment_checker, sizeof(segment_checker));
+		printf_serial_polling("Segment Descriptor %#010X\n", source);
+		printf_serial_polling("\tlimit low\t%#06X\n", segment_checker.limit_low);
+		printf_serial_polling("\tbase low\t%#06X\n", segment_checker.base_low);
+		printf_serial_polling("\tbase mid\t%#04X\n", segment_checker.base_mid);
+		printf_serial_polling("\taccess right\t%#04X\n", segment_checker.access_right);
+		printf_serial_polling("\tlimit high\t%#04X\n", segment_checker.limit_high);
+		printf_serial_polling("\tbase high\t%#04X\n", segment_checker.base_high);
+		source += sizeof(segment_checker);
+	}while(segment_checker.access_right & SEGMENT_DESCRIPTOR_PRESENT);
+	new_line_serial_polling();
 }
 
