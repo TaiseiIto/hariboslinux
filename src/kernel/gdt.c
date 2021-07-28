@@ -1,6 +1,5 @@
 #include "gdt.h"
 #include "io.h"
-#include "segment.h"
 
 #define GDT_ADDR ((void *)0x00200000)
 
@@ -58,5 +57,7 @@ void init_gdt(void)
 	destination += sizeof(kernel_data_segment);
 	writes(&vram_segment, WHOLE_SEGMENT, destination, sizeof(vram_segment));
 	destination += sizeof(vram_segment);
+
+	lgdt(0xffff, (SegmentDescriptor *)GDT_ADDR);
 }
 

@@ -12,6 +12,7 @@
 	.globl	inb
 	.globl	inw
 	.globl	inl
+	.globl	lgdt
 	.globl	outb
 	.globl	outw
 	.globl	outl
@@ -31,6 +32,7 @@
 	.type	inb,			@function
 	.type	inw,			@function
 	.type	inl,			@function
+	.type	lgdt,			@function
 	.type	outb,			@function
 	.type	outw,			@function
 	.type	outl,			@function
@@ -118,6 +120,15 @@ inl:				# unsigned int io_inl(unsigned short address);
 	xorl	%edx,	%edx
 	movw	0x08(%ebp),%dx
 	inl	%dx,	%eax
+	leave
+	ret
+
+				# // lgdt
+lgdt:				# void lgdt(unsigned int limit, SegmentDescriptor *begin);
+	pushl	%ebp
+	movl	%esp,	%ebp
+	shll	$0x10,	0x08(%ebp)
+	lgdt	0x0a(%ebp)
 	leave
 	ret
 
