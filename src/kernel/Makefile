@@ -21,7 +21,7 @@ clean:
 	rm -f *.bin *.o main.s font.s fontdata.s graphic.s main.s stack.s serial.s stdio.s string.s
 	make clean -C font
 
-kernel.bin: font.o fontdata.o global_descriptor_table.o graphic.o main.o io.o serial.o stack.o stdio.o string.o
+kernel.bin: font.o fontdata.o gdt.o graphic.o main.o io.o serial.o stack.o stdio.o string.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
 font.o: font.s
@@ -38,9 +38,9 @@ fontdata.c: font/fontdata.c
 font/fontdata.c: font/bitmap.txt font/Makefile font/translator.c
 	make -C font
 
-global_descriptor_table.o: global_descriptor_table.s
+gdt.o: gdt.s
 
-global_descriptor_table.s: global_descriptor_table.c
+gdt.s: gdt.c
 
 graphic.o: graphic.s
 

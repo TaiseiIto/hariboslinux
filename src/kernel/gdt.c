@@ -1,17 +1,17 @@
-#include "global_descriptor_table.h"
+#include "gdt.h"
 #include "io.h"
 #include "segment.h"
 
-#define GLOBAL_DESCRIPTOR_TABLE_ADDRESS ((void *)0x00200000)
+#define GDT_ADDR ((void *)0x00200000)
 
-void init_global_descriptor_table(void)
+void init_gdt(void)
 {
 	SegmentDescriptor null_segment;
 	SegmentDescriptor whole_memory_segment;
 	SegmentDescriptor kernel_code_segment;
 	SegmentDescriptor kernel_data_segment;
 	SegmentDescriptor vram_segment;
-	void *destination = GLOBAL_DESCRIPTOR_TABLE_ADDRESS;
+	void *destination = GDT_ADDR;
 
 	null_segment.limit_low = 0x0000;
 	null_segment.base_low = 0x0000;

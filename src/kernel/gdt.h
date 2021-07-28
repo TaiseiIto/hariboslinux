@@ -1,8 +1,8 @@
 // bibliography
 // https://wiki.osdev.org/Global_Descriptor_Table
 
-#ifndef _GLOBAL_DESCRIPTOR_TABLE_H_
-#define _GLOBAL_DESCRIPTOR_TABLE_H_
+#ifndef _GDT_H_
+#define _GDT_H_
 
 typedef struct
 {
@@ -63,6 +63,6 @@ typedef struct
 		// base 24:31 bits
 } SegmentDescriptor;
 
-void init_global_descriptor_table(void);
+void init_gdt(void);
 
 #endif
