@@ -2,7 +2,6 @@
 #include "gdt.h"
 #include "graphic.h"
 #include "io.h"
-#include "segment.h"
 #include "serial.h"
 #include "stdio.h"
 

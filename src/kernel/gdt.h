@@ -4,6 +4,11 @@
 #ifndef _GDT_H_
 #define _GDT_H_
 
+#define WHOLE_SEGMENT 0x08
+#define KERNEL_CODE_SEGMENT 0x10
+#define KERNEL_DATA_SEGMENT 0x18
+#define VRAM_SEGMENT 0x20
+
 typedef struct
 {
 	unsigned short limit_low;

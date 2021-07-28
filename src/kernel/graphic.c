@@ -1,7 +1,7 @@
 #include "font.h"
+#include "gdt.h"
 #include "graphic.h"
 #include "io.h"
-#include "segment.h"
 #include "serial.h"
 
 #define TAB_LENGTH 4
