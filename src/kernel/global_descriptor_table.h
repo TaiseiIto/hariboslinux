@@ -63,4 +63,6 @@ typedef struct
 		// base 24:31 bits
 } SegmentDescriptor;
 
+void init_global_descriptor_table(void);
+
 #endif
