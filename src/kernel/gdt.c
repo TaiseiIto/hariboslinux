@@ -118,7 +118,7 @@ unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char 
 			if(0x00100000 <= limit)
 			{
 				segment_descriptor.limit_high |= SEGMENT_DESCRIPTOR_GRANULARITY;
-				limit >>= 10;
+				limit >>= 12;
 			}
 			segment_descriptor.limit_low = (unsigned short)(limit & 0x0000ffff);
 			segment_descriptor.limit_high |= (unsigned char)(limit >> 16 & 0x0000000f);
