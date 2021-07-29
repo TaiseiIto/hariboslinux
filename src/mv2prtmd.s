@@ -208,18 +208,8 @@ gdt:
 	.byte	0xc0		#  limit_high
 	.byte	0x00		#  base_high
 
-				# 0x0020 VRAM section is readable and writable
-				# base	0x000a0000
-				# limit	0x0001ffff
-				# access_right 0x4092
-	.word	0xffff		#  limit_low
-	.word	0x0000		#  base_low
-	.byte	0x0a		#  base_mid
-	.byte	0x92		#  access_right
-	.byte	0x41		#  limit_high
-	.byte	0x00		#  base_high
 gdtr:
-	.word	0x0027		# 5 segment descriptors * 8 bytes per segment descriptor - 1
+	.word	0x001f		# 5 segment descriptors * 8 bytes per segment descriptor - 1
 	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"
