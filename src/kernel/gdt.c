@@ -10,8 +10,8 @@ void init_gdt(void)
 	SegmentDescriptor whole_memory_segment;
 	SegmentDescriptor kernel_code_segment;
 	SegmentDescriptor kernel_data_segment;
-	SegmentDescriptor vram_segment;
 	SegmentDescriptor gdt_segment;
+	SegmentDescriptor vram_segment;
 	SegmentDescriptor segment_checker;
 	void *source;
 	void *destination;
@@ -44,19 +44,19 @@ void init_gdt(void)
 	kernel_data_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE | SEGMENT_DESCRIPTOR_GRANULARITY;
 	kernel_data_segment.base_high = 0x00;
 
-	vram_segment.limit_low = 0xffff;
-	vram_segment.base_low = 0x0000;
-	vram_segment.base_mid = 0x0a;
-	vram_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
-	vram_segment.limit_high = 0x01 | SEGMENT_DESCRIPTOR_SIZE;
-	vram_segment.base_high = 0x00;
-
 	gdt_segment.limit_low = 0xffff;
 	gdt_segment.base_low = 0x0000;
 	gdt_segment.base_mid = 0x20;
 	gdt_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
 	gdt_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE;
 	gdt_segment.base_high = 0x00;
+
+	vram_segment.limit_low = 0xffff;
+	vram_segment.base_low = 0x0000;
+	vram_segment.base_mid = 0x0a;
+	vram_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
+	vram_segment.limit_high = 0x01 | SEGMENT_DESCRIPTOR_SIZE;
+	vram_segment.base_high = 0x00;
 
 	// init new GDT
 	for(destination = GDT_ADDR; destination < GDT_ADDR + 0x2000 * sizeof(SegmentDescriptor); destination += sizeof(SegmentDescriptor))writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
@@ -71,10 +71,10 @@ void init_gdt(void)
 	destination += sizeof(kernel_code_segment);
 	writes(&kernel_data_segment, WHOLE_SEGMENT, destination, sizeof(kernel_data_segment));
 	destination += sizeof(kernel_data_segment);
-	writes(&vram_segment, WHOLE_SEGMENT, destination, sizeof(vram_segment));
-	destination += sizeof(vram_segment);
 	writes(&gdt_segment, WHOLE_SEGMENT, destination, sizeof(gdt_segment));
 	destination += sizeof(gdt_segment);
+	writes(&vram_segment, WHOLE_SEGMENT, destination, sizeof(vram_segment));
+	destination += sizeof(vram_segment);
 
 	// load new GDT
 	lgdt(0xffff, (SegmentDescriptor *)GDT_ADDR);
