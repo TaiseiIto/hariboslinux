@@ -11,7 +11,7 @@ void init_gdt(void)
 	SegmentDescriptor kernel_code_segment;
 	SegmentDescriptor kernel_data_segment;
 	SegmentDescriptor gdt_segment;
-	SegmentDescriptor vram_segment;
+	//SegmentDescriptor vram_segment;
 	SegmentDescriptor segment_checker;
 	void *source;
 	void *destination;
@@ -51,12 +51,12 @@ void init_gdt(void)
 	gdt_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE;
 	gdt_segment.base_high = 0x00;
 
-	vram_segment.limit_low = 0xffff;
-	vram_segment.base_low = 0x0000;
-	vram_segment.base_mid = 0x0a;
-	vram_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
-	vram_segment.limit_high = 0x01 | SEGMENT_DESCRIPTOR_SIZE;
-	vram_segment.base_high = 0x00;
+	//vram_segment.limit_low = 0xffff;
+	//vram_segment.base_low = 0x0000;
+	//vram_segment.base_mid = 0x0a;
+	//vram_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
+	//vram_segment.limit_high = 0x01 | SEGMENT_DESCRIPTOR_SIZE;
+	//vram_segment.base_high = 0x00;
 
 	// init new GDT
 	for(destination = GDT_ADDR; destination < GDT_ADDR + 0x2000 * sizeof(SegmentDescriptor); destination += sizeof(SegmentDescriptor))writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
@@ -73,11 +73,14 @@ void init_gdt(void)
 	destination += sizeof(kernel_data_segment);
 	writes(&gdt_segment, WHOLE_SEGMENT, destination, sizeof(gdt_segment));
 	destination += sizeof(gdt_segment);
-	writes(&vram_segment, WHOLE_SEGMENT, destination, sizeof(vram_segment));
-	destination += sizeof(vram_segment);
-
+	//writes(&vram_segment, WHOLE_SEGMENT, destination, sizeof(vram_segment));
+	//destination += sizeof(vram_segment);
+	
 	// load new GDT
 	lgdt(0xffff, (SegmentDescriptor *)GDT_ADDR);
+
+	// VRAM
+	set_segment(0x000a0000, 0x0001ffff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA, 0x00);
 
 	// check new GDT
 	print_serial_polling("check new GDT\n");
@@ -101,17 +104,17 @@ void init_gdt(void)
 // return 0 if failed
 unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char access_right, unsigned char flags)
 {
-	for(unsigned short segment_selector = 0x08; segment_selector != 0x00; segment_selector += 8)
+	for(void *segment_selector = (void *)0x00000008; segment_selector != 0x00000000; segment_selector += sizeof(SegmentDescriptor))
 	{
 		SegmentDescriptor segment_descriptor;
-		reads(GDT_SEGMENT, (void *)segment_selector, &segment_descriptor, sizeof(segment_descriptor));
+		reads(GDT_SEGMENT, segment_selector, &segment_descriptor, sizeof(segment_descriptor));
 		if(!(segment_descriptor.access_right & SEGMENT_DESCRIPTOR_PRESENT))
 		{
 			segment_descriptor.base_low = (unsigned short)(base & 0x0000ffff);
 			segment_descriptor.base_mid = (unsigned char)(base >> 16 & 0x000000ff);
 			segment_descriptor.base_high = (unsigned char)(base >> 24 & 0x000000ff);
-			segment_descriptor.access_right = access_right;
-			segment_descriptor.limit_high = flags;
+			segment_descriptor.access_right = access_right | SEGMENT_DESCRIPTOR_PRESENT;
+			segment_descriptor.limit_high = flags | SEGMENT_DESCRIPTOR_SIZE;
 			if(0x00100000 <= limit)
 			{
 				segment_descriptor.limit_high |= SEGMENT_DESCRIPTOR_GRANULARITY;
@@ -120,7 +123,7 @@ unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char 
 			segment_descriptor.limit_low = (unsigned short)(limit & 0x0000ffff);
 			segment_descriptor.limit_high |= (unsigned char)(limit >> 16 & 0x0000000f);
 			writes(&segment_descriptor, GDT_SEGMENT, (void *)segment_selector, sizeof(segment_descriptor));
-			return segment_selector;
+			return (unsigned int)segment_selector;
 		}
 	}
 	// unused segment not found
