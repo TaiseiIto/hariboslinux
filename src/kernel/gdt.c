@@ -97,3 +97,33 @@ void init_gdt(void)
 	new_line_serial_polling();
 }
 
+// return a new segment selector
+// return 0 if failed
+unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char access_right, unsigned char flags)
+{
+	for(unsigned short segment_selector = 0x08; segment_selector != 0x00; segment_selector += 8)
+	{
+		SegmentDescriptor segment_descriptor;
+		reads(GDT_SEGMENT, (void *)segment_selector, &segment_descriptor, sizeof(segment_descriptor));
+		if(!(segment_descriptor.access_right & SEGMENT_DESCRIPTOR_PRESENT))
+		{
+			segment_descriptor.base_low = (unsigned short)(base & 0x0000ffff);
+			segment_descriptor.base_mid = (unsigned char)(base >> 16 & 0x000000ff);
+			segment_descriptor.base_high = (unsigned char)(base >> 24 & 0x000000ff);
+			segment_descriptor.access_right = access_right;
+			segment_descriptor.limit_high = flags;
+			if(0x00100000 <= limit)
+			{
+				segment_descriptor.limit_high |= SEGMENT_DESCRIPTOR_GRANULARITY;
+				limit >>= 10;
+			}
+			segment_descriptor.limit_low = (unsigned short)(limit & 0x0000ffff);
+			segment_descriptor.limit_high |= (unsigned char)(limit >> 16 & 0x0000000f);
+			writes(&segment_descriptor, GDT_SEGMENT, (void *)segment_selector, sizeof(segment_descriptor));
+			return segment_selector;
+		}
+	}
+	// unused segment not found
+	return 0x0000;
+}
+
