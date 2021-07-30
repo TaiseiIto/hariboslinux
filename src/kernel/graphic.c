@@ -126,7 +126,7 @@ void put_dot(unsigned short x, unsigned short y, Color color)
 {
 	if(screen_information.width <= x)return;
 	if(screen_information.height <= y)return;
-	writeb(VRAM_SEGMENT, (void *)(screen_information.width * y + x), color);
+	writeb(vram_segment_selector, (void *)(screen_information.width * y + x), color);
 }
 
 // put string at screen(x, y)

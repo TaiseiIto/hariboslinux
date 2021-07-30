@@ -4,16 +4,16 @@
 #ifndef _GDT_H_
 #define _GDT_H_
 
-#define WHOLE_SEGMENT 0x0008
-#define KERNEL_CODE_SEGMENT 0x0010
-#define KERNEL_DATA_SEGMENT 0x0018
-#define GDT_SEGMENT 0x0020
-#define IDT_SEGMENT 0x0028
-#define LOADED_DISK_SEGMENT 0x0030
-#define FIRST_FAT_SEGMENT 0x0038
-#define SECOND_FAT_SEGMENT 0x0040
-#define ROOT_DIRECTORY_SEGMENT 0x0048
-#define VRAM_SEGMENT 0x0050
+extern unsigned short whole_memory_segment_selector;
+extern unsigned short kernel_code_segment_selector;
+extern unsigned short kernel_data_segment_selector;
+extern unsigned short gdt_segment_selector;
+extern unsigned short idt_segment_selector;
+extern unsigned short loaded_disk_segment_selector;
+extern unsigned short first_fat_segment_selector;
+extern unsigned short second_fat_segment_selector;
+extern unsigned short root_directory_entry_segment_selector;
+extern unsigned short vram_segment_selector;
 
 typedef struct
 {

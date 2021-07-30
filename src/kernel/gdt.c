@@ -4,6 +4,17 @@
 
 #define GDT_ADDR ((void *)0x00200000)
 
+unsigned short whole_memory_segment_selector;
+unsigned short kernel_code_segment_selector;
+unsigned short kernel_data_segment_selector;
+unsigned short gdt_segment_selector;
+unsigned short idt_segment_selector;
+unsigned short loaded_disk_segment_selector;
+unsigned short first_fat_segment_selector;
+unsigned short second_fat_segment_selector;
+unsigned short root_directory_entry_segment_selector;
+unsigned short vram_segment_selector;
+
 void init_gdt(void)
 {
 	SegmentDescriptor null_segment;
@@ -14,6 +25,7 @@ void init_gdt(void)
 	SegmentDescriptor segment_checker;
 	void *source;
 	void *destination;
+	unsigned short const temporary_whole_memory_segment_selector = 0x0008;
 
 	null_segment.limit_low = 0x0000;
 	null_segment.base_low = 0x0000;
@@ -51,48 +63,41 @@ void init_gdt(void)
 	gdt_segment.base_high = 0x00;
 
 	// init new GDT
-	for(destination = GDT_ADDR; destination < GDT_ADDR + 0x2000 * sizeof(SegmentDescriptor); destination += sizeof(SegmentDescriptor))writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
+	for(destination = GDT_ADDR; destination < GDT_ADDR + 0x2000 * sizeof(SegmentDescriptor); destination += sizeof(SegmentDescriptor))writes(&null_segment, temporary_whole_memory_segment_selector, destination, sizeof(null_segment));
 
 	// set new GDT
 	destination = GDT_ADDR;
-	writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
+	writes(&null_segment, temporary_whole_memory_segment_selector, destination, sizeof(null_segment));
 	destination += sizeof(null_segment);
-	writes(&whole_memory_segment, WHOLE_SEGMENT, destination, sizeof(whole_memory_segment));
+	writes(&whole_memory_segment, temporary_whole_memory_segment_selector, destination, sizeof(whole_memory_segment));
+	whole_memory_segment_selector = (unsigned int)destination;
 	destination += sizeof(whole_memory_segment);
-	writes(&kernel_code_segment, WHOLE_SEGMENT, destination, sizeof(kernel_code_segment));
+	writes(&kernel_code_segment, temporary_whole_memory_segment_selector, destination, sizeof(kernel_code_segment));
+	kernel_code_segment_selector = (unsigned int)destination;
 	destination += sizeof(kernel_code_segment);
-	writes(&kernel_data_segment, WHOLE_SEGMENT, destination, sizeof(kernel_data_segment));
+	writes(&kernel_data_segment, temporary_whole_memory_segment_selector, destination, sizeof(kernel_data_segment));
+	kernel_data_segment_selector = (unsigned int)destination;
 	destination += sizeof(kernel_data_segment);
-	writes(&gdt_segment, WHOLE_SEGMENT, destination, sizeof(gdt_segment));
+	writes(&gdt_segment, temporary_whole_memory_segment_selector, destination, sizeof(gdt_segment));
+	gdt_segment_selector = (unsigned int)destination;
 	destination += sizeof(gdt_segment);
 	
 	// load new GDT
 	lgdt(0xffff, (SegmentDescriptor *)GDT_ADDR);
 
-	// IDT segment
-	set_segment(0x00007400, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-
-	// loaded disk segment
-	set_segment(0x00007c00, 0x00097fff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-
-	// first FAT segment
-	set_segment(0x00007e00, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-
-	// second FAT segment
-	set_segment(0x00009000, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-
-	// root directory segment
-	set_segment(0x0000a200, 0x00001bff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-
-	// VRAM segment
-	set_segment(0x000a0000, 0x0001ffff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	idt_segment_selector = set_segment(0x00007400, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	loaded_disk_segment_selector = set_segment(0x00007c00, 0x00097fff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	first_fat_segment_selector = set_segment(0x00007e00, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	second_fat_segment_selector = set_segment(0x00009000, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	root_directory_entry_segment_selector = set_segment(0x0000a200, 0x00001bff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	vram_segment_selector = set_segment(0x000a0000, 0x0001ffff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 
 	// check new GDT
 	print_serial_polling("check new GDT\n");
 	source = (void *)0x00000000 + sizeof(null_segment);
 	do
 	{
-		reads(GDT_SEGMENT, source, &segment_checker, sizeof(segment_checker));
+		reads(gdt_segment_selector, source, &segment_checker, sizeof(segment_checker));
 		printf_serial_polling("Segment Descriptor %#010X\n", source);
 		printf_serial_polling("\tlimit low\t%#06X\n", segment_checker.limit_low);
 		printf_serial_polling("\tbase low\t%#06X\n", segment_checker.base_low);
@@ -112,7 +117,7 @@ unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char 
 	for(void *segment_selector = (void *)0x00000008; segment_selector != 0x00000000; segment_selector += sizeof(SegmentDescriptor))
 	{
 		SegmentDescriptor segment_descriptor;
-		reads(GDT_SEGMENT, segment_selector, &segment_descriptor, sizeof(segment_descriptor));
+		reads(gdt_segment_selector, segment_selector, &segment_descriptor, sizeof(segment_descriptor));
 		if(!(segment_descriptor.access_right & SEGMENT_DESCRIPTOR_PRESENT))
 		{
 			segment_descriptor.base_low = (unsigned short)(base & 0x0000ffff);
@@ -127,7 +132,7 @@ unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char 
 			}
 			segment_descriptor.limit_low = (unsigned short)(limit & 0x0000ffff);
 			segment_descriptor.limit_high |= (unsigned char)(limit >> 16 & 0x0000000f);
-			writes(&segment_descriptor, GDT_SEGMENT, (void *)segment_selector, sizeof(segment_descriptor));
+			writes(&segment_descriptor, gdt_segment_selector, (void *)segment_selector, sizeof(segment_descriptor));
 			return (unsigned int)segment_selector;
 		}
 	}
