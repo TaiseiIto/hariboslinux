@@ -35,11 +35,11 @@ void main(void)
 	while(1)hlt();
 }
 
-// get BootInformation structure at 0x00000500
+// get BootInformation structure
 BootInformation get_boot_information(void)
 {
 	BootInformation boot_information;
-	reads(whole_memory_segment_selector, (void *)0x00000500, (void *)&boot_information, sizeof(boot_information));
+	reads(boot_information_segment_selector, (void *)0x00000000, (void *)&boot_information, sizeof(boot_information));
 	return boot_information;
 }
 

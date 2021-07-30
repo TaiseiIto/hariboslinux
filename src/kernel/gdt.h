@@ -9,6 +9,7 @@ extern unsigned short kernel_code_segment_selector;
 extern unsigned short kernel_data_segment_selector;
 extern unsigned short gdt_segment_selector;
 extern unsigned short idt_segment_selector;
+extern unsigned short boot_information_segment_selector;
 extern unsigned short loaded_disk_segment_selector;
 extern unsigned short first_fat_segment_selector;
 extern unsigned short second_fat_segment_selector;

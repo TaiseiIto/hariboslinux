@@ -1,3 +1,4 @@
+#include "boot.h"
 #include "gdt.h"
 #include "io.h"
 #include "serial.h"
@@ -9,6 +10,7 @@ unsigned short kernel_code_segment_selector;
 unsigned short kernel_data_segment_selector;
 unsigned short gdt_segment_selector;
 unsigned short idt_segment_selector;
+unsigned short boot_information_segment_selector;
 unsigned short loaded_disk_segment_selector;
 unsigned short first_fat_segment_selector;
 unsigned short second_fat_segment_selector;
@@ -86,6 +88,7 @@ void init_gdt(void)
 	lgdt(0xffff, (SegmentDescriptor *)GDT_ADDR);
 
 	idt_segment_selector = set_segment(0x00007400, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	boot_information_segment_selector = set_segment(0x00000500, sizeof(BootInformation), SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	loaded_disk_segment_selector = set_segment(0x00007c00, 0x00097fff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	first_fat_segment_selector = set_segment(0x00007e00, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	second_fat_segment_selector = set_segment(0x00009000, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
