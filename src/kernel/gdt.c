@@ -11,7 +11,6 @@ void init_gdt(void)
 	SegmentDescriptor kernel_code_segment;
 	SegmentDescriptor kernel_data_segment;
 	SegmentDescriptor gdt_segment;
-	//SegmentDescriptor vram_segment;
 	SegmentDescriptor segment_checker;
 	void *source;
 	void *destination;
@@ -51,13 +50,6 @@ void init_gdt(void)
 	gdt_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE;
 	gdt_segment.base_high = 0x00;
 
-	//vram_segment.limit_low = 0xffff;
-	//vram_segment.base_low = 0x0000;
-	//vram_segment.base_mid = 0x0a;
-	//vram_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
-	//vram_segment.limit_high = 0x01 | SEGMENT_DESCRIPTOR_SIZE;
-	//vram_segment.base_high = 0x00;
-
 	// init new GDT
 	for(destination = GDT_ADDR; destination < GDT_ADDR + 0x2000 * sizeof(SegmentDescriptor); destination += sizeof(SegmentDescriptor))writes(&null_segment, WHOLE_SEGMENT, destination, sizeof(null_segment));
 
@@ -73,14 +65,27 @@ void init_gdt(void)
 	destination += sizeof(kernel_data_segment);
 	writes(&gdt_segment, WHOLE_SEGMENT, destination, sizeof(gdt_segment));
 	destination += sizeof(gdt_segment);
-	//writes(&vram_segment, WHOLE_SEGMENT, destination, sizeof(vram_segment));
-	//destination += sizeof(vram_segment);
 	
 	// load new GDT
 	lgdt(0xffff, (SegmentDescriptor *)GDT_ADDR);
 
-	// VRAM
-	set_segment(0x000a0000, 0x0001ffff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA, 0x00);
+	// IDT segment
+	set_segment(0x00007400, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+
+	// loaded disk segment
+	set_segment(0x00007c00, 0x00097fff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+
+	// first FAT segment
+	set_segment(0x00007e00, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+
+	// second FAT segment
+	set_segment(0x00009000, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+
+	// root directory segment
+	set_segment(0x0000a200, 0x00001bff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+
+	// VRAM segment
+	set_segment(0x000a0000, 0x0001ffff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 
 	// check new GDT
 	print_serial_polling("check new GDT\n");
@@ -102,7 +107,7 @@ void init_gdt(void)
 
 // return a new segment selector
 // return 0 if failed
-unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char access_right, unsigned char flags)
+unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char access_right)
 {
 	for(void *segment_selector = (void *)0x00000008; segment_selector != 0x00000000; segment_selector += sizeof(SegmentDescriptor))
 	{
@@ -114,7 +119,7 @@ unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char 
 			segment_descriptor.base_mid = (unsigned char)(base >> 16 & 0x000000ff);
 			segment_descriptor.base_high = (unsigned char)(base >> 24 & 0x000000ff);
 			segment_descriptor.access_right = access_right | SEGMENT_DESCRIPTOR_PRESENT;
-			segment_descriptor.limit_high = flags | SEGMENT_DESCRIPTOR_SIZE;
+			segment_descriptor.limit_high = SEGMENT_DESCRIPTOR_SIZE;
 			if(0x00100000 <= limit)
 			{
 				segment_descriptor.limit_high |= SEGMENT_DESCRIPTOR_GRANULARITY;

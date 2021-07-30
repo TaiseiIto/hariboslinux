@@ -4,11 +4,16 @@
 #ifndef _GDT_H_
 #define _GDT_H_
 
-#define WHOLE_SEGMENT 0x08
-#define KERNEL_CODE_SEGMENT 0x10
-#define KERNEL_DATA_SEGMENT 0x18
-#define GDT_SEGMENT 0x20
-#define VRAM_SEGMENT 0x28
+#define WHOLE_SEGMENT 0x0008
+#define KERNEL_CODE_SEGMENT 0x0010
+#define KERNEL_DATA_SEGMENT 0x0018
+#define GDT_SEGMENT 0x0020
+#define IDT_SEGMENT 0x0028
+#define LOADED_DISK_SEGMENT 0x0030
+#define FIRST_FAT_SEGMENT 0x0038
+#define SECOND_FAT_SEGMENT 0x0040
+#define ROOT_DIRECTORY_SEGMENT 0x0048
+#define VRAM_SEGMENT 0x0050
 
 typedef struct
 {
@@ -73,6 +78,6 @@ void init_gdt(void);
 
 // return a new segment selector
 // return 0 if failed
-unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char access_right, unsigned char flags);
+unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char access_right);
 
 #endif
