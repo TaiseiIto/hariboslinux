@@ -97,6 +97,17 @@ void init_gdt(void)
 
 	// check new GDT
 	print_serial_polling("check new GDT\n");
+	printf_serial_polling("whole_memory_segment_selector = %#06X\n", whole_memory_segment_selector);
+	printf_serial_polling("kernel_code_segment_selector = %#06X\n", kernel_code_segment_selector);
+	printf_serial_polling("kernel_data_segment_selector = %#06X\n", kernel_data_segment_selector);
+	printf_serial_polling("gdt_segment_selector = %#06X\n", gdt_segment_selector);
+	printf_serial_polling("idt_segment_selector = %#06X\n", idt_segment_selector);
+	printf_serial_polling("boot_information_segment_selector = %#06X\n", boot_information_segment_selector);
+	printf_serial_polling("loaded_disk_segment_selector = %#06X\n", loaded_disk_segment_selector);
+	printf_serial_polling("first_fat_segment_selector = %#06X\n", first_fat_segment_selector);
+	printf_serial_polling("second_fat_segment_selector = %#06X\n", second_fat_segment_selector);
+	printf_serial_polling("root_directory_entry_segment_selector = %#06X\n", root_directory_entry_segment_selector);
+	printf_serial_polling("vram_segment_selector = %#06X\n", vram_segment_selector);
 	source = (void *)0x00000000 + sizeof(null_segment);
 	do
 	{
