@@ -2,6 +2,7 @@
 #define _IO_H_
 
 #include "gdt.h"
+#include "idt.h"
 
 // disable all interrupts
 void cli(void);
@@ -28,6 +29,9 @@ unsigned int inl(unsigned short address);
 
 // lgdt
 void lgdt(unsigned int limit, SegmentDescriptor *begin);
+
+// lidt
+void lidt(unsigned int limit, InterruptDescriptor *begin);
 
 // outb	$value,	$address
 void outb(unsigned short address, unsigned char value);

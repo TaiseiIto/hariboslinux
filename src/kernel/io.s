@@ -13,6 +13,7 @@
 	.globl	inw
 	.globl	inl
 	.globl	lgdt
+	.globl	lidt
 	.globl	outb
 	.globl	outw
 	.globl	outl
@@ -33,6 +34,7 @@
 	.type	inw,			@function
 	.type	inl,			@function
 	.type	lgdt,			@function
+	.type	lidt,			@function
 	.type	outb,			@function
 	.type	outw,			@function
 	.type	outl,			@function
@@ -129,6 +131,15 @@ lgdt:				# void lgdt(unsigned int limit, SegmentDescriptor *begin);
 	movl	%esp,	%ebp
 	shll	$0x10,	0x08(%ebp)
 	lgdt	0x0a(%ebp)
+	leave
+	ret
+
+				# // lidt
+lidt:				# void lidt(unsigned int limit, SegmentDescriptor *begin);
+	pushl	%ebp
+	movl	%esp,	%ebp
+	shll	$0x10,	0x08(%ebp)
+	lidt	0x0a(%ebp)
 	leave
 	ret
 
