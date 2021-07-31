@@ -18,10 +18,10 @@ LINKER_SCRIPT_OPTION = -T
 all: kernel.bin
 
 clean:
-	rm -f *.bin *.o main.s font.s fontdata.s gdt.s graphic.s main.s serial.s stack.s stdio.s string.s
+	rm -f *.bin *.o main.s font.s fontdata.s gdt.s graphic.s idt.s main.s serial.s stack.s stdio.s string.s
 	make clean -C font
 
-kernel.bin: font.o fontdata.o gdt.o graphic.o main.o io.o serial.o stack.o stdio.o string.o
+kernel.bin: font.o fontdata.o gdt.o graphic.o idt.o main.o io.o serial.o stack.o stdio.o string.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
 font.o: font.s
@@ -45,6 +45,10 @@ gdt.s: gdt.c
 graphic.o: graphic.s
 
 graphic.s: graphic.c
+
+idt.o: idt.s
+
+idt.s: idt.c
 
 io.o: io.s
 

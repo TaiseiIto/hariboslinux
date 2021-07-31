@@ -1,0 +1,399 @@
+rm -f diskcontents/*.bin imagepacker/imagepacker *.bin *.o *.img
+make clean -C src
+make[1]: Entering directory '/~/hariboslinux/src'
+rm -f kernel.s *.bin *.o 
+make clean -C kernel
+make[2]: Entering directory '/~/hariboslinux/src/kernel'
+rm -f *.bin *.o main.s font.s fontdata.s gdt.s graphic.s idt.s main.s serial.s stack.s stdio.s string.s
+make clean -C font
+make[3]: Entering directory '/~/hariboslinux/src/kernel/font'
+rm fontdata.c ./translator
+make[3]: Leaving directory '/~/hariboslinux/src/kernel/font'
+make[2]: Leaving directory '/~/hariboslinux/src/kernel'
+make[1]: Leaving directory '/~/hariboslinux/src'
+make
+make[1]: Entering directory '/~/hariboslinux'
+gcc imagepacker/imagepacker.c -o imagepacker/imagepacker -Wall -Wextra
+make -C src
+make[2]: Entering directory '/~/hariboslinux/src'
+gcc bootsector.s -c -nostdlib -o bootsector.o -Wall -Wextra
+ld bootsector.o -o bootsector.bin -T bootsector.ld
+gcc loaddisk.s -c -nostdlib -o loaddisk.o -Wall -Wextra
+ld loaddisk.o -o loaddisk.bin -T loaddisk.ld
+gcc initscrn.s -c -nostdlib -o initscrn.o -Wall -Wextra
+ld initscrn.o -o initscrn.bin -T initscrn.ld
+gcc mv2prtmd.s -c -nostdlib -o mv2prtmd.o -Wall -Wextra
+ld mv2prtmd.o -o mv2prtmd.bin -T mv2prtmd.ld
+make -C kernel
+make[3]: Entering directory '/~/hariboslinux/src/kernel'
+gcc font.c -m32 -S -fno-builtin -fno-pie -o font.s
+gcc font.s -m32 -c -nostdlib -o font.o -Wall -Wextra
+make -C font
+make[4]: Entering directory '/~/hariboslinux/src/kernel/font'
+gcc translator.c -o translator -Wall -Wextra
+./translator bitmap.txt fontdata.c
+argv[0] : ./translator
+argv[1] : bitmap.txt
+argv[2] : fontdata.c
+input file name: bitmap.txt
+output file name: fontdata.c
+char code 0000
+char code 0x01
+char code 0x02
+char code 0x03
+char code 0x04
+char code 0x05
+char code 0x06
+char code 0x07
+char code 0x08
+char code 0x09
+char code 0x0a
+char code 0x0b
+char code 0x0c
+char code 0x0d
+char code 0x0e
+char code 0x0f
+char code 0x10
+char code 0x11
+char code 0x12
+char code 0x13
+char code 0x14
+char code 0x15
+char code 0x16
+char code 0x17
+char code 0x18
+char code 0x19
+char code 0x1a
+char code 0x1b
+char code 0x1c
+char code 0x1d
+char code 0x1e
+char code 0x1f
+char code 0x20
+char code 0x21
+char code 0x22
+char code 0x23
+char code 0x24
+char code 0x25
+char code 0x26
+char code 0x27
+char code 0x28
+char code 0x29
+char code 0x2a
+char code 0x2b
+char code 0x2c
+char code 0x2d
+char code 0x2e
+char code 0x2f
+char code 0x30
+char code 0x31
+char code 0x32
+char code 0x33
+char code 0x34
+char code 0x35
+char code 0x36
+char code 0x37
+char code 0x38
+char code 0x39
+char code 0x3a
+char code 0x3b
+char code 0x3c
+char code 0x3d
+char code 0x3e
+char code 0x3f
+char code 0x40
+char code 0x41
+char code 0x42
+char code 0x43
+char code 0x44
+char code 0x45
+char code 0x46
+char code 0x47
+char code 0x48
+char code 0x49
+char code 0x4a
+char code 0x4b
+char code 0x4c
+char code 0x4d
+char code 0x4e
+char code 0x4f
+char code 0x50
+char code 0x51
+char code 0x52
+char code 0x53
+char code 0x54
+char code 0x55
+char code 0x56
+char code 0x57
+char code 0x58
+char code 0x59
+char code 0x5a
+char code 0x5b
+char code 0x5c
+char code 0x5d
+char code 0x5e
+char code 0x5f
+char code 0x60
+char code 0x61
+char code 0x62
+char code 0x63
+char code 0x64
+char code 0x65
+char code 0x66
+char code 0x67
+char code 0x68
+char code 0x69
+char code 0x6a
+char code 0x6b
+char code 0x6c
+char code 0x6d
+char code 0x6e
+char code 0x6f
+char code 0x70
+char code 0x71
+char code 0x72
+char code 0x73
+char code 0x74
+char code 0x75
+char code 0x76
+char code 0x77
+char code 0x78
+char code 0x79
+char code 0x7a
+char code 0x7b
+char code 0x7c
+char code 0x7d
+char code 0x7e
+char code 0x7f
+char code 0x80
+char code 0x81
+char code 0x82
+char code 0x83
+char code 0x84
+char code 0x85
+char code 0x86
+char code 0x87
+char code 0x88
+char code 0x89
+char code 0x8a
+char code 0x8b
+char code 0x8c
+char code 0x8d
+char code 0x8e
+char code 0x8f
+char code 0x90
+char code 0x91
+char code 0x92
+char code 0x93
+char code 0x94
+char code 0x95
+char code 0x96
+char code 0x97
+char code 0x98
+char code 0x99
+char code 0x9a
+char code 0x9b
+char code 0x9c
+char code 0x9d
+char code 0x9e
+char code 0x9f
+char code 0xa0
+char code 0xa1
+char code 0xa2
+char code 0xa3
+char code 0xa4
+char code 0xa5
+char code 0xa6
+char code 0xa7
+char code 0xa8
+char code 0xa9
+char code 0xaa
+char code 0xab
+char code 0xac
+char code 0xad
+char code 0xae
+char code 0xaf
+char code 0xb0
+char code 0xb1
+char code 0xb2
+char code 0xb3
+char code 0xb4
+char code 0xb5
+char code 0xb6
+char code 0xb7
+char code 0xb8
+char code 0xb9
+char code 0xba
+char code 0xbb
+char code 0xbc
+char code 0xbd
+char code 0xbe
+char code 0xbf
+char code 0xc0
+char code 0xc1
+char code 0xc2
+char code 0xc3
+char code 0xc4
+char code 0xc5
+char code 0xc6
+char code 0xc7
+char code 0xc8
+char code 0xc9
+char code 0xca
+char code 0xcb
+char code 0xcc
+char code 0xcd
+char code 0xce
+char code 0xcf
+char code 0xd0
+char code 0xd1
+char code 0xd2
+char code 0xd3
+char code 0xd4
+char code 0xd5
+char code 0xd6
+char code 0xd7
+char code 0xd8
+char code 0xd9
+char code 0xda
+char code 0xdb
+char code 0xdc
+char code 0xdd
+char code 0xde
+char code 0xdf
+char code 0xe0
+char code 0xe1
+char code 0xe2
+char code 0xe3
+char code 0xe4
+char code 0xe5
+char code 0xe6
+char code 0xe7
+char code 0xe8
+char code 0xe9
+char code 0xea
+char code 0xeb
+char code 0xec
+char code 0xed
+char code 0xee
+char code 0xef
+char code 0xf0
+char code 0xf1
+char code 0xf2
+char code 0xf3
+char code 0xf4
+char code 0xf5
+char code 0xf6
+char code 0xf7
+char code 0xf8
+char code 0xf9
+char code 0xfa
+char code 0xfb
+char code 0xfc
+char code 0xfd
+char code 0xfe
+char code 0xff
+make[4]: Leaving directory '/~/hariboslinux/src/kernel/font'
+cp font/fontdata.c fontdata.c
+gcc fontdata.c -m32 -S -fno-builtin -fno-pie -o fontdata.s
+gcc fontdata.s -m32 -c -nostdlib -o fontdata.o -Wall -Wextra
+gcc gdt.c -m32 -S -fno-builtin -fno-pie -o gdt.s
+gcc gdt.s -m32 -c -nostdlib -o gdt.o -Wall -Wextra
+gcc graphic.c -m32 -S -fno-builtin -fno-pie -o graphic.s
+gcc graphic.s -m32 -c -nostdlib -o graphic.o -Wall -Wextra
+gcc idt.c -m32 -S -fno-builtin -fno-pie -o idt.s
+gcc idt.s -m32 -c -nostdlib -o idt.o -Wall -Wextra
+gcc main.c -m32 -S -fno-builtin -fno-pie -o main.s
+gcc main.s -m32 -c -nostdlib -o main.o -Wall -Wextra
+gcc io.s -m32 -c -nostdlib -o io.o -Wall -Wextra
+gcc serial.c -m32 -S -fno-builtin -fno-pie -o serial.s
+gcc serial.s -m32 -c -nostdlib -o serial.o -Wall -Wextra
+gcc stack.c -m32 -S -fno-builtin -fno-pie -o stack.s
+gcc stack.s -m32 -c -nostdlib -o stack.o -Wall -Wextra
+gcc stdio.c -m32 -S -fno-builtin -fno-pie -o stdio.s
+gcc stdio.s -m32 -c -nostdlib -o stdio.o -Wall -Wextra
+gcc string.c -m32 -S -fno-builtin -fno-pie -o string.s
+gcc string.s -m32 -c -nostdlib -o string.o -Wall -Wextra
+ld font.o fontdata.o gdt.o graphic.o idt.o main.o io.o serial.o stack.o stdio.o string.o -m elf_i386 -o kernel.bin -T kernel.ld
+make[3]: Leaving directory '/~/hariboslinux/src/kernel'
+cp kernel/kernel.bin kernel.bin
+make[2]: Leaving directory '/~/hariboslinux/src'
+cp src/bootsector.bin diskcontents/bootsector.bin
+cp src/loaddisk.bin diskcontents/loaddisk.bin
+cp src/initscrn.bin diskcontents/initscrn.bin
+cp src/mv2prtmd.bin diskcontents/mv2prtmd.bin
+cp src/kernel.bin diskcontents/kernel.bin
+imagepacker/imagepacker haribos.img diskcontents/bootsector.bin diskcontents/loaddisk.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/kernel.bin diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
+argv[0] : imagepacker/imagepacker
+argv[1] : haribos.img
+argv[2] : diskcontents/bootsector.bin
+argv[3] : diskcontents/loaddisk.bin
+argv[4] : diskcontents/initscrn.bin
+argv[5] : diskcontents/mv2prtmd.bin
+argv[6] : diskcontents/kernel.bin
+argv[7] : diskcontents/test0.txt
+argv[8] : diskcontents/test1.txt
+argv[9] : diskcontents/test2.txt
+argv[10] : diskcontents/test3.txt
+argv[11] : diskcontents/test4.txt
+floppy disk raw image file : haribos.img
+boot sector binary file : diskcontents/bootsector.bin
+input file [0] : diskcontents/loaddisk.bin
+input file [1] : diskcontents/initscrn.bin
+input file [2] : diskcontents/mv2prtmd.bin
+input file [3] : diskcontents/kernel.bin
+input file [4] : diskcontents/test0.txt
+input file [5] : diskcontents/test1.txt
+input file [6] : diskcontents/test2.txt
+input file [7] : diskcontents/test3.txt
+input file [8] : diskcontents/test4.txt
+jump instructions[0] : 0XEB
+jump instructions[1] : 0X3C
+jump instructions[2] : 0X90
+produce name : HARIBOTE
+0X0200 bytes per sector
+0X01 sectors per cluster
+0X0001 reserved sectors
+0X02 FATs
+0X00E0 root directory entries
+0X0B40 sectors in disk
+media type : 0XF0
+0X0009 sectors per FAT
+0X0012 sectors per track
+0X0002 heads
+0000000000 hidden sectors
+0X00000B40 sectors in disk
+drive number : 0000
+boot signature : 0X29
+volume serial number : 0XFFFFFFFF
+volume label : HARIBOTEOS 
+file system name : FAT12   
+locate input file diskcontents/loaddisk.bin
+	file size : 1536
+	file creation time : 2021/07/31 18:39:47
+locate input file diskcontents/initscrn.bin
+	file size : 1536
+	file creation time : 2021/07/31 18:39:47
+locate input file diskcontents/mv2prtmd.bin
+	file size : 1024
+	file creation time : 2021/07/31 18:39:47
+locate input file diskcontents/kernel.bin
+	file size : 17632
+	file creation time : 2021/07/31 18:39:47
+locate input file diskcontents/test0.txt
+	file size : 15
+	file creation time : 2021/07/14 20:10:02
+locate input file diskcontents/test1.txt
+	file size : 256
+	file creation time : 2021/07/14 20:10:02
+locate input file diskcontents/test2.txt
+	file size : 512
+	file creation time : 2021/07/14 20:10:02
+locate input file diskcontents/test3.txt
+	file size : 768
+	file creation time : 2021/07/14 20:10:02
+locate input file diskcontents/test4.txt
+	file size : 1024
+	file creation time : 2021/07/14 20:10:02
+rm src/mv2prtmd.bin src/bootsector.bin src/loaddisk.bin src/initscrn.bin
+make[1]: Leaving directory '/~/hariboslinux'
