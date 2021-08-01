@@ -104,8 +104,7 @@ void init_gdt(void)
 	printf_serial_polling("root_directory_entry_segment_selector = %#06X\n", root_directory_entry_segment_selector);
 	printf_serial_polling("vram_segment_selector = %#06X\n", vram_segment_selector);
 	new_line_serial_polling();
-	source = (SegmentDescriptor *)0x00000000;
-	source++;
+	source = (SegmentDescriptor *)0x00000008;
 	do
 	{
 		reads(gdt_segment_selector, source, &segment_checker, sizeof(segment_checker));
