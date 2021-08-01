@@ -125,7 +125,7 @@ void init_gdt(void)
 // return 0 if failed
 unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char access_right)
 {
-	for(void *segment_selector = (void *)0x00000008; segment_selector != 0x00000000; segment_selector += sizeof(SegmentDescriptor))
+	for(SegmentDescriptor *segment_selector = (SegmentDescriptor *)0x00000008; segment_selector != (SegmentDescriptor*)0x00010000; segment_selector++)
 	{
 		SegmentDescriptor segment_descriptor;
 		reads(gdt_segment_selector, segment_selector, &segment_descriptor, sizeof(segment_descriptor));
