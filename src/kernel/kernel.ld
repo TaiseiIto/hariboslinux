@@ -54,5 +54,6 @@ SECTIONS
 		string.o(.bss)
 	}
 	/DISCARD/:{*(.eh_frame)}
+	/DISCARD/:{*(.note.gnu.property)}
 }
 
