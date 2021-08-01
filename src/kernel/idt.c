@@ -2,6 +2,8 @@
 #include "idt.h"
 #include "io.h"
 
+#define IDT_ADDR ((void *)0x00007400)
+
 void init_idt(void)
 {
 	InterruptDescriptor interrupt_descriptor;
@@ -12,5 +14,8 @@ void init_idt(void)
 	interrupt_descriptor.flags = 0x00;
 	interrupt_descriptor.offset_high = 0x0000;
 	for(InterruptDescriptor *destination = 0x00000000; destination < end_of_idt; destination++)writes((void *)&interrupt_descriptor, idt_segment_selector, destination, sizeof(interrupt_descriptor));
+
+	// load IDT
+	lidt(0x07ff, (InterruptDescriptor *)IDT_ADDR);
 }
 

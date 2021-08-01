@@ -15,6 +15,7 @@ void main(void)
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
 	init_gdt();
+	init_idt();
 	boot_information = get_boot_information();
 	printf_serial_polling("memory size = %#06X MiB\n", boot_information.memory_size);
 	printf_serial_polling("screen width = %#06X pixels\n", boot_information.screen_width);
