@@ -20,6 +20,7 @@
 // |---IRQ14
 // |---IRQ15
 
+#include "io.h"
 #include "pic.h"
 
 // Interrupt Mask Registers Ports

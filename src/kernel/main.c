@@ -3,6 +3,7 @@
 #include "gdt.h"
 #include "graphic.h"
 #include "io.h"
+#include "pic.h"
 #include "serial.h"
 #include "stdio.h"
 
