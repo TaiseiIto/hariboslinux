@@ -33,6 +33,7 @@ void main(void)
 	printf_screen(0, 4 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "last loaded cylinder = %#04X", boot_information.last_loaded_cylinder);
 	printf_screen(0, 5 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "last loaded head = %#04X", boot_information.last_loaded_head);
 	printf_screen(0, 6 * CHAR_HEIGHT, get_color(0x05, 0x05, 0x05), get_color(0x00, 0x00, 0x00), "last loaded sector = %#04X", boot_information.last_loaded_sector);
+	new_line_serial_polling();
 	while(1)hlt();
 }
 

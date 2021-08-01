@@ -108,6 +108,7 @@ void init_gdt(void)
 	printf_serial_polling("second_fat_segment_selector = %#06X\n", second_fat_segment_selector);
 	printf_serial_polling("root_directory_entry_segment_selector = %#06X\n", root_directory_entry_segment_selector);
 	printf_serial_polling("vram_segment_selector = %#06X\n", vram_segment_selector);
+	new_line_serial_polling();
 	source = (void *)0x00000000 + sizeof(null_segment);
 	do
 	{
