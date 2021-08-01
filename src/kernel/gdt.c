@@ -113,12 +113,12 @@ void init_gdt(void)
 	{
 		reads(gdt_segment_selector, source, &segment_checker, sizeof(segment_checker));
 		printf_serial_polling("Segment Descriptor %#010X\n", source);
-		printf_serial_polling("\tlimit low\t%#06X\n", segment_checker.limit_low);
-		printf_serial_polling("\tbase low\t%#06X\n", segment_checker.base_low);
-		printf_serial_polling("\tbase mid\t%#04X\n", segment_checker.base_mid);
-		printf_serial_polling("\taccess right\t%#04X\n", segment_checker.access_right);
-		printf_serial_polling("\tlimit high\t%#04X\n", segment_checker.limit_high);
-		printf_serial_polling("\tbase high\t%#04X\n", segment_checker.base_high);
+		printf_serial_polling("\tlimit_low\t%#06X\n", segment_checker.limit_low);
+		printf_serial_polling("\tbase_low\t%#06X\n", segment_checker.base_low);
+		printf_serial_polling("\tbase_mid\t%#04X\n", segment_checker.base_mid);
+		printf_serial_polling("\taccess_right\t%#04X\n", segment_checker.access_right);
+		printf_serial_polling("\tlimit_high\t%#04X\n", segment_checker.limit_high);
+		printf_serial_polling("\tbase_high\t%#04X\n", segment_checker.base_high);
 		source += sizeof(segment_checker);
 	}while(segment_checker.access_right & SEGMENT_DESCRIPTOR_PRESENT);
 	new_line_serial_polling();

@@ -234,7 +234,7 @@ readl:				# unsigned int io_readl(unsigned short segment, void *address);
 	ret
 
 				# // read size bytes from $source_segment:$source to $destination_segment:$destination
-reads:				# void read(unsigned short source_segment, void *source, void *destination, unsigned int size);
+reads:				# void read(unsigned short source_segment, void const *source, void *destination, unsigned int size);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -342,7 +342,7 @@ writel:				# void io_writel(unsigned short segment, void *address, unsigned char
 	ret
 
 				# // write size bytes from $source to $destination_segment:$destination
-writes:				# void writes(void *source, unsigned short destination_segment, void *destination, unsigned int size);
+writes:				# void writes(void const *source, unsigned short destination_segment, void *destination, unsigned int size);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
