@@ -3,7 +3,7 @@
 #include "io.h"
 #include "serial.h"
 
-#define IDT_ADDR ((void *)0x00007400)
+#define IDT_ADDR ((InterruptDescriptor *)0x00007400)
 
 void init_idt(void)
 {
@@ -17,7 +17,7 @@ void init_idt(void)
 	for(InterruptDescriptor *destination = 0x00000000; destination < end_of_idt; destination++)writes((void *)&interrupt_descriptor, idt_segment_selector, destination, sizeof(interrupt_descriptor));
 
 	// load IDT
-	lidt(0x07ff, (InterruptDescriptor *)IDT_ADDR);
+	lidt(0x07ff, IDT_ADDR);
 
 	// check IDT
 	for(InterruptDescriptor const *source = (InterruptDescriptor const *)0x00000000; source < (InterruptDescriptor const *)0x00000800; source++)
