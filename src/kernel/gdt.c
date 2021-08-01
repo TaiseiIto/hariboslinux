@@ -3,7 +3,7 @@
 #include "io.h"
 #include "serial.h"
 
-#define GDT_ADDR ((void *)0x00200000)
+#define GDT_ADDR ((SegmentDescriptor *)0x00200000)
 
 unsigned short whole_memory_segment_selector;
 unsigned short kernel_code_segment_selector;
@@ -25,8 +25,8 @@ void init_gdt(void)
 	SegmentDescriptor kernel_data_segment;
 	SegmentDescriptor gdt_segment;
 	SegmentDescriptor segment_checker;
-	void *source;
-	void *destination;
+	SegmentDescriptor *source;
+	SegmentDescriptor *destination;
 	unsigned short const temporary_whole_memory_segment_selector = 0x0008;
 
 	null_segment.limit_low = 0x0000;
@@ -65,27 +65,22 @@ void init_gdt(void)
 	gdt_segment.base_high = 0x00;
 
 	// init new GDT
-	for(destination = GDT_ADDR; destination < GDT_ADDR + 0x2000 * sizeof(SegmentDescriptor); destination += sizeof(SegmentDescriptor))writes(&null_segment, temporary_whole_memory_segment_selector, destination, sizeof(null_segment));
+	for(destination = GDT_ADDR; destination != GDT_ADDR + 0x2000; destination ++)writes(&null_segment, temporary_whole_memory_segment_selector, destination, sizeof(null_segment));
 
 	// set new GDT
 	destination = GDT_ADDR;
-	writes(&null_segment, temporary_whole_memory_segment_selector, destination, sizeof(null_segment));
-	destination += sizeof(null_segment);
+	writes(&null_segment, temporary_whole_memory_segment_selector, destination++, sizeof(null_segment));
 	writes(&whole_memory_segment, temporary_whole_memory_segment_selector, destination, sizeof(whole_memory_segment));
-	whole_memory_segment_selector = (unsigned int)destination;
-	destination += sizeof(whole_memory_segment);
+	whole_memory_segment_selector = (unsigned int)destination++;
 	writes(&kernel_code_segment, temporary_whole_memory_segment_selector, destination, sizeof(kernel_code_segment));
-	kernel_code_segment_selector = (unsigned int)destination;
-	destination += sizeof(kernel_code_segment);
+	kernel_code_segment_selector = (unsigned int)destination++;
 	writes(&kernel_data_segment, temporary_whole_memory_segment_selector, destination, sizeof(kernel_data_segment));
-	kernel_data_segment_selector = (unsigned int)destination;
-	destination += sizeof(kernel_data_segment);
+	kernel_data_segment_selector = (unsigned int)destination++;
 	writes(&gdt_segment, temporary_whole_memory_segment_selector, destination, sizeof(gdt_segment));
-	gdt_segment_selector = (unsigned int)destination;
-	destination += sizeof(gdt_segment);
+	gdt_segment_selector = (unsigned int)destination++;
 	
 	// load new GDT
-	lgdt(0xffff, (SegmentDescriptor *)GDT_ADDR);
+	lgdt(0xffff, GDT_ADDR);
 
 	idt_segment_selector = set_segment(0x00007400, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	boot_information_segment_selector = set_segment(0x00000500, sizeof(BootInformation), SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
@@ -109,7 +104,8 @@ void init_gdt(void)
 	printf_serial_polling("root_directory_entry_segment_selector = %#06X\n", root_directory_entry_segment_selector);
 	printf_serial_polling("vram_segment_selector = %#06X\n", vram_segment_selector);
 	new_line_serial_polling();
-	source = (void *)0x00000000 + sizeof(null_segment);
+	source = (SegmentDescriptor *)0x00000000;
+	source++;
 	do
 	{
 		reads(gdt_segment_selector, source, &segment_checker, sizeof(segment_checker));
@@ -120,7 +116,7 @@ void init_gdt(void)
 		printf_serial_polling("\taccess_right\t%#04X\n", segment_checker.access_right);
 		printf_serial_polling("\tlimit_high\t%#04X\n", segment_checker.limit_high);
 		printf_serial_polling("\tbase_high\t%#04X\n", segment_checker.base_high);
-		source += sizeof(segment_checker);
+		source++;
 	}while(segment_checker.access_right & SEGMENT_DESCRIPTOR_PRESENT);
 	new_line_serial_polling();
 }
