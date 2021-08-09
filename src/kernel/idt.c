@@ -30,6 +30,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000009, interrupt_handler0x09, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// invalid TSS exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000000a, interrupt_handler0x0a, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// segment not present exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000000b, interrupt_handler0x0b, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_handler0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 

@@ -48,6 +48,9 @@ void interrupt_handler0x09(void);
 // invalid TSS exception handler
 void interrupt_handler0x0a(void);
 
+// segment not present exception handler
+void interrupt_handler0x0b(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

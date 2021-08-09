@@ -8,6 +8,7 @@ void devide_by_zero_exception_handler(void);
 void double_fault_exception_handler(void);
 void invalid_opcode_exception_handler(void);
 void invalid_TSS_exception_handler(void);
+void segment_not_present_exception_handler(void);
 
 #endif
 
