@@ -52,6 +52,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001e, interrupt_handler0x1e, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_handler0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// FPU error exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000002d, interrupt_handler0x2d, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 
 	// load IDT
 	lidt(0x07ff, IDT_ADDR);

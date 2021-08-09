@@ -10,18 +10,19 @@
 	.extern	device_not_available_exception_handler
 	.extern	devide_by_zero_exception_handler
 	.extern	double_fault_exception_handler
+	.extern	fpu_error_exception_handler
 	.extern	general_protection_fault_exception_handler
 	.extern	invalid_opcode_exception_handler
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
-	.extern machine_check_exception_handler
-	.extern page_fault_exeption_handler
-	.extern security_exception_handler
+	.extern	machine_check_exception_handler
+	.extern	page_fault_exeption_handler
+	.extern	security_exception_handler
 	.extern	segment_not_present_exception_handler
-	.extern simd_floating_point_exception_handler
+	.extern	simd_floating_point_exception_handler
 	.extern	stack_segment_fault_exception_handler
-	.extern virtualization_exception_handler
-	.extern x87_floating_point_exception_handler
+	.extern	virtualization_exception_handler
+	.extern	x87_floating_point_exception_handler
 
 	.globl	cli
 	.globl	get_eflags
@@ -48,6 +49,7 @@
 	.globl	interrupt_handler0x14
 	.globl	interrupt_handler0x1e
 	.globl	interrupt_handler0x21
+	.globl	interrupt_handler0x2d
 	.globl	lgdt
 	.globl	lidt
 	.globl	outb
@@ -88,6 +90,7 @@
 	.type	interrupt_handler0x14,	@function
 	.type	interrupt_handler0x1e,	@function
 	.type	interrupt_handler0x21,	@function
+	.type	interrupt_handler0x2d,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
 	.type	outb,			@function
@@ -324,6 +327,14 @@ interrupt_handler0x21:		# void interrupt_handler0x21(void);
 0:
 	pushal
 	call	keyboard_interrupt_handler
+	popal
+	iret
+
+				# // FPU error exception handler
+interrupt_handler0x2d:		# void interrupt_handler0x2d(void);
+0:
+	pushal
+	call	fpu_error_exception_handler
 	popal
 	iret
 

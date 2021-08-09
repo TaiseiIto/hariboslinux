@@ -81,6 +81,9 @@ void interrupt_handler0x1e(void);
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 
+// FPU error exception handler
+void interrupt_handler0x2d(void);
+
 // lgdt
 void lgdt(unsigned int limit, SegmentDescriptor *begin);
 

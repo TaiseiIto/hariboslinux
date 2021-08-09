@@ -31,6 +31,11 @@ void double_fault_exception_handler(void)
 	print_serial_polling("DOUBLE FAULT EXCEPTION!!!\n");
 }
 
+void fpu_error_exception_handler(void)
+{
+	print_serial_polling("FPU ERROR EXCEPTION!!!\n");
+}
+
 void general_protection_fault_exception_handler(void)
 {
 	print_serial_polling("GENERAL PROTEXTION FAULT EXCEPTION!!!\n");
