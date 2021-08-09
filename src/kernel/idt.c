@@ -34,3 +34,14 @@ void init_idt(void)
 	new_line_serial_polling();
 }
 
+void set_gate(InterruptDescriptor *interrupt_descriptor, void (*handler)(void), unsigned char flags)
+{
+	InterruptDescriptor temp;
+	temp.offset_low = (unsigned short)((unsigned int)handler & 0x0000ffff);
+	temp.selector = kernel_code_segment_selector;
+	temp.zero = 0;
+	temp.flags = flags;
+	temp.offset_high = (unsigned short)((unsigned int)handler >> 16 & 0x0000ffff);
+	writes((void *)&temp, idt_segment_selector, (void *)interrupt_descriptor, sizeof(temp));
+}
+
