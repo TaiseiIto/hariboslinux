@@ -16,6 +16,9 @@ void init_idt(void)
 	interrupt_descriptor.offset_high = 0x0000;
 	for(InterruptDescriptor *destination = 0x00000000; destination < end_of_idt; destination++)writes((void *)&interrupt_descriptor, idt_segment_selector, destination, sizeof(interrupt_descriptor));
 
+	// kerboard interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_handler0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+
 	// load IDT
 	lidt(0x07ff, IDT_ADDR);
 
@@ -40,7 +43,7 @@ void set_gate(InterruptDescriptor *interrupt_descriptor, void (*handler)(void), 
 	temp.offset_low = (unsigned short)((unsigned int)handler & 0x0000ffff);
 	temp.selector = kernel_code_segment_selector;
 	temp.zero = 0;
-	temp.flags = flags;
+	temp.flags = flags | INTERRUPT_DESCRIPTOR_PRESENT;
 	temp.offset_high = (unsigned short)((unsigned int)handler >> 16 & 0x0000ffff);
 	writes((void *)&temp, idt_segment_selector, (void *)interrupt_descriptor, sizeof(temp));
 }

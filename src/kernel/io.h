@@ -27,6 +27,9 @@ unsigned short inw(unsigned short address);
 // inl	$address,	%eax
 unsigned int inl(unsigned short address);
 
+// keyboard interrupt handler
+void interrupt_handler0x21(void);
+
 // lgdt
 void lgdt(unsigned int limit, SegmentDescriptor *begin);
 

@@ -12,6 +12,7 @@
 	.globl	inb
 	.globl	inw
 	.globl	inl
+	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
 	.globl	outb
@@ -33,6 +34,7 @@
 	.type	inb,			@function
 	.type	inw,			@function
 	.type	inl,			@function
+	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
 	.type	outb,			@function
@@ -124,6 +126,12 @@ inl:				# unsigned int io_inl(unsigned short address);
 	inl	%dx,	%eax
 	leave
 	ret
+
+				# // kerboard interrupt handler
+interrupt_handler0x21:		# void interrupt_handler0x21(void);
+	pushal
+	popal
+	iret
 
 				# // lgdt
 lgdt:				# void lgdt(unsigned int limit, SegmentDescriptor *begin);
