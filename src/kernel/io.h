@@ -51,6 +51,9 @@ void interrupt_handler0x0a(void);
 // segment not present exception handler
 void interrupt_handler0x0b(void);
 
+// stack segment fault exception handler
+void interrupt_handler0x0c(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

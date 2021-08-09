@@ -13,6 +13,7 @@
 	.extern invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
 	.extern segment_not_present_exception_handler
+	.extern	stack_segment_fault_exception_handler
 
 	.globl	cli
 	.globl	get_eflags
@@ -29,6 +30,7 @@
 	.globl	interrupt_handler0x09
 	.globl	interrupt_handler0x0a
 	.globl	interrupt_handler0x0b
+	.globl	interrupt_handler0x0c
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -60,6 +62,7 @@
 	.type	interrupt_handler0x09,	@function
 	.type	interrupt_handler0x0a,	@function
 	.type	interrupt_handler0x0b,	@function
+	.type	interrupt_handler0x0c,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -217,6 +220,14 @@ interrupt_handler0x0b:		# void interrupt_handler0x0b(void);
 0:
 	pushal
 	call	segment_not_present_exception_handler
+	popal
+	iret
+
+				# // stack segment fault exception handler
+interrupt_handler0x0c:		# void interrupt_handler0x0c(void);
+0:
+	pushal
+	call	stack_segment_fault_exception_handler
 	popal
 	iret
 
