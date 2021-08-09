@@ -57,6 +57,9 @@ void interrupt_handler0x0c(void);
 // general protection fault exception handler
 void interrupt_handler0x0d(void);
 
+// page fault exception handler
+void interrupt_handler0x0e(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

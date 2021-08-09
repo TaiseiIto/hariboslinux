@@ -36,6 +36,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000000c, interrupt_handler0x0c, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// general protection fault exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000000d, interrupt_handler0x0d, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// page fault exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000000e, interrupt_handler0x0e, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_handler0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 

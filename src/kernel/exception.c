@@ -41,6 +41,11 @@ void invalid_TSS_exception_handler(void)
 	print_serial_polling("INVALID TSS EXCEPTION!!!\n");
 }
 
+void page_fault_exception_handler(void)
+{
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+}
+
 void segment_not_present_exception_handler(void)
 {
 	print_serial_polling("SEGMENT NOT PRESENT EXCEPTION!!!\n");
