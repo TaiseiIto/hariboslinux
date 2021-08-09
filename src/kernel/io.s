@@ -4,7 +4,8 @@
 # scratch registers: eax, ecx, edx
 # preserved registers: ebx, esi, edi, ebp, esp
 
-	.extern devide_by_zero_exception_handler
+	.extern	bound_range_exceeded_exception_handler
+	.extern	devide_by_zero_exception_handler
 	.extern	keyboard_interrupt_handler
 
 	.globl	cli
@@ -15,6 +16,7 @@
 	.globl	inw
 	.globl	inl
 	.globl	interrupt_handler0x00
+	.globl	interrupt_handler0x05
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -39,6 +41,7 @@
 	.type	inw,			@function
 	.type	inl,			@function
 	.type	interrupt_handler0x00,	@function
+	.type	interrupt_handler0x05,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -135,11 +138,19 @@ inl:				# unsigned int io_inl(unsigned short address);
 	leave
 	ret
 
-				# // devide by 0 CPU exception handler
+				# // devide by 0 exception handler
 interrupt_handler0x00:		# void interrupt_handler0x00(void);
 0:
 	pushal
 	call	devide_by_zero_exception_handler
+	popal
+	iret
+
+				# // bound range exceeded exception handler
+interrupt_handler0x05:		# void interrupt_handler0x05(void);
+0:
+	pushal
+	call	bound_range_exceeded_exception_handler
 	popal
 	iret
 
