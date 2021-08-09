@@ -1,6 +1,11 @@
 #include "exception.h"
 #include "serial.h"
 
+void alignment_check_exception_handler(void)
+{
+	print_serial_polling("ALIGNMENT CHECK EXCEPTION!!!\n");
+}
+
 void bound_range_exceeded_exception_handler(void)
 {
 	print_serial_polling("BOUND RANGE EXCEEDED EXCEPTION!!!\n");

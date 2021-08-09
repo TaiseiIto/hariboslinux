@@ -4,6 +4,7 @@
 # scratch registers: eax, ecx, edx
 # preserved registers: ebx, esi, edi, ebp, esp
 
+	.extern	alignment_check_exception_handler
 	.extern	bound_range_exceeded_exception_handler
 	.extern	coprocessor_segment_overrun_exception_handler
 	.extern	device_not_available_exception_handler
@@ -37,6 +38,7 @@
 	.globl	interrupt_handler0x0d
 	.globl	interrupt_handler0x0e
 	.globl	interrupt_handler0x10
+	.globl	interrupt_handler0x11
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -72,6 +74,7 @@
 	.type	interrupt_handler0x0d,	@function
 	.type	interrupt_handler0x0e,	@function
 	.type	interrupt_handler0x10,	@function
+	.type	interrupt_handler0x11,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -261,6 +264,14 @@ interrupt_handler0x10:		# void interrupt_handler0x10(void);
 0:
 	pushal
 	call	x87_floating_point_exception_handler
+	popal
+	iret
+
+				# // alignment check exception handler
+interrupt_handler0x11:		# void interrupt_handler0x11(void);
+0:
+	pushal
+	call	alignment_check_exception_handler
 	popal
 	iret
 

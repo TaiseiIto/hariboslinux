@@ -63,6 +63,9 @@ void interrupt_handler0x0e(void);
 // x87 floating point exception handler
 void interrupt_handler0x10(void);
 
+// alignment check exception handler
+void interrupt_handler0x11(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 
