@@ -5,8 +5,9 @@
 
 void keyboard_interrupt_handler(void)
 {
+	unsigned char keycode;
 	finish_interruption(IRQ_KEYBOARD);
-	inb(0x0060);
-	print_serial_polling("keyboard interrupt!!!\n");
+	keycode = inb(0x0060);
+	printf_serial_polling("keycode = %#04X\n", keycode);
 }
 
