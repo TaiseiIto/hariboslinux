@@ -60,6 +60,9 @@ void interrupt_handler0x0d(void);
 // page fault exception handler
 void interrupt_handler0x0e(void);
 
+// x87 floating point exception handler
+void interrupt_handler0x10(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

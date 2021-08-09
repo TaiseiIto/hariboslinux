@@ -16,6 +16,7 @@
 	.extern page_fault_exeption_handler
 	.extern	segment_not_present_exception_handler
 	.extern	stack_segment_fault_exception_handler
+	.extern x87_floating_point_exception_handler
 
 	.globl	cli
 	.globl	get_eflags
@@ -35,6 +36,7 @@
 	.globl	interrupt_handler0x0c
 	.globl	interrupt_handler0x0d
 	.globl	interrupt_handler0x0e
+	.globl	interrupt_handler0x10
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -69,6 +71,7 @@
 	.type	interrupt_handler0x0c,	@function
 	.type	interrupt_handler0x0d,	@function
 	.type	interrupt_handler0x0e,	@function
+	.type	interrupt_handler0x10,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -250,6 +253,14 @@ interrupt_handler0x0e:		# void interrupt_handler0x0e(void);
 0:
 	pushal
 	call	page_fault_exception_handler
+	popal
+	iret
+
+				# // x87 floating point exception handler
+interrupt_handler0x10:		# void interrupt_handler0x10(void);
+0:
+	pushal
+	call	x87_floating_point_exception_handler
 	popal
 	iret
 
