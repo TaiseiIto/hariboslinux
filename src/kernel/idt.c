@@ -44,6 +44,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000011, interrupt_handler0x11, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// machine check exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000012, interrupt_handler0x12, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// SIMD floating point exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000013, interrupt_handler0x13, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_handler0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 

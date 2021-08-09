@@ -69,6 +69,9 @@ void interrupt_handler0x11(void);
 // machine check exception handler
 void interrupt_handler0x12(void);
 
+// SIMD floating point exception handler
+void interrupt_handler0x13(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

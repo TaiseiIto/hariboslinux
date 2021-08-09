@@ -61,6 +61,11 @@ void segment_not_present_exception_handler(void)
 	print_serial_polling("SEGMENT NOT PRESENT EXCEPTION!!!\n");
 }
 
+void simd_floating_point_exception_handler(void)
+{
+	print_serial_polling("SIMD FLOATING POINT EXCEPTION!!!\n");
+}
+
 void stack_segment_fault_exception_handler(void)
 {
 	print_serial_polling("STACK SEGMENT FAULT EXCEPTION!!!\n");
