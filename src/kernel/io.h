@@ -30,6 +30,9 @@ unsigned int inl(unsigned short address);
 // devide by 0 exception handler
 void interrupt_handler0x00(void);
 
+// debug exception handler
+void interrupt_handler0x01(void);
+
 // breakpoint exception handler
 void interrupt_handler0x03(void);
 
