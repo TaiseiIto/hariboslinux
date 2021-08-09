@@ -12,6 +12,7 @@ COMPILER_WARNING_OPTION = -Wall -Wextra
 # linker
 LINKER = ld
 LINKER_I386_OPTION = -m elf_i386
+LINKER_MAP_OPTION = -Map kernel.map
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
@@ -22,7 +23,7 @@ clean:
 	make clean -C font
 
 kernel.bin: exception.o font.o fontdata.o gdt.o graphic.o idt.o io.o keyboard.o main.o pic.o serial.o stack.o stdio.o string.o
-	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
+	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_MAP_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
 exception.o: exception.s
 
