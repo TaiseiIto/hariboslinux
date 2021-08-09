@@ -24,6 +24,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000002, interrupt_handler0x02, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// breakpoint exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000003, interrupt_handler0x03, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// overflow exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000004, interrupt_handler0x04, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// bound range exceeded exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000005, interrupt_handler0x05, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// invalid opcode exception

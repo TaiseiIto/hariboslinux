@@ -19,6 +19,7 @@
 	.extern	keyboard_interrupt_handler
 	.extern	machine_check_exception_handler
 	.extern	non_maskable_interrupt_handler
+	.extern	overflow_exception_handler
 	.extern	page_fault_exeption_handler
 	.extern	security_exception_handler
 	.extern	segment_not_present_exception_handler
@@ -38,6 +39,7 @@
 	.globl	interrupt_handler0x01
 	.globl	interrupt_handler0x02
 	.globl	interrupt_handler0x03
+	.globl	interrupt_handler0x04
 	.globl	interrupt_handler0x05
 	.globl	interrupt_handler0x06
 	.globl	interrupt_handler0x07
@@ -82,6 +84,7 @@
 	.type	interrupt_handler0x01,	@function
 	.type	interrupt_handler0x02,	@function
 	.type	interrupt_handler0x03,	@function
+	.type	interrupt_handler0x04,	@function
 	.type	interrupt_handler0x05,	@function
 	.type	interrupt_handler0x06,	@function
 	.type	interrupt_handler0x07,	@function
@@ -224,6 +227,14 @@ interrupt_handler0x03:		# void interrupt_handler0x03(void);
 0:
 	pushal
 	call	breakpoint_exception_handler
+	popal
+	iret
+
+				# // overflow exception handler
+interrupt_handler0x04:		# void interrupt_handler0x04(void);
+0:
+	pushal
+	call	overflow_exception_handler
 	popal
 	iret
 

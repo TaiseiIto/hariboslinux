@@ -71,6 +71,11 @@ void non_maskable_interrupt_handler(void)
 	print_serial_polling("NON MASKABLE INTERRUPT!!!\n");
 }
 
+void overflow_exception_handler(void)
+{
+	print_serial_polling("OVERFLOW EXCEPTION!!!\n");
+}
+
 void page_fault_exception_handler(void)
 {
 	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");

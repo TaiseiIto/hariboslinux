@@ -39,6 +39,9 @@ void interrupt_handler0x02(void);
 // breakpoint exception handler
 void interrupt_handler0x03(void);
 
+// overflow exception handler
+void interrupt_handler0x04(void);
+
 // bound range exceeded exception handler
 void interrupt_handler0x05(void);
 
