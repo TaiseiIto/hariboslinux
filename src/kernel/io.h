@@ -27,6 +27,9 @@ unsigned short inw(unsigned short address);
 // inl	$address,	%eax
 unsigned int inl(unsigned short address);
 
+// devide by 0 CPU exception handler
+void interrupt_handler0x00(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

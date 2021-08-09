@@ -16,6 +16,8 @@ void init_idt(void)
 	interrupt_descriptor.offset_high = 0x0000;
 	for(InterruptDescriptor *destination = 0x00000000; destination < end_of_idt; destination++)writes((void *)&interrupt_descriptor, idt_segment_selector, destination, sizeof(interrupt_descriptor));
 
+	// devide by 0
+	set_gate((InterruptDescriptor *)0x00000000, interrupt_handler0x00, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_handler0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 
