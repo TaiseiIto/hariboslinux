@@ -6,6 +6,7 @@
 
 	.extern	bound_range_exceeded_exception_handler
 	.extern	devide_by_zero_exception_handler
+	.extern	invalid_opcode_exception_handler
 	.extern	keyboard_interrupt_handler
 
 	.globl	cli
@@ -17,6 +18,7 @@
 	.globl	inl
 	.globl	interrupt_handler0x00
 	.globl	interrupt_handler0x05
+	.globl	interrupt_handler0x06
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -42,6 +44,7 @@
 	.type	inl,			@function
 	.type	interrupt_handler0x00,	@function
 	.type	interrupt_handler0x05,	@function
+	.type	interrupt_handler0x06,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -151,6 +154,14 @@ interrupt_handler0x05:		# void interrupt_handler0x05(void);
 0:
 	pushal
 	call	bound_range_exceeded_exception_handler
+	popal
+	iret
+
+				# // invalid opcode exception handler
+interrupt_handler0x06:		# void interrupt_handler0x06(void);
+0:
+	pushal
+	call	invalid_opcode_exception_handler
 	popal
 	iret
 

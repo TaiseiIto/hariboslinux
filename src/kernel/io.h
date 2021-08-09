@@ -33,6 +33,9 @@ void interrupt_handler0x00(void);
 // bound range exceeded exception handler
 void interrupt_handler0x05(void);
 
+// invalid opcode exception handler
+void interrupt_handler0x06(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 
