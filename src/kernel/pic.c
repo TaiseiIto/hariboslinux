@@ -58,7 +58,7 @@
 
 void finish_interruption(unsigned char irq)
 {
-	if(0x00 <= irq && irq < 0x08)outb(PIC0_OCW2, 0x60 + irq);
+	if(0x00 <= irq && irq < 0x08)outb(PIC0_OCW2, irq + 0x60);
 	else if(0x08 <= irq && irq < 0xf0)
 	{
 		outb(PIC1_OCW2, irq + 0x58);
