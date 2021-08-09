@@ -14,6 +14,7 @@
 	.extern	invalid_opcode_exception_handler
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
+	.extern machine_check_exception_handler
 	.extern page_fault_exeption_handler
 	.extern	segment_not_present_exception_handler
 	.extern	stack_segment_fault_exception_handler
@@ -39,6 +40,7 @@
 	.globl	interrupt_handler0x0e
 	.globl	interrupt_handler0x10
 	.globl	interrupt_handler0x11
+	.globl	interrupt_handler0x12
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -75,6 +77,7 @@
 	.type	interrupt_handler0x0e,	@function
 	.type	interrupt_handler0x10,	@function
 	.type	interrupt_handler0x11,	@function
+	.type	interrupt_handler0x12,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -272,6 +275,14 @@ interrupt_handler0x11:		# void interrupt_handler0x11(void);
 0:
 	pushal
 	call	alignment_check_exception_handler
+	popal
+	iret
+
+				# // machine check exception handler
+interrupt_handler0x12:		# void interrupt_handler0x12(void);
+0:
+	pushal
+	call	machine_check_exception_handler
 	popal
 	iret
 

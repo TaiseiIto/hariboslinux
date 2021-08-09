@@ -46,6 +46,11 @@ void invalid_TSS_exception_handler(void)
 	print_serial_polling("INVALID TSS EXCEPTION!!!\n");
 }
 
+void machine_check_exception_handler(void)
+{
+	print_serial_polling("MACHINE CHECK EXCEPTION!!!\n");
+}
+
 void page_fault_exception_handler(void)
 {
 	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");

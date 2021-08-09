@@ -10,6 +10,7 @@ void double_fault_exception_handler(void);
 void general_protection_fault_exception_handler(void);
 void invalid_opcode_exception_handler(void);
 void invalid_TSS_exception_handler(void);
+void machine_check_exception_handler(void);
 void page_fault_exception_handler(void);
 void segment_not_present_exception_handler(void);
 void stack_segment_fault_exception_handler(void);
