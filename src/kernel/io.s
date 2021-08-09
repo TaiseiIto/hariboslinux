@@ -7,6 +7,7 @@
 	.extern	bound_range_exceeded_exception_handler
 	.extern	device_not_available_exception_handler
 	.extern	devide_by_zero_exception_handler
+	.extern double_fault_exception_handler
 	.extern	invalid_opcode_exception_handler
 	.extern	keyboard_interrupt_handler
 
@@ -21,6 +22,7 @@
 	.globl	interrupt_handler0x05
 	.globl	interrupt_handler0x06
 	.globl	interrupt_handler0x07
+	.globl	interrupt_handler0x08
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -48,6 +50,7 @@
 	.type	interrupt_handler0x05,	@function
 	.type	interrupt_handler0x06,	@function
 	.type	interrupt_handler0x07,	@function
+	.type	interrupt_handler0x08,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -173,6 +176,14 @@ interrupt_handler0x07:		# void interrupt_handler0x07(void);
 0:
 	pushal
 	call	device_not_available_exception_handler
+	popal
+	iret
+
+				# // double fault exception handler
+interrupt_handler0x08:		# void interrupt_handler0x08(void);
+0:
+	pushal
+	call	double_fault_exception_handler
 	popal
 	iret
 

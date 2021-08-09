@@ -39,6 +39,9 @@ void interrupt_handler0x06(void);
 // device not available exception handler
 void interrupt_handler0x07(void);
 
+// double fault exception handler
+void interrupt_handler0x08(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 
