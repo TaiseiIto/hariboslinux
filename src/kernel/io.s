@@ -4,7 +4,8 @@
 # scratch registers: eax, ecx, edx
 # preserved registers: ebx, esi, edi, ebp, esp
 
-	.text
+	.extern	keyboard_interrupt_handler
+
 	.globl	cli
 	.globl	get_eflags
 	.globl	get_variadic_arg
@@ -27,6 +28,7 @@
 	.globl	writew
 	.globl	writel
 	.globl	writes
+
 	.type	cli,			@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
@@ -49,6 +51,8 @@
 	.type	writew,			@function
 	.type	writel,			@function
 	.type	writes,			@function
+
+	.text
 
 				# // disable all interrupts
 cli:				# void cli(void);
@@ -130,6 +134,7 @@ inl:				# unsigned int io_inl(unsigned short address);
 				# // kerboard interrupt handler
 interrupt_handler0x21:		# void interrupt_handler0x21(void);
 	pushal
+	call	keyboard_interrupt_handler
 	popal
 	iret
 
