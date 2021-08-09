@@ -16,6 +16,7 @@
 	.extern	keyboard_interrupt_handler
 	.extern machine_check_exception_handler
 	.extern page_fault_exeption_handler
+	.extern security_exception_handler
 	.extern	segment_not_present_exception_handler
 	.extern simd_floating_point_exception_handler
 	.extern	stack_segment_fault_exception_handler
@@ -45,6 +46,7 @@
 	.globl	interrupt_handler0x12
 	.globl	interrupt_handler0x13
 	.globl	interrupt_handler0x14
+	.globl	interrupt_handler0x1e
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -84,6 +86,7 @@
 	.type	interrupt_handler0x12,	@function
 	.type	interrupt_handler0x13,	@function
 	.type	interrupt_handler0x14,	@function
+	.type	interrupt_handler0x1e,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -305,6 +308,14 @@ interrupt_handler0x14:		# void interrupt_handler0x14(void);
 0:
 	pushal
 	call	virtualization_exception_handler
+	popal
+	iret
+
+				# // security exception handler
+interrupt_handler0x1e:		# void interrupt_handler0x1e(void);
+0:
+	pushal
+	call	security_exception_handler
 	popal
 	iret
 

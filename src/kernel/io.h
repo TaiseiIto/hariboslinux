@@ -75,6 +75,9 @@ void interrupt_handler0x13(void);
 // virtualization exception handler
 void interrupt_handler0x14(void);
 
+// security exception handler
+void interrupt_handler0x1e(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

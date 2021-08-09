@@ -12,6 +12,7 @@ void invalid_opcode_exception_handler(void);
 void invalid_TSS_exception_handler(void);
 void machine_check_exception_handler(void);
 void page_fault_exception_handler(void);
+void security_exception_handler(void);
 void segment_not_present_exception_handler(void);
 void simd_floating_point_exception_handler(void);
 void stack_segment_fault_exception_handler(void);

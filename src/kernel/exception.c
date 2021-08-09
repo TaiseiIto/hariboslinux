@@ -56,6 +56,11 @@ void page_fault_exception_handler(void)
 	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
 }
 
+void security_exception_handler(void)
+{
+	print_serial_polling("SECURITY EXCEPTION!!!\n");
+}
+
 void segment_not_present_exception_handler(void)
 {
 	print_serial_polling("SEGMENT NOT PRESENT EXCEPTION!!!\n");
