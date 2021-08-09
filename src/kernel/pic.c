@@ -32,10 +32,12 @@
 #define PIC0_ICW2 0x0021
 #define PIC0_ICW3 0x0021
 #define PIC0_ICW4 0x0021
+#define PIC0_OCW2 0x0020
 #define PIC1_ICW1 0x00a0
 #define PIC1_ICW2 0x00a1
 #define PIC1_ICW3 0x00a1
 #define PIC1_ICW4 0x00a1
+#define PIC1_OCW2 0x00a0
 
 #define IRQ0_DISABLE 0x01
 #define IRQ1_DISABLE 0x02
@@ -53,6 +55,16 @@
 #define IRQ13_DISABLE 0x20
 #define IRQ14_DISABLE 0x40
 #define IRQ15_DISABLE 0x80
+
+void finish_interruption(unsigned char irq)
+{
+	if(0x00 <= irq && irq < 0x08)outb(PIC0_OCW2, 0x60 + irq);
+	else if(0x08 <= irq && irq < 0xf0)
+	{
+		outb(PIC1_OCW2, irq + 0x58);
+		finish_interruption(IRQ_SLAVE_PIC);
+	}
+}
 
 void init_pic(void)
 {

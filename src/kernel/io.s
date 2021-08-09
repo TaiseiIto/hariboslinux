@@ -65,6 +65,7 @@ cli:				# void cli(void);
 
 				# // get eflags register
 get_eflags:			# unsigned int get_eflags(void);
+0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	pushf
@@ -133,6 +134,7 @@ inl:				# unsigned int io_inl(unsigned short address);
 
 				# // kerboard interrupt handler
 interrupt_handler0x21:		# void interrupt_handler0x21(void);
+0:
 	pushal
 	call	keyboard_interrupt_handler
 	popal
@@ -140,6 +142,7 @@ interrupt_handler0x21:		# void interrupt_handler0x21(void);
 
 				# // lgdt
 lgdt:				# void lgdt(unsigned int limit, SegmentDescriptor *begin);
+0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	shll	$0x10,	0x08(%ebp)
@@ -149,6 +152,7 @@ lgdt:				# void lgdt(unsigned int limit, SegmentDescriptor *begin);
 
 				# // lidt
 lidt:				# void lidt(unsigned int limit, SegmentDescriptor *begin);
+0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	shll	$0x10,	0x08(%ebp)
