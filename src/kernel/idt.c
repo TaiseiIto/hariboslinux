@@ -22,6 +22,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000005, interrupt_handler0x05, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// invalid opcode exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000006, interrupt_handler0x06, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// device not available exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000007, interrupt_handler0x07, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_handler0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 
