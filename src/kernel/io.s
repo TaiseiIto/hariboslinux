@@ -8,11 +8,12 @@
 	.extern	coprocessor_segment_overrun_exception_handler
 	.extern	device_not_available_exception_handler
 	.extern	devide_by_zero_exception_handler
-	.extern double_fault_exception_handler
+	.extern	double_fault_exception_handler
+	.extern	general_protection_fault_exception_handler
 	.extern	invalid_opcode_exception_handler
-	.extern invalid_TSS_exception_handler
+	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
-	.extern segment_not_present_exception_handler
+	.extern	segment_not_present_exception_handler
 	.extern	stack_segment_fault_exception_handler
 
 	.globl	cli
@@ -31,6 +32,7 @@
 	.globl	interrupt_handler0x0a
 	.globl	interrupt_handler0x0b
 	.globl	interrupt_handler0x0c
+	.globl	interrupt_handler0x0d
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -63,6 +65,7 @@
 	.type	interrupt_handler0x0a,	@function
 	.type	interrupt_handler0x0b,	@function
 	.type	interrupt_handler0x0c,	@function
+	.type	interrupt_handler0x0d,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -228,6 +231,14 @@ interrupt_handler0x0c:		# void interrupt_handler0x0c(void);
 0:
 	pushal
 	call	stack_segment_fault_exception_handler
+	popal
+	iret
+
+				# // general protection fault exception handler
+interrupt_handler0x0d:		# void interrupt_handler0x0d(void);
+0:
+	pushal
+	call	general_protection_fault_exception_handler
 	popal
 	iret
 
