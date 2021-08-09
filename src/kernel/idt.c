@@ -26,6 +26,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000007, interrupt_handler0x07, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// double fault exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000008, interrupt_handler0x08, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// coprocessor segment overrun exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000009, interrupt_handler0x09, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_handler0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 

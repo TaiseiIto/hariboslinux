@@ -5,6 +5,7 @@
 # preserved registers: ebx, esi, edi, ebp, esp
 
 	.extern	bound_range_exceeded_exception_handler
+	.extern	coprocessor_segment_overrun_exception_handler
 	.extern	device_not_available_exception_handler
 	.extern	devide_by_zero_exception_handler
 	.extern double_fault_exception_handler
@@ -23,6 +24,7 @@
 	.globl	interrupt_handler0x06
 	.globl	interrupt_handler0x07
 	.globl	interrupt_handler0x08
+	.globl	interrupt_handler0x09
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -51,6 +53,7 @@
 	.type	interrupt_handler0x06,	@function
 	.type	interrupt_handler0x07,	@function
 	.type	interrupt_handler0x08,	@function
+	.type	interrupt_handler0x09,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -184,6 +187,14 @@ interrupt_handler0x08:		# void interrupt_handler0x08(void);
 0:
 	pushal
 	call	double_fault_exception_handler
+	popal
+	iret
+
+				# // coprocessor segment overrun exception handler
+interrupt_handler0x09:		# void interrupt_handler0x09(void);
+0:
+	pushal
+	call	coprocessor_segment_overrun_exception_handler
 	popal
 	iret
 

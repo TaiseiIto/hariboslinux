@@ -42,6 +42,9 @@ void interrupt_handler0x07(void);
 // double fault exception handler
 void interrupt_handler0x08(void);
 
+// coprocessor segment overrun exception handler
+void interrupt_handler0x09(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

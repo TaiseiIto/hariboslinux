@@ -6,6 +6,11 @@ void bound_range_exceeded_exception_handler(void)
 	print_serial_polling("BOUND RANGE EXCEEDED EXCEPTION!!!\n");
 }
 
+void coprocessor_segment_overrun_exception_handler(void)
+{
+	print_serial_polling("COPROCESSOR SEGMENT OVERRRUN EXCEPTION!!!\n");
+}
+
 void device_not_available_exception_handler(void)
 {
 	print_serial_polling("DEVICE NOT AVAILABLE EXCEPTION!!!\n");
