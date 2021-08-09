@@ -3,6 +3,7 @@
 
 void alignment_check_exception_handler(void);
 void bound_range_exceeded_exception_handler(void);
+void breakpoint_exception_handler(void);
 void coprocessor_segment_overrun_exception_handler(void);
 void device_not_available_exception_handler(void);
 void devide_by_zero_exception_handler(void);

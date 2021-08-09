@@ -6,6 +6,7 @@
 
 	.extern	alignment_check_exception_handler
 	.extern	bound_range_exceeded_exception_handler
+	.extern	breakpoint_exception_handler
 	.extern	coprocessor_segment_overrun_exception_handler
 	.extern	device_not_available_exception_handler
 	.extern	devide_by_zero_exception_handler
@@ -32,6 +33,7 @@
 	.globl	inw
 	.globl	inl
 	.globl	interrupt_handler0x00
+	.globl	interrupt_handler0x03
 	.globl	interrupt_handler0x05
 	.globl	interrupt_handler0x06
 	.globl	interrupt_handler0x07
@@ -73,6 +75,7 @@
 	.type	inw,			@function
 	.type	inl,			@function
 	.type	interrupt_handler0x00,	@function
+	.type	interrupt_handler0x03,	@function
 	.type	interrupt_handler0x05,	@function
 	.type	interrupt_handler0x06,	@function
 	.type	interrupt_handler0x07,	@function
@@ -191,6 +194,14 @@ interrupt_handler0x00:		# void interrupt_handler0x00(void);
 0:
 	pushal
 	call	devide_by_zero_exception_handler
+	popal
+	iret
+
+				# // breakpoint exception handler
+interrupt_handler0x03:		# void interrupt_handler0x03(void);
+0:
+	pushal
+	call	breakpoint_exception_handler
 	popal
 	iret
 
