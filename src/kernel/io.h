@@ -45,6 +45,9 @@ void interrupt_handler0x08(void);
 // coprocessor segment overrun exception handler
 void interrupt_handler0x09(void);
 
+// invalid TSS exception handler
+void interrupt_handler0x0a(void);
+
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 

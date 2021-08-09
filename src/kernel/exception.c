@@ -31,3 +31,8 @@ void invalid_opcode_exception_handler(void)
 	print_serial_polling("INVALID OPCODE EXCEPTION!!!\n");
 }
 
+void invalid_TSS_exception_handler(void)
+{
+	print_serial_polling("INVALID TSS EXCEPTION!!!\n");
+}
+

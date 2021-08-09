@@ -10,6 +10,7 @@
 	.extern	devide_by_zero_exception_handler
 	.extern double_fault_exception_handler
 	.extern	invalid_opcode_exception_handler
+	.extern invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
 
 	.globl	cli
@@ -25,6 +26,7 @@
 	.globl	interrupt_handler0x07
 	.globl	interrupt_handler0x08
 	.globl	interrupt_handler0x09
+	.globl	interrupt_handler0x0a
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -54,6 +56,7 @@
 	.type	interrupt_handler0x07,	@function
 	.type	interrupt_handler0x08,	@function
 	.type	interrupt_handler0x09,	@function
+	.type	interrupt_handler0x0a,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -195,6 +198,14 @@ interrupt_handler0x09:		# void interrupt_handler0x09(void);
 0:
 	pushal
 	call	coprocessor_segment_overrun_exception_handler
+	popal
+	iret
+
+				# // invalid TSS exception handler
+interrupt_handler0x0a:		# void interrupt_handler0x0a(void);
+0:
+	pushal
+	call	invalid_TSS_exception_handler
 	popal
 	iret
 
