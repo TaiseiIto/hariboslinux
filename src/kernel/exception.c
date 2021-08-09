@@ -66,6 +66,11 @@ void machine_check_exception_handler(void)
 	print_serial_polling("MACHINE CHECK EXCEPTION!!!\n");
 }
 
+void non_maskable_interrupt_handler(void)
+{
+	print_serial_polling("NON MASKABLE INTERRUPT!!!\n");
+}
+
 void page_fault_exception_handler(void)
 {
 	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");

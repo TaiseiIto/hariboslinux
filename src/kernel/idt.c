@@ -20,6 +20,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000000, interrupt_handler0x00, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// debug exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000001, interrupt_handler0x01, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// non maskable interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000002, interrupt_handler0x02, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// breakpoint exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000003, interrupt_handler0x03, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// bound range exceeded exception

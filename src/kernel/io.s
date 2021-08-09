@@ -18,6 +18,7 @@
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
 	.extern	machine_check_exception_handler
+	.extern	non_maskable_interrupt_handler
 	.extern	page_fault_exeption_handler
 	.extern	security_exception_handler
 	.extern	segment_not_present_exception_handler
@@ -35,6 +36,7 @@
 	.globl	inl
 	.globl	interrupt_handler0x00
 	.globl	interrupt_handler0x01
+	.globl	interrupt_handler0x02
 	.globl	interrupt_handler0x03
 	.globl	interrupt_handler0x05
 	.globl	interrupt_handler0x06
@@ -78,6 +80,7 @@
 	.type	inl,			@function
 	.type	interrupt_handler0x00,	@function
 	.type	interrupt_handler0x01,	@function
+	.type	interrupt_handler0x02,	@function
 	.type	interrupt_handler0x03,	@function
 	.type	interrupt_handler0x05,	@function
 	.type	interrupt_handler0x06,	@function
@@ -205,6 +208,14 @@ interrupt_handler0x01:		# void interrupt_handler0x01(void);
 0:
 	pushal
 	call	debug_exception_handler
+	popal
+	iret
+
+				# // non maskable interrupt handler
+interrupt_handler0x02:		# void interrupt_handler0x02(void);
+0:
+	pushal
+	call	non_maskable_interrupt_handler
 	popal
 	iret
 
