@@ -15,6 +15,7 @@ void page_fault_exception_handler(void);
 void segment_not_present_exception_handler(void);
 void simd_floating_point_exception_handler(void);
 void stack_segment_fault_exception_handler(void);
+void virtualization_exception_handler(void);
 void x87_floating_point_exception_handler(void);
 
 #endif

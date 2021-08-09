@@ -19,6 +19,7 @@
 	.extern	segment_not_present_exception_handler
 	.extern simd_floating_point_exception_handler
 	.extern	stack_segment_fault_exception_handler
+	.extern virtualization_exception_handler
 	.extern x87_floating_point_exception_handler
 
 	.globl	cli
@@ -43,6 +44,7 @@
 	.globl	interrupt_handler0x11
 	.globl	interrupt_handler0x12
 	.globl	interrupt_handler0x13
+	.globl	interrupt_handler0x14
 	.globl	interrupt_handler0x21
 	.globl	lgdt
 	.globl	lidt
@@ -81,6 +83,7 @@
 	.type	interrupt_handler0x11,	@function
 	.type	interrupt_handler0x12,	@function
 	.type	interrupt_handler0x13,	@function
+	.type	interrupt_handler0x14,	@function
 	.type	interrupt_handler0x21,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -296,6 +299,15 @@ interrupt_handler0x13:		# void interrupt_handler0x13(void);
 	call	simd_floating_point_exception_handler
 	popal
 	iret
+
+				# // virtualization exception handler
+interrupt_handler0x14:		# void interrupt_handler0x14(void);
+0:
+	pushal
+	call	virtualization_exception_handler
+	popal
+	iret
+
 				# // kerboard interrupt handler
 interrupt_handler0x21:		# void interrupt_handler0x21(void);
 0:

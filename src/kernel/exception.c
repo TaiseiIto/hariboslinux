@@ -71,6 +71,11 @@ void stack_segment_fault_exception_handler(void)
 	print_serial_polling("STACK SEGMENT FAULT EXCEPTION!!!\n");
 }
 
+void virtualization_exception_handler(void)
+{
+	print_serial_polling("VIRTUALIZATION EXCEPTION!!!\n");
+}
+
 void x87_floating_point_exception_handler(void)
 {
 	print_serial_polling("X87 FLOATING POINT EXCEPTION!!!\n");
