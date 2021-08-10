@@ -3,7 +3,6 @@
 
 void init_mouse(void);
 void mouse_interrupt_handler(void);
-void send_to_mouse(unsigned char data);
 
 #endif
 
