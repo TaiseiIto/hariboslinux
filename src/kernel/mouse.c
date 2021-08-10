@@ -12,8 +12,7 @@
 
 void init_mouse(void)
 {
-	send_to_mouse(MOUSE_COMMAND_SET_DEFAULTS);
-	send_to_mouse(MOUSE_COMMAND_RESET);
+	outb(PORT_KEYBOARD_COMMAND, KEYBOARD_COMMAND_GET_COMPAQ_STATUS);
 	send_to_mouse(MOUSE_COMMAND_GET_ID);
 	send_to_mouse(MOUSE_COMMAND_ENABLE_PACKET_STREAMING);
 }
