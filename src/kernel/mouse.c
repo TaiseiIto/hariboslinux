@@ -4,12 +4,13 @@
 #include "pic.h"
 #include "serial.h"
 
-#define MOUSE_ENABLE_PACKET_STREAMING	0xf4
-#define MOUSE_DISABLE_PACKET_STREAMING	0xf5
+#define MOUSE_COMMAND_GET_ID			0xf2
+#define MOUSE_COMMAND_ENABLE_PACKET_STREAMING	0xf4
+#define MOUSE_COMMAND_DISABLE_PACKET_STREAMING	0xf5
 
 void init_mouse(void)
 {
-	send_to_mouse(MOUSE_ENABLE_PACKET_STREAMING);
+	send_to_mouse(MOUSE_COMMAND_GET_ID);
 }
 
 void mouse_interrupt_handler(void)
