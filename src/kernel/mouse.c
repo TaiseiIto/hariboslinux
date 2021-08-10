@@ -11,6 +11,7 @@
 void init_mouse(void)
 {
 	send_to_mouse(MOUSE_COMMAND_GET_ID);
+	send_to_mouse(MOUSE_COMMAND_ENABLE_PACKET_STREAMING);
 }
 
 void mouse_interrupt_handler(void)
