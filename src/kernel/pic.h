@@ -8,7 +8,7 @@
 #define IRQ_SLAVE_PIC	0x02
 #define IRQ_COM2	0x03
 #define IRQ_COM1	0x04
-#define IRQ_MOUSE	0x0b
+#define IRQ_MOUSE	0x0c
 
 void finish_interruption(unsigned char irq);
 void init_pic(void);
