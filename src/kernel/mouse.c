@@ -4,12 +4,12 @@
 #include "pic.h"
 #include "serial.h"
 
+#define MOUSE_ENABLE_PACKET_STREAMING	0xf4
+#define MOUSE_DISABLE_PACKET_STREAMING	0xf5
+
 void init_mouse(void)
 {
-	wait_to_send_to_keyboard();
-	outb(PORT_KEYBOARD_COMMAND, KEYBOARD_COMMAND_SEND_TO_MOUSE);
-	wait_to_send_to_keyboard();
-	outb(PORT_KEYBOARD_DATA, MOUSE_ENABLE_PACKET_STREAMING);
+	send_to_mouse(MOUSE_ENABLE_PACKET_STREAMING);
 }
 
 void mouse_interrupt_handler(void)
@@ -18,5 +18,10 @@ void mouse_interrupt_handler(void)
 	finish_interruption(IRQ_MOUSE);
 	signal = inb(PORT_KEYBOARD_DATA);
 	printf_serial_polling("mouse signal = %#04X\n", signal);
+}
+
+void send_to_mouse(unsigned char data)
+{
+	send_to_keyboard(KEYBOARD_COMMAND_SEND_TO_MOUSE, data);
 }
 
