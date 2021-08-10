@@ -20,8 +20,15 @@ void init_mouse(void)
 	//send_to_mouse(MOUSE_COMMAND_RESET);
 	//outb(PORT_KEYBOARD_COMMAND, KEYBOARD_COMMAND_GET_COMPAQ_STATUS);
 	//outb(PORT_KEYBOARD_COMMAND, KEYBOARD_COMMAND_ENABLE_AUXILIARY_DEVICE);
+	
+	// upgrade mouse ID from 0 to 3
 	set_mouse_sample_rate(200);
 	set_mouse_sample_rate(100);
+	set_mouse_sample_rate(80);
+	send_to_mouse(MOUSE_COMMAND_GET_ID);
+	// upgrade mouse ID from 3 to 4
+	set_mouse_sample_rate(200);
+	set_mouse_sample_rate(200);
 	set_mouse_sample_rate(80);
 	send_to_mouse(MOUSE_COMMAND_GET_ID);
 	send_to_mouse(MOUSE_COMMAND_ENABLE_PACKET_STREAMING);
