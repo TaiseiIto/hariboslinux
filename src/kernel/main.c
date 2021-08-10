@@ -3,6 +3,7 @@
 #include "gdt.h"
 #include "graphic.h"
 #include "io.h"
+#include "keyboard.h"
 #include "pic.h"
 #include "serial.h"
 #include "stdio.h"
@@ -18,6 +19,7 @@ void main(void)
 	init_gdt();
 	init_idt();
 	init_pic();
+	init_keyboard();
 	boot_information = get_boot_information();
 	printf_serial_polling("memory size = %#06X MiB\n", boot_information.memory_size);
 	printf_serial_polling("screen width = %#06X pixels\n", boot_information.screen_width);

@@ -3,11 +3,50 @@
 #include "pic.h"
 #include "serial.h"
 
+#define PORT_KEYBOARD_COMMAND	0x0064
+#define PORT_KEYBOARD_DATA	0x0060
+#define PORT_KEYBOARD_STATUS	0x0064
+
+#define KEYBOARD_COMMAND_WRITE_MODE		0x60
+
+#define KEYBOARD_MODE_KEYBOARD_INTERRUPT	0x01
+#define KEYBOARD_MODE_MOUSE_INTERRUPT		0x02
+#define KEYBOARD_MODE_SYSTEM_FLAG		0x04
+#define KEYBOARD_MODE_DISABLE_LOCK		0x08
+#define KEYBOARD_MODE_DISABLE_KEYBOARD		0x10
+#define KEYBOARD_MODE_DISABLE_MOUSE		0x20
+#define KEYBOARD_MODE_SCANCODE01		0x40
+#define KEYBOARD_MODE_RESERVED			0x80
+
+#define KEYBOARD_STATUS_RECEIVED	0x01
+#define KEYBOARD_STATUS_UNSENDABLE	0x02
+#define KEYBOARD_STATUS_SYSTEM_FLAG	0x04
+#define KEYBOARD_STATUS_SENDING_COMMAND	0x08
+#define KEYBOARD_STATUS_ENABLE		0x10
+#define KEYBOARD_STATUS_SEND_ERROR	0x20
+#define KEYBOARD_STATUS_RECEIVE_ERROR	0x40
+#define KEYBOARD_STATUS_PARITY		0x80
+
+void wait_for_keyboard(void);
+
+void init_keyboard(void)
+{
+	wait_for_keyboard();
+	outb(PORT_KEYBOARD_COMMAND, KEYBOARD_COMMAND_WRITE_MODE);
+	wait_for_keyboard();
+	outb(PORT_KEYBOARD_DATA, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
+}
+
 void keyboard_interrupt_handler(void)
 {
 	unsigned char keycode;
 	finish_interruption(IRQ_KEYBOARD);
-	keycode = inb(0x0060);
+	keycode = inb(PORT_KEYBOARD_DATA);
 	printf_serial_polling("keycode = %#04X\n", keycode);
+}
+
+void wait_for_keyboard(void)
+{
+	while(inb(PORT_KEYBOARD_STATUS) & KEYBOARD_STATUS_UNSENDABLE);
 }
 
