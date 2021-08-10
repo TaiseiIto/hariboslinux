@@ -14,9 +14,9 @@ void init_mouse(void)
 
 void mouse_interrupt_handler(void)
 {
-	unsigned char data;
+	unsigned char signal;
 	finish_interruption(IRQ_MOUSE);
-	data = inb(PORT_KEYBOARD_DATA);
-	printf_serial_polling("mouse data = %#04X\n", data);
+	signal = inb(PORT_KEYBOARD_DATA);
+	printf_serial_polling("mouse signal = %#04X\n", signal);
 }
 

@@ -13,10 +13,10 @@ void init_keyboard(void)
 
 void keyboard_interrupt_handler(void)
 {
-	unsigned char keycode;
+	unsigned char signal;
 	finish_interruption(IRQ_KEYBOARD);
-	keycode = inb(PORT_KEYBOARD_DATA);
-	printf_serial_polling("keycode = %#04X\n", keycode);
+	signal = inb(PORT_KEYBOARD_DATA);
+	printf_serial_polling("keyboard signal = %#04X\n", signal);
 }
 
 void wait_for_keyboard(void)
