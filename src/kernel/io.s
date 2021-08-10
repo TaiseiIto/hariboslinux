@@ -18,6 +18,7 @@
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
 	.extern	machine_check_exception_handler
+	.extern mouse_interrupt_handler
 	.extern	non_maskable_interrupt_handler
 	.extern	overflow_exception_handler
 	.extern	page_fault_exeption_handler
@@ -57,6 +58,7 @@
 	.globl	interrupt_handler0x14
 	.globl	interrupt_handler0x1e
 	.globl	interrupt_handler0x21
+	.globl	interrupt_handler0x2c
 	.globl	interrupt_handler0x2d
 	.globl	lgdt
 	.globl	lidt
@@ -104,6 +106,7 @@
 	.type	interrupt_handler0x14,	@function
 	.type	interrupt_handler0x1e,	@function
 	.type	interrupt_handler0x21,	@function
+	.type	interrupt_handler0x2c,	@function
 	.type	interrupt_handler0x2d,	@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
@@ -869,6 +872,37 @@ interrupt_handler0x21:		# void interrupt_handler0x21(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	keyboard_interrupt_handler
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // mouse interrupt handler
+interrupt_handler0x2c:		# void interrupt_handler0x2c(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	mouse_interrupt_handler
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx

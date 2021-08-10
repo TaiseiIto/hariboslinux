@@ -93,6 +93,9 @@ void interrupt_handler0x1e(void);
 // keyboard interrupt handler
 void interrupt_handler0x21(void);
 
+// mouse interrupt handler
+void interrupt_handler0x2c(void);
+
 // FPU error exception handler
 void interrupt_handler0x2d(void);
 
