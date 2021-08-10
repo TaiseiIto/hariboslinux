@@ -6,10 +6,10 @@
 
 void init_mouse(void)
 {
-	wait_for_keyboard();
+	wait_to_send_to_keyboard();
 	outb(PORT_KEYBOARD_COMMAND, KEYBOARD_COMMAND_SEND_TO_MOUSE);
-	wait_for_keyboard();
-	outb(PORT_KEYBOARD_DATA, MOUSE_INIT);
+	wait_to_send_to_keyboard();
+	outb(PORT_KEYBOARD_DATA, MOUSE_ENABLE_PACKET_STREAMING);
 }
 
 void mouse_interrupt_handler(void)

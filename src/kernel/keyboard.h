@@ -26,11 +26,12 @@
 #define KEYBOARD_STATUS_RECEIVE_ERROR	0x40
 #define KEYBOARD_STATUS_PARITY		0x80
 
-#define MOUSE_INIT	0xf4
+#define MOUSE_ENABLE_PACKET_STREAMING	0xf4
+#define MOUSE_DISABLE_PACKET_STREAMING	0xf5
 
 void init_keyboard(void);
 void keyboard_interrupt_handler(void);
-void wait_for_keyboard(void);
+void wait_to_send_to_keyboard(void);
 
 #endif
 

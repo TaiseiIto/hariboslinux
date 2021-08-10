@@ -5,9 +5,9 @@
 
 void init_keyboard(void)
 {
-	wait_for_keyboard();
+	wait_to_send_to_keyboard();
 	outb(PORT_KEYBOARD_COMMAND, KEYBOARD_COMMAND_SET_MODE);
-	wait_for_keyboard();
+	wait_to_send_to_keyboard();
 	outb(PORT_KEYBOARD_DATA, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
 }
 
@@ -19,7 +19,7 @@ void keyboard_interrupt_handler(void)
 	printf_serial_polling("keyboard signal = %#04X\n", signal);
 }
 
-void wait_for_keyboard(void)
+void wait_to_send_to_keyboard(void)
 {
 	while(inb(PORT_KEYBOARD_STATUS) & KEYBOARD_STATUS_UNSENDABLE);
 }
