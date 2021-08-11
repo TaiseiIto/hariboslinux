@@ -30,8 +30,10 @@
 
 void init_keyboard(void);
 void keyboard_interrupt_handler(void);
+unsigned char receive_from_keyboard(void);
 void send_to_keyboard(unsigned int command, unsigned int data);
 void wait_to_send_to_keyboard(void);
+void wait_to_receive_from_keyboard(void);
 
 #endif
 
