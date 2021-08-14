@@ -9,6 +9,8 @@ RUN git config --global pull.rebase false
 RUN apk add --no-cache gdb
 # emulator
 RUN apk add --no-cache qemu-system-i386
+# ssh
+RUN apk add openssh
 # editor
 RUN apk add --no-cache vim
 # set time zone UTC+9 (Japan)
