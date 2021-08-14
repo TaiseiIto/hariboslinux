@@ -1,16 +1,17 @@
 #!/bin/sh
 
-curdir=$(cd $(dirname $0) && pwd)
+# This program gives the push access right.
+# Only the developer can execute it.
+# Put the private key "/~/hariboslinux/git/github" before the execution.
+
+currentdir=$(pwd)
+cd $(dirname $0)
 echo -n "Your GitHub email:"
 read email
 echo -n "Your GitHub name:"
 read name
 git config --global user.email $email
 git config --global user.name $name
-echo /url/ > .edcmd
-echo .s/github.com/${name}@github.com/ >> .edcmd
-echo w >> .edcmd
-echo q >> .edcmd
-ed ${curdir}/../.git/config < .edcmd
-rm .edcmd
+git remote set-url origin git@github.com:TaiseIto/hariboslinux.git
+cd $currentdir
 
