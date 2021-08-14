@@ -2,7 +2,7 @@
 
 # This program gives the push access right.
 # Only the developer can execute it.
-# Put the private key "/~/hariboslinux/git/github" before the execution.
+# Put the private key "/~/hariboslinux/ssh/github" before the execution.
 
 currentdir=$(pwd)
 cd $(dirname $0)
@@ -13,5 +13,6 @@ read name
 git config --global user.email $email
 git config --global user.name $name
 git remote set-url origin git@github.com:TaiseIto/hariboslinux.git
+cat ../ssh/config >> ~/.ssh/config
 cd $currentdir
 

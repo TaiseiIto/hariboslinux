@@ -10,7 +10,8 @@ RUN apk add --no-cache gdb
 # emulator
 RUN apk add --no-cache qemu-system-i386
 # ssh
-RUN apk add openssh
+RUN apk add --no-cache openssh
+RUN mkdir ~/.ssh
 # editor
 RUN apk add --no-cache vim
 # set time zone UTC+9 (Japan)
