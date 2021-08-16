@@ -14,5 +14,6 @@ git config --global user.email $email
 git config --global user.name $name
 git remote set-url origin git@github.com:TaiseIto/hariboslinux.git
 cat ../ssh/config >> ~/.ssh/config
+chmod 600 ../ssh/github
 cd $currentdir
 
