@@ -44,9 +44,17 @@ main:
 4:
 	movw	$vbe_available,(%di)
 	call	print_serial
+	movw	$vbe_version,(%di)
+	call	print_serial
+	movw	$0x0500,%si
+	movw	%es:0x04(%si),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
 5:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
 	int	$0x10
+
 6:				# push screen information and keyboard state
 				#
 				# 0x0500 unsigned short memory_size;	// MiB
@@ -383,6 +391,8 @@ vbe_available:
 	.string "VBE available\n"
 vbe_unavailable:
 	.string "VBE unavailable\n"
+vbe_version:
+	.string "VBE version = 0x"
 vram_addr_message:
 	.string "VRAM address = 0x"
 	.align 0x0200
