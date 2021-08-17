@@ -29,11 +29,13 @@ main:
 	movw	$hello_serial_message,(%di)
 	call	print_serial
 3:				# check VBE
+	pushw	%di
 	xorw	%ax,	%ax
 	movw	%ax,	%es
 	movw	$0x0500,%di
 	movw	$0x4f00,%ax
 	int	$0x0010
+	popw	%di
 	cmpw	$0x004f,%ax
 	je	4f
 	movw	$vbe_unavailable,(%di)
