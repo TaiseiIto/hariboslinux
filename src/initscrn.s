@@ -37,11 +37,11 @@ main:
 	cmpw	$0x004f,%ax
 	je	4f
 	movw	$vbe_unavailable,(%di)
-	call	print
+	call	print_serial
 	jmp	5f
 4:
 	movw	$vbe_available,(%di)
-	call	print
+	call	print_serial
 5:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
 	int	$0x10
