@@ -16,6 +16,7 @@ main:
 	movw	%sp,	%bp
 	pushw	%si
 	pushw	%di
+	pushw	%es
 	subw	$0x0002,%sp
 	movw	%sp,	%di
 1:				# print hello message
@@ -27,15 +28,24 @@ main:
 	call	new_line_serial
 	movw	$hello_serial_message,(%di)
 	call	print_serial
-3:				# free stack frame
-	#addw	$0x0002,%sp
-	#popw	%di
-	#popw	%si
-	#leave
-4:				# init screen
+3:				# check VBE
+	xorw	%ax,	%ax
+	movw	%ax,	%es
+	movw	$0x0500,%di
+	movw	$0x4f00,%ax
+	int	$0x0010
+	cmpw	$0x004f,%ax
+	je	4f
+	movw	$vbe_unavailable,(%di)
+	call	print
+	jmp	5f
+4:
+	movw	$vbe_available,(%di)
+	call	print
+5:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
 	int	$0x10
-5:				# push screen information and keyboard state
+6:				# push screen information and keyboard state
 				#
 				# 0x0500 unsigned short memory_size;	// MiB
 				# 0x0502 unsigned short screen_width;
@@ -59,13 +69,13 @@ main:
 	int	$0x0016
 	movw	$0x0507,%si
 	movb	%al,	(%si)
-6:				# check extended memroy size
+7:				# check extended memroy size
 	call	new_line_serial
 	movw	$0x0500,%si
 	movw	(%si),%dx
 	cmp	$0x0000,%dx
-	jne	8f
-7:				# memory size is bigger than or equals to 64MiB
+	jne	9f
+8:				# memory size is bigger than or equals to 64MiB
 	movw	$big_memory_message,(%di)
 	call	print_serial
 	movw	$0xe801,%ax
@@ -73,7 +83,7 @@ main:
 	addw	$0x0102,%dx
 	shrw	$0x04,	%dx
 	movw	%dx,	(%si)
-8:				# print memory size
+9:				# print memory size
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial
 	movw	$0x0500,%si
@@ -81,7 +91,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-9:				# check screen size
+10:				# check screen size
 	movw	$screen_size_message1,(%di)
 	call	print_serial
 	movw	$0x0502,%si
@@ -95,7 +105,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-10:				# check color size
+11:				# check color size
 	movw	$color_message,(%di)
 	call	print_serial
 	movw	$0x0506,%si
@@ -104,7 +114,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-11:				# check keyboard state
+12:				# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
 	movw	$0x0507,%si
@@ -113,12 +123,13 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-12:				# free stack frame
+13:				# free stack frame
 	addw	$0x0002,%sp
+	popw	%es
 	popw	%di
 	popw	%si
 	leave
-13:				# jump to mv2prtmd.bin
+14:				# jump to mv2prtmd.bin
 	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
@@ -136,7 +147,7 @@ init_serial_port_com1:		# void init_serial_port_com1(void)
 	movb	$0x01,	%al	# low byte of baudrate
 	movw	$com1,	%dx
 	outb	%al,	%dx
-	xorb	%al	,%al	# high byte of baudrate
+	xorb	%al,	%al	# high byte of baudrate
 	movw	$com1,	%dx
 	addw	$0x0001,%dx
 	outb	%al,	%dx
@@ -366,6 +377,10 @@ screen_size_message1:
 	.string "screen size = 0x"
 screen_size_message2:
 	.string " * 0x"
+vbe_available:
+	.string "VBE available\n"
+vbe_unavailable:
+	.string "VBE unavailable\n"
 vram_addr_message:
 	.string "VRAM address = 0x"
 	.align 0x0200
