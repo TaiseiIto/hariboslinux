@@ -51,41 +51,36 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-5:				# check video modes
-	xorw	%cx,	%cx
-	movw	%cx,	0x02(%di)
-6:
-	movw	$video_mode,(%di)
-	call	print_serial
-	movw	0x02(%di),%cx
-	movw	%cx,	(%di)
-	call	print_word_hex_serial
-	pushw	%di
-	xorw	%ax,	%ax
-	movw	%ax,	%es
-	movw	$0x0500,%di
-	movw	$0x4f01,%ax
-	int	$0x0010
-	popw	%di
-	cmpw	$0x004f,%ax
-	je	7f
-	movw	$video_mode_unavailable,(%di)
-	call	print_serial
-	jmp	8f
-7:
-	movw	$video_mode_available,(%di)
-	call	print_serial
-8:
-	movw	0x02(%di),%cx
-	incw	%cx
-	jcxz	9f
-	movw	%cx,	0x02(%di)
-	jmp	6b
-
-
-
-
-
+# 5:				# check video modes
+# 	xorw	%cx,	%cx
+# 	movw	%cx,	0x02(%di)
+# 6:
+# 	movw	$video_mode,(%di)
+# 	call	print_serial
+# 	movw	0x02(%di),%cx
+# 	movw	%cx,	(%di)
+# 	call	print_word_hex_serial
+# 	pushw	%di
+# 	xorw	%ax,	%ax
+# 	movw	%ax,	%es
+# 	movw	$0x0500,%di
+# 	movw	$0x4f01,%ax
+# 	int	$0x0010
+# 	popw	%di
+# 	cmpw	$0x004f,%ax
+# 	je	7f
+# 	movw	$video_mode_unavailable,(%di)
+# 	call	print_serial
+# 	jmp	8f
+# 7:
+# 	movw	$video_mode_available,(%di)
+# 	call	print_serial
+# 8:
+# 	movw	0x02(%di),%cx
+# 	incw	%cx
+# 	jcxz	9f
+# 	movw	%cx,	0x02(%di)
+# 	jmp	6b
 9:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
 	int	$0x10
