@@ -170,6 +170,30 @@ main:
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
+	movw	$video_mode_check_green_mask,(%di)# check vbe_mode_info_structure.green_mask
+	call	print_serial
+	movb	%es:0x1f(%si),%dl
+	movb	%dl,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
+	movw	$video_mode_check_green_position,(%di)# check vbe_mode_info_structure.green_position
+	call	print_serial
+	movb	%es:0x20(%si),%dl
+	movb	%dl,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
+	movw	$video_mode_check_blue_mask,(%di)# check vbe_mode_info_structure.blue_mask
+	call	print_serial
+	movb	%es:0x1f(%si),%dl
+	movb	%dl,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
+	movw	$video_mode_check_blue_position,(%di)# check vbe_mode_info_structure.blue_position
+	call	print_serial
+	movb	%es:0x20(%si),%dl
+	movb	%dl,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
 8:
 	movw	0x02(%di),%si
 	addw	$0x0002,%si			# next video mode
@@ -532,6 +556,14 @@ video_mode_check_attributes:
 	.string "\tattributes = 0x"
 video_mode_check_bpp:
 	.string "\tbits per pixel = 0x"
+video_mode_check_blue_mask:
+	.string "\tblue mask = 0x"
+video_mode_check_blue_position:
+	.string "\tblue position = 0x"
+video_mode_check_green_mask:
+	.string "\tgreen mask = 0x"
+video_mode_check_green_position:
+	.string "\tgreen position = 0x"
 video_mode_check_height:
 	.string "\theight = 0x"
 video_mode_check_memory_model:
