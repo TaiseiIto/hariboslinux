@@ -122,6 +122,12 @@ main:
 	popw	%di
 	cmp	$0x004f,%ax
 	jne	8f
+	movw	$video_mode_check_attributes,(%di)# check vbe_mode_info_structure.attributes
+	call	print_serial
+	movw	%es:(%si),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
 	movw	$video_mode_check_pitch,(%di)	# check vbe_mode_info_structure.putch
 	call	print_serial
 	movw	%es:0x10(%si),%dx
@@ -504,6 +510,8 @@ vbe_video_mode:
 	.string "VBE video mode = 0x"
 vbe_video_mode_pointer:
 	.string "VBE video mode pointer = 0x"
+video_mode_check_attributes:
+	.string "\tattributes = 0x"
 video_mode_check_bpp:
 	.string "\tbits per pixel = 0x"
 video_mode_check_height:
