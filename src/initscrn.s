@@ -102,16 +102,21 @@ main:
 5:				# check video modes
 	movw	%es:0x0e(%si),%si		# get VBE video mode pointer
 6:
-	movw	(%si),	%dx
-	cmp	$0xffff,%dx
+	movw	(%si),	%cx
+	cmp	$0xffff,%cx
 	je	9f
-	movw	%dx,	0x02(%di)
+	movw	%cx,	0x02(%di)
 	movw	$vbe_video_mode,(%di)		# check VBE video mode
 	call	print_serial
-	movw	0x02(%di),%dx
-	movw	%dx,	(%di)
+	movw	0x02(%di),%cx
+	movw	%cx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
+	movw	$0x4f01,%ax			# get vbe_mode_info_structure
+	pushw	%di
+	movw	$0x0600,%di
+	int	$0x0010
+	popw	%di
 	addw	$0x0002,%si
 	jmp	6b
  	jmp	6b
