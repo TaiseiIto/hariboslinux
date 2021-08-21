@@ -140,6 +140,12 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
+	movw	$video_mode_check_bpp,(%di)	# check vbe_mode_info_structure.bpp
+	call	print_serial
+	movb	%es:0x19(%si),%dl
+	movb	%dl,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
 8:
 	movw	0x02(%di),%si
 	addw	$0x0002,%si			# next video mode
@@ -498,6 +504,8 @@ vbe_video_mode:
 	.string "VBE video mode = 0x"
 vbe_video_mode_pointer:
 	.string "VBE video mode pointer = 0x"
+video_mode_check_bpp:
+	.string "\tbits per pixel = 0x"
 video_mode_check_height:
 	.string "\theight = 0x"
 video_mode_check_pitch:
