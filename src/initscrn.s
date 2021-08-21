@@ -119,12 +119,15 @@ main:
 	movw	%di,	%si
 	int	$0x0010
 	popw	%di
+	cmp	$0x004f,%ax
+	jne	8f
 	movw	$video_mode_check_pitch,(%di)	# check vbe_mode_info_structure.putch
 	call	print_serial
 	movw	%es:0x10(%si),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
+8:
 	movw	0x02(%di),%si
 	addw	$0x0002,%si			# next video mode
 	jmp	6b
@@ -483,7 +486,7 @@ vbe_video_mode:
 vbe_video_mode_pointer:
 	.string "VBE video mode pointer = 0x"
 video_mode_check_pitch:
-	.string "pitch = 0x"
+	.string "\tpitch = 0x"
 	.align 0x0200
 mv2prtmd:
 
