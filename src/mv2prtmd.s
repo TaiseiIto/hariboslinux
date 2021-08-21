@@ -77,8 +77,8 @@ entry:
 	movw	$0x0018,%dx
 	movw	%dx,	%ss
 	movw	%dx,	%ds
-	movl	$0x001f3200,%ebp
-	movl	$0x001f3200,%esp
+	movl	$0x001f3000,%ebp
+	movl	$0x001f3000,%esp
 	jmp	$0x10,	$0x0000
 
 				# // print LF
@@ -187,10 +187,10 @@ gdt:
 	.byte	0x00		#  base_high
 
 				# 0x0010 kernel.bin code section is readable and executable
-				# base	0x0000ce00
-				# limit	0x00092dff
+				# base	0x0000d000
+				# limit	0x00092bff
 				# access_right 0x409a
-	.word	0x2dff		#  limit_low
+	.word	0x2bff		#  limit_low
 	.word	kernel		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
@@ -198,10 +198,10 @@ gdt:
 	.byte	0x00		#  base_high
 
 				# 0x0018 kernel data and stack section is readable and writable
-				# base	0x0000ce00
-				# limit	0x001f31ff
+				# base	0x0000d000
+				# limit	0x001f2fff
 				# access_right 0x4092
-	.word	0x01f3		#  limit_low
+	.word	0x01f2		#  limit_low
 	.word	kernel		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x92		#  access_right
@@ -209,7 +209,7 @@ gdt:
 	.byte	0x00		#  base_high
 
 gdtr:
-	.word	0x001f		# 5 segment descriptors * 8 bytes per segment descriptor - 1
+	.word	0x001f		# 4 segment descriptors * 8 bytes per segment descriptor - 1
 	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"
