@@ -152,6 +152,12 @@ main:
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
+	movw	$video_mode_check_memory_model,(%di)# check vbe_mode_info_structure.memory_model
+	call	print_serial
+	movb	%es:0x1b(%si),%dl
+	movb	%dl,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
 8:
 	movw	0x02(%di),%si
 	addw	$0x0002,%si			# next video mode
@@ -516,6 +522,8 @@ video_mode_check_bpp:
 	.string "\tbits per pixel = 0x"
 video_mode_check_height:
 	.string "\theight = 0x"
+video_mode_check_memory_model:
+	.string "\tmemory model = 0x"
 video_mode_check_pitch:
 	.string "\tpitch = 0x"
 video_mode_check_width:
