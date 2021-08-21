@@ -127,6 +127,18 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
+	movw	$video_mode_check_width,(%di)	# check vbe_mode_info_structure.width
+	call	print_serial
+	movw	%es:0x12(%si),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
+	movw	$video_mode_check_height,(%di)	# check vbe_mode_info_structure.height
+	call	print_serial
+	movw	%es:0x14(%si),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
 8:
 	movw	0x02(%di),%si
 	addw	$0x0002,%si			# next video mode
@@ -485,8 +497,12 @@ vbe_video_mode:
 	.string "VBE video mode = 0x"
 vbe_video_mode_pointer:
 	.string "VBE video mode pointer = 0x"
+video_mode_check_height:
+	.string "\theight = 0x"
 video_mode_check_pitch:
 	.string "\tpitch = 0x"
+video_mode_check_width:
+	.string "\twidth = 0x"
 	.align 0x0200
 mv2prtmd:
 
