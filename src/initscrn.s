@@ -6,6 +6,9 @@
 # scratch registers: ax, cx, dx
 # preserved registers: bx, si, di, bp, sp
 
+# bibliography
+# https://wiki.osdev.org/VESA_Video_Modes
+
 	.include	"global.s"
 
 	.code16				# real mode
@@ -25,9 +28,9 @@ main:
 	call	print
 2:				# init serial port 0x03f8 (COM1)
 	call	init_serial_port_com1
-	call	new_line_serial
 	movw	$hello_serial_message,(%di)
 	call	print_serial
+	call	new_line_serial
 3:				# check VBE
 	pushw	%di
 	xorw	%ax,	%ax
@@ -40,10 +43,26 @@ main:
 	je	4f
 	movw	$vbe_unavailable,(%di)
 	call	print_serial
-	jmp	5f
-4:				# check VBE version
+	jmp	9f
+4:				# check struct VbeInfoBlock
 	movw	$vbe_available,(%di)
 	call	print_serial
+	movw	$vbe_signature,(%di)
+	call	print_serial
+	movw	$0x0500,%si
+	movb	%es:0x00(%si),%dl
+	movb	%dl,	(%di)
+	call	putchar_serial
+	movb	%es:0x01(%si),%dl
+	movb	%dl,	(%di)
+	call	putchar_serial
+	movb	%es:0x02(%si),%dl
+	movb	%dl,	(%di)
+	call	putchar_serial
+	movb	%es:0x03(%si),%dl
+	movb	%dl,	(%di)
+	call	putchar_serial
+	call	new_line_serial
 	movw	$vbe_version,(%di)
 	call	print_serial
 	movw	$0x0500,%si
@@ -51,7 +70,6 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-# 5:				# check video modes
 # 	xorw	%cx,	%cx
 # 	movw	%cx,	0x02(%di)
 # 6:
@@ -419,6 +437,8 @@ screen_size_message2:
 	.string " * 0x"
 vbe_available:
 	.string "VBE available\n"
+vbe_signature:
+	.string "VBE signature = "
 vbe_unavailable:
 	.string "VBE unavailable\n"
 vbe_version:
