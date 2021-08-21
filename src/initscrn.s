@@ -202,6 +202,14 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
+	movw	$video_mode_check_off_screen_mem_off,(%di)# check vbe_mode_info_structure.off_screen_mem_off
+	call	print_serial
+	movw	%es:0x28(%si),%dx
+	movw	%dx,	(%di)
+	movw	%es:0x2a(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex_serial
+	call	new_line_serial
 8:
 	movw	0x04(%di),%si
 	addw	$0x0002,%si			# next video mode
@@ -578,6 +586,8 @@ video_mode_check_height:
 	.string "\theight = 0x"
 video_mode_check_memory_model:
 	.string "\tmemory model = 0x"
+video_mode_check_off_screen_mem_off:
+	.string "\toff screen mem off = 0x"
 video_mode_check_pitch:
 	.string "\tpitch = 0x"
 video_mode_check_red_mask:
