@@ -85,6 +85,14 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
+	movw	$vbe_video_mode_pointer,(%di)	# check VBE video mode pointer
+	call	print_serial
+	movw	%es:0x0e(%si),%dx
+	movw	%dx,	(%di)
+	movw	%es:0x10(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex_serial
+	call	new_line_serial
 # 	xorw	%cx,	%cx
 # 	movw	%cx,	0x02(%di)
 # 6:
@@ -462,6 +470,8 @@ vbe_unavailable:
 	.string "VBE unavailable\n"
 vbe_version:
 	.string "VBE version = 0x"
+vbe_video_mode_pointer:
+	.string "VBE video mode pointer = 0x"
 video_mode:
 	.string "video mode 0x"
 video_mode_available:
