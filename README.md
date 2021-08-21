@@ -119,22 +119,23 @@ typedef struct
 [initscrn.binのsource](src/initscrn.s)
 
 #### initscrn.bin実行時のmemory map
-| memory start | memory end | disk start | disk end   | description               |
-| ------------ | ---------- | ---------- | ---------- | ------------------------- |
-| 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
-| 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x00000514 |            |            | struct VbeInfoBlock       |
-| 0x00000522   | ?          |            |            | video mode list           |
-| ?            | 0x00007bff |            |            | stack                     |
-| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
-| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
-| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
-| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                |
-| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries    |
-| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin              |
-| 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | initscrn.bin              |
-| 0x0000ca00   | 0x0000cdff | 0x00004e00 | 0x000051ff | mv2prtmd.bin              |
-| 0x0000ce00   | ?          | 0x00005200 | ?          | kernel.bin                |
+| memory start | memory end | disk start | disk end   | description                       |
+| ------------ | ---------- | ---------- | ---------- | --------------------------------- |
+| 0x00000000   | 0x000003ff |            |            | interrupt vector table            |
+| 0x00000400   | 0x000004ff |            |            | BIOS data area                    |
+| 0x00000500   | 0x00000514 |            |            | struct VbeInfoBlock               |
+| 0x00000522   | 0x00000600 |            |            | video mode list                   |
+| 0x00000600   | 0x00000700 |            |            | struct vbe\_mode\_info\_structure |
+| 0x00000700   | 0x00007bff |            |            | stack                             |
+| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                  |
+| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                    |
+| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                         |
+| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                        |
+| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries            |
+| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                      |
+| 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | initscrn.bin                      |
+| 0x0000ca00   | 0x0000cdff | 0x00004e00 | 0x000051ff | mv2prtmd.bin                      |
+| 0x0000ce00   | ?          | 0x00005200 | ?          | kernel.bin                        |
 
 ### mv2prtmd.bin
 real modeからprotected modeに移行し，kernel.binに移行します．
