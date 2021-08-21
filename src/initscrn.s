@@ -47,7 +47,7 @@ main:
 4:				# check struct VbeInfoBlock
 	movw	$vbe_available,(%di)
 	call	print_serial
-	movw	$vbe_signature,(%di)
+	movw	$vbe_signature,(%di)	# check VBE signature
 	call	print_serial
 	movw	$0x0500,%si
 	movb	%es:0x00(%si),%dl
@@ -63,12 +63,19 @@ main:
 	movb	%dl,	(%di)
 	call	putchar_serial
 	call	new_line_serial
-	movw	$vbe_version,(%di)
+	movw	$vbe_version,(%di)	# check VBE version
 	call	print_serial
-	movw	$0x0500,%si
 	movw	%es:0x04(%si),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
+	call	new_line_serial
+	movw	$vbe_oem_string_pointer,(%di)	# check VBE OEM string pointer
+	call	print_serial
+	movw	%es:0x06(%si),%dx
+	movw	%dx,	(%di)
+	movw	%es:0x08(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex_serial
 	call	new_line_serial
 # 	xorw	%cx,	%cx
 # 	movw	%cx,	0x02(%di)
@@ -319,17 +326,17 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 	leave
 	ret
 
-print_dword_hex_serial:		# void print_dword_hex_serial(unsigned high, unsigned short low);
+print_dword_hex_serial:		# void print_dword_hex_serial(unsigned low, unsigned short high);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%di
 	subw	$0x0002,%sp
 	movw	%sp,	%di
-	movw	0x04(%bp),%dx
+	movw	0x06(%bp),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
-	movw	0x06(%bp),%dx
+	movw	0x04(%bp),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	addw	$0x0002,%sp
@@ -437,6 +444,8 @@ screen_size_message2:
 	.string " * 0x"
 vbe_available:
 	.string "VBE available\n"
+vbe_oem_string_pointer:
+	.string "VBE OEM string pointer = "
 vbe_signature:
 	.string "VBE signature = "
 vbe_unavailable:
