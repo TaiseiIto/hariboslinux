@@ -101,6 +101,7 @@ main:
 	call	new_line_serial
 5:				# check video modes
 	movw	%es:0x0e(%si),%si		# get VBE video mode pointer
+6:
 	movw	(%si),	%dx
 	cmp	$0xffff,%dx
 	je	9f
@@ -112,7 +113,7 @@ main:
 	call	print_word_hex_serial
 	call	new_line_serial
 	addw	$0x0002,%si
-	jmp	5b
+	jmp	6b
 # 	xorw	%cx,	%cx
 # 	movw	%cx,	0x02(%di)
 # 6:
