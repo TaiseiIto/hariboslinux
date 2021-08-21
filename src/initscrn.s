@@ -113,13 +113,21 @@ main:
 	call	print_word_hex_serial
 	call	new_line_serial
 	movw	$0x4f01,%ax			# get vbe_mode_info_structure
+	movw	%si,	0x02(%di)
 	pushw	%di
 	movw	$0x0600,%di
+	movw	%di,	%si
 	int	$0x0010
 	popw	%di
-	addw	$0x0002,%si
+	movw	$video_mode_check_pitch,(%di)	# check vbe_mode_info_structure.putch
+	call	print_serial
+	movw	%es:0x10(%si),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
+	movw	0x02(%di),%si
+	addw	$0x0002,%si			# next video mode
 	jmp	6b
- 	jmp	6b
 9:				# init screen
 	movw	$0x0013,%ax	# VGA 320*200*8bit color
 	int	$0x10
@@ -474,14 +482,8 @@ vbe_video_mode:
 	.string "VBE video mode = 0x"
 vbe_video_mode_pointer:
 	.string "VBE video mode pointer = 0x"
-video_mode:
-	.string "video mode 0x"
-video_mode_available:
-	.string " available\n"
-video_mode_unavailable:
-	.string " unavailable\n"
-vram_addr_message:
-	.string "VRAM address = 0x"
+video_mode_check_pitch:
+	.string "pitch = 0x"
 	.align 0x0200
 mv2prtmd:
 
