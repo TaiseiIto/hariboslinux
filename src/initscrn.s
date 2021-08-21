@@ -20,7 +20,7 @@ main:
 	pushw	%si
 	pushw	%di
 	pushw	%es
-	subw	$0x0004,%sp
+	subw	$0x0006,%sp
 	movw	%sp,	%di
 1:				# print hello message
 	call	new_line
@@ -105,16 +105,16 @@ main:
 	movw	(%si),	%cx
 	cmp	$0xffff,%cx
 	je	9f
-	movw	%cx,	0x02(%di)
+	movw	%cx,	0x04(%di)
 	movw	$vbe_video_mode,(%di)		# check VBE video mode
 	call	print_serial
-	movw	0x02(%di),%cx
+	movw	0x04(%di),%cx
 	movw	%cx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
 	movw	$0x4f01,%ax			# get vbe_mode_info_structure
 	movw	(%di),	%cx
-	movw	%si,	0x02(%di)
+	movw	%si,	0x04(%di)
 	pushw	%di
 	movw	$0x0600,%di
 	movw	%di,	%si
@@ -194,8 +194,16 @@ main:
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
+	movw	$video_mode_check_frame_buffer,(%di)# check vbe_mode_info_structure.framebuffer
+	call	print_serial
+	movw	%es:0x24(%si),%dx
+	movw	%dx,	(%di)
+	movw	%es:0x26(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex_serial
+	call	new_line_serial
 8:
-	movw	0x02(%di),%si
+	movw	0x04(%di),%si
 	addw	$0x0002,%si			# next video mode
 	jmp	6b
 9:				# init screen
@@ -281,7 +289,7 @@ main:
 	call	print_byte_hex_serial
 	call	new_line_serial
 17:				# free stack frame
-	addw	$0x0004,%sp
+	addw	$0x0006,%sp
 	popw	%es
 	popw	%di
 	popw	%si
@@ -560,6 +568,8 @@ video_mode_check_blue_mask:
 	.string "\tblue mask = 0x"
 video_mode_check_blue_position:
 	.string "\tblue position = 0x"
+video_mode_check_frame_buffer:
+	.string "\tframe buffer = 0x"
 video_mode_check_green_mask:
 	.string "\tgreen mask = 0x"
 video_mode_check_green_position:
