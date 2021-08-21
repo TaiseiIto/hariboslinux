@@ -113,6 +113,7 @@ main:
 	call	print_word_hex_serial
 	call	new_line_serial
 	movw	$0x4f01,%ax			# get vbe_mode_info_structure
+	movw	(%di),	%cx
 	movw	%si,	0x02(%di)
 	pushw	%di
 	movw	$0x0600,%di
