@@ -33,6 +33,7 @@ EMULATOR_DRIVE_OPTION = -drive file=$(IMAGE_FILE),format=raw,if=floppy
 EMULATOR_MEMORY_OPTION = -m 4G
 # serial console
 EMULATOR_SERIAL_OPTION = -serial stdio
+EMULATOR_SERIAL_OUT = serialout.txt
 # VESA VBE 2.0
 EMULATOR_VIDEO_OPTION = -vga std
 # virtual network computing for all ip address
@@ -95,7 +96,7 @@ rebuild: clean
 
 # run the OS on QEMU
 run: $(IMAGE_FILE) stop
-	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) &
+	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) | tee $(EMULATOR_SERIAL_OUT) &
 
 src/kernel.bin: src/kernel/boot.h src/kernel/font/bitmap.txt src/kernel/exception.c src/kernel/exception.h src/kernel/font/translator.c src/kernel/font/Makefile src/kernel/font.c src/kernel/font.h src/kernel/gdt.c src/kernel/gdt.h src/kernel/graphic.c src/kernel/graphic.h src/kernel/idt.c src/kernel/idt.h src/kernel/io.h src/kernel/io.s src/kernel/kernel.ld src/kernel/keyboard.c src/kernel/keyboard.h src/kernel/main.c src/kernel/mouse.c src/kernel/mouse.h src/kernel/pic.c src/kernel/pic.h src/kernel/serial.c src/kernel/serial.h src/kernel/stack.c src/kernel/stack.h src/kernel/stdio.c src/kernel/stdio.h src/kernel/stdlib.h src/kernel/string.c src/kernel/string.h
 	make -C src
