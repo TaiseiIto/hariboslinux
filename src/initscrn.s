@@ -172,37 +172,29 @@ main:
 	call	new_line_serial
 	movw	$video_mode_check_green_mask,(%di)# check vbe_mode_info_structure.green_mask
 	call	print_serial
-	movb	%es:0x1f(%si),%dl
+	movb	%es:0x21(%si),%dl
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
 	movw	$video_mode_check_green_position,(%di)# check vbe_mode_info_structure.green_position
 	call	print_serial
-	movb	%es:0x20(%si),%dl
+	movb	%es:0x22(%si),%dl
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
 	movw	$video_mode_check_blue_mask,(%di)# check vbe_mode_info_structure.blue_mask
 	call	print_serial
-	movb	%es:0x1f(%si),%dl
+	movb	%es:0x23(%si),%dl
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
 	movw	$video_mode_check_blue_position,(%di)# check vbe_mode_info_structure.blue_position
 	call	print_serial
-	movb	%es:0x20(%si),%dl
+	movb	%es:0x24(%si),%dl
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
 	movw	$video_mode_check_frame_buffer,(%di)# check vbe_mode_info_structure.framebuffer
-	call	print_serial
-	movw	%es:0x24(%si),%dx
-	movw	%dx,	(%di)
-	movw	%es:0x26(%si),%dx
-	movw	%dx,	0x02(%di)
-	call	print_dword_hex_serial
-	call	new_line_serial
-	movw	$video_mode_check_off_screen_mem_off,(%di)# check vbe_mode_info_structure.off_screen_mem_off
 	call	print_serial
 	movw	%es:0x28(%si),%dx
 	movw	%dx,	(%di)
@@ -210,9 +202,17 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
-	movw	$video_mode_check_off_screen_mem_size,(%di)# check vbe_mode_info_structure.off_screen_mem_size
+	movw	$video_mode_check_off_screen_mem_off,(%di)# check vbe_mode_info_structure.off_screen_mem_off
 	call	print_serial
 	movw	%es:0x2c(%si),%dx
+	movw	%dx,	(%di)
+	movw	%es:0x2e(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex_serial
+	call	new_line_serial
+	movw	$video_mode_check_off_screen_mem_size,(%di)# check vbe_mode_info_structure.off_screen_mem_size
+	call	print_serial
+	movw	%es:0x30(%si),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
