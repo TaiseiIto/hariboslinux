@@ -47,7 +47,7 @@ main:
 4:				# check struct VbeInfoBlock
 	movw	$vbe_available,(%di)
 	call	print_serial
-	movw	$vbe_signature,(%di)	# check VBE signature
+	movw	$vbe_signature,(%di)		# check VBE signature
 	call	print_serial
 	movw	$0x0500,%si
 	movb	%es:0x00(%si),%dl
@@ -63,7 +63,7 @@ main:
 	movb	%dl,	(%di)
 	call	putchar_serial
 	call	new_line_serial
-	movw	$vbe_version,(%di)	# check VBE version
+	movw	$vbe_version,(%di)		# check VBE version
 	call	print_serial
 	movw	%es:0x04(%si),%dx
 	movw	%dx,	(%di)
@@ -77,7 +77,7 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
-	movw	$vbe_capabilities,(%di)	# check VBE capabilities
+	movw	$vbe_capabilities,(%di)		# check VBE capabilities
 	call	print_serial
 	movw	%es:0x0a(%si),%dx
 	movw	%dx,	(%di)
@@ -93,12 +93,26 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
-	movw	$vbe_total_memory,(%di)	# check VBE total memory
+	movw	$vbe_total_memory,(%di)		# check VBE total memory
 	call	print_serial
 	movw	%es:0x12(%si),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
+5:				# check video modes
+	movw	%es:0x0e(%si),%si		# get VBE video mode pointer
+	movw	(%si),	%dx
+	cmp	$0xffff,%dx
+	je	9f
+	movw	%dx,	0x02(%di)
+	movw	$vbe_video_mode,(%di)		# check VBE video mode
+	call	print_serial
+	movw	0x02(%di),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
+	addw	$0x0002,%si
+	jmp	5b
 # 	xorw	%cx,	%cx
 # 	movw	%cx,	0x02(%di)
 # 6:
@@ -478,6 +492,8 @@ vbe_unavailable:
 	.string "VBE unavailable\n"
 vbe_version:
 	.string "VBE version = 0x"
+vbe_video_mode:
+	.string "VBE video mode = 0x"
 vbe_video_mode_pointer:
 	.string "VBE video mode pointer = 0x"
 video_mode:
