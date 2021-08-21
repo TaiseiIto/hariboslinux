@@ -93,6 +93,12 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex_serial
 	call	new_line_serial
+	movw	$vbe_total_memory,(%di)	# check VBE total memory
+	call	print_serial
+	movw	%es:0x12(%si),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
 # 	xorw	%cx,	%cx
 # 	movw	%cx,	0x02(%di)
 # 6:
@@ -466,6 +472,8 @@ vbe_oem_string_pointer:
 	.string "VBE OEM string pointer = 0x"
 vbe_signature:
 	.string "VBE signature = 0x"
+vbe_total_memory:
+	.string "VBE total memory = 0x"
 vbe_unavailable:
 	.string "VBE unavailable\n"
 vbe_version:
