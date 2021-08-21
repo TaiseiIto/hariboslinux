@@ -158,6 +158,12 @@ main:
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
+	movw	$video_mode_check_red_mask,(%di)# check vbe_mode_info_structure.red_mask
+	call	print_serial
+	movb	%es:0x1f(%si),%dl
+	movb	%dl,	(%di)
+	call	print_byte_hex_serial
+	call	new_line_serial
 8:
 	movw	0x02(%di),%si
 	addw	$0x0002,%si			# next video mode
@@ -526,6 +532,8 @@ video_mode_check_memory_model:
 	.string "\tmemory model = 0x"
 video_mode_check_pitch:
 	.string "\tpitch = 0x"
+video_mode_check_red_mask:
+	.string "\tred mask = 0x"
 video_mode_check_width:
 	.string "\twidth = 0x"
 	.align 0x0200
