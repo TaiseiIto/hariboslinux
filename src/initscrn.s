@@ -256,11 +256,19 @@ main:
 	movw	0x04(%di),%si
 	addw	$0x0002,%si			# next video mode
 	jmp	6b
-11:						# init screen
+11:						# check the best video mode
+	call	new_line_serial
+	movw	$the_best_video_mode,(%di)
+	call	print_serial
+	movw	0x08(%di),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial
+	call	new_line_serial
+12:						# init screen
 	movw	$0x0013,%ax			# VGA 320*200*8bit color
 	int	$0x10
 
-12:						# push screen information and keyboard state
+13:						# push screen information and keyboard state
 						#
 						# 0x0500 unsigned short memory_size;	// MiB
 						# 0x0502 unsigned short screen_width;
@@ -284,13 +292,13 @@ main:
 	int	$0x0016
 	movw	$0x0507,%si
 	movb	%al,	(%si)
-13:						# check extended memroy size
+14:						# check extended memroy size
 	call	new_line_serial
 	movw	$0x0500,%si
 	movw	(%si),%dx
 	cmp	$0x0000,%dx
-	jne	15f
-14:						# memory size is bigger than or equals to 64MiB
+	jne	16f
+15:						# memory size is bigger than or equals to 64MiB
 	movw	$big_memory_message,(%di)
 	call	print_serial
 	movw	$0xe801,%ax
@@ -298,7 +306,7 @@ main:
 	addw	$0x0102,%dx
 	shrw	$0x04,	%dx
 	movw	%dx,	(%si)
-15:						# print memory size
+16:						# print memory size
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial
 	movw	$0x0500,%si
@@ -306,7 +314,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-16:						# check screen size
+17:						# check screen size
 	movw	$screen_size_message1,(%di)
 	call	print_serial
 	movw	$0x0502,%si
@@ -320,7 +328,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-17:						# check color size
+18:						# check color size
 	movw	$color_message,(%di)
 	call	print_serial
 	movw	$0x0506,%si
@@ -329,7 +337,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-18:						# check keyboard state
+19:						# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
 	movw	$0x0507,%si
@@ -338,13 +346,13 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-19:						# free stack frame
+20:						# free stack frame
 	addw	$0x000e,%sp
 	popw	%es
 	popw	%di
 	popw	%si
 	leave
-20:						# jump to mv2prtmd.bin
+21:						# jump to mv2prtmd.bin
 	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
@@ -592,6 +600,8 @@ screen_size_message1:
 	.string "screen size = 0x"
 screen_size_message2:
 	.string " * 0x"
+the_best_video_mode:
+	.string "The best video mode = 0x"
 vbe_available:
 	.string "VBE available\n"
 vbe_capabilities:
