@@ -270,31 +270,22 @@ main:
 
 13:						# push screen information and keyboard state
 						#
-						# 0x0500 unsigned short memory_size;	// MiB
-						# 0x0502 unsigned short screen_width;
-						# 0x0504 unsigned short screen_height;
-						# 0x0506 unsigned char bits_per_pixel;
-						# 0x0507 unsigned char keyboard_state;
+						# 0x0700 unsigned short memory_size;	// MiB
+						# 0x0702 unsigned char keyboard_state;
 
 	movw	$0x8800,%ax			# memory size
 	int	$0x0015				# get extended memory size
 	addw	$0x0480,%ax			# add first 420KiB memory
 	shr	$0x000a,%ax			# convert KiB to MiB
-	movw	$0x0500,%si
+	movw	$0x0700,%si
 	movw	%ax,	(%si)
-	movw	$0x0502,%si			# screen_width
-	movw	$0x0140,(%si)
-	movw	$0x0504,%si			# screen_height
-	movw	$0x00c8,(%si)
-	movw	$0x0506,%si			# 8 bit per pixel
-	movb	$0x08,(%si)
 	movw	$0x0200,%ax			# keyboard_state
 	int	$0x0016
-	movw	$0x0507,%si
+	movw	$0x0702,%si
 	movb	%al,	(%si)
 14:						# check extended memroy size
 	call	new_line_serial
-	movw	$0x0500,%si
+	movw	$0x0700,%si
 	movw	(%si),%dx
 	cmp	$0x0000,%dx
 	jne	16f
@@ -309,50 +300,25 @@ main:
 16:						# print memory size
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial
-	movw	$0x0500,%si
 	movw	(%si),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-17:						# check screen size
-	movw	$screen_size_message1,(%di)
-	call	print_serial
-	movw	$0x0502,%si
-	movw	(%si),	%dx
-	movw	%dx,	(%di)
-	call	print_word_hex_serial
-	movw	$screen_size_message2,(%di)
-	call	print_serial
-	movw	$0x0504,%si
-	movw	(%si),	%dx
-	movw	%dx,	(%di)
-	call	print_word_hex_serial
-	call	new_line_serial
-18:						# check color size
-	movw	$color_message,(%di)
-	call	print_serial
-	movw	$0x0506,%si
-	xorw	%dx,	%dx
-	movb	(%si),	%dl
-	movw	%dx,	(%di)
-	call	print_byte_hex_serial
-	call	new_line_serial
-19:						# check keyboard state
+17:						# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
-	movw	$0x0507,%si
-	xorw	%dx,	%dx
+	movw	$0x0702,%si
 	movb	(%si),	%dl
-	movw	%dx,	(%di)
+	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-20:						# free stack frame
+18:						# free stack frame
 	addw	$0x000e,%sp
 	popw	%es
 	popw	%di
 	popw	%si
 	leave
-21:						# jump to mv2prtmd.bin
+19:						# jump to mv2prtmd.bin
 	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
