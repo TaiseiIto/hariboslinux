@@ -229,6 +229,18 @@ main:
 	call	print_word_hex_serial
 	call	new_line_serial
 8:						# check the video mode conditions
+	movw	%es:(%si),%dx			# check linear frame buffer support (vbe_mode_info_structure.attributes & 0x0090)
+	andw	$0x0090,%dx
+	cmpw	$0x0090,%dx
+	jne	9f
+	movb	%es:0x1b(%si),%dl		# check direct color mode (vbe_mode_info_structure.memory_model == 0x06)
+	cmpb	$0x06,	%dl
+	jne	9f
+	movb	%es:0x19(%si),%dl		# check bits per pixel (0x18 <= vbe_mode_info_structure.bpp)
+	cmpb	$0x18,	%dl
+	jb	9f
+	movw	$video_mode_meets_conditions,(%di)
+	call	print_serial
 9:
 	movw	0x04(%di),%si
 	addw	$0x0002,%si			# next video mode
@@ -617,6 +629,8 @@ video_mode_check_red_position:
 	.string "\tred position = 0x"
 video_mode_check_width:
 	.string "\twidth = 0x"
+video_mode_meets_conditions:
+	.string "\tMEETS THE CONDITIONS!!!\n"
 	.align 0x0200
 mv2prtmd:
 
