@@ -271,14 +271,19 @@ main:
 	movw	$0x0600,%di
 	int	$0x0010
 	popw	%di
-13:						# push screen information and keyboard state
+13:						# enter the best video mode
+	movw	$0x4f02,%ax
+	movw	0x08(%di),%bx
+	orw	$0x4000,%bx			# use linear frame buffer
+	int	$0x0010
+14:						# write BootInforamtion structure
 						#
 						# 0x0700 unsigned short memory_size;	// MiB
 						# 0x0702 unsigned char keyboard_state;
 
 	movw	$0x8800,%ax			# memory size
 	int	$0x0015				# get extended memory size
-	addw	$0x0480,%ax			# add first 420KiB memory
+	addw	$0x0480,%ax			# add first 0x480KiB memory
 	shr	$0x000a,%ax			# convert KiB to MiB
 	movw	$0x0700,%si
 	movw	%ax,	(%si)
@@ -286,13 +291,13 @@ main:
 	int	$0x0016
 	movw	$0x0702,%si
 	movb	%al,	(%si)
-14:						# check extended memroy size
+15:						# check extended memroy size
 	call	new_line_serial
 	movw	$0x0700,%si
 	movw	(%si),%dx
 	cmp	$0x0000,%dx
-	jne	16f
-15:						# memory size is bigger than or equals to 64MiB
+	jne	17f
+16:						# memory size is bigger than or equals to 64MiB
 	movw	$big_memory_message,(%di)
 	call	print_serial
 	movw	$0xe801,%ax
@@ -300,14 +305,14 @@ main:
 	addw	$0x0102,%dx
 	shrw	$0x04,	%dx
 	movw	%dx,	(%si)
-16:						# print memory size
+17:						# print memory size
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial
 	movw	(%si),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-17:						# check keyboard state
+18:						# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
 	movw	$0x0702,%si
@@ -315,13 +320,13 @@ main:
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-18:						# free stack frame
+19:						# free stack frame
 	addw	$0x000e,%sp
 	popw	%es
 	popw	%di
 	popw	%si
 	leave
-19:						# jump to mv2prtmd.bin
+20:						# jump to mv2prtmd.bin
 	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
