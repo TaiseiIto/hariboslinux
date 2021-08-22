@@ -20,8 +20,15 @@ main:
 	pushw	%si
 	pushw	%di
 	pushw	%es
-	subw	$0x0006,%sp
+	subw	$0x000e,%sp
 	movw	%sp,	%di
+				# 0x00(%di) callee arguments
+				# 0x02(%di) callee arguments
+				# 0x04(%di) current checked video mode number pointer
+				# 0x06(%di) current checked video mode number
+				# 0x08(%di) current best video mode number
+				# 0x0a(%di) current best video mode width
+				# 0x0c(%di) current best video mode height
 1:				# print hello message
 	call	new_line
 	movw	$hello_message,(%di)
@@ -36,6 +43,7 @@ main:
 	xorw	%ax,	%ax
 	movw	%ax,	%es
 	movw	$0x0500,%di
+	movw	%di,	%si
 	movw	$0x4f00,%ax
 	int	$0x0010
 	popw	%di
@@ -49,7 +57,6 @@ main:
 	call	print_serial
 	movw	$vbe_signature,(%di)		# check VBE signature
 	call	print_serial
-	movw	$0x0500,%si
 	movb	%es:0x00(%si),%dl
 	movb	%dl,	(%di)
 	call	putchar_serial
@@ -105,15 +112,15 @@ main:
 	movw	(%si),	%cx
 	cmp	$0xffff,%cx
 	je	9f
-	movw	%cx,	0x04(%di)
+	movw	%cx,	0x06(%di)
 	movw	$vbe_video_mode,(%di)		# check VBE video mode
 	call	print_serial
-	movw	0x04(%di),%cx
+	movw	0x06(%di),%cx
 	movw	%cx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
 	movw	$0x4f01,%ax			# get vbe_mode_info_structure
-	movw	(%di),	%cx
+	movw	0x06(%di),%cx
 	movw	%si,	0x04(%di)
 	pushw	%di
 	movw	$0x0600,%di
@@ -303,7 +310,7 @@ main:
 	call	print_byte_hex_serial
 	call	new_line_serial
 17:				# free stack frame
-	addw	$0x0006,%sp
+	addw	$0x000e,%sp
 	popw	%es
 	popw	%di
 	popw	%si
