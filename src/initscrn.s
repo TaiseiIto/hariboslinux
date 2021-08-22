@@ -233,11 +233,9 @@ main:
 	andw	$0x0090,%dx
 	cmpw	$0x0090,%dx
 	jne	10f
-	movb	%es:0x1b(%si),%dl		# check direct color mode (vbe_mode_info_structure.memory_model == 0x06)
-	cmpb	$0x06,	%dl
+	cmpb	$0x06,%es:0x1b(%si)		# check direct color mode (vbe_mode_info_structure.memory_model == 0x06)
 	jne	10f
-	movb	%es:0x19(%si),%dl		# check bits per pixel (0x18 <= vbe_mode_info_structure.bpp)
-	cmpb	$0x18,	%dl
+	cmpb	$0x18,%es:0x19(%si)		# check bits per pixel (0x18 <= vbe_mode_info_structure.bpp)
 	jb	10f
 	movw	$video_mode_meets_conditions,(%di)
 	call	print_serial
