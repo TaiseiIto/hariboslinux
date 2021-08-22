@@ -1,15 +1,7 @@
 #ifndef _GRAPHIC_H_
 #define _GRAPHIC_H_
 
-// 0 <= red   < 6
-// 0 <= green < 6
-// 0 <= blue  < 6
 typedef unsigned char Color;
-
-// 0 <= red   < 6
-// 0 <= green < 6
-// 0 <= blue  < 6
-Color get_color(unsigned char red, unsigned char green, unsigned char blue);
 
 // fill box
 // x and y can be negative

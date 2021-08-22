@@ -15,7 +15,6 @@ unsigned short loaded_disk_segment_selector;
 unsigned short first_fat_segment_selector;
 unsigned short second_fat_segment_selector;
 unsigned short root_directory_entry_segment_selector;
-unsigned short vram_segment_selector;
 
 void init_gdt(void)
 {
@@ -88,7 +87,6 @@ void init_gdt(void)
 	first_fat_segment_selector = set_segment(0x00007e00, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	second_fat_segment_selector = set_segment(0x00009000, 0x000011ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	root_directory_entry_segment_selector = set_segment(0x0000a200, 0x00001bff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	vram_segment_selector = set_segment(0x000a0000, 0x0001ffff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 
 	// check new GDT
 	print_serial_polling("check new GDT\n");
@@ -102,7 +100,6 @@ void init_gdt(void)
 	printf_serial_polling("first_fat_segment_selector = %#06X\n", first_fat_segment_selector);
 	printf_serial_polling("second_fat_segment_selector = %#06X\n", second_fat_segment_selector);
 	printf_serial_polling("root_directory_entry_segment_selector = %#06X\n", root_directory_entry_segment_selector);
-	printf_serial_polling("vram_segment_selector = %#06X\n", vram_segment_selector);
 	new_line_serial_polling();
 	source = (SegmentDescriptor *)0x00000008;
 	do
