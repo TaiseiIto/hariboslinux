@@ -83,7 +83,7 @@ void init_gdt(void)
 	lgdt(0xffff, GDT_ADDR);
 
 	idt_segment_selector = set_segment(0x00007400, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	video_information_segment_selector = set_segment(0x00000700, sizeof(BootInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	video_information_segment_selector = set_segment(0x00000600, sizeof(BootInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	boot_information_segment_selector = set_segment(0x00000700, sizeof(BootInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	loaded_disk_segment_selector = set_segment(0x00007c00, 0x00097fff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	first_fat_segment_selector = set_segment(0x00007e00, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
