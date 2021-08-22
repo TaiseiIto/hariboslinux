@@ -20,6 +20,7 @@ void main(void)
 	init_keyboard();
 	init_mouse();
 	init_screen();
+	new_line_serial_polling();
 	while(1)hlt();
 }
 
