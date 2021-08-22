@@ -51,7 +51,7 @@ main:
 	je	4f
 	movw	$vbe_unavailable,(%di)
 	call	print_serial
-	jmp	9f
+	jmp	10f
 4:						# check struct VbeInfoBlock
 	movw	$vbe_available,(%di)
 	call	print_serial
@@ -115,7 +115,7 @@ main:
 6:
 	movw	(%si),	%cx
 	cmp	$0xffff,%cx
-	je	10f
+	je	11f
 	movw	%cx,	0x06(%di)
 	movw	$vbe_video_mode,(%di)		# check VBE video mode
 	call	print_serial
@@ -132,7 +132,7 @@ main:
 	int	$0x0010
 	popw	%di
 	cmp	$0x004f,%ax
-	jne	9f
+	jne	10f
 7:						# print the video mode informations
 	movw	$video_mode_check_attributes,(%di)# check vbe_mode_info_structure.attributes
 	call	print_serial
@@ -232,24 +232,25 @@ main:
 	movw	%es:(%si),%dx			# check linear frame buffer support (vbe_mode_info_structure.attributes & 0x0090)
 	andw	$0x0090,%dx
 	cmpw	$0x0090,%dx
-	jne	9f
+	jne	10f
 	movb	%es:0x1b(%si),%dl		# check direct color mode (vbe_mode_info_structure.memory_model == 0x06)
 	cmpb	$0x06,	%dl
-	jne	9f
+	jne	10f
 	movb	%es:0x19(%si),%dl		# check bits per pixel (0x18 <= vbe_mode_info_structure.bpp)
 	cmpb	$0x18,	%dl
-	jb	9f
+	jb	10f
 	movw	$video_mode_meets_conditions,(%di)
 	call	print_serial
-9:
+9:						# compare to current with video mode
+10:
 	movw	0x04(%di),%si
 	addw	$0x0002,%si			# next video mode
 	jmp	6b
-10:						# init screen
+11:						# init screen
 	movw	$0x0013,%ax			# VGA 320*200*8bit color
 	int	$0x10
 
-11:						# push screen information and keyboard state
+12:						# push screen information and keyboard state
 						#
 						# 0x0500 unsigned short memory_size;	// MiB
 						# 0x0502 unsigned short screen_width;
@@ -273,13 +274,13 @@ main:
 	int	$0x0016
 	movw	$0x0507,%si
 	movb	%al,	(%si)
-12:						# check extended memroy size
+13:						# check extended memroy size
 	call	new_line_serial
 	movw	$0x0500,%si
 	movw	(%si),%dx
 	cmp	$0x0000,%dx
 	jne	15f
-13:						# memory size is bigger than or equals to 64MiB
+14:						# memory size is bigger than or equals to 64MiB
 	movw	$big_memory_message,(%di)
 	call	print_serial
 	movw	$0xe801,%ax
@@ -287,7 +288,7 @@ main:
 	addw	$0x0102,%dx
 	shrw	$0x04,	%dx
 	movw	%dx,	(%si)
-14:						# print memory size
+15:						# print memory size
 	movw	$extended_memory_size_message,(%di)
 	call	print_serial
 	movw	$0x0500,%si
@@ -295,7 +296,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-15:						# check screen size
+16:						# check screen size
 	movw	$screen_size_message1,(%di)
 	call	print_serial
 	movw	$0x0502,%si
@@ -309,7 +310,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-16:						# check color size
+17:						# check color size
 	movw	$color_message,(%di)
 	call	print_serial
 	movw	$0x0506,%si
@@ -318,7 +319,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-17:						# check keyboard state
+18:						# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
 	movw	$0x0507,%si
@@ -327,13 +328,13 @@ main:
 	movw	%dx,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-18:						# free stack frame
+19:						# free stack frame
 	addw	$0x000e,%sp
 	popw	%es
 	popw	%di
 	popw	%si
 	leave
-19:						# jump to mv2prtmd.bin
+20:						# jump to mv2prtmd.bin
 	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
