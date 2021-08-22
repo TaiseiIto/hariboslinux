@@ -549,8 +549,6 @@ putchar_serial:			# void putchar_serial(char c);
 	.data
 big_memory_message:
 	.string "memory size is bigger then or equals to 64MiB\n"
-color_message:
-	.string "bits per pixel = 0x"
 extended_memory_size_message:
 	.string "extended memory size = 0x"
 hello_message:
@@ -559,10 +557,6 @@ hello_serial_message:
 	.string "Hello, serial port COM1!\n"
 keyboard_message:
 	.string "keyboard state = 0x"
-screen_size_message1:
-	.string "screen size = 0x"
-screen_size_message2:
-	.string " * 0x"
 the_best_video_mode:
 	.string "The best video mode = 0x"
 vbe_available:
