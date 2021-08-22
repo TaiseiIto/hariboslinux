@@ -126,7 +126,8 @@ typedef struct
 | 0x00000500   | 0x00000514 |            |            | struct VbeInfoBlock               |
 | 0x00000522   | 0x00000600 |            |            | video mode list                   |
 | 0x00000600   | 0x00000700 |            |            | struct vbe\_mode\_info\_structure |
-| 0x00000700   | 0x00007bff |            |            | stack                             |
+| 0x00000700   | 0x00000705 |            |            | BootInformation structure         |
+| 0x00000706   | 0x00007bff |            |            | stack                             |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                  |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                    |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                         |
@@ -143,26 +144,29 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 [mv2prtmd.binのsource](src/mv2prtmd.s)
 
 #### mv2prtmd.bin実行時のmemory map
-| memory start | memory end | disk start | disk end   | description               |
-| ------------ | ---------- | ---------- | ---------- | ------------------------- |
-| 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
-| 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x0000050a |            |            | BootInformation structure |
-| 0x0000050b   | 0x00007bff |            |            | stack                     |
-| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
-| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
-| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
-| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                |
-| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries    |
-| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin              |
-| 0x0000c400   | 0x0000cdff | 0x00004800 | 0x000051ff | initscrn.bin              |
-| 0x0000ce00   | 0x0000d1ff | 0x00005200 | 0x000055ff | mv2prtmd.bin              |
-| 0x0000d200   | ?          | 0x00005600 | ?          | kernel.bin                |
-| 0x0009fc00   | 0x0009ffff |            |            | ACPI work area            |
-| 0x000a0000   | 0x000bffff |            |            | VRAM                      |
-| 0x000c0000   | 0x000c7fff |            |            | Video BIOS                |
-| 0x000c8000   | 0x000effff |            |            | BIOS expansions           |
-| 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS          |
+| memory start | memory end | disk start | disk end   | description                       |
+| ------------ | ---------- | ---------- | ---------- | ----------------------------------|
+| 0x00000000   | 0x000003ff |            |            | interrupt vector table            |
+| 0x00000400   | 0x000004ff |            |            | BIOS data area                    |
+| 0x00000500   | 0x00000514 |            |            | struct VbeInfoBlock               |
+| 0x00000522   | 0x00000600 |            |            | video mode list                   |
+| 0x00000600   | 0x00000700 |            |            | struct vbe\_mode\_info\_structure |
+| 0x00000700   | 0x00000705 |            |            | BootInformation structure         |
+| 0x00000706   | 0x00007bff |            |            | stack                             |
+| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                  |
+| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                    |
+| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                         |
+| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                        |
+| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries            |
+| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                      |
+| 0x0000c400   | 0x0000cdff | 0x00004800 | 0x000051ff | initscrn.bin                      |
+| 0x0000ce00   | 0x0000d1ff | 0x00005200 | 0x000055ff | mv2prtmd.bin                      |
+| 0x0000d200   | ?          | 0x00005600 | ?          | kernel.bin                        |
+| 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                    |
+| 0x000a0000   | 0x000bffff |            |            | VRAM                              |
+| 0x000c0000   | 0x000c7fff |            |            | Video BIOS                        |
+| 0x000c8000   | 0x000effff |            |            | BIOS expansions                   |
+| 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS                  |
 
 ### kernel.bin
 OS本体です．
@@ -170,32 +174,35 @@ OS本体です．
 [kernel.binのsource](src/kernel)
 
 #### kernel.bin実行時のmemory map
-| memory start | memory end | disk start | disk end   | description               |
-| ------------ | ---------- | ---------- | ---------- | ------------------------- |
-| 0x00000000   | 0x000003ff |            |            | interrupt vector table    |
-| 0x00000400   | 0x000004ff |            |            | BIOS data area            |
-| 0x00000500   | 0x0000050a |            |            | BootInformation structure |
-| 0x0000050b   | 0x000073ff |            |            | reserved                  |
-| 0x00007400   | 0x00007bff |            |            | IDT                       |
-| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data          |
-| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin            |
-| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                 |
-| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                |
-| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries    |
-| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin              |
-| 0x0000c400   | 0x0000cdff | 0x00004800 | 0x000051ff | initscrn.bin              |
-| 0x0000ce00   | 0x0000d1ff | 0x00005200 | 0x000055ff | mv2prtmd.bin              |
-| 0x0000d200   | ?          | 0x00005600 | ?          | kernel.bin                |
-| 0x0009fc00   | 0x0009ffff |            |            | ACPI work area            |
-| 0x000a0000   | 0x000bffff |            |            | VRAM                      |
-| 0x000c0000   | 0x000c7fff |            |            | Video BIOS                |
-| 0x000c8000   | 0x000effff |            |            | BIOS expansions           |
-| 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS          |
-| 0x00100000   | 0x001fffff |            |            | kernel stack              |
-| 0x00200000   | 0x0020ffff |            |            | GDT                       |
-| 0x00210000   | 0x00efffff |            |            | reserved                  |
-| 0x00f00000   | 0x00ffffff |            |            | ISA memory hole           |
-| 0x01000000   | ?          |            |            | reserved                  |
+| memory start | memory end | disk start | disk end   | description                       |
+| ------------ | ---------- | ---------- | ---------- | ----------------------------------|
+| 0x00000000   | 0x000003ff |            |            | interrupt vector table            |
+| 0x00000400   | 0x000004ff |            |            | BIOS data area                    |
+| 0x00000500   | 0x00000514 |            |            | struct VbeInfoBlock               |
+| 0x00000522   | 0x00000600 |            |            | video mode list                   |
+| 0x00000600   | 0x00000700 |            |            | struct vbe\_mode\_info\_structure |
+| 0x00000700   | 0x00000705 |            |            | BootInformation structure         |
+| 0x00000706   | 0x000073ff |            |            | reserved                          |
+| 0x00007400   | 0x00007bff |            |            | IDT                               |
+| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                  |
+| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                    |
+| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                         |
+| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                        |
+| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries            |
+| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                      |
+| 0x0000c400   | 0x0000cdff | 0x00004800 | 0x000051ff | initscrn.bin                      |
+| 0x0000ce00   | 0x0000d1ff | 0x00005200 | 0x000055ff | mv2prtmd.bin                      |
+| 0x0000d200   | ?          | 0x00005600 | ?          | kernel.bin                        |
+| 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                    |
+| 0x000a0000   | 0x000bffff |            |            | VRAM                              |
+| 0x000c0000   | 0x000c7fff |            |            | Video BIOS                        |
+| 0x000c8000   | 0x000effff |            |            | BIOS expansions                   |
+| 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS                  |
+| 0x00100000   | 0x001fffff |            |            | kernel stack                      |
+| 0x00200000   | 0x0020ffff |            |            | GDT                               |
+| 0x00210000   | 0x00efffff |            |            | reserved                          |
+| 0x00f00000   | 0x00ffffff |            |            | ISA memory hole                   |
+| 0x01000000   | ?          |            |            | reserved                          |
 
 ## 開発者用メモ
 docker, VNC softwareに加え，git, makeを用いて開発しています．
