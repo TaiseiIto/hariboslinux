@@ -34,6 +34,7 @@ void init_screen(void)
 	printf_serial_polling("video_information.green_positioin = %#04X\n", video_information.green_position);
 	printf_serial_polling("video_information.blue_mask = %#04X\n", video_information.blue_mask);
 	printf_serial_polling("video_information.blue_positioin = %#04X\n", video_information.blue_position);
+	printf_serial_polling("video_information.frame_buffer = %#010X\n", video_information.frame_buffer);
 }
 
 // put character at screen(x, y)
