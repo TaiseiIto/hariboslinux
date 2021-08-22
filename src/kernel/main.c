@@ -11,7 +11,9 @@
 
 void main(void)
 {
+	Color background_color;
 	Color color;
+	Color foreground_color;
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
 	init_gdt();
@@ -41,6 +43,13 @@ void main(void)
 	color.green = 0x00;
 	color.blue = 0xff;
 	fill_box(0x0300, 0x0000, 0x0100, 0x0100, color);
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0, 0x0100, foreground_color, background_color, "Hello, World!\nHello, hariboslinux!\n");
 	while(1)hlt();
 }
 
