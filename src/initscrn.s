@@ -265,9 +265,6 @@ main:
 	call	print_word_hex_serial
 	call	new_line_serial
 12:						# init screen
-	movw	$0x0013,%ax			# VGA 320*200*8bit color
-	int	$0x10
-
 13:						# push screen information and keyboard state
 						#
 						# 0x0700 unsigned short memory_size;	// MiB
