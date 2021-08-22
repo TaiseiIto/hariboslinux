@@ -163,7 +163,7 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | 0x0000ce00   | 0x0000d1ff | 0x00005200 | 0x000055ff | mv2prtmd.bin                      |
 | 0x0000d200   | ?          | 0x00005600 | ?          | kernel.bin                        |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                    |
-| 0x000a0000   | 0x000bffff |            |            | VRAM                              |
+| 0x000a0000   | 0x000bffff |            |            | unused VRAM                       |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                        |
 | 0x000c8000   | 0x000effff |            |            | BIOS expansions                   |
 | 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS                  |
@@ -194,7 +194,7 @@ OS本体です．
 | 0x0000ce00   | 0x0000d1ff | 0x00005200 | 0x000055ff | mv2prtmd.bin                      |
 | 0x0000d200   | ?          | 0x00005600 | ?          | kernel.bin                        |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                    |
-| 0x000a0000   | 0x000bffff |            |            | VRAM                              |
+| 0x000a0000   | 0x000bffff |            |            | unused VRAM                       |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                        |
 | 0x000c8000   | 0x000effff |            |            | BIOS expansions                   |
 | 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS                  |
