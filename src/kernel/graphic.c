@@ -12,11 +12,27 @@ VideoInformation video_information;
 
 // fill box
 // x and y can be negative
-// 0 <= red   < 6
-// 0 <= green < 6
-// 0 <= blue  < 6
 void fill_box(short x, short y, unsigned short width, unsigned short height, Color color)
 {
+	for(short y_i = y; y_i < y + (short)height; y_i++)
+	{
+		if(y_i < 0)
+		{
+			y_i = -1;
+			continue;
+		}
+		if(video_information.height <= y_i)break;
+		for(short x_i = x; x_i < x + (short)width; x_i++)
+		{
+			if(x_i < 0)
+			{
+				x_i = -1;
+				continue;
+			}
+			if(video_information.width <= x_i)break;
+			put_dot((unsigned short)x_i, (unsigned short)y_i, color);
+		}
+	}
 }
 
 // init screen

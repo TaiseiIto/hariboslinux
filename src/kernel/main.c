@@ -11,6 +11,7 @@
 
 void main(void)
 {
+	Color color;
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
 	init_gdt();
@@ -23,12 +24,23 @@ void main(void)
 	new_line_serial_polling();
 	for(unsigned short y = 0; y < 0x100; y++)for(unsigned short x = 0; x < 0x100; x++)
 	{
-		Color color;
 		color.red = (unsigned char)x;
 		color.green = (unsigned char)y;
 		color.blue = 0;
 		put_dot(x, y, color);
 	}
+	color.red = 0xff;
+	color.green = 0x00;
+	color.blue = 0x00;
+	fill_box(0x0100, 0x0000, 0x0100, 0x0100, color);
+	color.red = 0x00;
+	color.green = 0xff;
+	color.blue = 0x00;
+	fill_box(0x0200, 0x0000, 0x0100, 0x0100, color);
+	color.red = 0x00;
+	color.green = 0x00;
+	color.blue = 0xff;
+	fill_box(0x0300, 0x0000, 0x0100, 0x0100, color);
 	while(1)hlt();
 }
 
