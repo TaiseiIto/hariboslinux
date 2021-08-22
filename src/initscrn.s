@@ -264,7 +264,13 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
-12:						# init screen
+12:						# write selected video mode informations
+	movw	$0x4f01,%ax			# get vbe_mode_info_structure
+	movw	0x08(%di),%cx
+	pushw	%di
+	movw	$0x0600,%di
+	int	$0x0010
+	popw	%di
 13:						# push screen information and keyboard state
 						#
 						# 0x0700 unsigned short memory_size;	// MiB
