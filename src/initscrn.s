@@ -240,6 +240,18 @@ main:
 	movw	$video_mode_meets_conditions,(%di)
 	call	print_serial
 9:						# compare to current with video mode
+	movw	0x0a(%di),%dx
+	cmpw	%dx,	%es:0x12(%si)		# current best video mode width < current checked video mode width
+	jbe	10f
+	movw	0x0c(%di),%dx
+	cmpw	%dx,	%es:0x14(%si)		# && current best video mode height < current checked video mode height
+	jbe	10f
+	movw	0x06(%di),%dx			# update current best video mode
+	movw	%dx,	0x08(%di)
+	movw	%es:0x12(%si),%dx
+	movw	%dx,	0x0a(%di)
+	movw	%es:0x14(%si),%dx
+	movw	%dx,	0x0c(%di)
 10:
 	movw	0x04(%di),%si
 	addw	$0x0002,%si			# next video mode
