@@ -2,10 +2,12 @@
 #include "gdt.h"
 #include "graphic.h"
 #include "io.h"
+#include "limits.h"
 #include "serial.h"
 
 #define TAB_LENGTH 4
 
+unsigned short vram_segment_selector;
 VideoInformation video_information;
 
 // fill box
@@ -21,6 +23,7 @@ void fill_box(short x, short y, unsigned short width, unsigned short height, Col
 void init_screen(void)
 {
 	reads(video_information_segment_selector, (void *)0x00000000, (void *)&video_information, sizeof(video_information));
+	vram_segment_selector = set_segment(video_information.frame_buffer, video_information.pitch * video_information.height, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	new_line_serial_polling();
 	printf_serial_polling("video_information.attributes = %#06X\n", video_information.attributes);
 	printf_serial_polling("video_information.pitch = %#06X\n", video_information.pitch);
@@ -47,6 +50,8 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 // 0 <= y < screen height
 void put_dot(unsigned short x, unsigned short y, Color color)
 {
+	unsigned int dot = (color.red << video_information.red_position) + (color.green << video_information.green_position) + (color.blue << video_information.blue_position);
+	writes((void *)&dot, vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x), video_information.bits_per_pixel / CHAR_BIT);
 }
 
 // put string at screen(x, y)

@@ -37,7 +37,12 @@ typedef struct
 	unsigned int off_screen_mem_size;
 } __attribute__((packed)) VideoInformation;
 
-typedef unsigned char Color;
+typedef struct
+{
+	unsigned char red;
+	unsigned char green;
+	unsigned char blue;
+} Color;
 
 // fill box
 // x and y can be negative

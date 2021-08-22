@@ -1,4 +1,5 @@
 gdb/i386-32bit.xml
+makeout.txt
 serialout.txt
 *.bin
 *.img
