@@ -21,6 +21,14 @@ void main(void)
 	init_mouse();
 	init_screen();
 	new_line_serial_polling();
+	for(unsigned short y = 0; y < 0x100; y++)for(unsigned short x = 0; x < 0x100; x++)
+	{
+		Color color;
+		color.red = (unsigned char)x;
+		color.green = (unsigned char)y;
+		color.blue = 0;
+		put_dot(x, y, color);
+	}
 	while(1)hlt();
 }
 
