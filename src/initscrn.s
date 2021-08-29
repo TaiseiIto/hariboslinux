@@ -111,9 +111,10 @@ main:
 	movw	%dx,	0x08(%di)		# init current best video mode number
 	movw	%dx,	0x0a(%di)		# init current best video mode width
 	movw	%dx,	0x0c(%di)		# init current best video mode height
-	movw	%es:0x0e(%si),%si		# get VBE video mode pointer
+	movw	%es:0x10(%si),%fs		# get VBE video mode pointer segment
+	movw	%es:0x0e(%si),%si		# get VBE video mode pointer offset
 6:
-	movw	(%si),	%cx
+	movw	%fs:(%si),%cx
 	cmp	$0xffff,%cx
 	je	11f
 	movw	%cx,	0x06(%di)
