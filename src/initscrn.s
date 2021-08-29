@@ -20,6 +20,7 @@ main:
 	pushw	%si
 	pushw	%di
 	pushw	%es
+	pushw	%fs
 	subw	$0x000e,%sp
 	movw	%sp,	%di
 						# 0x00(%di) callee arguments
@@ -323,6 +324,7 @@ main:
 	call	new_line_serial
 19:						# free stack frame
 	addw	$0x000e,%sp
+	popw	%fs
 	popw	%es
 	popw	%di
 	popw	%si
