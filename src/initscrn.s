@@ -283,22 +283,20 @@ main:
 	int	$0x0010
 14:						# write BootInforamtion structure
 						#
-						# 0x0700 unsigned short memory_size;	// MiB
-						# 0x0702 unsigned char keyboard_state;
+						# 0x0800 unsigned short memory_size;	// MiB
+						# 0x0802 unsigned char keyboard_state;
 
 	movw	$0x8800,%ax			# memory size
 	int	$0x0015				# get extended memory size
 	addw	$0x0480,%ax			# add first 0x480KiB memory
 	shr	$0x000a,%ax			# convert KiB to MiB
-	movw	$0x0700,%si
+	movw	$0x0800,%si
 	movw	%ax,	(%si)
 	movw	$0x0200,%ax			# keyboard_state
 	int	$0x0016
-	movw	$0x0702,%si
-	movb	%al,	(%si)
+	movb	%al,	0x02(%si)
 15:						# check extended memroy size
 	call	new_line_serial
-	movw	$0x0700,%si
 	movw	(%si),%dx
 	cmp	$0x0000,%dx
 	jne	17f
@@ -320,8 +318,7 @@ main:
 18:						# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
-	movw	$0x0702,%si
-	movb	(%si),	%dl
+	movb	0x02(%si),	%dl
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
