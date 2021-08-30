@@ -358,6 +358,38 @@ init_serial_port_com1:		# void init_serial_port_com1(void)
 	leave
 	ret
 
+memset:				# void memset(unsugned short segment, void *buf, unsigned char value, unsigned short size);	
+0:
+	push	%bp
+	movw	%sp,	%bp
+				# 0x04(%bp) == segment	-> %es
+				# 0x06(%bp) == buf	-> %di
+				# 0x08(%bp) == value	-> %dx
+				# 0x0a(%bp) == size	-> %cx
+	pushw	%di
+	pushw	%es
+	movw	%es,	0x04(%bp)
+	movw	%di,	0x06(%bp)
+	movb	%dl,	0x08(%bp)
+	movb	%dh,	0x09(%bp)
+	movw	%cx,	0x0a(%bp)
+1:
+	jcxz	4f
+	cmpw	$0x0002,%cx
+	jb	3f
+2:				# set next 2 bytes
+	movw	%dx,	%es:(%di)
+	addw	$0x0002,%di
+	subw	$0x0002,%cx
+	jmp	1b
+3:				# set a last byte
+	movb	%dl,	%es:(%di)
+4:
+	popw	%es
+	popw	%di
+	leave
+	ret
+
 				# // print CRLF
 new_line:			# void new_line(void);
 0:
