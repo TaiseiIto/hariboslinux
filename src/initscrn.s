@@ -111,6 +111,11 @@ main:
 	call	print_word_hex_serial
 	call	new_line_serial
 5:						# check video modes
+	movw	$0x0000,(%di)			# init best vbe_mode_info_structure
+	movw	$0x0700,0x02(%di)
+	movw	$0x0000,0x04(%di)
+	movw	$0x0100,0x06(%di)
+	call	memset
 	xorw	%dx,	%dx
 	movw	%dx,	0x0e(%di)		# init current best video mode number
 	movw	%dx,	0x10(%di)		# init current best video mode width
