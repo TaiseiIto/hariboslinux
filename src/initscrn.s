@@ -399,11 +399,11 @@ memcpy:				# void memcpy(unsigned short dest_seg, void *dest_addr, unsigned shor
 	pushw	%di
 	pushw	%es
 	pushw	%fs
-	movw	%es,	0x04(%bp)	# dest_seg
-	movw	%di,	0x06(%bp)	# dest_addr
-	movw	%fs,	0x08(%bp)	# src_seg
-	movw	%si,	0x0a(%bp)	# src_addr
-	movw	%cx,	0x0c(%bp)	# size
+	movw	0x04(%bp),%es	# dest_seg
+	movw	0x06(%bp),%di	# dest_addr
+	movw	0x08(%bp),%fs	# src_seg
+	movw	0x0a(%bp),%si	# src_addr
+	movw	0x0c(%bp),%cx	# size
 1:
 	jcxz	4f
 	cmp	$0x0002,%cx
