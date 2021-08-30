@@ -137,7 +137,7 @@ main:
 	movw	0x0c(%di),%cx
 	movw	%si,	0x0a(%di)
 	pushw	%di
-	movw	$0x0600,%di
+	movw	$0x0700,%di
 	movw	%di,	%si
 	int	$0x0010
 	popw	%di
@@ -262,6 +262,12 @@ main:
 	movw	%dx,	0x10(%di)
 	movw	%es:0x14(%si),%dx
 	movw	%dx,	0x12(%di)
+	movw	$0x0000,(%di)
+	movw	$0x0600,0x02(%di)
+	movw	%es,	0x04(%di)
+	movw	%si,	0x06(%di)
+	movw	$0x0100,0x08(%di)
+	call	memcpy
 10:
 	movw	0x0a(%di),%si
 	addw	$0x0002,%si			# next video mode
