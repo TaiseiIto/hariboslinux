@@ -21,15 +21,18 @@ main:
 	pushw	%di
 	pushw	%es
 	pushw	%fs
-	subw	$0x000e,%sp
+	subw	$0x0014,%sp
 	movw	%sp,	%di
 						# 0x00(%di) callee arguments
 						# 0x02(%di) callee arguments
-						# 0x04(%di) current checked video mode number pointer
-						# 0x06(%di) current checked video mode number
-						# 0x08(%di) current best video mode number
-						# 0x0a(%di) current best video mode width
-						# 0x0c(%di) current best video mode height
+						# 0x04(%di) callee arguments
+						# 0x06(%di) callee arguments
+						# 0x08(%di) callee arguments
+						# 0x0a(%di) current checked video mode number pointer
+						# 0x0c(%di) current checked video mode number
+						# 0x0e(%di) current best video mode number
+						# 0x10(%di) current best video mode width
+						# 0x12(%di) current best video mode height
 1:						# print hello message
 	call	new_line
 	movw	$hello_message,(%di)
@@ -109,25 +112,25 @@ main:
 	call	new_line_serial
 5:						# check video modes
 	xorw	%dx,	%dx
-	movw	%dx,	0x08(%di)		# init current best video mode number
-	movw	%dx,	0x0a(%di)		# init current best video mode width
-	movw	%dx,	0x0c(%di)		# init current best video mode height
+	movw	%dx,	0x0e(%di)		# init current best video mode number
+	movw	%dx,	0x10(%di)		# init current best video mode width
+	movw	%dx,	0x12(%di)		# init current best video mode height
 	movw	%es:0x10(%si),%fs		# get VBE video mode pointer segment
 	movw	%es:0x0e(%si),%si		# get VBE video mode pointer offset
 6:
 	movw	%fs:(%si),%cx
 	cmp	$0xffff,%cx
 	je	11f
-	movw	%cx,	0x06(%di)
+	movw	%cx,	0x0c(%di)
 	movw	$vbe_video_mode,(%di)		# check VBE video mode
 	call	print_serial
-	movw	0x06(%di),%cx
+	movw	0x0c(%di),%cx
 	movw	%cx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
 	movw	$0x4f01,%ax			# get vbe_mode_info_structure
-	movw	0x06(%di),%cx
-	movw	%si,	0x04(%di)
+	movw	0x0c(%di),%cx
+	movw	%si,	0x0a(%di)
 	pushw	%di
 	movw	$0x0600,%di
 	movw	%di,	%si
@@ -242,40 +245,40 @@ main:
 	movw	$video_mode_meets_conditions,(%di)
 	call	print_serial
 9:						# compare to current with video mode
-	movw	0x0a(%di),%dx
+	movw	0x10(%di),%dx
 	cmpw	%dx,	%es:0x12(%si)		# current best video mode width < current checked video mode width
 	jbe	10f
-	movw	0x0c(%di),%dx
+	movw	0x12(%di),%dx
 	cmpw	%dx,	%es:0x14(%si)		# && current best video mode height < current checked video mode height
 	jbe	10f
-	movw	0x06(%di),%dx			# update current best video mode
-	movw	%dx,	0x08(%di)
+	movw	0x0c(%di),%dx			# update current best video mode
+	movw	%dx,	0x0e(%di)
 	movw	%es:0x12(%si),%dx
-	movw	%dx,	0x0a(%di)
+	movw	%dx,	0x10(%di)
 	movw	%es:0x14(%si),%dx
-	movw	%dx,	0x0c(%di)
+	movw	%dx,	0x12(%di)
 10:
-	movw	0x04(%di),%si
+	movw	0x0a(%di),%si
 	addw	$0x0002,%si			# next video mode
 	jmp	6b
 11:						# check the best video mode
 	call	new_line_serial
 	movw	$the_best_video_mode,(%di)
 	call	print_serial
-	movw	0x08(%di),%dx
+	movw	0x0e(%di),%dx
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
 12:						# write selected video mode informations
 	movw	$0x4f01,%ax			# get vbe_mode_info_structure
-	movw	0x08(%di),%cx
+	movw	0x0e(%di),%cx
 	pushw	%di
 	movw	$0x0600,%di
 	int	$0x0010
 	popw	%di
 13:						# enter the best video mode
 	movw	$0x4f02,%ax
-	movw	0x08(%di),%bx
+	movw	0x0e(%di),%bx
 	orw	$0x4000,%bx			# use linear frame buffer
 	int	$0x0010
 14:						# write BootInforamtion structure
@@ -323,7 +326,7 @@ main:
 	call	print_byte_hex_serial
 	call	new_line_serial
 19:						# free stack frame
-	addw	$0x000e,%sp
+	addw	$0x0014,%sp
 	popw	%fs
 	popw	%es
 	popw	%di
