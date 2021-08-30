@@ -25,6 +25,22 @@
 
 	.include	"global.s"
 
+	.globl	main
+	.globl	dump
+	.globl	new_line
+	.globl	print
+	.globl	print_byte_hex
+	.globl	put_char
+	.globl	read_sector
+
+	.type	main,		@function
+	.type	dump,		@function
+	.type	new_line,	@function
+	.type	print,		@function
+	.type	print_byte_hex,	@function
+	.type	put_char,	@function
+	.type	read_sector,	@function
+
 	.code16				# real mode
 	.text
 main:

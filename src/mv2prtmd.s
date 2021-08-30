@@ -8,9 +8,23 @@
 
 	.include	"global.s"
 
+	.globl	main
+	.globl	new_line_serial
+	.globl	print_serial
+	.globl	putchar_serial
+	.globl	send_byte_to_keyboard
+	.globl	wait_for_keyboard
+
+	.type	main,			@function
+	.type	new_line_serial,	@function
+	.type	print_serial,		@function
+	.type	putchar_serial,		@function
+	.type	send_byte_to_keyboard,	@function
+	.type	wait_for_keyboard,	@function
+
 	.code16				# real mode
 	.text
-entry:
+main:
 0:
 	pushw	%bp
 	movw	%sp,	%bp

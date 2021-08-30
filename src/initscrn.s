@@ -11,6 +11,34 @@
 
 	.include	"global.s"
 
+	.globl	main
+	.globl	init_serial_port_com1
+	.globl	memcpy
+	.globl	memset
+	.globl	new_line
+	.globl	new_line_serial
+	.globl	print
+	.globl	print_byte_hex_serial
+	.globl	print_dword_hex_serial
+	.globl	print_word_hex_serial
+	.globl	print_serial
+	.globl	putchar
+	.globl	putchar_serial
+
+	.type	main,			@function
+	.type	init_serial_port_com1,	@function
+	.type	memcpy,			@function
+	.type	memset,			@function
+	.type	new_line,		@function
+	.type	new_line_serial,	@function
+	.type	print,			@function
+	.type	print_byte_hex_serial,	@function
+	.type	print_dword_hex_serial,	@function
+	.type	print_word_hex_serial,	@function
+	.type	print_serial,		@function
+	.type	putchar,		@function
+	.type	putchar_serial,		@function
+
 	.code16					# real mode
 	.text
 main:

@@ -12,6 +12,20 @@
 
 	.include	"global.s"
 
+	.globl	main
+	.globl	new_line
+	.globl	print
+	.globl	print_byte_hex
+	.globl	putchar
+	.globl	read_sector
+
+	.type	main,		@function
+	.type	new_line,	@function
+	.type	print,		@function
+	.type	print_byte_hex,	@function
+	.type	putchar,	@function
+	.type	read_sector,	@function
+
 	.code16					# real mode
 	.text
 stack:						# bottom of stack
