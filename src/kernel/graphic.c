@@ -86,8 +86,9 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 // 0 <= y < screen height
 void put_dot(unsigned short x, unsigned short y, Color color)
 {
-	unsigned int dot = (color.red << video_information.red_position) + (color.green << video_information.green_position) + (color.blue << video_information.blue_position);
-	writes((void *)&dot, vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x), video_information.bits_per_pixel / CHAR_BIT);
+	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.red_position / CHAR_BIT), color.red);
+	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.green_position / CHAR_BIT), color.green);
+	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.blue_position / CHAR_BIT), color.blue);
 }
 
 // put string at screen(x, y)
