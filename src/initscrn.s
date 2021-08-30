@@ -358,21 +358,52 @@ init_serial_port_com1:		# void init_serial_port_com1(void)
 	leave
 	ret
 
+memcpy:				# void memcpy(unsigned short dest_seg, void *dest_addr, unsigned short src_seg, void *src_addr, unsigned short size);
+0:
+	push	%bp
+	movw	%sp,	%bp
+	pushw	%si
+	pushw	%di
+	pushw	%es
+	pushw	%fs
+	movw	%es,	0x04(%bp)	# dest_seg
+	movw	%di,	0x06(%bp)	# dest_addr
+	movw	%fs,	0x08(%bp)	# src_seg
+	movw	%si,	0x0a(%bp)	# src_addr
+	movw	%cx,	0x0c(%bp)	# size
+1:
+	jcxz	4f
+	cmp	$0x0002,%cx
+	jb	3f
+2:
+	movw	%fs:(%si),%dx
+	movw	%dx,	%es:(%di)
+	addw	$0x0002,%si
+	addw	$0x0002,%di
+	subw	$0x0002,%cx
+	jmp	1b
+3:
+	movb	%fs:(%si),%dl
+	movb	%dl,	%es:(%di)
+4:
+	popw	%fs
+	popw	%es
+	popw	%di
+	popw	%si
+	leave
+	ret
+
 memset:				# void memset(unsugned short segment, void *buf, unsigned char value, unsigned short size);	
 0:
 	push	%bp
 	movw	%sp,	%bp
-				# 0x04(%bp) == segment	-> %es
-				# 0x06(%bp) == buf	-> %di
-				# 0x08(%bp) == value	-> %dx
-				# 0x0a(%bp) == size	-> %cx
 	pushw	%di
 	pushw	%es
-	movw	%es,	0x04(%bp)
-	movw	%di,	0x06(%bp)
-	movb	%dl,	0x08(%bp)
-	movb	%dh,	0x09(%bp)
-	movw	%cx,	0x0a(%bp)
+	movw	%es,	0x04(%bp)	# segment
+	movw	%di,	0x06(%bp)	# buf
+	movb	%dl,	0x08(%bp)	# value
+	movb	%dh,	0x09(%bp)	# value
+	movw	%cx,	0x0a(%bp)	# size
 1:
 	jcxz	4f
 	cmpw	$0x0002,%cx
