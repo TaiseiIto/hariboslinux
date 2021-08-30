@@ -3,5 +3,6 @@ makeout.txt
 serialout.txt
 *.bin
 *.img
+*.map
 *.o
 

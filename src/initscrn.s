@@ -281,12 +281,6 @@ main:
 	call	print_word_hex_serial
 	call	new_line_serial
 12:						# write selected video mode informations
-	movw	$0x4f01,%ax			# get vbe_mode_info_structure
-	movw	0x0e(%di),%cx
-	pushw	%di
-	movw	$0x0600,%di
-	int	$0x0010
-	popw	%di
 13:						# enter the best video mode
 	movw	$0x4f02,%ax
 	movw	0x0e(%di),%bx
