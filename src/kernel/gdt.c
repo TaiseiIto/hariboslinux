@@ -71,14 +71,14 @@ void init_gdt(void)
 	// set new GDT
 	destination = GDT_ADDR;
 	writes(&null_segment, temporary_whole_memory_segment_selector, destination++, sizeof(null_segment));
-	writes(&whole_memory_segment, temporary_whole_memory_segment_selector, destination, sizeof(whole_memory_segment));
-	whole_memory_segment_selector = (unsigned int)destination++;
-	writes(&kernel_code_segment, temporary_whole_memory_segment_selector, destination, sizeof(kernel_code_segment));
-	kernel_code_segment_selector = (unsigned int)destination++;
-	writes(&kernel_data_segment, temporary_whole_memory_segment_selector, destination, sizeof(kernel_data_segment));
-	kernel_data_segment_selector = (unsigned int)destination++;
-	writes(&gdt_segment, temporary_whole_memory_segment_selector, destination, sizeof(gdt_segment));
-	gdt_segment_selector = (unsigned int)destination++;
+	writes(&whole_memory_segment, temporary_whole_memory_segment_selector, destination++, sizeof(whole_memory_segment));
+	whole_memory_segment_selector = 0x0008;
+	writes(&kernel_code_segment, temporary_whole_memory_segment_selector, destination++, sizeof(kernel_code_segment));
+	kernel_code_segment_selector = 0x0010;
+	writes(&kernel_data_segment, temporary_whole_memory_segment_selector, destination++, sizeof(kernel_data_segment));
+	kernel_data_segment_selector = 0x0018;
+	writes(&gdt_segment, temporary_whole_memory_segment_selector, destination++, sizeof(gdt_segment));
+	gdt_segment_selector = 0x0020;
 	
 	// load new GDT
 	lgdt(0xffff, GDT_ADDR);
