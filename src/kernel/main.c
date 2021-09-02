@@ -17,12 +17,12 @@ void main(void)
 	Color background_color;
 	Color color;
 	Color foreground_color;
+	cli();
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
 	init_gdt();
 	init_idt();
 	init_pic();
-	sti();
 	init_keyboard();
 	init_mouse();
 	init_screen();
@@ -58,6 +58,7 @@ void main(void)
 	color.blue = 0xff;
 	fill_box(0x0300, 0x0100, 0x0100, 0x0100, color);
 	new_line_serial_polling();
+	sti();
 	while(1)hlt();
 }
 
