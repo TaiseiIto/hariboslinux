@@ -400,24 +400,24 @@ break pointに到達すると，gdbはSIGTRAP信号を受信して一時停止�
 
 ## 実機(Legacy BIOS対応ASUS)での動かし方memo
 1. bootable USBの用意
-    1. explorerでboot用USBを右クリックし，Formatして空の状態にする．
-    1. rufusでboot用USBにharibos.imgを書き込む．
-    1. diskmgmt.mscを起動し，bootable USBを右クリックしてDrive Letterを与える．
-    1. explorerでbootable USBを右クリックし，ejectしてから取り外す．
+	1. explorerでboot用USBを右クリックし，Formatして空の状態にする．
+	1. rufusでboot用USBにharibos.imgを書き込む．
+	1. diskmgmt.mscを起動し，bootable USBを右クリックしてDrive Letterを与える．
+	1. explorerでbootable USBを右クリックし，ejectしてから取り外す．
 1. 実機のBIOS設定変更
-    1. 起動前の実機にbootable USBを差す．
-    1. 実機を起動し，設定画面からUpdate and Security/Recovery/Advanced startup/Restart now/Troubleshoot/Advanced options/UEFI Firmware Settings/RestartでBIOS設定画面を開く．
-    1. Security/Secure Boot menu/Secure Boot ControlをDisableにする．
-    1. Boot/Launch CSMをEnableにする．
-    1. Boot/Boot Option #1をbootable USBにする．
-    1. 再起動
+	1. 起動前の実機にbootable USBを差す．
+	1. 実機を起動し，設定画面からUpdate and Security/Recovery/Advanced startup/Restart now/Troubleshoot/Advanced options/UEFI Firmware Settings/RestartでBIOS設定画面を開く．
+	1. Security/Secure Boot menu/Secure Boot ControlをDisableにする．
+	1. Boot/Launch CSMをEnableにする．
+	1. Boot/Boot Option #1をbootable USBにする．
+	1. 再起動
 1. bootable USBからの起動
-    1. 設定画面からUpdate and Security/Recovery/Advanced startup/Restart now/Use a device/Removable Drive
+	1. 設定画面からUpdate and Security/Recovery/Advanced startup/Restart now/Use a device/Removable Drive
 1. 電源ボタンを押してharibos終了
 1. BIOS設定を戻す
-    1. BIOS設定画面を開く
-    1. Security/Secure Boot menu/Secure Boot ControlをEnableにする．
-    1. Boot/Launch CSMをDisableにする．
-    1. Boot/Boot Option #1をWindows Boot Managerにする．
-    1. 再起動
+	1. BIOS設定画面を開く
+	1. Security/Secure Boot menu/Secure Boot ControlをEnableにする．
+	1. Boot/Launch CSMをDisableにする．
+	1. Boot/Boot Option #1をWindows Boot Managerにする．
+	1. 再起動
 
