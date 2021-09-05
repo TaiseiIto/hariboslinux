@@ -135,10 +135,10 @@ typedef struct
 | 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
 | 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
 | 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
-| 0x0000c400   | 0x0000c5ff | 0x00004800 | 0x000049aa | getmemmp.bin                       |
-| 0x0000c600   | 0x0000cfff | 0x00004a00 | 0x000053ff | initscrn.bin                       |
-| 0x0000d000   | 0x0000d3ff | 0x00005400 | 0x000057ff | mv2prtmd.bin                       |
-| 0x0000d400   | ?          | 0x00005800 | ?          | kernel.bin                         |
+| 0x0000c400   | 0x0000c7ff | 0x00004800 | 0x00004baa | getmemmp.bin                       |
+| 0x0000c800   | 0x0000d1ff | 0x00004c00 | 0x000055ff | initscrn.bin                       |
+| 0x0000d200   | 0x0000d5ff | 0x00005600 | 0x000059ff | mv2prtmd.bin                       |
+| 0x0000d600   | ?          | 0x00005a00 | ?          | kernel.bin                         |
 
 ### mv2prtmd.bin
 real modeからprotected modeに移行し，kernel.binに移行します．
@@ -161,10 +161,10 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
 | 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
 | 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
-| 0x0000c400   | 0x0000c5ff | 0x00004800 | 0x000049aa | getmemmp.bin                       |
-| 0x0000c600   | 0x0000cfff | 0x00004a00 | 0x000053ff | initscrn.bin                       |
-| 0x0000d000   | 0x0000d3ff | 0x00005400 | 0x000057ff | mv2prtmd.bin                       |
-| 0x0000d400   | ?          | 0x00005800 | ?          | kernel.bin                         |
+| 0x0000c400   | 0x0000c7ff | 0x00004800 | 0x00004baa | getmemmp.bin                       |
+| 0x0000c800   | 0x0000d1ff | 0x00004c00 | 0x000055ff | initscrn.bin                       |
+| 0x0000d200   | 0x0000d5ff | 0x00005600 | 0x000059ff | mv2prtmd.bin                       |
+| 0x0000d600   | ?          | 0x00005a00 | ?          | kernel.bin                         |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
@@ -193,10 +193,10 @@ OS本体です．
 | 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
 | 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
 | 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
-| 0x0000c400   | 0x0000c5ff | 0x00004800 | 0x000049aa | getmemmp.bin                       |
-| 0x0000c600   | 0x0000cfff | 0x00004a00 | 0x000053ff | initscrn.bin                       |
-| 0x0000d000   | 0x0000d3ff | 0x00005400 | 0x000057ff | mv2prtmd.bin                       |
-| 0x0000d400   | ?          | 0x00005800 | ?          | kernel.bin                         |
+| 0x0000c400   | 0x0000c7ff | 0x00004800 | 0x00004baa | getmemmp.bin                       |
+| 0x0000c800   | 0x0000d1ff | 0x00004c00 | 0x000055ff | initscrn.bin                       |
+| 0x0000d200   | 0x0000d5ff | 0x00005600 | 0x000059ff | mv2prtmd.bin                       |
+| 0x0000d600   | ?          | 0x00005a00 | ?          | kernel.bin                         |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
