@@ -328,41 +328,21 @@ main:
 	movw	$0x0200,%ax			# keyboard_state
 	int	$0x0016
 	movb	%al,	0x02(%si)
-15:						# check extended memroy size
-	call	new_line_serial
-	movw	(%si),%dx
-	cmp	$0x0000,%dx
-	jne	17f
-16:						# memory size is bigger than or equals to 64MiB
-	movw	$big_memory_message,(%di)
-	call	print_serial
-	movw	$0xe801,%ax
-	int	$0x15
-	addw	$0x0102,%dx
-	shrw	$0x04,	%dx
-	movw	%dx,	(%si)
-17:						# print memory size
-	movw	$extended_memory_size_message,(%di)
-	call	print_serial
-	movw	(%si),%dx
-	movw	%dx,	(%di)
-	call	print_word_hex_serial
-	call	new_line_serial
-18:						# check keyboard state
+15:						# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
 	movb	0x02(%si),	%dl
 	movb	%dl,	(%di)
 	call	print_byte_hex_serial
 	call	new_line_serial
-19:						# free stack frame
+16:						# free stack frame
 	addw	$0x0014,%sp
 	popw	%fs
 	popw	%es
 	popw	%di
 	popw	%si
 	leave
-20:						# jump to mv2prtmd.bin
+27:						# jump to mv2prtmd.bin
 	jmp	mv2prtmd
 
 init_serial_port_com1:		# void init_serial_port_com1(void)
@@ -657,10 +637,6 @@ putchar_serial:			# void putchar_serial(char c);
 	ret
 
 	.data
-big_memory_message:
-	.string "memory size is bigger then or equals to 64MiB\n"
-extended_memory_size_message:
-	.string "extended memory size = 0x"
 hello_message:
 	.string	"Hello, initscrn.bin!\n"
 hello_serial_message:
