@@ -60,14 +60,7 @@ main:
 	call	wait_for_keyboard
 	movw	$expand_memory_message,(%di)
 	call	print_serial
-3:					# memory size
-	movw	$0x0500,%si
-	movw	$0xe801,%ax
-	int	$0x15
-	addw	$0x0102,%dx
-	shrw	$0x04,	%dx
-	movw	%dx,	(%si)
-4:					# free stack frame
+3:					# free stack frame
 	addw	$0x0004,%sp
 	popw	%di
 	popw	%si
@@ -75,7 +68,7 @@ main:
 	pushw	$free_stack_message
 	call	print_serial
 	addw	$0x0002,%sp
-5:					# move to protected mode
+4:					# move to protected mode
 	lgdt	(gdtr)
 	pushw	$lgdt_message
 	call	print_serial
