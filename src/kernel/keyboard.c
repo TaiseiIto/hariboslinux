@@ -22,7 +22,7 @@ unsigned char receive_from_keyboard(void)
 	return inb(PORT_KEYBOARD_DATA);
 }
 
-void send_to_keyboard(unsigned int command, unsigned int data)
+void send_to_keyboard(unsigned short command, unsigned char data)
 {
 	wait_to_send_to_keyboard();
 	outb(PORT_KEYBOARD_COMMAND, command);
