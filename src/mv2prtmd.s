@@ -84,8 +84,8 @@ main:
 	movw	$0x0018,%dx
 	movw	%dx,	%ss
 	movw	%dx,	%ds
-	movl	$0x001f2e00,%ebp
-	movl	$0x001f2e00,%esp
+	movl	$0x001f2c00,%ebp
+	movl	$0x001f2c00,%esp
 	jmp	$0x10,	$0x0000
 
 				# // print LF
