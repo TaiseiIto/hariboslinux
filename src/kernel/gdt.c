@@ -44,15 +44,15 @@ void init_gdt(void)
 	whole_memory_segment.limit_high = 0x0f | SEGMENT_DESCRIPTOR_SIZE | SEGMENT_DESCRIPTOR_GRANULARITY;
 	whole_memory_segment.base_high = 0x00;
 
-	kernel_code_segment.limit_low = 0x29ff;
-	kernel_code_segment.base_low = 0xd200;
+	kernel_code_segment.limit_low = 0x27ff;
+	kernel_code_segment.base_low = 0xd400;
 	kernel_code_segment.base_mid = 0x00;
 	kernel_code_segment.access_right = SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
 	kernel_code_segment.limit_high = 0x09 | SEGMENT_DESCRIPTOR_SIZE;
 	kernel_code_segment.base_high = 0x00;
 
 	kernel_data_segment.limit_low = 0x01f2;
-	kernel_data_segment.base_low = 0xd200;
+	kernel_data_segment.base_low = 0xd400;
 	kernel_data_segment.base_mid = 0x00;
 	kernel_data_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
 	kernel_data_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE | SEGMENT_DESCRIPTOR_GRANULARITY;

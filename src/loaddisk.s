@@ -160,8 +160,8 @@ main:
 	popw	%di
 	popw	%si
 	leave
-15:				# jump to initscrn.bin
-	jmp	initscrn
+15:				# jump to getmemmp.bin
+	jmp	getmemmp
 
 dump:				# void dump(void *address, unsigned short num_of_bytes);
 0:
@@ -374,5 +374,5 @@ hello_message:
 int13_error_message:
 	.string "INT 0x13 ERROR AH = 0x"
 	.align	0x0200
-initscrn:
+getmemmp:
 

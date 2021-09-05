@@ -194,10 +194,10 @@ gdt:
 	.byte	0x00		#  base_high
 
 				# 0x0010 kernel.bin code section is readable and executable
-				# base	0x0000d200
-				# limit	0x000929ff
+				# base	0x0000d400
+				# limit	0x000927ff
 				# access_right 0x409a
-	.word	0x29ff		#  limit_low
+	.word	0x27ff		#  limit_low
 	.word	kernel		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
@@ -205,8 +205,8 @@ gdt:
 	.byte	0x00		#  base_high
 
 				# 0x0018 kernel data and stack section is readable and writable
-				# base	0x0000d200
-				# limit	0x001f2dff
+				# base	0x0000d400
+				# limit	0x001f2bff
 				# access_right 0x4092
 	.word	0x01f2		#  limit_low
 	.word	kernel		#  base_low
