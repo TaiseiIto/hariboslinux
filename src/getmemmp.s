@@ -30,16 +30,21 @@ main:
 	pushw	%si
 	pushw	%di
 	pushw	%es
+	subw	$0x0002,%sp
+	movw	%sp,	%di
 1:					# print hello message
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
 2:					# free stack frame
+	addw	$0x0002,%sp
 	popw	%es
 	popw	%di
 	popw	%si
 	leave
 3:					# jump to initscrn.bin
+	hlt
+	jmp	3b
 	jmp	initscrn
 
 				# // print CRLF
