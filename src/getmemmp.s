@@ -52,12 +52,13 @@ main:
 	call	print
 2:
 	movw	$0x0900,0x08(%di)	# start point of memory map
+	xorl	%ebx,	%ebx
+	movw	%bx,	%es
+3:					# get memory region information
 	pushw	%di
 	movl	$0x0000e820,%eax
-	xorl	%ebx,	%ebx
 	movl	$0x00000018,%ecx
 	movl	$0x534d4150,%edx
-	movw	%bx,	%es
 	movw	0x08(%di),%di
 	int	$0x15
 	popw	%di
@@ -99,16 +100,22 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex
 	call	new_line
-3:					# free stack frame
+	cmpw	$0x0000,%bx
+	je	4f
+	movw	0x08(%di),%dx
+	addw	$0x0018,%dx
+	movw	%dx,	0x08(%di)
+	jmp	3b
+4:					# free stack frame
 	addw	$0x000a,%sp
 	popw	%es
 	popw	%di
 	popw	%si
 	popw	%bx
 	leave
-4:					# jump to initscrn.bin
+5:					# jump to initscrn.bin
 	hlt
-	jmp	4b
+	jmp	5b
 	jmp	initscrn
 
 				# // print CRLF
