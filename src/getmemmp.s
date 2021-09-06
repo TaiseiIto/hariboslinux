@@ -57,12 +57,19 @@ main:
 	movw	0x04(%di),%di
 	int	$0x15
 	popw	%di
-	movw	$base_address_message,(%di)
+	movw	$base_address_message,(%di)	# print base address
 	call	print
 	movw	0x04(%di),%si
 	movw	(%si),	%dx
 	movw	%dx,	(%di)
 	movw	0x02(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex
+	movw	$length_message,(%di)	# print length
+	call	print
+	movw	0x04(%si),%dx
+	movw	%dx,	(%di)
+	movw	0x06(%si),%dx
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex
 3:					# free stack frame
@@ -224,6 +231,8 @@ base_address_message:
 	.string "Base Address = 0x"
 hello_message:
 	.string	"Hello, getmemmp.bin!\n\n"
+length_message:
+	.string ", Length = 0x"
 	.align 0x0200
 initscrn:
 
