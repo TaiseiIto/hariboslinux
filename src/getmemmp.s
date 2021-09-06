@@ -14,11 +14,17 @@
 	.globl	main
 	.globl	new_line
 	.globl	print
+	.globl	print_byte_hex
+	.globl	print_dword_hex
+	.globl	print_word_hex
 	.globl	putchar
 
 	.type	main,		@function
 	.type	new_line,	@function
 	.type	print,		@function
+	.type	print_byte_hex,	@function
+	.type	print_dword_hex,@function
+	.type	print_word_hex,	@function
 	.type	putchar,	@function
 
 	.code16				# real mode
@@ -31,29 +37,36 @@ main:
 	pushw	%si
 	pushw	%di
 	pushw	%es
-	subw	$0x0004,%sp
+	subw	$0x0006,%sp
 	movw	%sp,	%di
 					# (%di)		argument
-					# 0x02(%di)	memory region information destination
+					# 0x02(%di)	argument
+					# 0x04(%di)	memory region information destination
 1:					# print hello message
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
 2:
-	movw	$0x0900,0x02(%di)	# start point of memory map
+	movw	$0x0900,0x04(%di)	# start point of memory map
 	pushw	%di
 	movl	$0x0000e820,%eax
 	xorl	%ebx,	%ebx
 	movl	$0x00000018,%ecx
 	movl	$0x534d4150,%edx
 	movw	%bx,	%es
-	movw	0x02(%di),%di
+	movw	0x04(%di),%di
 	int	$0x15
 	popw	%di
 	movw	$base_address_message,(%di)
 	call	print
+	movw	0x04(%di),%si
+	movw	(%si),	%dx
+	movw	%dx,	(%di)
+	movw	0x02(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex
 3:					# free stack frame
-	addw	$0x0004,%sp
+	addw	$0x0006,%sp
 	popw	%es
 	popw	%di
 	popw	%si
@@ -116,6 +129,82 @@ print:				# void print(char *string);
 	leave
 	ret
 
+				# // print value as hexadecimal
+print_byte_hex:			# void print_byte_hex(unsigned value);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	$0x0001,%cx	# if %cx == 1, then print the digit of 0x10s place, else print the digit of 0x01s place.
+	movw	0x04(%bp),%dx	# get the byte
+	shrw	$0x0004,%dx
+1:
+	andw	$0x000f,%dx
+	cmpw	$0x000a,%dx
+	jae	3f
+2:				# the digit is less than 0x0a
+	addw	$0x0030,%dx
+	jmp	4f
+3:				# the digit is greater than or equal to 0x0a
+	subw	$0x000a,%dx
+	addw	$0x0061,%dx
+4:				# print the digit
+	movw	%cx,	0x02(%di)
+	movw	%dx,	(%di)
+	call	putchar
+	movw	0x02(%di),%cx
+	jcxz	5f
+	movw	0x04(%bp),%dx	# get the byte
+	decw	%cx
+	jmp	1b
+5:				# finish printing
+	addw	$0x0004,%sp
+	popw	%di
+	leave
+	ret
+
+print_dword_hex:		# void print_dword_hex(unsigned low, unsigned short high);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	0x06(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex
+	movw	0x04(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex
+	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_word_hex:			# void print_word_hex(unsigned short value);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	0x04(%bp),%dx
+	movw	%dx,	0x02(%di)
+	shr	$0x0008,%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex
+	movw	0x02(%di),%dx
+	andw	$0x00ff,%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex
+	addw	$0x0004,%sp
+	popw	%di
+	leave
+	ret
+
 				# // print a character to console
 putchar:			# void putchar(char c);
 0:
@@ -134,7 +223,7 @@ putchar:			# void putchar(char c);
 base_address_message:
 	.string "Base Address = 0x"
 hello_message:
-	.string	"Hello, getmemmp.bin!\n"
+	.string	"Hello, getmemmp.bin!\n\n"
 	.align 0x0200
 initscrn:
 
