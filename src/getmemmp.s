@@ -61,7 +61,7 @@ main:
 	movw	0x08(%di),%di
 	int	$0x15
 	popw	%di
-	movw	$base_address_message,(%di)	# print base address
+	movw	$base_message,(%di)	# print base address
 	call	print
 	movw	0x08(%di),%si
 	movw	(%si),	%dx
@@ -84,6 +84,13 @@ main:
 	movw	0x0e(%si),%dx
 	movw	%dx,	0x06(%di)
 	call	print_qword_hex
+	movw	$type_message,(%di)	# print type
+	call	print
+	movw	0x10(%si),%dx
+	movw	%dx,	(%di)
+	movw	0x12(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex
 3:					# free stack frame
 	addw	$0x000a,%sp
 	popw	%es
@@ -261,12 +268,14 @@ putchar:			# void putchar(char c);
 	ret
 
 	.data
-base_address_message:
-	.string "Base Address = 0x"
+base_message:
+	.string "Base = 0x"
 hello_message:
 	.string	"Hello, getmemmp.bin!\n\n"
 length_message:
 	.string ", Length = 0x"
+type_message:
+	.string ", Type = 0x"
 	.align 0x0200
 initscrn:
 
