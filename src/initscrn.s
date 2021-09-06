@@ -537,7 +537,7 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 	leave
 	ret
 
-print_dword_hex_serial:		# void print_dword_hex_serial(unsigned low, unsigned short high);
+print_dword_hex_serial:		# void print_dword_hex_serial(unsigned short low, unsigned short high);
 0:
 	pushw	%bp
 	movw	%sp,	%bp

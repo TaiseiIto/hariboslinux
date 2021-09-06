@@ -16,6 +16,7 @@
 	.globl	print
 	.globl	print_byte_hex
 	.globl	print_dword_hex
+	.globl	print_qword_hex
 	.globl	print_word_hex
 	.globl	putchar
 
@@ -24,6 +25,7 @@
 	.type	print,		@function
 	.type	print_byte_hex,	@function
 	.type	print_dword_hex,@function
+	.type	print_qword_hex,@function
 	.type	print_word_hex,	@function
 	.type	putchar,	@function
 
@@ -37,43 +39,53 @@ main:
 	pushw	%si
 	pushw	%di
 	pushw	%es
-	subw	$0x0006,%sp
+	subw	$0x000a,%sp
 	movw	%sp,	%di
 					# (%di)		argument
 					# 0x02(%di)	argument
-					# 0x04(%di)	memory region information destination
+					# 0x04(%di)	argument
+					# 0x06(%di)	argument
+					# 0x08(%di)	memory region information destination
 1:					# print hello message
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
 2:
-	movw	$0x0900,0x04(%di)	# start point of memory map
+	movw	$0x0900,0x08(%di)	# start point of memory map
 	pushw	%di
 	movl	$0x0000e820,%eax
 	xorl	%ebx,	%ebx
 	movl	$0x00000018,%ecx
 	movl	$0x534d4150,%edx
 	movw	%bx,	%es
-	movw	0x04(%di),%di
+	movw	0x08(%di),%di
 	int	$0x15
 	popw	%di
 	movw	$base_address_message,(%di)	# print base address
 	call	print
-	movw	0x04(%di),%si
+	movw	0x0a(%di),%si
 	movw	(%si),	%dx
 	movw	%dx,	(%di)
 	movw	0x02(%si),%dx
 	movw	%dx,	0x02(%di)
-	call	print_dword_hex
+	movw	0x04(%si),%dx
+	movw	%dx,	0x04(%di)
+	movw	0x06(%si),%dx
+	movw	%dx,	0x06(%di)
+	call	print_qword_hex
 	movw	$length_message,(%di)	# print length
 	call	print
-	movw	0x04(%si),%dx
+	movw	0x08(%si),%dx
 	movw	%dx,	(%di)
-	movw	0x06(%si),%dx
+	movw	0x0a(%si),%dx
 	movw	%dx,	0x02(%di)
-	call	print_dword_hex
+	movw	0x0c(%si),%dx
+	movw	%dx,	0x04(%di)
+	movw	0x0e(%si),%dx
+	movw	%dx,	0x06(%di)
+	call	print_qword_hex
 3:					# free stack frame
-	addw	$0x0006,%sp
+	addw	$0x000a,%sp
 	popw	%es
 	popw	%di
 	popw	%si
@@ -172,7 +184,7 @@ print_byte_hex:			# void print_byte_hex(unsigned value);
 	leave
 	ret
 
-print_dword_hex:		# void print_dword_hex(unsigned low, unsigned short high);
+print_dword_hex:		# void print_dword_hex(unsigned short low, unsigned short high);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
@@ -186,6 +198,28 @@ print_dword_hex:		# void print_dword_hex(unsigned low, unsigned short high);
 	movw	%dx,	(%di)
 	call	print_word_hex
 	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
+print_qword_hex:		# void print_qword_hex(unsigned int low, unsigned int high);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	0x0a(%bp),%dx
+	movw	%dx,	0x02(%di)
+	movw	0x08(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_dword_hex
+	movw	0x06(%bp),%dx
+	movw	%dx,	0x02(%di)
+	movw	0x04(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_dword_hex
+	addw	$0x0004,%sp
 	popw	%di
 	leave
 	ret
