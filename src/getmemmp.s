@@ -31,24 +31,29 @@ main:
 	pushw	%si
 	pushw	%di
 	pushw	%es
-	subw	$0x0002,%sp
+	subw	$0x0004,%sp
 	movw	%sp,	%di
+					# (%di)		argument
+					# 0x02(%di)	memory region information destination
 1:					# print hello message
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
 2:
+	movw	$0x0900,0x02(%di)	# start point of memory map
 	pushw	%di
 	movl	$0x0000e820,%eax
 	xorl	%ebx,	%ebx
 	movl	$0x00000018,%ecx
 	movl	$0x534d4150,%edx
 	movw	%bx,	%es
-	movw	$0x0900,%di
+	movw	0x02(%di),%di
 	int	$0x15
 	popw	%di
+	movw	$base_address_message,(%di)
+	call	print
 3:					# free stack frame
-	addw	$0x0002,%sp
+	addw	$0x0004,%sp
 	popw	%es
 	popw	%di
 	popw	%si
@@ -56,7 +61,7 @@ main:
 	leave
 4:					# jump to initscrn.bin
 	hlt
-	jmp	3b
+	jmp	4b
 	jmp	initscrn
 
 				# // print CRLF
@@ -126,6 +131,8 @@ putchar:			# void putchar(char c);
 	ret
 
 	.data
+base_address_message:
+	.string "Base Address = 0x"
 hello_message:
 	.string	"Hello, getmemmp.bin!\n"
 	.align 0x0200
