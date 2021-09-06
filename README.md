@@ -82,7 +82,7 @@ bootsector.binでは，bootの第2段階であるloaddisk.binを含むfloppy dis
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin         |
 
 ### loaddisk.bin
-floppy diskをmemoryに読み込み，initscrn.binに移行します．
+floppy diskをmemoryに読み込み，getmemmp.binに移行します．
 これにより，floppy diskの0x00000000番地から0x000783ff番地までが，memoryの0x00007c00番地から0x0007ffff番地に配置されます．
 
 [loaddisk.binのsource](src/loaddisk.s)
@@ -97,6 +97,30 @@ floppy diskをmemoryに読み込み，initscrn.binに移行します．
 | 0x0000a000    | 0x0000c3ff | 0x00002400 | 0x000047ff | loaded disk data       |
 | 0x0000a200    | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries |
 | 0x0000be00    | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin           |
+
+### getmemmp.bin
+hard wareのmemory mapを0x00000900番地から書き込み，initscrn.binに移行します．
+
+[getmemmp.binのsource](src/getmemmp.s)
+
+#### getmemmp.bin実行時のmemory map
+| memory start | memory end | disk start | disk end   | description                        |
+| ------------ | ---------- | ---------- | ---------- | ---------------------------------- |
+| 0x00000000   | 0x000003ff |            |            | interrupt vector table             |
+| 0x00000400   | 0x000004ff |            |            | BIOS data area                     |
+| 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
+| 0x00000900   | ?          |            |            | memory regions list                |
+| ?            | 0x00007bff |            |            | stack                              |
+| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                   |
+| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                     |
+| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                          |
+| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
+| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
+| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
+| 0x0000c400   | 0x0000c7ff | 0x00004800 | 0x00004baa | getmemmp.bin                       |
+| 0x0000c800   | 0x0000d1ff | 0x00004c00 | 0x000055ff | initscrn.bin                       |
+| 0x0000d200   | 0x0000d5ff | 0x00005600 | 0x000059ff | mv2prtmd.bin                       |
+| 0x0000d600   | ?          | 0x00005a00 | ?          | kernel.bin                         |
 
 ### initscrn.bin
 BIOSのconsole画面を破棄し，VGA画面に移行します．
@@ -128,7 +152,8 @@ typedef struct
 | 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
 | 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
-| 0x00000706   | 0x00007bff |            |            | stack                              |
+| 0x00000900   | ?          |            |            | memory regions list                |
+| ?            | 0x00007bff |            |            | stack                              |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                   |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                     |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                          |
@@ -154,7 +179,8 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
 | 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
-| 0x00000706   | 0x00007bff |            |            | stack                              |
+| 0x00000900   | ?          |            |            | memory regions list                |
+| ?            | 0x00007bff |            |            | stack                              |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                   |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                     |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                          |
@@ -185,7 +211,7 @@ OS本体です．
 | 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
 | 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
-| 0x00000706   | 0x000073ff |            |            | reserved                           |
+| 0x00000900   | ?          |            |            | memory regions list                |
 | 0x00007400   | 0x00007bff |            |            | IDT                                |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                   |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                     |
