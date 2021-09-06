@@ -91,6 +91,14 @@ main:
 	movw	0x12(%si),%dx
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex
+	movw	$attribute_message,(%di)# print attribute
+	call	print
+	movw	0x14(%si),%dx
+	movw	%dx,	(%di)
+	movw	0x16(%si),%dx
+	movw	%dx,	0x02(%di)
+	call	print_dword_hex
+	call	new_line
 3:					# free stack frame
 	addw	$0x000a,%sp
 	popw	%es
@@ -268,6 +276,8 @@ putchar:			# void putchar(char c);
 	ret
 
 	.data
+attribute_message:
+	.string ", Attr = 0x"
 base_message:
 	.string "Base = 0x"
 hello_message:
