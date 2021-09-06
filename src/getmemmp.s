@@ -63,7 +63,7 @@ main:
 	popw	%di
 	movw	$base_address_message,(%di)	# print base address
 	call	print
-	movw	0x0a(%di),%si
+	movw	0x08(%di),%si
 	movw	(%si),	%dx
 	movw	%dx,	(%di)
 	movw	0x02(%si),%dx
