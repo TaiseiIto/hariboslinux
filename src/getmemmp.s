@@ -27,6 +27,7 @@ main:
 0:
 	pushw	%bp
 	movw	%sp,	%bp
+	pushw	%bx
 	pushw	%si
 	pushw	%di
 	pushw	%es
@@ -36,13 +37,24 @@ main:
 	call	new_line
 	movw	$hello_message,(%di)
 	call	print
-2:					# free stack frame
+2:
+	pushw	%di
+	movl	$0x0000e820,%eax
+	xorl	%ebx,	%ebx
+	movl	$0x00000018,%ecx
+	movl	$0x534d4150,%edx
+	movw	%bx,	%es
+	movw	$0x0900,%di
+	int	$0x15
+	popw	%di
+3:					# free stack frame
 	addw	$0x0002,%sp
 	popw	%es
 	popw	%di
 	popw	%si
+	popw	%bx
 	leave
-3:					# jump to initscrn.bin
+4:					# jump to initscrn.bin
 	hlt
 	jmp	3b
 	jmp	initscrn
