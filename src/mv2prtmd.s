@@ -208,7 +208,7 @@ gdt:
 				# base  0x00106000
 				# limit 0x001f9fff
 				# access_right 0x4092
-	.word	0x01f9		#  limit_low
+	.word	0x01fa		#  limit_low
 	.word	0x6000		#  base_low
 	.byte	0x10		#  base_mid
 	.byte	0x92		#  access_right
