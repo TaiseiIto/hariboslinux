@@ -44,23 +44,23 @@ void init_gdt(void)
 	whole_memory_segment.limit_high = 0x0f | SEGMENT_DESCRIPTOR_SIZE | SEGMENT_DESCRIPTOR_GRANULARITY;
 	whole_memory_segment.base_high = 0x00;
 
-	kernel_code_segment.limit_low = 0x23ff;
-	kernel_code_segment.base_low = 0xd800;
-	kernel_code_segment.base_mid = 0x00;
+	kernel_code_segment.limit_low = 0x9bff;
+	kernel_code_segment.base_low = 0x6000;
+	kernel_code_segment.base_mid = 0x10;
 	kernel_code_segment.access_right = SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
 	kernel_code_segment.limit_high = 0x09 | SEGMENT_DESCRIPTOR_SIZE;
 	kernel_code_segment.base_high = 0x00;
 
-	kernel_data_segment.limit_low = 0x01f2;
-	kernel_data_segment.base_low = 0xd800;
-	kernel_data_segment.base_mid = 0x00;
+	kernel_data_segment.limit_low = 0x01f9;
+	kernel_data_segment.base_low = 0x6000;
+	kernel_data_segment.base_mid = 0x10;
 	kernel_data_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
 	kernel_data_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE | SEGMENT_DESCRIPTOR_GRANULARITY;
 	kernel_data_segment.base_high = 0x00;
 
 	gdt_segment.limit_low = 0xffff;
 	gdt_segment.base_low = 0x0000;
-	gdt_segment.base_mid = 0x20;
+	gdt_segment.base_mid = 0x27;
 	gdt_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
 	gdt_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE;
 	gdt_segment.base_high = 0x00;
@@ -83,13 +83,13 @@ void init_gdt(void)
 	// load new GDT
 	lgdt(0xffff, GDT_ADDR);
 
-	idt_segment_selector = set_segment(0x00007400, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	idt_segment_selector = set_segment(0x00268000, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	video_information_segment_selector = set_segment(0x00000600, sizeof(VideoInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	boot_information_segment_selector = set_segment(0x00000800, sizeof(BootInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	loaded_disk_segment_selector = set_segment(0x00007c00, 0x00097fff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	first_fat_segment_selector = set_segment(0x00007e00, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	second_fat_segment_selector = set_segment(0x00009000, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	root_directory_entry_segment_selector = set_segment(0x0000a200, 0x00001bff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	loaded_disk_segment_selector = set_segment(0x00100000, 0x00097fff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	first_fat_segment_selector = set_segment(0x00100200, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	second_fat_segment_selector = set_segment(0x00101400, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	root_directory_entry_segment_selector = set_segment(0x00102600, 0x00001bff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 
 	// check new GDT
 	print_serial_polling("check new GDT\n");
