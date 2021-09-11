@@ -9,11 +9,13 @@
 	.include	"global.s"
 
 	.globl	main
+	.globl	memcpy
 	.globl	new_line_serial
 	.globl	print_serial
 	.globl	putchar_serial
 
 	.type	main,		@function
+	.type	memcpy,		@function
 	.type	new_line_serial,@function
 	.type	print_serial,	@function
 	.type	putchar_serial,	@function
@@ -24,17 +26,73 @@ main:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	subl	$0x00000004,%esp
-	movl	$0x00000041,%edx
+	subl	$0x00000014,%esp
+1:					# hello message
 	call	new_line_serial
 	movl	$hello_message,(%esp)
 	call	print_serial
-1:
-	addl	$0x00000004,%esp
+2:					# deploy disk image to 0x00100000
+	movl	$0x00000008,(%esp)
+	movl	$0x00100000,0x04(%esp)
+	movl	$0x00000008,0x08(%esp)
+	movl	$0x00007c00,0x0c(%esp)
+	movl	$0x00168000,0x10(%esp)
+	call	memcpy
+3:					# free stack frame
+	addl	$0x00000014,%esp
 	leave
-2:
+4:					# jump to kernel
 	hlt
 	jmp	2b
+
+memcpy:				# void memcpy(unsigned short dest_seg, void *dest_addr, unsigned short src_seg, void *src_addr, unsigned short size);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	pushl	%edi
+	movw	%es,	%dx
+	shll	$0x8,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+1:
+	movw	0x08(%ebp),%fs	# dest_seg
+	movl	0x0c(%ebp),%edi	# dest_addr
+	movw	0x10(%ebp),%es	# src_seg
+	movl	0x14(%ebp),%esi	# src_addr
+	movl	0x18(%ebp),%ecx	# size
+2:
+	jecxz	6f
+	cmpl	$0x00000004,%ecx
+	jb	4f
+3:
+	movl	%es:(%esi),%edx
+	movl	%edx,	%fs:(%edi)
+	addl	$0x00000004,%esi
+	addl	$0x00000004,%edi
+	subl	$0x00000004,%ecx
+	jmp	2b
+4:
+	cmpl	$0x00000002,%ecx
+	jb	5f
+	movw	%es:(%esi),%dx
+	movw	%dx,	%fs:(%edi)
+	addl	$0x00000002,%esi
+	addl	$0x00000002,%edi
+	subl	$0x00000002,%ecx
+	jmp	2b
+5:
+	movb	%es:(%esi),%dl
+	movb	%dl,	%fs:(%edi)
+6:
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x8,	%edx
+	movw	%dx,	%es
+	popl	%edi
+	popl	%esi
+	leave
+	ret
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
