@@ -168,9 +168,44 @@ typedef struct
 | 0x0000dc00   | ?          | 0x00006000 | ?          | kernel.bin                         |
 
 ### mv2prtmd.bin
-real modeからprotected modeに移行し，kernel.binに移行します．
+real modeからprotected modeに移行し，dplydisk.binに移行します．
 
 [mv2prtmd.binのsource](src/mv2prtmd.s)
+
+#### mv2prtmd.bin実行時のmemory map
+| memory start | memory end | disk start | disk end   | description                        |
+| ------------ | ---------- | ---------- | ---------- | ---------------------------------- |
+| 0x00000000   | 0x000003ff |            |            | interrupt vector table             |
+| 0x00000400   | 0x000004ff |            |            | BIOS data area                     |
+| 0x00000500   | 0x00000600 |            |            | struct VbeInfoBlock                |
+| 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
+| 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
+| 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
+| 0x00000900   | ?          |            |            | memory regions list                |
+| ?            | 0x00007bff |            |            | stack                              |
+| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                   |
+| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                     |
+| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                          |
+| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
+| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
+| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
+| 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
+| 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
+| 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
+| 0x0000d800   | 0x0000dbff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
+| 0x0000dc00   | ?          | 0x00006000 | ?          | kernel.bin                         |
+| 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
+| 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
+| 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
+| 0x000c8000   | 0x000effff |            |            | BIOS expansions                    |
+| 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS                   |
+
+### dplydisk.bin
+0x00007c00番地に配置されているdisk imageを，0x00100000番地に展開します．
+現在のversionでは，disk imageは0x00097fff番地までしか読み込んでいません．
+もしdisk上のこれより先の部分を使用する場合，dplydisk.binにおいて一時的にreal modeに戻って読み込んでください．
+
+[dplydisk.binのsource](src/dplydisk.s)
 
 #### mv2prtmd.bin実行時のmemory map
 | memory start | memory end | disk start | disk end   | description                        |
@@ -215,17 +250,7 @@ OS本体です．
 | 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
-| 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                   |
-| 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                     |
-| 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                          |
-| 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
-| 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
-| 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
-| 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
-| 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
-| 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
-| 0x0000d800   | 0x0000dbff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
-| 0x0000dc00   | ?          | 0x00006000 | ?          | kernel.bin                         |
+| 0x00007c00   | 0x0009fbff |            |            | reserved                           |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
