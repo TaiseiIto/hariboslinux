@@ -120,7 +120,8 @@ hard wareのmemory mapを0x00000900番地から書き込み，initscrn.binに移
 | 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
 | 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
 | 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
-| 0x0000d800   | ?          | 0x00005c00 | ?          | kernel.bin                         |
+| 0x0000d800   | 0x0000dbff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
+| 0x0000dc00   | ?          | 0x00006000 | ?          | kernel.bin                         |
 
 ### initscrn.bin
 BIOSのconsole画面を破棄し，VGA画面に移行します．
@@ -163,7 +164,8 @@ typedef struct
 | 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
 | 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
 | 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
-| 0x0000d800   | ?          | 0x00005c00 | ?          | kernel.bin                         |
+| 0x0000d800   | 0x0000dbff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
+| 0x0000dc00   | ?          | 0x00006000 | ?          | kernel.bin                         |
 
 ### mv2prtmd.bin
 real modeからprotected modeに移行し，kernel.binに移行します．
@@ -190,7 +192,8 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
 | 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
 | 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
-| 0x0000d800   | ?          | 0x00005c00 | ?          | kernel.bin                         |
+| 0x0000d800   | 0x0000dbff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
+| 0x0000dc00   | ?          | 0x00006000 | ?          | kernel.bin                         |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
@@ -212,7 +215,6 @@ OS本体です．
 | 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
-| 0x00007400   | 0x00007bff |            |            | IDT                                |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                   |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                     |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                          |
@@ -222,17 +224,29 @@ OS本体です．
 | 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
 | 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
 | 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
-| 0x0000d800   | ?          | 0x00005c00 | ?          | kernel.bin                         |
+| 0x0000d800   | 0x0000dbff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
+| 0x0000dc00   | ?          | 0x00006000 | ?          | kernel.bin                         |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
 | 0x000c8000   | 0x000effff |            |            | BIOS expansions                    |
 | 0x000f0000   | 0x000fffff |            |            | Motherboard BIOS                   |
-| 0x00100000   | 0x001fffff |            |            | kernel stack                       |
-| 0x00200000   | 0x0020ffff |            |            | GDT                                |
-| 0x00210000   | 0x00efffff |            |            | reserved                           |
-| 0x00f00000   | 0x00ffffff |            |            | ISA memory hole                    |
-| 0x01000000   | ?          |            |            | reserved                           |
+| 0x00100000   | 0x00267fff | 0x00000000 | 0x00167fff | loaded disk data                   |
+| 0x00100000   | 0x001001ff | 0x00000000 | 0x000001ff | bootsector.bin                     |
+| 0x00100200   | 0x001013ff | 0x00000200 | 0x000013ff | first FAT                          |
+| 0x00101400   | 0x001025ff | 0x00001400 | 0x000025ff | second FAT                         |
+| 0x00102600   | 0x001041ff | 0x00002600 | 0x000041ff | root directory entries             |
+| 0x00104200   | 0x001047ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
+| 0x00104800   | 0x00104dff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
+| 0x00104e00   | 0x001057ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
+| 0x00105800   | 0x00105bff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
+| 0x00105c00   | 0x00105fff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
+| 0x00106000   | ?          | 0x00006000 | ?          | kernel.bin                         |
+| 0x00268000   | 0x0026ffff |            |            | IDT                                |
+| 0x00270000   | 0x0027ffff |            |            | GDT                                |
+| 0x00280000   | 0x002fffff |            |            | kernel stack                       |
+| 0x00300000   | 0x003fffff |            |            | reserved                           |
+| 0x00400000   | ?          |            |            | kernel heap                        |
 
 ## 開発者用メモ
 docker, VNC softwareに加え，git, makeを用いて開発しています．
