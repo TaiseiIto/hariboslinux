@@ -250,7 +250,7 @@ OS本体です．
 | 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
-| 0x00007c00   | 0x0009fbff |            |            | reserved                           |
+| 0x00007c00   | 0x0009fbff |            |            | reserved (for real mode execution) |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
@@ -267,10 +267,11 @@ OS本体です．
 | 0x00105800   | 0x00105bff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
 | 0x00105c00   | 0x00105fff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
 | 0x00106000   | ?          | 0x00006000 | ?          | kernel.bin                         |
-| 0x00268000   | 0x0026ffff |            |            | IDT                                |
+| 0x00268000   | 0x00267fff |            |            | IDT                                |
+| 0x00268000   | 0x0026ffff |            |            | reserved (alignment for GDT)       |
 | 0x00270000   | 0x0027ffff |            |            | GDT                                |
 | 0x00280000   | 0x002fffff |            |            | kernel stack                       |
-| 0x00300000   | 0x003fffff |            |            | reserved                           |
+| 0x00300000   | 0x003fffff |            |            | reserved (for future expantion)    |
 | 0x00400000   | ?          |            |            | kernel heap                        |
 
 ## 開発者用メモ
