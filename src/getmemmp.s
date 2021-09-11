@@ -122,8 +122,6 @@ main:
 	popw	%bx
 	leave
 6:					# jump to initscrn.bin
-	hlt
-	jmp	6b
 	jmp	initscrn
 
 memset:				# void memset(unsugned short segment, void *buf, unsigned char value, unsigned short size);	

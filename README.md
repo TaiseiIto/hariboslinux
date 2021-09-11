@@ -117,10 +117,10 @@ hard wareのmemory mapを0x00000900番地から書き込み，initscrn.binに移
 | 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
 | 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
 | 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
-| 0x0000c400   | 0x0000c7ff | 0x00004800 | 0x00004baa | getmemmp.bin                       |
-| 0x0000c800   | 0x0000d1ff | 0x00004c00 | 0x000055ff | initscrn.bin                       |
-| 0x0000d200   | 0x0000d5ff | 0x00005600 | 0x000059ff | mv2prtmd.bin                       |
-| 0x0000d600   | ?          | 0x00005a00 | ?          | kernel.bin                         |
+| 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
+| 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
+| 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
+| 0x0000d800   | ?          | 0x00005c00 | ?          | kernel.bin                         |
 
 ### initscrn.bin
 BIOSのconsole画面を破棄し，VGA画面に移行します．
@@ -160,10 +160,10 @@ typedef struct
 | 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
 | 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
 | 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
-| 0x0000c400   | 0x0000c7ff | 0x00004800 | 0x00004baa | getmemmp.bin                       |
-| 0x0000c800   | 0x0000d1ff | 0x00004c00 | 0x000055ff | initscrn.bin                       |
-| 0x0000d200   | 0x0000d5ff | 0x00005600 | 0x000059ff | mv2prtmd.bin                       |
-| 0x0000d600   | ?          | 0x00005a00 | ?          | kernel.bin                         |
+| 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
+| 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
+| 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
+| 0x0000d800   | ?          | 0x00005c00 | ?          | kernel.bin                         |
 
 ### mv2prtmd.bin
 real modeからprotected modeに移行し，kernel.binに移行します．
@@ -187,10 +187,10 @@ real modeからprotected modeに移行し，kernel.binに移行します．
 | 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
 | 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
 | 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
-| 0x0000c400   | 0x0000c7ff | 0x00004800 | 0x00004baa | getmemmp.bin                       |
-| 0x0000c800   | 0x0000d1ff | 0x00004c00 | 0x000055ff | initscrn.bin                       |
-| 0x0000d200   | 0x0000d5ff | 0x00005600 | 0x000059ff | mv2prtmd.bin                       |
-| 0x0000d600   | ?          | 0x00005a00 | ?          | kernel.bin                         |
+| 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
+| 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
+| 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
+| 0x0000d800   | ?          | 0x00005c00 | ?          | kernel.bin                         |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
@@ -219,10 +219,10 @@ OS本体です．
 | 0x00009000   | 0x0000a1ff | 0x00001400 | 0x000025ff | second FAT                         |
 | 0x0000a200   | 0x0000bdff | 0x00002600 | 0x000041ff | root directory entries             |
 | 0x0000be00   | 0x0000c3ff | 0x00004200 | 0x000047ff | loaddisk.bin                       |
-| 0x0000c400   | 0x0000c7ff | 0x00004800 | 0x00004baa | getmemmp.bin                       |
-| 0x0000c800   | 0x0000d1ff | 0x00004c00 | 0x000055ff | initscrn.bin                       |
-| 0x0000d200   | 0x0000d5ff | 0x00005600 | 0x000059ff | mv2prtmd.bin                       |
-| 0x0000d600   | ?          | 0x00005a00 | ?          | kernel.bin                         |
+| 0x0000c400   | 0x0000c9ff | 0x00004800 | 0x00004dff | getmemmp.bin                       |
+| 0x0000ca00   | 0x0000d3ff | 0x00004e00 | 0x000057ff | initscrn.bin                       |
+| 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
+| 0x0000d800   | ?          | 0x00005c00 | ?          | kernel.bin                         |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
