@@ -38,10 +38,13 @@ main:
 	movl	$0x00007c00,0x0c(%esp)
 	movl	$0x00168000,0x10(%esp)
 	call	memcpy
-3:					# free stack frame
+3:					# finish message
+	movl	$finish_message,(%esp)
+	call	print_serial
+4:					# free stack frame
 	addl	$0x00000014,%esp
 	leave
-4:					# jump to kernel
+5:					# jump to kernel
 	hlt
 	jmp	2b
 
@@ -149,6 +152,8 @@ putchar_serial:			# void putchar_serial(char c);
 	ret
 
 	.data
+finish_message:
+	.string "finish deploying the disk image!\n"
 hello_message:
 	.string "Hello, dplydisk.bin!\n"
 	.align	0x0200
