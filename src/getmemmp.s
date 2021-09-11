@@ -12,6 +12,7 @@
 	.include	"global.s"
 
 	.globl	main
+	.globl	memset
 	.globl	new_line
 	.globl	print
 	.globl	print_byte_hex
@@ -21,6 +22,7 @@
 	.globl	putchar
 
 	.type	main,		@function
+	.type	memset,		@function
 	.type	new_line,	@function
 	.type	print,		@function
 	.type	print_byte_hex,	@function
@@ -100,23 +102,57 @@ main:
 	movw	%dx,	0x02(%di)
 	call	print_dword_hex
 	call	new_line
-	cmpw	$0x0000,%bx
-	je	4f
 	movw	0x08(%di),%dx
 	addw	$0x0018,%dx
 	movw	%dx,	0x08(%di)
-	jmp	3b
-4:					# free stack frame
+	cmpw	$0x0000,%bx
+	jne	3b
+4:					# write end of memory map
+	movw	%es,	(%di)
+	movw	0x08(%di),%dx
+	movw	%dx,	0x02(%di)
+	movw	$0x0000,0x04(%di)
+	movw	$0x0018,0x06(%di)
+	call	memset
+5:					# free stack frame
 	addw	$0x000a,%sp
 	popw	%es
 	popw	%di
 	popw	%si
 	popw	%bx
 	leave
-5:					# jump to initscrn.bin
+6:					# jump to initscrn.bin
 	hlt
-	jmp	5b
+	jmp	6b
 	jmp	initscrn
+
+memset:				# void memset(unsugned short segment, void *buf, unsigned char value, unsigned short size);	
+0:
+	push	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	pushw	%es
+	movw	%es,	0x04(%bp)	# segment
+	movw	%di,	0x06(%bp)	# buf
+	movb	%dl,	0x08(%bp)	# value
+	movb	%dh,	0x09(%bp)	# value
+	movw	%cx,	0x0a(%bp)	# size
+1:
+	jcxz	4f
+	cmpw	$0x0002,%cx
+	jb	3f
+2:				# set next 2 bytes
+	movw	%dx,	%es:(%di)
+	addw	$0x0002,%di
+	subw	$0x0002,%cx
+	jmp	1b
+3:				# set a last byte
+	movb	%dl,	%es:(%di)
+4:
+	popw	%es
+	popw	%di
+	leave
+	ret
 
 				# // print CRLF
 new_line:			# void new_line(void);
