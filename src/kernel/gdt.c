@@ -4,7 +4,7 @@
 #include "io.h"
 #include "serial.h"
 
-#define GDT_ADDR ((SegmentDescriptor *)0x00200000)
+#define GDT_ADDR ((SegmentDescriptor *)0x00270000)
 
 unsigned short whole_memory_segment_selector;
 unsigned short kernel_code_segment_selector;

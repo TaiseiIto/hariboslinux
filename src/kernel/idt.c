@@ -3,7 +3,7 @@
 #include "io.h"
 #include "serial.h"
 
-#define IDT_ADDR ((InterruptDescriptor *)0x00007400)
+#define IDT_ADDR ((InterruptDescriptor *)0x00268000)
 
 void init_idt(void)
 {
