@@ -84,9 +84,9 @@ main:
 	movw	$0x0018,%dx
 	movw	%dx,	%ss
 	movw	%dx,	%ds
-	movl	$0x001f2800,%ebp
-	movl	$0x001f2800,%esp
-	jmp	$0x10,	$0x0000
+	movl	$0x00007c00,%ebp
+	movl	$0x00007c00,%esp
+	jmp	$0x10,	$dplydisk
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
@@ -193,26 +193,26 @@ gdt:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 
-				# 0x0010 kernel.bin code section is readable and executable
-				# base	0x0000d800
-				# limit	0x000923ff
+				# 0x0010 dplydisk.bin code section is readable and executable
+				# base	0x00000000
+				# limit	0x0009fbff
 				# access_right 0x409a
-	.word	0x23ff		#  limit_low
-	.word	kernel		#  base_low
+	.word	0xfbff		#  limit_low
+	.word	0x0000		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
 	.byte	0x49		#  limit_high
 	.byte	0x00		#  base_high
 
-				# 0x0018 kernel data and stack section is readable and writable
-				# base	0x0000d800
-				# limit	0x001f27ff
+				# 0x0018 dplydisk.bin data and stack section is readable and writable
+				# base	0x00000000
+				# limit	0x0009fbff
 				# access_right 0x4092
-	.word	0x01f2		#  limit_low
-	.word	kernel		#  base_low
+	.word	0xfbff		#  limit_low
+	.word	0x0000		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x92		#  access_right
-	.byte	0xc0		#  limit_high
+	.byte	0x49		#  limit_high
 	.byte	0x00		#  base_high
 
 gdtr:
@@ -233,4 +233,5 @@ hello_message:
 lgdt_message:
 	.string "lgdt!\n"
 	.align	0x0200
-kernel:
+dplydisk:
+
