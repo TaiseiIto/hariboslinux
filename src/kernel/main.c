@@ -41,7 +41,7 @@ void main(void)
 	printf_screen(0x0000, 3 * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04X", boot_information.last_loaded_sector);
 
 	memoryRegionDescriptor = getMemoryRegionDescriptor(0);
-	printf_screen(0x0000, 4 * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#010X%010X", (unsigned int)(memoryRegionDescriptor.base >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.base & 0xffffffff));
+	printf_screen(0x0000, 4 * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#010X%010X, length = %#010X%010X, type = %#010X", (unsigned int)(memoryRegionDescriptor.base >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.base & 0xffffffff), (unsigned int)(memoryRegionDescriptor.length >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.length & 0xffffffff), memoryRegionDescriptor.type);
 
 	new_line_serial_polling();
 	sti();
