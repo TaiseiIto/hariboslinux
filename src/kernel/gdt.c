@@ -13,6 +13,7 @@ unsigned short gdt_segment_selector;
 unsigned short idt_segment_selector;
 unsigned short video_information_segment_selector;
 unsigned short boot_information_segment_selector;
+unsigned short memory_map_segment_selector;
 unsigned short loaded_disk_segment_selector;
 unsigned short first_fat_segment_selector;
 unsigned short second_fat_segment_selector;
@@ -86,6 +87,7 @@ void init_gdt(void)
 	idt_segment_selector = set_segment(0x00268000, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	video_information_segment_selector = set_segment(0x00000600, sizeof(VideoInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	boot_information_segment_selector = set_segment(0x00000800, sizeof(BootInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	memory_map_segment_selector = set_segment(0x00000900, 0x000072ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	loaded_disk_segment_selector = set_segment(0x00100000, 0x00097fff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	first_fat_segment_selector = set_segment(0x00100200, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	second_fat_segment_selector = set_segment(0x00101400, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
@@ -100,6 +102,7 @@ void init_gdt(void)
 	printf_serial_polling("idt_segment_selector = %#06X\n", idt_segment_selector);
 	printf_serial_polling("video_information_segment_selector = %#06X\n", video_information_segment_selector);
 	printf_serial_polling("boot_information_segment_selector = %#06X\n", boot_information_segment_selector);
+	printf_serial_polling("memory_map_segment_selector = %#06X\n", memory_map_segment_selector);
 	printf_serial_polling("loaded_disk_segment_selector = %#06X\n", loaded_disk_segment_selector);
 	printf_serial_polling("first_fat_segment_selector = %#06X\n", first_fat_segment_selector);
 	printf_serial_polling("second_fat_segment_selector = %#06X\n", second_fat_segment_selector);
