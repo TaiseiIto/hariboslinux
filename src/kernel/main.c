@@ -19,6 +19,7 @@ void main(void)
 	Color color;
 	Color foreground_color;
 	MemoryRegionDescriptor memoryRegionDescriptor;
+	unsigned int memoryRegionDescriptorIndex;
 	cli();
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
@@ -39,10 +40,13 @@ void main(void)
 	printf_screen(0x0000, 1 * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04X", boot_information.last_loaded_cylinder);
 	printf_screen(0x0000, 2 * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04X", boot_information.last_loaded_head);
 	printf_screen(0x0000, 3 * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04X", boot_information.last_loaded_sector);
-
-	memoryRegionDescriptor = getMemoryRegionDescriptor(0);
-	printf_screen(0x0000, 4 * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#010X%010X, length = %#010X%010X, type = %#010X", (unsigned int)(memoryRegionDescriptor.base >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.base & 0xffffffff), (unsigned int)(memoryRegionDescriptor.length >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.length & 0xffffffff), memoryRegionDescriptor.type);
-
+	memoryRegionDescriptorIndex = 0;
+	do
+	{
+		memoryRegionDescriptor = getMemoryRegionDescriptor(memoryRegionDescriptorIndex);
+		printf_screen(0x0000, (memoryRegionDescriptorIndex + 4) * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#010X%010X, length = %#010X%010X, type = %#010X", (unsigned int)(memoryRegionDescriptor.base >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.base & 0xffffffff), (unsigned int)(memoryRegionDescriptor.length >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.length & 0xffffffff), memoryRegionDescriptor.type);
+		memoryRegionDescriptorIndex++;
+	} while(memoryRegionDescriptor.base != 0 || memoryRegionDescriptor.length != 0 || memoryRegionDescriptor.type != 0 || memoryRegionDescriptor.attribute != 0);
 	new_line_serial_polling();
 	sti();
 	while(1)hlt();
