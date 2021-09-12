@@ -3,8 +3,8 @@
 
 typedef struct
 {
-	unsigned long base;
-	unsigned long length;
+	unsigned long long base;
+	unsigned long long length;
 	unsigned int type;
 	unsigned int attribute;
 } MemoryRegionDescriptor;

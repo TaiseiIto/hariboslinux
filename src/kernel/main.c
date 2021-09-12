@@ -4,6 +4,7 @@
 #include "graphic.h"
 #include "io.h"
 #include "keyboard.h"
+#include "memory.h"
 #include "mouse.h"
 #include "pic.h"
 #include "serial.h"
@@ -17,6 +18,7 @@ void main(void)
 	Color background_color;
 	Color color;
 	Color foreground_color;
+	MemoryRegionDescriptor memoryRegionDescriptor;
 	cli();
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
@@ -37,6 +39,10 @@ void main(void)
 	printf_screen(0x0000, 1 * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04X", boot_information.last_loaded_cylinder);
 	printf_screen(0x0000, 2 * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04X", boot_information.last_loaded_head);
 	printf_screen(0x0000, 3 * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04X", boot_information.last_loaded_sector);
+
+	memoryRegionDescriptor = getMemoryRegionDescriptor(0);
+	printf_screen(0x0000, 4 * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#010X%010X", (unsigned int)(memoryRegionDescriptor.base >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.base & 0xffffffff));
+
 	new_line_serial_polling();
 	sti();
 	while(1)hlt();
