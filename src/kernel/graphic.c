@@ -7,6 +7,14 @@
 
 #define TAB_LENGTH 4
 
+typedef union
+{
+	int ints[2];
+	long long int long_long_int;
+	unsigned int unsigned_ints[2];
+	unsigned long long int unsigned_long_long_int;
+} VariadicArg;
+
 unsigned short vram_segment_selector;
 VideoInformation video_information;
 
@@ -129,10 +137,8 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 	int arg_num = 5;
 	char character;
 	char const *input_string;
-	int integer;
-	int integer_destroyable;
-	unsigned int unsigned_integer;
-	unsigned int unsigned_integer_destroyable;
+	VariadicArg integer;
+	VariadicArg integer_destroyable;
 	unsigned int char_pos_x = 0;
 	unsigned int char_pos_y = 0;
 	unsigned int char_pos_x_destroyable;
@@ -144,6 +150,8 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 			#define SPRINTF_MINUS_FLAG 0x01
 			#define SPRINTF_TYPE_FLAG 0x02
 			#define SPRINTF_ZERO_FLAG 0x04
+			#define SPRINTF_LONG_FLAG 0x08
+			#define SPRINTF_LONG_LONG_FLAG 0x10
 			unsigned int length = 0;
 			unsigned int num_of_digits = 0;
 			format++;
@@ -172,6 +180,22 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 			}
 			switch(*format)
 			{
+			case 'l':
+				flags |= SPRINTF_LONG_FLAG;
+				format++;
+			}
+			switch(*format)
+			{
+			case 'l':
+				if(flags | SPRINTF_LONG_FLAG)
+				{
+					flags &= ~SPRINTF_LONG_FLAG;
+					flags |= SPRINTF_LONG_LONG_FLAG;
+					format++;
+				}
+			}
+			switch(*format)
+			{
 			case 'c':
 				character = get_variadic_arg(arg_num++);
 				switch(character)
@@ -196,17 +220,26 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				}
 				break;
 			case 'd':
-				integer = get_variadic_arg(arg_num++);
-				if(integer < 0)
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = get_variadic_arg(arg_num++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = 0;
+				}
+				if(integer.long_long_int < 0)
 				{
 					put_char('-', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
-					integer *= -1;
+					integer.long_long_int *= -1;
 					if(0 < length)length--;
 					flags |= SPRINTF_MINUS_FLAG;
 				}
 				integer_destroyable = integer;
-				if(integer)for(num_of_digits = 0; 0 < integer_destroyable; integer_destroyable /= 10)num_of_digits++;
+				if(integer.long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.long_long_int; integer_destroyable.long_long_int /= 10)num_of_digits++;
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
@@ -217,8 +250,8 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				while(0 < num_of_digits)
 				{
 					integer_destroyable = integer;
-					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable /= 10;
-					put_char('0' + integer_destroyable % 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.long_long_int /= 10;
+					put_char('0' + integer_destroyable.long_long_int % 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}
@@ -251,9 +284,18 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				}
 				break;
 			case 'u':
-				unsigned_integer = get_variadic_arg(arg_num++);
-				unsigned_integer_destroyable = unsigned_integer;
-				if(unsigned_integer)for(num_of_digits = 0; 0 < unsigned_integer_destroyable; unsigned_integer_destroyable /= 10)num_of_digits++;
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = get_variadic_arg(arg_num++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = 0;
+				}
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 10)num_of_digits++;
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
@@ -263,15 +305,24 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				}
 				while(0 < num_of_digits)
 				{
-					unsigned_integer_destroyable = unsigned_integer;
-					for(unsigned int i = 0; i + 1 < num_of_digits; i++)unsigned_integer_destroyable /= 10;
-					put_char('0' + unsigned_integer_destroyable % 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 10;
+					put_char('0' + integer_destroyable.unsigned_long_long_int % 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}
 				break;
 			case 'x':
-				unsigned_integer = get_variadic_arg(arg_num++);
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = get_variadic_arg(arg_num++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = 0;
+				}
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
 					put_char('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
@@ -281,8 +332,8 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 					char_pos_x++;
 					if(0 < length)length--;
 				}
-				unsigned_integer_destroyable = unsigned_integer;
-				if(unsigned_integer)for(num_of_digits = 0; 0 < unsigned_integer_destroyable; unsigned_integer_destroyable /= 0x10)num_of_digits++;
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
@@ -292,15 +343,24 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				}
 				while(0 < num_of_digits)
 				{
-					unsigned_integer_destroyable = unsigned_integer;
-					for(unsigned int i = 0; i + 1 < num_of_digits; i++)unsigned_integer_destroyable /= 0x10;
-					put_char(unsigned_integer_destroyable % 0x10 < 10 ? '0' + unsigned_integer_destroyable % 0x10 : 'a' + unsigned_integer_destroyable % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					put_char(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}
 				break;
 			case 'X':
-				unsigned_integer = get_variadic_arg(arg_num++);
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = get_variadic_arg(arg_num++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = 0;
+				}
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
 					put_char('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
@@ -310,8 +370,8 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 					char_pos_x++;
 					if(0 < length)length--;
 				}
-				unsigned_integer_destroyable = unsigned_integer;
-				if(unsigned_integer)for(num_of_digits = 0; 0 < unsigned_integer_destroyable; unsigned_integer_destroyable /= 0x10)num_of_digits++;
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
@@ -321,9 +381,9 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				}
 				while(0 < num_of_digits)
 				{
-					unsigned_integer_destroyable = unsigned_integer;
-					for(unsigned int i = 0; i + 1 < num_of_digits; i++)unsigned_integer_destroyable /= 0x10;
-					put_char(unsigned_integer_destroyable % 0x10 < 10 ? '0' + unsigned_integer_destroyable % 0x10 : 'A' + unsigned_integer_destroyable % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					put_char(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'A' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}

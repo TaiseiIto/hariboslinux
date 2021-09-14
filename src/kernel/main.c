@@ -44,7 +44,7 @@ void main(void)
 	do
 	{
 		memoryRegionDescriptor = getMemoryRegionDescriptor(memoryRegionDescriptorIndex);
-		printf_screen(0x0000, (memoryRegionDescriptorIndex + 4) * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#010X%08X, length = %#010X%08X, type = %#010X", (unsigned int)(memoryRegionDescriptor.base >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.base & 0xffffffff), (unsigned int)(memoryRegionDescriptor.length >> 32 & 0xffffffff), (unsigned int)(memoryRegionDescriptor.length & 0xffffffff), memoryRegionDescriptor.type);
+		printf_screen(0x0000, (memoryRegionDescriptorIndex + 4) * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#018llX, length = %#018llX, type = %#010X", memoryRegionDescriptor.base, memoryRegionDescriptor.length, memoryRegionDescriptor.type);
 		memoryRegionDescriptorIndex++;
 	} while(memoryRegionDescriptor.base != 0 || memoryRegionDescriptor.length != 0 || memoryRegionDescriptor.type != 0 || memoryRegionDescriptor.attribute != 0);
 	new_line_serial_polling();
