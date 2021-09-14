@@ -9,6 +9,7 @@ SECTIONS
 	.text :
 	{
 		main.o(.text)
+		arithmetic.o(.text)
 		exception.o(.text)
 		font.o(.text)
 		fontdata.o(.text)
@@ -25,6 +26,7 @@ SECTIONS
 		stdio.o(.text)
 		string.o(.text)
 		main.o(.rodata)
+		arithmetic.o(.rodata)
 		exception.o(.rodata)
 		font.o(.rodata)
 		fontdata.o(.rodata)
@@ -41,6 +43,7 @@ SECTIONS
 		stdio.o(.rodata)
 		string.o(.rodata)
 		main.o(.data)
+		arithmetic.o(.data)
 		exception.o(.data)
 		font.o(.data)
 		fontdata.o(.data)
@@ -57,6 +60,7 @@ SECTIONS
 		stdio.o(.data)
 		string.o(.data)
 		main.o(.bss)
+		arithmetic.o(.bss)
 		exception.o(.bss)
 		font.o(.bss)
 		fontdata.o(.bss)

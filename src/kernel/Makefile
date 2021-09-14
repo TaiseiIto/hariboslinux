@@ -22,8 +22,12 @@ clean:
 	rm -f $$(ls *.bin *.o *.s | grep -v ^io.s$$)
 	make clean -C font
 
-kernel.bin: exception.o font.o fontdata.o gdt.o graphic.o idt.o io.o keyboard.o main.o memory.o mouse.o pic.o serial.o stack.o stdio.o string.o
+kernel.bin: arithmetic.o exception.o font.o fontdata.o gdt.o graphic.o idt.o io.o keyboard.o main.o memory.o mouse.o pic.o serial.o stack.o stdio.o string.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_MAP_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
+
+arithmetic.o: arithmetic.s
+
+arithmetic.s: arithmetic.c
 
 exception.o: exception.s
 
