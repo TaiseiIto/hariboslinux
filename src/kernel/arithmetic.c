@@ -27,7 +27,12 @@ unsigned long long int __udivdi3(unsigned long long int a, unsigned long long in
 
 unsigned long long int __umoddi3(unsigned long long int a, unsigned long long int b)
 {
-	unsigned long long int result = 0;
-	return result;
+	while(b <= a)
+	{
+		unsigned char shift;
+		for(shift = 0; b << shift + 1 <= a; shift++);
+		a -= b << shift;
+	}
+	return a;
 }
 
