@@ -1,4 +1,4 @@
-#include "arithmetic.h"
+#include "libgcc.h"
 
 long long int __divdi3(long long int a, long long int b)
 {

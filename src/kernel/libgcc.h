@@ -1,5 +1,5 @@
-#ifndef _ARITHMETIC_H_
-#define _ARITHMETIC_H_
+#ifndef _LIBGCC_H_
+#define _LIBGCC_H_
 
 long long int __divdi3(long long int a, long long int b);
 long long int __moddi3(long long int a, long long int b);
