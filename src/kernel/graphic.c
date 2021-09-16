@@ -228,9 +228,9 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				else
 				{
 					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
-					integer.unsigned_ints[1] = 0;
+					integer.ints[1] = -(integer.ints[0] < 0);
 				}
-				if(flags & SPRINTF_LONG_LONG_FLAG && integer.long_long_int < 0 || !(flags & SPRINTF_LONG_LONG_FLAG) && integer.ints[0] < 0)
+				if(integer.long_long_int < 0)
 				{
 					put_char('-', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
