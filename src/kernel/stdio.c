@@ -4,7 +4,7 @@
 
 int sprintf(char *str, const char *format, ...)
 {
-	int arg_num = 5;
+	int arg_num = 2;
 	char character;
 	char const *input_string;
 	VariadicArg integer;

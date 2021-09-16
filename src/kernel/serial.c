@@ -13,7 +13,7 @@ void new_line_serial_polling(void)
 // printf
 void printf_serial_polling(char const *format, ...)
 {
-	int arg_num = 5;
+	int arg_num = 1;
 	char character;
 	char const *input_string;
 	VariadicArg integer;
