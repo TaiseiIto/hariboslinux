@@ -4,11 +4,11 @@
 
 int sprintf(char *str, const char *format, ...)
 {
-	int arg_num = 2;
+	int arg_num = 5;
 	char character;
 	char const *input_string;
-	int integer;
-	unsigned int unsigned_integer;
+	VariadicArg integer;
+	VariadicArg integer_destroyable;
 	while(*format)
 	{
 		if(*format == '%')
@@ -17,9 +17,10 @@ int sprintf(char *str, const char *format, ...)
 			#define SPRINTF_MINUS_FLAG 0x01
 			#define SPRINTF_TYPE_FLAG 0x02
 			#define SPRINTF_ZERO_FLAG 0x04
+			#define SPRINTF_LONG_FLAG 0x08
+			#define SPRINTF_LONG_LONG_FLAG 0x10
 			unsigned int length = 0;
 			unsigned int num_of_digits = 0;
-			char *digit;
 			format++;
 			switch(*format)
 			{
@@ -45,63 +46,102 @@ int sprintf(char *str, const char *format, ...)
 			}
 			switch(*format)
 			{
+			case 'l':
+				flags |= SPRINTF_LONG_FLAG;
+				format++;
+			}
+			switch(*format)
+			{
+			case 'l':
+				if(flags | SPRINTF_LONG_FLAG)
+				{
+					flags &= ~SPRINTF_LONG_FLAG;
+					flags |= SPRINTF_LONG_LONG_FLAG;
+					format++;
+				}
+			}
+			switch(*format)
+			{
 			case 'c':
 				character = get_variadic_arg(arg_num++);
 				*str++ = character;
 				break;
 			case 'd':
-				integer = get_variadic_arg(arg_num++);
-				if(integer < 0)
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = get_variadic_arg(arg_num++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.ints[1] = -(integer.ints[0] < 0);
+				}
+				if(integer.long_long_int < 0)
 				{
 					*str++ = '-';
-					integer *= -1;
+					integer.long_long_int *= -1;
 					if(0 < length)length--;
 					flags |= SPRINTF_MINUS_FLAG;
 				}
-				do
+				integer_destroyable = integer;
+				if(integer.long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.long_long_int; integer_destroyable.long_long_int /= 10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = '0' + integer % 10;
-					if(num_of_digits == length)break;
-				}while(integer /= 10);
-				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
-				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = '0';
+					*str++ = flags & SPRINTF_ZERO_FLAG ? '0' : ' ';
+					length--;
 				}
-				else while(num_of_digits < length)
+				while(0 < num_of_digits)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.long_long_int /= 10;
+					*str++ = '0' + integer_destroyable.long_long_int % 10;
+					num_of_digits--;
 				}
-				str += num_of_digits;
 				break;
 			case 's':
 				input_string = (char const *)get_variadic_arg(arg_num++);
 				while(*input_string && (!length || num_of_digits++ < length))*str++ = *input_string++;
 				break;
 			case 'u':
-				unsigned_integer = get_variadic_arg(arg_num++);
-				do
+				if(flags & SPRINTF_LONG_LONG_FLAG)
 				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = '0' + unsigned_integer % 10;
-					if(num_of_digits == length)break;
-				}while(unsigned_integer /= 10);
-				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
-				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = '0';
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = get_variadic_arg(arg_num++);
 				}
-				else while(num_of_digits < length)
+				else
 				{
-					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = 0;
 				}
-				str += num_of_digits;
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
+				{
+					*str++ = flags & SPRINTF_ZERO_FLAG ? '0' : ' ';
+					length--;
+				}
+				while(0 < num_of_digits)
+				{
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 10;
+					*str++ = '0' + integer_destroyable.unsigned_long_long_int % 10;
+					num_of_digits--;
+				}
 				break;
 			case 'x':
-				unsigned_integer = get_variadic_arg(arg_num++);
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = get_variadic_arg(arg_num++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = 0;
+				}
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
 					*str++ = '0';
@@ -109,26 +149,33 @@ int sprintf(char *str, const char *format, ...)
 					*str++ = 'x';
 					if(0 < length)length--;
 				}
-				do
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = (unsigned_integer % 0x10 < 10) ? '0' + unsigned_integer % 0x10 : unsigned_integer % 0x10 - 10 + 'a';
-					if(num_of_digits == length)break;
-				}while(unsigned_integer /= 0x10);
-				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
-				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = '0';
+					*str++ = flags & SPRINTF_ZERO_FLAG ? '0' : ' ';
+					length--;
 				}
-				else while(num_of_digits < length)
+				while(0 < num_of_digits)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					*str++ = integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10;
+					num_of_digits--;
 				}
-				str += num_of_digits;
 				break;
 			case 'X':
-				unsigned_integer = get_variadic_arg(arg_num++);
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = get_variadic_arg(arg_num++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+					integer.unsigned_ints[1] = 0;
+				}
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
 					*str++ = '0';
@@ -136,26 +183,24 @@ int sprintf(char *str, const char *format, ...)
 					*str++ = 'X';
 					if(0 < length)length--;
 				}
-				do
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = (unsigned_integer % 0x10 < 10) ? '0' + unsigned_integer % 0x10 : unsigned_integer % 0x10 - 10 + 'A';
-					if(num_of_digits == length)break;
-				}while(unsigned_integer /= 0x10);
-				if(flags & SPRINTF_ZERO_FLAG)while(num_of_digits < length)
-				{
-					for(digit = str + num_of_digits++; digit > str; digit--)*digit = *(digit - 1);
-					*str = '0';
+					*str++ = flags & SPRINTF_ZERO_FLAG ? '0' : ' ';
+					length--;
 				}
-				else while(num_of_digits < length)
+				while(0 < num_of_digits)
 				{
-					for(digit = str + num_of_digits++; digit > (flags & SPRINTF_MINUS_FLAG ? str - 1 : str); digit--)*digit = *(digit - 1);
-					*(flags & SPRINTF_MINUS_FLAG ? str - 1 : str) = ' ';
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					*str++ = integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'A' + integer_destroyable.unsigned_long_long_int % 0x10 - 10;
+					num_of_digits--;
 				}
-				str += num_of_digits;
 				break;
 			default:
-				return -1;
+				break;
 			}
 		}
 		else *str++ = *format;
@@ -164,4 +209,3 @@ int sprintf(char *str, const char *format, ...)
 	*str = '\0';
 	return 0;
 }
-

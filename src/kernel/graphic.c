@@ -4,16 +4,9 @@
 #include "io.h"
 #include "limits.h"
 #include "serial.h"
+#include "stdio.h"
 
 #define TAB_LENGTH 4
-
-typedef union
-{
-	int ints[2];
-	long long int long_long_int;
-	unsigned int unsigned_ints[2];
-	unsigned long long int unsigned_long_long_int;
-} VariadicArg;
 
 unsigned short vram_segment_selector;
 VideoInformation video_information;
