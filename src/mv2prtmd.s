@@ -78,15 +78,14 @@ main:
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
 	movw	$0x0008,%dx
+	movw	%dx,	%ds
 	movw	%dx,	%es
 	movw	%dx,	%fs
 	movw	%dx,	%gs
-	movw	$0x0028,%dx
 	movw	%dx,	%ss
-	movw	%dx,	%ds
 	movl	$0x00007c00,%ebp
 	movl	$0x00007c00,%esp
-	jmp	$0x20,	$dplydisk
+	jmp	$0x10,	$dplydisk
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
@@ -185,7 +184,7 @@ gdt:
 				# selector 0x0008 whole memory is readable and writable
 				# base	0x00000000
 				# limit	0xffffffff
-				# access_right 0x4092
+				# access_right 0x409a
 	.word	0xffff		#  limit_low
 	.word	0x0000		#  base_low
 	.byte	0x00		#  base_mid
@@ -193,52 +192,18 @@ gdt:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 
-				# selector 0x0010 kernel.bin code section is readable and executable
-				# base  0x00106000
-				# limit 0x00099bff
-				# access_right 0x409a
-	.word	0x9bff		#  limit_low
-	.word	0x6000		#  base_low
-	.byte	0x10		#  base_mid
-	.byte	0x9a		#  access_right
-	.byte	0x49		#  limit_high
-	.byte	0x00		#  base_high
-
-				# selector 0x0018 kernel.bin data and stack section is readable and writable
-				# base  0x00106000
-				# limit 0x001f9fff
-				# access_right 0x4092
-	.word	0x01fa		#  limit_low
-	.word	0x6000		#  base_low
-	.byte	0x10		#  base_mid
-	.byte	0x92		#  access_right
-	.byte	0xc0		#  limit_high
-	.byte	0x00		#  base_high
-
-				# selector 0x0020 dplydisk.bin code section is readable and executable
+				# selector 0x0010 whole memory is readable and executable
 				# base	0x00000000
-				# limit	0x0009fbff
-				# access_right 0x409a
-	.word	0xfbff		#  limit_low
+				# limit	0xffffffff
+				# access_right 0x4092
+	.word	0xffff		#  limit_low
 	.word	0x0000		#  base_low
 	.byte	0x00		#  base_mid
 	.byte	0x9a		#  access_right
-	.byte	0x49		#  limit_high
+	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
-
-				# selector 0x0028 dplydisk.bin data and stack section is readable and writable
-				# base	0x00000000
-				# limit	0x0009fbff
-				# access_right 0x4092
-	.word	0xfbff		#  limit_low
-	.word	0x0000		#  base_low
-	.byte	0x00		#  base_mid
-	.byte	0x92		#  access_right
-	.byte	0x49		#  limit_high
-	.byte	0x00		#  base_high
-
 gdtr:
-	.word	0x002f		# 6 segment descriptors * 8 bytes per segment descriptor - 1
+	.word	0x0017		# 3 segment descriptors * 8 bytes per segment descriptor - 1
 	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"

@@ -8,7 +8,6 @@
 
 unsigned short whole_memory_segment_selector;
 unsigned short kernel_code_segment_selector;
-unsigned short kernel_data_segment_selector;
 unsigned short gdt_segment_selector;
 unsigned short idt_segment_selector;
 unsigned short video_information_segment_selector;
@@ -24,7 +23,6 @@ void init_gdt(void)
 	SegmentDescriptor null_segment;
 	SegmentDescriptor whole_memory_segment;
 	SegmentDescriptor kernel_code_segment;
-	SegmentDescriptor kernel_data_segment;
 	SegmentDescriptor gdt_segment;
 	SegmentDescriptor segment_checker;
 	SegmentDescriptor *source;
@@ -45,19 +43,12 @@ void init_gdt(void)
 	whole_memory_segment.limit_high = 0x0f | SEGMENT_DESCRIPTOR_SIZE | SEGMENT_DESCRIPTOR_GRANULARITY;
 	whole_memory_segment.base_high = 0x00;
 
-	kernel_code_segment.limit_low = 0x9bff;
-	kernel_code_segment.base_low = 0x6000;
-	kernel_code_segment.base_mid = 0x10;
+	kernel_code_segment.limit_low = 0xffff;
+	kernel_code_segment.base_low = 0x0000;
+	kernel_code_segment.base_mid = 0x00;
 	kernel_code_segment.access_right = SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
-	kernel_code_segment.limit_high = 0x09 | SEGMENT_DESCRIPTOR_SIZE;
+	kernel_code_segment.limit_high = 0x0f | SEGMENT_DESCRIPTOR_SIZE | SEGMENT_DESCRIPTOR_GRANULARITY;
 	kernel_code_segment.base_high = 0x00;
-
-	kernel_data_segment.limit_low = 0x01f9;
-	kernel_data_segment.base_low = 0x6000;
-	kernel_data_segment.base_mid = 0x10;
-	kernel_data_segment.access_right = SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRESENT;
-	kernel_data_segment.limit_high = 0x00 | SEGMENT_DESCRIPTOR_SIZE | SEGMENT_DESCRIPTOR_GRANULARITY;
-	kernel_data_segment.base_high = 0x00;
 
 	gdt_segment.limit_low = 0xffff;
 	gdt_segment.base_low = 0x0000;
@@ -76,10 +67,8 @@ void init_gdt(void)
 	whole_memory_segment_selector = 0x0008;
 	writes(&kernel_code_segment, temporary_whole_memory_segment_selector, destination++, sizeof(kernel_code_segment));
 	kernel_code_segment_selector = 0x0010;
-	writes(&kernel_data_segment, temporary_whole_memory_segment_selector, destination++, sizeof(kernel_data_segment));
-	kernel_data_segment_selector = 0x0018;
 	writes(&gdt_segment, temporary_whole_memory_segment_selector, destination++, sizeof(gdt_segment));
-	gdt_segment_selector = 0x0020;
+	gdt_segment_selector = 0x0018;
 	
 	// load new GDT
 	lgdt(0xffff, GDT_ADDR);
@@ -97,7 +86,6 @@ void init_gdt(void)
 	print_serial_polling("check new GDT\n");
 	printf_serial_polling("whole_memory_segment_selector = %#06X\n", whole_memory_segment_selector);
 	printf_serial_polling("kernel_code_segment_selector = %#06X\n", kernel_code_segment_selector);
-	printf_serial_polling("kernel_data_segment_selector = %#06X\n", kernel_data_segment_selector);
 	printf_serial_polling("gdt_segment_selector = %#06X\n", gdt_segment_selector);
 	printf_serial_polling("idt_segment_selector = %#06X\n", idt_segment_selector);
 	printf_serial_polling("video_information_segment_selector = %#06X\n", video_information_segment_selector);

@@ -45,12 +45,9 @@ main:
 	addl	$0x00000014,%esp
 	leave
 5:					# jump to kernel
-	movw	$0x0018,%dx
-	movw	%dx,	%ss
-	movw	%dx,	%ds
-	movl	$0x001fa000,%ebp
-	movl	$0x001fa000,%esp
-	jmp	$0x10,	$0x00000000
+	movl	$0x00300000,%ebp
+	movl	$0x00300000,%esp
+	jmp	$0x10,	$0x00106000
 
 memcpy:				# void memcpy(unsigned short dest_seg, void *dest_addr, unsigned short src_seg, void *src_addr, unsigned short size);
 0:
