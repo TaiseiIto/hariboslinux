@@ -9,6 +9,7 @@
 #include "pic.h"
 #include "serial.h"
 #include "stdio.h"
+#include "task.h"
 
 BootInformation get_boot_information(void);
 
@@ -27,6 +28,7 @@ void main(void)
 	print_serial_polling("Hello, kernel.bin!\n\n");
 	init_gdt();
 	init_idt();
+	init_task();
 	init_memory();
 	init_pic();
 	init_keyboard();
@@ -59,7 +61,7 @@ void main(void)
 		memory_section = memory_section->next;
 	} while(memory_section != get_root_memory_section());
 	new_line_serial_polling();
-	sti();
+	sti_task();
 	while(1)hlt();
 }
 
