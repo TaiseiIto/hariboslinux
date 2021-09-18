@@ -16,6 +16,7 @@ void keyboard_interrupt_handler(void)
 	event.type = EVENT_TYPE_KEYBOARD_INTERRUPT;
 	event.event_union.keyboard_interrupt_event.signal = inb(PORT_KEYBOARD_DATA);
 	enqueue_event(&event);
+	printf_serial_polling("keyboard interrupt signal = %#04x\n", event.event_union.keyboard_interrupt_event.signal);
 }
 
 unsigned char receive_from_keyboard(void)
