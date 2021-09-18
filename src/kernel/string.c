@@ -13,17 +13,23 @@ void *memcpy(void *destination, void const *source, size_t size)
 		{
 			if(sizeof(unsigned int) <= size)
 			{
-				*--((unsigned int *)writer) = *--((unsigned int *)reader);
+				(unsigned int *)reader--;
+				(unsigned int *)writer--;
+				*(unsigned int *)writer = *(unsigned int *)reader;
 				size -= sizeof(unsigned int);
 			}
 			else if(sizeof(unsigned short) <= size)
 			{
-				*--((unsigned short *)writer) = *--((unsigned short *)reader);
+				(unsigned short *)reader--;
+				(unsigned short *)writer--;
+				*(unsigned short *)writer = *(unsigned short *)reader;
 				size -= sizeof(unsigned short);
 			}
 			else
 			{
-				*--((unsigned char *)writer) = *--((unsigned char *)reader);
+				(unsigned char *)reader--;
+				(unsigned char *)writer--;
+				*(unsigned char *)writer = *(unsigned char *)reader;
 				size -= sizeof(unsigned char);
 			}
 		}
@@ -36,17 +42,23 @@ void *memcpy(void *destination, void const *source, size_t size)
 		{
 			if(sizeof(unsigned int) <= size)
 			{
-				*((unsigned int *)writer)++ = *((unsigned int *)reader)++;
+				*(unsigned int *)writer = *(unsigned int *)reader;
+				(unsigned int *)reader++;
+				(unsigned int *)writer++;
 				size -= sizeof(unsigned int);
 			}
 			else if(sizeof(unsigned short) <= size)
 			{
-				*((unsigned short *)writer)++ = *((unsigned short *)reader)++;
+				*(unsigned short *)writer = *(unsigned short *)reader;
+				(unsigned short *)reader++;
+				(unsigned short *)writer++;
 				size -= sizeof(unsigned short);
 			}
 			else
 			{
-				*((unsigned char *)writer)++ = *((unsigned char *)reader)++;
+				*(unsigned char *)writer = *(unsigned char *)reader;
+				(unsigned char *)reader++;
+				(unsigned char *)writer++;
 				size -= sizeof(unsigned char);
 			}
 		}
