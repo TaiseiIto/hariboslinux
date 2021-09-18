@@ -6,6 +6,10 @@
 MemorySection *root_memory_section;
 void * const heap_base = (void *)0x00400000;
 
+void free(void *address)
+{
+}
+
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index)
 {
 	MemoryRegionDescriptor memory_region_descriptor;
@@ -67,5 +71,34 @@ void init_memory(void)
 		printf_serial_polling("previous = %p, this = %p, next = %p, size = %#010x, flags = %#04x\n", memory_section->previous, memory_section, memory_section->next, memory_section->size, memory_section->flags);
 		memory_section = memory_section->next;
 	}while(memory_section != root_memory_section);
+}
+
+void *malloc(size_t size)
+{
+	MemorySection *memory_section = root_memory_section;
+	do
+	{
+		if(!(memory_section->flags & MEMORY_SECTION_ALLOCATED) && size <= memory_section->size)
+		{
+			void *allocated = (void *)memory_section + sizeof(*memory_section);
+			if(memory_section->size <= size + sizeof(MemorySection))memory_section->flags |= MEMORY_SECTION_ALLOCATED; // Can't devide the memory section
+			else // devide the memory section
+			{
+				MemorySection *remaining_memory_section = (MemorySection *)((void *)memory_section + sizeof(*memory_section) + size);
+				remaining_memory_section->previous = memory_section;
+				remaining_memory_section->next = memory_section->next;
+				remaining_memory_section->size = memory_section->size - size - sizeof(*remaining_memory_section);
+				remaining_memory_section->flags = memory_section->flags;
+				memory_section->next->previous = remaining_memory_section;
+				memory_section->next = remaining_memory_section;
+				memory_section->size = size;
+				memory_section->flags |= MEMORY_SECTION_ALLOCATED;
+			}
+			root_memory_section = memory_section->next;
+			return allocated;
+		}
+		memory_section = memory_section->next;
+	} while(memory_section != root_memory_section);
+	return NULL;
 }
 

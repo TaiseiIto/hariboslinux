@@ -20,9 +20,11 @@ typedef struct
 	unsigned int attribute;
 } MemoryRegionDescriptor;
 
+void free(void *address);
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index);
 MemorySection const *get_root_memory_section(void);
 void init_memory(void);
+void *malloc(size_t size);
 
 #endif
 
