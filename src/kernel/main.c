@@ -25,6 +25,7 @@ void main(void)
 	print_serial_polling("Hello, kernel.bin!\n\n");
 	init_gdt();
 	init_idt();
+	init_memory();
 	init_pic();
 	init_keyboard();
 	init_mouse();

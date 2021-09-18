@@ -10,6 +10,7 @@ typedef struct
 } MemoryRegionDescriptor;
 
 MemoryRegionDescriptor getMemoryRegionDescriptor(unsigned int index);
+void init_memory(void);
 
 #endif
 
