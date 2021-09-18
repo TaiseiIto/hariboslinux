@@ -1,13 +1,13 @@
 #ifndef _MEMORY_H_
 #define _MEMORY_H_
 
-#define NULL ((void *)0x00000000)
+#include "stddef.h"
 
 typedef struct _MemorySection
 {
 	struct _MemorySection *previous;
 	struct _MemorySection *next;
-	unsigned int size; // This doesn't include sizeof(MemorySection)
+	size_t size; // This doesn't include sizeof(MemorySection)
 	unsigned char flags;
 	#define MEMORY_SECTION_ALLOCATED 0x01
 } MemorySection;
