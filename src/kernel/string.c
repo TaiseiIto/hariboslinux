@@ -23,7 +23,6 @@ void *memcpy(void *destination, void const *source, size_t size)
 			}
 			else
 			{
-			{
 				*--((unsigned char *)writer) = *--((unsigned char *)reader);
 				size -= sizeof(unsigned char);
 			}
