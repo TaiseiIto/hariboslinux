@@ -3,15 +3,6 @@
 #include "memory.h"
 #include "serial.h"
 
-typedef struct _MemorySection
-{
-	struct _MemorySection *previous;
-	struct _MemorySection *next;
-	unsigned int size; // This doesn't include sizeof(MemorySection)
-	unsigned char flags;
-	#define MEMORY_SECTION_ALLOCATED 0x01
-} MemorySection;
-
 MemorySection *root_memory_section;
 void * const heap_base = (void *)0x00400000;
 
@@ -20,6 +11,11 @@ MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index)
 	MemoryRegionDescriptor memory_region_descriptor;
 	reads(memory_map_segment_selector, (void *)(index * sizeof(MemoryRegionDescriptor)), &memory_region_descriptor, sizeof(memory_region_descriptor));
 	return memory_region_descriptor;
+}
+
+MemorySection const *get_root_memory_section(void)
+{
+	return root_memory_section;
 }
 
 void init_memory(void)

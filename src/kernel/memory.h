@@ -3,6 +3,15 @@
 
 #define NULL ((void *)0x00000000)
 
+typedef struct _MemorySection
+{
+	struct _MemorySection *previous;
+	struct _MemorySection *next;
+	unsigned int size; // This doesn't include sizeof(MemorySection)
+	unsigned char flags;
+	#define MEMORY_SECTION_ALLOCATED 0x01
+} MemorySection;
+
 typedef struct
 {
 	unsigned long long base;
@@ -12,6 +21,7 @@ typedef struct
 } MemoryRegionDescriptor;
 
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index);
+MemorySection const *get_root_memory_section(void);
 void init_memory(void);
 
 #endif
