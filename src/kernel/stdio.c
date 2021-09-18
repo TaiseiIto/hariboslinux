@@ -113,7 +113,7 @@ int sprintf(char *str, const char *format, ...)
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					*str++ = flags & SPRINTF_ZERO_FLAG ? '0' : ' ';
+					*str++ = '0';
 					length--;
 				}
 				while(0 < num_of_digits)

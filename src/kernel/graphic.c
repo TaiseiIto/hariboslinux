@@ -264,7 +264,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					put_char(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					length--;
 				}

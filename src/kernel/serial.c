@@ -122,7 +122,7 @@ void printf_serial_polling(char const *format, ...)
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					put_char_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					put_char_serial_polling('0');
 					length--;
 				}
 				while(0 < num_of_digits)
