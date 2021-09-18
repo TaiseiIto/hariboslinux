@@ -156,7 +156,7 @@ putchar_serial:			# void putchar_serial(char c);
 finish_message:
 	.string "finish deploying the disk image!\n"
 hello_message:
-	.string "Hello, dplydisk.bin!\n"
+	.string "Hello, dplydisk.bin!\n\n"
 	.align	0x0200
 kernel:
 

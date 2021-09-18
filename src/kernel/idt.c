@@ -80,7 +80,6 @@ void init_idt(void)
 		printf_serial_polling("\t flags\t\t%#04X\n", interrupt_descriptor_checker.flags);
 		printf_serial_polling("\t offset_high\t%#06X\n", interrupt_descriptor_checker.offset_high);
 	}
-	new_line_serial_polling();
 }
 
 void set_gate(InterruptDescriptor *interrupt_descriptor, void (*handler)(void), unsigned char flags)

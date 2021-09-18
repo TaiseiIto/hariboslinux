@@ -308,6 +308,7 @@ main:
 	movw	%dx,	(%di)
 	call	print_word_hex_serial
 	call	new_line_serial
+	call	new_line_serial
 12:						# write selected video mode informations
 13:						# enter the best video mode
 	movw	$0x4f02,%ax
