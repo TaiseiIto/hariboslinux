@@ -18,8 +18,8 @@ void main(void)
 	Color background_color;
 	Color color;
 	Color foreground_color;
-	MemoryRegionDescriptor memoryRegionDescriptor;
-	unsigned int memoryRegionDescriptorIndex;
+	MemoryRegionDescriptor memory_region_descriptor;
+	unsigned int memory_region_descriptor_index;
 	cli();
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
@@ -41,13 +41,13 @@ void main(void)
 	printf_screen(0x0000, 1 * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04X", boot_information.last_loaded_cylinder);
 	printf_screen(0x0000, 2 * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04X", boot_information.last_loaded_head);
 	printf_screen(0x0000, 3 * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04X", boot_information.last_loaded_sector);
-	memoryRegionDescriptorIndex = 0;
+	memory_region_descriptor_index = 0;
 	do
 	{
-		memoryRegionDescriptor = getMemoryRegionDescriptor(memoryRegionDescriptorIndex);
-		printf_screen(0x0000, (memoryRegionDescriptorIndex + 4) * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#018llX, length = %#018llX, type = %#010X", memoryRegionDescriptor.base, memoryRegionDescriptor.length, memoryRegionDescriptor.type);
-		memoryRegionDescriptorIndex++;
-	} while(memoryRegionDescriptor.base != 0 || memoryRegionDescriptor.length != 0 || memoryRegionDescriptor.type != 0 || memoryRegionDescriptor.attribute != 0);
+		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);
+		printf_screen(0x0000, (memory_region_descriptor_index + 4) * CHAR_HEIGHT, foreground_color, background_color, "memory region base = %#018llX, length = %#018llX, type = %#010X", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type);
+		memory_region_descriptor_index++;
+	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
 	new_line_serial_polling();
 	sti();
 	while(1)hlt();
