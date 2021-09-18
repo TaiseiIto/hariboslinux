@@ -42,6 +42,8 @@ EMULATOR_VNC_OPTION = -vnc :0
 # image paccker
 IMAGE_PACKER = imagepacker/imagepacker
 
+MAKE_OUT = makeout.txt
+
 # build the operating system
 all: build
 
@@ -92,7 +94,7 @@ gitconfig:
 
 # rebuild the OS
 rebuild: clean
-	make
+	make | tee $(MAKE_OUT)
 
 # run the OS on QEMU
 run: $(IMAGE_FILE) stop

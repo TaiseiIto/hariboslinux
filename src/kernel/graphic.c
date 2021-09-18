@@ -249,6 +249,34 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 					num_of_digits--;
 				}
 				break;
+			case 'p':
+				length = 10;
+				integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+				integer.unsigned_ints[1] = 0;
+				put_char('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+				char_pos_x++;
+				if(0 < length)length--;
+				put_char('x', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+				char_pos_x++;
+				if(0 < length)length--;
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
+				{
+					put_char(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					char_pos_x++;
+					length--;
+				}
+				while(0 < num_of_digits)
+				{
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					put_char(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					char_pos_x++;
+					num_of_digits--;
+				}
+				break;
 			case 's':
 				input_string = (char const *)get_variadic_arg(arg_num++);
 				while(*input_string && (!length || num_of_digits++ < length))

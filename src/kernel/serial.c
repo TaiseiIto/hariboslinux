@@ -109,6 +109,30 @@ void printf_serial_polling(char const *format, ...)
 					num_of_digits--;
 				}
 				break;
+			case 'p':
+				length = 10;
+				integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
+				integer.unsigned_ints[1] = 0;
+				put_char_serial_polling('0');
+				if(0 < length)length--;
+				put_char_serial_polling('x');
+				if(0 < length)length--;
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
+				{
+					put_char_serial_polling(flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					length--;
+				}
+				while(0 < num_of_digits)
+				{
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					put_char_serial_polling(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10);
+					num_of_digits--;
+				}
+				break;
 			case 's':
 				input_string = (char const *)get_variadic_arg(arg_num++);
 				while(*input_string && (!length || num_of_digits++ < length))put_char_serial_polling(*input_string++);
