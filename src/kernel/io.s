@@ -7,6 +7,7 @@
 	.extern	alignment_check_exception_handler
 	.extern	bound_range_exceeded_exception_handler
 	.extern	breakpoint_exception_handler
+	.extern cli_task_interrupt
 	.extern	coprocessor_segment_overrun_exception_handler
 	.extern	debug_exception_handler
 	.extern	device_not_available_exception_handler
@@ -26,6 +27,7 @@
 	.extern	segment_not_present_exception_handler
 	.extern	simd_floating_point_exception_handler
 	.extern	stack_segment_fault_exception_handler
+	.extern sti_task_interrupt
 	.extern	virtualization_exception_handler
 	.extern	x87_floating_point_exception_handler
 
@@ -220,7 +222,9 @@ interrupt_handler0x00:		# void interrupt_handler0x00(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	devide_by_zero_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -251,7 +255,9 @@ interrupt_handler0x01:		# void interrupt_handler0x01(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	debug_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -282,7 +288,9 @@ interrupt_handler0x02:		# void interrupt_handler0x02(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	non_maskable_interrupt_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -313,7 +321,9 @@ interrupt_handler0x03:		# void interrupt_handler0x03(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	breakpoint_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -344,7 +354,9 @@ interrupt_handler0x04:		# void interrupt_handler0x04(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	overflow_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -375,7 +387,9 @@ interrupt_handler0x05:		# void interrupt_handler0x05(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	bound_range_exceeded_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -406,7 +420,9 @@ interrupt_handler0x06:		# void interrupt_handler0x06(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	invalid_opcode_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -437,7 +453,9 @@ interrupt_handler0x07:		# void interrupt_handler0x07(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	device_not_available_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -468,7 +486,9 @@ interrupt_handler0x08:		# void interrupt_handler0x08(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	double_fault_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -499,7 +519,9 @@ interrupt_handler0x09:		# void interrupt_handler0x09(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	coprocessor_segment_overrun_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -530,7 +552,9 @@ interrupt_handler0x0a:		# void interrupt_handler0x0a(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	invalid_TSS_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -561,7 +585,9 @@ interrupt_handler0x0b:		# void interrupt_handler0x0b(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	segment_not_present_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -592,7 +618,9 @@ interrupt_handler0x0c:		# void interrupt_handler0x0c(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	stack_segment_fault_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -623,7 +651,9 @@ interrupt_handler0x0d:		# void interrupt_handler0x0d(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	general_protection_fault_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -654,7 +684,9 @@ interrupt_handler0x0e:		# void interrupt_handler0x0e(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	page_fault_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -685,7 +717,9 @@ interrupt_handler0x10:		# void interrupt_handler0x10(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	x87_floating_point_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -716,7 +750,9 @@ interrupt_handler0x11:		# void interrupt_handler0x11(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	alignment_check_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -747,7 +783,9 @@ interrupt_handler0x12:		# void interrupt_handler0x12(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	machine_check_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -778,7 +816,9 @@ interrupt_handler0x13:		# void interrupt_handler0x13(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	simd_floating_point_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -809,7 +849,9 @@ interrupt_handler0x14:		# void interrupt_handler0x14(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	virtualization_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -840,7 +882,9 @@ interrupt_handler0x1e:		# void interrupt_handler0x1e(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	security_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -871,7 +915,9 @@ interrupt_handler0x21:		# void interrupt_handler0x21(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	keyboard_interrupt_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -902,7 +948,9 @@ interrupt_handler0x2c:		# void interrupt_handler0x2c(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	mouse_interrupt_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -933,7 +981,9 @@ interrupt_handler0x2d:		# void interrupt_handler0x2d(void);
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%ss
+	call	cli_task_interrupt
 	call	fpu_error_exception_handler
+	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
