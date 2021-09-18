@@ -28,6 +28,7 @@ void init_memory(void)
 	MemorySection *memory_section;
 	unsigned int memory_region_descriptor_index = 0;;
 	root_memory_section = NULL;
+	printf_serial_polling("\nCheck memory regions\n");
 	do
 	{
 		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);
@@ -37,14 +38,14 @@ void init_memory(void)
 			if(memory_region_descriptor.base < (unsigned long long int)(unsigned int)heap_base)
 			{
 				memory_section = heap_base;
-				if(0x0000000100000000 < memory_region_descriptor.base + memory_region_descriptor.length)memory_section->size = 0x00000000 - (unsigned int)heap_base;
-				else memory_section->size = (unsigned int)(memory_region_descriptor.base + memory_region_descriptor.length - (unsigned long long int)(unsigned int)heap_base);
+				if(0x0000000100000000 < memory_region_descriptor.base + memory_region_descriptor.length)memory_section->size = 0x00000000 - (unsigned int)heap_base - sizeof(*memory_section);
+				else memory_section->size = (unsigned int)(memory_region_descriptor.base + memory_region_descriptor.length - (unsigned long long int)(unsigned int)heap_base) - sizeof(*memory_section);
 			}
 			else
 			{
 				memory_section = (MemorySection *)(unsigned int)memory_region_descriptor.base;
-				if(0x0000000100000000 < memory_region_descriptor.base + memory_region_descriptor.length)memory_section->size = 0x00000000 - (unsigned int)memory_section;
-				else memory_section->size = (unsigned int)(memory_region_descriptor.length);
+				if(0x0000000100000000 < memory_region_descriptor.base + memory_region_descriptor.length)memory_section->size = 0x00000000 - (unsigned int)memory_section - sizeof(*memory_section);
+				else memory_section->size = (unsigned int)(memory_region_descriptor.length) - sizeof(*memory_section);
 			}
 			memory_section->flags = 0x00;
 			if(!root_memory_section)
