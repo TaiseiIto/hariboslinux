@@ -1,6 +1,61 @@
 #include "string.h"
 
-void *memset(void *buf, char ch, unsigned int size)
+void *memcpy(void *destination, void const *source, size_t size)
+{
+	void const *reader;
+	void *writer;
+	if(destination == source)return NULL;
+	if((unsigned int)source < (unsigned int)destination && (unsigned int)destination < (unsigned int)source + size) // reverse copy
+	{
+		reader = source + size;
+		writer = destination;
+		while(size)
+		{
+			if(sizeof(unsigned int) <= size)
+			{
+				*--((unsigned int *)writer) = *--((unsigned int *)reader);
+				size -= sizeof(unsigned int);
+			}
+			else if(sizeof(unsigned short) <= size)
+			{
+				*--((unsigned short *)writer) = *--((unsigned short *)reader);
+				size -= sizeof(unsigned short);
+			}
+			else
+			{
+			{
+				*--((unsigned char *)writer) = *--((unsigned char *)reader);
+				size -= sizeof(unsigned char);
+			}
+		}
+	}
+	else // forward copy
+	{
+		reader = source;
+		writer = destination;
+		while(size)
+		{
+			if(sizeof(unsigned int) <= size)
+			{
+				*((unsigned int *)writer)++ = *((unsigned int *)reader)++;
+				size -= sizeof(unsigned int);
+			}
+			else if(sizeof(unsigned short) <= size)
+			{
+				*((unsigned short *)writer)++ = *((unsigned short *)reader)++;
+				size -= sizeof(unsigned short);
+			}
+			else
+			{
+				*((unsigned char *)writer)++ = *((unsigned char *)reader)++;
+				size -= sizeof(unsigned char);
+			}
+		}
+	}
+	return destination;
+}
+
+void *memset(void *buf, char ch, size_t size)
 {
 	char *writer;
 	for(writer = buf; size > 0; size--)*writer++ = ch;
@@ -21,13 +76,13 @@ int strcmp(char const *string1, char const *string2)
 	else return 0;
 }
 
-char *strcpy(char *dst, char const *src)
+char *strcpy(char *destination, char const *source)
 {
 	char const *reader;
-	char *writer = dst;
-	for(reader = src; *reader; reader++)*(writer++) = *reader;
+	char *writer = destination;
+	for(reader = source; *reader; reader++)*(writer++) = *reader;
 	*writer = '\0';
-	return dst;
+	return destination;
 }
 
 unsigned int strlen(char const *string)
