@@ -1,4 +1,5 @@
 #include "boot.h"
+#include "event.h"
 #include "font.h"
 #include "gdt.h"
 #include "graphic.h"
@@ -30,6 +31,7 @@ void main(void)
 	init_idt();
 	init_task();
 	init_memory();
+	create_event_queue();
 	init_pic();
 	init_keyboard();
 	init_mouse();
