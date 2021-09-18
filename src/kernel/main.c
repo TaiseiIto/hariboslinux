@@ -64,7 +64,23 @@ void main(void)
 	} while(memory_section != get_root_memory_section());
 	new_line_serial_polling();
 	sti_task();
-	while(1)hlt();
+	while(1)
+	{
+		Event const *event = dequeue_event();
+		if(event)switch(event->type)
+		{
+		case EVENT_TYPE_KEYBOARD_INTERRUPT:
+			printf_serial_polling("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt_event.signal);
+			break;
+		case EVENT_TYPE_MOUSE_INTERRUPT:
+			printf_serial_polling("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt_event.signal);
+			break;
+		default: // invalid event->type
+			printf_serial_polling("invalid event->type\n");
+			break;
+		}
+		else hlt();
+	}
 }
 
 BootInformation get_boot_information(void)

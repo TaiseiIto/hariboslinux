@@ -1,3 +1,4 @@
+#include "event.h"
 #include "io.h"
 #include "keyboard.h"
 #include "pic.h"
@@ -10,10 +11,11 @@ void init_keyboard(void)
 
 void keyboard_interrupt_handler(void)
 {
-	unsigned char signal;
+	Event event;
 	finish_interruption(IRQ_KEYBOARD);
-	signal = inb(PORT_KEYBOARD_DATA);
-	printf_serial_polling("keyboard signal = %#04X\n", signal);
+	event.type = EVENT_TYPE_KEYBOARD_INTERRUPT;
+	event.event_union.keyboard_interrupt_event.signal = inb(PORT_KEYBOARD_DATA);
+	enqueue_event(&event);
 }
 
 unsigned char receive_from_keyboard(void)
