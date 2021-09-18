@@ -26,6 +26,7 @@ SECTIONS
 		stack.o(.text)
 		stdio.o(.text)
 		string.o(.text)
+		task.o(.text)
 		main.o(.rodata)
 		exception.o(.rodata)
 		font.o(.rodata)
@@ -44,6 +45,7 @@ SECTIONS
 		stack.o(.rodata)
 		stdio.o(.rodata)
 		string.o(.rodata)
+		task.o(.rodata)
 		main.o(.data)
 		exception.o(.data)
 		font.o(.data)
@@ -62,6 +64,7 @@ SECTIONS
 		stack.o(.data)
 		stdio.o(.data)
 		string.o(.data)
+		task.o(.data)
 		main.o(.bss)
 		exception.o(.bss)
 		font.o(.bss)
@@ -80,6 +83,7 @@ SECTIONS
 		stack.o(.bss)
 		stdio.o(.bss)
 		string.o(.bss)
+		task.o(.bss)
 	}
 	/DISCARD/:{*(.eh_frame)}
 	/DISCARD/:{*(.note.gnu.property)}

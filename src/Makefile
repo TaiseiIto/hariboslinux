@@ -20,7 +20,7 @@ clean:
 kernel.bin: kernel/kernel.bin
 	cp $^ $@
 
-kernel/kernel.bin: kernel/boot.h kernel/exception.c kernel/exception.h kernel/font/bitmap.txt kernel/font/translator.c kernel/font/Makefile kernel/font.c kernel/font.h kernel/gdt.c kernel/gdt.h kernel/graphic.c kernel/graphic.h kernel/idt.c kernel/idt.h kernel/io.h kernel/io.s kernel/kernel.ld kernel/keyboard.c kernel/keyboard.h kernel/libgcc.c kernel/libgcc.h kernel/main.c kernel/math.c kernel/math.h kernel/memory.c kernel/memory.h kernel/mouse.c kernel/mouse.h kernel/pic.c kernel/pic.h kernel/serial.c kernel/serial.h kernel/stack.c kernel/stack.h kernel/stdio.c kernel/stdio.h kernel/stdlib.h kernel/string.c kernel/string.h
+kernel/kernel.bin: kernel/boot.h kernel/exception.c kernel/exception.h kernel/font/bitmap.txt kernel/font/translator.c kernel/font/Makefile kernel/font.c kernel/font.h kernel/gdt.c kernel/gdt.h kernel/graphic.c kernel/graphic.h kernel/idt.c kernel/idt.h kernel/io.h kernel/io.s kernel/kernel.ld kernel/keyboard.c kernel/keyboard.h kernel/libgcc.c kernel/libgcc.h kernel/main.c kernel/math.c kernel/math.h kernel/memory.c kernel/memory.h kernel/mouse.c kernel/mouse.h kernel/pic.c kernel/pic.h kernel/serial.c kernel/serial.h kernel/stack.c kernel/stack.h kernel/stdio.c kernel/stdio.h kernel/stdlib.h kernel/string.c kernel/string.h kernel/task.c kernel/task.h
 	make -C kernel
 
 rebuild: clean
