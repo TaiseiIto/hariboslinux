@@ -2,6 +2,7 @@
 #include "io.h"
 #include "memory.h"
 #include "serial.h"
+#include "task.h"
 
 MemorySection *root_memory_section;
 void * const heap_base = (void *)0x00400000;
