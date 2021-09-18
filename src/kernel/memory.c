@@ -9,6 +9,7 @@ void * const heap_base = (void *)0x00400000;
 void free(void *address)
 {
 	MemorySection *memory_section = root_memory_section;
+	cli_task();
 	do
 	{
 		if((void *)memory_section + sizeof(*memory_section) == address)
@@ -32,7 +33,10 @@ void free(void *address)
 					memory_section->next = memory_section->next->next;
 				}
 			}
-			else return; // double free error!
+			else // double free error!
+			{
+			}
+			sti_task();
 			return;
 		}
 		memory_section = memory_section->next;
@@ -105,6 +109,7 @@ void init_memory(void)
 void *malloc(size_t size)
 {
 	MemorySection *memory_section = root_memory_section;
+	cli_task();
 	do
 	{
 		if(!(memory_section->flags & MEMORY_SECTION_ALLOCATED) && size <= memory_section->size)
@@ -124,10 +129,12 @@ void *malloc(size_t size)
 				memory_section->flags |= MEMORY_SECTION_ALLOCATED;
 			}
 			root_memory_section = memory_section->next;
+			sti_task();
 			return allocated;
 		}
 		memory_section = memory_section->next;
 	} while(memory_section != root_memory_section);
+	sti_task();
 	return NULL;
 }
 
