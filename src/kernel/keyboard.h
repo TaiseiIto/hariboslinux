@@ -28,6 +28,11 @@
 #define KEYBOARD_STATUS_RECEIVE_ERROR	0x40
 #define KEYBOARD_STATUS_PARITY		0x80
 
+typedef struct _KeyboardInterruptEvent
+{
+	unsigned char signal;
+} KeyboardInterruptEvent;
+
 void init_keyboard(void);
 void keyboard_interrupt_handler(void);
 unsigned char receive_from_keyboard(void);

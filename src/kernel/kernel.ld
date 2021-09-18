@@ -9,6 +9,7 @@ SECTIONS
 	.text :
 	{
 		main.o(.text)
+		event.o(.text)
 		exception.o(.text)
 		font.o(.text)
 		fontdata.o(.text)
@@ -29,6 +30,7 @@ SECTIONS
 		string.o(.text)
 		task.o(.text)
 		main.o(.rodata)
+		event.o(.rodata)
 		exception.o(.rodata)
 		font.o(.rodata)
 		fontdata.o(.rodata)
@@ -49,6 +51,7 @@ SECTIONS
 		string.o(.rodata)
 		task.o(.rodata)
 		main.o(.data)
+		event.o(.data)
 		exception.o(.data)
 		font.o(.data)
 		fontdata.o(.data)
@@ -69,6 +72,7 @@ SECTIONS
 		string.o(.data)
 		task.o(.data)
 		main.o(.bss)
+		event.o(.bss)
 		exception.o(.bss)
 		font.o(.bss)
 		fontdata.o(.bss)
