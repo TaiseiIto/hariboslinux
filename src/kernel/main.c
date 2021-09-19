@@ -64,7 +64,6 @@ void main(void)
 		memory_section = memory_section->next;
 	} while(memory_section != get_root_memory_section());
 	new_line_serial_polling();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "Hello, World!");
 	sti_task();
 	while(1)
 	{
