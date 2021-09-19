@@ -32,8 +32,13 @@ void sti_task(void)
 	foreground_color.red = 0xff;
 	foreground_color.green = 0xff;
 	foreground_color.blue = 0xff;
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "current_task = %p", current_task);
-	if(current_task->interrupt_prohibition_level)if(!(--current_task->interrupt_prohibition_level))sti();
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "current_task = %p, interrupt_prohibition_level = %d", current_task, current_task->interrupt_prohibition_level);
+	if(current_task->interrupt_prohibition_level)if(!(--current_task->interrupt_prohibition_level))
+	{
+		printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "before sti");
+		sti();
+		printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "after sti");
+	}
 	else return; // double sti error!
 }
 
