@@ -67,7 +67,9 @@ void main(void)
 	sti_task();
 	while(1)
 	{
-		Event const *event = dequeue_event();
+		Event const *event;
+		printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "loop_time = %d\n", loop_time);
+		event = dequeue_event();
 		if(event)switch(event->type)
 		{
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
@@ -81,7 +83,7 @@ void main(void)
 		}
 		else
 		{
-			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "loop_time = %d\n", loop_time);
+			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "loop_time = %d\n", loop_time);
 			hlt();
 		}
 		loop_time++;
