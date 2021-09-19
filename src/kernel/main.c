@@ -20,6 +20,7 @@ void main(void)
 	Color background_color;
 	Color color;
 	Color foreground_color;
+	unsigned int loop_time = 0;
 	MemoryRegionDescriptor memory_region_descriptor;
 	MemorySection const *memory_section;
 	unsigned int memory_region_descriptor_index;
@@ -78,7 +79,12 @@ void main(void)
 		default: // invalid event->type
 			break;
 		}
-		else hlt();
+		else
+		{
+			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "loop_time = %d\n", loop_time);
+			hlt();
+		}
+		loop_time++;
 	}
 }
 
