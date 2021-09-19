@@ -23,7 +23,7 @@ void main(void)
 	MemoryRegionDescriptor memory_region_descriptor;
 	MemorySection const *memory_section;
 	unsigned int memory_region_descriptor_index;
-	unsigned short screen_text_row = 0;
+	unsigned short screen_text_row = 2;
 	cli();
 	new_line_serial_polling();
 	print_serial_polling("Hello, kernel.bin!\n\n");
@@ -71,9 +71,11 @@ void main(void)
 		{
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_serial_polling("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt_event.signal);
+			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt_event.signal);
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
 			printf_serial_polling("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt_event.signal);
+			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt_event.signal);
 			break;
 		default: // invalid event->type
 			printf_serial_polling("invalid event->type\n");
