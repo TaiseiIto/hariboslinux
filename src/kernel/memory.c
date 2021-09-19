@@ -66,7 +66,7 @@ void init_memory(void)
 	do
 	{
 		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);
-		printf_serial_polling("base = %#018llX, length = %#018llX, type = %#010X, attribute = %#010X\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
+		printf_serial_polling("base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
 		if(memory_region_descriptor.type == 0x00000001 && (unsigned long long int)(unsigned int)heap_base + sizeof(MemorySection) < memory_region_descriptor.base + memory_region_descriptor.length && memory_region_descriptor.base < 0x0000000100000000)
 		{
 			if(memory_region_descriptor.base < (unsigned long long int)(unsigned int)heap_base)

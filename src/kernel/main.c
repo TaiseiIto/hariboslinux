@@ -43,16 +43,16 @@ void main(void)
 	foreground_color.red = 0xff;
 	foreground_color.green = 0xff;
 	foreground_color.blue = 0xff;
-	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04X", boot_information.keyboard_state);
-	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04X", boot_information.last_loaded_cylinder);
-	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04X", boot_information.last_loaded_head);
-	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04X", boot_information.last_loaded_sector);
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04x", boot_information.keyboard_state);
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04x", boot_information.last_loaded_cylinder);
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04x", boot_information.last_loaded_head);
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04x", boot_information.last_loaded_sector);
 	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "memory regions");
 	memory_region_descriptor_index = 0;
 	do
 	{
 		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);
-		printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "base = %#018llX, length = %#018llX, type = %#010X, attribute = %#010X\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
+		printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
 	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "memory sections");

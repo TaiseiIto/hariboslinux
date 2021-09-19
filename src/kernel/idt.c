@@ -73,12 +73,12 @@ void init_idt(void)
 	{
 		InterruptDescriptor interrupt_descriptor_checker;
 		reads(idt_segment_selector, source, &interrupt_descriptor_checker, sizeof(interrupt_descriptor_checker));
-		printf_serial_polling("Interrupt Descriptor %#010X\n", (unsigned int)source / sizeof(*source));
-		printf_serial_polling("\t offset_low\t%#06X\n", interrupt_descriptor_checker.offset_low);
-		printf_serial_polling("\t selector\t%#06X\n", interrupt_descriptor_checker.selector);
-		printf_serial_polling("\t zero\t\t%#04X\n", interrupt_descriptor_checker.zero);
-		printf_serial_polling("\t flags\t\t%#04X\n", interrupt_descriptor_checker.flags);
-		printf_serial_polling("\t offset_high\t%#06X\n", interrupt_descriptor_checker.offset_high);
+		printf_serial_polling("Interrupt Descriptor %#010x\n", (unsigned int)source / sizeof(*source));
+		printf_serial_polling("\t offset_low\t%#06x\n", interrupt_descriptor_checker.offset_low);
+		printf_serial_polling("\t selector\t%#06x\n", interrupt_descriptor_checker.selector);
+		printf_serial_polling("\t zero\t\t%#04x\n", interrupt_descriptor_checker.zero);
+		printf_serial_polling("\t flags\t\t%#04x\n", interrupt_descriptor_checker.flags);
+		printf_serial_polling("\t offset_high\t%#06x\n", interrupt_descriptor_checker.offset_high);
 	}
 }
 

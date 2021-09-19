@@ -84,29 +84,29 @@ void init_gdt(void)
 
 	// check new GDT
 	print_serial_polling("check new GDT\n");
-	printf_serial_polling("whole_memory_segment_selector = %#06X\n", whole_memory_segment_selector);
-	printf_serial_polling("kernel_code_segment_selector = %#06X\n", kernel_code_segment_selector);
-	printf_serial_polling("gdt_segment_selector = %#06X\n", gdt_segment_selector);
-	printf_serial_polling("idt_segment_selector = %#06X\n", idt_segment_selector);
-	printf_serial_polling("video_information_segment_selector = %#06X\n", video_information_segment_selector);
-	printf_serial_polling("boot_information_segment_selector = %#06X\n", boot_information_segment_selector);
-	printf_serial_polling("memory_map_segment_selector = %#06X\n", memory_map_segment_selector);
-	printf_serial_polling("loaded_disk_segment_selector = %#06X\n", loaded_disk_segment_selector);
-	printf_serial_polling("first_fat_segment_selector = %#06X\n", first_fat_segment_selector);
-	printf_serial_polling("second_fat_segment_selector = %#06X\n", second_fat_segment_selector);
-	printf_serial_polling("root_directory_entry_segment_selector = %#06X\n", root_directory_entry_segment_selector);
+	printf_serial_polling("whole_memory_segment_selector = %#06x\n", whole_memory_segment_selector);
+	printf_serial_polling("kernel_code_segment_selector = %#06x\n", kernel_code_segment_selector);
+	printf_serial_polling("gdt_segment_selector = %#06x\n", gdt_segment_selector);
+	printf_serial_polling("idt_segment_selector = %#06x\n", idt_segment_selector);
+	printf_serial_polling("video_information_segment_selector = %#06x\n", video_information_segment_selector);
+	printf_serial_polling("boot_information_segment_selector = %#06x\n", boot_information_segment_selector);
+	printf_serial_polling("memory_map_segment_selector = %#06x\n", memory_map_segment_selector);
+	printf_serial_polling("loaded_disk_segment_selector = %#06x\n", loaded_disk_segment_selector);
+	printf_serial_polling("first_fat_segment_selector = %#06x\n", first_fat_segment_selector);
+	printf_serial_polling("second_fat_segment_selector = %#06x\n", second_fat_segment_selector);
+	printf_serial_polling("root_directory_entry_segment_selector = %#06x\n", root_directory_entry_segment_selector);
 	new_line_serial_polling();
 	source = (SegmentDescriptor *)0x00000008;
 	do
 	{
 		reads(gdt_segment_selector, source, &segment_checker, sizeof(segment_checker));
-		printf_serial_polling("Segment Descriptor %#010X\n", source);
-		printf_serial_polling("\tlimit_low\t%#06X\n", segment_checker.limit_low);
-		printf_serial_polling("\tbase_low\t%#06X\n", segment_checker.base_low);
-		printf_serial_polling("\tbase_mid\t%#04X\n", segment_checker.base_mid);
-		printf_serial_polling("\taccess_right\t%#04X\n", segment_checker.access_right);
-		printf_serial_polling("\tlimit_high\t%#04X\n", segment_checker.limit_high);
-		printf_serial_polling("\tbase_high\t%#04X\n", segment_checker.base_high);
+		printf_serial_polling("Segment Descriptor %#010x\n", source);
+		printf_serial_polling("\tlimit_low\t%#06x\n", segment_checker.limit_low);
+		printf_serial_polling("\tbase_low\t%#06x\n", segment_checker.base_low);
+		printf_serial_polling("\tbase_mid\t%#04x\n", segment_checker.base_mid);
+		printf_serial_polling("\taccess_right\t%#04x\n", segment_checker.access_right);
+		printf_serial_polling("\tlimit_high\t%#04x\n", segment_checker.limit_high);
+		printf_serial_polling("\tbase_high\t%#04x\n", segment_checker.base_high);
 		source++;
 	}while(segment_checker.access_right & SEGMENT_DESCRIPTOR_PRESENT);
 	new_line_serial_polling();

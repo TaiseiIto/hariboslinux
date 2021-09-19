@@ -42,19 +42,19 @@ void init_screen(void)
 	reads(video_information_segment_selector, (void *)0x00000000, (void *)&video_information, sizeof(video_information));
 	vram_segment_selector = set_segment(video_information.frame_buffer, video_information.pitch * video_information.height, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	new_line_serial_polling();
-	printf_serial_polling("video_information.attributes = %#06X\n", video_information.attributes);
-	printf_serial_polling("video_information.pitch = %#06X\n", video_information.pitch);
-	printf_serial_polling("video_information.width = %#06X\n", video_information.width);
-	printf_serial_polling("video_information.height = %#06X\n", video_information.height);
-	printf_serial_polling("video_information.bits_per_pixel = %#04X\n", video_information.bits_per_pixel);
-	printf_serial_polling("video_information.memory_model = %#04X\n", video_information.memory_model);
-	printf_serial_polling("video_information.red_mask = %#04X\n", video_information.red_mask);
-	printf_serial_polling("video_information.red_positioin = %#04X\n", video_information.red_position);
-	printf_serial_polling("video_information.green_mask = %#04X\n", video_information.green_mask);
-	printf_serial_polling("video_information.green_positioin = %#04X\n", video_information.green_position);
-	printf_serial_polling("video_information.blue_mask = %#04X\n", video_information.blue_mask);
-	printf_serial_polling("video_information.blue_positioin = %#04X\n", video_information.blue_position);
-	printf_serial_polling("video_information.frame_buffer = %#010X\n", video_information.frame_buffer);
+	printf_serial_polling("video_information.attributes = %#06x\n", video_information.attributes);
+	printf_serial_polling("video_information.pitch = %#06x\n", video_information.pitch);
+	printf_serial_polling("video_information.width = %#06x\n", video_information.width);
+	printf_serial_polling("video_information.height = %#06x\n", video_information.height);
+	printf_serial_polling("video_information.bits_per_pixel = %#04x\n", video_information.bits_per_pixel);
+	printf_serial_polling("video_information.memory_model = %#04x\n", video_information.memory_model);
+	printf_serial_polling("video_information.red_mask = %#04x\n", video_information.red_mask);
+	printf_serial_polling("video_information.red_positioin = %#04x\n", video_information.red_position);
+	printf_serial_polling("video_information.green_mask = %#04x\n", video_information.green_mask);
+	printf_serial_polling("video_information.green_positioin = %#04x\n", video_information.green_position);
+	printf_serial_polling("video_information.blue_mask = %#04x\n", video_information.blue_mask);
+	printf_serial_polling("video_information.blue_positioin = %#04x\n", video_information.blue_position);
+	printf_serial_polling("video_information.frame_buffer = %#010x\n", video_information.frame_buffer);
 }
 
 // put character at screen(x, y)
