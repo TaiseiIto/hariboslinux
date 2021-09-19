@@ -24,22 +24,22 @@ void init_mouse(void)
 	set_mouse_sample_rate(100);
 	set_mouse_sample_rate(80);
 	send_to_mouse(MOUSE_COMMAND_GET_ID);
-	//printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
-	//mouseID = receive_from_keyboard();
-	//printf_serial_polling("mouse ID = %#04X\n", mouseID);
+	printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
+	mouseID = receive_from_keyboard();
+	printf_serial_polling("mouse ID = %#04X\n", mouseID);
 
 	// upgrade mouse ID from 3 to 4
 	set_mouse_sample_rate(200);
 	set_mouse_sample_rate(200);
 	set_mouse_sample_rate(80);
 	send_to_mouse(MOUSE_COMMAND_GET_ID);
-	//printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
-	//mouseID = receive_from_keyboard();
-	//printf_serial_polling("mouse ID = %#04X\n", mouseID);
+	printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
+	mouseID = receive_from_keyboard();
+	printf_serial_polling("mouse ID = %#04X\n", mouseID);
 
 	// enable packet streaming
 	send_to_mouse(MOUSE_COMMAND_ENABLE_PACKET_STREAMING);
-	//printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
+	printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
 }
 
 void mouse_interrupt_handler(void)
@@ -59,7 +59,7 @@ void send_to_mouse(unsigned char data)
 void set_mouse_sample_rate(unsigned char rate)
 {
 	send_to_mouse(MOUSE_COMMAND_SET_SAMPLE_RATE);
-	//printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
+	printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
 	send_to_mouse(rate);
-	//printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
+	printf_serial_polling("mouse ACK = %#04X\n", receive_from_keyboard());
 }
