@@ -19,7 +19,7 @@ void *dequeue(Queue *queue)
 	{
 		QueueElement *dequeued_element = queue->read_head;
 		cli_task();
-		memcpy(queue->io, dequeued_element, queue->element_size);
+		memcpy(queue->io, dequeued_element->data, queue->element_size);
 		queue->read_head = queue->read_head->next;
 		if(!queue->read_head)queue->write_head = NULL; // dequeue last element
 		free(dequeued_element->data);
