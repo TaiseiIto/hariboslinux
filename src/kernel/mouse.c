@@ -1,3 +1,4 @@
+#include "event.h"
 #include "io.h"
 #include "keyboard.h"
 #include "mouse.h"
@@ -43,10 +44,11 @@ void init_mouse(void)
 
 void mouse_interrupt_handler(void)
 {
-	unsigned char signal;
+	Event event;
 	finish_interruption(IRQ_MOUSE);
-	signal = inb(PORT_KEYBOARD_DATA);
-	printf_serial_polling("mouse signal = %#04X\n", signal);
+	event.type = EVENT_TYPE_MOUSE_INTERRUPT;
+	event.event_union.mouse_interrupt_event.signal = inb(PORT_KEYBOARD_DATA);
+	enqueue_event(&event);
 }
 
 void send_to_mouse(unsigned char data)
