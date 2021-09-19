@@ -62,7 +62,7 @@ void init_memory(void)
 	MemorySection *memory_section;
 	unsigned int memory_region_descriptor_index = 0;;
 	root_memory_section = NULL;
-	printf_serial_polling("\nCheck memory regions\n");
+	print_serial_polling("\nCheck memory regions\n");
 	do
 	{
 		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);
@@ -98,13 +98,14 @@ void init_memory(void)
 		}
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
-	printf_serial_polling("\nCheck memory sections\n");
+	print_serial_polling("\nCheck memory sections\n");
 	memory_section = root_memory_section;
 	do
 	{
 		printf_serial_polling("previous = %p, this = %p, next = %p, size = %#010x, flags = %#04x\n", memory_section->previous, memory_section, memory_section->next, memory_section->size, memory_section->flags);
 		memory_section = memory_section->next;
 	}while(memory_section != root_memory_section);
+	new_line_serial_polling();
 }
 
 void *malloc(size_t size)
