@@ -16,6 +16,15 @@
 	.extern	fpu_error_exception_handler
 	.extern	general_protection_fault_exception_handler
 	.extern interrupt_handler0x0f
+	.extern interrupt_handler0x15
+	.extern interrupt_handler0x16
+	.extern interrupt_handler0x17
+	.extern interrupt_handler0x18
+	.extern interrupt_handler0x19
+	.extern interrupt_handler0x1a
+	.extern interrupt_handler0x1b
+	.extern interrupt_handler0x1c
+	.extern interrupt_handler0x1d
 	.extern	invalid_opcode_exception_handler
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
@@ -53,6 +62,15 @@
 	.globl	interrupt_gate0x12
 	.globl	interrupt_gate0x13
 	.globl	interrupt_gate0x14
+	.globl	interrupt_gate0x15
+	.globl	interrupt_gate0x16
+	.globl	interrupt_gate0x17
+	.globl	interrupt_gate0x18
+	.globl	interrupt_gate0x19
+	.globl	interrupt_gate0x1a
+	.globl	interrupt_gate0x1b
+	.globl	interrupt_gate0x1c
+	.globl	interrupt_gate0x1d
 	.globl	interrupt_gate0x1e
 	.globl	interrupt_gate0x21
 	.globl	interrupt_gate0x2c
@@ -81,6 +99,15 @@
 	.type	interrupt_gate0x12,	@function
 	.type	interrupt_gate0x13,	@function
 	.type	interrupt_gate0x14,	@function
+	.type	interrupt_gate0x15,	@function
+	.type	interrupt_gate0x16,	@function
+	.type	interrupt_gate0x17,	@function
+	.type	interrupt_gate0x18,	@function
+	.type	interrupt_gate0x19,	@function
+	.type	interrupt_gate0x1a,	@function
+	.type	interrupt_gate0x1b,	@function
+	.type	interrupt_gate0x1c,	@function
+	.type	interrupt_gate0x1d,	@function
 	.type	interrupt_gate0x1e,	@function
 	.type	interrupt_gate0x21,	@function
 	.type	interrupt_gate0x2c,	@function
@@ -765,6 +792,303 @@ interrupt_gate0x14:		# void interrupt_gate0x14(void);
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	virtualization_exception_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x15:		# void interrupt_gate0x15(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x15
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x16:		# void interrupt_gate0x16(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x16
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x17:		# void interrupt_gate0x17(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x17
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x18:		# void interrupt_gate0x18(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x18
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x19:		# void interrupt_gate0x19(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x19
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x1a:		# void interrupt_gate0x1a(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x1a
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x1b:		# void interrupt_gate0x1b(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x1b
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x1c:		# void interrupt_gate0x1c(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x1c
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // reserfed exception handler
+interrupt_gate0x1d:		# void interrupt_gate0x1d(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x1d
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds

@@ -59,6 +59,24 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000013, interrupt_gate0x13, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// virtualization exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000014, interrupt_gate0x14, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000015, interrupt_gate0x15, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000016, interrupt_gate0x16, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000017, interrupt_gate0x17, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000018, interrupt_gate0x18, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000019, interrupt_gate0x19, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001a, interrupt_gate0x1a, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001b, interrupt_gate0x1b, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001c, interrupt_gate0x1c, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001d, interrupt_gate0x1d, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// security exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001e, interrupt_gate0x1e, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt

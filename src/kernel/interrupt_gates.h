@@ -64,6 +64,33 @@ void interrupt_gate0x13(void);
 // virtualization exception gate
 void interrupt_gate0x14(void);
 
+// reserved exception gate
+void interrupt_gate0x15(void);
+
+// reserved exception gate
+void interrupt_gate0x16(void);
+
+// reserved exception gate
+void interrupt_gate0x17(void);
+
+// reserved exception gate
+void interrupt_gate0x18(void);
+
+// reserved exception gate
+void interrupt_gate0x19(void);
+
+// reserved exception gate
+void interrupt_gate0x1a(void);
+
+// reserved exception gate
+void interrupt_gate0x1b(void);
+
+// reserved exception gate
+void interrupt_gate0x1c(void);
+
+// reserved exception gate
+void interrupt_gate0x1d(void);
+
 // security exception gate
 void interrupt_gate0x1e(void);
 
