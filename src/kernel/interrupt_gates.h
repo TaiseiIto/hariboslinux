@@ -145,5 +145,8 @@ void interrupt_gate0x2e(void);
 // secondary ATA hard disk interrupt gate
 void interrupt_gate0x2f(void);
 
+// other interrupt gates
+void interrupt_gate0x30(void);
+
 #endif
 

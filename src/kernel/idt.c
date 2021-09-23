@@ -113,6 +113,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000002e, interrupt_gate0x2e, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// secondary ATA hard disk interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000002f, interrupt_gate0x2f, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// other interrupts
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000030, interrupt_gate0x30, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 
 	// load IDT
 	lidt(0x07ff, IDT_ADDR);

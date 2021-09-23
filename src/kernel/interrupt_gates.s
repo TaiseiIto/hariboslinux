@@ -18,6 +18,7 @@
 	.extern	double_fault_exception_handler
 	.extern	fpu_error_exception_handler
 	.extern	general_protection_fault_exception_handler
+	.extern interrupt_handler0x30
 	.extern	invalid_opcode_exception_handler
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
@@ -103,6 +104,7 @@
 	.globl	interrupt_gate0x2d
 	.globl	interrupt_gate0x2e
 	.globl	interrupt_gate0x2f
+	.globl	interrupt_gate0x30
 
 	.set	kernel_data_segment_selector,0x0008
 
@@ -154,6 +156,7 @@
 	.type	interrupt_gate0x2d,	@function
 	.type	interrupt_gate0x2e,	@function
 	.type	interrupt_gate0x2f,	@function
+	.type	interrupt_gate0x30,	@function
 
 				# // devide by 0 exception handler
 interrupt_gate0x00:		# void interrupt_gate0x00(void);
@@ -1724,6 +1727,38 @@ interrupt_gate0x2f:		# void interrupt_gate0x2f(void);
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	secondary_ATA_hard_disk_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+interrupt_gate0x30:		# void interrupt_gate0x30(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x30
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
