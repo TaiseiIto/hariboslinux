@@ -31,6 +31,8 @@
 	.extern	invalid_opcode_exception_handler
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
+	.extern lpt1_interrupt_handler
+	.extern lpt2_interrupt_handler
 	.extern	machine_check_exception_handler
 	.extern mouse_interrupt_handler
 	.extern	non_maskable_interrupt_handler
@@ -83,6 +85,8 @@
 	.globl	interrupt_gate0x22
 	.globl	interrupt_gate0x23
 	.globl	interrupt_gate0x24
+	.globl	interrupt_gate0x25
+	.globl	interrupt_gate0x27
 	.globl	interrupt_gate0x2c
 	.globl	interrupt_gate0x2d
 
@@ -125,6 +129,8 @@
 	.type	interrupt_gate0x22,	@function
 	.type	interrupt_gate0x23,	@function
 	.type	interrupt_gate0x24,	@function
+	.type	interrupt_gate0x25,	@function
+	.type	interrupt_gate0x27,	@function
 	.type	interrupt_gate0x2c,	@function
 	.type	interrupt_gate0x2d,	@function
 
@@ -1335,6 +1341,72 @@ interrupt_gate0x24:		# void interrupt_gate0x24(void);
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	com1_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // LPT2 interrupt handler
+interrupt_gate0x25:		# void interrupt_gate0x25(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	lpt2_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // LPT1 interrupt handler
+interrupt_gate0x27:		# void interrupt_gate0x27(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	lpt1_interrupt_handler
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds

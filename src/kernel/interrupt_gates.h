@@ -112,6 +112,12 @@ void interrupt_gate0x23(void);
 // COM1 interrupt gate
 void interrupt_gate0x24(void);
 
+// LPT2 interrupt gate
+void interrupt_gate0x25(void);
+
+// LPT1 interrupt gate
+void interrupt_gate0x27(void);
+
 // mouse interrupt gate
 void interrupt_gate0x2c(void);
 
