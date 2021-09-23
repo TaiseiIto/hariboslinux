@@ -121,6 +121,9 @@ void interrupt_gate0x26(void);
 // LPT1 interrupt gate
 void interrupt_gate0x27(void);
 
+// real time clock interrupt gate
+void interrupt_gate0x28(void);
+
 // mouse interrupt gate
 void interrupt_gate0x2c(void);
 
