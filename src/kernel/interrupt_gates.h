@@ -106,6 +106,12 @@ void interrupt_gate0x21(void);
 // slave pic interrupt gate
 void interrupt_gate0x22(void);
 
+// COM2 interrupt gate
+void interrupt_gate0x23(void);
+
+// COM1 interrupt gate
+void interrupt_gate0x24(void);
+
 // mouse interrupt gate
 void interrupt_gate0x2c(void);
 

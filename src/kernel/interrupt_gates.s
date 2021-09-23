@@ -8,6 +8,8 @@
 	.extern	bound_range_exceeded_exception_handler
 	.extern	breakpoint_exception_handler
 	.extern cli_task_interrupt
+	.extern com1_interrupt_handler
+	.extern com2_interrupt_handler
 	.extern	coprocessor_segment_overrun_exception_handler
 	.extern	debug_exception_handler
 	.extern	device_not_available_exception_handler
@@ -79,6 +81,8 @@
 	.globl	interrupt_gate0x20
 	.globl	interrupt_gate0x21
 	.globl	interrupt_gate0x22
+	.globl	interrupt_gate0x23
+	.globl	interrupt_gate0x24
 	.globl	interrupt_gate0x2c
 	.globl	interrupt_gate0x2d
 
@@ -119,6 +123,8 @@
 	.type	interrupt_gate0x20,	@function
 	.type	interrupt_gate0x21,	@function
 	.type	interrupt_gate0x22,	@function
+	.type	interrupt_gate0x23,	@function
+	.type	interrupt_gate0x24,	@function
 	.type	interrupt_gate0x2c,	@function
 	.type	interrupt_gate0x2d,	@function
 
@@ -1263,6 +1269,72 @@ interrupt_gate0x22:		# void interrupt_gate0x22(void);
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	slave_pic_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // COM2 interrupt handler
+interrupt_gate0x23:		# void interrupt_gate0x23(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	com2_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // COM1 interrupt handler
+interrupt_gate0x24:		# void interrupt_gate0x24(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	com1_interrupt_handler
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds

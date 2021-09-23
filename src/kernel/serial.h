@@ -1,6 +1,12 @@
 #ifndef _SERIAL_H_
 #define _SERIAL_H_
 
+// COM1 interrupt handler
+void com1_interrupt_handler(void);
+
+// COM2 interrupt handler
+void com2_interrupt_handler(void);
+
 // print LF
 void new_line_serial_polling(void);
 
