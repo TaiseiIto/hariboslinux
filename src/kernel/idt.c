@@ -87,6 +87,16 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_gate0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// slave pic interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000022, interrupt_gate0x22, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// COM2 interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000023, interrupt_gate0x23, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// COM1 interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000024, interrupt_gate0x24, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// LPT2 interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000025, interrupt_gate0x25, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// disk interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000026, interrupt_gate0x26, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// LPT1 interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000027, interrupt_gate0x27, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// mouse interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000002c, interrupt_gate0x2c, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// FPU error exception

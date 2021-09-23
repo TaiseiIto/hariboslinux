@@ -9,6 +9,7 @@ SECTIONS
 	.text :
 	{
 		main.o(.text)
+		disk.o(.text)
 		event.o(.text)
 		exception.o(.text)
 		font.o(.text)
@@ -34,6 +35,7 @@ SECTIONS
 		task.o(.text)
 		timer.o(.text)
 		main.o(.rodata)
+		disk.o(.rodata)
 		event.o(.rodata)
 		exception.o(.rodata)
 		font.o(.rodata)
@@ -59,6 +61,7 @@ SECTIONS
 		task.o(.rodata)
 		timer.o(.rodata)
 		main.o(.data)
+		disk.o(.data)
 		event.o(.data)
 		exception.o(.data)
 		font.o(.data)
@@ -84,6 +87,7 @@ SECTIONS
 		task.o(.data)
 		timer.o(.data)
 		main.o(.bss)
+		disk.o(.bss)
 		event.o(.bss)
 		exception.o(.bss)
 		font.o(.bss)
