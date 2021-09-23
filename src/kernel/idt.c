@@ -97,6 +97,14 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000026, interrupt_gate0x26, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// LPT1 interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000027, interrupt_gate0x27, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// real time clock interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000028, interrupt_gate0x28, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// peripheral0 interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x00000029, interrupt_gate0x29, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// peripheral1 interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000002a, interrupt_gate0x2a, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// peripheral2 interrupt
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000002b, interrupt_gate0x2b, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// mouse interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000002c, interrupt_gate0x2c, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// FPU error exception

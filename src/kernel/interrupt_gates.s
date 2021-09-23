@@ -39,6 +39,9 @@
 	.extern	non_maskable_interrupt_handler
 	.extern	overflow_exception_handler
 	.extern	page_fault_exeption_handler
+	.extern peripheral0_interrupt_handler
+	.extern peripheral1_interrupt_handler
+	.extern peripheral2_interrupt_handler
 	.extern real_time_clock_interrupt_handler
 	.extern	security_exception_handler
 	.extern	segment_not_present_exception_handler
@@ -91,6 +94,9 @@
 	.globl	interrupt_gate0x26
 	.globl	interrupt_gate0x27
 	.globl	interrupt_gate0x28
+	.globl	interrupt_gate0x29
+	.globl	interrupt_gate0x2a
+	.globl	interrupt_gate0x2b
 	.globl	interrupt_gate0x2c
 	.globl	interrupt_gate0x2d
 
@@ -137,6 +143,9 @@
 	.type	interrupt_gate0x26,	@function
 	.type	interrupt_gate0x27,	@function
 	.type	interrupt_gate0x28,	@function
+	.type	interrupt_gate0x29,	@function
+	.type	interrupt_gate0x2a,	@function
+	.type	interrupt_gate0x2b,	@function
 	.type	interrupt_gate0x2c,	@function
 	.type	interrupt_gate0x2d,	@function
 
@@ -1479,6 +1488,104 @@ interrupt_gate0x28:		# void interrupt_gate0x28(void);
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	real_time_clock_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+				# // peripheral0 interrupt handler
+interrupt_gate0x29:		# void interrupt_gate0x29(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	peripheral0_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // peripheral1 interrupt handler
+interrupt_gate0x2a:		# void interrupt_gate0x2a(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	peripheral1_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // peripheral2 interrupt handler
+interrupt_gate0x2b:		# void interrupt_gate0x2b(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	peripheral2_interrupt_handler
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds

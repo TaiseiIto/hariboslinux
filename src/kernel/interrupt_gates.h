@@ -124,6 +124,15 @@ void interrupt_gate0x27(void);
 // real time clock interrupt gate
 void interrupt_gate0x28(void);
 
+// peripheral0 interrupt gate
+void interrupt_gate0x29(void);
+
+// peripheral1 interrupt gate
+void interrupt_gate0x2a(void);
+
+// peripheral2 interrupt gate
+void interrupt_gate0x2b(void);
+
 // mouse interrupt gate
 void interrupt_gate0x2c(void);
 
