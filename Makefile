@@ -94,7 +94,7 @@ gitconfig:
 
 # rebuild the OS
 rebuild: clean
-	make | tee $(MAKE_OUT)
+	make 2>&1 | tee $(MAKE_OUT)
 
 # run the OS on QEMU
 run: $(IMAGE_FILE) stop

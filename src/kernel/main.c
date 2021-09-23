@@ -11,6 +11,7 @@
 #include "serial.h"
 #include "stdio.h"
 #include "task.h"
+#include "timer.h"
 
 BootInformation get_boot_information(void);
 
@@ -33,6 +34,7 @@ void main(void)
 	init_memory();
 	create_event_queue();
 	init_pic();
+	init_timer();
 	init_keyboard();
 	init_mouse();
 	init_screen();
