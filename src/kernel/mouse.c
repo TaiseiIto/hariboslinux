@@ -12,10 +12,15 @@
 #define MOUSE_COMMAND_SET_DEFAULTS		0xf6
 #define MOUSE_COMMAND_RESET			0xff
 
-unsigned char mouseID;
+unsigned char mouse_id;
 
 void send_to_mouse(unsigned char data);
 void set_mouse_sample_rate(unsigned char rate);
+
+unsigned char get_mouse_id(void)
+{
+	return mouse_id;
+}
 
 void init_mouse(void)
 {
@@ -25,8 +30,8 @@ void init_mouse(void)
 	set_mouse_sample_rate(80);
 	send_to_mouse(MOUSE_COMMAND_GET_ID);
 	printf_serial_polling("mouse ACK = %#04x\n", receive_from_keyboard());
-	mouseID = receive_from_keyboard();
-	printf_serial_polling("mouse ID = %#04x\n", mouseID);
+	mouse_id = receive_from_keyboard();
+	printf_serial_polling("mouse ID = %#04x\n", mouse_id);
 
 	// upgrade mouse ID from 3 to 4
 	set_mouse_sample_rate(200);
@@ -34,8 +39,8 @@ void init_mouse(void)
 	set_mouse_sample_rate(80);
 	send_to_mouse(MOUSE_COMMAND_GET_ID);
 	printf_serial_polling("mouse ACK = %#04x\n", receive_from_keyboard());
-	mouseID = receive_from_keyboard();
-	printf_serial_polling("mouse ID = %#04x\n", mouseID);
+	mouse_id = receive_from_keyboard();
+	printf_serial_polling("mouse ID = %#04x\n", mouse_id);
 
 	// enable packet streaming
 	send_to_mouse(MOUSE_COMMAND_ENABLE_PACKET_STREAMING);

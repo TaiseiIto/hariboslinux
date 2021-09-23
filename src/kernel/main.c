@@ -43,6 +43,7 @@ void main(void)
 	foreground_color.red = 0xff;
 	foreground_color.green = 0xff;
 	foreground_color.blue = 0xff;
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "mouse ID = %#04x", get_mouse_id());
 	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04x", boot_information.keyboard_state);
 	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04x", boot_information.last_loaded_cylinder);
 	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04x", boot_information.last_loaded_head);
