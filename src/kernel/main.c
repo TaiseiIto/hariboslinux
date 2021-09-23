@@ -20,7 +20,6 @@ void main(void)
 	Color background_color;
 	Color color;
 	Color foreground_color;
-	unsigned int loop_time = 0;
 	MemoryRegionDescriptor memory_region_descriptor;
 	MemorySection const *memory_section;
 	unsigned int memory_region_descriptor_index;
@@ -68,7 +67,6 @@ void main(void)
 	while(1)
 	{
 		Event const *event;
-		printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "loop_time = %d", loop_time);
 		event = dequeue_event();
 		if(event)switch(event->type)
 		{
@@ -81,14 +79,10 @@ void main(void)
 			printf_serial_polling("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt_event.signal);
 			break;
 		default: // invalid event->type
+			printf_serial_polling("invalid event->type %#04x\n", event->type);
 			break;
 		}
-		else
-		{
-			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "loop_time = %d\n", loop_time);
-			hlt();
-		}
-		loop_time++;
+		else hlt();
 	}
 }
 
