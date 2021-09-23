@@ -47,6 +47,7 @@
 	.globl	interrupt_gate0x0c
 	.globl	interrupt_gate0x0d
 	.globl	interrupt_gate0x0e
+	.globl	interrupt_gate0x0f
 	.globl	interrupt_gate0x10
 	.globl	interrupt_gate0x11
 	.globl	interrupt_gate0x12
