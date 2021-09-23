@@ -74,9 +74,11 @@ void main(void)
 		{
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt_event.signal);
+			printf_serial_polling("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt_event.signal);
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
 			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt_event.signal);
+			printf_serial_polling("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt_event.signal);
 			break;
 		default: // invalid event->type
 			break;
