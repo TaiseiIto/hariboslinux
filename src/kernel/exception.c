@@ -2,6 +2,7 @@
 #include "font.h"
 #include "graphic.h"
 #include "io.h"
+#include "pic.h"
 #include "serial.h"
 
 void kernel_panic(void);
@@ -453,6 +454,7 @@ void simd_floating_point_exception_handler(void)
 {
 	Color background_color;
 	Color foreground_color;
+	finish_interruption(IRQ_FLOATING_POINT_UNIT);
 	background_color.red = 0x00;
 	background_color.green = 0x00;
 	background_color.blue = 0x00;

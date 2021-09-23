@@ -93,5 +93,6 @@ void init_pic(void)
 
 void slave_pic_interrupt_handler(void)
 {
+	finish_interruption(IRQ_SLAVE_PIC);
 }
 

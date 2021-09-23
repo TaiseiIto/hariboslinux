@@ -1,4 +1,5 @@
 #include "io.h"
+#include "pic.h"
 #include "serial.h"
 #include "stdio.h"
 
@@ -7,13 +8,15 @@
 // COM1 interrupt handler
 void com1_interrupt_handler(void)
 {
+	finish_interruption(IRQ_COM1);
 	print_serial_polling("COM1 interrupt\n");
 }
 
 // COM2 interrupt handler
 void com2_interrupt_handler(void)
 {
-	print_serial_polling("COM1 interrupt\n");
+	finish_interruption(IRQ_COM2);
+	print_serial_polling("COM2 interrupt\n");
 }
 
 // print LF
