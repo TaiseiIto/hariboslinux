@@ -26,8 +26,6 @@
 	.globl	writel
 	.globl	writes
 
-	.set	kernel_data_segment_selector,0x0008
-
 	.type	cli,			@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function

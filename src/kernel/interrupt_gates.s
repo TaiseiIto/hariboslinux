@@ -56,6 +56,8 @@
 	.globl	interrupt_handler0x2c
 	.globl	interrupt_handler0x2d
 
+	.set	kernel_data_segment_selector,0x0008
+
 	.type	interrupt_handler0x00,	@function
 	.type	interrupt_handler0x01,	@function
 	.type	interrupt_handler0x02,	@function
