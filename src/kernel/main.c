@@ -85,7 +85,7 @@ void main(void)
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)
 			{
-				printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", ++timer_interrupt_counter);
+				printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
 				printf_serial_polling("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
 			}
 			break;
