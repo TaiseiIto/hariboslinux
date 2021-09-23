@@ -15,6 +15,7 @@
 	.extern	double_fault_exception_handler
 	.extern	fpu_error_exception_handler
 	.extern	general_protection_fault_exception_handler
+	.extern interrupt_handler0x0f
 	.extern	invalid_opcode_exception_handler
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
@@ -31,60 +32,61 @@
 	.extern	virtualization_exception_handler
 	.extern	x87_floating_point_exception_handler
 
-	.globl	interrupt_handler0x00
-	.globl	interrupt_handler0x01
-	.globl	interrupt_handler0x02
-	.globl	interrupt_handler0x03
-	.globl	interrupt_handler0x04
-	.globl	interrupt_handler0x05
-	.globl	interrupt_handler0x06
-	.globl	interrupt_handler0x07
-	.globl	interrupt_handler0x08
-	.globl	interrupt_handler0x09
-	.globl	interrupt_handler0x0a
-	.globl	interrupt_handler0x0b
-	.globl	interrupt_handler0x0c
-	.globl	interrupt_handler0x0d
-	.globl	interrupt_handler0x0e
-	.globl	interrupt_handler0x10
-	.globl	interrupt_handler0x11
-	.globl	interrupt_handler0x12
-	.globl	interrupt_handler0x13
-	.globl	interrupt_handler0x14
-	.globl	interrupt_handler0x1e
-	.globl	interrupt_handler0x21
-	.globl	interrupt_handler0x2c
-	.globl	interrupt_handler0x2d
+	.globl	interrupt_gate0x00
+	.globl	interrupt_gate0x01
+	.globl	interrupt_gate0x02
+	.globl	interrupt_gate0x03
+	.globl	interrupt_gate0x04
+	.globl	interrupt_gate0x05
+	.globl	interrupt_gate0x06
+	.globl	interrupt_gate0x07
+	.globl	interrupt_gate0x08
+	.globl	interrupt_gate0x09
+	.globl	interrupt_gate0x0a
+	.globl	interrupt_gate0x0b
+	.globl	interrupt_gate0x0c
+	.globl	interrupt_gate0x0d
+	.globl	interrupt_gate0x0e
+	.globl	interrupt_gate0x10
+	.globl	interrupt_gate0x11
+	.globl	interrupt_gate0x12
+	.globl	interrupt_gate0x13
+	.globl	interrupt_gate0x14
+	.globl	interrupt_gate0x1e
+	.globl	interrupt_gate0x21
+	.globl	interrupt_gate0x2c
+	.globl	interrupt_gate0x2d
 
 	.set	kernel_data_segment_selector,0x0008
 
-	.type	interrupt_handler0x00,	@function
-	.type	interrupt_handler0x01,	@function
-	.type	interrupt_handler0x02,	@function
-	.type	interrupt_handler0x03,	@function
-	.type	interrupt_handler0x04,	@function
-	.type	interrupt_handler0x05,	@function
-	.type	interrupt_handler0x06,	@function
-	.type	interrupt_handler0x07,	@function
-	.type	interrupt_handler0x08,	@function
-	.type	interrupt_handler0x09,	@function
-	.type	interrupt_handler0x0a,	@function
-	.type	interrupt_handler0x0b,	@function
-	.type	interrupt_handler0x0c,	@function
-	.type	interrupt_handler0x0d,	@function
-	.type	interrupt_handler0x0e,	@function
-	.type	interrupt_handler0x10,	@function
-	.type	interrupt_handler0x11,	@function
-	.type	interrupt_handler0x12,	@function
-	.type	interrupt_handler0x13,	@function
-	.type	interrupt_handler0x14,	@function
-	.type	interrupt_handler0x1e,	@function
-	.type	interrupt_handler0x21,	@function
-	.type	interrupt_handler0x2c,	@function
-	.type	interrupt_handler0x2d,	@function
+	.type	interrupt_gate0x00,	@function
+	.type	interrupt_gate0x01,	@function
+	.type	interrupt_gate0x02,	@function
+	.type	interrupt_gate0x03,	@function
+	.type	interrupt_gate0x04,	@function
+	.type	interrupt_gate0x05,	@function
+	.type	interrupt_gate0x06,	@function
+	.type	interrupt_gate0x07,	@function
+	.type	interrupt_gate0x08,	@function
+	.type	interrupt_gate0x09,	@function
+	.type	interrupt_gate0x0a,	@function
+	.type	interrupt_gate0x0b,	@function
+	.type	interrupt_gate0x0c,	@function
+	.type	interrupt_gate0x0d,	@function
+	.type	interrupt_gate0x0e,	@function
+	.type	interrupt_gate0x0f,	@function
+	.type	interrupt_gate0x10,	@function
+	.type	interrupt_gate0x11,	@function
+	.type	interrupt_gate0x12,	@function
+	.type	interrupt_gate0x13,	@function
+	.type	interrupt_gate0x14,	@function
+	.type	interrupt_gate0x1e,	@function
+	.type	interrupt_gate0x21,	@function
+	.type	interrupt_gate0x2c,	@function
+	.type	interrupt_gate0x2d,	@function
 
 				# // devide by 0 exception handler
-interrupt_handler0x00:		# void interrupt_handler0x00(void);
+interrupt_gate0x00:		# void interrupt_gate0x00(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -117,7 +119,7 @@ interrupt_handler0x00:		# void interrupt_handler0x00(void);
 	iret
 
 				# // debug exception handler
-interrupt_handler0x01:		# void interrupt_handler0x01(void);
+interrupt_gate0x01:		# void interrupt_gate0x01(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -150,7 +152,7 @@ interrupt_handler0x01:		# void interrupt_handler0x01(void);
 	iret
 
 				# // non maskable interrupt handler
-interrupt_handler0x02:		# void interrupt_handler0x02(void);
+interrupt_gate0x02:		# void interrupt_gate0x02(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -183,7 +185,7 @@ interrupt_handler0x02:		# void interrupt_handler0x02(void);
 	iret
 
 				# // breakpoint exception handler
-interrupt_handler0x03:		# void interrupt_handler0x03(void);
+interrupt_gate0x03:		# void interrupt_gate0x03(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -216,7 +218,7 @@ interrupt_handler0x03:		# void interrupt_handler0x03(void);
 	iret
 
 				# // overflow exception handler
-interrupt_handler0x04:		# void interrupt_handler0x04(void);
+interrupt_gate0x04:		# void interrupt_gate0x04(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -249,7 +251,7 @@ interrupt_handler0x04:		# void interrupt_handler0x04(void);
 	iret
 
 				# // bound range exceeded exception handler
-interrupt_handler0x05:		# void interrupt_handler0x05(void);
+interrupt_gate0x05:		# void interrupt_gate0x05(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -282,7 +284,7 @@ interrupt_handler0x05:		# void interrupt_handler0x05(void);
 	iret
 
 				# // invalid opcode exception handler
-interrupt_handler0x06:		# void interrupt_handler0x06(void);
+interrupt_gate0x06:		# void interrupt_gate0x06(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -315,7 +317,7 @@ interrupt_handler0x06:		# void interrupt_handler0x06(void);
 	iret
 
 				# // device not available exception handler
-interrupt_handler0x07:		# void interrupt_handler0x07(void);
+interrupt_gate0x07:		# void interrupt_gate0x07(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -348,7 +350,7 @@ interrupt_handler0x07:		# void interrupt_handler0x07(void);
 	iret
 
 				# // double fault exception handler
-interrupt_handler0x08:		# void interrupt_handler0x08(void);
+interrupt_gate0x08:		# void interrupt_gate0x08(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -381,7 +383,7 @@ interrupt_handler0x08:		# void interrupt_handler0x08(void);
 	iret
 
 				# // coprocessor segment overrun exception handler
-interrupt_handler0x09:		# void interrupt_handler0x09(void);
+interrupt_gate0x09:		# void interrupt_gate0x09(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -414,7 +416,7 @@ interrupt_handler0x09:		# void interrupt_handler0x09(void);
 	iret
 
 				# // invalid TSS exception handler
-interrupt_handler0x0a:		# void interrupt_handler0x0a(void);
+interrupt_gate0x0a:		# void interrupt_gate0x0a(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -447,7 +449,7 @@ interrupt_handler0x0a:		# void interrupt_handler0x0a(void);
 	iret
 
 				# // segment not present exception handler
-interrupt_handler0x0b:		# void interrupt_handler0x0b(void);
+interrupt_gate0x0b:		# void interrupt_gate0x0b(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -480,7 +482,7 @@ interrupt_handler0x0b:		# void interrupt_handler0x0b(void);
 	iret
 
 				# // stack segment fault exception handler
-interrupt_handler0x0c:		# void interrupt_handler0x0c(void);
+interrupt_gate0x0c:		# void interrupt_gate0x0c(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -513,7 +515,7 @@ interrupt_handler0x0c:		# void interrupt_handler0x0c(void);
 	iret
 
 				# // general protection fault exception handler
-interrupt_handler0x0d:		# void interrupt_handler0x0d(void);
+interrupt_gate0x0d:		# void interrupt_gate0x0d(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -546,7 +548,7 @@ interrupt_handler0x0d:		# void interrupt_handler0x0d(void);
 	iret
 
 				# // page fault exception handler
-interrupt_handler0x0e:		# void interrupt_handler0x0e(void);
+interrupt_gate0x0e:		# void interrupt_gate0x0e(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -578,8 +580,41 @@ interrupt_handler0x0e:		# void interrupt_handler0x0e(void);
 	popal
 	iret
 
+				# // reserved exception handler
+interrupt_gate0x0f:		# void interrupt_gate0x0e(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	interrupt_handler0x0f
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
 				# // x87 floating point exception handler
-interrupt_handler0x10:		# void interrupt_handler0x10(void);
+interrupt_gate0x10:		# void interrupt_gate0x10(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -612,7 +647,7 @@ interrupt_handler0x10:		# void interrupt_handler0x10(void);
 	iret
 
 				# // alignment check exception handler
-interrupt_handler0x11:		# void interrupt_handler0x11(void);
+interrupt_gate0x11:		# void interrupt_gate0x11(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -645,7 +680,7 @@ interrupt_handler0x11:		# void interrupt_handler0x11(void);
 	iret
 
 				# // machine check exception handler
-interrupt_handler0x12:		# void interrupt_handler0x12(void);
+interrupt_gate0x12:		# void interrupt_gate0x12(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -678,7 +713,7 @@ interrupt_handler0x12:		# void interrupt_handler0x12(void);
 	iret
 
 				# // SIMD floating point exception handler
-interrupt_handler0x13:		# void interrupt_handler0x13(void);
+interrupt_gate0x13:		# void interrupt_gate0x13(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -711,7 +746,7 @@ interrupt_handler0x13:		# void interrupt_handler0x13(void);
 	iret
 
 				# // virtualization exception handler
-interrupt_handler0x14:		# void interrupt_handler0x14(void);
+interrupt_gate0x14:		# void interrupt_gate0x14(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -744,7 +779,7 @@ interrupt_handler0x14:		# void interrupt_handler0x14(void);
 	iret
 
 				# // security exception handler
-interrupt_handler0x1e:		# void interrupt_handler0x1e(void);
+interrupt_gate0x1e:		# void interrupt_gate0x1e(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -777,7 +812,7 @@ interrupt_handler0x1e:		# void interrupt_handler0x1e(void);
 	iret
 
 				# // kerboard interrupt handler
-interrupt_handler0x21:		# void interrupt_handler0x21(void);
+interrupt_gate0x21:		# void interrupt_gate0x21(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -810,7 +845,7 @@ interrupt_handler0x21:		# void interrupt_handler0x21(void);
 	iret
 
 				# // mouse interrupt handler
-interrupt_handler0x2c:		# void interrupt_handler0x2c(void);
+interrupt_gate0x2c:		# void interrupt_gate0x2c(void);
 0:
 	pushal
 	movw	%ss,	%dx
@@ -843,7 +878,7 @@ interrupt_handler0x2c:		# void interrupt_handler0x2c(void);
 	iret
 
 				# // FPU error exception handler
-interrupt_handler0x2d:		# void interrupt_handler0x2d(void);
+interrupt_gate0x2d:		# void interrupt_gate0x2d(void);
 0:
 	pushal
 	movw	%ss,	%dx
