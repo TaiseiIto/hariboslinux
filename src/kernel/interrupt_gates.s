@@ -42,7 +42,9 @@
 	.extern peripheral0_interrupt_handler
 	.extern peripheral1_interrupt_handler
 	.extern peripheral2_interrupt_handler
+	.extern primary_ATA_hard_disk_interrupt_handler
 	.extern real_time_clock_interrupt_handler
+	.extern secondary_ATA_hard_disk_interrupt_handler
 	.extern	security_exception_handler
 	.extern	segment_not_present_exception_handler
 	.extern	simd_floating_point_exception_handler
@@ -99,6 +101,8 @@
 	.globl	interrupt_gate0x2b
 	.globl	interrupt_gate0x2c
 	.globl	interrupt_gate0x2d
+	.globl	interrupt_gate0x2e
+	.globl	interrupt_gate0x2f
 
 	.set	kernel_data_segment_selector,0x0008
 
@@ -148,6 +152,8 @@
 	.type	interrupt_gate0x2b,	@function
 	.type	interrupt_gate0x2c,	@function
 	.type	interrupt_gate0x2d,	@function
+	.type	interrupt_gate0x2e,	@function
+	.type	interrupt_gate0x2f,	@function
 
 				# // devide by 0 exception handler
 interrupt_gate0x00:		# void interrupt_gate0x00(void);
@@ -1652,6 +1658,72 @@ interrupt_gate0x2d:		# void interrupt_gate0x2d(void);
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	fpu_error_exception_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // primary ATA hard disk interrupt handler
+interrupt_gate0x2e:		# void interrupt_gate0x2e(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	primary_ATA_hard_disk_interrupt_handler
+	call	sti_task_interrupt
+	popl	%edx
+	movw	%dx,	%ds
+	shrl	$0x10,	%edx
+	movw	%dx,	%es
+	popl	%edx
+	movw	%dx,	%fs
+	shrl	$0x10,	%edx
+	movw	%dx,	%gs
+	popl	%edx
+	movw	%dx,	%ss
+	popal
+	iret
+
+				# // secondary ATA hard disk interrupt handler
+interrupt_gate0x2f:		# void interrupt_gate0x2f(void);
+0:
+	pushal
+	movw	%ss,	%dx
+	pushl	%edx
+	movw	%gs,	%dx
+	shll	$0x10,	%edx
+	movw	%fs,	%dx
+	pushl	%edx
+	movw	%es,	%dx
+	shll	$0x10,	%edx
+	movw	%ds,	%dx
+	pushl	%edx
+	movw	$kernel_data_segment_selector,%dx
+	movw	%dx	,%ds
+	movw	%dx	,%ss
+	call	cli_task_interrupt
+	call	secondary_ATA_hard_disk_interrupt_handler
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds

@@ -139,5 +139,11 @@ void interrupt_gate0x2c(void);
 // FPU error exception gate
 void interrupt_gate0x2d(void);
 
+// primary ATA hard disk interrupt gate
+void interrupt_gate0x2e(void);
+
+// secondary ATA hard disk interrupt gate
+void interrupt_gate0x2f(void);
+
 #endif
 
