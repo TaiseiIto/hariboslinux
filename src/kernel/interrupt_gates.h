@@ -97,6 +97,9 @@ void interrupt_gate0x1e(void);
 // security exception gate
 void interrupt_gate0x1f(void);
 
+// security exception gate
+void interrupt_gate0x20(void);
+
 // keyboard interrupt gate
 void interrupt_gate0x21(void);
 
