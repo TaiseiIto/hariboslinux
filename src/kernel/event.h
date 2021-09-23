@@ -17,6 +17,7 @@ typedef struct _Event
 	unsigned char type;
 	#define EVENT_TYPE_KEYBOARD_INTERRUPT 0x00
 	#define EVENT_TYPE_MOUSE_INTERRUPT 0x01
+	#define EVENT_TYPE_TIMER_INTERRUPT 0x02
 } Event;
 
 extern Queue * event_queue;

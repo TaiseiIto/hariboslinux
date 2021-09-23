@@ -1,3 +1,4 @@
+#include "event.h"
 #include "io.h"
 #include "limits.h"
 #include "pic.h"
@@ -29,7 +30,9 @@ void real_time_clock_interrupt_handler(void)
 
 void timer_interrupt_handler(void)
 {
+	Event event;
 	finish_interruption(IRQ_TIMER);
-	print_serial_polling("timer interrupt\n");
+	event.type = EVENT_TYPE_TIMER_INTERRUPT;
+	enqueue_event(&event);
 }
 
