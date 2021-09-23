@@ -91,3 +91,7 @@ void init_pic(void)
 	outb(PIC1_IMR, IRQ8_DISABLE | IRQ9_DISABLE | IRQ10_DISABLE | IRQ11_DISABLE | IRQ14_DISABLE | IRQ15_DISABLE);
 }
 
+void slave_pic_interrupt_handler(void)
+{
+}
+

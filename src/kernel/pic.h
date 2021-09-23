@@ -12,6 +12,7 @@
 
 void finish_interruption(unsigned char irq);
 void init_pic(void);
+void slave_pic_interrupt_handler(void);
 
 #endif
 
