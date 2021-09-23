@@ -253,6 +253,172 @@ void page_fault_exception_handler(void)
 	kernel_panic();
 }
 
+void reserved_exception_handler0x00(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x00!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x01(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x01!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x02(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x02!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x03(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x03!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x04(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x04!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x05(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x05!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x06(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x06!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x07(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x07!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x08(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x08!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x09(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x09!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+void reserved_exception_handler0x0a(void)
+{
+	Color background_color;
+	Color foreground_color;
+	background_color.red = 0x00;
+	background_color.green = 0x00;
+	background_color.blue = 0x00;
+	foreground_color.red = 0xff;
+	foreground_color.green = 0xff;
+	foreground_color.blue = 0xff;
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "RESERVED EXCEPTION 0x0a!!!\n");
+	print_serial_polling("PAGE FAULT EXCEPTION!!!\n");
+	kernel_panic();
+}
+
+
 void security_exception_handler(void)
 {
 	Color background_color;

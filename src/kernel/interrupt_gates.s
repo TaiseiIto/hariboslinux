@@ -18,17 +18,6 @@
 	.extern	double_fault_exception_handler
 	.extern	fpu_error_exception_handler
 	.extern	general_protection_fault_exception_handler
-	.extern interrupt_handler0x0f
-	.extern interrupt_handler0x15
-	.extern interrupt_handler0x16
-	.extern interrupt_handler0x17
-	.extern interrupt_handler0x18
-	.extern interrupt_handler0x19
-	.extern interrupt_handler0x1a
-	.extern interrupt_handler0x1b
-	.extern interrupt_handler0x1c
-	.extern interrupt_handler0x1d
-	.extern interrupt_handler0x1f
 	.extern	invalid_opcode_exception_handler
 	.extern	invalid_TSS_exception_handler
 	.extern	keyboard_interrupt_handler
@@ -44,6 +33,17 @@
 	.extern peripheral2_interrupt_handler
 	.extern primary_ATA_hard_disk_interrupt_handler
 	.extern real_time_clock_interrupt_handler
+	.extern reserved_exception_handler0x00
+	.extern reserved_exception_handler0x01
+	.extern reserved_exception_handler0x02
+	.extern reserved_exception_handler0x03
+	.extern reserved_exception_handler0x04
+	.extern reserved_exception_handler0x05
+	.extern reserved_exception_handler0x06
+	.extern reserved_exception_handler0x07
+	.extern reserved_exception_handler0x08
+	.extern reserved_exception_handler0x09
+	.extern reserved_exception_handler0x0a
 	.extern secondary_ATA_hard_disk_interrupt_handler
 	.extern	security_exception_handler
 	.extern	segment_not_present_exception_handler
@@ -668,7 +668,7 @@ interrupt_gate0x0f:		# void interrupt_gate0x0e(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x0f
+	call	reserved_exception_handler0x00
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -848,7 +848,7 @@ interrupt_gate0x14:		# void interrupt_gate0x14(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x15:		# void interrupt_gate0x15(void);
 0:
 	pushal
@@ -866,7 +866,7 @@ interrupt_gate0x15:		# void interrupt_gate0x15(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x15
+	call	reserved_exception_handler0x01
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -881,7 +881,7 @@ interrupt_gate0x15:		# void interrupt_gate0x15(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x16:		# void interrupt_gate0x16(void);
 0:
 	pushal
@@ -899,7 +899,7 @@ interrupt_gate0x16:		# void interrupt_gate0x16(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x16
+	call	reserved_exception_handler0x02
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -914,7 +914,7 @@ interrupt_gate0x16:		# void interrupt_gate0x16(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x17:		# void interrupt_gate0x17(void);
 0:
 	pushal
@@ -932,7 +932,7 @@ interrupt_gate0x17:		# void interrupt_gate0x17(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x17
+	call	reserved_exception_handler0x03
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -947,7 +947,7 @@ interrupt_gate0x17:		# void interrupt_gate0x17(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x18:		# void interrupt_gate0x18(void);
 0:
 	pushal
@@ -965,7 +965,7 @@ interrupt_gate0x18:		# void interrupt_gate0x18(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x18
+	call	reserved_exception_handler0x04
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -980,7 +980,7 @@ interrupt_gate0x18:		# void interrupt_gate0x18(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x19:		# void interrupt_gate0x19(void);
 0:
 	pushal
@@ -998,7 +998,7 @@ interrupt_gate0x19:		# void interrupt_gate0x19(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x19
+	call	reserved_exception_handler0x05
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1013,7 +1013,7 @@ interrupt_gate0x19:		# void interrupt_gate0x19(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x1a:		# void interrupt_gate0x1a(void);
 0:
 	pushal
@@ -1031,7 +1031,7 @@ interrupt_gate0x1a:		# void interrupt_gate0x1a(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x1a
+	call	reserved_exception_handler0x06
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1046,7 +1046,7 @@ interrupt_gate0x1a:		# void interrupt_gate0x1a(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x1b:		# void interrupt_gate0x1b(void);
 0:
 	pushal
@@ -1064,7 +1064,7 @@ interrupt_gate0x1b:		# void interrupt_gate0x1b(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x1b
+	call	reserved_exception_handler0x07
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1079,7 +1079,7 @@ interrupt_gate0x1b:		# void interrupt_gate0x1b(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x1c:		# void interrupt_gate0x1c(void);
 0:
 	pushal
@@ -1097,7 +1097,7 @@ interrupt_gate0x1c:		# void interrupt_gate0x1c(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x1c
+	call	reserved_exception_handler0x08
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1112,7 +1112,7 @@ interrupt_gate0x1c:		# void interrupt_gate0x1c(void);
 	popal
 	iret
 
-				# // reserfed exception handler
+				# // reserved exception handler
 interrupt_gate0x1d:		# void interrupt_gate0x1d(void);
 0:
 	pushal
@@ -1130,7 +1130,7 @@ interrupt_gate0x1d:		# void interrupt_gate0x1d(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x1d
+	call	reserved_exception_handler0x09
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1196,7 +1196,7 @@ interrupt_gate0x1f:		# void interrupt_gate0x1f(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	interrupt_handler0x1f
+	call	reserved_exception_handler0x0a
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
