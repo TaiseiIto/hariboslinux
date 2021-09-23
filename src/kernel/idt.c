@@ -79,6 +79,8 @@ void init_idt(void)
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001d, interrupt_gate0x1d, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// security exception
 	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001e, interrupt_gate0x1e, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
+	// reserved exception
+	set_gate((InterruptDescriptor *)0x00000000 + 0x0000001f, interrupt_gate0x1f, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// kerboard interrupt
 	set_gate((InterruptDescriptor *)0x00000000 + 0x00000021, interrupt_gate0x21, INTERRUPT_DESCRIPTOR_INTERRUPT_GATE);
 	// mouse interrupt

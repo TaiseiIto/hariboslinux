@@ -1,3 +1,5 @@
+#include "interrupt_handlers.h"
+
 void interrupt_handler0x0f(void)
 {
 }
@@ -35,6 +37,10 @@ void interrupt_handler0x1c(void)
 }
 
 void interrupt_handler0x1d(void)
+{
+}
+
+void interrupt_handler0x1f(void)
 {
 }
 
