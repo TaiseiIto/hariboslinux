@@ -7,6 +7,9 @@ void com1_interrupt_handler(void);
 // COM2 interrupt handler
 void com2_interrupt_handler(void);
 
+// switch from polling to interrupt
+void init_serial_interrupt(void);
+
 // print LF
 void new_line_serial_polling(void);
 

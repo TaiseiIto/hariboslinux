@@ -3,7 +3,79 @@
 #include "serial.h"
 #include "stdio.h"
 
+#define BAUD_RATE 115200
+
+// COM ports
 #define COM1 0x03f8
+#define COM2 0x02f8
+#define COM3 0x03e8
+#define COM4 0x02e8
+
+// port offsets
+#define DATA_REGISTER 0 // If DLAB == 0
+	#define INTERRUPT_ENABLE_REGISTER 0 // If DLAB == 0
+	#define INTERRUPT_DATA_AVAILABLE 0x01
+	#define INTERRUPT_TRANSMITTER_EMPTY 0x02
+	#define INTERRUPT_LINE_STATUS 0x04
+	#define INTERRUPT_MODEM_STATUS 0x08
+#define BAUD_RATE_DIVISOR_LOW 0 // If DLAB == 1
+#define BAUD_RATE_DIVISOR_HIGH 1 // If DLAB == 1
+#define INTERRUPT_IDENTIFICATION_REGISTER 2 // Read only register
+	#define INTERRUPT_PENDING 0x01
+	#define MODEM_STATUS_INTERRUPT 0x00
+	#define TRANSMITTER_EMPTY_INTERRUPT 0x02
+	#define RECEIVED_DATA_INTERRUPT 0x04
+	#define LINE_STATUS_INTERRUPT 0x06
+	#define FIFOM 0x08
+	#define FIFOE 0xc0
+#define FIFO_CONTROL_REGISTER 2 // Write only register
+	#define TRANSMITTED_AND_RECEIVED_FIFO_ENABLE 0x01
+	#define CLEAR_RECEIVED_FIFO 0x02
+	#define CLEAR_TRANSMITTED_FIFO 0x04
+	#define TRIGGER_BYTE_1 0x00
+	#define TRIGGER_BYTE_4 0x40
+	#define TRIGGER_BYTE_8 0x80
+	#define TRIGGER_BYTE_14 0xc0
+#define LINE_CONTROL_REGISTER 3 // The most significant bit of this register is DLAB
+	#define CHARACTER_LENGTH_5 0x00
+	#define CHARACTER_LENGTH_6 0x01
+	#define CHARACTER_LENGTH_7 0x02
+	#define CHARACTER_LENGTH_8 0x03
+	#define STOP_BYTE_1 0x00
+	#define STOP_BYTE_2 0x04
+	#define NO_PATIRY 0x00
+	#define ODD_PATIRY 0x08
+	#define EVEN_PATIRY 0x18
+	#define MARK_PATIRY 0x28
+	#define SPACE_PATIRY 0x38
+	#define DLAB 0x80
+#define MODEM_CONTROL_REGISTER 4
+	#define DATA_TERMINAL_READY 0x01
+	#define REQUEST_TO_SEND 0x02
+	#define INTERRUPT_ENABLE 0x08
+	#define LOOP_BACK_FEATURE 0x10
+#define LINE_STATUS_REGISTER 5
+	#define DATA_READY 0x01
+	#define OVERRUN_ERROR 0x02
+	#define PARITY_ERROR 0x04
+	#define FRAMING_ERROR 0x08
+	#define BREAK_INDICATOR 0x10
+	#define TRANSMITTER_HOLDING_REGISTER_EMPTY 0x20
+	#define TRANSMITTER_EMPTY 0x40
+	#define IMPENDING_ERROR 0x80
+#define MODEL_STATUS_REGISTER 6
+	#define DELTA_CLEAR_TO_SEND 0x01
+	#define DELTA_DATA_SET_READY 0x02
+	#define TRAILING_EDGE_OF_RING_INDICATOR 0x04
+	#define DELTA_DATA_CARRIER_DETECT 0x08
+	#define CLEAR_TO_SEND 0x10
+	#define DATA_SET_READY 0x20
+	#define RING_INDICATOR 0x40
+	#define DATA_CARRIER_DETECT 0x80
+
+#define SCRATCH_REGISTER 7 // OS developper can use this register freely
+#define COMPORT_AVAILABLE 0x01
+#define COMPORT_WRITABLE 0x02
 
 // COM1 interrupt handler
 void com1_interrupt_handler(void)
@@ -17,6 +89,11 @@ void com2_interrupt_handler(void)
 {
 	finish_interruption(IRQ_COM2);
 	print_serial_polling("COM2 interrupt\n");
+}
+
+// switch from polling to interrupt
+void init_serial_interrupt(void)
+{
 }
 
 // print LF
