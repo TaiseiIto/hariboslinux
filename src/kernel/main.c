@@ -39,6 +39,7 @@ void main(void)
 	init_keyboard();
 	init_mouse();
 	init_screen();
+	init_serial_interrupt();
 	boot_information = get_boot_information();
 	background_color.red = 0x00;
 	background_color.green = 0x00;
@@ -66,7 +67,7 @@ void main(void)
 		printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "previous = %p, this = %p, next = %p, size = %#010x, flags = %#04x\n", memory_section->previous, memory_section, memory_section->next, memory_section->size, memory_section->flags);
 		memory_section = memory_section->next;
 	} while(memory_section != get_root_memory_section());
-	new_line_serial_polling();
+	new_line_serial();
 	sti_task();
 	while(1)
 	{
@@ -76,21 +77,21 @@ void main(void)
 		{
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt_event.signal);
-			printf_serial_polling("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt_event.signal);
+			printf_serial("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt_event.signal);
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
 			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt_event.signal);
-			printf_serial_polling("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt_event.signal);
+			printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt_event.signal);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)
 			{
 				printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
-				printf_serial_polling("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
+				printf_serial("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
 			}
 			break;
 		default: // invalid event->type
-			printf_serial_polling("invalid event->type %#04x\n", event->type);
+			printf_serial("invalid event->type %#04x\n", event->type);
 			break;
 		}
 		else hlt();
