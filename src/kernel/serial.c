@@ -76,6 +76,8 @@
 	#define DATA_CARRIER_DETECT 0x80
 
 #define SCRATCH_REGISTER 7 // OS developper can use this register freely
+
+unsigned char com1_flags = 0;
 #define COM_AVAILABLE 0x01
 #define COM_INTERRUPT 0x02
 #define COM_WRITABLE 0x04
@@ -99,7 +101,7 @@ void com1_interrupt_handler(void)
 		break;
 	case TRANSMITTER_EMPTY_INTERRUPT:
 		if(character_to_send = dequeue(com1_transmission_queue))outb(COM1 + DATA_REGISTER, *character_to_send);
-		else outb(COM1 + SCRATCH_REGISTER, inb(COM1 + SCRATCH_REGISTER) | COM_WRITABLE);
+		else com1_flags |= COM_WRITABLE;
 		break;
 	}
 }
@@ -129,7 +131,7 @@ void init_serial_interrupt(void)
 	outb(COM1 + LINE_CONTROL_REGISTER, inb(COM1 + LINE_CONTROL_REGISTER) & ~DLAB);
 	// forsake the first received byte
 	inb(COM1 + DATA_REGISTER);
-	outb(COM1 + SCRATCH_REGISTER, inb(COM1 + SCRATCH_REGISTER) | COM_AVAILABLE | COM_INTERRUPT | COM_WRITABLE);
+	com1_flags |= COM_AVAILABLE | COM_INTERRUPT | COM_WRITABLE;
 	print_serial("COM1 is switched from polling to interrupt.\n\n");
 }
 
@@ -405,12 +407,12 @@ void print_word_hex_serial(unsigned short value)
 // print a character to serial port COM1
 void put_char_serial(char character)
 {
-	if(inb(COM1 + SCRATCH_REGISTER) & COM_INTERRUPT)
+	if(com1_flags & COM_INTERRUPT)
 	{
 		enqueue(com1_transmission_queue, &character);
-		if(inb(COM1 + SCRATCH_REGISTER) & COM_WRITABLE)
+		if(com1_flags & COM_WRITABLE)
 		{
-			outb(COM1 + SCRATCH_REGISTER, inb(COM1 + SCRATCH_REGISTER) & ~COM_WRITABLE);
+			com1_flags &= ~COM_WRITABLE;
 			outb(COM1 + DATA_REGISTER, *(unsigned char *)dequeue(com1_transmission_queue));
 		}
 	}
