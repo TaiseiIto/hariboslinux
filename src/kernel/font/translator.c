@@ -93,7 +93,6 @@ int main(int argc, char **argv)
 			else if('a' <= input_char && input_char <= 'f')char_code += input_char - 'a' + 10;
 			else if('A' <= input_char && input_char <= 'F')char_code += input_char - 'A' + 10;
 			else fprintf(stderr, "%s is broken!\n", input_file_name);
-			printf("char code %#04x\n", char_code);
 			flags &= ~INPUT_CHAR_CODE2;
 			flags |= INPUT_MAP_BEGIN;
 		}
