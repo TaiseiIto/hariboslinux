@@ -6,7 +6,6 @@
 
 extern unsigned short whole_memory_segment_selector;
 extern unsigned short kernel_code_segment_selector;
-extern unsigned short kernel_data_segment_selector;
 extern unsigned short gdt_segment_selector;
 extern unsigned short idt_segment_selector;
 extern unsigned short video_information_segment_selector;
