@@ -45,7 +45,6 @@ void main(void)
 	print_serial("finish init_mouse()\n");
 	init_screen();
 	print_serial("finish init_screen()\n");
-	init_serial_interrupt();
 	print_serial("finish init_serial_interrupt()\n");
 	boot_information = get_boot_information();
 	background_color.red = 0x00;
@@ -76,6 +75,7 @@ void main(void)
 	} while(memory_section != get_root_memory_section());
 	new_line_serial();
 	sti_task();
+	init_serial_interrupt();
 	while(1)
 	{
 		Event const *event;
