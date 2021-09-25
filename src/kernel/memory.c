@@ -9,8 +9,9 @@ void * const heap_base = (void *)0x00400000;
 
 void free(void *address)
 {
-	MemorySection *memory_section = root_memory_section;
+	MemorySection *memory_section;
 	cli_task();
+	memory_section = root_memory_section;
 	do
 	{
 		if((void *)memory_section + sizeof(*memory_section) == address)
@@ -110,8 +111,9 @@ void init_memory(void)
 
 void *malloc(size_t size)
 {
-	MemorySection *memory_section = root_memory_section;
+	MemorySection *memory_section;
 	cli_task();
+	memory_section = root_memory_section;
 	do
 	{
 		if(!(memory_section->flags & MEMORY_SECTION_ALLOCATED) && size <= memory_section->size)

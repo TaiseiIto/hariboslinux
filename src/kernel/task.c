@@ -24,14 +24,6 @@ void init_task(void)
 
 void sti_task(void)
 {
-	Color background_color;
-	Color foreground_color;
-	background_color.red = 0x00;
-	background_color.green = 0x00;
-	background_color.blue = 0x00;
-	foreground_color.red = 0xff;
-	foreground_color.green = 0xff;
-	foreground_color.blue = 0xff;
 	if(current_task->interrupt_prohibition_level)if(!(--current_task->interrupt_prohibition_level))sti();
 	else return; // double sti error!
 }
