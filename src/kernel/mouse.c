@@ -44,7 +44,7 @@ void init_mouse(void)
 
 	// enable packet streaming
 	send_to_mouse(MOUSE_COMMAND_ENABLE_PACKET_STREAMING);
-	printf_serial("mouse ACK = %#04x\n", receive_from_keyboard());
+	printf_serial("mouse ACK = %#04x\n\n", receive_from_keyboard());
 }
 
 void mouse_interrupt_handler(void)

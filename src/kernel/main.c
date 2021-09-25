@@ -30,23 +30,27 @@ void main(void)
 	new_line_serial();
 	print_serial("Hello, kernel.bin!\n\n");
 	init_gdt();
+	print_serial("finish init_gdt()\n\n");
 	init_idt();
+	print_serial("finish init_idt()\n\n");
 	init_task();
+	print_serial("finish init_task()\n\n");
 	init_memory();
+	print_serial("finish init_memory()\n\n");
 	create_event_queue();
-	print_serial("finish create_event_queue()\n");
+	print_serial("finish create_event_queue()\n\n");
 	init_pic();
-	print_serial("finish init_pic()\n");
+	print_serial("finish init_pic()\n\n");
 	init_timer();
-	print_serial("finish init_timer()\n");
+	print_serial("finish init_timer()\n\n");
 	init_keyboard();
-	print_serial("finish init_keyboard()\n");
+	print_serial("finish init_keyboard()\n\n");
 	init_mouse();
-	print_serial("finish init_mouse()\n");
+	print_serial("finish init_mouse()\n\n");
 	init_screen();
-	print_serial("finish init_screen()\n");
-	print_serial("finish init_serial_interrupt()\n");
+	print_serial("finish init_screen()\n\n");
 	boot_information = get_boot_information();
+	print_serial("finish get_boot_information()\n\n");
 	background_color.red = 0x00;
 	background_color.green = 0x00;
 	background_color.blue = 0x00;
@@ -73,9 +77,10 @@ void main(void)
 		printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "previous = %p, this = %p, next = %p, size = %#010x, flags = %#04x\n", memory_section->previous, memory_section, memory_section->next, memory_section->size, memory_section->flags);
 		memory_section = memory_section->next;
 	} while(memory_section != get_root_memory_section());
-	new_line_serial();
 	sti_task();
+	print_serial("finish sti_task()\n\n");
 	init_serial_interrupt();
+	print_serial("finish init_serial_interrupt()\n\n");
 	while(1)
 	{
 		Event const *event;

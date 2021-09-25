@@ -130,7 +130,7 @@ void init_serial_interrupt(void)
 	// forsake the first received byte
 	inb(COM1 + DATA_REGISTER);
 	outb(COM1 + SCRATCH_REGISTER, inb(COM1 + SCRATCH_REGISTER) | COM_AVAILABLE | COM_INTERRUPT | COM_WRITABLE);
-	print_serial("COM1 is switched from polling to interrupt.\n");
+	print_serial("COM1 is switched from polling to interrupt.\n\n");
 }
 
 // print LF
