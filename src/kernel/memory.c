@@ -62,11 +62,11 @@ void init_memory(void)
 	MemorySection *memory_section;
 	unsigned int memory_region_descriptor_index = 0;;
 	root_memory_section = NULL;
-	print_serial_polling("\nCheck memory regions\n");
+	print_serial("\nCheck memory regions\n");
 	do
 	{
 		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);
-		printf_serial_polling("base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
+		printf_serial("base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
 		if(memory_region_descriptor.type == 0x00000001 && (unsigned long long int)(unsigned int)heap_base + sizeof(MemorySection) < memory_region_descriptor.base + memory_region_descriptor.length && memory_region_descriptor.base < 0x0000000100000000)
 		{
 			if(memory_region_descriptor.base < (unsigned long long int)(unsigned int)heap_base)
@@ -98,14 +98,14 @@ void init_memory(void)
 		}
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
-	print_serial_polling("\nCheck memory sections\n");
+	print_serial("\nCheck memory sections\n");
 	memory_section = root_memory_section;
 	do
 	{
-		printf_serial_polling("previous = %p, this = %p, next = %p, size = %#010x, flags = %#04x\n", memory_section->previous, memory_section, memory_section->next, memory_section->size, memory_section->flags);
+		printf_serial("previous = %p, this = %p, next = %p, size = %#010x, flags = %#04x\n", memory_section->previous, memory_section, memory_section->next, memory_section->size, memory_section->flags);
 		memory_section = memory_section->next;
 	}while(memory_section != root_memory_section);
-	new_line_serial_polling();
+	new_line_serial();
 }
 
 void *malloc(size_t size)
