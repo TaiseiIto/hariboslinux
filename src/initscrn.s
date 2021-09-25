@@ -369,6 +369,10 @@ init_serial_port_com1:		# void init_serial_port_com1(void)
 	movw	$com1,	%dx
 	addw	$0x0003,%dx
 	outb	%al,	%dx
+	xorb	%al,	%al	# init scratch register
+	movw	$com1,	%dx
+	addw	$0x0007,%dx
+	outb	%al,	%dx
 	leave
 	ret
 
