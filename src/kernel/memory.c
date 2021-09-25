@@ -62,7 +62,7 @@ void init_memory(void)
 	MemorySection *memory_section;
 	unsigned int memory_region_descriptor_index = 0;;
 	root_memory_section = NULL;
-	print_serial("\nCheck memory regions\n");
+	print_serial("Check memory regions\n");
 	do
 	{
 		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);

@@ -17,7 +17,6 @@ const unsigned int timer_interrupt_frequency = 100;
 void init_timer(void)
 {
 	const unsigned int interval = timer_frequency / timer_interrupt_frequency + (timer_interrupt_frequency / 2 < timer_frequency % timer_interrupt_frequency);
-	printf_serial("timer interval = %#010x\n", interval);
 	outb(PIT_COMMAND, PIT_COMMAND_SET_INTERVAL);
 	outb(PIT_CHANNEL0, (unsigned char)(interval & 0x000000ff));
 	outb(PIT_CHANNEL0, (unsigned char)(interval >> CHAR_BIT & 0x000000ff));

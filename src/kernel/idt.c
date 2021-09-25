@@ -338,6 +338,7 @@ void init_idt(void)
 		printf_serial("\t flags\t\t%#04x\n", interrupt_descriptor_checker.flags);
 		printf_serial("\t offset_high\t%#06x\n", interrupt_descriptor_checker.offset_high);
 	}
+	new_line_serial();
 }
 
 void set_gate(InterruptDescriptor *interrupt_descriptor, void (*handler)(void), unsigned char flags)
