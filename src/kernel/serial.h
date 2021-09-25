@@ -12,6 +12,7 @@ void init_serial_interrupt(void);
 
 // print LF
 void new_line_serial_polling(void);
+void new_line_serial(void);
 
 // printf
 void printf_serial(char const *format, ...);
