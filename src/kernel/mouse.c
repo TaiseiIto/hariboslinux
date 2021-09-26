@@ -33,14 +33,17 @@ void init_mouse(void)
 	mouse_id = receive_from_keyboard();
 	printf_serial("mouse ID = %#04x\n", mouse_id);
 
-	// upgrade mouse ID from 3 to 4
-	set_mouse_sample_rate(200);
-	set_mouse_sample_rate(200);
-	set_mouse_sample_rate(80);
-	send_to_mouse(MOUSE_COMMAND_GET_ID);
-	printf_serial("mouse ACK = %#04x\n", receive_from_keyboard());
-	mouse_id = receive_from_keyboard();
-	printf_serial("mouse ID = %#04x\n", mouse_id);
+	if(mouse_id == 3)
+	{
+		// upgrade mouse ID from 3 to 4
+		set_mouse_sample_rate(200);
+		set_mouse_sample_rate(200);
+		set_mouse_sample_rate(80);
+		send_to_mouse(MOUSE_COMMAND_GET_ID);
+		printf_serial("mouse ACK = %#04x\n", receive_from_keyboard());
+		mouse_id = receive_from_keyboard();
+		printf_serial("mouse ID = %#04x\n", mouse_id);
+	}
 
 	// enable packet streaming
 	send_to_mouse(MOUSE_COMMAND_ENABLE_PACKET_STREAMING);
