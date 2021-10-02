@@ -2,12 +2,18 @@
 #include "io.h"
 #include "keyboard.h"
 #include "pic.h"
+#include "queue.h"
 #include "serial.h"
+
+unsigned short keyboard_flags;
+Queue *keyboard_send_buffer;
+unsigned char last_byte_sent_to_keyboard;
 
 void decode_keyboard_interrupt(unsigned char signal)
 {
 	Event event;
-	static unsigned short keyboard_flags = 0;
+	unsigned char keyboard_command;
+	unsigned char *sent_byte;
 	event.type = EVENT_TYPE_KEYBOARD_EVENT;
 	// Set flags
 	switch(signal)
@@ -20,6 +26,17 @@ void decode_keyboard_interrupt(unsigned char signal)
 		break;
 	case KEY_CAPS_LOCK:
 		keyboard_flags ^= KEYBOARD_FLAG_CAPS_LOCK_ON;
+		// Control CAPS LOCK LED
+		keyboard_command = KEYBOARD_COMMAND_SET_LED;
+		enqueue(keyboard_send_buffer, &keyboard_command);
+		keyboard_command = (keyboard_flags & KEYBOARD_FLAG_CAPS_LOCK_ON) ? KEYBOARD_LED_CAPS_LOCK : 0;
+		enqueue(keyboard_send_buffer, &keyboard_command);
+		if(keyboard_flags & KEYBOARD_FLAG_SEND_READY)if(sent_byte = dequeue(keyboard_send_buffer))
+		{
+			keyboard_flags &= ~KEYBOARD_FLAG_SEND_READY;
+			outb(PORT_KEYBOARD_DATA, *sent_byte);
+			last_byte_sent_to_keyboard = *sent_byte;
+		}
 		break;
 	case KEY_CONTROL:
 		keyboard_flags |= KEYBOARD_FLAG_CONTROL_KEY_PUSHED;
@@ -50,6 +67,17 @@ void decode_keyboard_interrupt(unsigned char signal)
 		break;
 	case KEY_RIGHT_SUPER | KEY_RELEASED:
 		keyboard_flags &= ~KEYBOARD_FLAG_RIGHT_SUPER_KEY_PUSHED;
+		break;
+	case KEYBOARD_SUCCESS_ACK:
+		if(sent_byte = dequeue(keyboard_send_buffer))
+		{
+			outb(PORT_KEYBOARD_DATA, *sent_byte);
+			last_byte_sent_to_keyboard = *sent_byte;
+		}
+		else keyboard_flags |= KEYBOARD_FLAG_SEND_READY;
+		break;
+	case KEYBOARD_FAILURE_ACK:
+		outb(PORT_KEYBOARD_DATA, last_byte_sent_to_keyboard);
 		break;
 	}
 	if(keyboard_flags & (KEYBOARD_FLAG_LEFT_SHIFT_KEY_PUSHED | KEYBOARD_FLAG_RIGHT_SHIFT_KEY_PUSHED))keyboard_flags |= KEYBOARD_FLAG_SHIFT_KEY_PUSHED;
@@ -235,6 +263,8 @@ void decode_keyboard_interrupt(unsigned char signal)
 void init_keyboard(void)
 {
 	send_to_keyboard(KEYBOARD_COMMAND_SET_MODE, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
+	keyboard_send_buffer = create_queue(sizeof(unsigned char));
+	keyboard_flags = KEYBOARD_FLAG_SEND_READY;
 }
 
 void keyboard_interrupt_handler(void)
