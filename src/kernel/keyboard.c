@@ -7,11 +7,53 @@
 void decode_keyboard_interrupt(unsigned char signal)
 {
 	Event event;
+	static unsigned short keyboard_flags = 0;
 	event.type = EVENT_TYPE_KEYBOARD_EVENT;
-	event.event_union.keyboard_event.flags = 0;
+	switch(signal)
+	{
+	case KEY_ALT:
+		keyboard_flags |= KEYBOARD_FLAG_ALT_KEY_PUSHED;
+		break;
+	case KEY_ALT | KEY_RELEASED:
+		keyboard_flags &= ~KEYBOARD_FLAG_ALT_KEY_PUSHED;
+		break;
+	case KEY_CAPS_LOCK:
+		keyboard_flags ^= KEYBOARD_FLAG_CAPS_LOCK_ON;
+		break;
+	case KEY_CONTROL:
+		keyboard_flags |= KEYBOARD_FLAG_CONTROL_KEY_PUSHED;
+		break;
+	case KEY_CONTROL | KEY_RELEASED:
+		keyboard_flags &= ~KEYBOARD_FLAG_CONTROL_KEY_PUSHED;
+		break;
+	case KEY_LEFT_SHIFT:
+		keyboard_flags |= KEYBOARD_FLAG_LEFT_SHIFT_KEY_PUSHED;
+		break;
+	case KEY_LEFT_SHIFT | KEY_RELEASED:
+		keyboard_flags &= ~KEYBOARD_FLAG_LEFT_SHIFT_KEY_PUSHED;
+		break;
+	case KEY_LEFT_SUPER:
+		keyboard_flags |= KEYBOARD_FLAG_LEFT_SUPER_KEY_PUSHED;
+		break;
+	case KEY_LEFT_SUPER | KEY_RELEASED:
+		keyboard_flags &= ~KEYBOARD_FLAG_LEFT_SUPER_KEY_PUSHED;
+		break;
+	case KEY_RIGHT_SHIFT:
+		keyboard_flags |= KEYBOARD_FLAG_RIGHT_SHIFT_KEY_PUSHED;
+		break;
+	case KEY_RIGHT_SHIFT | KEY_RELEASED:
+		keyboard_flags &= ~KEYBOARD_FLAG_RIGHT_SHIFT_KEY_PUSHED;
+		break;
+	case KEY_RIGHT_SUPER:
+		keyboard_flags |= KEYBOARD_FLAG_RIGHT_SUPER_KEY_PUSHED;
+		break;
+	case KEY_RIGHT_SUPER | KEY_RELEASED:
+		keyboard_flags &= ~KEYBOARD_FLAG_RIGHT_SUPER_KEY_PUSHED;
+		break;
+	}
+	event.event_union.keyboard_event.flags = keyboard_flags;
 	event.event_union.keyboard_event.keycode = signal;
-	event.event_union.keyboard_event.keycode &= ~KEY_RELEASED;
-	switch(event.event_union.keyboard_event.keycode)
+	switch(signal & ~KEY_RELEASED)
 	{
 	case KEY_1:
 		event.event_union.keyboard_event.character = '1';
