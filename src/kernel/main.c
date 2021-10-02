@@ -79,6 +79,7 @@ void main(void)
 	} while(memory_section != get_root_memory_section());
 	sti_task();
 	print_serial("finish sti_task()\n\n");
+	init_serial_interrupt();
 	print_serial("finish init_serial_interrupt()\n\n");
 	while(1)
 	{
