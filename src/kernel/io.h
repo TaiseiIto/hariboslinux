@@ -9,7 +9,7 @@ void cli(void);
 
 // get eflags register
 unsigned int get_eflags(void);
-#define INTERRUPT_FLAG 0x00000020
+#define EFLAGS_INTERRUPT_FLAG 0x00000200
 
 // get nth arg in variadic arg function
 // the first arg is 0th

@@ -284,23 +284,29 @@ void send_byte_to_keyboard(unsigned short port, unsigned char data)
 {
 	KeyboardTransmission keyboard_transmission;
 	KeyboardTransmission *first_keyboard_transmission;
-	keyboard_transmission.port = port;
-	keyboard_transmission.data = data;
-	enqueue(keyboard_send_buffer, &keyboard_transmission);
-	if(keyboard_flags & KEYBOARD_FLAG_SEND_READY)if(first_keyboard_transmission = dequeue(keyboard_send_buffer))
+	if(get_eflags() & EFLAGS_INTERRUPT_FLAG)
 	{
-		keyboard_flags &= ~KEYBOARD_FLAG_SEND_READY;
-		outb(first_keyboard_transmission->port, first_keyboard_transmission->data);
-		last_keyboard_transmission = *first_keyboard_transmission;
+		keyboard_transmission.port = port;
+		keyboard_transmission.data = data;
+		enqueue(keyboard_send_buffer, &keyboard_transmission);
+		if(keyboard_flags & KEYBOARD_FLAG_SEND_READY)if(first_keyboard_transmission = dequeue(keyboard_send_buffer))
+		{
+			keyboard_flags &= ~KEYBOARD_FLAG_SEND_READY;
+			outb(first_keyboard_transmission->port, first_keyboard_transmission->data);
+			last_keyboard_transmission = *first_keyboard_transmission;
+		}
+	}
+	else
+	{
+		wait_to_send_to_keyboard();
+		outb(port, data);
 	}
 }
 
 void send_command_to_keyboard(unsigned char command, unsigned char data)
 {
-	wait_to_send_to_keyboard();
-	outb(PORT_KEYBOARD_COMMAND, command);
-	wait_to_send_to_keyboard();
-	outb(PORT_KEYBOARD_DATA, data);
+	send_byte_to_keyboard(PORT_KEYBOARD_COMMAND, command);
+	send_byte_to_keyboard(PORT_KEYBOARD_DATA, data);
 }
 
 void wait_to_send_to_keyboard(void)
