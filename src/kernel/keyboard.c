@@ -6,6 +6,19 @@
 
 void decode_keyboard_interrupt(unsigned char signal)
 {
+	Event event;
+	event.type = EVENT_TYPE_KEYBOARD_EVENT;
+	event.event_union.keyboard_event.flags = 0;
+	event.event_union.keyboard_event.keycode = signal;
+	event.event_union.keyboard_event.keycode &= ~KEY_RELEASED;
+	switch(event.event_union.keyboard_event.keycode)
+	{
+	case KEY_1:
+		event.event_union.keyboard_event.character = '1';
+	default:
+		event.event_union.keyboard_event.character = '\0';
+	}
+	enqueue_event(&event);
 }
 
 void init_keyboard(void)
@@ -18,7 +31,7 @@ void keyboard_interrupt_handler(void)
 	Event event;
 	finish_interruption(IRQ_KEYBOARD);
 	event.type = EVENT_TYPE_KEYBOARD_INTERRUPT;
-	event.event_union.keyboard_interrupt_event.signal = inb(PORT_KEYBOARD_DATA);
+	event.event_union.keyboard_interrupt.signal = inb(PORT_KEYBOARD_DATA);
 	enqueue_event(&event);
 }
 

@@ -55,7 +55,7 @@ void mouse_interrupt_handler(void)
 	Event event;
 	finish_interruption(IRQ_MOUSE);
 	event.type = EVENT_TYPE_MOUSE_INTERRUPT;
-	event.event_union.mouse_interrupt_event.signal = inb(PORT_KEYBOARD_DATA);
+	event.event_union.mouse_interrupt.signal = inb(PORT_KEYBOARD_DATA);
 	enqueue_event(&event);
 }
 
