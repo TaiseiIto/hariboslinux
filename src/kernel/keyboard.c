@@ -5,15 +5,21 @@
 #include "queue.h"
 #include "serial.h"
 
+typedef struct _KeyboardTransmission
+{
+	unsigned short port;
+	unsigned char data;
+} KeyboardTransmission;
+
 unsigned short keyboard_flags = 0;
 Queue *keyboard_send_buffer;
-unsigned char last_byte_sent_to_keyboard;
+KeyboardTransmission last_keyboard_transmission;
 
 void decode_keyboard_interrupt(unsigned char signal)
 {
 	Event event;
 	unsigned char keyboard_command;
-	unsigned char *sent_byte;
+	KeyboardTransmission *keyboard_transmission;
 	event.type = EVENT_TYPE_KEYBOARD_EVENT;
 	// Set flags
 	switch(signal)
@@ -27,16 +33,8 @@ void decode_keyboard_interrupt(unsigned char signal)
 	case KEY_CAPS_LOCK:
 		keyboard_flags ^= KEYBOARD_FLAG_CAPS_LOCK_ON;
 		// Control CAPS LOCK LED
-		keyboard_command = KEYBOARD_COMMAND_SET_LED;
-		enqueue(keyboard_send_buffer, &keyboard_command);
-		keyboard_command = (keyboard_flags & KEYBOARD_FLAG_CAPS_LOCK_ON) ? KEYBOARD_LED_CAPS_LOCK : 0;
-		enqueue(keyboard_send_buffer, &keyboard_command);
-		if(keyboard_flags & KEYBOARD_FLAG_SEND_READY)if(sent_byte = dequeue(keyboard_send_buffer))
-		{
-			keyboard_flags &= ~KEYBOARD_FLAG_SEND_READY;
-			outb(PORT_KEYBOARD_DATA, *sent_byte);
-			last_byte_sent_to_keyboard = *sent_byte;
-		}
+		send_byte_to_keyboard(PORT_KEYBOARD_DATA, KEYBOARD_COMMAND_SET_LED);
+		send_byte_to_keyboard(PORT_KEYBOARD_DATA, (keyboard_flags & KEYBOARD_FLAG_CAPS_LOCK_ON) ? KEYBOARD_LED_CAPS_LOCK : 0);
 		break;
 	case KEY_CONTROL:
 		keyboard_flags |= KEYBOARD_FLAG_CONTROL_KEY_PUSHED;
@@ -69,15 +67,15 @@ void decode_keyboard_interrupt(unsigned char signal)
 		keyboard_flags &= ~KEYBOARD_FLAG_RIGHT_SUPER_KEY_PUSHED;
 		break;
 	case KEYBOARD_SUCCESS_ACK:
-		if(sent_byte = dequeue(keyboard_send_buffer))
+		if(keyboard_transmission = dequeue(keyboard_send_buffer))
 		{
-			outb(PORT_KEYBOARD_DATA, *sent_byte);
-			last_byte_sent_to_keyboard = *sent_byte;
+			outb(keyboard_transmission->port, keyboard_transmission->data);
+			last_keyboard_transmission = *keyboard_transmission;
 		}
 		else keyboard_flags |= KEYBOARD_FLAG_SEND_READY;
 		break;
 	case KEYBOARD_FAILURE_ACK:
-		outb(PORT_KEYBOARD_DATA, last_byte_sent_to_keyboard);
+		outb(last_keyboard_transmission.port, last_keyboard_transmission.data);
 		break;
 	}
 	if(keyboard_flags & (KEYBOARD_FLAG_LEFT_SHIFT_KEY_PUSHED | KEYBOARD_FLAG_RIGHT_SHIFT_KEY_PUSHED))keyboard_flags |= KEYBOARD_FLAG_SHIFT_KEY_PUSHED;
@@ -263,7 +261,7 @@ void decode_keyboard_interrupt(unsigned char signal)
 void init_keyboard(void)
 {
 	send_command_to_keyboard(KEYBOARD_COMMAND_SET_MODE, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
-	keyboard_send_buffer = create_queue(sizeof(unsigned char));
+	keyboard_send_buffer = create_queue(sizeof(KeyboardTransmission));
 	keyboard_flags = KEYBOARD_FLAG_INTERRUPT_ENABLED | KEYBOARD_FLAG_SEND_READY;
 }
 
@@ -282,7 +280,22 @@ unsigned char receive_from_keyboard(void)
 	return inb(PORT_KEYBOARD_DATA);
 }
 
-void send_command_to_keyboard(unsigned short command, unsigned char data)
+void send_byte_to_keyboard(unsigned short port, unsigned char data)
+{
+	KeyboardTransmission keyboard_transmission;
+	KeyboardTransmission *first_keyboard_transmission;
+	keyboard_transmission.port = port;
+	keyboard_transmission.data = data;
+	enqueue(keyboard_send_buffer, &keyboard_transmission);
+	if(keyboard_flags & KEYBOARD_FLAG_SEND_READY)if(first_keyboard_transmission = dequeue(keyboard_send_buffer))
+	{
+		keyboard_flags &= ~KEYBOARD_FLAG_SEND_READY;
+		outb(first_keyboard_transmission->port, first_keyboard_transmission->data);
+		last_keyboard_transmission = *first_keyboard_transmission;
+	}
+}
+
+void send_command_to_keyboard(unsigned char command, unsigned char data)
 {
 	wait_to_send_to_keyboard();
 	outb(PORT_KEYBOARD_COMMAND, command);

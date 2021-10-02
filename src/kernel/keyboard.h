@@ -163,7 +163,8 @@ void decode_keyboard_interrupt(unsigned char signal);
 void init_keyboard(void);
 void keyboard_interrupt_handler(void);
 unsigned char receive_from_keyboard(void);
-void send_command_to_keyboard(unsigned short command, unsigned char data);
+void send_byte_to_keyboard(unsigned short port, unsigned char data);
+void send_command_to_keyboard(unsigned char command, unsigned char data);
 void wait_to_send_to_keyboard(void);
 void wait_to_receive_from_keyboard(void);
 
