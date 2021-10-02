@@ -7,6 +7,7 @@
 
 typedef union _EventUnion
 {
+	KeyboardEvent keyboard_event;
 	KeyboardInterruptEvent keyboard_interrupt_event;
 	MouseInterruptEvent mouse_interrupt_event;
 } EventUnion;
@@ -15,9 +16,10 @@ typedef struct _Event
 {
 	EventUnion event_union;
 	unsigned char type;
-	#define EVENT_TYPE_KEYBOARD_INTERRUPT 0x00
-	#define EVENT_TYPE_MOUSE_INTERRUPT 0x01
-	#define EVENT_TYPE_TIMER_INTERRUPT 0x02
+	#define EVENT_TYPE_KEYBOARD 0x00
+	#define EVENT_TYPE_KEYBOARD_INTERRUPT 0x01
+	#define EVENT_TYPE_MOUSE_INTERRUPT 0x02
+	#define EVENT_TYPE_TIMER_INTERRUPT 0x03
 } Event;
 
 extern Queue * event_queue;

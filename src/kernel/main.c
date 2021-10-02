@@ -24,7 +24,7 @@ void main(void)
 	MemoryRegionDescriptor memory_region_descriptor;
 	MemorySection const *memory_section;
 	unsigned int memory_region_descriptor_index;
-	unsigned short screen_text_row = 3;
+	unsigned short screen_text_row = 4;
 	unsigned int timer_interrupt_counter = 0;
 	cli();
 	new_line_serial();
@@ -86,18 +86,22 @@ void main(void)
 		event = dequeue_event();
 		if(event)switch(event->type)
 		{
+		case EVENT_TYPE_KEYBOARD:
+			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
+			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
-			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt_event.signal);
+			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt_event.signal);
 			printf_serial("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt_event.signal);
+			decode_keyboard_interrupt(event->event_union.keyboard_interrupt_event.signal);
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
-			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt_event.signal);
+			printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt_event.signal);
 			printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt_event.signal);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)
 			{
-				printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
+				printf_screen(0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
 				printf_serial("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
 			}
 			break;
