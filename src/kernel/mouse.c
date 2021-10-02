@@ -61,7 +61,7 @@ void mouse_interrupt_handler(void)
 
 void send_to_mouse(unsigned char data)
 {
-	send_to_keyboard(KEYBOARD_COMMAND_SEND_TO_MOUSE, data);
+	send_command_to_keyboard(KEYBOARD_COMMAND_SEND_TO_MOUSE, data);
 }
 
 void set_mouse_sample_rate(unsigned char rate)

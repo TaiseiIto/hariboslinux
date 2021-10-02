@@ -5,7 +5,7 @@
 #include "queue.h"
 #include "serial.h"
 
-unsigned short keyboard_flags;
+unsigned short keyboard_flags = 0;
 Queue *keyboard_send_buffer;
 unsigned char last_byte_sent_to_keyboard;
 
@@ -262,9 +262,9 @@ void decode_keyboard_interrupt(unsigned char signal)
 
 void init_keyboard(void)
 {
-	send_to_keyboard(KEYBOARD_COMMAND_SET_MODE, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
+	send_command_to_keyboard(KEYBOARD_COMMAND_SET_MODE, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
 	keyboard_send_buffer = create_queue(sizeof(unsigned char));
-	keyboard_flags = KEYBOARD_FLAG_SEND_READY;
+	keyboard_flags = KEYBOARD_FLAG_INTERRUPT_ENABLED | KEYBOARD_FLAG_SEND_READY;
 }
 
 void keyboard_interrupt_handler(void)
@@ -282,7 +282,7 @@ unsigned char receive_from_keyboard(void)
 	return inb(PORT_KEYBOARD_DATA);
 }
 
-void send_to_keyboard(unsigned short command, unsigned char data)
+void send_command_to_keyboard(unsigned short command, unsigned char data)
 {
 	wait_to_send_to_keyboard();
 	outb(PORT_KEYBOARD_COMMAND, command);

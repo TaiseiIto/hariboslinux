@@ -40,16 +40,17 @@ typedef struct _KeyboardEvent
 	#define KEYBOARD_FLAG_ALT_KEY_PUSHED 0x0001
 	#define KEYBOARD_FLAG_CAPS_LOCK_ON 0x0002
 	#define KEYBOARD_FLAG_CONTROL_KEY_PUSHED 0x0004
-	#define KEYBOARD_FLAG_SEND_READY 0x0008
+	#define KEYBOARD_FLAG_INTERRUPT_ENABLED 0x0008
 	#define KEYBOARD_FLAG_KEY_PUSHED 0x0010
 	#define KEYBOARD_FLAG_KEY_RELEASED 0x0020
 	#define KEYBOARD_FLAG_LEFT_SHIFT_KEY_PUSHED 0x0040
 	#define KEYBOARD_FLAG_LEFT_SUPER_KEY_PUSHED 0x0080
 	#define KEYBOARD_FLAG_RIGHT_SHIFT_KEY_PUSHED 0x0100
 	#define KEYBOARD_FLAG_RIGHT_SUPER_KEY_PUSHED 0x0200
-	#define KEYBOARD_FLAG_SHIFT_KEY_PUSHED 0x0400
-	#define KEYBOARD_FLAG_SUPER_KEY_PUSHED 0x0800
-	#define KEYBOARD_FLAG_UPPER_CASE 0x1000
+	#define KEYBOARD_FLAG_SEND_READY 0x0400
+	#define KEYBOARD_FLAG_SHIFT_KEY_PUSHED 0x0800
+	#define KEYBOARD_FLAG_SUPER_KEY_PUSHED 0x1000
+	#define KEYBOARD_FLAG_UPPER_CASE 0x2000
 	unsigned char keycode;
 	#define KEY_ESC 0x01
 	#define KEY_1 0x02
@@ -162,7 +163,7 @@ void decode_keyboard_interrupt(unsigned char signal);
 void init_keyboard(void);
 void keyboard_interrupt_handler(void);
 unsigned char receive_from_keyboard(void);
-void send_to_keyboard(unsigned short command, unsigned char data);
+void send_command_to_keyboard(unsigned short command, unsigned char data);
 void wait_to_send_to_keyboard(void);
 void wait_to_receive_from_keyboard(void);
 
