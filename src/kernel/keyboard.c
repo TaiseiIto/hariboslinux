@@ -99,40 +99,40 @@ void decode_keyboard_interrupt(unsigned char signal)
 	switch(signal & ~KEY_RELEASED)
 	{
 	case KEY_1:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '!' : '1';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '!' : '1';
 		break;
 	case KEY_2:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '@' : '2';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '@' : '2';
 		break;
 	case KEY_3:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '#' : '3';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '#' : '3';
 		break;
 	case KEY_4:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '$' : '4';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '$' : '4';
 		break;
 	case KEY_5:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '%' : '5';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '%' : '5';
 		break;
 	case KEY_6:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '^' : '6';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '^' : '6';
 		break;
 	case KEY_7:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '&' : '7';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '&' : '7';
 		break;
 	case KEY_8:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '*' : '8';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '*' : '8';
 		break;
 	case KEY_9:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '(' : '9';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '(' : '9';
 		break;
 	case KEY_0:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? ')' : '0';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? ')' : '0';
 		break;
 	case KEY_MINUS:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '_' : '-';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '_' : '-';
 		break;
 	case KEY_EQUAL:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '+' : '=';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '+' : '=';
 		break;
 	case KEY_BACKSPACE:
 		event.event_union.keyboard_event.character = '\b';
@@ -171,10 +171,10 @@ void decode_keyboard_interrupt(unsigned char signal)
 		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? 'P' : 'p';
 		break;
 	case KEY_LEFT_SQUARE_BRACKET:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '{' : '[';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '{' : '[';
 		break;
 	case KEY_RIGHT_SQUARE_BRACKET:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '}' : ']';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '}' : ']';
 		break;
 	case KEY_ENTER:
 		event.event_union.keyboard_event.character = '\n';
@@ -207,16 +207,16 @@ void decode_keyboard_interrupt(unsigned char signal)
 		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? 'L' : 'l';
 		break;
 	case KEY_SEMICOLON:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? ':' : ';';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? ':' : ';';
 		break;
 	case KEY_QUOTE:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '\"' : '\'';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '\"' : '\'';
 		break;
 	case KEY_BACKQUOTE:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '~' : '`';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '~' : '`';
 		break;
 	case KEY_BACKSLASH:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '|' : '\\';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '|' : '\\';
 		break;
 	case KEY_Z:
 		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? 'Z' : 'z';
@@ -240,13 +240,13 @@ void decode_keyboard_interrupt(unsigned char signal)
 		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? 'M' : 'm';
 		break;
 	case KEY_COMMA:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '<' : ',';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '<' : ',';
 		break;
 	case KEY_PERIOD:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '>' : '.';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '>' : '.';
 		break;
 	case KEY_SLASH:
-		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '?' : '/';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED) ? '?' : '/';
 		break;
 	case KEY_SPACE:
 		event.event_union.keyboard_event.character = ' ';
