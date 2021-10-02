@@ -4,6 +4,10 @@
 #include "pic.h"
 #include "serial.h"
 
+void decode_keyboard_interrupt(unsigned char signal)
+{
+}
+
 void init_keyboard(void)
 {
 	send_to_keyboard(KEYBOARD_COMMAND_SET_MODE, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
