@@ -9,6 +9,7 @@ void decode_keyboard_interrupt(unsigned char signal)
 	Event event;
 	static unsigned short keyboard_flags = 0;
 	event.type = EVENT_TYPE_KEYBOARD_EVENT;
+	// Set flags
 	switch(signal)
 	{
 	case KEY_ALT:
@@ -51,12 +52,28 @@ void decode_keyboard_interrupt(unsigned char signal)
 		keyboard_flags &= ~KEYBOARD_FLAG_RIGHT_SUPER_KEY_PUSHED;
 		break;
 	}
+	if(keyboard_flags & (KEYBOARD_FLAG_LEFT_SHIFT_KEY_PUSHED | KEYBOARD_FLAG_RIGHT_SHIFT_KEY_PUSHED))keyboard_flags |= KEYBOARD_FLAG_SHIFT_KEY_PUSHED;
+	else keyboard_flags &= ~KEYBOARD_FLAG_SHIFT_KEY_PUSHED;
+	if(keyboard_flags & (KEYBOARD_FLAG_LEFT_SUPER_KEY_PUSHED | KEYBOARD_FLAG_RIGHT_SUPER_KEY_PUSHED))keyboard_flags |= KEYBOARD_FLAG_SUPER_KEY_PUSHED;
+	else keyboard_flags &= ~KEYBOARD_FLAG_SUPER_KEY_PUSHED;
+	// Determine upper or lower case
+	if(keyboard_flags & KEYBOARD_FLAG_CAPS_LOCK_ON)
+	{
+		if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)keyboard_flags &= ~KEYBOARD_FLAG_UPPER_CASE;
+		else keyboard_flags |= KEYBOARD_FLAG_UPPER_CASE;
+	}
+	else
+	{
+		if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)keyboard_flags |= KEYBOARD_FLAG_UPPER_CASE;
+		else keyboard_flags &= ~KEYBOARD_FLAG_UPPER_CASE;
+	}
 	event.event_union.keyboard_event.flags = keyboard_flags;
 	event.event_union.keyboard_event.keycode = signal;
+	// Set chatacter
 	switch(signal & ~KEY_RELEASED)
 	{
 	case KEY_1:
-		event.event_union.keyboard_event.character = '1';
+		event.event_union.keyboard_event.character = (keyboard_flags & KEYBOARD_FLAG_UPPER_CASE) ? '!' : '1';
 		break;
 	case KEY_2:
 		event.event_union.keyboard_event.character = '2';
