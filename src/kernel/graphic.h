@@ -65,5 +65,8 @@ void put_string(char const *string, unsigned short x, unsigned short y, Color fo
 // printf to screen
 void printf_screen(unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...);
 
+// print to screen
+void print_screen(unsigned short x, unsigned short y, Color foreground, Color background, char *string);
+
 #endif
 

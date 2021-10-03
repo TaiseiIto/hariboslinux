@@ -11,7 +11,7 @@ typedef struct _KeyboardTransmission
 	unsigned char data;
 } KeyboardTransmission;
 
-unsigned short keyboard_flags = 0;
+unsigned short keyboard_flags = KEYBOARD_FLAG_LAYOUT_ENGLISH;
 Queue *keyboard_send_buffer;
 KeyboardTransmission last_keyboard_transmission;
 
@@ -65,6 +65,9 @@ void decode_keyboard_interrupt(unsigned char signal)
 		break;
 	case KEY_RIGHT_SUPER | KEY_RELEASED:
 		keyboard_flags &= ~KEYBOARD_FLAG_RIGHT_SUPER_KEY_PUSHED;
+		break;
+	case KEY_SPACE:
+		if(keyboard_flags & KEYBOARD_FLAG_SUPER_KEY_PUSHED)keyboard_flags ^= KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE; // Switch keyboard layout
 		break;
 	case KEYBOARD_SUCCESS_ACK:
 		if(keyboard_transmission = dequeue(keyboard_send_buffer))
@@ -262,7 +265,7 @@ void init_keyboard(void)
 {
 	send_command_to_keyboard(KEYBOARD_COMMAND_SET_MODE, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
 	keyboard_send_buffer = create_queue(sizeof(KeyboardTransmission));
-	keyboard_flags = KEYBOARD_FLAG_INTERRUPT_ENABLED | KEYBOARD_FLAG_SEND_READY;
+	keyboard_flags = KEYBOARD_FLAG_INTERRUPT_ENABLED | KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_SEND_READY;
 }
 
 void keyboard_interrupt_handler(void)

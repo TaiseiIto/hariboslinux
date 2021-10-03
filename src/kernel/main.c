@@ -21,10 +21,11 @@ void main(void)
 	Color background_color;
 	Color color;
 	Color foreground_color;
+	unsigned short keyboard_flags = 0;
 	MemoryRegionDescriptor memory_region_descriptor;
 	MemorySection const *memory_section;
 	unsigned int memory_region_descriptor_index;
-	unsigned short screen_text_row = 4;
+	unsigned short screen_text_row = 5;
 	unsigned int timer_interrupt_counter = 0;
 	cli();
 	new_line_serial();
@@ -88,21 +89,28 @@ void main(void)
 		if(event)switch(event->type)
 		{
 		case EVENT_TYPE_KEYBOARD_EVENT:
-			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
+			if(keyboard_flags & (KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE) != event->event_union.keyboard_event.flags & (KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE))
+			{
+				if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_LAYOUT_ENGLISH)print_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard layout = English ");
+				else if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_LAYOUT_JAPANESE)print_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard layout = Japanese");
+			}
+			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard flags = %#06x", event->event_union.keyboard_event.flags);
+			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
+			keyboard_flags = event->event_union.keyboard_event.flags;
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
-			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
+			printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
 			printf_serial("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt.signal);
 			decode_keyboard_interrupt(event->event_union.keyboard_interrupt.signal);
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
-			printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt.signal);
+			printf_screen(0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt.signal);
 			printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt.signal);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)
 			{
-				printf_screen(0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
+				printf_screen(0x0000, 0x0004 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
 				printf_serial("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
 			}
 			break;
