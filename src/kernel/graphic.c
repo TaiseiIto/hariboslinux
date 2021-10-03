@@ -64,6 +64,7 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 	case '\t':
 	case '\n':
 	case ' ':
+		fill_box(x, y, CHAR_WIDTH, CHAR_HEIGHT, background);
 		break;
 	default:
 		for(short y_i = 0; y_i < CHAR_HEIGHT; y_i++)
