@@ -542,17 +542,557 @@ char get_character(unsigned char signal)
 		'\0',	// 0x7e
 		'\0'	// 0x7f
 	};
-
-	if(keyboard_flags & KEYBOARD_FLAG_CAPS_LOCK_ON)
+	const char character_map_japanese_no_caps_lock_no_shift[0x80] = 
 	{
-		if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)return character_map_english_caps_lock_shift[signal & ~KEY_RELEASED];
-		else return character_map_english_caps_lock_no_shift[signal & ~KEY_RELEASED];
-	}
-	else
+		'\0',	// 0x00
+		'\0',	// 0x01 KEY_ESC
+		'1',	// 0x02 KEY_1
+		'2',	// 0x03 KEY_2
+		'3',	// 0x04 KEY_3
+		'4',	// 0x05 KEY_4
+		'5',	// 0x06 KEY_5
+		'6',	// 0x07 KEY_6
+		'7',	// 0x08 KEY_7
+		'8',	// 0x09 KEY_8
+		'9',	// 0x0a KEY_9
+		'0',	// 0x0b KEY_0
+		'-',	// 0x0c KEY_MINUS
+		'=',	// 0x0d KEY_EQUAL
+		'\b',	// 0x0e KEY_BACKSPACE
+		'\t',	// 0x0f KEY_TAB
+		'q',	// 0x10 KEY_Q
+		'w',	// 0x11 KEY_W
+		'e',	// 0x12 KEY_E
+		'r',	// 0x13 KEY_R
+		't',	// 0x14 KEY_T
+		'y',	// 0x15 KEY_Y
+		'u',	// 0x16 KEY_U
+		'i',	// 0x17 KEY_I
+		'o',	// 0x18 KEY_O
+		'p',	// 0x19 KEY_P
+		'[',	// 0x1a KEY_LEFT_SQUARE_BRACKET
+		']',	// 0x1b KEY_RIGHT_SQUARE_BRACKET
+		'\n',	// 0x1c KEY_ENTER
+		'\0',	// 0x1d KEY_CONTROL
+		'a',	// 0x1e KEY_A
+		's',	// 0x1f KEY_S
+		'd',	// 0x20 KEY_D
+		'f',	// 0x21 KEY_F
+		'g',	// 0x22 KEY_G
+		'h',	// 0x23 KEY_H
+		'j',	// 0x24 KEY_J
+		'k',	// 0x25 KEY_K
+		'l',	// 0x26 KEY_L
+		';',	// 0x27 KEY_SEMICOLON
+		'\'',	// 0x28 KEY_QUOTE
+		'`',	// 0x29 KEY_BACKQUOTE
+		'\0',	// 0x2a KEY_LEFT_SHIFT
+		'\\',	// 0x2b KEY_BACKSLASH
+		'z',	// 0x2c KEY_Z
+		'x',	// 0x2d KEY_X
+		'c',	// 0x2e KEY_C
+		'v',	// 0x2f KEY_V
+		'b',	// 0x30 KEY_B
+		'n',	// 0x31 KEY_N
+		'm',	// 0x32 KEY_M
+		',',	// 0x33 KEY_COMMA
+		'.',	// 0x34 KEY_PERIOD
+		'/',	// 0x35 KEY_SLASH
+		'\0',	// 0x36 KEY_RIGHT_SHIFT
+		'*',	// 0x37 KEY_PAD_ASTERISK
+		'\0',	// 0x38 KEY_ALT
+		' ',	// 0x39 KEY_SPACE
+		'\0',	// 0x3a KEY_CAPS_LOCK
+		'\0',	// 0x3b KEY_F1
+		'\0',	// 0x3c KEY_F2
+		'\0',	// 0x3d KEY_F3
+		'\0',	// 0x3e KEY_F4
+		'\0',	// 0x3f KEY_F5
+		'\0',	// 0x40 KEY_F6
+		'\0',	// 0x41 KEY_F7
+		'\0',	// 0x42 KEY_F8
+		'\0',	// 0x43 KEY_F9
+		'\0',	// 0x44 KEY_F10
+		'\0',	// 0x45 KEY_NUMBER_LOCK
+		'\0',	// 0x46 KEY_SCROLL_LOCK
+		'7',	// 0x47 KEY_PAD_7
+		'8',	// 0x48 KEY_PAD_8
+		'9',	// 0x49 KEY_PAD_9
+		'-',	// 0x4a KEY_PAD_MINUS
+		'4',	// 0x4b KEY_PAD_4
+		'5',	// 0x4c KEY_PAD_5
+		'6',	// 0x4d KEY_PAD_6
+		'+',	// 0x4e KEY_PAD_PLIS
+		'1',	// 0x4f KEY_PAD_1
+		'2',	// 0x50 KEY_PAD_2
+		'3',	// 0x51 KEY_PAD_3
+		'0',	// 0x52 KEY_PAD_0
+		'.',	// 0x53 KEY_PAD_PERIOD
+		'\0',	// 0x54
+		'\0',	// 0x55
+		'\0',	// 0x56
+		'\0',	// 0x57 KEY_F11
+		'\0',	// 0x58 KEY_F12
+		'\0',	// 0x59
+		'\0',	// 0x5a
+		'\0',	// 0x5b KEY_LEFT_SUPER
+		'\0',	// 0x5c KEY_RIGHT_SUPER
+		'\0',	// 0x5d
+		'\0',	// 0x5e
+		'\0',	// 0x5f
+		'\0',	// 0x60
+		'\0',	// 0x61
+		'\0',	// 0x62
+		'\0',	// 0x63
+		'\0',	// 0x64
+		'\0',	// 0x65
+		'\0',	// 0x66
+		'\0',	// 0x67
+		'\0',	// 0x68
+		'\0',	// 0x69
+		'\0',	// 0x6a
+		'\0',	// 0x6b
+		'\0',	// 0x6c
+		'\0',	// 0x6d
+		'\0',	// 0x6e
+		'\0',	// 0x6f
+		'\0',	// 0x70
+		'\0',	// 0x71
+		'\0',	// 0x72
+		'\0',	// 0x73
+		'\0',	// 0x74
+		'\0',	// 0x75
+		'\0',	// 0x76
+		'\0',	// 0x77
+		'\0',	// 0x78
+		'\0',	// 0x79
+		'\0',	// 0x7a
+		'\0',	// 0x7b
+		'\0',	// 0x7c
+		'\0',	// 0x7d
+		'\0',	// 0x7e
+		'\0'	// 0x7f
+	};
+	const char character_map_japanese_no_caps_lock_shift[0x80] = 
 	{
-		if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)return character_map_english_no_caps_lock_shift[signal & ~KEY_RELEASED];
-		else return character_map_english_no_caps_lock_no_shift[signal & ~KEY_RELEASED];
+		'\0',	// 0x00
+		'\0',	// 0x01 KEY_ESC
+		'!',	// 0x02 KEY_1
+		'@',	// 0x03 KEY_2
+		'#',	// 0x04 KEY_3
+		'$',	// 0x05 KEY_4
+		'%',	// 0x06 KEY_5
+		'^',	// 0x07 KEY_6
+		'&',	// 0x08 KEY_7
+		'*',	// 0x09 KEY_8
+		'(',	// 0x0a KEY_9
+		')',	// 0x0b KEY_0
+		'_',	// 0x0c KEY_MINUS
+		'+',	// 0x0d KEY_EQUAL
+		'\b',	// 0x0e KEY_BACKSPACE
+		'\t',	// 0x0f KEY_TAB
+		'Q',	// 0x10 KEY_Q
+		'W',	// 0x11 KEY_W
+		'E',	// 0x12 KEY_E
+		'R',	// 0x13 KEY_R
+		'T',	// 0x14 KEY_T
+		'Y',	// 0x15 KEY_Y
+		'U',	// 0x16 KEY_U
+		'I',	// 0x17 KEY_I
+		'O',	// 0x18 KEY_O
+		'P',	// 0x19 KEY_P
+		'{',	// 0x1a KEY_LEFT_SQUARE_BRACKET
+		'}',	// 0x1b KEY_RIGHT_SQUARE_BRACKET
+		'\n',	// 0x1c KEY_ENTER
+		'\0',	// 0x1d KEY_CONTROL
+		'A',	// 0x1e KEY_A
+		'S',	// 0x1f KEY_S
+		'D',	// 0x20 KEY_D
+		'F',	// 0x21 KEY_F
+		'G',	// 0x22 KEY_G
+		'H',	// 0x23 KEY_H
+		'J',	// 0x24 KEY_J
+		'K',	// 0x25 KEY_K
+		'L',	// 0x26 KEY_L
+		':',	// 0x27 KEY_SEMICOLON
+		'\"',	// 0x28 KEY_QUOTE
+		'~',	// 0x29 KEY_BACKQUOTE
+		'\0',	// 0x2a KEY_LEFT_SHIFT
+		'|',	// 0x2b KEY_BACKSLASH
+		'Z',	// 0x2c KEY_Z
+		'X',	// 0x2d KEY_X
+		'C',	// 0x2e KEY_C
+		'V',	// 0x2f KEY_V
+		'B',	// 0x30 KEY_B
+		'N',	// 0x31 KEY_N
+		'M',	// 0x32 KEY_M
+		'<',	// 0x33 KEY_COMMA
+		'>',	// 0x34 KEY_PERIOD
+		'?',	// 0x35 KEY_SLASH
+		'\0',	// 0x36 KEY_RIGHT_SHIFT
+		'*',	// 0x37 KEY_PAD_ASTERISK
+		'\0',	// 0x38 KEY_ALT
+		' ',	// 0x39 KEY_SPACE
+		'\0',	// 0x3a KEY_CAPS_LOCK
+		'\0',	// 0x3b KEY_F1
+		'\0',	// 0x3c KEY_F2
+		'\0',	// 0x3d KEY_F3
+		'\0',	// 0x3e KEY_F4
+		'\0',	// 0x3f KEY_F5
+		'\0',	// 0x40 KEY_F6
+		'\0',	// 0x41 KEY_F7
+		'\0',	// 0x42 KEY_F8
+		'\0',	// 0x43 KEY_F9
+		'\0',	// 0x44 KEY_F10
+		'\0',	// 0x45 KEY_NUMBER_LOCK
+		'\0',	// 0x46 KEY_SCROLL_LOCK
+		'7',	// 0x47 KEY_PAD_7
+		'8',	// 0x48 KEY_PAD_8
+		'9',	// 0x49 KEY_PAD_9
+		'-',	// 0x4a KEY_PAD_MINUS
+		'4',	// 0x4b KEY_PAD_4
+		'5',	// 0x4c KEY_PAD_5
+		'6',	// 0x4d KEY_PAD_6
+		'+',	// 0x4e KEY_PAD_PLIS
+		'1',	// 0x4f KEY_PAD_1
+		'2',	// 0x50 KEY_PAD_2
+		'3',	// 0x51 KEY_PAD_3
+		'0',	// 0x52 KEY_PAD_0
+		'.',	// 0x53 KEY_PAD_PERIOD
+		'\0',	// 0x54
+		'\0',	// 0x55
+		'\0',	// 0x56
+		'\0',	// 0x57 KEY_F11
+		'\0',	// 0x58 KEY_F12
+		'\0',	// 0x59
+		'\0',	// 0x5a
+		'\0',	// 0x5b KEY_LEFT_SUPER
+		'\0',	// 0x5c KEY_RIGHT_SUPER
+		'\0',	// 0x5d
+		'\0',	// 0x5e
+		'\0',	// 0x5f
+		'\0',	// 0x60
+		'\0',	// 0x61
+		'\0',	// 0x62
+		'\0',	// 0x63
+		'\0',	// 0x64
+		'\0',	// 0x65
+		'\0',	// 0x66
+		'\0',	// 0x67
+		'\0',	// 0x68
+		'\0',	// 0x69
+		'\0',	// 0x6a
+		'\0',	// 0x6b
+		'\0',	// 0x6c
+		'\0',	// 0x6d
+		'\0',	// 0x6e
+		'\0',	// 0x6f
+		'\0',	// 0x70
+		'\0',	// 0x71
+		'\0',	// 0x72
+		'\0',	// 0x73
+		'\0',	// 0x74
+		'\0',	// 0x75
+		'\0',	// 0x76
+		'\0',	// 0x77
+		'\0',	// 0x78
+		'\0',	// 0x79
+		'\0',	// 0x7a
+		'\0',	// 0x7b
+		'\0',	// 0x7c
+		'\0',	// 0x7d
+		'\0',	// 0x7e
+		'\0'	// 0x7f
+	};
+	const char character_map_japanese_caps_lock_no_shift[0x80] = 
+	{
+		'\0',	// 0x00
+		'\0',	// 0x01 KEY_ESC
+		'1',	// 0x02 KEY_1
+		'2',	// 0x03 KEY_2
+		'3',	// 0x04 KEY_3
+		'4',	// 0x05 KEY_4
+		'5',	// 0x06 KEY_5
+		'6',	// 0x07 KEY_6
+		'7',	// 0x08 KEY_7
+		'8',	// 0x09 KEY_8
+		'9',	// 0x0a KEY_9
+		'0',	// 0x0b KEY_0
+		'-',	// 0x0c KEY_MINUS
+		'=',	// 0x0d KEY_EQUAL
+		'\b',	// 0x0e KEY_BACKSPACE
+		'\t',	// 0x0f KEY_TAB
+		'Q',	// 0x10 KEY_Q
+		'W',	// 0x11 KEY_W
+		'E',	// 0x12 KEY_E
+		'R',	// 0x13 KEY_R
+		'T',	// 0x14 KEY_T
+		'Y',	// 0x15 KEY_Y
+		'U',	// 0x16 KEY_U
+		'I',	// 0x17 KEY_I
+		'O',	// 0x18 KEY_O
+		'P',	// 0x19 KEY_P
+		'[',	// 0x1a KEY_LEFT_SQUARE_BRACKET
+		']',	// 0x1b KEY_RIGHT_SQUARE_BRACKET
+		'\n',	// 0x1c KEY_ENTER
+		'\0',	// 0x1d KEY_CONTROL
+		'A',	// 0x1e KEY_A
+		'S',	// 0x1f KEY_S
+		'D',	// 0x20 KEY_D
+		'F',	// 0x21 KEY_F
+		'G',	// 0x22 KEY_G
+		'H',	// 0x23 KEY_H
+		'J',	// 0x24 KEY_J
+		'K',	// 0x25 KEY_K
+		'L',	// 0x26 KEY_L
+		';',	// 0x27 KEY_SEMICOLON
+		'\'',	// 0x28 KEY_QUOTE
+		'`',	// 0x29 KEY_BACKQUOTE
+		'\0',	// 0x2a KEY_LEFT_SHIFT
+		'\\',	// 0x2b KEY_BACKSLASH
+		'Z',	// 0x2c KEY_Z
+		'X',	// 0x2d KEY_X
+		'C',	// 0x2e KEY_C
+		'V',	// 0x2f KEY_V
+		'B',	// 0x30 KEY_B
+		'N',	// 0x31 KEY_N
+		'M',	// 0x32 KEY_M
+		',',	// 0x33 KEY_COMMA
+		'.',	// 0x34 KEY_PERIOD
+		'/',	// 0x35 KEY_SLASH
+		'\0',	// 0x36 KEY_RIGHT_SHIFT
+		'*',	// 0x37 KEY_PAD_ASTERISK
+		'\0',	// 0x38 KEY_ALT
+		' ',	// 0x39 KEY_SPACE
+		'\0',	// 0x3a KEY_CAPS_LOCK
+		'\0',	// 0x3b KEY_F1
+		'\0',	// 0x3c KEY_F2
+		'\0',	// 0x3d KEY_F3
+		'\0',	// 0x3e KEY_F4
+		'\0',	// 0x3f KEY_F5
+		'\0',	// 0x40 KEY_F6
+		'\0',	// 0x41 KEY_F7
+		'\0',	// 0x42 KEY_F8
+		'\0',	// 0x43 KEY_F9
+		'\0',	// 0x44 KEY_F10
+		'\0',	// 0x45 KEY_NUMBER_LOCK
+		'\0',	// 0x46 KEY_SCROLL_LOCK
+		'7',	// 0x47 KEY_PAD_7
+		'8',	// 0x48 KEY_PAD_8
+		'9',	// 0x49 KEY_PAD_9
+		'-',	// 0x4a KEY_PAD_MINUS
+		'4',	// 0x4b KEY_PAD_4
+		'5',	// 0x4c KEY_PAD_5
+		'6',	// 0x4d KEY_PAD_6
+		'+',	// 0x4e KEY_PAD_PLIS
+		'1',	// 0x4f KEY_PAD_1
+		'2',	// 0x50 KEY_PAD_2
+		'3',	// 0x51 KEY_PAD_3
+		'0',	// 0x52 KEY_PAD_0
+		'.',	// 0x53 KEY_PAD_PERIOD
+		'\0',	// 0x54
+		'\0',	// 0x55
+		'\0',	// 0x56
+		'\0',	// 0x57 KEY_F11
+		'\0',	// 0x58 KEY_F12
+		'\0',	// 0x59
+		'\0',	// 0x5a
+		'\0',	// 0x5b KEY_LEFT_SUPER
+		'\0',	// 0x5c KEY_RIGHT_SUPER
+		'\0',	// 0x5d
+		'\0',	// 0x5e
+		'\0',	// 0x5f
+		'\0',	// 0x60
+		'\0',	// 0x61
+		'\0',	// 0x62
+		'\0',	// 0x63
+		'\0',	// 0x64
+		'\0',	// 0x65
+		'\0',	// 0x66
+		'\0',	// 0x67
+		'\0',	// 0x68
+		'\0',	// 0x69
+		'\0',	// 0x6a
+		'\0',	// 0x6b
+		'\0',	// 0x6c
+		'\0',	// 0x6d
+		'\0',	// 0x6e
+		'\0',	// 0x6f
+		'\0',	// 0x70
+		'\0',	// 0x71
+		'\0',	// 0x72
+		'\0',	// 0x73
+		'\0',	// 0x74
+		'\0',	// 0x75
+		'\0',	// 0x76
+		'\0',	// 0x77
+		'\0',	// 0x78
+		'\0',	// 0x79
+		'\0',	// 0x7a
+		'\0',	// 0x7b
+		'\0',	// 0x7c
+		'\0',	// 0x7d
+		'\0',	// 0x7e
+		'\0'	// 0x7f
+	};
+	const char character_map_japanese_caps_lock_shift[0x80] = 
+	{
+		'\0',	// 0x00
+		'\0',	// 0x01 KEY_ESC
+		'!',	// 0x02 KEY_1
+		'@',	// 0x03 KEY_2
+		'#',	// 0x04 KEY_3
+		'$',	// 0x05 KEY_4
+		'%',	// 0x06 KEY_5
+		'^',	// 0x07 KEY_6
+		'&',	// 0x08 KEY_7
+		'*',	// 0x09 KEY_8
+		'(',	// 0x0a KEY_9
+		')',	// 0x0b KEY_0
+		'_',	// 0x0c KEY_MINUS
+		'+',	// 0x0d KEY_EQUAL
+		'\b',	// 0x0e KEY_BACKSPACE
+		'\t',	// 0x0f KEY_TAB
+		'q',	// 0x10 KEY_Q
+		'w',	// 0x11 KEY_W
+		'e',	// 0x12 KEY_E
+		'r',	// 0x13 KEY_R
+		't',	// 0x14 KEY_T
+		'y',	// 0x15 KEY_Y
+		'u',	// 0x16 KEY_U
+		'i',	// 0x17 KEY_I
+		'o',	// 0x18 KEY_O
+		'p',	// 0x19 KEY_P
+		'{',	// 0x1a KEY_LEFT_SQUARE_BRACKET
+		'}',	// 0x1b KEY_RIGHT_SQUARE_BRACKET
+		'\n',	// 0x1c KEY_ENTER
+		'\0',	// 0x1d KEY_CONTROL
+		'a',	// 0x1e KEY_A
+		's',	// 0x1f KEY_S
+		'd',	// 0x20 KEY_D
+		'f',	// 0x21 KEY_F
+		'g',	// 0x22 KEY_G
+		'h',	// 0x23 KEY_H
+		'j',	// 0x24 KEY_J
+		'k',	// 0x25 KEY_K
+		'l',	// 0x26 KEY_L
+		':',	// 0x27 KEY_SEMICOLON
+		'\"',	// 0x28 KEY_QUOTE
+		'~',	// 0x29 KEY_BACKQUOTE
+		'\0',	// 0x2a KEY_LEFT_SHIFT
+		'|',	// 0x2b KEY_BACKSLASH
+		'z',	// 0x2c KEY_Z
+		'x',	// 0x2d KEY_X
+		'c',	// 0x2e KEY_C
+		'v',	// 0x2f KEY_V
+		'b',	// 0x30 KEY_B
+		'n',	// 0x31 KEY_N
+		'm',	// 0x32 KEY_M
+		'<',	// 0x33 KEY_COMMA
+		'>',	// 0x34 KEY_PERIOD
+		'?',	// 0x35 KEY_SLASH
+		'\0',	// 0x36 KEY_RIGHT_SHIFT
+		'*',	// 0x37 KEY_PAD_ASTERISK
+		'\0',	// 0x38 KEY_ALT
+		' ',	// 0x39 KEY_SPACE
+		'\0',	// 0x3a KEY_CAPS_LOCK
+		'\0',	// 0x3b KEY_F1
+		'\0',	// 0x3c KEY_F2
+		'\0',	// 0x3d KEY_F3
+		'\0',	// 0x3e KEY_F4
+		'\0',	// 0x3f KEY_F5
+		'\0',	// 0x40 KEY_F6
+		'\0',	// 0x41 KEY_F7
+		'\0',	// 0x42 KEY_F8
+		'\0',	// 0x43 KEY_F9
+		'\0',	// 0x44 KEY_F10
+		'\0',	// 0x45 KEY_NUMBER_LOCK
+		'\0',	// 0x46 KEY_SCROLL_LOCK
+		'7',	// 0x47 KEY_PAD_7
+		'8',	// 0x48 KEY_PAD_8
+		'9',	// 0x49 KEY_PAD_9
+		'-',	// 0x4a KEY_PAD_MINUS
+		'4',	// 0x4b KEY_PAD_4
+		'5',	// 0x4c KEY_PAD_5
+		'6',	// 0x4d KEY_PAD_6
+		'+',	// 0x4e KEY_PAD_PLIS
+		'1',	// 0x4f KEY_PAD_1
+		'2',	// 0x50 KEY_PAD_2
+		'3',	// 0x51 KEY_PAD_3
+		'0',	// 0x52 KEY_PAD_0
+		'.',	// 0x53 KEY_PAD_PERIOD
+		'\0',	// 0x54
+		'\0',	// 0x55
+		'\0',	// 0x56
+		'\0',	// 0x57 KEY_F11
+		'\0',	// 0x58 KEY_F12
+		'\0',	// 0x59
+		'\0',	// 0x5a
+		'\0',	// 0x5b KEY_LEFT_SUPER
+		'\0',	// 0x5c KEY_RIGHT_SUPER
+		'\0',	// 0x5d
+		'\0',	// 0x5e
+		'\0',	// 0x5f
+		'\0',	// 0x60
+		'\0',	// 0x61
+		'\0',	// 0x62
+		'\0',	// 0x63
+		'\0',	// 0x64
+		'\0',	// 0x65
+		'\0',	// 0x66
+		'\0',	// 0x67
+		'\0',	// 0x68
+		'\0',	// 0x69
+		'\0',	// 0x6a
+		'\0',	// 0x6b
+		'\0',	// 0x6c
+		'\0',	// 0x6d
+		'\0',	// 0x6e
+		'\0',	// 0x6f
+		'\0',	// 0x70
+		'\0',	// 0x71
+		'\0',	// 0x72
+		'\0',	// 0x73
+		'\0',	// 0x74
+		'\0',	// 0x75
+		'\0',	// 0x76
+		'\0',	// 0x77
+		'\0',	// 0x78
+		'\0',	// 0x79
+		'\0',	// 0x7a
+		'\0',	// 0x7b
+		'\0',	// 0x7c
+		'\0',	// 0x7d
+		'\0',	// 0x7e
+		'\0'	// 0x7f
+	};
+	if(keyboard_flags & KEYBOARD_FLAG_LAYOUT_ENGLISH)
+	{
+		if(keyboard_flags & KEYBOARD_FLAG_CAPS_LOCK_ON)
+		{
+			if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)return character_map_english_caps_lock_shift[signal & ~KEY_RELEASED];
+			else return character_map_english_caps_lock_no_shift[signal & ~KEY_RELEASED];
+		}
+		else
+		{
+			if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)return character_map_english_no_caps_lock_shift[signal & ~KEY_RELEASED];
+			else return character_map_english_no_caps_lock_no_shift[signal & ~KEY_RELEASED];
+		}
 	}
+	else if(keyboard_flags & KEYBOARD_FLAG_LAYOUT_JAPANESE)
+	{
+		if(keyboard_flags & KEYBOARD_FLAG_CAPS_LOCK_ON)
+		{
+			if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)return character_map_japanese_caps_lock_shift[signal & ~KEY_RELEASED];
+			else return character_map_japanese_caps_lock_no_shift[signal & ~KEY_RELEASED];
+		}
+		else
+		{
+			if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)return character_map_japanese_no_caps_lock_shift[signal & ~KEY_RELEASED];
+			else return character_map_japanese_no_caps_lock_no_shift[signal & ~KEY_RELEASED];
+		}
+	}
+	else return '\0';
 }
 
 void decode_keyboard_interrupt(unsigned char signal)
