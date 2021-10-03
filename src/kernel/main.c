@@ -99,23 +99,23 @@ void main(void)
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
-			printf_serial("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt.signal);
+			// printf_serial("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt.signal);
 			decode_keyboard_interrupt(event->event_union.keyboard_interrupt.signal);
 			break;
 		case EVENT_TYPE_MOUSE_EVENT:
 			printf_screen(0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c", event->event_union.mouse_event.x_movement, event->event_union.mouse_event.y_movement, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
-			printf_serial("mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c", event->event_union.mouse_event.x_movement, event->event_union.mouse_event.y_movement, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
+			printf_serial("mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c\n", event->event_union.mouse_event.x_movement, event->event_union.mouse_event.y_movement, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
 			printf_screen(0x0000, 0x0004 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt.signal);
-			printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt.signal);
+			// printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt.signal);
 			decode_mouse_interrupt(event->event_union.mouse_interrupt.signal);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)
 			{
 				printf_screen(0x0000, 0x0005 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
-				printf_serial("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
+				// printf_serial("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
 			}
 			break;
 		default: // invalid event->type
