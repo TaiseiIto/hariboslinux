@@ -54,7 +54,8 @@ void decode_mouse_interrupt(unsigned char signal)
 	static MousePacket mouse_packet;
 	static unsigned char signal_index = 0;
 	mouse_packet.signals[signal_index++] = signal;
-	if(signal_index == 1 && mouse_packet.signals[0] & (MOUSE_PACKET_MUST_BE_1 | MOUSE_PACKET_X_OVERFLOW | MOUSE_PACKET_Y_OVERFLOW) != MOUSE_PACKET_MUST_BE_1)signal_index = 0; // mouse_packet.signals[0] is wrong
+	printf_serial("mouse signal = %#04x\n", signal);
+	if(signal_index == 1 && (mouse_packet.packet & (MOUSE_PACKET_MUST_BE_1 | MOUSE_PACKET_X_OVERFLOW | MOUSE_PACKET_Y_OVERFLOW)) != MOUSE_PACKET_MUST_BE_1)signal_index = 0; // mouse_packet.signals[0] is wrong
 	switch(mouse_id)
 	{
 	case 0:
@@ -95,7 +96,7 @@ void decode_mouse_interrupt(unsigned char signal)
 		}
 		break;
 	case 4:
-		if(signal_index == 4 && mouse_packet.signals[3] & MOUSE_PACKET_ID4_MUST_BE_0)signal_index = 0; // mouse_packet.signals[3] is wrong
+		if(signal_index == 4 && mouse_packet.packet & MOUSE_PACKET_ID4_MUST_BE_0)signal_index = 0; // mouse_packet.signals[3] is wrong
 		if(signal_index == 4)
 		{
 			event.type = EVENT_TYPE_MOUSE_EVENT;
