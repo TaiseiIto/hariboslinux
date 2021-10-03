@@ -654,7 +654,7 @@ const char character_map_japanese_no_caps_lock_no_shift[0x80] =
 	'\0',	// 0x70 KEY_JAPANESE_HIRAGANA
 	'\0',	// 0x71
 	'\0',	// 0x72
-	'_',	// 0x73 KEY_JAPANESE_UNDERSCORE
+	'\\',	// 0x73 KEY_JAPANESE_BACKSLASH
 	'\0',	// 0x74
 	'\0',	// 0x75
 	'\0',	// 0x76
@@ -785,7 +785,7 @@ const char character_map_japanese_no_caps_lock_shift[0x80] =
 	'\0',	// 0x70 KEY_JAPANESE_HIRAGANA
 	'\0',	// 0x71
 	'\0',	// 0x72
-	'\0',	// 0x73 KEY_JAPANESE_UNDERSCORE
+	'_',	// 0x73 KEY_JAPANESE_BACKSLASH
 	'\0',	// 0x74
 	'\0',	// 0x75
 	'\0',	// 0x76
@@ -916,7 +916,7 @@ const char character_map_japanese_caps_lock_no_shift[0x80] =
 	'\0',	// 0x70 KEY_JAPANESE_HIRAGANA
 	'\0',	// 0x71
 	'\0',	// 0x72
-	'\0',	// 0x73 KEY_JAPANESE_UNDERSCORE
+	'\\',	// 0x73 KEY_JAPANESE_BACKSLASH
 	'\0',	// 0x74
 	'\0',	// 0x75
 	'\0',	// 0x76
@@ -1047,7 +1047,7 @@ const char character_map_japanese_caps_lock_shift[0x80] =
 	'\0',	// 0x70 KEY_JAPANESE_HIRAGANA
 	'\0',	// 0x71
 	'\0',	// 0x72
-	'\0',	// 0x73 KEY_JAPANESE_UNDERSCORE
+	'_',	// 0x73 KEY_JAPANESE_BACKSLASH
 	'\0',	// 0x74
 	'\0',	// 0x75
 	'\0',	// 0x76
