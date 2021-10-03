@@ -557,7 +557,7 @@ char get_character(unsigned char signal)
 		'9',	// 0x0a KEY_9
 		'0',	// 0x0b KEY_0
 		'-',	// 0x0c KEY_MINUS
-		'=',	// 0x0d KEY_EQUAL
+		'^',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
 		'\b',	// 0x0e KEY_BACKSPACE
 		'\t',	// 0x0f KEY_TAB
 		'q',	// 0x10 KEY_Q
@@ -570,8 +570,8 @@ char get_character(unsigned char signal)
 		'i',	// 0x17 KEY_I
 		'o',	// 0x18 KEY_O
 		'p',	// 0x19 KEY_P
-		'[',	// 0x1a KEY_LEFT_SQUARE_BRACKET
-		']',	// 0x1b KEY_RIGHT_SQUARE_BRACKET
+		'@',	// 0x1a KEY_JAPANESE_AT_SIGN
+		'[',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
 		'\n',	// 0x1c KEY_ENTER
 		'\0',	// 0x1d KEY_CONTROL
 		'a',	// 0x1e KEY_A
@@ -584,10 +584,10 @@ char get_character(unsigned char signal)
 		'k',	// 0x25 KEY_K
 		'l',	// 0x26 KEY_L
 		';',	// 0x27 KEY_SEMICOLON
-		'\'',	// 0x28 KEY_QUOTE
-		'`',	// 0x29 KEY_BACKQUOTE
+		':',	// 0x28 KEY_JAPANESE_COLON
+		'\0',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
 		'\0',	// 0x2a KEY_LEFT_SHIFT
-		'\\',	// 0x2b KEY_BACKSLASH
+		']',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
 		'z',	// 0x2c KEY_Z
 		'x',	// 0x2d KEY_X
 		'c',	// 0x2e KEY_C
@@ -656,20 +656,20 @@ char get_character(unsigned char signal)
 		'\0',	// 0x6d
 		'\0',	// 0x6e
 		'\0',	// 0x6f
-		'\0',	// 0x70
+		'\0',	// 0x70 KEY_JAPANESE_HIRAGANA
 		'\0',	// 0x71
 		'\0',	// 0x72
-		'\0',	// 0x73
+		'_',	// 0x73 KEY_JAPANESE_UNDERSCORE
 		'\0',	// 0x74
 		'\0',	// 0x75
 		'\0',	// 0x76
 		'\0',	// 0x77
 		'\0',	// 0x78
-		'\0',	// 0x79
+		'\0',	// 0x79 KEY_JAPANESE_HENKAN
 		'\0',	// 0x7a
-		'\0',	// 0x7b
+		'\0',	// 0x7b KEY_JAPANESE_MUHENKAN
 		'\0',	// 0x7c
-		'\0',	// 0x7d
+		'\\',	// 0x7d KEY_JAPANESE_YEN
 		'\0',	// 0x7e
 		'\0'	// 0x7f
 	};
@@ -688,7 +688,7 @@ char get_character(unsigned char signal)
 		'(',	// 0x0a KEY_9
 		')',	// 0x0b KEY_0
 		'_',	// 0x0c KEY_MINUS
-		'+',	// 0x0d KEY_EQUAL
+		'+',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
 		'\b',	// 0x0e KEY_BACKSPACE
 		'\t',	// 0x0f KEY_TAB
 		'Q',	// 0x10 KEY_Q
@@ -701,8 +701,8 @@ char get_character(unsigned char signal)
 		'I',	// 0x17 KEY_I
 		'O',	// 0x18 KEY_O
 		'P',	// 0x19 KEY_P
-		'{',	// 0x1a KEY_LEFT_SQUARE_BRACKET
-		'}',	// 0x1b KEY_RIGHT_SQUARE_BRACKET
+		'{',	// 0x1a KEY_JAPANESE_AT_SIGN
+		'}',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
 		'\n',	// 0x1c KEY_ENTER
 		'\0',	// 0x1d KEY_CONTROL
 		'A',	// 0x1e KEY_A
@@ -715,10 +715,10 @@ char get_character(unsigned char signal)
 		'K',	// 0x25 KEY_K
 		'L',	// 0x26 KEY_L
 		':',	// 0x27 KEY_SEMICOLON
-		'\"',	// 0x28 KEY_QUOTE
-		'~',	// 0x29 KEY_BACKQUOTE
+		'\"',	// 0x28 KEY_JAPANESE_COLON
+		'~',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
 		'\0',	// 0x2a KEY_LEFT_SHIFT
-		'|',	// 0x2b KEY_BACKSLASH
+		'|',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
 		'Z',	// 0x2c KEY_Z
 		'X',	// 0x2d KEY_X
 		'C',	// 0x2e KEY_C
@@ -787,20 +787,20 @@ char get_character(unsigned char signal)
 		'\0',	// 0x6d
 		'\0',	// 0x6e
 		'\0',	// 0x6f
-		'\0',	// 0x70
+		'\0',	// 0x70 KEY_JAPANESE_HIRAGANA
 		'\0',	// 0x71
 		'\0',	// 0x72
-		'\0',	// 0x73
+		'\0',	// 0x73 KEY_JAPANESE_UNDERSCORE
 		'\0',	// 0x74
 		'\0',	// 0x75
 		'\0',	// 0x76
 		'\0',	// 0x77
 		'\0',	// 0x78
-		'\0',	// 0x79
+		'\0',	// 0x79 KEY_JAPANESE_HENKAN
 		'\0',	// 0x7a
-		'\0',	// 0x7b
+		'\0',	// 0x7b KEY_JAPANESE_MUHENKAN
 		'\0',	// 0x7c
-		'\0',	// 0x7d
+		'\0',	// 0x7d KEY_JAPANESE_YEN
 		'\0',	// 0x7e
 		'\0'	// 0x7f
 	};
@@ -819,7 +819,7 @@ char get_character(unsigned char signal)
 		'9',	// 0x0a KEY_9
 		'0',	// 0x0b KEY_0
 		'-',	// 0x0c KEY_MINUS
-		'=',	// 0x0d KEY_EQUAL
+		'=',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
 		'\b',	// 0x0e KEY_BACKSPACE
 		'\t',	// 0x0f KEY_TAB
 		'Q',	// 0x10 KEY_Q
@@ -832,8 +832,8 @@ char get_character(unsigned char signal)
 		'I',	// 0x17 KEY_I
 		'O',	// 0x18 KEY_O
 		'P',	// 0x19 KEY_P
-		'[',	// 0x1a KEY_LEFT_SQUARE_BRACKET
-		']',	// 0x1b KEY_RIGHT_SQUARE_BRACKET
+		'[',	// 0x1a KEY_JAPANESE_AT_SIGN
+		']',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
 		'\n',	// 0x1c KEY_ENTER
 		'\0',	// 0x1d KEY_CONTROL
 		'A',	// 0x1e KEY_A
@@ -846,10 +846,10 @@ char get_character(unsigned char signal)
 		'K',	// 0x25 KEY_K
 		'L',	// 0x26 KEY_L
 		';',	// 0x27 KEY_SEMICOLON
-		'\'',	// 0x28 KEY_QUOTE
-		'`',	// 0x29 KEY_BACKQUOTE
+		'\'',	// 0x28 KEY_JAPANESE_COLON
+		'`',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
 		'\0',	// 0x2a KEY_LEFT_SHIFT
-		'\\',	// 0x2b KEY_BACKSLASH
+		'\\',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
 		'Z',	// 0x2c KEY_Z
 		'X',	// 0x2d KEY_X
 		'C',	// 0x2e KEY_C
@@ -918,20 +918,20 @@ char get_character(unsigned char signal)
 		'\0',	// 0x6d
 		'\0',	// 0x6e
 		'\0',	// 0x6f
-		'\0',	// 0x70
+		'\0',	// 0x70 KEY_JAPANESE_HIRAGANA
 		'\0',	// 0x71
 		'\0',	// 0x72
-		'\0',	// 0x73
+		'\0',	// 0x73 KEY_JAPANESE_UNDERSCORE
 		'\0',	// 0x74
 		'\0',	// 0x75
 		'\0',	// 0x76
 		'\0',	// 0x77
 		'\0',	// 0x78
-		'\0',	// 0x79
+		'\0',	// 0x79 KEY_JAPANESE_HENKAN
 		'\0',	// 0x7a
-		'\0',	// 0x7b
+		'\0',	// 0x7b KEY_JAPANESE_MUHENKAN
 		'\0',	// 0x7c
-		'\0',	// 0x7d
+		'\0',	// 0x7d KEY_JAPANESE_YEN
 		'\0',	// 0x7e
 		'\0'	// 0x7f
 	};
@@ -950,7 +950,7 @@ char get_character(unsigned char signal)
 		'(',	// 0x0a KEY_9
 		')',	// 0x0b KEY_0
 		'_',	// 0x0c KEY_MINUS
-		'+',	// 0x0d KEY_EQUAL
+		'+',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
 		'\b',	// 0x0e KEY_BACKSPACE
 		'\t',	// 0x0f KEY_TAB
 		'q',	// 0x10 KEY_Q
@@ -963,8 +963,8 @@ char get_character(unsigned char signal)
 		'i',	// 0x17 KEY_I
 		'o',	// 0x18 KEY_O
 		'p',	// 0x19 KEY_P
-		'{',	// 0x1a KEY_LEFT_SQUARE_BRACKET
-		'}',	// 0x1b KEY_RIGHT_SQUARE_BRACKET
+		'{',	// 0x1a KEY_JAPANESE_AT_SIGN
+		'}',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
 		'\n',	// 0x1c KEY_ENTER
 		'\0',	// 0x1d KEY_CONTROL
 		'a',	// 0x1e KEY_A
@@ -977,10 +977,10 @@ char get_character(unsigned char signal)
 		'k',	// 0x25 KEY_K
 		'l',	// 0x26 KEY_L
 		':',	// 0x27 KEY_SEMICOLON
-		'\"',	// 0x28 KEY_QUOTE
-		'~',	// 0x29 KEY_BACKQUOTE
+		'\"',	// 0x28 KEY_JAPANESE_COLON
+		'~',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
 		'\0',	// 0x2a KEY_LEFT_SHIFT
-		'|',	// 0x2b KEY_BACKSLASH
+		'|',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
 		'z',	// 0x2c KEY_Z
 		'x',	// 0x2d KEY_X
 		'c',	// 0x2e KEY_C
@@ -1049,20 +1049,20 @@ char get_character(unsigned char signal)
 		'\0',	// 0x6d
 		'\0',	// 0x6e
 		'\0',	// 0x6f
-		'\0',	// 0x70
+		'\0',	// 0x70 KEY_JAPANESE_HIRAGANA
 		'\0',	// 0x71
 		'\0',	// 0x72
-		'\0',	// 0x73
+		'\0',	// 0x73 KEY_JAPANESE_UNDERSCORE
 		'\0',	// 0x74
 		'\0',	// 0x75
 		'\0',	// 0x76
 		'\0',	// 0x77
 		'\0',	// 0x78
-		'\0',	// 0x79
+		'\0',	// 0x79 KEY_JAPANESE_HENKAN
 		'\0',	// 0x7a
-		'\0',	// 0x7b
+		'\0',	// 0x7b KEY_JAPANESE_MUHENKAN
 		'\0',	// 0x7c
-		'\0',	// 0x7d
+		'\0',	// 0x7d KEY_JAPANESE_YEN
 		'\0',	// 0x7e
 		'\0'	// 0x7f
 	};
