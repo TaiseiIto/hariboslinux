@@ -167,10 +167,10 @@ typedef struct _KeyboardEvent
 	#define KEYBOARD_FAILURE_ACK 0xfe
 } KeyboardEvent;
 
-typedef struct _KeyboardInterruptEvent
+typedef struct _KeyboardInterrupt
 {
 	unsigned char signal;
-} KeyboardInterruptEvent;
+} KeyboardInterrupt;
 
 void decode_keyboard_interrupt(unsigned char signal);
 void init_keyboard(void);

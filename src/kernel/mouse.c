@@ -17,6 +17,10 @@ unsigned char mouse_id;
 void send_to_mouse(unsigned char data);
 void set_mouse_sample_rate(unsigned char rate);
 
+void decode_mouse_interrupt(unsigned char signal)
+{
+}
+
 unsigned char get_mouse_id(void)
 {
 	return mouse_id;
