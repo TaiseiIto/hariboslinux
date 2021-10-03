@@ -67,6 +67,7 @@ typedef struct _KeyboardEvent
 	#define KEY_0 0x0b
 	#define KEY_MINUS 0x0c
 	#define KEY_EQUAL 0x0d
+	#define KEY_JAPANESE_CIRCUMFLEX 0x0d
 	#define KEY_BACKSPACE 0x0e
 	#define KEY_TAB 0x0f
 	#define KEY_Q 0x10
@@ -80,7 +81,9 @@ typedef struct _KeyboardEvent
 	#define KEY_O 0x18
 	#define KEY_P 0x19
 	#define KEY_LEFT_SQUARE_BRACKET 0x1a
+	#define KEY_JAPANESE_AT_SIGN 0x1a
 	#define KEY_RIGHT_SQUARE_BRACKET 0x1b
+	#define KEY_JAPANESE_LEFT_SQUARE_BRACKET 0x1b
 	#define KEY_ENTER 0x1c
 	#define KEY_CONTROL 0x1d
 	#define KEY_A 0x1e
@@ -94,9 +97,12 @@ typedef struct _KeyboardEvent
 	#define KEY_L 0x26
 	#define KEY_SEMICOLON 0x27
 	#define KEY_QUOTE 0x28
+	#define KEY_JAPANESE_COLON 0x28
 	#define KEY_BACKQUOTE 0x29
+	#define KEY_JAPANESE_ZENKAKU_HANKAKU 0x29
 	#define KEY_LEFT_SHIFT 0x2a
 	#define KEY_BACKSLASH 0x2b
+	#define KEY_JAPANESE_RIGHT_SQUARE_BRACKET 0x2b
 	#define KEY_Z 0x2c
 	#define KEY_X 0x2d
 	#define KEY_C 0x2e
@@ -151,6 +157,11 @@ typedef struct _KeyboardEvent
 	#define KEY_F12 0x58
 	#define KEY_LEFT_SUPER 0x5b
 	#define KEY_RIGHT_SUPER 0x5c
+	#define KEY_JAPANESE_HIRAGANA 0x70
+	#define KEY_JAPANESE_UNDERSCORE 0x73
+	#define KEY_JAPANESE_HENKAN 0x79
+	#define KEY_JAPANESE_MUHENKAN 0x7b
+	#define KEY_JAPANESE_YEN 0x7d
 	#define KEY_RELEASED 0x80
 	#define KEYBOARD_SUCCESS_ACK 0xfa
 	#define KEYBOARD_FAILURE_ACK 0xfe
