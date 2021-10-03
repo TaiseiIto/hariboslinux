@@ -69,6 +69,8 @@ void decode_mouse_interrupt(unsigned char signal)
 			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)event.event_union.mouse_event.x_movement |= 0xff00;
 			event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
 			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)event.event_union.mouse_event.y_movement |= 0xff00;
+			event.event_union.mouse_event.vertical_wheel_movement = 0;
+			event.event_union.mouse_event.horizontal_wheel_movement = 0;
 			enqueue_event(&event);
 			signal_index = 0;
 		}
@@ -85,8 +87,9 @@ void decode_mouse_interrupt(unsigned char signal)
 			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)event.event_union.mouse_event.x_movement |= 0xff00;
 			event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
 			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)event.event_union.mouse_event.y_movement |= 0xff00;
-			if(0 < (char)mouse_packet.signals[3])event.event_union.mouse_event.flags |= MOUSE_WHEEL_UP;
-			else if((char)mouse_packet.signals[3] < 0)event.event_union.mouse_event.flags |= MOUSE_WHEEL_DOWN;
+			if(0 < (char)mouse_packet.signals[3])event.event_union.mouse_event.vertical_wheel_movement = 1;
+			else if((char)mouse_packet.signals[3] < 0)event.event_union.mouse_event.vertical_wheel_movement = -1;
+			event.event_union.mouse_event.horizontal_wheel_movement = 0;
 			enqueue_event(&event);
 			signal_index = 0;
 		}
@@ -107,18 +110,24 @@ void decode_mouse_interrupt(unsigned char signal)
 			switch(mouse_packet.packet & MOUSE_PACKET_ID4_WHEEL)
 			{
 			case MOUSE_PACKET_ID4_WHEEL_STOP:
+				event.event_union.mouse_event.vertical_wheel_movement = 0;
+				event.event_union.mouse_event.horizontal_wheel_movement = 0;
 				break;
 			case MOUSE_PACKET_ID4_WHEEL_DOWN:
-				event.event_union.mouse_event.flags |= MOUSE_WHEEL_DOWN;
+				event.event_union.mouse_event.vertical_wheel_movement = -1;
+				event.event_union.mouse_event.horizontal_wheel_movement = 0;
 				break;
 			case MOUSE_PACKET_ID4_WHEEL_LEFT:
-				event.event_union.mouse_event.flags |= MOUSE_WHEEL_LEFT;
+				event.event_union.mouse_event.vertical_wheel_movement = -1;
+				event.event_union.mouse_event.horizontal_wheel_movement = 0;
 				break;
 			case MOUSE_PACKET_ID4_WHEEL_RIGHT:
-				event.event_union.mouse_event.flags |= MOUSE_WHEEL_RIGHT;
+				event.event_union.mouse_event.vertical_wheel_movement = 0;
+				event.event_union.mouse_event.horizontal_wheel_movement = 1;
 				break;
 			case MOUSE_PACKET_ID4_WHEEL_UP:
-				event.event_union.mouse_event.flags |= MOUSE_WHEEL_UP;
+				event.event_union.mouse_event.vertical_wheel_movement = 1;
+				event.event_union.mouse_event.horizontal_wheel_movement = 0;
 				break;
 			default:
 				print_serial("Wrong mouse wheel state!\n");
@@ -191,3 +200,4 @@ void set_mouse_sample_rate(unsigned char rate)
 	send_to_mouse(rate);
 	printf_serial("mouse ACK = %#04x\n", receive_from_keyboard());
 }
+
