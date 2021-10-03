@@ -98,7 +98,7 @@ char get_character(unsigned char signal)
 		'4',	// 0x4b KEY_PAD_4
 		'5',	// 0x4c KEY_PAD_5
 		'6',	// 0x4d KEY_PAD_6
-		'+',	// 0x4e KEY_PAD_PLIS
+		'+',	// 0x4e KEY_PAD_PLUS
 		'1',	// 0x4f KEY_PAD_1
 		'2',	// 0x50 KEY_PAD_2
 		'3',	// 0x51 KEY_PAD_3
@@ -229,7 +229,7 @@ char get_character(unsigned char signal)
 		'4',	// 0x4b KEY_PAD_4
 		'5',	// 0x4c KEY_PAD_5
 		'6',	// 0x4d KEY_PAD_6
-		'+',	// 0x4e KEY_PAD_PLIS
+		'+',	// 0x4e KEY_PAD_PLUS
 		'1',	// 0x4f KEY_PAD_1
 		'2',	// 0x50 KEY_PAD_2
 		'3',	// 0x51 KEY_PAD_3
@@ -360,7 +360,7 @@ char get_character(unsigned char signal)
 		'4',	// 0x4b KEY_PAD_4
 		'5',	// 0x4c KEY_PAD_5
 		'6',	// 0x4d KEY_PAD_6
-		'+',	// 0x4e KEY_PAD_PLIS
+		'+',	// 0x4e KEY_PAD_PLUS
 		'1',	// 0x4f KEY_PAD_1
 		'2',	// 0x50 KEY_PAD_2
 		'3',	// 0x51 KEY_PAD_3
@@ -491,7 +491,7 @@ char get_character(unsigned char signal)
 		'4',	// 0x4b KEY_PAD_4
 		'5',	// 0x4c KEY_PAD_5
 		'6',	// 0x4d KEY_PAD_6
-		'+',	// 0x4e KEY_PAD_PLIS
+		'+',	// 0x4e KEY_PAD_PLUS
 		'1',	// 0x4f KEY_PAD_1
 		'2',	// 0x50 KEY_PAD_2
 		'3',	// 0x51 KEY_PAD_3
@@ -622,7 +622,7 @@ char get_character(unsigned char signal)
 		'4',	// 0x4b KEY_PAD_4
 		'5',	// 0x4c KEY_PAD_5
 		'6',	// 0x4d KEY_PAD_6
-		'+',	// 0x4e KEY_PAD_PLIS
+		'+',	// 0x4e KEY_PAD_PLUS
 		'1',	// 0x4f KEY_PAD_1
 		'2',	// 0x50 KEY_PAD_2
 		'3',	// 0x51 KEY_PAD_3
@@ -678,17 +678,17 @@ char get_character(unsigned char signal)
 		'\0',	// 0x00
 		'\0',	// 0x01 KEY_ESC
 		'!',	// 0x02 KEY_1
-		'@',	// 0x03 KEY_2
+		'"',	// 0x03 KEY_2
 		'#',	// 0x04 KEY_3
 		'$',	// 0x05 KEY_4
 		'%',	// 0x06 KEY_5
-		'^',	// 0x07 KEY_6
-		'&',	// 0x08 KEY_7
-		'*',	// 0x09 KEY_8
-		'(',	// 0x0a KEY_9
-		')',	// 0x0b KEY_0
-		'_',	// 0x0c KEY_MINUS
-		'+',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
+		'&',	// 0x07 KEY_6
+		'\'',	// 0x08 KEY_7
+		'(',	// 0x09 KEY_8
+		')',	// 0x0a KEY_9
+		'\0',	// 0x0b KEY_0
+		'=',	// 0x0c KEY_MINUS
+		'~',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
 		'\b',	// 0x0e KEY_BACKSPACE
 		'\t',	// 0x0f KEY_TAB
 		'Q',	// 0x10 KEY_Q
@@ -701,8 +701,8 @@ char get_character(unsigned char signal)
 		'I',	// 0x17 KEY_I
 		'O',	// 0x18 KEY_O
 		'P',	// 0x19 KEY_P
-		'{',	// 0x1a KEY_JAPANESE_AT_SIGN
-		'}',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
+		'`',	// 0x1a KEY_JAPANESE_AT_SIGN
+		'{',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
 		'\n',	// 0x1c KEY_ENTER
 		'\0',	// 0x1d KEY_CONTROL
 		'A',	// 0x1e KEY_A
@@ -714,11 +714,11 @@ char get_character(unsigned char signal)
 		'J',	// 0x24 KEY_J
 		'K',	// 0x25 KEY_K
 		'L',	// 0x26 KEY_L
-		':',	// 0x27 KEY_SEMICOLON
-		'\"',	// 0x28 KEY_JAPANESE_COLON
-		'~',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
+		'+',	// 0x27 KEY_SEMICOLON
+		'*',	// 0x28 KEY_JAPANESE_COLON
+		'\0',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
 		'\0',	// 0x2a KEY_LEFT_SHIFT
-		'|',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
+		'}',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
 		'Z',	// 0x2c KEY_Z
 		'X',	// 0x2d KEY_X
 		'C',	// 0x2e KEY_C
@@ -753,7 +753,7 @@ char get_character(unsigned char signal)
 		'4',	// 0x4b KEY_PAD_4
 		'5',	// 0x4c KEY_PAD_5
 		'6',	// 0x4d KEY_PAD_6
-		'+',	// 0x4e KEY_PAD_PLIS
+		'+',	// 0x4e KEY_PAD_PLUS
 		'1',	// 0x4f KEY_PAD_1
 		'2',	// 0x50 KEY_PAD_2
 		'3',	// 0x51 KEY_PAD_3
@@ -819,7 +819,7 @@ char get_character(unsigned char signal)
 		'9',	// 0x0a KEY_9
 		'0',	// 0x0b KEY_0
 		'-',	// 0x0c KEY_MINUS
-		'=',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
+		'^',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
 		'\b',	// 0x0e KEY_BACKSPACE
 		'\t',	// 0x0f KEY_TAB
 		'Q',	// 0x10 KEY_Q
@@ -832,8 +832,8 @@ char get_character(unsigned char signal)
 		'I',	// 0x17 KEY_I
 		'O',	// 0x18 KEY_O
 		'P',	// 0x19 KEY_P
-		'[',	// 0x1a KEY_JAPANESE_AT_SIGN
-		']',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
+		'@',	// 0x1a KEY_JAPANESE_AT_SIGN
+		'[',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
 		'\n',	// 0x1c KEY_ENTER
 		'\0',	// 0x1d KEY_CONTROL
 		'A',	// 0x1e KEY_A
@@ -846,10 +846,10 @@ char get_character(unsigned char signal)
 		'K',	// 0x25 KEY_K
 		'L',	// 0x26 KEY_L
 		';',	// 0x27 KEY_SEMICOLON
-		'\'',	// 0x28 KEY_JAPANESE_COLON
-		'`',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
+		':',	// 0x28 KEY_JAPANESE_COLON
+		'\0',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
 		'\0',	// 0x2a KEY_LEFT_SHIFT
-		'\\',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
+		']',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
 		'Z',	// 0x2c KEY_Z
 		'X',	// 0x2d KEY_X
 		'C',	// 0x2e KEY_C
@@ -884,7 +884,7 @@ char get_character(unsigned char signal)
 		'4',	// 0x4b KEY_PAD_4
 		'5',	// 0x4c KEY_PAD_5
 		'6',	// 0x4d KEY_PAD_6
-		'+',	// 0x4e KEY_PAD_PLIS
+		'+',	// 0x4e KEY_PAD_PLUS
 		'1',	// 0x4f KEY_PAD_1
 		'2',	// 0x50 KEY_PAD_2
 		'3',	// 0x51 KEY_PAD_3
@@ -940,17 +940,17 @@ char get_character(unsigned char signal)
 		'\0',	// 0x00
 		'\0',	// 0x01 KEY_ESC
 		'!',	// 0x02 KEY_1
-		'@',	// 0x03 KEY_2
+		'"',	// 0x03 KEY_2
 		'#',	// 0x04 KEY_3
 		'$',	// 0x05 KEY_4
 		'%',	// 0x06 KEY_5
-		'^',	// 0x07 KEY_6
-		'&',	// 0x08 KEY_7
-		'*',	// 0x09 KEY_8
-		'(',	// 0x0a KEY_9
-		')',	// 0x0b KEY_0
-		'_',	// 0x0c KEY_MINUS
-		'+',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
+		'&',	// 0x07 KEY_6
+		'\'',	// 0x08 KEY_7
+		'(',	// 0x09 KEY_8
+		')',	// 0x0a KEY_9
+		'\0',	// 0x0b KEY_0
+		'=',	// 0x0c KEY_MINUS
+		'~',	// 0x0d KEY_JAPANESE_CIRCUMFLEX
 		'\b',	// 0x0e KEY_BACKSPACE
 		'\t',	// 0x0f KEY_TAB
 		'q',	// 0x10 KEY_Q
@@ -963,8 +963,8 @@ char get_character(unsigned char signal)
 		'i',	// 0x17 KEY_I
 		'o',	// 0x18 KEY_O
 		'p',	// 0x19 KEY_P
-		'{',	// 0x1a KEY_JAPANESE_AT_SIGN
-		'}',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
+		'`',	// 0x1a KEY_JAPANESE_AT_SIGN
+		'{',	// 0x1b KEY_JAPANESE_LEFT_SQUARE_BRACKET
 		'\n',	// 0x1c KEY_ENTER
 		'\0',	// 0x1d KEY_CONTROL
 		'a',	// 0x1e KEY_A
@@ -976,11 +976,11 @@ char get_character(unsigned char signal)
 		'j',	// 0x24 KEY_J
 		'k',	// 0x25 KEY_K
 		'l',	// 0x26 KEY_L
-		':',	// 0x27 KEY_SEMICOLON
-		'\"',	// 0x28 KEY_JAPANESE_COLON
-		'~',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
+		'+',	// 0x27 KEY_SEMICOLON
+		'*',	// 0x28 KEY_JAPANESE_COLON
+		'\0',	// 0x29 KEY_JAPANESE_ZENKAKU_HANKAKU
 		'\0',	// 0x2a KEY_LEFT_SHIFT
-		'|',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
+		'}',	// 0x2b KEY_JAPANESE_RIGHT_SQUARE_BRACKET
 		'z',	// 0x2c KEY_Z
 		'x',	// 0x2d KEY_X
 		'c',	// 0x2e KEY_C
@@ -1015,7 +1015,7 @@ char get_character(unsigned char signal)
 		'4',	// 0x4b KEY_PAD_4
 		'5',	// 0x4c KEY_PAD_5
 		'6',	// 0x4d KEY_PAD_6
-		'+',	// 0x4e KEY_PAD_PLIS
+		'+',	// 0x4e KEY_PAD_PLUS
 		'1',	// 0x4f KEY_PAD_1
 		'2',	// 0x50 KEY_PAD_2
 		'3',	// 0x51 KEY_PAD_3
