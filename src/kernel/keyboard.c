@@ -795,7 +795,7 @@ const char character_map_japanese_no_caps_lock_shift[0x80] =
 	'\0',	// 0x7a
 	'\0',	// 0x7b KEY_JAPANESE_MUHENKAN
 	'\0',	// 0x7c
-	'\0',	// 0x7d KEY_JAPANESE_YEN
+	'|',	// 0x7d KEY_JAPANESE_YEN
 	'\0',	// 0x7e
 	'\0'	// 0x7f
 };
@@ -926,7 +926,7 @@ const char character_map_japanese_caps_lock_no_shift[0x80] =
 	'\0',	// 0x7a
 	'\0',	// 0x7b KEY_JAPANESE_MUHENKAN
 	'\0',	// 0x7c
-	'\0',	// 0x7d KEY_JAPANESE_YEN
+	'\\',	// 0x7d KEY_JAPANESE_YEN
 	'\0',	// 0x7e
 	'\0'	// 0x7f
 };
@@ -1057,7 +1057,7 @@ const char character_map_japanese_caps_lock_shift[0x80] =
 	'\0',	// 0x7a
 	'\0',	// 0x7b KEY_JAPANESE_MUHENKAN
 	'\0',	// 0x7c
-	'\0',	// 0x7d KEY_JAPANESE_YEN
+	'|',	// 0x7d KEY_JAPANESE_YEN
 	'\0',	// 0x7e
 	'\0'	// 0x7f
 };
