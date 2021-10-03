@@ -18,7 +18,7 @@ KeyboardTransmission last_keyboard_transmission;
 
 char get_character(unsigned char signal)
 {
-	const char english_no_caps_lock_no_shift_character_map[0x80] = 
+	const char character_map_english_no_caps_lock_no_shift[0x80] = 
 	{
 		'\0',	// 0x00
 		'\0',	// 0x01 KEY_ESC
@@ -149,7 +149,7 @@ char get_character(unsigned char signal)
 		'\0',	// 0x7e
 		'\0'	// 0x7f
 	};
-	const char english_no_caps_lock_shift_character_map[0x80] = 
+	const char character_map_english_no_caps_lock_shift[0x80] = 
 	{
 		'\0',	// 0x00
 		'\0',	// 0x01 KEY_ESC
@@ -280,8 +280,8 @@ char get_character(unsigned char signal)
 		'\0',	// 0x7e
 		'\0'	// 0x7f
 	};
-	if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)return english_no_caps_lock_shift_character_map[signal & ~KEY_RELEASED];
-	else return english_no_caps_lock_no_shift_character_map[signal & ~KEY_RELEASED];
+	if(keyboard_flags & KEYBOARD_FLAG_SHIFT_KEY_PUSHED)return character_map_english_no_caps_lock_shift[signal & ~KEY_RELEASED];
+	else return character_map_english_no_caps_lock_no_shift[signal & ~KEY_RELEASED];
 }
 
 void decode_keyboard_interrupt(unsigned char signal)
