@@ -94,7 +94,7 @@ void main(void)
 				if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_LAYOUT_ENGLISH)print_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard layout = English ");
 				else if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_LAYOUT_JAPANESE)print_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "keyboard layout = Japanese");
 			}
-			printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
+			if(event->event_union.keyboard_event.character)printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
 			keyboard_flags = event->event_union.keyboard_event.flags;
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:

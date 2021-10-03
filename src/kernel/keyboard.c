@@ -1103,6 +1103,17 @@ void decode_keyboard_interrupt(unsigned char signal)
 	unsigned char keyboard_command;
 	KeyboardTransmission *keyboard_transmission;
 	event.type = EVENT_TYPE_KEYBOARD_EVENT;
+	// Pushed or released
+	if(signal & KEY_RELEASED)
+	{
+		keyboard_flags &= ~KEYBOARD_FLAG_KEY_PUSHED;
+		keyboard_flags |= KEYBOARD_FLAG_KEY_RELEASED;
+	}
+	else
+	{
+		keyboard_flags |= KEYBOARD_FLAG_KEY_PUSHED;
+		keyboard_flags &= ~KEYBOARD_FLAG_KEY_RELEASED;
+	}
 	// Set flags
 	switch(signal)
 	{
