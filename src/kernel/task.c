@@ -25,7 +25,10 @@ void init_task(void)
 
 void sti_task(void)
 {
-	if(current_task->interrupt_prohibition_level)if(!(--current_task->interrupt_prohibition_level))sti();
+	if(current_task->interrupt_prohibition_level)
+	{
+		if(!(--current_task->interrupt_prohibition_level))sti();
+	}
 	else ERROR_MESSAGE(); // double sti error!
 }
 

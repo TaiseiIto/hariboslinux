@@ -78,9 +78,8 @@ void main(void)
 		printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "previous = %p, this = %p, next = %p, size = %#010x, flags = %#04x\n", memory_section->previous, memory_section, memory_section->next, memory_section->size, memory_section->flags);
 		memory_section = memory_section->next;
 	} while(memory_section != get_root_memory_section());
-	sti_task();
-	print_serial("finish sti_task()\n\n");
 	init_serial_interrupt();
+	sti_task();
 	print_serial("finish init_serial_interrupt()\n\n");
 	while(1)
 	{
