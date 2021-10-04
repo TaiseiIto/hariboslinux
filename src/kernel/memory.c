@@ -35,14 +35,13 @@ void free(void *address)
 					memory_section->next = memory_section->next->next;
 				}
 			}
-			else // double free error!
-			{
-			}
+			else ERROR_MESSAGE(); // double free error!
 			sti_task();
 			return;
 		}
 		memory_section = memory_section->next;
 	} while(memory_section != root_memory_section);
+	ERROR_MESSAGE(); // Can't find the memory section!
 }
 
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index)
@@ -139,6 +138,7 @@ void *malloc(size_t size)
 		memory_section = memory_section->next;
 	} while(memory_section != root_memory_section);
 	sti_task();
+	ERROR_MESSAGE(); // Can't find enough size free memory section!
 	return NULL;
 }
 

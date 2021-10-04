@@ -1,6 +1,7 @@
 #include "font.h"
 #include "graphic.h"
 #include "io.h"
+#include "serial.h"
 #include "task.h"
 
 Task *current_task;
@@ -25,12 +26,12 @@ void init_task(void)
 void sti_task(void)
 {
 	if(current_task->interrupt_prohibition_level)if(!(--current_task->interrupt_prohibition_level))sti();
-	else return; // double sti error!
+	else ERROR_MESSAGE(); // double sti error!
 }
 
 void sti_task_interrupt(void)
 {
 	if(current_task->interrupt_prohibition_level)current_task->interrupt_prohibition_level--;
-	else return; // double sti error!
+	else ERROR_MESSAGE(); // double sti error!
 }
 

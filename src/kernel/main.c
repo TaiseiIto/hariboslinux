@@ -99,7 +99,7 @@ void main(void)
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_screen(0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
-			// printf_serial("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt.signal);
+			printf_serial("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt.signal);
 			decode_keyboard_interrupt(event->event_union.keyboard_interrupt.signal);
 			break;
 		case EVENT_TYPE_MOUSE_EVENT:
@@ -108,14 +108,14 @@ void main(void)
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
 			printf_screen(0x0000, 0x0004 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt.signal);
-			// printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt.signal);
+			printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt.signal);
 			decode_mouse_interrupt(event->event_union.mouse_interrupt.signal);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)
 			{
 				printf_screen(0x0000, 0x0005 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
-				// printf_serial("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
+				printf_serial("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
 			}
 			break;
 		default: // invalid event->type

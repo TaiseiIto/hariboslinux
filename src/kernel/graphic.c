@@ -96,6 +96,8 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 // 0 <= y < screen height
 void put_dot(unsigned short x, unsigned short y, Color color)
 {
+	if(video_information.width <= x)ERROR_MESSAGE();
+	if(video_information.height <= y)ERROR_MESSAGE();
 	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.red_position / CHAR_BIT), color.red);
 	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.green_position / CHAR_BIT), color.green);
 	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.blue_position / CHAR_BIT), color.blue);

@@ -131,7 +131,7 @@ void decode_mouse_interrupt(unsigned char signal)
 				event.event_union.mouse_event.horizontal_wheel_movement = 0;
 				break;
 			default:
-				print_serial("Wrong mouse wheel state!\n");
+				ERROR_MESSAGE(); // Wrong mouse wheel state!
 				signal_index = 0;
 				return;
 			}
@@ -142,7 +142,7 @@ void decode_mouse_interrupt(unsigned char signal)
 		}
 		break;
 	default:
-		print_serial("Wrong mouse id!\n");
+		ERROR_MESSAGE(); // Wrong mouse id!
 		break;
 	}
 }

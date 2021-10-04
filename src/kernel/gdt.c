@@ -139,6 +139,7 @@ unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char 
 		}
 	}
 	// unused segment not found
+	ERROR_MESSAGE();
 	return 0x0000;
 }
 

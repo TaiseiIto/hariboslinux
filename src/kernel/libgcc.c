@@ -1,9 +1,11 @@
+#include "exception.h"
 #include "libgcc.h"
 #include "math.h"
 
 long long int __divdi3(long long int a, long long int b)
 {
 	long long int result = 0;
+	if(b == 0)devide_by_zero_exception_handler();
 	while(!(llabs(a) < llabs(b)))
 	{
 		unsigned char shift;
@@ -17,6 +19,7 @@ long long int __divdi3(long long int a, long long int b)
 
 long long int __moddi3(long long int a, long long int b)
 {
+	if(b == 0)devide_by_zero_exception_handler();
 	while(!(llabs(a) < llabs(b)))
 	{
 		unsigned char shift;
@@ -30,6 +33,7 @@ long long int __moddi3(long long int a, long long int b)
 unsigned long long int __udivdi3(unsigned long long int a, unsigned long long int b)
 {
 	unsigned long long int result = 0;
+	if(b == 0)devide_by_zero_exception_handler();
 	while(!(a < b))
 	{
 		unsigned char shift;
@@ -42,6 +46,7 @@ unsigned long long int __udivdi3(unsigned long long int a, unsigned long long in
 
 unsigned long long int __umoddi3(unsigned long long int a, unsigned long long int b)
 {
+	if(b == 0)devide_by_zero_exception_handler();
 	while(!(a < b))
 	{
 		unsigned char shift;
