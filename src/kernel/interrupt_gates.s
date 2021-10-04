@@ -1835,7 +1835,7 @@ interrupt_gate0x1f:		# void interrupt_gate0x1f(void);
 	popal
 	iret
 
-				# // kerboard interrupt handler
+				# // timer interrupt handler
 interrupt_gate0x20:		# void interrupt_gate0x20(void);
 0:
 	pushal
@@ -1868,7 +1868,7 @@ interrupt_gate0x20:		# void interrupt_gate0x20(void);
 	popal
 	iret
 
-				# // kerboard interrupt handler
+				# // keyboard interrupt handler
 interrupt_gate0x21:		# void interrupt_gate0x21(void);
 0:
 	pushal

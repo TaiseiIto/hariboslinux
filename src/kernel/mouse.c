@@ -98,7 +98,7 @@ void decode_mouse_interrupt(unsigned char signal)
 		if(signal_index == 4 && mouse_packet.packet & MOUSE_PACKET_ID4_MUST_BE_0)signal_index = 0; // mouse_packet.signals[3] is wrong
 		if(signal_index == 4)
 		{
-			printf_serial("mouse packer = %#010x\n", mouse_packet.packet);
+			printf_serial("mouse packet = %#010x\n", mouse_packet.packet);
 			event.type = EVENT_TYPE_MOUSE_EVENT;
 			event.event_union.mouse_event.flags = 0;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
