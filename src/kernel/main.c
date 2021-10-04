@@ -80,7 +80,7 @@ void main(void)
 	} while(memory_section != get_root_memory_section());
 	init_serial_interrupt();
 	sti_task();
-	print_serial("finish init_serial_interrupt()\n\n");
+	print_serial("finish sti_task()\n\n");
 	while(1)
 	{
 		Event const *event;
