@@ -89,7 +89,7 @@ void init_gdt(void)
 	segment_checker = GDT_BEGIN;
 	do
 	{
-		printf_serial("Segment Descriptor %#010x\n", segment_checker);
+		printf_serial("Segment Descriptor %p\n", segment_checker);
 		printf_serial("\tlimit_low\t%#06x\n", segment_checker->limit_low);
 		printf_serial("\tbase_low\t%#06x\n", segment_checker->base_low);
 		printf_serial("\tbase_mid\t%#04x\n", segment_checker->base_mid);
