@@ -13,11 +13,9 @@
 #include "task.h"
 #include "timer.h"
 
-BootInformation get_boot_information(void);
-
 void main(void)
 {
-	BootInformation boot_information;
+	BootInformation const * const boot_information = (BootInformation const * const)0x00000800;
 	Color background_color;
 	Color color;
 	Color foreground_color;
@@ -50,8 +48,6 @@ void main(void)
 	print_serial("finish init_mouse()\n\n");
 	init_screen();
 	print_serial("finish init_screen()\n\n");
-	boot_information = get_boot_information();
-	print_serial("finish get_boot_information()\n\n");
 	background_color.red = 0x00;
 	background_color.green = 0x00;
 	background_color.blue = 0x00;
@@ -59,10 +55,10 @@ void main(void)
 	foreground_color.green = 0xff;
 	foreground_color.blue = 0xff;
 	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "mouse ID = %#04x", get_mouse_id());
-	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04x", boot_information.keyboard_state);
-	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04x", boot_information.last_loaded_cylinder);
-	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04x", boot_information.last_loaded_head);
-	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04x", boot_information.last_loaded_sector);
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04x", boot_information->keyboard_state);
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04x", boot_information->last_loaded_cylinder);
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04x", boot_information->last_loaded_head);
+	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04x", boot_information->last_loaded_sector);
 	printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "memory regions");
 	memory_region_descriptor_index = 0;
 	do
@@ -123,12 +119,5 @@ void main(void)
 		}
 		else hlt();
 	}
-}
-
-BootInformation get_boot_information(void)
-{
-	BootInformation boot_information;
-	reads(boot_information_segment_selector, (void *)0x00000000, (void *)&boot_information, sizeof(boot_information));
-	return boot_information;
 }
 

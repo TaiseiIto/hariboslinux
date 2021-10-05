@@ -11,7 +11,6 @@
 
 unsigned short whole_memory_segment_selector;
 unsigned short kernel_code_segment_selector;
-unsigned short boot_information_segment_selector;
 unsigned short memory_map_segment_selector;
 unsigned short loaded_disk_segment_selector;
 unsigned short first_fat_segment_selector;
@@ -62,7 +61,6 @@ void init_gdt(void)
 	// load new GDT
 	lgdt(0xffff, GDT_ADDR);
 
-	boot_information_segment_selector = set_segment(0x00000800, sizeof(BootInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	memory_map_segment_selector = set_segment(0x00000900, 0x000072ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	loaded_disk_segment_selector = set_segment(0x00100000, 0x00097fff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	first_fat_segment_selector = set_segment(0x00100200, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
@@ -73,7 +71,6 @@ void init_gdt(void)
 	print_serial("check new GDT\n");
 	printf_serial("whole_memory_segment_selector = %#06x\n", whole_memory_segment_selector);
 	printf_serial("kernel_code_segment_selector = %#06x\n", kernel_code_segment_selector);
-	printf_serial("boot_information_segment_selector = %#06x\n", boot_information_segment_selector);
 	printf_serial("memory_map_segment_selector = %#06x\n", memory_map_segment_selector);
 	printf_serial("loaded_disk_segment_selector = %#06x\n", loaded_disk_segment_selector);
 	printf_serial("first_fat_segment_selector = %#06x\n", first_fat_segment_selector);
