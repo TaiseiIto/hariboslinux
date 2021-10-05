@@ -25,8 +25,7 @@ void init_gdt(void)
 	SegmentDescriptor null_segment;
 	SegmentDescriptor whole_memory_segment;
 	SegmentDescriptor kernel_code_segment;
-	SegmentDescriptor segment_checker;
-	SegmentDescriptor *source;
+	SegmentDescriptor *segment_checker;
 	SegmentDescriptor *destination;
 	unsigned short const temporary_whole_memory_segment_selector = 0x0008;
 
@@ -87,18 +86,18 @@ void init_gdt(void)
 	printf_serial("second_fat_segment_selector = %#06x\n", second_fat_segment_selector);
 	printf_serial("root_directory_entry_segment_selector = %#06x\n", root_directory_entry_segment_selector);
 	new_line_serial();
-	source = GDT_BEGIN;
+	segment_checker = GDT_BEGIN;
 	do
 	{
-		printf_serial("Segment Descriptor %#010x\n", source);
-		printf_serial("\tlimit_low\t%#06x\n", segment_checker.limit_low);
-		printf_serial("\tbase_low\t%#06x\n", segment_checker.base_low);
-		printf_serial("\tbase_mid\t%#04x\n", segment_checker.base_mid);
-		printf_serial("\taccess_right\t%#04x\n", segment_checker.access_right);
-		printf_serial("\tlimit_high\t%#04x\n", segment_checker.limit_high);
-		printf_serial("\tbase_high\t%#04x\n", segment_checker.base_high);
-		source++;
-	}while(segment_checker.access_right & SEGMENT_DESCRIPTOR_PRESENT);
+		printf_serial("Segment Descriptor %#010x\n", segment_checker);
+		printf_serial("\tlimit_low\t%#06x\n", segment_checker->limit_low);
+		printf_serial("\tbase_low\t%#06x\n", segment_checker->base_low);
+		printf_serial("\tbase_mid\t%#04x\n", segment_checker->base_mid);
+		printf_serial("\taccess_right\t%#04x\n", segment_checker->access_right);
+		printf_serial("\tlimit_high\t%#04x\n", segment_checker->limit_high);
+		printf_serial("\tbase_high\t%#04x\n", segment_checker->base_high);
+		segment_checker++;
+	}while(segment_checker->access_right & SEGMENT_DESCRIPTOR_PRESENT);
 	new_line_serial();
 }
 
