@@ -5,7 +5,7 @@
 #include "serial.h"
 
 #define IDT_BEGIN ((InterruptDescriptor *)0x00268000)
-#define IDT_END (IDT_BEGIN + 0x00000800)
+#define IDT_END (IDT_BEGIN + 0x00000100)
 
 void init_idt(void)
 {
