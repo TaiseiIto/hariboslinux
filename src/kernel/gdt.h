@@ -6,7 +6,6 @@
 
 extern unsigned short whole_memory_segment_selector;
 extern unsigned short kernel_code_segment_selector;
-extern unsigned short memory_map_segment_selector;
 
 typedef struct
 {

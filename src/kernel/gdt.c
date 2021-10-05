@@ -11,7 +11,6 @@
 
 unsigned short whole_memory_segment_selector;
 unsigned short kernel_code_segment_selector;
-unsigned short memory_map_segment_selector;
 
 void init_gdt(void)
 {
@@ -57,13 +56,10 @@ void init_gdt(void)
 	// load new GDT
 	lgdt(0xffff, GDT_ADDR);
 
-	memory_map_segment_selector = set_segment(0x00000900, 0x000072ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-
 	// check new GDT
 	print_serial("check new GDT\n");
 	printf_serial("whole_memory_segment_selector = %#06x\n", whole_memory_segment_selector);
 	printf_serial("kernel_code_segment_selector = %#06x\n", kernel_code_segment_selector);
-	printf_serial("memory_map_segment_selector = %#06x\n", memory_map_segment_selector);
 	new_line_serial();
 	segment_checker = GDT_BEGIN;
 	do
