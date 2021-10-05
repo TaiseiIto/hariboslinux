@@ -8,8 +8,8 @@
 
 #define TAB_LENGTH 4
 
-unsigned short vram_segment_selector;
-VideoInformation video_information;
+void *vram;
+VideoInformation const * const video_information = (VideoInformation const * const)0x00000600;
 
 // fill box
 // x and y can be negative
@@ -22,7 +22,7 @@ void fill_box(short x, short y, unsigned short width, unsigned short height, Col
 			y_i = -1;
 			continue;
 		}
-		if(video_information.height <= y_i)break;
+		if(video_information->height <= y_i)break;
 		for(short x_i = x; x_i < x + (short)width; x_i++)
 		{
 			if(x_i < 0)
@@ -30,7 +30,7 @@ void fill_box(short x, short y, unsigned short width, unsigned short height, Col
 				x_i = -1;
 				continue;
 			}
-			if(video_information.width <= x_i)break;
+			if(video_information->width <= x_i)break;
 			put_dot((unsigned short)x_i, (unsigned short)y_i, color);
 		}
 	}
@@ -39,21 +39,20 @@ void fill_box(short x, short y, unsigned short width, unsigned short height, Col
 // init screen
 void init_screen(void)
 {
-	reads(video_information_segment_selector, (void *)0x00000000, (void *)&video_information, sizeof(video_information));
-	vram_segment_selector = set_segment(video_information.frame_buffer, video_information.pitch * video_information.height, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	printf_serial("video_information.attributes = %#06x\n", video_information.attributes);
-	printf_serial("video_information.pitch = %#06x\n", video_information.pitch);
-	printf_serial("video_information.width = %#06x\n", video_information.width);
-	printf_serial("video_information.height = %#06x\n", video_information.height);
-	printf_serial("video_information.bits_per_pixel = %#04x\n", video_information.bits_per_pixel);
-	printf_serial("video_information.memory_model = %#04x\n", video_information.memory_model);
-	printf_serial("video_information.red_mask = %#04x\n", video_information.red_mask);
-	printf_serial("video_information.red_positioin = %#04x\n", video_information.red_position);
-	printf_serial("video_information.green_mask = %#04x\n", video_information.green_mask);
-	printf_serial("video_information.green_positioin = %#04x\n", video_information.green_position);
-	printf_serial("video_information.blue_mask = %#04x\n", video_information.blue_mask);
-	printf_serial("video_information.blue_positioin = %#04x\n", video_information.blue_position);
-	printf_serial("video_information.frame_buffer = %#010x\n\n", video_information.frame_buffer);
+	printf_serial("video_information->attributes = %#06x\n", video_information->attributes);
+	printf_serial("video_information->pitch = %#06x\n", video_information->pitch);
+	printf_serial("video_information->width = %#06x\n", video_information->width);
+	printf_serial("video_information->height = %#06x\n", video_information->height);
+	printf_serial("video_information->bits_per_pixel = %#04x\n", video_information->bits_per_pixel);
+	printf_serial("video_information->memory_model = %#04x\n", video_information->memory_model);
+	printf_serial("video_information->red_mask = %#04x\n", video_information->red_mask);
+	printf_serial("video_information->red_positioin = %#04x\n", video_information->red_position);
+	printf_serial("video_information->green_mask = %#04x\n", video_information->green_mask);
+	printf_serial("video_information->green_positioin = %#04x\n", video_information->green_position);
+	printf_serial("video_information->blue_mask = %#04x\n", video_information->blue_mask);
+	printf_serial("video_information->blue_positioin = %#04x\n", video_information->blue_position);
+	printf_serial("video_information->frame_buffer = %#010x\n\n", video_information->frame_buffer);
+	vram = (void *)video_information->frame_buffer;
 }
 
 // put character at screen(x, y)
@@ -74,7 +73,7 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 				y_i = -y - 1;
 				continue;
 			}
-			if(video_information.height <= y + y_i)break;
+			if(video_information->height <= y + y_i)break;
 			for(short x_i = 0; x_i < CHAR_WIDTH; x_i++)
 			{
 				if(x + x_i < 0)
@@ -82,7 +81,7 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 					x_i = -x - 1;
 					continue;
 				}
-				if(video_information.width <= x + x_i)break;
+				if(video_information->width <= x + x_i)break;
 				if(get_font_pixel(character, x_i, y_i))put_dot((unsigned short)(x + x_i), (unsigned short)(y + y_i), foreground);
 				else put_dot((unsigned short)(x + x_i), (unsigned short)(y + y_i), background);
 			}
@@ -96,11 +95,9 @@ void put_char(unsigned char character, unsigned short x, unsigned short y, Color
 // 0 <= y < screen height
 void put_dot(unsigned short x, unsigned short y, Color color)
 {
-	if(video_information.width <= x)ERROR_MESSAGE();
-	if(video_information.height <= y)ERROR_MESSAGE();
-	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.red_position / CHAR_BIT), color.red);
-	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.green_position / CHAR_BIT), color.green);
-	writeb(vram_segment_selector, (void *)(video_information.pitch * y + video_information.bits_per_pixel / CHAR_BIT * x + video_information.blue_position / CHAR_BIT), color.blue);
+	if(video_information->width <= x)ERROR_MESSAGE();
+	if(video_information->height <= y)ERROR_MESSAGE();
+	*(unsigned int *)(vram + video_information->pitch * y + video_information->bits_per_pixel / CHAR_BIT * x) = (color.red << video_information->red_position) + (color.green << video_information->green_position) + (color.blue << video_information->blue_position);
 }
 
 // put string at screen(x, y)

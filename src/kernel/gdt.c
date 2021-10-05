@@ -12,7 +12,6 @@
 unsigned short whole_memory_segment_selector;
 unsigned short kernel_code_segment_selector;
 unsigned short idt_segment_selector;
-unsigned short video_information_segment_selector;
 unsigned short boot_information_segment_selector;
 unsigned short memory_map_segment_selector;
 unsigned short loaded_disk_segment_selector;
@@ -65,7 +64,6 @@ void init_gdt(void)
 	lgdt(0xffff, GDT_ADDR);
 
 	idt_segment_selector = set_segment(0x00268000, 0x000007ff, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	video_information_segment_selector = set_segment(0x00000600, sizeof(VideoInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	boot_information_segment_selector = set_segment(0x00000800, sizeof(BootInformation), SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	memory_map_segment_selector = set_segment(0x00000900, 0x000072ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	loaded_disk_segment_selector = set_segment(0x00100000, 0x00097fff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
@@ -78,7 +76,6 @@ void init_gdt(void)
 	printf_serial("whole_memory_segment_selector = %#06x\n", whole_memory_segment_selector);
 	printf_serial("kernel_code_segment_selector = %#06x\n", kernel_code_segment_selector);
 	printf_serial("idt_segment_selector = %#06x\n", idt_segment_selector);
-	printf_serial("video_information_segment_selector = %#06x\n", video_information_segment_selector);
 	printf_serial("boot_information_segment_selector = %#06x\n", boot_information_segment_selector);
 	printf_serial("memory_map_segment_selector = %#06x\n", memory_map_segment_selector);
 	printf_serial("loaded_disk_segment_selector = %#06x\n", loaded_disk_segment_selector);
