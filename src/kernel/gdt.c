@@ -12,10 +12,6 @@
 unsigned short whole_memory_segment_selector;
 unsigned short kernel_code_segment_selector;
 unsigned short memory_map_segment_selector;
-unsigned short loaded_disk_segment_selector;
-unsigned short first_fat_segment_selector;
-unsigned short second_fat_segment_selector;
-unsigned short root_directory_entry_segment_selector;
 
 void init_gdt(void)
 {
@@ -62,20 +58,12 @@ void init_gdt(void)
 	lgdt(0xffff, GDT_ADDR);
 
 	memory_map_segment_selector = set_segment(0x00000900, 0x000072ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	loaded_disk_segment_selector = set_segment(0x00100000, 0x00097fff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	first_fat_segment_selector = set_segment(0x00100200, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	second_fat_segment_selector = set_segment(0x00101400, 0x000011ff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	root_directory_entry_segment_selector = set_segment(0x00102600, 0x00001bff, SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 
 	// check new GDT
 	print_serial("check new GDT\n");
 	printf_serial("whole_memory_segment_selector = %#06x\n", whole_memory_segment_selector);
 	printf_serial("kernel_code_segment_selector = %#06x\n", kernel_code_segment_selector);
 	printf_serial("memory_map_segment_selector = %#06x\n", memory_map_segment_selector);
-	printf_serial("loaded_disk_segment_selector = %#06x\n", loaded_disk_segment_selector);
-	printf_serial("first_fat_segment_selector = %#06x\n", first_fat_segment_selector);
-	printf_serial("second_fat_segment_selector = %#06x\n", second_fat_segment_selector);
-	printf_serial("root_directory_entry_segment_selector = %#06x\n", root_directory_entry_segment_selector);
 	new_line_serial();
 	segment_checker = GDT_BEGIN;
 	do

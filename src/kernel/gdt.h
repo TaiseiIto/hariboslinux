@@ -7,10 +7,6 @@
 extern unsigned short whole_memory_segment_selector;
 extern unsigned short kernel_code_segment_selector;
 extern unsigned short memory_map_segment_selector;
-extern unsigned short loaded_disk_segment_selector;
-extern unsigned short first_fat_segment_selector;
-extern unsigned short second_fat_segment_selector;
-extern unsigned short root_directory_entry_segment_selector;
 
 typedef struct
 {
