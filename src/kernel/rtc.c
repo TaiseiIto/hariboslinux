@@ -29,9 +29,10 @@ void init_rtc(void)
 
 void rtc_interrupt_handler(void)
 {
+	unsigned char status_register_c;
 	finish_interruption(IRQ_REAL_TIME_CLOCK);
 	// read statuc register c
-	read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
-	print_serial("RTC interrupt\n");
+	status_register_c = read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
+	printf_serial("RTC interrupt status register c = %#04x\n", status_register_c);
 }
 
