@@ -88,7 +88,7 @@ void init_pic(void)
 	// Enable master PIC interrupts
 	outb(PIC0_IMR, IRQ3_DISABLE | IRQ5_DISABLE | IRQ6_DISABLE | IRQ7_DISABLE);
 	// Enable slave PIC interrupts
-	outb(PIC1_IMR, IRQ8_DISABLE | IRQ9_DISABLE | IRQ10_DISABLE | IRQ11_DISABLE | IRQ13_DISABLE| IRQ14_DISABLE | IRQ15_DISABLE);
+	outb(PIC1_IMR, IRQ9_DISABLE | IRQ10_DISABLE | IRQ11_DISABLE | IRQ13_DISABLE| IRQ14_DISABLE | IRQ15_DISABLE);
 }
 
 void slave_pic_interrupt_handler(void)

@@ -9,6 +9,7 @@
 #include "mouse.h"
 #include "pic.h"
 #include "pit.h"
+#include "rtc.h"
 #include "serial.h"
 #include "stdio.h"
 #include "task.h"
@@ -40,10 +41,12 @@ void main(void)
 	print_serial("finish create_event_queue()\n\n");
 	init_pic();
 	print_serial("finish init_pic()\n\n");
-	init_timer();
-	print_serial("finish init_timer()\n\n");
+	init_pit();
+	print_serial("finish init_pit()\n\n");
 	init_keyboard();
 	print_serial("finish init_keyboard()\n\n");
+	init_rtc();
+	print_serial("finish init_rtc()\n\n");
 	init_mouse();
 	print_serial("finish init_mouse()\n\n");
 	init_screen();

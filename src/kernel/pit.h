@@ -3,9 +3,8 @@
 
 // Programmable Interval Timer
 
-void init_timer(void);
-void real_time_clock_interrupt_handler(void);
-void timer_interrupt_handler(void);
+void init_pit(void);
+void pit_interrupt_handler(void);
 
 #endif
 

@@ -16,7 +16,7 @@
 const unsigned int timer_frequency = 1193182;
 const unsigned int timer_interrupt_frequency = 100;
 
-void init_timer(void)
+void init_pit(void)
 {
 	const unsigned int interval = timer_frequency / timer_interrupt_frequency + (timer_interrupt_frequency / 2 < timer_frequency % timer_interrupt_frequency);
 	outb(PIT_COMMAND, PIT_COMMAND_SET_INTERVAL);
@@ -24,13 +24,7 @@ void init_timer(void)
 	outb(PIT_CHANNEL0, (unsigned char)(interval >> CHAR_BIT & 0x000000ff));
 }
 
-void real_time_clock_interrupt_handler(void)
-{
-	finish_interruption(IRQ_REAL_TIME_CLOCK);
-	print_serial("real time clock interrupt\n");
-}
-
-void timer_interrupt_handler(void)
+void pit_interrupt_handler(void)
 {
 	Event event;
 	finish_interruption(IRQ_TIMER);

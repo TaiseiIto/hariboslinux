@@ -239,8 +239,9 @@
 	.extern peripheral0_interrupt_handler
 	.extern peripheral1_interrupt_handler
 	.extern peripheral2_interrupt_handler
+	.extern pit_interrupt_handler
 	.extern primary_ATA_hard_disk_interrupt_handler
-	.extern real_time_clock_interrupt_handler
+	.extern rtc_interrupt_handler
 	.extern reserved_exception_handler0x00
 	.extern reserved_exception_handler0x01
 	.extern reserved_exception_handler0x02
@@ -259,7 +260,6 @@
 	.extern slave_pic_interrupt_handler
 	.extern	stack_segment_fault_exception_handler
 	.extern sti_task_interrupt
-	.extern timer_interrupt_handler
 	.extern	virtualization_exception_handler
 	.extern	x87_floating_point_exception_handler
 
@@ -1835,7 +1835,7 @@ interrupt_gate0x1f:		# void interrupt_gate0x1f(void);
 	popal
 	iret
 
-				# // timer interrupt handler
+				# // pit interrupt handler
 interrupt_gate0x20:		# void interrupt_gate0x20(void);
 0:
 	pushal
@@ -1853,7 +1853,7 @@ interrupt_gate0x20:		# void interrupt_gate0x20(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	timer_interrupt_handler
+	call	pit_interrupt_handler
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -2099,7 +2099,7 @@ interrupt_gate0x27:		# void interrupt_gate0x27(void);
 	popal
 	iret
 
-				# // real time clock interrupt handler
+				# // rtc interrupt handler
 interrupt_gate0x28:		# void interrupt_gate0x28(void);
 0:
 	pushal
@@ -2117,7 +2117,7 @@ interrupt_gate0x28:		# void interrupt_gate0x28(void);
 	movw	%dx	,%ds
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	real_time_clock_interrupt_handler
+	call	rtc_interrupt_handler
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
