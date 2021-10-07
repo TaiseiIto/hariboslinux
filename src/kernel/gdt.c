@@ -1,3 +1,5 @@
+// Global Descriptor Table
+
 #include "boot.h"
 #include "gdt.h"
 #include "graphic.h"

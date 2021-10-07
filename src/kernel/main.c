@@ -8,10 +8,10 @@
 #include "memory.h"
 #include "mouse.h"
 #include "pic.h"
+#include "pit.h"
 #include "serial.h"
 #include "stdio.h"
 #include "task.h"
-#include "timer.h"
 
 void main(void)
 {

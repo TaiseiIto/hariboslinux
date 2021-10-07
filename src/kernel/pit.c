@@ -1,9 +1,11 @@
+// Programmable Interval Timer
+
 #include "event.h"
 #include "io.h"
 #include "limits.h"
 #include "pic.h"
+#include "pit.h"
 #include "serial.h"
-#include "timer.h"
 
 #define PIT_CHANNEL0			0x0040
 #define PIT_CHANNEL1			0x0041

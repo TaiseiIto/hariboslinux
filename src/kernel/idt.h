@@ -1,6 +1,8 @@
 #ifndef _IDT_H_
 #define _IDT_H_
 
+// Interrupt Descriptor Table
+
 typedef struct
 {
 	unsigned short offset_low;

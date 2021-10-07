@@ -1,3 +1,4 @@
+// Global Descriptor Table
 // bibliography
 // https://wiki.osdev.org/Global_Descriptor_Table
 

@@ -1,5 +1,7 @@
-#ifndef _TIMER_H_
-#define _TIMER_H_
+#ifndef _PIT_H_
+#define _PIT_H_
+
+// Programmable Interval Timer
 
 void init_timer(void);
 void real_time_clock_interrupt_handler(void);

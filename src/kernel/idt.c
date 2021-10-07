@@ -1,3 +1,5 @@
+// Interrupt Descriptor Table
+
 #include "gdt.h"
 #include "idt.h"
 #include "interrupt_gates.h"
