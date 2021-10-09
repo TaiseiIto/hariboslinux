@@ -110,13 +110,13 @@ void main(void)
 			decode_mouse_interrupt(event->event_union.mouse_interrupt.signal);
 			break;
 		case EVENT_TYPE_RTC_INTERRUPT:
-			printf_serial("second = %#04x\n", event->event_union.rtc_interrupt.second);
+			printf_serial("second = %d\n", event->event_union.rtc_interrupt.second);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)
 			{
 				printf_screen(0x0000, 0x0005 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
-				printf_serial("timer_interrupt_counter = %#010x\n", timer_interrupt_counter);
+				printf_serial("timer_interrupt_counter = %#04x\n", timer_interrupt_counter);
 			}
 			break;
 		default: // invalid event->type
