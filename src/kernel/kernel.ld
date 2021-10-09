@@ -37,6 +37,7 @@ SECTIONS
 		stdio.o(.text)
 		string.o(.text)
 		task.o(.text)
+		timer.o(.text)
 		main.o(.rodata)
 		cmos.o(.rodata)
 		disk.o(.rodata)
@@ -66,6 +67,7 @@ SECTIONS
 		stdio.o(.rodata)
 		string.o(.rodata)
 		task.o(.rodata)
+		timer.o(.rodata)
 		main.o(.data)
 		cmos.o(.data)
 		disk.o(.data)
@@ -95,6 +97,7 @@ SECTIONS
 		stdio.o(.data)
 		string.o(.data)
 		task.o(.data)
+		timer.o(.data)
 		main.o(.bss)
 		cmos.o(.bss)
 		disk.o(.bss)
@@ -124,6 +127,7 @@ SECTIONS
 		stdio.o(.bss)
 		string.o(.bss)
 		task.o(.bss)
+		timer.o(.bss)
 	}
 	/DISCARD/:{*(.eh_frame)}
 	/DISCARD/:{*(.note.gnu.property)}

@@ -27,8 +27,8 @@ void init_pit(void)
 void pit_interrupt_handler(void)
 {
 	Event event;
-	finish_interruption(IRQ_TIMER);
-	event.type = EVENT_TYPE_TIMER_INTERRUPT;
+	finish_interruption(IRQ_PIT);
+	event.type = EVENT_TYPE_PIT_INTERRUPT;
 	enqueue_event(&event);
 }
 

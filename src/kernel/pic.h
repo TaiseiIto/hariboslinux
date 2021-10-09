@@ -3,7 +3,7 @@
 
 // Programmable Interrupt Controller
 
-#define IRQ_TIMER			0x00
+#define IRQ_PIT				0x00
 #define IRQ_KEYBOARD			0x01
 #define IRQ_SLAVE_PIC			0x02
 #define IRQ_COM2			0x03

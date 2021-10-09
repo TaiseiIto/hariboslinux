@@ -109,6 +109,13 @@ void main(void)
 			printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt.signal);
 			decode_mouse_interrupt(event->event_union.mouse_interrupt.signal);
 			break;
+		case EVENT_TYPE_PIT_INTERRUPT:
+			if(++timer_interrupt_counter % 100 == 0)
+			{
+				printf_screen(0x0000, 0x0006 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %d seconds", timer_interrupt_counter / 100);
+				printf_serial("timer_interrupt_counter = %d seconds\n", timer_interrupt_counter / 100);
+			}
+			break;
 		case EVENT_TYPE_RTC_INTERRUPT:
 			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "%04d/%02d/%02d %s %02d:%02d:%02d", event->event_union.rtc_interrupt.year, event->event_union.rtc_interrupt.month, event->event_union.rtc_interrupt.day, get_day_of_week_string(get_day_of_week(event->event_union.rtc_interrupt.year, event->event_union.rtc_interrupt.month, event->event_union.rtc_interrupt.day)), event->event_union.rtc_interrupt.hour, event->event_union.rtc_interrupt.minute, event->event_union.rtc_interrupt.second);
 			printf_serial("second = %d\n", event->event_union.rtc_interrupt.second);
@@ -117,13 +124,6 @@ void main(void)
 			printf_serial("day = %d\n", event->event_union.rtc_interrupt.day);
 			printf_serial("month = %d\n", event->event_union.rtc_interrupt.month);
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
-			break;
-		case EVENT_TYPE_TIMER_INTERRUPT:
-			if(++timer_interrupt_counter % 100 == 0)
-			{
-				printf_screen(0x0000, 0x0006 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %d seconds", timer_interrupt_counter / 100);
-				printf_serial("timer_interrupt_counter = %d seconds\n", timer_interrupt_counter / 100);
-			}
 			break;
 		default: // invalid event->type
 			printf_serial("invalid event->type %#04x\n", event->type);
