@@ -119,10 +119,10 @@ void main(void)
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
-			if(++timer_interrupt_counter % 0x100 == 0)
+			if(++timer_interrupt_counter % 100 == 0)
 			{
-				printf_screen(0x0000, 0x0005 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %#010x", timer_interrupt_counter);
-				printf_serial("timer_interrupt_counter = %#04x\n", timer_interrupt_counter);
+				printf_screen(0x0000, 0x0005 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %d seconds", timer_interrupt_counter / 100);
+				printf_serial("timer_interrupt_counter = %d seconds\n", timer_interrupt_counter / 100);
 			}
 			break;
 		default: // invalid event->type
