@@ -111,6 +111,8 @@ void main(void)
 			break;
 		case EVENT_TYPE_RTC_INTERRUPT:
 			printf_serial("second = %d\n", event->event_union.rtc_interrupt.second);
+			printf_serial("minute = %d\n", event->event_union.rtc_interrupt.minute);
+			printf_serial("hour = %d\n", event->event_union.rtc_interrupt.hour);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)

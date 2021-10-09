@@ -47,6 +47,10 @@ void rtc_interrupt_handler(void)
 		event.type = EVENT_TYPE_RTC_INTERRUPT;
 		event.event_union.rtc_interrupt.second = read_cmos_register(CMOS_REGISTER_RTC_SECOND);
 		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.second = 10 * (event.event_union.rtc_interrupt.second >> 4) + (event.event_union.rtc_interrupt.second & 0x0f);
+		event.event_union.rtc_interrupt.minute = read_cmos_register(CMOS_REGISTER_RTC_MINUTE);
+		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.minute = 10 * (event.event_union.rtc_interrupt.minute >> 4) + (event.event_union.rtc_interrupt.minute & 0x0f);
+		event.event_union.rtc_interrupt.hour = read_cmos_register(CMOS_REGISTER_RTC_HOUR);
+		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.hour = 10 * (event.event_union.rtc_interrupt.hour >> 4) + (event.event_union.rtc_interrupt.hour & 0x0f);
 		enqueue_event(&event);
 	}
 }
