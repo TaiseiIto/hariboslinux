@@ -6,6 +6,8 @@
 #include "rtc.h"
 #include "serial.h"
 
+#define RTC_HOUR_REGISTER_PM_FLAG	0xf0
+
 unsigned char status_register_b;
 #define RTC_STATUS_REGISTER_B_24_HOURS_MODE		0x02
 #define RTC_STATUS_REGISTER_B_BINARY_MODE		0x04
@@ -50,7 +52,23 @@ void rtc_interrupt_handler(void)
 		event.event_union.rtc_interrupt.minute = read_cmos_register(CMOS_REGISTER_RTC_MINUTE);
 		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.minute = 10 * (event.event_union.rtc_interrupt.minute >> 4) + (event.event_union.rtc_interrupt.minute & 0x0f);
 		event.event_union.rtc_interrupt.hour = read_cmos_register(CMOS_REGISTER_RTC_HOUR);
-		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.hour = 10 * (event.event_union.rtc_interrupt.hour >> 4) + (event.event_union.rtc_interrupt.hour & 0x0f);
+		if(status_register_b & RTC_STATUS_REGISTER_B_24_HOURS_MODE)
+		{
+			if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.hour = 10 * (event.event_union.rtc_interrupt.hour >> 4) + (event.event_union.rtc_interrupt.hour & 0x0f);
+		}
+		else
+		{
+			if(event.event_union.rtc_interrupt.hour & RTC_HOUR_REGISTER_PM_FLAG) // PM
+			{
+				event.event_union.rtc_interrupt.hour &= ~RTC_HOUR_REGISTER_PM_FLAG;
+				if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.hour = 10 * (event.event_union.rtc_interrupt.hour >> 4) + (event.event_union.rtc_interrupt.hour & 0x0f);
+				event.event_union.rtc_interrupt.hour += 12;
+			}
+			else // AM
+			{
+				if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.hour = 10 * (event.event_union.rtc_interrupt.hour >> 4) + (event.event_union.rtc_interrupt.hour & 0x0f);
+			}
+		}
 		enqueue_event(&event);
 	}
 }
