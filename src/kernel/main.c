@@ -25,8 +25,9 @@ void main(void)
 	MemoryRegionDescriptor memory_region_descriptor;
 	MemorySection const *memory_section;
 	unsigned int memory_region_descriptor_index;
-	unsigned short screen_text_row = 7;
+	unsigned short screen_text_row = 8;
 	Timer *test_timer;
+	Timer *checking_free_memory_space_size_timer;
 	unsigned long long timer_counter = 0;
 	cli();
 	new_line_serial();
@@ -82,6 +83,7 @@ void main(void)
 		memory_section = memory_section->next;
 	} while(memory_section != get_root_memory_section());
 	test_timer = create_timer(0, 100);
+	checking_free_memory_space_size_timer = create_timer(0, 100);
 	init_serial_interrupt();
 	sti_task();
 	print_serial("finish sti_task()\n\n");
@@ -132,6 +134,11 @@ void main(void)
 				timer_counter++;
 				printf_screen(0x0000, 0x0006 * CHAR_HEIGHT, foreground_color, background_color, "timer = %lld seconds", timer_counter);
 				printf_serial("timer_counterr = %lld seconds\n", timer_counter);
+			}
+			else if(event->event_union.timer_event.timer == checking_free_memory_space_size_timer)
+			{
+				printf_screen(0x0000, 0x0007 * CHAR_HEIGHT, foreground_color, background_color, "free memory space size = %lld bytes", get_free_memory_space_size());
+				printf_serial("free memory space size = %lld bytes\n", get_free_memory_space_size());
 			}
 			break;
 		default: // invalid event->type
