@@ -17,7 +17,8 @@ typedef struct _TimerEvent
 
 Timer *create_timer(unsigned long long estimated_count, unsigned long long interval_count);
 void delete_timer(Timer *timer);
-void init_timers(void);
+void init_timer(void);
+void timers_tick(void);
 
 #endif
 

@@ -5,6 +5,7 @@
 
 void init_pit(void);
 void pit_interrupt_handler(void);
+void decode_pit_interrupt(void);
 
 #endif
 

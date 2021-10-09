@@ -6,6 +6,7 @@
 #include "pic.h"
 #include "pit.h"
 #include "serial.h"
+#include "timer.h"
 
 #define PIT_CHANNEL0			0x0040
 #define PIT_CHANNEL1			0x0041
@@ -30,5 +31,10 @@ void pit_interrupt_handler(void)
 	finish_interruption(IRQ_PIT);
 	event.type = EVENT_TYPE_PIT_INTERRUPT;
 	enqueue_event(&event);
+}
+
+void decode_pit_interrupt(void)
+{
+	timers_tick();
 }
 

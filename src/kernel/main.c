@@ -115,6 +115,7 @@ void main(void)
 				printf_screen(0x0000, 0x0006 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %d seconds", timer_interrupt_counter / 100);
 				printf_serial("timer_interrupt_counter = %d seconds\n", timer_interrupt_counter / 100);
 			}
+			decode_pit_interrupt();
 			break;
 		case EVENT_TYPE_RTC_INTERRUPT:
 			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "%04d/%02d/%02d %s %02d:%02d:%02d", event->event_union.rtc_interrupt.year, event->event_union.rtc_interrupt.month, event->event_union.rtc_interrupt.day, get_day_of_week_string(get_day_of_week(event->event_union.rtc_interrupt.year, event->event_union.rtc_interrupt.month, event->event_union.rtc_interrupt.day)), event->event_union.rtc_interrupt.hour, event->event_union.rtc_interrupt.minute, event->event_union.rtc_interrupt.second);
