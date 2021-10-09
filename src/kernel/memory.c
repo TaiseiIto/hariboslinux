@@ -54,6 +54,21 @@ MemorySection const *get_root_memory_section(void)
 	return root_memory_section;
 }
 
+unsigned int get_free_memory_space_size(void)
+{
+	unsigned int free_memory_space_size = 0;
+	MemorySection *memory_section;
+	cli_task();
+	memory_section = root_memory_section;
+	do
+	{
+		if(!(memory_section->flags & MEMORY_SECTION_ALLOCATED))free_memory_space_size += memory_section->size;
+		memory_section = memory_section->next;
+	} while(memory_section != root_memory_section);
+	sti_task();
+	return free_memory_space_size;
+}
+
 void init_memory(void)
 {
 	MemoryRegionDescriptor memory_region_descriptor;

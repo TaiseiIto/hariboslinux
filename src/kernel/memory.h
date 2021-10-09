@@ -23,6 +23,7 @@ typedef struct
 void free(void *address);
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index);
 MemorySection const *get_root_memory_section(void);
+unsigned int get_free_memory_space_size(void);
 void init_memory(void);
 void *malloc(size_t size);
 
