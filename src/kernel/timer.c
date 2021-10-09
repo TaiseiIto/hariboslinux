@@ -1,3 +1,4 @@
+#include "event.h"
 #include "memory.h"
 #include "task.h"
 #include "timer.h"
@@ -59,5 +60,45 @@ void init_timer(void)
 void timers_tick(void)
 {
 	tick_count++;
+	cli_task();
+	if(next_estimated_timer)while(next_estimated_timer->estimated_count <= tick_count)
+	{
+		Event event;
+		event.type = EVENT_TYPE_TIMER_EVENT;
+		event.event_union.timer_event.timer = next_estimated_timer;
+		enqueue_event(&event);
+		if(next_estimated_timer->interval_count)
+		{
+			Timer *repeating_timer = next_estimated_timer;
+			next_estimated_timer = next_estimated_timer->next;
+			if(repeating_timer->previous)repeating_timer->previous->next = repeating_timer->next;
+			if(repeating_timer->next)repeating_timer->next->previous = repeating_timer->previous;
+			repeating_timer->previous = NULL;
+			repeating_timer->next = NULL;
+			repeating_timer->estimated_count += repeating_timer->interval_count;
+			if(next_estimated_timer)
+			{
+				Timer *previous_timer;
+				for(previous_timer = next_estimated_timer; previous_timer->next; previous_timer = previous_timer->next)if(repeating_timer->estimated_count < previous_timer->next->estimated_count)break;
+				if(previous_timer == next_estimated_timer && repeating_timer->estimated_count < next_estimated_timer->estimated_count)
+				{
+					repeating_timer->next = next_estimated_timer;
+					next_estimated_timer->previous = repeating_timer;
+					repeating_timer->previous = NULL;
+					next_estimated_timer = repeating_timer;
+				}
+				else
+				{
+					repeating_timer->next = previous_timer->next;
+					if(repeating_timer->next)repeating_timer->next->previous = repeating_timer;
+					repeating_timer->previous = previous_timer;
+					previous_timer->next = repeating_timer;
+				}
+			}
+			else next_estimated_timer = repeating_timer;
+		}
+		else next_estimated_timer = next_estimated_timer->next;
+	}
+	sti_task();
 }
 

@@ -13,6 +13,7 @@
 #include "serial.h"
 #include "stdio.h"
 #include "task.h"
+#include "timer.h"
 
 void main(void)
 {
@@ -43,6 +44,8 @@ void main(void)
 	print_serial("finish init_pic()\n\n");
 	init_pit();
 	print_serial("finish init_pit()\n\n");
+	init_timer();
+	print_serial("finish init_timer()\n\n");
 	init_keyboard();
 	print_serial("finish init_keyboard()\n\n");
 	init_rtc();
@@ -125,6 +128,9 @@ void main(void)
 			printf_serial("day = %d\n", event->event_union.rtc_interrupt.day);
 			printf_serial("month = %d\n", event->event_union.rtc_interrupt.month);
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
+			break;
+		case EVENT_TYPE_TIMER_EVENT:
+			printf_serial("timer event!\n");
 			break;
 		default: // invalid event->type
 			printf_serial("invalid event->type %#04x\n", event->type);
