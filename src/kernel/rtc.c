@@ -11,7 +11,9 @@
 unsigned char status_register_b;
 #define RTC_STATUS_REGISTER_B_24_HOURS_MODE		0x02
 #define RTC_STATUS_REGISTER_B_BINARY_MODE		0x04
+#define RTC_STATUS_REGISTER_B_ENABLE_UPDATE_INTERRUPT	0x10
 #define RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT	0x40
+
 #define RTC_STATUS_REGISTER_C_TIME_UPDATED		0x10
 
 char const *get_day_of_week_string(unsigned char day_of_week)
@@ -58,10 +60,11 @@ void init_rtc(void)
 	frequency_index &= 0x0f;
 	printf_serial("frequency_index = %#04x\n", frequency_index);
 	// Enable IRQ8
-	status_register_b = read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT;
+	// status_register_b = read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT | RTC_STATUS_REGISTER_B_ENABLE_UPDATE_INTERRUPT;
+	status_register_b = read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_UPDATE_INTERRUPT;
 	write_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, status_register_b);
 	// Set periodic interrupt frequency
-	write_cmos_register(CMOS_REGISTER_RTC_STATUS_A | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, (read_cmos_register(CMOS_REGISTER_RTC_STATUS_A | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) & 0xf0) + frequency_index);
+	// write_cmos_register(CMOS_REGISTER_RTC_STATUS_A | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, (read_cmos_register(CMOS_REGISTER_RTC_STATUS_A | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) & 0xf0) + frequency_index);
 	// read statuc register c
 	read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
 }
