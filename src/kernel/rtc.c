@@ -16,6 +16,14 @@ unsigned char status_register_b;
 
 #define RTC_STATUS_REGISTER_C_TIME_UPDATED		0x10
 
+// https://en.wikipedia.org/wiki/Zeller%27s_congruence
+unsigned char get_day_of_week(unsigned short year, unsigned char month, unsigned char day)
+{
+	unsigned int year_of_the_century = year % 100;
+	unsigned int zero_based_century = year / 100;
+	return (day + 13 * (month + 1) / 5 + year_of_the_century + year_of_the_century / 4 + zero_based_century / 4 - 2 * zero_based_century) % 7;
+}
+
 char const *get_day_of_week_string(unsigned char day_of_week)
 {
 	static char const * const sunday = "Sunday";
@@ -60,11 +68,8 @@ void init_rtc(void)
 	frequency_index &= 0x0f;
 	printf_serial("frequency_index = %#04x\n", frequency_index);
 	// Enable IRQ8
-	// status_register_b = read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT | RTC_STATUS_REGISTER_B_ENABLE_UPDATE_INTERRUPT;
 	status_register_b = read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_UPDATE_INTERRUPT;
 	write_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, status_register_b);
-	// Set periodic interrupt frequency
-	// write_cmos_register(CMOS_REGISTER_RTC_STATUS_A | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, (read_cmos_register(CMOS_REGISTER_RTC_STATUS_A | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) & 0xf0) + frequency_index);
 	// read statuc register c
 	read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
 }
@@ -103,9 +108,8 @@ void rtc_interrupt_handler(void)
 				if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.hour = 10 * (event.event_union.rtc_interrupt.hour >> 4) + (event.event_union.rtc_interrupt.hour & 0x0f);
 			}
 		}
-		event.event_union.rtc_interrupt.day_of_week = read_cmos_register(CMOS_REGISTER_RTC_DAY_OF_WEEK);
-		event.event_union.rtc_interrupt.day_of_month = read_cmos_register(CMOS_REGISTER_RTC_DAY_OF_MONTH);
-		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.day_of_month = 10 * (event.event_union.rtc_interrupt.day_of_month >> 4) + (event.event_union.rtc_interrupt.day_of_month & 0x0f);
+		event.event_union.rtc_interrupt.day = read_cmos_register(CMOS_REGISTER_RTC_DAY_OF_MONTH);
+		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.day = 10 * (event.event_union.rtc_interrupt.day >> 4) + (event.event_union.rtc_interrupt.day & 0x0f);
 		event.event_union.rtc_interrupt.month = read_cmos_register(CMOS_REGISTER_RTC_MONTH);
 		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.month = 10 * (event.event_union.rtc_interrupt.month >> 4) + (event.event_union.rtc_interrupt.month & 0x0f);
 		event.event_union.rtc_interrupt.year = read_cmos_register(CMOS_REGISTER_RTC_YEAR);
