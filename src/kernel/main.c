@@ -109,6 +109,9 @@ void main(void)
 			printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt.signal);
 			decode_mouse_interrupt(event->event_union.mouse_interrupt.signal);
 			break;
+		case EVENT_TYPE_RTC_INTERRUPT:
+			printf_serial("second = %#04x\n", event->event_union.rtc_interrupt.second);
+			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)
 			{

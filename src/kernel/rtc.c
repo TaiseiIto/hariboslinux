@@ -1,14 +1,17 @@
 // Real Time Clock
 
 #include "cmos.h"
+#include "event.h"
 #include "pic.h"
 #include "rtc.h"
 #include "serial.h"
 
+unsigned char status_register_b;
 #define RTC_STATUS_REGISTER_B_24_HOURS_MODE		0x02
 #define RTC_STATUS_REGISTER_B_BINARY_MODE		0x04
 #define RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT	0x40
-unsigned char status_register_b;
+#define RTC_STATUS_REGISTER_C_TIME_UPDATED		0x10
+
 
 void init_rtc(void)
 {
@@ -38,5 +41,12 @@ void rtc_interrupt_handler(void)
 	// read statuc register c
 	status_register_c = read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
 	printf_serial("RTC interrupt status register c = %#04x\n", status_register_c);
+	if(status_register_c & RTC_STATUS_REGISTER_C_TIME_UPDATED)
+	{
+		Event event;
+		event.type = EVENT_TYPE_RTC_INTERRUPT;
+		event.event_union.rtc_interrupt.second = read_cmos_register(CMOS_REGISTER_RTC_SECOND);
+		enqueue_event(&event);
+	}
 }
 

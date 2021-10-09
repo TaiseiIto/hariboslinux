@@ -4,6 +4,7 @@
 #include "keyboard.h"
 #include "mouse.h"
 #include "queue.h"
+#include "rtc.h"
 
 typedef union _EventUnion
 {
@@ -11,6 +12,7 @@ typedef union _EventUnion
 	KeyboardInterrupt keyboard_interrupt;
 	MouseEvent mouse_event;
 	MouseInterrupt mouse_interrupt;
+	RTCInterrupt rtc_interrupt;
 } EventUnion;
 
 typedef struct _Event
@@ -20,7 +22,8 @@ typedef struct _Event
 	#define EVENT_TYPE_KEYBOARD_INTERRUPT	0x01
 	#define EVENT_TYPE_MOUSE_EVENT		0x02
 	#define EVENT_TYPE_MOUSE_INTERRUPT	0x03
-	#define EVENT_TYPE_TIMER_INTERRUPT	0x04
+	#define EVENT_TYPE_RTC_INTERRUPT	0x04
+	#define EVENT_TYPE_TIMER_INTERRUPT	0x05
 	EventUnion event_union;
 } Event;
 
