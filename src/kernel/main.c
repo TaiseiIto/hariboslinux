@@ -27,7 +27,7 @@ void main(void)
 	unsigned int memory_region_descriptor_index;
 	unsigned short screen_text_row = 7;
 	Timer *test_timer;
-	unsigned int timer_interrupt_counter = 0;
+	unsigned long long timer_counter = 0;
 	cli();
 	new_line_serial();
 	print_serial("Hello, kernel.bin!\n\n");
@@ -115,11 +115,6 @@ void main(void)
 			decode_mouse_interrupt(event->event_union.mouse_interrupt.signal);
 			break;
 		case EVENT_TYPE_PIT_INTERRUPT:
-			if(++timer_interrupt_counter % 100 == 0)
-			{
-				printf_screen(0x0000, 0x0006 * CHAR_HEIGHT, foreground_color, background_color, "timer_interrupt_counter = %d seconds", timer_interrupt_counter / 100);
-				printf_serial("timer_interrupt_counter = %d seconds\n", timer_interrupt_counter / 100);
-			}
 			decode_pit_interrupt();
 			break;
 		case EVENT_TYPE_RTC_INTERRUPT:
@@ -132,7 +127,12 @@ void main(void)
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
 			break;
 		case EVENT_TYPE_TIMER_EVENT:
-			printf_serial("timer event!\n");
+			if(event->event_union.timer_event.timer == test_timer)
+			{
+				timer_counter++;
+				printf_screen(0x0000, 0x0006 * CHAR_HEIGHT, foreground_color, background_color, "timer = %lld seconds", timer_counter);
+				printf_serial("timer_counterr = %lld seconds\n", timer_counter);
+			}
 			break;
 		default: // invalid event->type
 			printf_serial("invalid event->type %#04x\n", event->type);
