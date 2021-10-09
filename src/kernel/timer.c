@@ -6,7 +6,7 @@
 Timer *next_estimated_timer;
 unsigned long long tick_count;
 
-Timer *create_timer(unsigned long long estimated_count, unsigned long long interval_count)
+Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned long long interval_count/*centisecond*/)
 {
 	Timer *new_timer = (Timer *)malloc(sizeof(*new_timer));
 	new_timer->estimated_count = tick_count + estimated_count;

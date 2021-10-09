@@ -26,6 +26,7 @@ void main(void)
 	MemorySection const *memory_section;
 	unsigned int memory_region_descriptor_index;
 	unsigned short screen_text_row = 7;
+	Timer *test_timer;
 	unsigned int timer_interrupt_counter = 0;
 	cli();
 	new_line_serial();
@@ -80,6 +81,7 @@ void main(void)
 		printf_screen(0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "previous = %p, this = %p, next = %p, size = %#010x, flags = %#04x\n", memory_section->previous, memory_section, memory_section->next, memory_section->size, memory_section->flags);
 		memory_section = memory_section->next;
 	} while(memory_section != get_root_memory_section());
+	test_timer = create_timer(0, 100);
 	init_serial_interrupt();
 	sti_task();
 	print_serial("finish sti_task()\n\n");
