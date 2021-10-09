@@ -5,7 +5,10 @@
 #include "rtc.h"
 #include "serial.h"
 
-#define RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT 0x40
+#define RTC_STATUS_REGISTER_B_24_HOURS_MODE		0x02
+#define RTC_STATUS_REGISTER_B_BINARY_MODE		0x04
+#define RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT	0x40
+unsigned char status_register_b;
 
 void init_rtc(void)
 {
@@ -20,7 +23,8 @@ void init_rtc(void)
 	frequency_index &= 0x0f;
 	printf_serial("frequency_index = %#04x\n", frequency_index);
 	// Enable IRQ8
-	write_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT);
+	status_register_b = read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT;
+	write_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, status_register_b);
 	// Set periodic interrupt frequency
 	write_cmos_register(CMOS_REGISTER_RTC_STATUS_A | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, (read_cmos_register(CMOS_REGISTER_RTC_STATUS_A | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) & 0xf0) + frequency_index);
 	// read statuc register c
