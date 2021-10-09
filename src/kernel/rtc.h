@@ -21,6 +21,7 @@ typedef struct _RTCInterrupt
 	unsigned short year;
 } RTCInterrupt;
 
+char const *get_day_of_week_string(unsigned char day_of_week);
 void init_rtc(void);
 void rtc_interrupt_handler(void);
 

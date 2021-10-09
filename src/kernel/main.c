@@ -110,7 +110,7 @@ void main(void)
 			decode_mouse_interrupt(event->event_union.mouse_interrupt.signal);
 			break;
 		case EVENT_TYPE_RTC_INTERRUPT:
-			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "UTC %04d/%02d/%02d %02d:%02d:%02d", event->event_union.rtc_interrupt.year, event->event_union.rtc_interrupt.month, event->event_union.rtc_interrupt.day_of_month, event->event_union.rtc_interrupt.hour, event->event_union.rtc_interrupt.minute, event->event_union.rtc_interrupt.second);
+			printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "UTC %04d/%02d/%02d %s %02d:%02d:%02d", event->event_union.rtc_interrupt.year, event->event_union.rtc_interrupt.month, event->event_union.rtc_interrupt.day_of_month, get_day_of_week_string(event->event_union.rtc_interrupt.day_of_week), event->event_union.rtc_interrupt.hour, event->event_union.rtc_interrupt.minute, event->event_union.rtc_interrupt.second);
 			printf_serial("second = %d\n", event->event_union.rtc_interrupt.second);
 			printf_serial("minute = %d\n", event->event_union.rtc_interrupt.minute);
 			printf_serial("hour = %d\n", event->event_union.rtc_interrupt.hour);

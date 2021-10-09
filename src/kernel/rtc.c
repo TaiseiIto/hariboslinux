@@ -14,6 +14,36 @@ unsigned char status_register_b;
 #define RTC_STATUS_REGISTER_B_ENABLE_PERIODIC_INTERRUPT	0x40
 #define RTC_STATUS_REGISTER_C_TIME_UPDATED		0x10
 
+char const *get_day_of_week_string(unsigned char day_of_week)
+{
+	static char const * const sunday = "Sunday";
+	static char const * const monday = "Monday";
+	static char const * const tuesday = "Tuesday";
+	static char const * const wednesday = "Wednesday";
+	static char const * const thursday = "Thursday";
+	static char const * const friday = "Friday";
+	static char const * const saturday = "Saturday";
+	static char const * const invalid_day_of_week = "INVALID DAY OF WEEK!";
+	switch(day_of_week)
+	{
+	case RTC_SUNDAY:
+		return sunday;
+	case RTC_MONDAY:
+		return monday;
+	case RTC_TUESDAY:
+		return tuesday;
+	case RTC_WEDNESDAY:
+		return wednesday;
+	case RTC_THURSDAY:
+		return thursday;
+	case RTC_FRIDAY:
+		return friday;
+	case RTC_SATURDAY:
+		return saturday;
+	default:
+		return invalid_day_of_week;
+	}
+}
 
 void init_rtc(void)
 {
