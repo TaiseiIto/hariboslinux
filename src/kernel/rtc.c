@@ -69,6 +69,13 @@ void rtc_interrupt_handler(void)
 				if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.hour = 10 * (event.event_union.rtc_interrupt.hour >> 4) + (event.event_union.rtc_interrupt.hour & 0x0f);
 			}
 		}
+		event.event_union.rtc_interrupt.day_of_week = read_cmos_register(CMOS_REGISTER_RTC_DAY_OF_WEEK);
+		event.event_union.rtc_interrupt.day_of_month = read_cmos_register(CMOS_REGISTER_RTC_DAY_OF_MONTH);
+		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.day_of_month = 10 * (event.event_union.rtc_interrupt.day_of_month >> 4) + (event.event_union.rtc_interrupt.day_of_month & 0x0f);
+		event.event_union.rtc_interrupt.year = read_cmos_register(CMOS_REGISTER_RTC_YEAR);
+		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.year = 10 * (event.event_union.rtc_interrupt.year >> 4) + (event.event_union.rtc_interrupt.year & 0x0f);
+		event.event_union.rtc_interrupt.century = read_cmos_register(CMOS_REGISTER_RTC_CENTURY);
+		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.century = 10 * (event.event_union.rtc_interrupt.century >> 4) + (event.event_union.rtc_interrupt.century & 0x0f);
 		enqueue_event(&event);
 	}
 }
