@@ -117,7 +117,6 @@ void main(void)
 			printf_serial("day_of_month = %d\n", event->event_union.rtc_interrupt.day_of_month);
 			printf_serial("month = %d\n", event->event_union.rtc_interrupt.month);
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
-			printf_serial("century = %d\n", event->event_union.rtc_interrupt.century);
 			break;
 		case EVENT_TYPE_TIMER_INTERRUPT:
 			if(++timer_interrupt_counter % 0x100 == 0)

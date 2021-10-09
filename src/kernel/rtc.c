@@ -46,6 +46,7 @@ void rtc_interrupt_handler(void)
 	if(status_register_c & RTC_STATUS_REGISTER_C_TIME_UPDATED)
 	{
 		Event event;
+		unsigned short century;
 		event.type = EVENT_TYPE_RTC_INTERRUPT;
 		event.event_union.rtc_interrupt.second = read_cmos_register(CMOS_REGISTER_RTC_SECOND);
 		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.second = 10 * (event.event_union.rtc_interrupt.second >> 4) + (event.event_union.rtc_interrupt.second & 0x0f);
@@ -76,8 +77,9 @@ void rtc_interrupt_handler(void)
 		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.month = 10 * (event.event_union.rtc_interrupt.month >> 4) + (event.event_union.rtc_interrupt.month & 0x0f);
 		event.event_union.rtc_interrupt.year = read_cmos_register(CMOS_REGISTER_RTC_YEAR);
 		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.year = 10 * (event.event_union.rtc_interrupt.year >> 4) + (event.event_union.rtc_interrupt.year & 0x0f);
-		event.event_union.rtc_interrupt.century = read_cmos_register(CMOS_REGISTER_RTC_CENTURY);
-		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))event.event_union.rtc_interrupt.century = 10 * (event.event_union.rtc_interrupt.century >> 4) + (event.event_union.rtc_interrupt.century & 0x0f);
+		century = read_cmos_register(CMOS_REGISTER_RTC_CENTURY);
+		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))century = 10 * (century >> 4) + (century & 0x0f);
+		event.event_union.rtc_interrupt.year += 100 * century;
 		enqueue_event(&event);
 	}
 }

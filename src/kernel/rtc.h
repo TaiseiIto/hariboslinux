@@ -18,8 +18,7 @@ typedef struct _RTCInterrupt
 	#define RTC_SATURDAY	0x07
 	unsigned char day_of_month;
 	unsigned char month;
-	unsigned char year;
-	unsigned char century;
+	unsigned short year;
 } RTCInterrupt;
 
 void init_rtc(void);
