@@ -52,19 +52,19 @@ void fill_box(short x, short y, unsigned short width, unsigned short height, Col
 // init screen
 void init_screen(void);
 
-// put character at screen(x, y)
-void put_char(unsigned char character, unsigned short x, unsigned short y, Color foreground, Color background);
-
-// put dot
-// 0 <= x < screen width
-// 0 <= y < screen height
-void put_dot(unsigned short x, unsigned short y, Color color);
-
 // printf to screen
 void printf_screen(unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...);
 
 // print to screen
 void print_screen(unsigned short x, unsigned short y, Color foreground, Color background, char *string);
+
+// put character at screen(x, y)
+void put_char_screen(unsigned char character, unsigned short x, unsigned short y, Color foreground, Color background);
+
+// put dot to screen
+// 0 <= x < screen width
+// 0 <= y < screen height
+void put_dot_screen(unsigned short x, unsigned short y, Color color);
 
 #endif
 

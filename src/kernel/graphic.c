@@ -31,7 +31,7 @@ void fill_box(short x, short y, unsigned short width, unsigned short height, Col
 				continue;
 			}
 			if(video_information->width <= x_i)break;
-			put_dot((unsigned short)x_i, (unsigned short)y_i, color);
+			put_dot_screen((unsigned short)x_i, (unsigned short)y_i, color);
 		}
 	}
 }
@@ -53,51 +53,6 @@ void init_screen(void)
 	printf_serial("video_information->blue_positioin = %#04x\n", video_information->blue_position);
 	printf_serial("video_information->frame_buffer = %#010x\n\n", video_information->frame_buffer);
 	vram = (void *)video_information->frame_buffer;
-}
-
-// put character at screen(x, y)
-void put_char(unsigned char character, unsigned short x, unsigned short y, Color foreground, Color background)
-{
-	switch(character)
-	{
-	case '\t':
-	case '\n':
-	case ' ':
-		fill_box(x, y, CHAR_WIDTH, CHAR_HEIGHT, background);
-		break;
-	default:
-		for(short y_i = 0; y_i < CHAR_HEIGHT; y_i++)
-		{
-			if(y + y_i < 0)
-			{
-				y_i = -y - 1;
-				continue;
-			}
-			if(video_information->height <= y + y_i)break;
-			for(short x_i = 0; x_i < CHAR_WIDTH; x_i++)
-			{
-				if(x + x_i < 0)
-				{
-					x_i = -x - 1;
-					continue;
-				}
-				if(video_information->width <= x + x_i)break;
-				if(get_font_pixel(character, x_i, y_i))put_dot((unsigned short)(x + x_i), (unsigned short)(y + y_i), foreground);
-				else put_dot((unsigned short)(x + x_i), (unsigned short)(y + y_i), background);
-			}
-		}
-		break;
-	}
-}
-
-// put dot
-// 0 <= x < screen width
-// 0 <= y < screen height
-void put_dot(unsigned short x, unsigned short y, Color color)
-{
-	if(video_information->width <= x)ERROR_MESSAGE();
-	if(video_information->height <= y)ERROR_MESSAGE();
-	*(unsigned int *)(vram + video_information->pitch * y + video_information->bits_per_pixel / CHAR_BIT * x) = (color.red << video_information->red_position) + (color.green << video_information->green_position) + (color.blue << video_information->blue_position);
 }
 
 // printf to screen
@@ -127,7 +82,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 			switch(*format)
 			{
 			case '%':
-				put_char('%', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+				put_char_screen('%', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 				char_pos_x++;
 				format++;
 				continue;
@@ -183,7 +138,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 					char_pos_x++;
 					break;
 				default:
-					put_char(character, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen(character, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					break;
 				}
@@ -201,7 +156,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				}
 				if(integer.long_long_int < 0)
 				{
-					put_char('-', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen('-', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					integer.long_long_int *= -1;
 					if(0 < length)length--;
@@ -212,7 +167,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					put_char(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					length--;
 				}
@@ -220,7 +175,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				{
 					integer_destroyable = integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.long_long_int /= 10;
-					put_char('0' + integer_destroyable.long_long_int % 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen('0' + integer_destroyable.long_long_int % 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}
@@ -229,10 +184,10 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				length = 10;
 				integer.unsigned_ints[0] = get_variadic_arg(arg_num++);
 				integer.unsigned_ints[1] = 0;
-				put_char('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+				put_char_screen('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 				char_pos_x++;
 				if(0 < length)length--;
-				put_char('x', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+				put_char_screen('x', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 				char_pos_x++;
 				if(0 < length)length--;
 				integer_destroyable = integer;
@@ -240,7 +195,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					put_char('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					length--;
 				}
@@ -248,7 +203,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				{
 					integer_destroyable = integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
-					put_char(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}
@@ -273,7 +228,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 						char_pos_x++;
 						break;
 					default:
-						put_char(*input_string, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+						put_char_screen(*input_string, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 						char_pos_x++;
 						break;
 					}
@@ -296,7 +251,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					put_char(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					length--;
 				}
@@ -304,7 +259,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				{
 					integer_destroyable = integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 10;
-					put_char('0' + integer_destroyable.unsigned_long_long_int % 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen('0' + integer_destroyable.unsigned_long_long_int % 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}
@@ -322,10 +277,10 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				}
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
-					put_char('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					if(0 < length)length--;
-					put_char('x', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen('x', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					if(0 < length)length--;
 				}
@@ -334,7 +289,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					put_char(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					length--;
 				}
@@ -342,7 +297,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				{
 					integer_destroyable = integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
-					put_char(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}
@@ -360,10 +315,10 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				}
 				if(flags & SPRINTF_TYPE_FLAG)
 				{
-					put_char('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen('0', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					if(0 < length)length--;
-					put_char('X', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen('X', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					if(0 < length)length--;
 				}
@@ -372,7 +327,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				else num_of_digits = 1;
 				if(num_of_digits < length)while(num_of_digits < length)
 				{
-					put_char(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen(flags & SPRINTF_ZERO_FLAG ? '0' : ' ', x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					length--;
 				}
@@ -380,7 +335,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				{
 					integer_destroyable = integer;
 					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
-					put_char(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'A' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+					put_char_screen(integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'A' + integer_destroyable.unsigned_long_long_int % 0x10 - 10, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 					char_pos_x++;
 					num_of_digits--;
 				}
@@ -405,7 +360,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 			char_pos_x++;
 			break;
 		default:
-			put_char(*format, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+			put_char_screen(*format, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 			char_pos_x++;
 			break;
 		}
@@ -436,10 +391,56 @@ void print_screen(unsigned short x, unsigned short y, Color foreground, Color ba
 			char_pos_x++;
 			break;
 		default:
-			put_char(*string, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
+			put_char_screen(*string, x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, foreground, background);
 			char_pos_x++;
 			break;
 		}
 		string++;
 	}
 }
+
+// put character at screen(x, y)
+void put_char_screen(unsigned char character, unsigned short x, unsigned short y, Color foreground, Color background)
+{
+	switch(character)
+	{
+	case '\t':
+	case '\n':
+	case ' ':
+		fill_box(x, y, CHAR_WIDTH, CHAR_HEIGHT, background);
+		break;
+	default:
+		for(short y_i = 0; y_i < CHAR_HEIGHT; y_i++)
+		{
+			if(y + y_i < 0)
+			{
+				y_i = -y - 1;
+				continue;
+			}
+			if(video_information->height <= y + y_i)break;
+			for(short x_i = 0; x_i < CHAR_WIDTH; x_i++)
+			{
+				if(x + x_i < 0)
+				{
+					x_i = -x - 1;
+					continue;
+				}
+				if(video_information->width <= x + x_i)break;
+				if(get_font_pixel(character, x_i, y_i))put_dot_screen((unsigned short)(x + x_i), (unsigned short)(y + y_i), foreground);
+				else put_dot_screen((unsigned short)(x + x_i), (unsigned short)(y + y_i), background);
+			}
+		}
+		break;
+	}
+}
+
+// put dot
+// 0 <= x < screen width
+// 0 <= y < screen height
+void put_dot_screen(unsigned short x, unsigned short y, Color color)
+{
+	if(video_information->width <= x)ERROR_MESSAGE();
+	if(video_information->height <= y)ERROR_MESSAGE();
+	*(unsigned int *)(vram + video_information->pitch * y + video_information->bits_per_pixel / CHAR_BIT * x) = (color.red << video_information->red_position) + (color.green << video_information->green_position) + (color.blue << video_information->blue_position);
+}
+
