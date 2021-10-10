@@ -13,7 +13,7 @@ VideoInformation const * const video_information = (VideoInformation const * con
 
 // fill box
 // x and y can be negative
-void fill_box(short x, short y, unsigned short width, unsigned short height, Color color)
+void fill_box_screen(short x, short y, unsigned short width, unsigned short height, Color color)
 {
 	for(short y_i = y; y_i < y + (short)height; y_i++)
 	{
@@ -126,7 +126,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 				{
 				case '\t':
 					char_pos_x_destroyable = (char_pos_x / TAB_LENGTH + 1) * TAB_LENGTH;
-					fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
+					fill_box_screen(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
 					char_pos_x = char_pos_x_destroyable;
 					break;
 				case '\n':
@@ -134,7 +134,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 					char_pos_y++;
 					break;
 				case ' ':
-					fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
+					fill_box_screen(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
 					char_pos_x++;
 					break;
 				default:
@@ -216,7 +216,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 					{
 					case '\t':
 						char_pos_x_destroyable = (char_pos_x / TAB_LENGTH + 1) * TAB_LENGTH;
-						fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
+						fill_box_screen(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
 						char_pos_x = char_pos_x_destroyable;
 						break;
 					case '\n':
@@ -224,7 +224,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 						char_pos_y++;
 						break;
 					case ' ':
-						fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
+						fill_box_screen(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
 						char_pos_x++;
 						break;
 					default:
@@ -348,7 +348,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 		{
 		case '\t':
 			char_pos_x_destroyable = (char_pos_x / TAB_LENGTH + 1) * TAB_LENGTH;
-			fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
+			fill_box_screen(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
 			char_pos_x = char_pos_x_destroyable;
 			break;
 		case '\n':
@@ -356,7 +356,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 			char_pos_y++;
 			break;
 		case ' ':
-			fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
+			fill_box_screen(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
 			char_pos_x++;
 			break;
 		default:
@@ -379,7 +379,7 @@ void print_screen(unsigned short x, unsigned short y, Color foreground, Color ba
 		{
 		case '\t':
 			char_pos_x_destroyable = (char_pos_x / TAB_LENGTH + 1) * TAB_LENGTH;
-			fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
+			fill_box_screen(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH * (char_pos_x_destroyable - char_pos_x), CHAR_HEIGHT, background);
 			char_pos_x = char_pos_x_destroyable;
 			break;
 		case '\n':
@@ -387,7 +387,7 @@ void print_screen(unsigned short x, unsigned short y, Color foreground, Color ba
 			char_pos_y++;
 			break;
 		case ' ':
-			fill_box(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
+			fill_box_screen(x + CHAR_WIDTH * char_pos_x, y + CHAR_HEIGHT * char_pos_y, CHAR_WIDTH, CHAR_HEIGHT, background);
 			char_pos_x++;
 			break;
 		default:
@@ -407,7 +407,7 @@ void put_char_screen(unsigned char character, unsigned short x, unsigned short y
 	case '\t':
 	case '\n':
 	case ' ':
-		fill_box(x, y, CHAR_WIDTH, CHAR_HEIGHT, background);
+		fill_box_screen(x, y, CHAR_WIDTH, CHAR_HEIGHT, background);
 		break;
 	default:
 		for(short y_i = 0; y_i < CHAR_HEIGHT; y_i++)

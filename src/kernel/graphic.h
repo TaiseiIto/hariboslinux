@@ -47,7 +47,7 @@ typedef struct
 
 // fill box
 // x and y can be negative
-void fill_box(short x, short y, unsigned short width, unsigned short height, Color color);
+void fill_box_screen(short x, short y, unsigned short width, unsigned short height, Color color);
 
 // init screen
 void init_screen(void);
