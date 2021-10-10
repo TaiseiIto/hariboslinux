@@ -53,3 +53,19 @@ void delete_sheet(Sheet *sheet)
 	free(sheet);
 }
 
+void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
+{
+}
+
+void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *string)
+{
+}
+
+void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char character)
+{
+}
+
+void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color)
+{
+}
+
