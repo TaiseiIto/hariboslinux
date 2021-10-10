@@ -53,6 +53,10 @@ void delete_sheet(Sheet *sheet)
 	free(sheet);
 }
 
+void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsigned short height, Color color)
+{
+}
+
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
 {
 }
