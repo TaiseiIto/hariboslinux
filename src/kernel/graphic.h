@@ -59,7 +59,7 @@ void printf_screen(unsigned short x, unsigned short y, Color foreground, Color b
 void print_screen(unsigned short x, unsigned short y, Color foreground, Color background, char *string);
 
 // put character at screen(x, y)
-void put_char_screen(unsigned char character, unsigned short x, unsigned short y, Color foreground, Color background);
+void put_char_screen(unsigned short x, unsigned short y, Color foreground, Color background, char character);
 
 // put dot to screen
 // 0 <= x < screen width
