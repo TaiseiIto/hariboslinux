@@ -77,10 +77,10 @@
 
 #define SCRATCH_REGISTER 7 // OS developper can use this register freely
 
-unsigned char com1_flags = 0;
 #define COM_AVAILABLE 0x01
 #define COM_INTERRUPT 0x02
 #define COM_WRITABLE 0x04
+unsigned char com1_flags = COM_AVAILABLE;
 
 Queue *com1_transmission_queue;
 
@@ -117,6 +117,15 @@ void init_serial_interrupt(void)
 {
 	unsigned int baud_rate = 115200;
 	unsigned short baud_rate_divisor = SERIAL_FREQUENCY / baud_rate;
+	// check COM1 availability
+	outb(COM1 + MODEM_CONTROL_REGISTER, LOOP_BACK_FEATURE);
+	outb(COM1 + DATA_REGISTER, 0xae);
+	if(inb(COM1 + DATA_REGISTER) != 0xae)
+	{
+		// COM1 unavailable
+		com1_flags = 0;
+		return;
+	}
 	// create com1_transmission_queue
 	com1_transmission_queue = create_queue(sizeof(char));
 	// 8 bits per char
