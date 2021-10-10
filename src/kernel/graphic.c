@@ -6,8 +6,6 @@
 #include "serial.h"
 #include "stdio.h"
 
-#define TAB_LENGTH 4
-
 void *vram;
 VideoInformation const * const video_information = (VideoInformation const * const)0x00000600;
 

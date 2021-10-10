@@ -4,6 +4,8 @@
 #define CHAR_WIDTH 0x08
 #define CHAR_HEIGHT 0x10
 
+#define TAB_LENGTH 4
+
 // width 8 pixels
 // height 16 pixels
 typedef struct
