@@ -81,7 +81,7 @@ void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsign
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
 {
-	int arg_num = 5;
+	int arg_num = 6;
 	char character;
 	char const *input_string;
 	VariadicArg integer;
