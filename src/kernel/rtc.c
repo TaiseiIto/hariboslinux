@@ -57,16 +57,6 @@ char const *get_day_of_week_string(unsigned char day_of_week)
 
 void init_rtc(void)
 {
-	const unsigned short frequency = 2; // Hz
-	unsigned int frequency_divisor = 0x00010000 / frequency;
-	unsigned char frequency_index = 0;
-	while(1 < frequency_divisor)
-	{
-		frequency_divisor >>= 1;
-		frequency_index++;
-	}
-	frequency_index &= 0x0f;
-	printf_serial("frequency_index = %#04x\n", frequency_index);
 	// Enable IRQ8
 	status_register_b = read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_UPDATE_INTERRUPT;
 	write_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, status_register_b);
