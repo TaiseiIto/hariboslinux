@@ -146,11 +146,7 @@ void main(void)
 			printf_serial("invalid event->type %#04x\n", event->type);
 			break;
 		}
-		else
-		{
-			refresh_screen();
-			hlt();
-		}
+		else hlt();
 	}
 }
 
