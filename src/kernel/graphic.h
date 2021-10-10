@@ -49,6 +49,8 @@ typedef struct
 // x and y can be negative
 void fill_box_screen(short x, short y, unsigned short width, unsigned short height, Color color);
 
+VideoInformation const *getVideoInformation(void);
+
 // init screen
 void init_screen(void);
 

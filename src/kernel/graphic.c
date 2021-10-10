@@ -9,6 +9,11 @@
 void *vram;
 VideoInformation const * const video_information = (VideoInformation const * const)0x00000600;
 
+VideoInformation const *getVideoInformation(void)
+{
+	return video_information;
+}
+
 // fill box
 // x and y can be negative
 void fill_box_screen(short x, short y, unsigned short width, unsigned short height, Color color)

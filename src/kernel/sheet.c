@@ -454,7 +454,6 @@ void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color fore
 		}
 		break;
 	}
-
 }
 
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color)
@@ -462,5 +461,34 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 	if(sheet->width <= x)ERROR_MESSAGE();
 	if(sheet->height <= y)ERROR_MESSAGE();
 	sheet->image[sheet->width * y + x] = color;
+}
+
+void refresh_screen(void)
+{
+	Sheet *sheet;
+	cli_task();
+	for(sheet = lowest_sheet; sheet; sheet = sheet->upper_sheet)
+	{
+		for(short y = 0; y < sheet->height; y++)
+		{
+			if(sheet->y + y < 0)
+			{
+				y = -sheet->y - 1;
+				continue;
+			}
+			if(getVideoInformation()->height <= sheet->y + y)break;
+			for(short x = 0; x < sheet->width; x++)
+			{
+				if(sheet->x + x < 0)
+				{
+					x = -sheet->x - 1;
+					continue;
+				}
+				if(getVideoInformation()->width <= sheet->x + x)break;
+				put_dot_screen(sheet->x + x, sheet->y + y, sheet->image[sheet->width * y + x]);
+			}
+		}
+	}
+	sti_task();
 }
 
