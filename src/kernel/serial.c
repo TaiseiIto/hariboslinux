@@ -406,19 +406,22 @@ void print_word_hex_serial(unsigned short value)
 // print a character to serial port COM1
 void put_char_serial(char character)
 {
-	if(com1_flags & COM_INTERRUPT)
+	if(com1_flags & COM_AVAILABLE)
 	{
-		enqueue(com1_transmission_queue, &character);
-		if(com1_flags & COM_WRITABLE)
+		if(com1_flags & COM_INTERRUPT)
 		{
-			com1_flags &= ~COM_WRITABLE;
-			outb(COM1 + DATA_REGISTER, *(unsigned char *)dequeue(com1_transmission_queue));
+			enqueue(com1_transmission_queue, &character);
+			if(com1_flags & COM_WRITABLE)
+			{
+				com1_flags &= ~COM_WRITABLE;
+				outb(COM1 + DATA_REGISTER, *(unsigned char *)dequeue(com1_transmission_queue));
+			}
 		}
-	}
-	else
-	{
-		while(!(inb(COM1 + LINE_STATUS_REGISTER) & TRANSMITTER_HOLDING_REGISTER_EMPTY));
-		outb(COM1, character);
+		else
+		{
+			while(!(inb(COM1 + LINE_STATUS_REGISTER) & TRANSMITTER_HOLDING_REGISTER_EMPTY));
+			outb(COM1, character);
+		}
 	}
 }
 
