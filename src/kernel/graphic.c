@@ -9,7 +9,7 @@
 void *vram;
 VideoInformation const * const video_information = (VideoInformation const * const)0x00000600;
 
-VideoInformation const *getVideoInformation(void)
+VideoInformation const *get_video_information(void)
 {
 	return video_information;
 }

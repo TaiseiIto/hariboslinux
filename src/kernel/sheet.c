@@ -476,7 +476,7 @@ void refresh_screen(void)
 				y = -sheet->y - 1;
 				continue;
 			}
-			if(getVideoInformation()->height <= sheet->y + y)break;
+			if(get_video_information()->height <= sheet->y + y)break;
 			for(short x = 0; x < sheet->width; x++)
 			{
 				if(sheet->x + x < 0)
@@ -484,7 +484,7 @@ void refresh_screen(void)
 					x = -sheet->x - 1;
 					continue;
 				}
-				if(getVideoInformation()->width <= sheet->x + x)break;
+				if(get_video_information()->width <= sheet->x + x)break;
 				put_dot_screen(sheet->x + x, sheet->y + y, sheet->image[sheet->width * y + x]);
 			}
 		}
