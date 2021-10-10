@@ -30,7 +30,7 @@ void *dequeue(Queue *queue)
 	else return NULL; // no element!
 }
 
-void destroy_queue(Queue *queue)
+void delete_queue(Queue *queue)
 {
 	while(queue->read_head)dequeue(queue);
 	free(queue->io);

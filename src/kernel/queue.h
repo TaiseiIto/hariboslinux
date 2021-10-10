@@ -19,7 +19,7 @@ typedef struct _Queue
 
 Queue *create_queue(size_t element_size);
 void *dequeue(Queue *queue);
-void destroy_queue(Queue *queue);
+void delete_queue(Queue *queue);
 void enqueue(Queue *queue, void const *data);
 
 #endif

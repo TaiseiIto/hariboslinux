@@ -46,8 +46,6 @@ void main(void)
 	print_serial("finish init_pic()\n\n");
 	init_pit();
 	print_serial("finish init_pit()\n\n");
-	init_timer();
-	print_serial("finish init_timer()\n\n");
 	init_keyboard();
 	print_serial("finish init_keyboard()\n\n");
 	init_rtc();

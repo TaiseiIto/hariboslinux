@@ -3,8 +3,8 @@
 #include "task.h"
 #include "timer.h"
 
-Timer *next_estimated_timer;
-unsigned long long tick_count;
+Timer *next_estimated_timer = NULL;
+unsigned long long tick_count = 0;
 
 Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned long long interval_count/*centisecond*/)
 {
@@ -49,12 +49,6 @@ void delete_timer(Timer *timer)
 	if(timer->next)timer->next->previous = timer->previous;
 	sti_task();
 	free(timer);
-}
-
-void init_timer(void)
-{
-	next_estimated_timer = NULL;
-	tick_count = 0;
 }
 
 void timers_tick(void)
