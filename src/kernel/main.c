@@ -134,7 +134,7 @@ void main(void)
 			{
 				timer_counter++;
 				printf_sheet(background_sheet, 0x0000, 0x0006 * CHAR_HEIGHT, foreground_color, background_color, "timer = %lld seconds", timer_counter);
-				printf_serial("timer_counterr = %lld seconds\n", timer_counter);
+				printf_serial("timer counter = %lld seconds\n", timer_counter);
 			}
 			else if(event->event_union.timer_event.timer == checking_free_memory_space_size_timer)
 			{
