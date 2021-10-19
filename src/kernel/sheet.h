@@ -19,6 +19,7 @@ void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foregr
 void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *string);
 void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char character);
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color);
+void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigned short y, Color color);
 
 #endif
 

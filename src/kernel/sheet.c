@@ -461,6 +461,20 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 	if(sheet->width <= x)ERROR_MESSAGE();
 	if(sheet->height <= y)ERROR_MESSAGE();
 	sheet->image[sheet->width * y + x] = color;
-	if(0 <= sheet->x + x && sheet->x + x < get_video_information()->width && 0 <= sheet->y + y && sheet->y + y < get_video_information()->height)put_dot_screen(sheet->x + x, sheet->y + y, color);
+	if(0 <= sheet->x + x && sheet->x + x < get_video_information()->width && 0 <= sheet->y + y && sheet->y + y < get_video_information()->height)
+	{
+		if(sheet == uppest_sheet)put_dot_screen(sheet->x + x, sheet->y + y, color);
+		else transmit_color_to_upper_sheet(sheet->upper_sheet, x + sheet->x, y + sheet->y, color);
+	}
+}
+
+void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigned short y, Color color)
+{
+	if(upper_sheet->x <= x && x < upper_sheet->x + upper_sheet->width && upper_sheet->y <= y && y < upper_sheet->y + upper_sheet->height)
+	{
+		// Point (x, y) on the screen doesn't change its color because the point is covered with upper_sheet
+	}
+	else if(upper_sheet == uppest_sheet)put_dot_screen(x, y, color);
+	else transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, color);
 }
 
