@@ -6,8 +6,8 @@
 #include "stdio.h"
 #include "task.h"
 
-Sheet *uppest_sheet = NULL;
-Sheet *lowest_sheet = NULL;
+Sheet *mouse_cursor_sheet = NULL;
+Sheet *background_sheet = NULL;
 
 Sheet *create_sheet(short x, short y, unsigned short width, unsigned short height)
 {
@@ -18,28 +18,14 @@ Sheet *create_sheet(short x, short y, unsigned short width, unsigned short heigh
 	new_sheet->height = height;
 	new_sheet->image = malloc(width * height * sizeof(*new_sheet->image));
 	cli_task();
-	if(lowest_sheet)
+	if(background_sheet && mouse_cursor_sheet)
 	{
-		if(uppest_sheet)
-		{
-			new_sheet->lower_sheet = uppest_sheet;
-			new_sheet->upper_sheet = NULL;
-			uppest_sheet->upper_sheet = new_sheet;
-			uppest_sheet = new_sheet;
-		}
-		else ERROR_MESSAGE();
+		new_sheet->lower_sheet = mouse_cursor_sheet->lower_sheet;
+		new_sheet->upper_sheet = mouse_cursor_sheet;
+		mouse_cursor_sheet->lower_sheet->upper_sheet = new_sheet;
+		mouse_cursor_sheet->lower_sheet = new_sheet;
 	}
-	else
-	{
-		if(uppest_sheet)ERROR_MESSAGE();
-		else
-		{
-			new_sheet->lower_sheet = NULL;
-			new_sheet->upper_sheet = NULL;
-			lowest_sheet = new_sheet;
-			uppest_sheet = new_sheet;
-		}
-	}
+	else ERROR_MESSAGE();
 	sti_task();
 	return new_sheet;
 }
@@ -47,8 +33,8 @@ Sheet *create_sheet(short x, short y, unsigned short width, unsigned short heigh
 void delete_sheet(Sheet *sheet)
 {
 	cli_task();
-	if(lowest_sheet == sheet)lowest_sheet = sheet->upper_sheet;
-	if(uppest_sheet == sheet)uppest_sheet = sheet->lower_sheet;
+	if(background_sheet == sheet)background_sheet = sheet->upper_sheet;
+	if(mouse_cursor_sheet == sheet)mouse_cursor_sheet = sheet->lower_sheet;
 	if(sheet->lower_sheet)sheet->lower_sheet->upper_sheet = sheet->upper_sheet;
 	if(sheet->upper_sheet)sheet->upper_sheet->lower_sheet = sheet->lower_sheet;
 	sti_task();
@@ -77,6 +63,36 @@ void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsign
 			put_dot_sheet(sheet, (unsigned short)x_i, (unsigned short)y_i, color);
 		}
 	}
+}
+
+void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
+{
+	Color red;
+	red.red = 0xff;
+	red.green = 0x00;
+	red.blue = 0x00;
+	red.alpha = 0xff;
+	cli_task();
+	background_sheet = malloc(sizeof(*background_sheet));
+	background_sheet->x = 0;
+	background_sheet->y = 0;
+	background_sheet->width = get_video_information()->width;
+	background_sheet->height = get_video_information()->height;
+	background_sheet->image = malloc(background_sheet->width * background_sheet->height * sizeof(*background_sheet->image));
+	mouse_cursor_sheet = malloc(sizeof(*mouse_cursor_sheet));
+	mouse_cursor_sheet->x = get_video_information()->width / 2;
+	mouse_cursor_sheet->y = get_video_information()->height / 2;
+	mouse_cursor_sheet->width = 0x10;
+	mouse_cursor_sheet->height = 0x10;
+	mouse_cursor_sheet->image = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
+	background_sheet->lower_sheet = NULL;
+	background_sheet->upper_sheet = mouse_cursor_sheet;
+	mouse_cursor_sheet->lower_sheet = background_sheet;
+	mouse_cursor_sheet->upper_sheet = NULL;
+	*_background_sheet = background_sheet;
+	*_mouse_cursor_sheet = mouse_cursor_sheet;
+	fill_box_sheet(mouse_cursor_sheet, 0, 0, mouse_cursor_sheet->width, mouse_cursor_sheet->height, red);
+	sti_task();
 }
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
@@ -463,7 +479,7 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 	sheet->image[sheet->width * y + x] = color;
 	if(0 <= sheet->x + x && sheet->x + x < get_video_information()->width && 0 <= sheet->y + y && sheet->y + y < get_video_information()->height)
 	{
-		if(sheet == uppest_sheet)put_dot_screen(sheet->x + x, sheet->y + y, color);
+		if(sheet == mouse_cursor_sheet)put_dot_screen(sheet->x + x, sheet->y + y, color);
 		else transmit_color_to_upper_sheet(sheet->upper_sheet, x + sheet->x, y + sheet->y, color);
 	}
 }
@@ -474,7 +490,7 @@ void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigne
 	{
 		// Point (x, y) on the screen doesn't change its color because the point is covered with upper_sheet
 	}
-	else if(upper_sheet == uppest_sheet)put_dot_screen(x, y, color);
+	else if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, color);
 	else transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, color);
 }
 
