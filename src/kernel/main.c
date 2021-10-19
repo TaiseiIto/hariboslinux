@@ -20,11 +20,12 @@ void main(void)
 {
 	BootInformation const * const boot_information = (BootInformation const * const)0x00000800;
 	Color background_color;
-	Color color;
+	Color red;
 	Color foreground_color;
 	MemoryRegionDescriptor memory_region_descriptor;
 	MemorySection const *memory_section;
 	Sheet *background_sheet;
+	Sheet *mouse_cursor_sheet;
 	Timer *test_timer;
 	Timer *checking_free_memory_space_size_timer;
 	unsigned int memory_region_descriptor_index;
@@ -57,12 +58,20 @@ void main(void)
 	init_screen();
 	print_serial("finish init_screen()\n\n");
 	background_sheet = create_sheet(0, 0, get_video_information()->width, get_video_information()->height);
+	mouse_cursor_sheet = create_sheet(0, 0, 0x10, 0x10);
+	red.red = 0xff;
+	red.green = 0x00;
+	red.blue = 0x00;
+	red.alpha = 0xff;
+	fill_box_sheet(mouse_cursor_sheet, 0, 0, mouse_cursor_sheet->width, mouse_cursor_sheet->height, red);
 	background_color.red = 0x00;
 	background_color.green = 0x00;
 	background_color.blue = 0x00;
+	background_color.alpha = 0xff;
 	foreground_color.red = 0xff;
 	foreground_color.green = 0xff;
 	foreground_color.blue = 0xff;
+	foreground_color.alpha = 0xff;
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "mouse ID = %#04x", get_mouse_id());
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04x", boot_information->keyboard_state);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04x", boot_information->last_loaded_cylinder);
