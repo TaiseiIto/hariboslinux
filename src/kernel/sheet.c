@@ -9,6 +9,24 @@
 Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
+Color ask_color_screen(Sheet *sheet, unsigned short x, unsigned short y)
+{
+	if(get_video_information()->width <= x)ERROR_MESSAGE();
+	if(get_video_information()->height <= y)ERROR_MESSAGE();
+	if(sheet->x <= x && x < sheet->x + sheet->width && sheet->y <= y && y < sheet->y + sheet->height)return sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)];
+	else if(sheet->lower_sheet)return ask_color_screen(sheet->lower_sheet, x, y);
+	else
+	{
+		Color default_color;
+		ERROR_MESSAGE();
+		default_color.red = 0x00;
+		default_color.green = 0x00;
+		default_color.blue = 0x00;
+		default_color.alpha = 0x00;
+		return default_color;
+	}
+}
+
 Sheet *create_sheet(short x, short y, unsigned short width, unsigned short height)
 {
 	Sheet *new_sheet = malloc(sizeof(*new_sheet));
@@ -65,6 +83,13 @@ void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsign
 	}
 }
 
+Color get_color_screen(unsigned short x, unsigned short y)
+{
+	if(get_video_information()->width <= x)ERROR_MESSAGE();
+	if(get_video_information()->height <= y)ERROR_MESSAGE();
+	return ask_color_screen(mouse_cursor_sheet, x, y);
+}
+
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 {
 	Color red;
@@ -93,6 +118,16 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	*_mouse_cursor_sheet = mouse_cursor_sheet;
 	fill_box_sheet(mouse_cursor_sheet, 0, 0, mouse_cursor_sheet->width, mouse_cursor_sheet->height, red);
 	sti_task();
+}
+
+void move_sheet(Sheet *sheet, short x, short y)
+{
+	short previous_x = sheet->x;
+	short previous_y = sheet->y;
+	sheet->x = x;
+	sheet->y = y;
+	refresh_rectangle(previous_x, previous_y, sheet->width, sheet->height);
+	refresh_rectangle(sheet->x, sheet->y, sheet->width, sheet->height);
 }
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
@@ -482,6 +517,22 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 		if(sheet == mouse_cursor_sheet)put_dot_screen(sheet->x + x, sheet->y + y, color);
 		else transmit_color_to_upper_sheet(sheet->upper_sheet, x + sheet->x, y + sheet->y, color);
 	}
+}
+
+void refresh_dot(unsigned short x, unsigned short y)
+{
+	if(get_video_information()->width <= x)ERROR_MESSAGE();
+	if(get_video_information()->height <= y)ERROR_MESSAGE();
+	put_dot_screen(x, y, get_color_screen(x, y));
+}
+
+void refresh_rectangle(short x, short y, unsigned short width, unsigned short height)
+{
+	unsigned short x_start = (0 <= x) ? x : 0;
+	unsigned short x_end = (x + width < get_video_information()->width) ? x + width : get_video_information()->width;
+	unsigned short y_start = (0 <= y) ? y : 0;
+	unsigned short y_end = (y + height < get_video_information()->height) ? y + height : get_video_information()->height;
+	for(unsigned short y_i = y_start; y_i < y_end; y_i++)for(unsigned short x_i = x_start; x_i < x_end; x_i++)refresh_dot(x_i, y_i);
 }
 
 void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigned short y, Color color)
