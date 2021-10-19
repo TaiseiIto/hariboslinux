@@ -58,13 +58,6 @@ void main(void)
 	init_screen();
 	print_serial("finish init_screen()\n\n");
 	init_sheets(&background_sheet, &mouse_cursor_sheet);
-	//background_sheet = create_sheet(0, 0, get_video_information()->width, get_video_information()->height);
-	//mouse_cursor_sheet = create_sheet(0, 0, 0x10, 0x10);
-	//red.red = 0xff;
-	//red.green = 0x00;
-	//red.blue = 0x00;
-	//red.alpha = 0xff;
-	//fill_box_sheet(mouse_cursor_sheet, 0, 0, mouse_cursor_sheet->width, mouse_cursor_sheet->height, red);
 	background_color.red = 0x00;
 	background_color.green = 0x00;
 	background_color.blue = 0x00;
@@ -138,6 +131,7 @@ void main(void)
 			printf_serial("day = %d\n", event->event_union.rtc_interrupt.day);
 			printf_serial("month = %d\n", event->event_union.rtc_interrupt.month);
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
+			move_sheet(mouse_cursor_sheet, event->event_union.rtc_interrupt.second, event->event_union.rtc_interrupt.second);
 			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
