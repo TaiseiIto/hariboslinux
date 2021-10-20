@@ -3,8 +3,8 @@
 
 typedef struct _MouseEvent
 {
-	unsigned short x;
-	unsigned short y;
+	short x;
+	short y;
 	short x_movement;
 	short y_movement;
 	unsigned char flags;
