@@ -1,4 +1,5 @@
 #include "event.h"
+#include "graphic.h"
 #include "io.h"
 #include "keyboard.h"
 #include "mouse.h"
@@ -60,15 +61,16 @@ void decode_mouse_interrupt(unsigned char signal)
 	case 0:
 		if(signal_index == 3)
 		{
-			mouse_event.type = EVENT_TYPE_MOUSE_EVENT;
 			mouse_event.event_union.mouse_event.flags = 0;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
 			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
 			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED;
 			mouse_event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
 			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)mouse_event.event_union.mouse_event.x_movement |= 0xff00;
+			mouse_event.event_union.mouse_event.x += mouse_event.event_union.mouse_event.x_movement;
 			mouse_event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
 			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)mouse_event.event_union.mouse_event.y_movement |= 0xff00;
+			mouse_event.event_union.mouse_event.y += mouse_event.event_union.mouse_event.y_movement;
 			mouse_event.event_union.mouse_event.vertical_wheel_movement = 0;
 			mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
 			enqueue_event(&mouse_event);
@@ -78,7 +80,6 @@ void decode_mouse_interrupt(unsigned char signal)
 	case 3:
 		if(signal_index == 4)
 		{
-			mouse_event.type = EVENT_TYPE_MOUSE_EVENT;
 			mouse_event.event_union.mouse_event.flags = 0;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
 			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
@@ -99,7 +100,6 @@ void decode_mouse_interrupt(unsigned char signal)
 		if(signal_index == 4)
 		{
 			printf_serial("mouse packet = %#010x\n", mouse_packet.packet);
-			mouse_event.type = EVENT_TYPE_MOUSE_EVENT;
 			mouse_event.event_union.mouse_event.flags = 0;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
 			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
@@ -174,10 +174,18 @@ void init_mouse(void)
 		mouse_id = receive_from_keyboard();
 		printf_serial("mouse ID = %#04x\n", mouse_id);
 	}
-
 	// enable packet streaming
 	send_to_mouse(MOUSE_COMMAND_ENABLE_PACKET_STREAMING);
 	printf_serial("mouse ACK = %#04x\n\n", receive_from_keyboard());
+	// init mouse state
+	mouse_event.type = EVENT_TYPE_MOUSE_EVENT;
+	mouse_event.event_union.mouse_event.x = get_video_information()->width / 2;
+	mouse_event.event_union.mouse_event.y = get_video_information()->height / 2;
+	mouse_event.event_union.mouse_event.x_movement = 0;
+	mouse_event.event_union.mouse_event.y_movement = 0;
+	mouse_event.event_union.mouse_event.flags = 0;
+	mouse_event.event_union.mouse_event.vertical_wheel_movement = 0;
+	mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
 }
 
 void mouse_interrupt_handler(void)
