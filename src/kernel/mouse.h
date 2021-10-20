@@ -3,14 +3,16 @@
 
 typedef struct _MouseEvent
 {
+	unsigned short x;
+	unsigned short y;
+	short x_movement;
+	short y_movement;
 	unsigned char flags;
 	#define MOUSE_LEFT_BUTTON_PUSHED	0x01
 	#define MOUSE_MIDDLE_BUTTON_PUSHED	0x02
 	#define MOUSE_RIGHT_BUTTON_PUSHED	0x04
 	#define MOUSE_4TH_BUTTON_PUSHED		0x08
 	#define MOUSE_5TH_BUTTON_PUSHED		0x10
-	short x_movement;
-	short y_movement;
 	char vertical_wheel_movement;
 	char horizontal_wheel_movement;
 } MouseEvent;

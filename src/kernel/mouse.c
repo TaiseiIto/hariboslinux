@@ -43,6 +43,7 @@ typedef union _MousePacket
 	#define MOUSE_PACKET_ID4_MUST_BE_0		0xc0000000
 } MousePacket;
 
+Event mouse_event;
 unsigned char mouse_id;
 
 void send_to_mouse(unsigned char data);
@@ -50,7 +51,6 @@ void set_mouse_sample_rate(unsigned char rate);
 
 void decode_mouse_interrupt(unsigned char signal)
 {
-	Event event;
 	static MousePacket mouse_packet;
 	static unsigned char signal_index = 0;
 	mouse_packet.signals[signal_index++] = signal;
@@ -60,37 +60,37 @@ void decode_mouse_interrupt(unsigned char signal)
 	case 0:
 		if(signal_index == 3)
 		{
-			event.type = EVENT_TYPE_MOUSE_EVENT;
-			event.event_union.mouse_event.flags = 0;
-			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
-			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
-			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED;
-			event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
-			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)event.event_union.mouse_event.x_movement |= 0xff00;
-			event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
-			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)event.event_union.mouse_event.y_movement |= 0xff00;
-			event.event_union.mouse_event.vertical_wheel_movement = 0;
-			event.event_union.mouse_event.horizontal_wheel_movement = 0;
-			enqueue_event(&event);
+			mouse_event.type = EVENT_TYPE_MOUSE_EVENT;
+			mouse_event.event_union.mouse_event.flags = 0;
+			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
+			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
+			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED;
+			mouse_event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
+			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)mouse_event.event_union.mouse_event.x_movement |= 0xff00;
+			mouse_event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
+			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)mouse_event.event_union.mouse_event.y_movement |= 0xff00;
+			mouse_event.event_union.mouse_event.vertical_wheel_movement = 0;
+			mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
+			enqueue_event(&mouse_event);
 			signal_index = 0;
 		}
 		break;
 	case 3:
 		if(signal_index == 4)
 		{
-			event.type = EVENT_TYPE_MOUSE_EVENT;
-			event.event_union.mouse_event.flags = 0;
-			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
-			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
-			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED;
-			event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
-			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)event.event_union.mouse_event.x_movement |= 0xff00;
-			event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
-			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)event.event_union.mouse_event.y_movement |= 0xff00;
-			if(0 < (char)mouse_packet.signals[3])event.event_union.mouse_event.vertical_wheel_movement = 1;
-			else if((char)mouse_packet.signals[3] < 0)event.event_union.mouse_event.vertical_wheel_movement = -1;
-			event.event_union.mouse_event.horizontal_wheel_movement = 0;
-			enqueue_event(&event);
+			mouse_event.type = EVENT_TYPE_MOUSE_EVENT;
+			mouse_event.event_union.mouse_event.flags = 0;
+			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
+			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
+			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED;
+			mouse_event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
+			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)mouse_event.event_union.mouse_event.x_movement |= 0xff00;
+			mouse_event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
+			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)mouse_event.event_union.mouse_event.y_movement |= 0xff00;
+			if(0 < (char)mouse_packet.signals[3])mouse_event.event_union.mouse_event.vertical_wheel_movement = 1;
+			else if((char)mouse_packet.signals[3] < 0)mouse_event.event_union.mouse_event.vertical_wheel_movement = -1;
+			mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
+			enqueue_event(&mouse_event);
 			signal_index = 0;
 		}
 		break;
@@ -99,45 +99,45 @@ void decode_mouse_interrupt(unsigned char signal)
 		if(signal_index == 4)
 		{
 			printf_serial("mouse packet = %#010x\n", mouse_packet.packet);
-			event.type = EVENT_TYPE_MOUSE_EVENT;
-			event.event_union.mouse_event.flags = 0;
-			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
-			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
-			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED;
-			event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
-			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)event.event_union.mouse_event.x_movement |= 0xff00;
-			event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
-			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)event.event_union.mouse_event.y_movement |= 0xff00;
+			mouse_event.type = EVENT_TYPE_MOUSE_EVENT;
+			mouse_event.event_union.mouse_event.flags = 0;
+			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED;
+			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED;
+			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED;
+			mouse_event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
+			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)mouse_event.event_union.mouse_event.x_movement |= 0xff00;
+			mouse_event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
+			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)mouse_event.event_union.mouse_event.y_movement |= 0xff00;
 			switch(mouse_packet.packet & MOUSE_PACKET_ID4_WHEEL)
 			{
 			case MOUSE_PACKET_ID4_WHEEL_STOP:
-				event.event_union.mouse_event.vertical_wheel_movement = 0;
-				event.event_union.mouse_event.horizontal_wheel_movement = 0;
+				mouse_event.event_union.mouse_event.vertical_wheel_movement = 0;
+				mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
 				break;
 			case MOUSE_PACKET_ID4_WHEEL_DOWN:
-				event.event_union.mouse_event.vertical_wheel_movement = -1;
-				event.event_union.mouse_event.horizontal_wheel_movement = 0;
+				mouse_event.event_union.mouse_event.vertical_wheel_movement = -1;
+				mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
 				break;
 			case MOUSE_PACKET_ID4_WHEEL_LEFT:
-				event.event_union.mouse_event.vertical_wheel_movement = 0;
-				event.event_union.mouse_event.horizontal_wheel_movement = -1;
+				mouse_event.event_union.mouse_event.vertical_wheel_movement = 0;
+				mouse_event.event_union.mouse_event.horizontal_wheel_movement = -1;
 				break;
 			case MOUSE_PACKET_ID4_WHEEL_RIGHT:
-				event.event_union.mouse_event.vertical_wheel_movement = 0;
-				event.event_union.mouse_event.horizontal_wheel_movement = 1;
+				mouse_event.event_union.mouse_event.vertical_wheel_movement = 0;
+				mouse_event.event_union.mouse_event.horizontal_wheel_movement = 1;
 				break;
 			case MOUSE_PACKET_ID4_WHEEL_UP:
-				event.event_union.mouse_event.vertical_wheel_movement = 1;
-				event.event_union.mouse_event.horizontal_wheel_movement = 0;
+				mouse_event.event_union.mouse_event.vertical_wheel_movement = 1;
+				mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
 				break;
 			default:
 				ERROR_MESSAGE(); // Wrong mouse wheel state!
 				signal_index = 0;
 				return;
 			}
-			if(mouse_packet.packet & MOUSE_PACKET_ID4_4TH_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_4TH_BUTTON_PUSHED;
-			if(mouse_packet.packet & MOUSE_PACKET_ID4_5TH_BUTTON_PUSHED)event.event_union.mouse_event.flags |= MOUSE_5TH_BUTTON_PUSHED;
-			enqueue_event(&event);
+			if(mouse_packet.packet & MOUSE_PACKET_ID4_4TH_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_4TH_BUTTON_PUSHED;
+			if(mouse_packet.packet & MOUSE_PACKET_ID4_5TH_BUTTON_PUSHED)mouse_event.event_union.mouse_event.flags |= MOUSE_5TH_BUTTON_PUSHED;
+			enqueue_event(&mouse_event);
 			signal_index = 0;
 		}
 		break;
