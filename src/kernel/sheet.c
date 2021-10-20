@@ -92,7 +92,11 @@ Color get_color_screen(unsigned short x, unsigned short y)
 
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 {
-	Color red;
+	Color black, red;
+	black.red = 0x00;
+	black.green = 0x00;
+	black.blue = 0x00;
+	black.alpha = 0xff;
 	red.red = 0xff;
 	red.green = 0x00;
 	red.blue = 0x00;
@@ -116,6 +120,7 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	mouse_cursor_sheet->upper_sheet = NULL;
 	*_background_sheet = background_sheet;
 	*_mouse_cursor_sheet = mouse_cursor_sheet;
+	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, black);
 	fill_box_sheet(mouse_cursor_sheet, 0, 0, mouse_cursor_sheet->width, mouse_cursor_sheet->height, red);
 	sti_task();
 }
