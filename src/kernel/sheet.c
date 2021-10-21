@@ -6,6 +6,10 @@
 #include "stdio.h"
 #include "task.h"
 
+//			  {red ,green, blue,alpha}
+Color color_black	= {0x00, 0x00, 0x00, 0xff};
+Color color_red		= {0xff, 0x00, 0x00, 0xff};
+
 Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
@@ -92,15 +96,6 @@ Color get_color_screen(unsigned short x, unsigned short y)
 
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 {
-	Color black, red;
-	black.red = 0x00;
-	black.green = 0x00;
-	black.blue = 0x00;
-	black.alpha = 0xff;
-	red.red = 0xff;
-	red.green = 0x00;
-	red.blue = 0x00;
-	red.alpha = 0xff;
 	cli_task();
 	background_sheet = malloc(sizeof(*background_sheet));
 	background_sheet->x = 0;
@@ -120,8 +115,8 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	mouse_cursor_sheet->upper_sheet = NULL;
 	*_background_sheet = background_sheet;
 	*_mouse_cursor_sheet = mouse_cursor_sheet;
-	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, black);
-	fill_box_sheet(mouse_cursor_sheet, 0, 0, mouse_cursor_sheet->width, mouse_cursor_sheet->height, red);
+	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
+	fill_box_sheet(mouse_cursor_sheet, 0, 0, mouse_cursor_sheet->width, mouse_cursor_sheet->height, color_red);
 	sti_task();
 }
 
