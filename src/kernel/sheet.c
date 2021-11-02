@@ -576,12 +576,14 @@ void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigne
 		switch(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x].alpha)
 		{
 		case 0x00:
-			transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, color);
+			if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, color);
+			else transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, color);
 			break;
 		case 0xff:
 			break;
 		default:
-			transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
+			if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
+			else transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
 			break;
 		}
 	}
