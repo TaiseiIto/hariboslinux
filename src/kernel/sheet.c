@@ -8,8 +8,8 @@
 #include "task.h"
 
 //			  {red ,green, blue,alpha}
-Color color_black	= {0x00, 0x00, 0x00, 0xff};
-Color color_red		= {0xff, 0x00, 0x00, 0xff};
+const Color color_black	= {0x00, 0x00, 0x00, 0xff};
+const Color color_red	= {0xff, 0x00, 0x00, 0xff};
 
 Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
