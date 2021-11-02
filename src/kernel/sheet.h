@@ -6,6 +6,7 @@
 typedef struct _Sheet
 {
 	Color *image;
+	Color *background; // Input image from lower sheet is needed to determine output color when alpha value is variable.
 	short x, y;
 	unsigned short width, height;
 	struct _Sheet *upper_sheet;

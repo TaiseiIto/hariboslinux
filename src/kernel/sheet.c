@@ -7,23 +7,47 @@
 #include "stdio.h"
 #include "task.h"
 
-//			  {red ,green, blue,alpha}
-const Color color_black	= {0x00, 0x00, 0x00, 0xff};
-const Color color_red	= {0xff, 0x00, 0x00, 0xff};
+//			        {red ,green, blue,alpha}
+const Color color_black	      = {0x00, 0x00, 0x00, 0xff};
+const Color color_red	      = {0xff, 0x00, 0x00, 0xff};
+const Color color_transparent = {0x00, 0x00, 0x00, 0x00};
 
 Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
+Color alpha_blend(Color foreground, Color background);
+
+Color alpha_blend(Color foreground, Color background)
+{
+	Color blended;
+	blended.red = (unsigned char)(((unsigned short)foreground.alpha * (unsigned short)foreground.red + (0x00ff - (unsigned short)foreground.alpha) * (unsigned short)background.red)/ 0x00ff);
+	blended.green = (unsigned char)(((unsigned short)foreground.alpha * (unsigned short)foreground.green + (0x00ff - (unsigned short)foreground.alpha) * (unsigned short)background.green)/ 0x00ff);
+	blended.blue = (unsigned char)(((unsigned short)foreground.alpha * (unsigned short)foreground.blue + (0x00ff - (unsigned short)foreground.alpha) * (unsigned short)background.blue)/ 0x00ff);
+	blended.alpha = 0xff;
+	return blended;
+}
+
 Color ask_color_screen(Sheet *sheet, unsigned short x, unsigned short y)
 {
-	if(get_video_information()->width <= x)ERROR_MESSAGE();
-	if(get_video_information()->height <= y)ERROR_MESSAGE();
-	if(sheet->x <= x && x < sheet->x + sheet->width && sheet->y <= y && y < sheet->y + sheet->height)return sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)];
-	else if(sheet->lower_sheet)return ask_color_screen(sheet->lower_sheet, x, y);
-	else
+	if(get_video_information()->width <= x)ERROR_MESSAGE(); // Out of screen
+	if(get_video_information()->height <= y)ERROR_MESSAGE(); // Out of screen
+	if(sheet->x <= x && x < sheet->x + sheet->width && sheet->y <= y && y < sheet->y + sheet->height) // screen point (x, y) is covered with the sheet.
+	{
+		switch(sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)].alpha)
+		{
+		case 0x00:
+			return sheet->background[sheet->width * (y - sheet->y) + (x - sheet->x)];
+		case 0xff:
+			return sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)];
+		default:
+			return alpha_blend(sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)], sheet->background[sheet->width * (y - sheet->y) + (x - sheet->x)]);
+		}
+	}
+	else if(sheet->lower_sheet)return ask_color_screen(sheet->lower_sheet, x, y); // Out of sheet, the sheet has lower sheet.
+	else // Out of sheet, the sheet has no lower sheet.
 	{
 		Color default_color;
-		ERROR_MESSAGE();
+		ERROR_MESSAGE(); // The lowest sheet must cover the screen without any margin. So this code must not be executed.
 		default_color.red = 0x00;
 		default_color.green = 0x00;
 		default_color.blue = 0x00;
@@ -40,6 +64,7 @@ Sheet *create_sheet(short x, short y, unsigned short width, unsigned short heigh
 	new_sheet->width = width;
 	new_sheet->height = height;
 	new_sheet->image = malloc(width * height * sizeof(*new_sheet->image));
+	new_sheet->background = malloc(width * height * sizeof(*new_sheet->image));
 	cli_task();
 	if(background_sheet && mouse_cursor_sheet)
 	{
@@ -50,11 +75,13 @@ Sheet *create_sheet(short x, short y, unsigned short width, unsigned short heigh
 	}
 	else ERROR_MESSAGE();
 	sti_task();
+	for(unsigned short y_i = 0; y_i < new_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < new_sheet->width; x_i++)if(x + x_i < get_video_information()->width && y + y_i < get_video_information()->height)new_sheet->background[new_sheet->width * y_i + x_i] = ask_color_screen(new_sheet->lower_sheet, x + x_i, y + y_i);
 	return new_sheet;
 }
 
 void delete_sheet(Sheet *sheet)
 {
+	fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, color_transparent);
 	cli_task();
 	if(background_sheet == sheet)background_sheet = sheet->upper_sheet;
 	if(mouse_cursor_sheet == sheet)mouse_cursor_sheet = sheet->lower_sheet;
@@ -62,6 +89,7 @@ void delete_sheet(Sheet *sheet)
 	if(sheet->upper_sheet)sheet->upper_sheet->lower_sheet = sheet->lower_sheet;
 	sti_task();
 	free(sheet->image);
+	free(sheet->background);
 	free(sheet);
 }
 
@@ -104,12 +132,16 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	background_sheet->width = get_video_information()->width;
 	background_sheet->height = get_video_information()->height;
 	background_sheet->image = malloc(background_sheet->width * background_sheet->height * sizeof(*background_sheet->image));
+	background_sheet->background = malloc(background_sheet->width * background_sheet->height * sizeof(*background_sheet->image));
+	for(unsigned short y_i = 0; y_i < background_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < background_sheet->width; x_i++)background_sheet->background[background_sheet->width * y_i + x_i] = color_black;
 	mouse_cursor_sheet = malloc(sizeof(*mouse_cursor_sheet));
 	mouse_cursor_sheet->x = get_video_information()->width / 2;
 	mouse_cursor_sheet->y = get_video_information()->height / 2;
 	mouse_cursor_sheet->width = 0x08;
 	mouse_cursor_sheet->height = 0x10;
 	mouse_cursor_sheet->image = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
+	mouse_cursor_sheet->background = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
+	for(unsigned short y_i = 0; y_i < mouse_cursor_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < mouse_cursor_sheet->width; x_i++)mouse_cursor_sheet->background[mouse_cursor_sheet->width * y_i + x_i] = color_black;
 	background_sheet->lower_sheet = NULL;
 	background_sheet->upper_sheet = mouse_cursor_sheet;
 	mouse_cursor_sheet->lower_sheet = background_sheet;
@@ -515,8 +547,8 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 	sheet->image[sheet->width * y + x] = color;
 	if(0 <= sheet->x + x && sheet->x + x < get_video_information()->width && 0 <= sheet->y + y && sheet->y + y < get_video_information()->height)
 	{
-		if(sheet == mouse_cursor_sheet)put_dot_screen(sheet->x + x, sheet->y + y, color);
-		else transmit_color_to_upper_sheet(sheet->upper_sheet, x + sheet->x, y + sheet->y, color);
+		if(sheet == mouse_cursor_sheet)put_dot_screen(sheet->x + x, sheet->y + y, ask_color_screen(sheet, sheet->x + x, sheet->y + y));
+		else transmit_color_to_upper_sheet(sheet->upper_sheet, x + sheet->x, y + sheet->y, ask_color_screen(sheet, sheet->x + x, sheet->y + y));
 	}
 }
 
@@ -540,7 +572,18 @@ void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigne
 {
 	if(upper_sheet->x <= x && x < upper_sheet->x + upper_sheet->width && upper_sheet->y <= y && y < upper_sheet->y + upper_sheet->height)
 	{
-		// Point (x, y) on the screen doesn't change its color because the point is covered with upper_sheet
+		upper_sheet->background[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x] = color;
+		switch(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x].alpha)
+		{
+		case 0x00:
+			transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, color);
+			break;
+		case 0xff:
+			break;
+		default:
+			transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
+			break;
+		}
 	}
 	else if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, color);
 	else transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, color);
