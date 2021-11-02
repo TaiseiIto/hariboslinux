@@ -1,6 +1,7 @@
 #include "font.h"
 #include "io.h"
 #include "memory.h"
+#include "mouse_cursor.h"
 #include "serial.h"
 #include "sheet.h"
 #include "stdio.h"
@@ -106,7 +107,7 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	mouse_cursor_sheet = malloc(sizeof(*mouse_cursor_sheet));
 	mouse_cursor_sheet->x = get_video_information()->width / 2;
 	mouse_cursor_sheet->y = get_video_information()->height / 2;
-	mouse_cursor_sheet->width = 0x10;
+	mouse_cursor_sheet->width = 0x08;
 	mouse_cursor_sheet->height = 0x10;
 	mouse_cursor_sheet->image = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
 	background_sheet->lower_sheet = NULL;
@@ -116,7 +117,7 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	*_background_sheet = background_sheet;
 	*_mouse_cursor_sheet = mouse_cursor_sheet;
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
-	fill_box_sheet(mouse_cursor_sheet, 0, 0, mouse_cursor_sheet->width, mouse_cursor_sheet->height, color_red);
+	for(unsigned int mouse_cursor_image_pixel_index = 0; mouse_cursor_image_pixel_index < MOUSE_CURSOR_HEIGHT * MOUSE_CURSOR_WIDTH; mouse_cursor_image_pixel_index++)mouse_cursor_sheet->image[mouse_cursor_image_pixel_index] = mouse_cursor_image[mouse_cursor_image_pixel_index];
 	sti_task();
 }
 
