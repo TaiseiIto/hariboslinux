@@ -154,7 +154,7 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	*_background_sheet = background_sheet;
 	*_mouse_cursor_sheet = mouse_cursor_sheet;
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
-	for(unsigned int mouse_cursor_image_pixel_index = 0; mouse_cursor_image_pixel_index < MOUSE_CURSOR_HEIGHT * MOUSE_CURSOR_WIDTH; mouse_cursor_image_pixel_index++)mouse_cursor_sheet->image[mouse_cursor_image_pixel_index] = mouse_cursor_image[mouse_cursor_image_pixel_index];
+	for(unsigned short mouse_cursor_image_y = 0; mouse_cursor_image_y < mouse_cursor_sheet->height; mouse_cursor_image_y++)for(unsigned short mouse_cursor_image_x = 0; mouse_cursor_image_x < mouse_cursor_sheet->width; mouse_cursor_image_x++)put_dot_sheet(mouse_cursor_sheet, mouse_cursor_image_x, mouse_cursor_image_y, mouse_cursor_image[mouse_cursor_sheet->width * mouse_cursor_image_y + mouse_cursor_image_x]);
 	sti_task();
 }
 
