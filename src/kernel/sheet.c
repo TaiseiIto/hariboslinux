@@ -16,6 +16,12 @@ Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
+Color ask_color_screen(Sheet *sheet, unsigned short x, unsigned short y); // Color at a point(x, y) on the screen seen from an eye put on the argument sheet. This output color is determined considering sheets from the lowest sheet to the argument sheet.
+Color get_color_screen(unsigned short x, unsigned short y); // Color at a point(x, y) on the screen. This output color is determined considering sheets from the lowest sheet to the highest sheet.
+void refresh_dot(unsigned short x, unsigned short y);
+void refresh_rectangle(short x, short y, unsigned short width, unsigned short height);
+void refresh_sheet_background(Sheet *sheet);
+void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigned short y, Color color);
 
 Color alpha_blend(Color foreground, Color background)
 {
@@ -159,6 +165,7 @@ void move_sheet(Sheet *sheet, short x, short y)
 	short previous_y = sheet->y;
 	sheet->x = x;
 	sheet->y = y;
+	refresh_sheet_background(sheet);
 	refresh_rectangle(previous_x, previous_y, sheet->width, sheet->height);
 	refresh_rectangle(sheet->x, sheet->y, sheet->width, sheet->height);
 }
@@ -566,6 +573,10 @@ void refresh_rectangle(short x, short y, unsigned short width, unsigned short he
 	unsigned short y_start = (0 <= y) ? y : 0;
 	unsigned short y_end = (y + height < get_video_information()->height) ? y + height : get_video_information()->height;
 	for(unsigned short y_i = y_start; y_i < y_end; y_i++)for(unsigned short x_i = x_start; x_i < x_end; x_i++)refresh_dot(x_i, y_i);
+}
+
+void refresh_sheet_background(Sheet *sheet)
+{
 }
 
 void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigned short y, Color color)
