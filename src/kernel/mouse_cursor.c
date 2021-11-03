@@ -15,12 +15,13 @@ Color mouse_cursor_image[MOUSE_CURSOR_HEIGHT * MOUSE_CURSOR_WIDTH] =
 	b,w,w,w,w,b,t,t,
 	b,w,w,w,w,w,b,t,
 	b,w,w,w,w,w,w,b,
-	b,w,w,w,b,b,b,b,
-	b,w,b,w,w,b,t,t,
-	b,b,t,b,w,w,b,t,
-	b,t,t,t,b,w,w,b,
+	b,w,w,w,w,b,b,b,
+	b,w,w,b,w,b,t,t,
+	b,w,b,b,w,w,b,t,
+	b,b,t,t,b,w,b,t,
+	t,t,t,t,b,w,w,b,
 	t,t,t,t,t,b,w,b,
-	t,t,t,t,t,t,b,b,
-	t,t,t,t,t,t,t,b
+	t,t,t,t,t,b,w,b,
+	t,t,t,t,t,t,b,b
 };
 
