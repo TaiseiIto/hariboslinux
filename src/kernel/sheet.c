@@ -576,6 +576,25 @@ void refresh_rectangle(short x, short y, unsigned short width, unsigned short he
 
 void refresh_sheet_background(Sheet *sheet)
 {
+	if(sheet != background_sheet)for(short y_i = 0; y_i < sheet->height; y_i++)
+	{
+		if(sheet->y + y_i < 0)
+		{
+			y_i = -sheet->y - 1;
+			continue;
+		}
+		if(get_video_information()->height <= sheet->y + y_i)break;
+		for(short x_i = 0; x_i < sheet->width; x_i++)
+		{
+			if(sheet->x + x_i < 0)
+			{
+				x_i = -sheet->x - 1;
+				continue;
+			}
+			if(get_video_information()->width <= sheet->x + x_i)break;
+			transmit_color_to_upper_sheet(sheet, sheet->x + x_i, sheet->y + y_i, get_color_sheet(sheet->lower_sheet, sheet->x + x_i, sheet->y + y_i));
+		}
+	}
 }
 
 void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigned short y, Color color)
