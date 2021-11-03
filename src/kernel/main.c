@@ -20,12 +20,13 @@ void main(void)
 {
 	BootInformation const * const boot_information = (BootInformation const * const)0x00000800;
 	Color background_color;
-	Color red;
 	Color foreground_color;
+	Color translucent_red;
 	MemoryRegionDescriptor memory_region_descriptor;
 	MemorySection const *memory_section;
 	Sheet *background_sheet;
 	Sheet *mouse_cursor_sheet;
+	Sheet *translucent_red_sheet;
 	Timer *test_timer;
 	Timer *checking_free_memory_space_size_timer;
 	unsigned int memory_region_descriptor_index;
@@ -66,6 +67,12 @@ void main(void)
 	foreground_color.green = 0xff;
 	foreground_color.blue = 0xff;
 	foreground_color.alpha = 0xff;
+	translucent_red.red = 0xff;
+	translucent_red.green = 0x00;
+	translucent_red.blue = 0x00;
+	translucent_red.alpha = 0x80;
+	translucent_red_sheet = create_sheet(0x0000, 0x0000, 0x0100, 0x0100);
+	fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "mouse ID = %#04x", get_mouse_id());
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04x", boot_information->keyboard_state);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04x", boot_information->last_loaded_cylinder);
