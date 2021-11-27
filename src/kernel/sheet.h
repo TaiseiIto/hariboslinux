@@ -6,11 +6,16 @@
 typedef struct _Sheet
 {
 	Color *image;
-	Color *background; // Input image from lower sheet is needed to determine output color when alpha value is variable.
-	short x, y;
+	Color *input; // Input image from lower sheet is needed to determine output color when alpha value is variable.
+	Color *self_output; // output image from this.
+	Color *family_output; // output image from this and its descendants.
+	struct _Sheet *parent;
+	struct _Sheet *upper;
+	struct _Sheet *lower;
+	struct _Sheet *uppest_child;
+	struct _Sheet *lowest_child;
+	short x, y; // Coordinate seen from parent
 	unsigned short width, height;
-	struct _Sheet *upper_sheet;
-	struct _Sheet *lower_sheet;
 } Sheet;
 
 Sheet *create_sheet(short x, short y, unsigned short width, unsigned short height);

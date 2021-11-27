@@ -40,18 +40,18 @@ Sheet *create_sheet(short x, short y, unsigned short width, unsigned short heigh
 	new_sheet->width = width;
 	new_sheet->height = height;
 	new_sheet->image = malloc(width * height * sizeof(*new_sheet->image));
-	new_sheet->background = malloc(width * height * sizeof(*new_sheet->image));
+	new_sheet->input = malloc(width * height * sizeof(*new_sheet->image));
 	cli_task();
 	if(background_sheet && mouse_cursor_sheet)
 	{
-		new_sheet->lower_sheet = mouse_cursor_sheet->lower_sheet;
-		new_sheet->upper_sheet = mouse_cursor_sheet;
-		mouse_cursor_sheet->lower_sheet->upper_sheet = new_sheet;
-		mouse_cursor_sheet->lower_sheet = new_sheet;
+		new_sheet->lower = mouse_cursor_sheet->lower;
+		new_sheet->upper = mouse_cursor_sheet;
+		mouse_cursor_sheet->lower->upper = new_sheet;
+		mouse_cursor_sheet->lower = new_sheet;
 	}
 	else ERROR_MESSAGE();
 	sti_task();
-	for(unsigned short y_i = 0; y_i < new_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < new_sheet->width; x_i++)if(x + x_i < get_video_information()->width && y + y_i < get_video_information()->height)new_sheet->background[new_sheet->width * y_i + x_i] = get_color_sheet(new_sheet->lower_sheet, x + x_i, y + y_i);
+	for(unsigned short y_i = 0; y_i < new_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < new_sheet->width; x_i++)if(x + x_i < get_video_information()->width && y + y_i < get_video_information()->height)new_sheet->input[new_sheet->width * y_i + x_i] = get_color_sheet(new_sheet->lower, x + x_i, y + y_i);
 	return new_sheet;
 }
 
@@ -59,13 +59,13 @@ void delete_sheet(Sheet *sheet)
 {
 	fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, color_transparent);
 	cli_task();
-	if(background_sheet == sheet)background_sheet = sheet->upper_sheet;
-	if(mouse_cursor_sheet == sheet)mouse_cursor_sheet = sheet->lower_sheet;
-	if(sheet->lower_sheet)sheet->lower_sheet->upper_sheet = sheet->upper_sheet;
-	if(sheet->upper_sheet)sheet->upper_sheet->lower_sheet = sheet->lower_sheet;
+	if(background_sheet == sheet)background_sheet = sheet->upper;
+	if(mouse_cursor_sheet == sheet)mouse_cursor_sheet = sheet->lower;
+	if(sheet->lower)sheet->lower->upper = sheet->upper;
+	if(sheet->upper)sheet->upper->lower = sheet->lower;
 	sti_task();
 	free(sheet->image);
-	free(sheet->background);
+	free(sheet->input);
 	free(sheet);
 }
 
@@ -108,14 +108,14 @@ Color get_color_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 		switch(sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)].alpha)
 		{
 		case 0x00:
-			return sheet->background[sheet->width * (y - sheet->y) + (x - sheet->x)];
+			return sheet->input[sheet->width * (y - sheet->y) + (x - sheet->x)];
 		case 0xff:
 			return sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)];
 		default:
-			return alpha_blend(sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)], sheet->background[sheet->width * (y - sheet->y) + (x - sheet->x)]);
+			return alpha_blend(sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)], sheet->input[sheet->width * (y - sheet->y) + (x - sheet->x)]);
 		}
 	}
-	else if(sheet->lower_sheet)return get_color_sheet(sheet->lower_sheet, x, y); // Out of sheet, the sheet has lower sheet.
+	else if(sheet->lower)return get_color_sheet(sheet->lower, x, y); // Out of sheet, the sheet has lower sheet.
 	else // Out of sheet, the sheet has no lower sheet.
 	{
 		Color default_color;
@@ -137,20 +137,20 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	background_sheet->width = get_video_information()->width;
 	background_sheet->height = get_video_information()->height;
 	background_sheet->image = malloc(background_sheet->width * background_sheet->height * sizeof(*background_sheet->image));
-	background_sheet->background = malloc(background_sheet->width * background_sheet->height * sizeof(*background_sheet->image));
-	for(unsigned short y_i = 0; y_i < background_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < background_sheet->width; x_i++)background_sheet->background[background_sheet->width * y_i + x_i] = color_black;
+	background_sheet->input = malloc(background_sheet->width * background_sheet->height * sizeof(*background_sheet->image));
+	for(unsigned short y_i = 0; y_i < background_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < background_sheet->width; x_i++)background_sheet->input[background_sheet->width * y_i + x_i] = color_black;
 	mouse_cursor_sheet = malloc(sizeof(*mouse_cursor_sheet));
 	mouse_cursor_sheet->x = get_video_information()->width / 2;
 	mouse_cursor_sheet->y = get_video_information()->height / 2;
 	mouse_cursor_sheet->width = 0x08;
 	mouse_cursor_sheet->height = 0x10;
 	mouse_cursor_sheet->image = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
-	mouse_cursor_sheet->background = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
-	for(unsigned short y_i = 0; y_i < mouse_cursor_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < mouse_cursor_sheet->width; x_i++)mouse_cursor_sheet->background[mouse_cursor_sheet->width * y_i + x_i] = color_black;
-	background_sheet->lower_sheet = NULL;
-	background_sheet->upper_sheet = mouse_cursor_sheet;
-	mouse_cursor_sheet->lower_sheet = background_sheet;
-	mouse_cursor_sheet->upper_sheet = NULL;
+	mouse_cursor_sheet->input = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
+	for(unsigned short y_i = 0; y_i < mouse_cursor_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < mouse_cursor_sheet->width; x_i++)mouse_cursor_sheet->input[mouse_cursor_sheet->width * y_i + x_i] = color_black;
+	background_sheet->lower = NULL;
+	background_sheet->upper = mouse_cursor_sheet;
+	mouse_cursor_sheet->lower = background_sheet;
+	mouse_cursor_sheet->upper = NULL;
 	*_background_sheet = background_sheet;
 	*_mouse_cursor_sheet = mouse_cursor_sheet;
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
@@ -554,7 +554,7 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 	if(0 <= sheet->x + x && sheet->x + x < get_video_information()->width && 0 <= sheet->y + y && sheet->y + y < get_video_information()->height)
 	{
 		if(sheet == mouse_cursor_sheet)put_dot_screen(sheet->x + x, sheet->y + y, get_color_sheet(sheet, sheet->x + x, sheet->y + y));
-		else transmit_color_to_upper_sheet(sheet->upper_sheet, x + sheet->x, y + sheet->y, get_color_sheet(sheet, sheet->x + x, sheet->y + y));
+		else transmit_color_to_upper_sheet(sheet->upper, x + sheet->x, y + sheet->y, get_color_sheet(sheet, sheet->x + x, sheet->y + y));
 	}
 }
 
@@ -592,7 +592,7 @@ void refresh_sheet_background(Sheet *sheet)
 				continue;
 			}
 			if(get_video_information()->width <= sheet->x + x_i)break;
-			transmit_color_to_upper_sheet(sheet, sheet->x + x_i, sheet->y + y_i, get_color_sheet(sheet->lower_sheet, sheet->x + x_i, sheet->y + y_i));
+			transmit_color_to_upper_sheet(sheet, sheet->x + x_i, sheet->y + y_i, get_color_sheet(sheet->lower, sheet->x + x_i, sheet->y + y_i));
 		}
 	}
 }
@@ -601,22 +601,22 @@ void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigne
 {
 	if(upper_sheet->x <= x && x < upper_sheet->x + upper_sheet->width && upper_sheet->y <= y && y < upper_sheet->y + upper_sheet->height)
 	{
-		upper_sheet->background[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x] = color;
+		upper_sheet->input[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x] = color;
 		switch(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x].alpha)
 		{
 		case 0x00:
 			if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, color);
-			else transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, color);
+			else transmit_color_to_upper_sheet(upper_sheet->upper, x, y, color);
 			break;
 		case 0xff:
 			break;
 		default:
 			if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
-			else transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
+			else transmit_color_to_upper_sheet(upper_sheet->upper, x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
 			break;
 		}
 	}
 	else if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, color);
-	else transmit_color_to_upper_sheet(upper_sheet->upper_sheet, x, y, color);
+	else transmit_color_to_upper_sheet(upper_sheet->upper, x, y, color);
 }
 
