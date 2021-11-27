@@ -5,7 +5,7 @@
 
 typedef struct _Sheet
 {
-	Color *image;
+	Color *image; // Color of point (x, y) is this->image[x + y * this->width], provided that 0 <= x < this->width and 0 <= y < this->height.
 	Color *input; // Input image from lower sheet is needed to determine output color when alpha value is variable.
 	Color *self_output; // output image from this.
 	Color *family_output; // output image from this and its descendants.

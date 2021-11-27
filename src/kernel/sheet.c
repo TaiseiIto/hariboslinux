@@ -15,6 +15,8 @@ Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
+void refresh_dot_input(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
+void refresh_input(Sheet *sheet); // refresh sheet->input.
 
 Color alpha_blend(Color foreground, Color background)
 {
@@ -78,6 +80,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 		else ERROR_MESSAGE();
 	}
 	sti_task();
+	refresh_input(new_sheet);
 	fill_box_sheet(new_sheet, 0, 0, new_sheet->width, new_sheet->height, color_transparent);
 	return new_sheet;
 }
@@ -517,5 +520,40 @@ void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color fore
 
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color)
 {
+}
+
+void refresh_dot_input(Sheet *sheet, unsigned short x, unsigned short y) // refresh sheet->input[x + y * sheet->width].
+{
+	if(x < sheet->width && y < sheet->height)
+	{
+		if(sheet->parent || sheet->lower)
+		{
+			unsigned short parent_width = (sheet->parent ? sheet->parent->width : get_video_information()->width);
+			unsigned short parent_height = (sheet->parent ? sheet->parent->height : get_video_information()->height);
+			short x_seen_from_parent = x + sheet->x;
+			short y_seen_from_parent = y + sheet->y;
+			if(0 <= x_seen_from_parent && x_seen_from_parent < parent_width && 0 <= y_seen_from_parent && y_seen_from_parent < parent_height)
+			{
+				for(Sheet *lower = sheet->lower; lower; lower = lower->lower)
+				{
+					short x_seen_from_lower = x_seen_from_parent - lower->x;
+					short y_seen_from_lower = y_seen_from_parent - lower->y;
+					if(0 <= x_seen_from_lower && x_seen_from_lower < lower->width && 0 <= y_seen_from_lower && y_seen_from_lower < lower->height)
+					{
+						sheet->input[x + y * sheet->width] = lower->family_output[x_seen_from_lower + y_seen_from_lower * lower->width];
+						return;
+					}
+				}
+				sheet->input[x + y * sheet->width] = (sheet->parent ? sheet->parent->self_output[x_seen_from_parent + y_seen_from_parent * sheet->parent->width] : color_black);
+			}
+		}
+		else sheet->input[x + y * sheet->width] = color_black;
+	}
+	else ERROR_MESSAGE();
+}
+
+void refresh_input(Sheet *sheet) // refresh sheet->input.
+{
+	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)refresh_dot_input(sheet, x, y);
 }
 
