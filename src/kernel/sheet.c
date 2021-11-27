@@ -15,12 +15,6 @@ Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
-Color get_color_screen(unsigned short x, unsigned short y); // Color at a point(x, y) on the screen. This output color is determined considering sheets from the lowest sheet to the highest sheet.
-Color get_color_sheet(Sheet *sheet, unsigned short x, unsigned short y); // Color at a point(x, y) on the screen seen from an eye put on the argument sheet. This output color is determined considering sheets from the lowest sheet to the argument sheet.
-void refresh_dot(unsigned short x, unsigned short y);
-void refresh_rectangle(short x, short y, unsigned short width, unsigned short height);
-void refresh_sheet_background(Sheet *sheet);
-void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigned short y, Color color);
 
 Color alpha_blend(Color foreground, Color background)
 {
@@ -34,39 +28,10 @@ Color alpha_blend(Color foreground, Color background)
 
 Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height)
 {
-	Sheet *new_sheet = malloc(sizeof(*new_sheet));
-	new_sheet->x = x;
-	new_sheet->y = y;
-	new_sheet->width = width;
-	new_sheet->height = height;
-	new_sheet->image = malloc(width * height * sizeof(*new_sheet->image));
-	new_sheet->input = malloc(width * height * sizeof(*new_sheet->image));
-	cli_task();
-	if(background_sheet && mouse_cursor_sheet)
-	{
-		new_sheet->lower = mouse_cursor_sheet->lower;
-		new_sheet->upper = mouse_cursor_sheet;
-		mouse_cursor_sheet->lower->upper = new_sheet;
-		mouse_cursor_sheet->lower = new_sheet;
-	}
-	else ERROR_MESSAGE();
-	sti_task();
-	for(unsigned short y_i = 0; y_i < new_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < new_sheet->width; x_i++)if(x + x_i < get_video_information()->width && y + y_i < get_video_information()->height)new_sheet->input[new_sheet->width * y_i + x_i] = get_color_sheet(new_sheet->lower, x + x_i, y + y_i);
-	return new_sheet;
 }
 
 void delete_sheet(Sheet *sheet)
 {
-	fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, color_transparent);
-	cli_task();
-	if(background_sheet == sheet)background_sheet = sheet->upper;
-	if(mouse_cursor_sheet == sheet)mouse_cursor_sheet = sheet->lower;
-	if(sheet->lower)sheet->lower->upper = sheet->upper;
-	if(sheet->upper)sheet->upper->lower = sheet->lower;
-	sti_task();
-	free(sheet->image);
-	free(sheet->input);
-	free(sheet);
 }
 
 void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsigned short height, Color color)
@@ -92,81 +57,12 @@ void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsign
 	}
 }
 
-Color get_color_screen(unsigned short x, unsigned short y)
-{
-	if(get_video_information()->width <= x)ERROR_MESSAGE();
-	if(get_video_information()->height <= y)ERROR_MESSAGE();
-	return get_color_sheet(mouse_cursor_sheet, x, y);
-}
-
-Color get_color_sheet(Sheet *sheet, unsigned short x, unsigned short y)
-{
-	if(get_video_information()->width <= x)ERROR_MESSAGE(); // Out of screen
-	if(get_video_information()->height <= y)ERROR_MESSAGE(); // Out of screen
-	if(sheet->x <= x && x < sheet->x + sheet->width && sheet->y <= y && y < sheet->y + sheet->height) // screen point (x, y) is covered with the sheet.
-	{
-		switch(sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)].alpha)
-		{
-		case 0x00:
-			return sheet->input[sheet->width * (y - sheet->y) + (x - sheet->x)];
-		case 0xff:
-			return sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)];
-		default:
-			return alpha_blend(sheet->image[sheet->width * (y - sheet->y) + (x - sheet->x)], sheet->input[sheet->width * (y - sheet->y) + (x - sheet->x)]);
-		}
-	}
-	else if(sheet->lower)return get_color_sheet(sheet->lower, x, y); // Out of sheet, the sheet has lower sheet.
-	else // Out of sheet, the sheet has no lower sheet.
-	{
-		Color default_color;
-		ERROR_MESSAGE(); // The lowest sheet must cover the screen without any margin. So this code must not be executed.
-		default_color.red = 0x00;
-		default_color.green = 0x00;
-		default_color.blue = 0x00;
-		default_color.alpha = 0x00;
-		return default_color;
-	}
-}
-
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 {
-	cli_task();
-	background_sheet = malloc(sizeof(*background_sheet));
-	background_sheet->x = 0;
-	background_sheet->y = 0;
-	background_sheet->width = get_video_information()->width;
-	background_sheet->height = get_video_information()->height;
-	background_sheet->image = malloc(background_sheet->width * background_sheet->height * sizeof(*background_sheet->image));
-	background_sheet->input = malloc(background_sheet->width * background_sheet->height * sizeof(*background_sheet->image));
-	for(unsigned short y_i = 0; y_i < background_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < background_sheet->width; x_i++)background_sheet->input[background_sheet->width * y_i + x_i] = color_black;
-	mouse_cursor_sheet = malloc(sizeof(*mouse_cursor_sheet));
-	mouse_cursor_sheet->x = get_video_information()->width / 2;
-	mouse_cursor_sheet->y = get_video_information()->height / 2;
-	mouse_cursor_sheet->width = 0x08;
-	mouse_cursor_sheet->height = 0x10;
-	mouse_cursor_sheet->image = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
-	mouse_cursor_sheet->input = malloc(mouse_cursor_sheet->width * mouse_cursor_sheet->height * sizeof(*mouse_cursor_sheet->image));
-	for(unsigned short y_i = 0; y_i < mouse_cursor_sheet->height; y_i++)for(unsigned short x_i = 0; x_i < mouse_cursor_sheet->width; x_i++)mouse_cursor_sheet->input[mouse_cursor_sheet->width * y_i + x_i] = color_black;
-	background_sheet->lower = NULL;
-	background_sheet->upper = mouse_cursor_sheet;
-	mouse_cursor_sheet->lower = background_sheet;
-	mouse_cursor_sheet->upper = NULL;
-	*_background_sheet = background_sheet;
-	*_mouse_cursor_sheet = mouse_cursor_sheet;
-	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
-	for(unsigned short mouse_cursor_image_y = 0; mouse_cursor_image_y < mouse_cursor_sheet->height; mouse_cursor_image_y++)for(unsigned short mouse_cursor_image_x = 0; mouse_cursor_image_x < mouse_cursor_sheet->width; mouse_cursor_image_x++)put_dot_sheet(mouse_cursor_sheet, mouse_cursor_image_x, mouse_cursor_image_y, mouse_cursor_image[mouse_cursor_sheet->width * mouse_cursor_image_y + mouse_cursor_image_x]);
-	sti_task();
 }
 
 void move_sheet(Sheet *sheet, short x, short y)
 {
-	short previous_x = sheet->x;
-	short previous_y = sheet->y;
-	sheet->x = x;
-	sheet->y = y;
-	refresh_sheet_background(sheet);
-	refresh_rectangle(previous_x, previous_y, sheet->width, sheet->height);
-	refresh_rectangle(sheet->x, sheet->y, sheet->width, sheet->height);
 }
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
@@ -548,75 +444,5 @@ void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color fore
 
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color)
 {
-	if(sheet->width <= x)ERROR_MESSAGE();
-	if(sheet->height <= y)ERROR_MESSAGE();
-	sheet->image[sheet->width * y + x] = color;
-	if(0 <= sheet->x + x && sheet->x + x < get_video_information()->width && 0 <= sheet->y + y && sheet->y + y < get_video_information()->height)
-	{
-		if(sheet == mouse_cursor_sheet)put_dot_screen(sheet->x + x, sheet->y + y, get_color_sheet(sheet, sheet->x + x, sheet->y + y));
-		else transmit_color_to_upper_sheet(sheet->upper, x + sheet->x, y + sheet->y, get_color_sheet(sheet, sheet->x + x, sheet->y + y));
-	}
-}
-
-void refresh_dot(unsigned short x, unsigned short y)
-{
-	if(get_video_information()->width <= x)ERROR_MESSAGE();
-	if(get_video_information()->height <= y)ERROR_MESSAGE();
-	put_dot_screen(x, y, get_color_screen(x, y));
-}
-
-void refresh_rectangle(short x, short y, unsigned short width, unsigned short height)
-{
-	unsigned short x_start = (0 <= x) ? x : 0;
-	unsigned short x_end = (x + width < get_video_information()->width) ? x + width : get_video_information()->width;
-	unsigned short y_start = (0 <= y) ? y : 0;
-	unsigned short y_end = (y + height < get_video_information()->height) ? y + height : get_video_information()->height;
-	for(unsigned short y_i = y_start; y_i < y_end; y_i++)for(unsigned short x_i = x_start; x_i < x_end; x_i++)refresh_dot(x_i, y_i);
-}
-
-void refresh_sheet_background(Sheet *sheet)
-{
-	if(sheet != background_sheet)for(short y_i = 0; y_i < sheet->height; y_i++)
-	{
-		if(sheet->y + y_i < 0)
-		{
-			y_i = -sheet->y - 1;
-			continue;
-		}
-		if(get_video_information()->height <= sheet->y + y_i)break;
-		for(short x_i = 0; x_i < sheet->width; x_i++)
-		{
-			if(sheet->x + x_i < 0)
-			{
-				x_i = -sheet->x - 1;
-				continue;
-			}
-			if(get_video_information()->width <= sheet->x + x_i)break;
-			transmit_color_to_upper_sheet(sheet, sheet->x + x_i, sheet->y + y_i, get_color_sheet(sheet->lower, sheet->x + x_i, sheet->y + y_i));
-		}
-	}
-}
-
-void transmit_color_to_upper_sheet(Sheet *upper_sheet, unsigned short x, unsigned short y, Color color)
-{
-	if(upper_sheet->x <= x && x < upper_sheet->x + upper_sheet->width && upper_sheet->y <= y && y < upper_sheet->y + upper_sheet->height)
-	{
-		upper_sheet->input[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x] = color;
-		switch(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x].alpha)
-		{
-		case 0x00:
-			if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, color);
-			else transmit_color_to_upper_sheet(upper_sheet->upper, x, y, color);
-			break;
-		case 0xff:
-			break;
-		default:
-			if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
-			else transmit_color_to_upper_sheet(upper_sheet->upper, x, y, alpha_blend(upper_sheet->image[upper_sheet->width * (y - upper_sheet->y) + x - upper_sheet->x], color));
-			break;
-		}
-	}
-	else if(upper_sheet == mouse_cursor_sheet)put_dot_screen(x, y, color);
-	else transmit_color_to_upper_sheet(upper_sheet->upper, x, y, color);
 }
 
