@@ -15,9 +15,10 @@ Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
-void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
 void refresh_input(Sheet *sheet); // refresh sheet->input.
+void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width].
+void transmit_self_output(Sheet *sheet); // transmit image sheet->self_output.
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
 
 Color alpha_blend(Color foreground, Color background)
@@ -141,6 +142,9 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 
 void move_sheet(Sheet *sheet, short x, short y)
 {
+	sheet->x = x;
+	sheet->y = y;
+	transmit_self_output(sheet);
 }
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
@@ -534,6 +538,11 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 	else ERROR_MESSAGE();
 }
 
+void refresh_input(Sheet *sheet) // refresh sheet->input.
+{
+	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)refresh_input_dot(sheet, x, y);
+}
+
 void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refresh sheet->input[x + y * sheet->width].
 {
 	if(x < sheet->width && y < sheet->height)
@@ -562,11 +571,6 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refr
 		else sheet->input[x + y * sheet->width] = color_black;
 	}
 	else ERROR_MESSAGE();
-}
-
-void refresh_input(Sheet *sheet) // refresh sheet->input.
-{
-	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)refresh_input_dot(sheet, x, y);
 }
 
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width].
@@ -602,6 +606,11 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 	x_seen_from_screen = x + sheet->x;
 	y_seen_from_screen = y + sheet->y;
 	if(0 <= x_seen_from_screen && x_seen_from_screen < get_video_information()->width && 0 <= y_seen_from_screen && y_seen_from_screen < get_video_information()->height)put_dot_screen(x_seen_from_screen, y_seen_from_screen, sheet->family_output[x + y * sheet->width]);
+}
+
+void transmit_self_output(Sheet *sheet) // transmit image sheet->self_output.
+{
+	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)transmit_self_output_dot(sheet, x, y);
 }
 
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width].
