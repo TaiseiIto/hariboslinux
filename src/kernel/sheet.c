@@ -61,7 +61,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	}
 	else
 	{
-		if(background_sheet && mouse_cursor_sheet)
+		if(background_sheet && mouse_cursor_sheet && background_sheet == mouse_cursor_sheet)
 		{
 			new_sheet->upper = NULL;
 			new_sheet->lower = mouse_cursor_sheet;
@@ -84,6 +84,23 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 
 void delete_sheet(Sheet *sheet)
 {
+	if(sheet == background_sheet || sheet == mouse_cursor_sheet)ERROR_MESSAGE();
+	while(sheet->uppest_child && sheet->lowest_child)delete_sheet(sheet->uppest_child);
+	if(sheet->uppest_child || sheet->lowest_child)ERROR_MESSAGE();
+	cli_task();
+	if(sheet->parent)
+	{
+		if(sheet == sheet->parent->uppest_child)sheet->parent->uppest_child = sheet->lower;
+		if(sheet == sheet->parent->lowest_child)sheet->parent->lowest_child = sheet->upper;
+	}
+	if(sheet->upper)sheet->upper->lower = sheet->lower;
+	if(sheet->lower)sheet->lower->upper = sheet->upper;
+	sti_task();
+	free(sheet->image);
+	free(sheet->input);
+	free(sheet->self_output);
+	free(sheet->family_output);
+	free(sheet);
 }
 
 void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsigned short height, Color color)
