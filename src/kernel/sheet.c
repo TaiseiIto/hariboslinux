@@ -17,6 +17,8 @@ Sheet *background_sheet = NULL;
 Color alpha_blend(Color foreground, Color background);
 void refresh_input(Sheet *sheet); // refresh sheet->input.
 void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
+void refresh_self_output(Sheet *sheet); // refresh sheet->self_output.
+void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->self_output[x + y * sheet->width].
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width].
 void transmit_self_output(Sheet *sheet); // transmit image sheet->self_output.
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
@@ -155,6 +157,8 @@ void move_sheet(Sheet *sheet, short x, short y)
 	unsigned short refresh_height = refresh_y_end - refresh_y_begin;
 	sheet->x = x;
 	sheet->y = y;
+	refresh_input(sheet);
+	refresh_self_output(sheet);
 	transmit_self_output(sheet);
 	transmit_self_output_rectangle(sheet->parent ? sheet->parent : background_sheet, refresh_x_begin, refresh_y_begin, refresh_width, refresh_height);
 }
@@ -583,6 +587,17 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refr
 		else sheet->input[x + y * sheet->width] = color_black;
 	}
 	else ERROR_MESSAGE();
+}
+
+void refresh_self_output(Sheet *sheet) // refresh sheet->self_output.
+{
+	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)refresh_self_output_dot(sheet, x, y);
+}
+
+void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // refresh sheet->self_output[x + y * sheet->width].
+{
+	refresh_input_dot(sheet, x, y);
+	sheet->self_output[x + y * sheet->width] = alpha_blend(sheet->image[x + y * sheet->width], sheet->input[x + y * sheet->width]);
 }
 
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width].
