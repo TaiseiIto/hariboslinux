@@ -20,6 +20,7 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // ref
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width].
 void transmit_self_output(Sheet *sheet); // transmit image sheet->self_output.
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
+void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height); // transmit color sheet->self_output[x + y * sheet->width].
 
 Color alpha_blend(Color foreground, Color background)
 {
@@ -142,9 +143,20 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 
 void move_sheet(Sheet *sheet, short x, short y)
 {
+	short previous_x = sheet->x;
+	short previous_y = sheet->y;
+	unsigned short parent_width = (sheet->parent ? sheet->parent->width : get_video_information()->width);
+	unsigned short parent_height = (sheet->parent ? sheet->parent->height : get_video_information()->height);
+	unsigned short refresh_x_begin = (0 <= previous_x ? previous_x : 0);
+	unsigned short refresh_x_end = (previous_x + sheet->width <= parent_width ? previous_x + sheet->width : parent_width);
+	unsigned short refresh_y_begin = (0 <= previous_y ? previous_y : 0);
+	unsigned short refresh_y_end = (previous_y + sheet->height <= parent_height ? previous_y + sheet->height : parent_height);
+	unsigned short refresh_width = refresh_x_end - refresh_x_begin;
+	unsigned short refresh_height = refresh_y_end - refresh_y_begin;
 	sheet->x = x;
 	sheet->y = y;
 	transmit_self_output(sheet);
+	transmit_self_output_rectangle(sheet->parent ? sheet->parent : background_sheet, refresh_x_begin, refresh_y_begin, refresh_width, refresh_height);
 }
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
@@ -629,5 +641,10 @@ void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) 
 	}
 	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
+}
+
+void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_output[x + y * sheet->width].
+{
+	for(unsigned short x_i = x; x_i < x + width; x_i++)for(unsigned short y_i = y; y_i < y + height; y_i++)transmit_self_output_dot(sheet, x_i, y_i);
 }
 
