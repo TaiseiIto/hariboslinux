@@ -597,7 +597,7 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 			short y_seen_from_upper = (short)y + sheet->y - upper->y;
 			if(0 <= x_seen_from_upper && x_seen_from_upper < upper->width && 0 <= y_seen_from_upper && y_seen_from_upper < upper->height)
 			{
-				upper->input[x_seen_from_upper + y_seen_from_upper * upper->width] = sheet->self_output[x + y * sheet->width];
+				upper->input[x_seen_from_upper + y_seen_from_upper * upper->width] = sheet->family_output[x + y * sheet->width];
 				if(upper->image[x_seen_from_upper + y_seen_from_upper * upper->width].alpha != 0xff)
 				{
 					upper->self_output[x_seen_from_upper + y_seen_from_upper * upper->width] = alpha_blend(upper->image[x_seen_from_upper + y_seen_from_upper * upper->width], upper->input[x_seen_from_upper + y_seen_from_upper * upper->width]);
