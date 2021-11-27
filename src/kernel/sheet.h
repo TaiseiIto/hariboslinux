@@ -18,7 +18,7 @@ typedef struct _Sheet
 	unsigned short width, height;
 } Sheet;
 
-Sheet *create_sheet(short x, short y, unsigned short width, unsigned short height);
+Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height);
 void delete_sheet(Sheet *sheet);
 void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsigned short height, Color color);
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet);

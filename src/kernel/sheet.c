@@ -32,7 +32,7 @@ Color alpha_blend(Color foreground, Color background)
 	return blended;
 }
 
-Sheet *create_sheet(short x, short y, unsigned short width, unsigned short height)
+Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height)
 {
 	Sheet *new_sheet = malloc(sizeof(*new_sheet));
 	new_sheet->x = x;

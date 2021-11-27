@@ -83,9 +83,9 @@ void main(void)
 	translucent_blue.green = 0x00;
 	translucent_blue.blue = 0xff;
 	translucent_blue.alpha = 0x40;
-	translucent_red_sheet = create_sheet(0x0000, 0x0000, 0x0300, 0x0300);
-	translucent_green_sheet = create_sheet(0x0100, 0x0100, 0x0300, 0x0300);
-	translucent_blue_sheet = create_sheet(0x0200, 0x0200, 0x0300, 0x0300);
+	translucent_red_sheet = create_sheet(background_sheet, 0x0000, 0x0000, 0x0300, 0x0300);
+	translucent_green_sheet = create_sheet(background_sheet, 0x0100, 0x0100, 0x0300, 0x0300);
+	translucent_blue_sheet = create_sheet(background_sheet, 0x0200, 0x0200, 0x0300, 0x0300);
 	fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
 	fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
 	fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
