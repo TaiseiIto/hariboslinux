@@ -598,8 +598,11 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 			if(0 <= x_seen_from_upper && x_seen_from_upper < upper->width && 0 <= y_seen_from_upper && y_seen_from_upper < upper->height)
 			{
 				upper->input[x_seen_from_upper + y_seen_from_upper * upper->width] = sheet->self_output[x + y * sheet->width];
-				upper->self_output[x_seen_from_upper + y_seen_from_upper * upper->width] = alpha_blend(upper->image[x_seen_from_upper + y_seen_from_upper * upper->width], upper->input[x_seen_from_upper + y_seen_from_upper * upper->width]);
-				transmit_self_output_dot(upper, x_seen_from_upper, y_seen_from_upper);
+				if(upper->image[x_seen_from_upper + y_seen_from_upper * upper->width].alpha != 0xff)
+				{
+					upper->self_output[x_seen_from_upper + y_seen_from_upper * upper->width] = alpha_blend(upper->image[x_seen_from_upper + y_seen_from_upper * upper->width], upper->input[x_seen_from_upper + y_seen_from_upper * upper->width]);
+					transmit_self_output_dot(upper, x_seen_from_upper, y_seen_from_upper);
+				}
 				return;
 			}
 		}
@@ -634,8 +637,11 @@ void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) 
 		if(0 <= x_seen_from_child && x_seen_from_child < child->width && 0 <= y_seen_from_child && y_seen_from_child < child->height)
 		{
 			child->input[x_seen_from_child + y_seen_from_child * child->width] = sheet->self_output[x + y * sheet->width];
-			child->self_output[x_seen_from_child + y_seen_from_child * child->width] = alpha_blend(child->image[x_seen_from_child + y_seen_from_child * child->width], child->input[x_seen_from_child + y_seen_from_child * child->width]);
-			transmit_self_output_dot(child, x_seen_from_child, y_seen_from_child);
+			if(child->image[x_seen_from_child + y_seen_from_child * child->width].alpha != 0xff)
+			{
+				child->self_output[x_seen_from_child + y_seen_from_child * child->width] = alpha_blend(child->image[x_seen_from_child + y_seen_from_child * child->width], child->input[x_seen_from_child + y_seen_from_child * child->width]);
+				transmit_self_output_dot(child, x_seen_from_child, y_seen_from_child);
+			}
 			return;
 		}
 	}
