@@ -323,19 +323,43 @@ void decode_mouse_interrupt(unsigned char signal)
 			}
 			if(mouse_packet.packet & MOUSE_PACKET_ID4_4TH_BUTTON_PUSHED)
 			{
-				mouse_event.event_union.mouse_event.flags |= MOUSE_4TH_BUTTON_PUSHED;
+				if(mouse_event.event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED)
+				{
+					if(mouse_event.event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_4TH_BUTTON_PUSHED_NOW;
+				}
+				else
+				{
+					mouse_event.event_union.mouse_event.flags |= MOUSE_4TH_BUTTON_PUSHED | MOUSE_4TH_BUTTON_PUSHED_NOW;
+				}
 			}
 			else
 			{
-				mouse_event.event_union.mouse_event.flags &= ~MOUSE_4TH_BUTTON_PUSHED;
+				if(mouse_event.event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED)
+				{
+					mouse_event.event_union.mouse_event.flags &= ~MOUSE_4TH_BUTTON_PUSHED;
+					mouse_event.event_union.mouse_event.flags |= MOUSE_4TH_BUTTON_RELEASED_NOW;
+				}
+				else if(mouse_event.event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_4TH_BUTTON_RELEASED_NOW;
 			}
 			if(mouse_packet.packet & MOUSE_PACKET_ID4_5TH_BUTTON_PUSHED)
 			{
-				mouse_event.event_union.mouse_event.flags |= MOUSE_5TH_BUTTON_PUSHED;
+				if(mouse_event.event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED)
+				{
+					if(mouse_event.event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_5TH_BUTTON_PUSHED_NOW;
+				}
+				else
+				{
+					mouse_event.event_union.mouse_event.flags |= MOUSE_5TH_BUTTON_PUSHED | MOUSE_5TH_BUTTON_PUSHED_NOW;
+				}
 			}
 			else
 			{
-				mouse_event.event_union.mouse_event.flags &= ~MOUSE_5TH_BUTTON_PUSHED;
+				if(mouse_event.event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED)
+				{
+					mouse_event.event_union.mouse_event.flags &= ~MOUSE_5TH_BUTTON_PUSHED;
+					mouse_event.event_union.mouse_event.flags |= MOUSE_5TH_BUTTON_RELEASED_NOW;
+				}
+				else if(mouse_event.event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_5TH_BUTTON_RELEASED_NOW;
 			}
 			enqueue_event(&mouse_event);
 			signal_index = 0;
