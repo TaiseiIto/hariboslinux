@@ -15,8 +15,10 @@ Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
-void refresh_dot_input(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
+void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
 void refresh_input(Sheet *sheet); // refresh sheet->input.
+void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width].
+void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
 
 Color alpha_blend(Color foreground, Color background)
 {
@@ -520,9 +522,19 @@ void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color fore
 
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color)
 {
+	if(x < sheet->width && y < sheet->height)
+	{
+		sheet->image[x + y * sheet->width] = color;
+		if(color.alpha)
+		{
+			sheet->self_output[x + y * sheet->width] = alpha_blend(color, sheet->input[x + y * sheet->width]);
+			transmit_self_output_dot(sheet, x, y);
+		}
+	}
+	else ERROR_MESSAGE();
 }
 
-void refresh_dot_input(Sheet *sheet, unsigned short x, unsigned short y) // refresh sheet->input[x + y * sheet->width].
+void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refresh sheet->input[x + y * sheet->width].
 {
 	if(x < sheet->width && y < sheet->height)
 	{
@@ -554,6 +566,59 @@ void refresh_dot_input(Sheet *sheet, unsigned short x, unsigned short y) // refr
 
 void refresh_input(Sheet *sheet) // refresh sheet->input.
 {
-	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)refresh_dot_input(sheet, x, y);
+	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)refresh_input_dot(sheet, x, y);
+}
+
+void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width].
+{
+	short x_seen_from_screen;
+	short y_seen_from_screen;
+	if(sheet->upper)
+	{
+		for(Sheet *upper = sheet->upper; upper; upper = upper->upper)
+		{
+			short x_seen_from_upper = (short)x + sheet->x - upper->x;
+			short y_seen_from_upper = (short)y + sheet->y - upper->y;
+			if(0 <= x_seen_from_upper && x_seen_from_upper < upper->width && 0 <= y_seen_from_upper && y_seen_from_upper < upper->height)
+			{
+				upper->input[x_seen_from_upper + y_seen_from_upper * upper->width] = sheet->self_output[x + y * sheet->width];
+				upper->self_output[x_seen_from_upper + y_seen_from_upper * upper->width] = alpha_blend(upper->image[x_seen_from_upper + y_seen_from_upper * upper->width], upper->input[x_seen_from_upper + y_seen_from_upper * upper->width]);
+				transmit_self_output_dot(upper, x_seen_from_upper, y_seen_from_upper);
+				return;
+			}
+		}
+	}
+	if(sheet->parent)
+	{
+		short x_seen_from_parent = x + sheet->x;
+		short y_seen_from_parent = y + sheet->y;
+		if(0 <= x_seen_from_parent && x_seen_from_parent < sheet->parent->width && 0 <= y_seen_from_parent && y_seen_from_parent < sheet->parent->height)
+		{
+			sheet->parent->family_output[x_seen_from_parent + y_seen_from_parent * sheet->parent->width] = sheet->family_output[x + y * sheet->width];
+			transmit_family_output_dot(sheet->parent, x_seen_from_parent, y_seen_from_parent);
+			return;
+		}
+	}
+	x_seen_from_screen = x + sheet->x;
+	y_seen_from_screen = y + sheet->y;
+	if(0 <= x_seen_from_screen && x_seen_from_screen < get_video_information()->width && 0 <= y_seen_from_screen && y_seen_from_screen < get_video_information()->height)put_dot_screen(x_seen_from_screen, y_seen_from_screen, sheet->family_output[x + y * sheet->width]);
+}
+
+void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width].
+{
+	for(Sheet *child = sheet->lowest_child; child; child = child->upper)
+	{
+		short x_seen_from_child = x - child->x;
+		short y_seen_from_child = y - child->y;
+		if(0 <= x_seen_from_child && x_seen_from_child < child->width && 0 <= y_seen_from_child && y_seen_from_child < child->height)
+		{
+			child->input[x_seen_from_child + y_seen_from_child * child->width] = sheet->self_output[x + y * sheet->width];
+			child->self_output[x_seen_from_child + y_seen_from_child * child->width] = alpha_blend(child->image[x_seen_from_child + y_seen_from_child * child->width], child->input[x_seen_from_child + y_seen_from_child * child->width]);
+			transmit_self_output_dot(child, x_seen_from_child, y_seen_from_child);
+			return;
+		}
+	}
+	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
+	transmit_family_output_dot(sheet, x, y);
 }
 
