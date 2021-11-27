@@ -28,6 +28,58 @@ Color alpha_blend(Color foreground, Color background)
 
 Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height)
 {
+	Sheet *new_sheet = malloc(sizeof(*new_sheet));
+	new_sheet->image = malloc(width * height * sizeof(*new_sheet->image));
+	new_sheet->input = malloc(width * height * sizeof(*new_sheet->image));
+	new_sheet->self_output = malloc(width * height * sizeof(*new_sheet->image));
+	new_sheet->family_output = malloc(width * height * sizeof(*new_sheet->image));
+	new_sheet->x = x;
+	new_sheet->y = y;
+	new_sheet->width = width;
+	new_sheet->height = height;
+	new_sheet->uppest_child = NULL;
+	new_sheet->lowest_child = NULL;
+	cli_task();
+	new_sheet->parent = parent;
+	if(parent)
+	{
+		if(parent->uppest_child && parent->lowest_child)
+		{
+			new_sheet->upper = NULL;
+			new_sheet->lower = parent->uppest_child;
+			parent->uppest_child->upper = new_sheet;
+			parent->uppest_child = new_sheet;
+		}
+		else if(!parent->uppest_child && !parent->lowest_child)
+		{
+			new_sheet->upper = NULL;
+			new_sheet->lower = NULL;
+			parent->uppest_child = new_sheet;
+			parent->lowest_child = new_sheet;
+		}
+		else ERROR_MESSAGE();
+	}
+	else
+	{
+		if(background_sheet && mouse_cursor_sheet)
+		{
+			new_sheet->upper = NULL;
+			new_sheet->lower = mouse_cursor_sheet;
+			mouse_cursor_sheet->upper = new_sheet;
+			mouse_cursor_sheet = new_sheet;
+		}
+		else if(!background_sheet && !mouse_cursor_sheet)
+		{
+			new_sheet->upper = NULL;
+			new_sheet->lower = NULL;
+			background_sheet = new_sheet;
+			mouse_cursor_sheet = new_sheet;
+		}
+		else ERROR_MESSAGE();
+	}
+	sti_task();
+	fill_box_sheet(new_sheet, 0, 0, new_sheet->width, new_sheet->height, color_transparent);
+	return new_sheet;
 }
 
 void delete_sheet(Sheet *sheet)
