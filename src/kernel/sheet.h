@@ -3,6 +3,20 @@
 
 struct _Sheet;
 
+typedef struct _SheetClickedEvent
+{
+	struct _Sheet *sheet;
+	unsigned short x, y;
+	unsigned char flags;
+	#define SHEET_CLICKED_EVENT_FLAG_PUSHED		0x01
+	#define SHEET_CLICKED_EVENT_FLAG_RELEASED	0x02
+	#define SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON	0x04
+	#define SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON	0x08
+	#define SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON	0x10
+	#define SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON	0x20
+	#define SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON	0x40
+} SheetClickedEvent;
+
 #include "event.h"
 #include "graphic.h"
 
