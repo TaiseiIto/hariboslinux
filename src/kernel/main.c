@@ -143,16 +143,16 @@ void main(void)
 				new_event.event_union.sheet_clicked_event.sheet = clicked_sheet;
 				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(clicked_sheet);
 				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(clicked_sheet);
-				if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON;
-				else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
+				if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
 				enqueue_event(&new_event);
 			}
 			move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);

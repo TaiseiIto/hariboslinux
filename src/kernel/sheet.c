@@ -95,7 +95,6 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 
 void *default_event_procedure(Sheet *sheet, Event const *event)
 {
-	printf_serial("default_event_procedure");
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CLICKED:
