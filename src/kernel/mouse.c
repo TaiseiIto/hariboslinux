@@ -61,16 +61,10 @@ void decode_mouse_interrupt(unsigned char signal)
 	case 0:
 		if(signal_index == 3)
 		{
+			mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED_NOW & ~MOUSE_LEFT_BUTTON_RELEASED_NOW & ~MOUSE_MIDDLE_BUTTON_PUSHED_NOW & ~MOUSE_MIDDLE_BUTTON_RELEASED_NOW & ~MOUSE_RIGHT_BUTTON_PUSHED_NOW & ~MOUSE_RIGHT_BUTTON_RELEASED_NOW & ~MOUSE_4TH_BUTTON_PUSHED_NOW & ~MOUSE_4TH_BUTTON_RELEASED_NOW & ~MOUSE_5TH_BUTTON_PUSHED_NOW & ~MOUSE_5TH_BUTTON_RELEASED_NOW;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)
 			{
-				if(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED)
-				{
-					if(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED_NOW;
-				}
-				else
-				{
-					mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED | MOUSE_LEFT_BUTTON_PUSHED_NOW;
-				}
+				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED))mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED | MOUSE_LEFT_BUTTON_PUSHED_NOW;
 			}
 			else
 			{
@@ -79,18 +73,10 @@ void decode_mouse_interrupt(unsigned char signal)
 					mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED;
 					mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_RELEASED_NOW;
 				}
-				else if(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_RELEASED_NOW;
 			}
 			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)
 			{
-				if(mouse_event.event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED)
-				{
-					if(mouse_event.event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_MIDDLE_BUTTON_PUSHED_NOW;
-				}
-				else
-				{
-					mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED | MOUSE_MIDDLE_BUTTON_PUSHED_NOW;
-				}
+				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED))mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED | MOUSE_MIDDLE_BUTTON_PUSHED_NOW;
 			}
 			else
 			{
@@ -99,18 +85,10 @@ void decode_mouse_interrupt(unsigned char signal)
 					mouse_event.event_union.mouse_event.flags &= ~MOUSE_MIDDLE_BUTTON_PUSHED;
 					mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_RELEASED_NOW;
 				}
-				else if(mouse_event.event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_MIDDLE_BUTTON_RELEASED_NOW;
 			}
 			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)
 			{
-				if(mouse_event.event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED)
-				{
-					if(mouse_event.event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_RIGHT_BUTTON_PUSHED_NOW;
-				}
-				else
-				{
-					mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED | MOUSE_RIGHT_BUTTON_PUSHED_NOW;
-				}
+				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED))mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED | MOUSE_RIGHT_BUTTON_PUSHED_NOW;
 			}
 			else
 			{
@@ -119,7 +97,6 @@ void decode_mouse_interrupt(unsigned char signal)
 					mouse_event.event_union.mouse_event.flags &= ~MOUSE_RIGHT_BUTTON_PUSHED;
 					mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_RELEASED_NOW;
 				}
-				else if(mouse_event.event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_RIGHT_BUTTON_RELEASED_NOW;
 			}
 			mouse_event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
 			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)mouse_event.event_union.mouse_event.x_movement |= 0xff00;
@@ -140,16 +117,10 @@ void decode_mouse_interrupt(unsigned char signal)
 	case 3:
 		if(signal_index == 4)
 		{
+			mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED_NOW & ~MOUSE_LEFT_BUTTON_RELEASED_NOW & ~MOUSE_MIDDLE_BUTTON_PUSHED_NOW & ~MOUSE_MIDDLE_BUTTON_RELEASED_NOW & ~MOUSE_RIGHT_BUTTON_PUSHED_NOW & ~MOUSE_RIGHT_BUTTON_RELEASED_NOW & ~MOUSE_4TH_BUTTON_PUSHED_NOW & ~MOUSE_4TH_BUTTON_RELEASED_NOW & ~MOUSE_5TH_BUTTON_PUSHED_NOW & ~MOUSE_5TH_BUTTON_RELEASED_NOW;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)
 			{
-				if(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED)
-				{
-					if(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED_NOW;
-				}
-				else
-				{
-					mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED | MOUSE_LEFT_BUTTON_PUSHED_NOW;
-				}
+				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED))mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED | MOUSE_LEFT_BUTTON_PUSHED_NOW;
 			}
 			else
 			{
@@ -158,18 +129,10 @@ void decode_mouse_interrupt(unsigned char signal)
 					mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED;
 					mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_RELEASED_NOW;
 				}
-				else if(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_RELEASED_NOW;
 			}
 			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)
 			{
-				if(mouse_event.event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED)
-				{
-					if(mouse_event.event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_MIDDLE_BUTTON_PUSHED_NOW;
-				}
-				else
-				{
-					mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED | MOUSE_MIDDLE_BUTTON_PUSHED_NOW;
-				}
+				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED))mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_PUSHED | MOUSE_MIDDLE_BUTTON_PUSHED_NOW;
 			}
 			else
 			{
@@ -178,18 +141,10 @@ void decode_mouse_interrupt(unsigned char signal)
 					mouse_event.event_union.mouse_event.flags &= ~MOUSE_MIDDLE_BUTTON_PUSHED;
 					mouse_event.event_union.mouse_event.flags |= MOUSE_MIDDLE_BUTTON_RELEASED_NOW;
 				}
-				else if(mouse_event.event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_MIDDLE_BUTTON_RELEASED_NOW;
 			}
 			if(mouse_packet.packet & MOUSE_PACKET_RIGHT_BUTTON_PUSHED)
 			{
-				if(mouse_event.event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED)
-				{
-					if(mouse_event.event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_RIGHT_BUTTON_PUSHED_NOW;
-				}
-				else
-				{
-					mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED | MOUSE_RIGHT_BUTTON_PUSHED_NOW;
-				}
+				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED))mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_PUSHED | MOUSE_RIGHT_BUTTON_PUSHED_NOW;
 			}
 			else
 			{
@@ -198,7 +153,6 @@ void decode_mouse_interrupt(unsigned char signal)
 					mouse_event.event_union.mouse_event.flags &= ~MOUSE_RIGHT_BUTTON_PUSHED;
 					mouse_event.event_union.mouse_event.flags |= MOUSE_RIGHT_BUTTON_RELEASED_NOW;
 				}
-				else if(mouse_event.event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)mouse_event.event_union.mouse_event.flags &= ~MOUSE_RIGHT_BUTTON_RELEASED_NOW;
 			}
 			mouse_event.event_union.mouse_event.x_movement = mouse_packet.signals[1];
 			if(mouse_packet.packet & MOUSE_PACKET_X_SIGN)mouse_event.event_union.mouse_event.x_movement |= 0xff00;
@@ -224,12 +178,7 @@ void decode_mouse_interrupt(unsigned char signal)
 			#ifdef LOGGING
 			printf_serial("mouse packet = %#010x\n", mouse_packet.packet);
 			#endif
-			mouse_event.event_union.mouse_event.flags &= 
-				~MOUSE_LEFT_BUTTON_PUSHED_NOW & ~MOUSE_LEFT_BUTTON_RELEASED_NOW
-				& ~MOUSE_MIDDLE_BUTTON_PUSHED_NOW & ~MOUSE_MIDDLE_BUTTON_RELEASED_NOW
-				& ~MOUSE_RIGHT_BUTTON_PUSHED_NOW & ~MOUSE_RIGHT_BUTTON_RELEASED_NOW 
-				& ~MOUSE_4TH_BUTTON_PUSHED_NOW & ~MOUSE_4TH_BUTTON_RELEASED_NOW
-				& ~MOUSE_5TH_BUTTON_PUSHED_NOW & ~MOUSE_5TH_BUTTON_RELEASED_NOW;
+			mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED_NOW & ~MOUSE_LEFT_BUTTON_RELEASED_NOW & ~MOUSE_MIDDLE_BUTTON_PUSHED_NOW & ~MOUSE_MIDDLE_BUTTON_RELEASED_NOW & ~MOUSE_RIGHT_BUTTON_PUSHED_NOW & ~MOUSE_RIGHT_BUTTON_RELEASED_NOW & ~MOUSE_4TH_BUTTON_PUSHED_NOW & ~MOUSE_4TH_BUTTON_RELEASED_NOW & ~MOUSE_5TH_BUTTON_PUSHED_NOW & ~MOUSE_5TH_BUTTON_RELEASED_NOW;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)
 			{
 				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED))mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED | MOUSE_LEFT_BUTTON_PUSHED_NOW;
