@@ -106,7 +106,11 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("pushed ");
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("released ");
 		printf_serial("at (%d, %d)\n", event->event_union.sheet_clicked_event.x, event->event_union.sheet_clicked_event.y);
-		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED) && sheet != background_sheet)printf_serial("pull_up_sheet\n");
+		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED) && sheet != background_sheet)
+		{
+			printf_serial("pull_up_sheet\n");
+			pull_up_sheet(sheet);
+		}
 		break;
 	default:
 		ERROR_MESSAGE(); // Event that procedure is not defined.
@@ -551,6 +555,24 @@ void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foregro
 		}
 		string++;
 	}
+}
+
+void pull_up_sheet(Sheet *sheet)
+{
+	if(sheet->parent)
+	{
+		if(sheet->parent->uppest_child == sheet)return;
+		cli_task();
+		if(sheet->parent->lowest_child == sheet)sheet->parent->lowest_child == sheet->upper;
+		if(sheet->upper)sheet->upper->lower = sheet->lower;
+		if(sheet->lower)sheet->lower->upper = sheet->upper;
+		sheet->lower = sheet->parent->uppest_child;
+		sheet->parent->uppest_child->upper = sheet;
+		sheet->parent->uppest_child = sheet;
+		sti_task();
+		transmit_self_output_rectangle(sheet->parent, sheet->x, sheet->y, sheet->width, sheet->height);
+	}
+	else ERROR_MESSAGE(); // Sheet that has no parent can't be pulled up.
 }
 
 void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char character)
