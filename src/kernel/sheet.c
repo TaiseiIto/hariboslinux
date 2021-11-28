@@ -142,6 +142,18 @@ void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsign
 	}
 }
 
+short get_sheet_x_on_screen(Sheet const *sheet)
+{
+	if(sheet->parent)return get_sheet_x_on_screen(sheet->parent) + sheet->x;
+	else return sheet->x;
+}
+
+short get_sheet_y_on_screen(Sheet const *sheet)
+{
+	if(sheet->parent)return get_sheet_y_on_screen(sheet->parent) + sheet->y;
+	else return sheet->y;
+}
+
 Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 {
 	for(Sheet *child = sheet->uppest_child; child; child = child->lower)

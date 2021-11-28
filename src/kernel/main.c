@@ -109,6 +109,7 @@ void main(void)
 	checking_free_memory_space_size_timer = create_timer(0, 100);
 	while(1)
 	{
+		Event new_event;
 		Event const *event;
 		event = dequeue_event();
 		if(event)switch(event->type)
@@ -136,7 +137,13 @@ void main(void)
 			#endif
 			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)
 			{
-				printf_serial("mouse left button pushed now\nsheet = %p\n", get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y));
+				Sheet *clicked_sheet = get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
+				new_event.type = EVENT_TYPE_SHEET_CLICKED;
+				new_event.event_union.sheet_clicked_event.sheet = clicked_sheet;
+				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(clicked_sheet);
+				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(clicked_sheet);
+				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
+				enqueue_event(&new_event);
 			}
 			if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)printf_serial("mouse middle button pushed now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)printf_serial("mouse right button pushed now\n");
@@ -169,6 +176,9 @@ void main(void)
 			printf_serial("month = %d\n", event->event_union.rtc_interrupt.month);
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
 			#endif
+			break;
+		case EVENT_TYPE_SHEET_CLICKED:
+			event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
