@@ -16,6 +16,7 @@ Sheet *background_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
 void *default_event_procedure(Sheet *sheet, Event const *event);
+void print_sheet_tree(Sheet *sheet, unsigned int level);
 void refresh_input(Sheet *sheet); // refresh sheet->input.
 void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
 void refresh_self_output(Sheet *sheet); // refresh sheet->self_output.
@@ -557,11 +558,20 @@ void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foregro
 	}
 }
 
+void print_sheet_tree(Sheet *sheet, unsigned int level)
+{
+	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
+	printf_serial("%p\n", sheet);
+	if(sheet->lowest_child)print_sheet_tree(sheet->lowest_child, level + 1);
+	if(sheet->upper)print_sheet_tree(sheet->upper, level);
+}
+
 void pull_up_sheet(Sheet *sheet)
 {
 	if(sheet->parent)
 	{
 		if(sheet->parent->uppest_child == sheet)return;
+		print_sheet_tree(background_sheet, 0);
 		cli_task();
 		if(sheet->parent->lowest_child == sheet)sheet->parent->lowest_child == sheet->upper;
 		if(sheet->upper)sheet->upper->lower = sheet->lower;
@@ -571,6 +581,7 @@ void pull_up_sheet(Sheet *sheet)
 		sheet->parent->uppest_child->upper = sheet;
 		sheet->parent->uppest_child = sheet;
 		sti_task();
+		print_sheet_tree(background_sheet, 0);
 		printf_serial("pull_up_sheet1\n");
 		transmit_self_output_rectangle(sheet->parent, sheet->x, sheet->y, sheet->width, sheet->height);
 		printf_serial("pull_up_sheet2\n");
