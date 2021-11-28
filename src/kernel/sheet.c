@@ -13,6 +13,7 @@ const Color color_transparent = {0x00, 0x00, 0x00, 0x00};
 
 Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
+Sheet *mouse_catched_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
 void *default_event_procedure(Sheet *sheet, Event const *event);
@@ -108,10 +109,17 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("pushed ");
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("released ");
 		printf_serial("at (%d, %d)\n", event->event_union.sheet_clicked_event.x, event->event_union.sheet_clicked_event.y);
-		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED) && sheet != background_sheet)
+		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED) && sheet->parent == background_sheet)
 		{
 			printf_serial("pull_up_sheet\n");
 			pull_up_sheet(sheet);
+			mouse_catched_sheet = sheet;
+			printf_serial("Sheet %p is catched by mouse.\n", mouse_catched_sheet);
+		}
+		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_RELEASED))
+		{
+			printf_serial("Sheet %p is released by mouse.\n", mouse_catched_sheet);
+			mouse_catched_sheet = NULL;
 		}
 		break;
 	default:
