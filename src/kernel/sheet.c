@@ -588,17 +588,23 @@ void pull_up_sheet(Sheet *sheet)
 	if(sheet->parent)
 	{
 		if(sheet->parent->uppest_child == sheet)return;
-		print_sheet_tree();
 		cli_task();
-		if(sheet->parent->lowest_child == sheet)sheet->parent->lowest_child == sheet->upper;
-		if(sheet->upper)sheet->upper->lower = sheet->lower;
-		if(sheet->lower)sheet->lower->upper = sheet->upper;
-		sheet->upper = NULL;
-		sheet->lower = sheet->parent->uppest_child;
-		sheet->parent->uppest_child->upper = sheet;
-		sheet->parent->uppest_child = sheet;
-		sti_task();
 		print_sheet_tree();
+		if(sheet->parent->lowest_child == sheet)sheet->parent->lowest_child == sheet->upper;
+		print_sheet_tree();
+		if(sheet->upper)sheet->upper->lower = sheet->lower;
+		print_sheet_tree();
+		if(sheet->lower)sheet->lower->upper = sheet->upper;
+		print_sheet_tree();
+		sheet->upper = NULL;
+		print_sheet_tree();
+		sheet->lower = sheet->parent->uppest_child;
+		print_sheet_tree();
+		sheet->parent->uppest_child->upper = sheet;
+		print_sheet_tree();
+		sheet->parent->uppest_child = sheet;
+		print_sheet_tree();
+		sti_task();
 		printf_serial("pull_up_sheet1\n");
 		transmit_self_output_rectangle(sheet->parent, sheet->x, sheet->y, sheet->width, sheet->height);
 		printf_serial("pull_up_sheet2\n");
