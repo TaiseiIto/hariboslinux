@@ -142,19 +142,15 @@ void main(void)
 			printf_serial("mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c\n", event->event_union.mouse_event.x, event->event_union.mouse_event.y, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
 			#endif
 			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)printf_serial("mouse left button pushed now\n");
-			#ifdef LOGGING
 			if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)printf_serial("mouse middle button pushed now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)printf_serial("mouse right button pushed now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED_NOW)printf_serial("mouse 4th button pushed now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED_NOW)printf_serial("mouse 5th button pushed now\n");
-			#endif
 			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)printf_serial("mouse left button released now\n");
-			#ifdef LOGGING
 			if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)printf_serial("mouse middle button released now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)printf_serial("mouse right button released now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW)printf_serial("mouse 4th button released now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)printf_serial("mouse 5th button released now\n");
-			#endif
 			move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
