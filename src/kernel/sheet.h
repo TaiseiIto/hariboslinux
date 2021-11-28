@@ -1,6 +1,8 @@
 #ifndef _SHEET_H_
 #define _SHEET_H_
 
+struct _Sheet;
+
 #include "event.h"
 #include "graphic.h"
 
@@ -15,7 +17,7 @@ typedef struct _Sheet
 	struct _Sheet *lower;
 	struct _Sheet *uppest_child;
 	struct _Sheet *lowest_child;
-	void *(*event_procedure)(struct _Sheet *sheet, Event const *event);
+	void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event);
 	short x, y; // Coordinate seen from parent
 	unsigned short width, height;
 } Sheet;

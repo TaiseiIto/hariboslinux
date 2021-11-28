@@ -1,11 +1,28 @@
 #ifndef _EVENT_H_
 #define _EVENT_H_
 
+struct _Event;
+
 #include "keyboard.h"
 #include "mouse.h"
 #include "queue.h"
 #include "rtc.h"
+#include "sheet.h"
 #include "timer.h"
+
+typedef struct _SheetClickedEvent
+{
+	struct _Sheet *sheet;
+	unsigned short x, y;
+	unsigned char flags;
+	#define SHEET_CLICKED_EVENT_FLAG_PUSHED		0x01
+	#define SHEET_CLICKED_EVENT_FLAG_RELEASED	0x02
+	#define SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON	0x04
+	#define SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON	0x08
+	#define SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON	0x10
+	#define SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON	0x20
+	#define SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON	0x40
+} SheetClickedEvent;
 
 typedef union _EventUnion
 {
@@ -14,6 +31,7 @@ typedef union _EventUnion
 	MouseEvent mouse_event;
 	MouseInterrupt mouse_interrupt;
 	RTCInterrupt rtc_interrupt;
+	SheetClickedEvent sheet_clicked_event;
 	TimerEvent timer_event;
 } EventUnion;
 
@@ -26,7 +44,8 @@ typedef struct _Event
 	#define EVENT_TYPE_MOUSE_INTERRUPT	0x03
 	#define EVENT_TYPE_PIT_INTERRUPT	0x04
 	#define EVENT_TYPE_RTC_INTERRUPT	0x05
-	#define EVENT_TYPE_TIMER_EVENT		0x06
+	#define EVENT_TYPE_SHEET_CLICKED	0x06
+	#define EVENT_TYPE_TIMER_EVENT		0x07
 	EventUnion event_union;
 } Event;
 
