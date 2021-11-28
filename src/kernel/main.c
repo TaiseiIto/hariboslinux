@@ -111,6 +111,7 @@ void main(void)
 	{
 		Event new_event;
 		Event const *event;
+		Sheet *operated_sheet;
 		event = dequeue_event();
 		if(event)switch(event->type)
 		{
@@ -135,14 +136,13 @@ void main(void)
 			#ifdef LOGGING
 			printf_serial("mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c\n", event->event_union.mouse_event.x, event->event_union.mouse_event.y, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
 			#endif
-
+			operated_sheet = get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 			if(event->event_union.mouse_event.flags & (MOUSE_LEFT_BUTTON_PUSHED_NOW | MOUSE_LEFT_BUTTON_RELEASED_NOW | MOUSE_MIDDLE_BUTTON_PUSHED_NOW | MOUSE_MIDDLE_BUTTON_RELEASED_NOW | MOUSE_RIGHT_BUTTON_PUSHED_NOW | MOUSE_RIGHT_BUTTON_RELEASED_NOW | MOUSE_4TH_BUTTON_PUSHED_NOW | MOUSE_4TH_BUTTON_RELEASED_NOW | MOUSE_5TH_BUTTON_PUSHED_NOW | MOUSE_5TH_BUTTON_RELEASED_NOW))
 			{
-				Sheet *clicked_sheet = get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 				new_event.type = EVENT_TYPE_SHEET_CLICKED;
-				new_event.event_union.sheet_clicked_event.sheet = clicked_sheet;
-				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(clicked_sheet);
-				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(clicked_sheet);
+				new_event.event_union.sheet_clicked_event.sheet = operated_sheet;
+				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(operated_sheet);
+				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(operated_sheet);
 				if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
 				else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
 				else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
@@ -155,7 +155,15 @@ void main(void)
 				else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
 				enqueue_event(&new_event);
 			}
-			move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
+			if(event->event_union.mouse_event.x_movement || event->event_union.mouse_event.y_movement)
+			{
+				new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
+				new_event.event_union.sheet_mouse_move_event.sheet = operated_sheet;
+				new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.mouse_event.x_movement;
+				new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.mouse_event.y_movement;
+				enqueue_event(&new_event);
+				move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
+			}
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
 			printf_sheet(background_sheet, 0x0000, 0x0005 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt.signal);
@@ -181,6 +189,8 @@ void main(void)
 		case EVENT_TYPE_SHEET_CLICKED:
 			event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 			break;
+		case EVENT_TYPE_SHEET_MOUSE_MOVE:
+			event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
 			{

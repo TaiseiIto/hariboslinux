@@ -17,6 +17,12 @@ typedef struct _SheetClickedEvent
 	#define SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON	0x40
 } SheetClickedEvent;
 
+typedef struct _SheetMouseMoveEvent
+{
+	struct _Sheet *sheet;
+	short x_movement, y_movement;
+} SheetMouseMoveEvent;
+
 #include "event.h"
 #include "graphic.h"
 

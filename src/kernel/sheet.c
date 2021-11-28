@@ -122,6 +122,9 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 			mouse_catched_sheet = NULL;
 		}
 		break;
+	case EVENT_TYPE_SHEET_MOUSE_MOVE:
+		if(sheet == mouse_catched_sheet)move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_move_event.x_movement, sheet->y + event->event_union.sheet_mouse_move_event.y_movement);
+		break;
 	default:
 		ERROR_MESSAGE(); // Event that procedure is not defined.
 		break;
