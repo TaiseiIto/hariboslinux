@@ -738,6 +738,6 @@ void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) 
 
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_output[x + y * sheet->width].
 {
-	for(unsigned short x_i = x; x_i < x + width; x_i++)for(unsigned short y_i = y; y_i < y + height; y_i++)transmit_self_output_dot(sheet, x_i, y_i);
+	for(unsigned short y_i = y; y_i < y + height; y_i++)for(unsigned short x_i = x; x_i < x + width; x_i++)transmit_self_output_dot(sheet, x_i, y_i);
 }
 
