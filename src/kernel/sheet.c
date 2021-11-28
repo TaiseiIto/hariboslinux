@@ -566,6 +566,7 @@ void pull_up_sheet(Sheet *sheet)
 		if(sheet->parent->lowest_child == sheet)sheet->parent->lowest_child == sheet->upper;
 		if(sheet->upper)sheet->upper->lower = sheet->lower;
 		if(sheet->lower)sheet->lower->upper = sheet->upper;
+		sheet->upper = NULL;
 		sheet->lower = sheet->parent->uppest_child;
 		sheet->parent->uppest_child->upper = sheet;
 		sheet->parent->uppest_child = sheet;
