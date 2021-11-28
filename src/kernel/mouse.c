@@ -105,7 +105,8 @@ void decode_mouse_interrupt(unsigned char signal)
 			else if(get_video_information()->width <= mouse_event.event_union.mouse_event.x)mouse_event.event_union.mouse_event.x = get_video_information()->width - 1;
 			mouse_event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
 			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)mouse_event.event_union.mouse_event.y_movement |= 0xff00;
-			mouse_event.event_union.mouse_event.y -= mouse_event.event_union.mouse_event.y_movement;
+			mouse_event.event_union.mouse_event.y_movement *= -1;
+			mouse_event.event_union.mouse_event.y += mouse_event.event_union.mouse_event.y_movement;
 			if(mouse_event.event_union.mouse_event.y < 0)mouse_event.event_union.mouse_event.y = 0;
 			else if(get_video_information()->height <= mouse_event.event_union.mouse_event.y)mouse_event.event_union.mouse_event.y = get_video_information()->height - 1;
 			mouse_event.event_union.mouse_event.vertical_wheel_movement = 0;
@@ -161,7 +162,8 @@ void decode_mouse_interrupt(unsigned char signal)
 			else if(get_video_information()->width <= mouse_event.event_union.mouse_event.x)mouse_event.event_union.mouse_event.x = get_video_information()->width - 1;
 			mouse_event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
 			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)mouse_event.event_union.mouse_event.y_movement |= 0xff00;
-			mouse_event.event_union.mouse_event.y -= mouse_event.event_union.mouse_event.y_movement;
+			mouse_event.event_union.mouse_event.y_movement *= -1;
+			mouse_event.event_union.mouse_event.y += mouse_event.event_union.mouse_event.y_movement;
 			if(mouse_event.event_union.mouse_event.y < 0)mouse_event.event_union.mouse_event.y = 0;
 			else if(get_video_information()->height <= mouse_event.event_union.mouse_event.y)mouse_event.event_union.mouse_event.y = get_video_information()->height - 1;
 			if(0 < (char)mouse_packet.signals[3])mouse_event.event_union.mouse_event.vertical_wheel_movement = 1;
@@ -222,7 +224,8 @@ void decode_mouse_interrupt(unsigned char signal)
 			else if(get_video_information()->width <= mouse_event.event_union.mouse_event.x)mouse_event.event_union.mouse_event.x = get_video_information()->width - 1;
 			mouse_event.event_union.mouse_event.y_movement = mouse_packet.signals[2];
 			if(mouse_packet.packet & MOUSE_PACKET_Y_SIGN)mouse_event.event_union.mouse_event.y_movement |= 0xff00;
-			mouse_event.event_union.mouse_event.y -= mouse_event.event_union.mouse_event.y_movement;
+			mouse_event.event_union.mouse_event.y_movement *= -1;
+			mouse_event.event_union.mouse_event.y += mouse_event.event_union.mouse_event.y_movement;
 			if(mouse_event.event_union.mouse_event.y < 0)mouse_event.event_union.mouse_event.y = 0;
 			else if(get_video_information()->height <= mouse_event.event_union.mouse_event.y)mouse_event.event_union.mouse_event.y = get_video_information()->height - 1;
 			switch(mouse_packet.packet & MOUSE_PACKET_ID4_WHEEL)
