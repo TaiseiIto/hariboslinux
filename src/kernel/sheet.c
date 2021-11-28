@@ -712,7 +712,7 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 
 void transmit_self_output(Sheet *sheet) // transmit image sheet->self_output.
 {
-	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)transmit_self_output_dot(sheet, x, y);
+	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_output_dot(sheet, x, y);
 }
 
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width].
