@@ -568,7 +568,17 @@ void print_sheet_tree(void)
 void print_sheet_tree_level(Sheet *sheet, unsigned int level)
 {
 	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
-	printf_serial("%p\n", sheet);
+	printf_serial("sheet = %p\n", sheet);
+	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
+	printf_serial("\tparent = %p\n", sheet->parent);
+	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
+	printf_serial("\tupper = %p\n", sheet->upper);
+	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
+	printf_serial("\tlower = %p\n", sheet->lower);
+	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
+	printf_serial("\tuppest_child = %p\n", sheet->uppest_child);
+	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
+	printf_serial("\tlowest_child = %p\n", sheet->lowest_child);
 	if(sheet->lowest_child)print_sheet_tree_level(sheet->lowest_child, level + 1);
 	if(sheet->upper)print_sheet_tree_level(sheet->upper, level);
 }
