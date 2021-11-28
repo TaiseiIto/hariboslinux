@@ -158,9 +158,9 @@ Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 {
 	for(Sheet *child = sheet->uppest_child; child; child = child->lower)
 	{
-		short x_seen_from_child = (short)x -child->x;
-		short y_seen_from_child = (short)y -child->y;
-		if(0 <= x_seen_from_child && x_seen_from_child < child->width && 0 <= y_seen_from_child && y_seen_from_child < child->height)return get_uppest_sheet(child, x_seen_from_child, y_seen_from_child);
+		short x_on_child = (short)x -child->x;
+		short y_on_child = (short)y -child->y;
+		if(0 <= x_on_child && x_on_child < child->width && 0 <= y_on_child && y_on_child < child->height)return get_uppest_sheet(child, x_on_child, y_on_child);
 	}
 	return sheet;
 }
@@ -597,21 +597,21 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refr
 		{
 			unsigned short parent_width = (sheet->parent ? sheet->parent->width : get_video_information()->width);
 			unsigned short parent_height = (sheet->parent ? sheet->parent->height : get_video_information()->height);
-			short x_seen_from_parent = x + sheet->x;
-			short y_seen_from_parent = y + sheet->y;
-			if(0 <= x_seen_from_parent && x_seen_from_parent < parent_width && 0 <= y_seen_from_parent && y_seen_from_parent < parent_height)
+			short x_on_parent = x + sheet->x;
+			short y_on_parent = y + sheet->y;
+			if(0 <= x_on_parent && x_on_parent < parent_width && 0 <= y_on_parent && y_on_parent < parent_height)
 			{
 				for(Sheet *lower = sheet->lower; lower; lower = lower->lower)
 				{
-					short x_seen_from_lower = x_seen_from_parent - lower->x;
-					short y_seen_from_lower = y_seen_from_parent - lower->y;
-					if(0 <= x_seen_from_lower && x_seen_from_lower < lower->width && 0 <= y_seen_from_lower && y_seen_from_lower < lower->height)
+					short x_on_lower = x_on_parent - lower->x;
+					short y_on_lower = y_on_parent - lower->y;
+					if(0 <= x_on_lower && x_on_lower < lower->width && 0 <= y_on_lower && y_on_lower < lower->height)
 					{
-						sheet->input[x + y * sheet->width] = lower->family_output[x_seen_from_lower + y_seen_from_lower * lower->width];
+						sheet->input[x + y * sheet->width] = lower->family_output[x_on_lower + y_on_lower * lower->width];
 						return;
 					}
 				}
-				sheet->input[x + y * sheet->width] = (sheet->parent ? sheet->parent->self_output[x_seen_from_parent + y_seen_from_parent * sheet->parent->width] : color_black);
+				sheet->input[x + y * sheet->width] = (sheet->parent ? sheet->parent->self_output[x_on_parent + y_on_parent * sheet->parent->width] : color_black);
 			}
 		}
 		else sheet->input[x + y * sheet->width] = color_black;
@@ -632,21 +632,21 @@ void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) /
 
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width].
 {
-	short x_seen_from_screen;
-	short y_seen_from_screen;
+	short x_on_screen;
+	short y_on_screen;
 	if(sheet->upper)
 	{
 		for(Sheet *upper = sheet->upper; upper; upper = upper->upper)
 		{
-			short x_seen_from_upper = (short)x + sheet->x - upper->x;
-			short y_seen_from_upper = (short)y + sheet->y - upper->y;
-			if(0 <= x_seen_from_upper && x_seen_from_upper < upper->width && 0 <= y_seen_from_upper && y_seen_from_upper < upper->height)
+			short x_on_upper = (short)x + sheet->x - upper->x;
+			short y_on_upper = (short)y + sheet->y - upper->y;
+			if(0 <= x_on_upper && x_on_upper < upper->width && 0 <= y_on_upper && y_on_upper < upper->height)
 			{
-				upper->input[x_seen_from_upper + y_seen_from_upper * upper->width] = sheet->family_output[x + y * sheet->width];
-				if(upper->image[x_seen_from_upper + y_seen_from_upper * upper->width].alpha != 0xff)
+				upper->input[x_on_upper + y_on_upper * upper->width] = sheet->family_output[x + y * sheet->width];
+				if(upper->image[x_on_upper + y_on_upper * upper->width].alpha != 0xff)
 				{
-					upper->self_output[x_seen_from_upper + y_seen_from_upper * upper->width] = alpha_blend(upper->image[x_seen_from_upper + y_seen_from_upper * upper->width], upper->input[x_seen_from_upper + y_seen_from_upper * upper->width]);
-					transmit_self_output_dot(upper, x_seen_from_upper, y_seen_from_upper);
+					upper->self_output[x_on_upper + y_on_upper * upper->width] = alpha_blend(upper->image[x_on_upper + y_on_upper * upper->width], upper->input[x_on_upper + y_on_upper * upper->width]);
+					transmit_self_output_dot(upper, x_on_upper, y_on_upper);
 				}
 				return;
 			}
@@ -654,18 +654,18 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 	}
 	if(sheet->parent)
 	{
-		short x_seen_from_parent = x + sheet->x;
-		short y_seen_from_parent = y + sheet->y;
-		if(0 <= x_seen_from_parent && x_seen_from_parent < sheet->parent->width && 0 <= y_seen_from_parent && y_seen_from_parent < sheet->parent->height)
+		short x_on_parent = x + sheet->x;
+		short y_on_parent = y + sheet->y;
+		if(0 <= x_on_parent && x_on_parent < sheet->parent->width && 0 <= y_on_parent && y_on_parent < sheet->parent->height)
 		{
-			sheet->parent->family_output[x_seen_from_parent + y_seen_from_parent * sheet->parent->width] = sheet->family_output[x + y * sheet->width];
-			transmit_family_output_dot(sheet->parent, x_seen_from_parent, y_seen_from_parent);
+			sheet->parent->family_output[x_on_parent + y_on_parent * sheet->parent->width] = sheet->family_output[x + y * sheet->width];
+			transmit_family_output_dot(sheet->parent, x_on_parent, y_on_parent);
 			return;
 		}
 	}
-	x_seen_from_screen = x + sheet->x;
-	y_seen_from_screen = y + sheet->y;
-	if(0 <= x_seen_from_screen && x_seen_from_screen < get_video_information()->width && 0 <= y_seen_from_screen && y_seen_from_screen < get_video_information()->height)put_dot_screen(x_seen_from_screen, y_seen_from_screen, sheet->family_output[x + y * sheet->width]);
+	x_on_screen = x + sheet->x;
+	y_on_screen = y + sheet->y;
+	if(0 <= x_on_screen && x_on_screen < get_video_information()->width && 0 <= y_on_screen && y_on_screen < get_video_information()->height)put_dot_screen(x_on_screen, y_on_screen, sheet->family_output[x + y * sheet->width]);
 }
 
 void transmit_self_output(Sheet *sheet) // transmit image sheet->self_output.
@@ -677,15 +677,15 @@ void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) 
 {
 	for(Sheet *child = sheet->lowest_child; child; child = child->upper)
 	{
-		short x_seen_from_child = x - child->x;
-		short y_seen_from_child = y - child->y;
-		if(0 <= x_seen_from_child && x_seen_from_child < child->width && 0 <= y_seen_from_child && y_seen_from_child < child->height)
+		short x_on_child = x - child->x;
+		short y_on_child = y - child->y;
+		if(0 <= x_on_child && x_on_child < child->width && 0 <= y_on_child && y_on_child < child->height)
 		{
-			child->input[x_seen_from_child + y_seen_from_child * child->width] = sheet->self_output[x + y * sheet->width];
-			if(child->image[x_seen_from_child + y_seen_from_child * child->width].alpha != 0xff)
+			child->input[x_on_child + y_on_child * child->width] = sheet->self_output[x + y * sheet->width];
+			if(child->image[x_on_child + y_on_child * child->width].alpha != 0xff)
 			{
-				child->self_output[x_seen_from_child + y_seen_from_child * child->width] = alpha_blend(child->image[x_seen_from_child + y_seen_from_child * child->width], child->input[x_seen_from_child + y_seen_from_child * child->width]);
-				transmit_self_output_dot(child, x_seen_from_child, y_seen_from_child);
+				child->self_output[x_on_child + y_on_child * child->width] = alpha_blend(child->image[x_on_child + y_on_child * child->width], child->input[x_on_child + y_on_child * child->width]);
+				transmit_self_output_dot(child, x_on_child, y_on_child);
 			}
 			return;
 		}
