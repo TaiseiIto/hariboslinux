@@ -135,25 +135,26 @@ void main(void)
 			#ifdef LOGGING
 			printf_serial("mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c\n", event->event_union.mouse_event.x, event->event_union.mouse_event.y, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
 			#endif
-			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)
+
+			if(event->event_union.mouse_event.flags & (MOUSE_LEFT_BUTTON_PUSHED_NOW | MOUSE_LEFT_BUTTON_RELEASED_NOW | MOUSE_MIDDLE_BUTTON_PUSHED_NOW | MOUSE_MIDDLE_BUTTON_RELEASED_NOW | MOUSE_RIGHT_BUTTON_PUSHED_NOW | MOUSE_RIGHT_BUTTON_RELEASED_NOW | MOUSE_4TH_BUTTON_PUSHED_NOW | MOUSE_4TH_BUTTON_RELEASED_NOW | MOUSE_5TH_BUTTON_PUSHED_NOW | MOUSE_5TH_BUTTON_RELEASED_NOW))
 			{
 				Sheet *clicked_sheet = get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 				new_event.type = EVENT_TYPE_SHEET_CLICKED;
 				new_event.event_union.sheet_clicked_event.sheet = clicked_sheet;
 				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(clicked_sheet);
 				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(clicked_sheet);
-				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
+				if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED & SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON;
+				else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED & SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
 				enqueue_event(&new_event);
 			}
-			if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)printf_serial("mouse middle button pushed now\n");
-			if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)printf_serial("mouse right button pushed now\n");
-			if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED_NOW)printf_serial("mouse 4th button pushed now\n");
-			if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED_NOW)printf_serial("mouse 5th button pushed now\n");
-			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)printf_serial("mouse left button released now\n");
-			if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)printf_serial("mouse middle button released now\n");
-			if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)printf_serial("mouse right button released now\n");
-			if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW)printf_serial("mouse 4th button released now\n");
-			if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)printf_serial("mouse 5th button released now\n");
 			move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:

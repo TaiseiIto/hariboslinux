@@ -95,7 +95,23 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 
 void *default_event_procedure(Sheet *sheet, Event const *event)
 {
-	printf_serial("default event procedure\n");
+	printf_serial("default_event_procedure");
+	switch(event->type)
+	{
+	case EVENT_TYPE_SHEET_CLICKED:
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON)printf_serial("Mouse left button ");
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON)printf_serial("Mouse middle button ");
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON)printf_serial("Mouse right button ");
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON)printf_serial("Mouse 4th button ");
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON)printf_serial("Mouse 5th button ");
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("pushed\n");
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("released\n");
+		break;
+	default:
+		ERROR_MESSAGE(); // Event that procedure is not defined.
+		break;
+	}
+	return NULL;
 }
 
 void delete_sheet(Sheet *sheet)
