@@ -157,11 +157,14 @@ void main(void)
 			}
 			if(event->event_union.mouse_event.x_movement || event->event_union.mouse_event.y_movement)
 			{
-				new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
-				new_event.event_union.sheet_mouse_move_event.sheet = operated_sheet;
-				new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.mouse_event.x_movement;
-				new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.mouse_event.y_movement;
-				enqueue_event(&new_event);
+				if(operated_sheet->parent == background_sheet)
+				{
+					new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
+					new_event.event_union.sheet_mouse_move_event.sheet = operated_sheet;
+					new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.mouse_event.x_movement;
+					new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.mouse_event.y_movement;
+					enqueue_event(&new_event);
+				}
 				move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 			}
 			break;
