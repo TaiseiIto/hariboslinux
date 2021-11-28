@@ -134,7 +134,10 @@ void main(void)
 			#ifdef LOGGING
 			printf_serial("mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c\n", event->event_union.mouse_event.x, event->event_union.mouse_event.y, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
 			#endif
-			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)printf_serial("mouse left button pushed now\n");
+			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED_NOW)
+			{
+				printf_serial("mouse left button pushed now\nsheet = %p\n", get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y));
+			}
 			if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED_NOW)printf_serial("mouse middle button pushed now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED_NOW)printf_serial("mouse right button pushed now\n");
 			if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED_NOW)printf_serial("mouse 4th button pushed now\n");

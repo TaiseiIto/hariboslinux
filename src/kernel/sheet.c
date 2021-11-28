@@ -135,6 +135,17 @@ void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsign
 	}
 }
 
+Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
+{
+	for(Sheet *child = sheet->uppest_child; child; child = child->lower)
+	{
+		short x_seen_from_child = (short)x -child->x;
+		short y_seen_from_child = (short)y -child->y;
+		if(0 <= x_seen_from_child && x_seen_from_child < child->width && 0 <= y_seen_from_child && y_seen_from_child < child->height)return get_uppest_sheet(child, x_seen_from_child, y_seen_from_child);
+	}
+	return sheet;
+}
+
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 {
 	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height);
