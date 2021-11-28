@@ -15,6 +15,7 @@ Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
+void *default_event_procedure(Sheet *sheet, Event const *event);
 void refresh_input(Sheet *sheet); // refresh sheet->input.
 void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
 void refresh_self_output(Sheet *sheet); // refresh sheet->self_output.
@@ -47,6 +48,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	new_sheet->height = height;
 	new_sheet->uppest_child = NULL;
 	new_sheet->lowest_child = NULL;
+	new_sheet->event_procedure = default_event_procedure;
 	cli_task();
 	new_sheet->parent = parent;
 	if(parent)
@@ -89,6 +91,11 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	refresh_input(new_sheet);
 	fill_box_sheet(new_sheet, 0, 0, new_sheet->width, new_sheet->height, color_transparent);
 	return new_sheet;
+}
+
+void *default_event_procedure(Sheet *sheet, Event const *event)
+{
+	printf_serial("default event procedure\n");
 }
 
 void delete_sheet(Sheet *sheet)
