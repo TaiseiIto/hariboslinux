@@ -227,11 +227,7 @@ void decode_mouse_interrupt(unsigned char signal)
 			mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED_NOW & ~MOUSE_LEFT_BUTTON_RELEASED_NOW;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)
 			{
-				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED))
-				{
-					mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED | MOUSE_LEFT_BUTTON_PUSHED_NOW;
-					printf_serial("mouse left button pushed now\n");
-				}
+				if(!(mouse_event.event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED))mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_PUSHED | MOUSE_LEFT_BUTTON_PUSHED_NOW;
 			}
 			else
 			{
@@ -239,7 +235,6 @@ void decode_mouse_interrupt(unsigned char signal)
 				{
 					mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED;
 					mouse_event.event_union.mouse_event.flags |= MOUSE_LEFT_BUTTON_RELEASED_NOW;
-					printf_serial("mouse left button released now\n");
 				}
 			}
 			if(mouse_packet.packet & MOUSE_PACKET_MIDDLE_BUTTON_PUSHED)
