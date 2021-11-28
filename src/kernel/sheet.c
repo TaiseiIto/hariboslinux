@@ -570,7 +570,9 @@ void pull_up_sheet(Sheet *sheet)
 		sheet->parent->uppest_child->upper = sheet;
 		sheet->parent->uppest_child = sheet;
 		sti_task();
+		printf_serial("pull_up_sheet1\n");
 		transmit_self_output_rectangle(sheet->parent, sheet->x, sheet->y, sheet->width, sheet->height);
+		printf_serial("pull_up_sheet2\n");
 	}
 	else ERROR_MESSAGE(); // Sheet that has no parent can't be pulled up.
 }
