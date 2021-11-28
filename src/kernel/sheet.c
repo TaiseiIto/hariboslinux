@@ -105,7 +105,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON)printf_serial("Mouse 5th button ");
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("pushed ");
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("released ");
-		printf_serial("at (%d, %d)\n", (unsigned int)event->event_union.sheet_clicked_event.x, (unsigned int)event->event_union.sheet_clicked_event.y);
+		printf_serial("at (%d, %d)\n", event->event_union.sheet_clicked_event.x, event->event_union.sheet_clicked_event.y);
 		break;
 	default:
 		ERROR_MESSAGE(); // Event that procedure is not defined.
