@@ -221,10 +221,10 @@ void move_sheet(Sheet *sheet, short x, short y)
 	unsigned short refresh_height = refresh_y_end - refresh_y_begin;
 	sheet->x = x;
 	sheet->y = y;
+	transmit_self_output_rectangle(sheet->parent ? sheet->parent : background_sheet, refresh_x_begin, refresh_y_begin, refresh_width, refresh_height);
 	refresh_input(sheet);
 	refresh_self_output(sheet);
 	transmit_self_output(sheet);
-	transmit_self_output_rectangle(sheet->parent ? sheet->parent : background_sheet, refresh_x_begin, refresh_y_begin, refresh_width, refresh_height);
 }
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
