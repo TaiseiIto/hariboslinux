@@ -6,10 +6,11 @@
 Queue *create_queue(size_t element_size)
 {
 	Queue *queue = malloc(sizeof(*queue));
-	queue->write_head = NULL;
-	queue->read_head = NULL;
-	queue->io = malloc(element_size);
 	queue->element_size = element_size;
+	queue->io = malloc(element_size);
+	queue->number_of_elements = 0;
+	queue->read_head = NULL;
+	queue->write_head = NULL;
 	return queue;
 }
 
@@ -22,6 +23,7 @@ void *dequeue(Queue *queue)
 		memcpy(queue->io, dequeued_element->data, queue->element_size);
 		queue->read_head = queue->read_head->next;
 		if(!queue->read_head)queue->write_head = NULL; // dequeue last element
+		queue->number_of_elements--;
 		free(dequeued_element->data);
 		free(dequeued_element);
 		sti_task();
@@ -48,6 +50,7 @@ void enqueue(Queue *queue, void const *data)
 	if(queue->write_head)queue->write_head->next = new_element;
 	queue->write_head = new_element;
 	if(!queue->read_head)queue->read_head = new_element;
+	queue->number_of_elements++;
 	sti_task();
 }
 

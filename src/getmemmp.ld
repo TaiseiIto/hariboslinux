@@ -12,6 +12,10 @@ SECTIONS
 		getmemmp.o(.text)
 		getmemmp.o(.data)
 	}
-	/DISCARD/:{*(.eh_frame)}
+	/DISCARD/ :
+	{
+		*(.eh_frame)
+		*(.note.gnu.property)
+	}
 }
 

@@ -20,6 +20,10 @@ SECTIONS
 		BYTE(0x55);
 		BYTE(0xaa);
 	}
-	/DISCARD/:{*(.eh_frame)}
+	/DISCARD/ :
+	{
+		*(.eh_frame)
+		*(.note.gnu.property)
+	}
 }
 

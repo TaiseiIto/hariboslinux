@@ -5,16 +5,17 @@
 
 typedef struct _QueueElement
 {
-	struct _QueueElement *next;
 	void *data;
+	struct _QueueElement *next;
 } QueueElement;
 
 typedef struct _Queue
 {
-	QueueElement *write_head;
-	QueueElement *read_head;
-	void *io; // This is needed for dynamic size element enqueue/dequeue.
 	size_t element_size;
+	void *io; // This is needed for dynamic size element enqueue/dequeue.
+	unsigned int number_of_elements;
+	QueueElement *read_head;
+	QueueElement *write_head;
 } Queue;
 
 Queue *create_queue(size_t element_size);

@@ -12,6 +12,10 @@ SECTIONS
 		initscrn.o(.text)
 		initscrn.o(.data)
 	}
-	/DISCARD/:{*(.eh_frame)}
+	/DISCARD/ :
+	{
+		*(.eh_frame)
+		*(.note.gnu.property)
+	}
 }
 
