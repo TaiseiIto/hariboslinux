@@ -24,7 +24,9 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // ref
 void refresh_self_output(Sheet *sheet); // refresh sheet->self_output.
 void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->self_output[x + y * sheet->width].
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width].
+void transmit_self_input(Sheet *sheet); // transmit image sheet->self_input.
 void transmit_self_output(Sheet *sheet); // transmit image sheet->self_output.
+void transmit_self_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_input[x + y * sheet->width].
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height); // transmit color sheet->self_output[x + y * sheet->width].
 
@@ -219,9 +221,12 @@ void move_sheet(Sheet *sheet, short x, short y)
 	unsigned short refresh_y_end = (previous_y + sheet->height <= parent_height ? previous_y + sheet->height : parent_height);
 	unsigned short refresh_width = refresh_x_end - refresh_x_begin;
 	unsigned short refresh_height = refresh_y_end - refresh_y_begin;
+	// Erase self image at the old coordinate
+	transmit_self_input(sheet);
+	// Set the new coordinate
 	sheet->x = x;
 	sheet->y = y;
-	transmit_self_output_rectangle(sheet->parent ? sheet->parent : background_sheet, refresh_x_begin, refresh_y_begin, refresh_width, refresh_height);
+	// Refresh screen 
 	refresh_input(sheet);
 	refresh_self_output(sheet);
 	transmit_self_output(sheet);
@@ -745,9 +750,21 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 	if(0 <= x_on_screen && x_on_screen < get_video_information()->width && 0 <= y_on_screen && y_on_screen < get_video_information()->height)put_dot_screen(x_on_screen, y_on_screen, sheet->family_output[x + y * sheet->width]);
 }
 
+void transmit_self_input(Sheet *sheet) // transmit image sheet->self_input.
+{
+	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_input_dot(sheet, x, y);
+}
+
 void transmit_self_output(Sheet *sheet) // transmit image sheet->self_output.
 {
 	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_output_dot(sheet, x, y);
+}
+
+void transmit_self_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_input[x + y * sheet->width].
+{
+	sheet->family_output[x + y * sheet->width] = sheet->input[x + y * sheet->width];
+	transmit_family_output_dot(sheet, x, y);
+	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
 }
 
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width].
