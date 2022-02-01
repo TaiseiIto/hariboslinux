@@ -28,6 +28,7 @@ void transmit_self_input(Sheet *sheet); // transmit image sheet->self_input.
 void transmit_self_output(Sheet *sheet); // transmit image sheet->self_output.
 void transmit_self_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_input[x + y * sheet->width].
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
+void transmit_self_input_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height); // transmit color sheet->self_input[x + y * sheet->width].
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height); // transmit color sheet->self_output[x + y * sheet->width].
 
 Color alpha_blend(Color foreground, Color background)
@@ -211,8 +212,34 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 
 void move_sheet(Sheet *sheet, short x, short y)
 {
+	// Previous sheet boundary seen from previous sheet
+	short previous_top = 0;
+	short previous_bottom = sheet->height;
+	short previous_left = 0;
+	short previous_right = sheet->width;
+	// New sheet boundary seen from previous sheet
+	short new_top = previous_top + y - sheet->y;
+	short new_bottom = previous_bottom + y - sheet->y;
+	short new_left = previous_left + x - sheet->x;
+	short new_right = previous_right + x - sheet->x;
+	// Regions that should be erased in previous sheet.
+	short erased_top_height = new_top - previous_top;
+	short erased_bottom_height = previous_bottom - new_bottom;
+	short erased_left_width = new_left - previous_left;
+	short erased_right_width = previous_right - new_right;
+	if(erased_top_height < 0)erased_top_height = 0;
+	else if(sheet->height < erased_top_height)erased_top_height = sheet->height;
+	if(erased_bottom_height < 0)erased_bottom_height = 0;
+	else if(sheet->height < erased_bottom_height)erased_bottom_height = sheet->height;
+	if(erased_left_width < 0)erased_left_width = 0;
+	else if(sheet->width < erased_left_width)erased_left_width = sheet->width;
+	if(erased_right_width < 0)erased_right_width = 0;
+	else if(sheet->width < erased_right_width)erased_right_width = sheet->width;
 	// Erase self image at the old coordinate
-	transmit_self_input(sheet);
+	if(0 < erased_top_height)transmit_self_input_rectangle(sheet, 0, 0, sheet->width, erased_top_height);
+	else if(0 < erased_bottom_height)transmit_self_input_rectangle(sheet, 0, sheet->height - erased_bottom_height, sheet->width, erased_bottom_height);
+	if(0 < erased_left_width)transmit_self_input_rectangle(sheet, 0, erased_top_height, erased_left_width, sheet->height - erased_top_height - erased_bottom_height);
+	else if(0 < erased_right_width)transmit_self_input_rectangle(sheet, sheet->width - erased_right_width, erased_top_height, erased_right_width, sheet->height - erased_top_height - erased_bottom_height);
 	// Set the new coordinate
 	sheet->x = x;
 	sheet->y = y;
@@ -779,6 +806,11 @@ void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) 
 	}
 	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
+}
+
+void transmit_self_input_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_input[x + y * sheet->width].
+{
+	for(unsigned short y_i = y; y_i < y + height; y_i++)for(unsigned short x_i = x; x_i < x + width; x_i++)transmit_self_input_dot(sheet, x_i, y_i);
 }
 
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_output[x + y * sheet->width].
