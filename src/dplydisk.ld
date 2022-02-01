@@ -12,6 +12,9 @@ SECTIONS
 		dplydisk.o(.text)
 		dplydisk.o(.data)
 	}
-	/DISCARD/:{*(.eh_frame)}
+	/DISCARD/ :
+	{
+		*(.eh_frame)
+	}
 }
 

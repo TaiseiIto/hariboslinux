@@ -12,6 +12,9 @@ SECTIONS
 		mv2prtmd.o(.text)
 		mv2prtmd.o(.data)
 	}
-	/DISCARD/:{*(.eh_frame)}
+	/DISCARD/ :
+	{
+		*(.eh_frame)
+	}
 }
 

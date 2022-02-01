@@ -137,7 +137,13 @@ SECTIONS
 		task.o(.bss)
 		timer.o(.bss)
 	}
-	/DISCARD/:{*(.eh_frame)}
-	/DISCARD/:{*(.note.gnu.property)}
+	/DISCARD/ :
+	{
+		*(.eh_frame)
+	}
+	/DISCARD/ :
+	{
+		*(.note.gnu.property)
+	}
 }
 
