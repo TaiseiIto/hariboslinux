@@ -620,7 +620,10 @@ void pull_up_sheet(Sheet *sheet)
 {
 	if(sheet->parent)
 	{
-		if(sheet->parent->uppest_child == sheet)return;
+		if(sheet->parent->uppest_child == sheet)return; // The sheet is already the uppest
+		// erase the sheet before pulled up
+		transmit_self_input(sheet);
+		// Pull up the sheet
 		cli_task();
 		if(sheet->parent->lowest_child == sheet)sheet->parent->lowest_child = sheet->upper;
 		if(sheet->upper)sheet->upper->lower = sheet->lower;
