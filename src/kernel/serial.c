@@ -83,6 +83,7 @@
 unsigned char com1_flags = COM_AVAILABLE;
 
 Queue *com1_transmission_queue;
+#define MAX_LENGTH_OF_TRANSMISSION_QUEUE 0x0400
 
 // COM1 interrupt handler
 void com1_interrupt_handler(void)
@@ -417,7 +418,7 @@ void put_char_serial(char character)
 {
 	if(com1_flags & COM_AVAILABLE)
 	{
-		if(com1_flags & COM_INTERRUPT)
+		if(com1_flags & COM_INTERRUPT) // interrupt
 		{
 			enqueue(com1_transmission_queue, &character);
 			if(com1_flags & COM_WRITABLE)
@@ -425,8 +426,10 @@ void put_char_serial(char character)
 				com1_flags &= ~COM_WRITABLE;
 				outb(COM1 + DATA_REGISTER, *(unsigned char *)dequeue(com1_transmission_queue));
 			}
+			// If COM1 doesn't react, the queue contents should be discarded regularly.
+			if(MAX_LENGTH_OF_TRANSMISSION_QUEUE < com1_transmission_queue->number_of_elements)while(com1_transmission_queue->number_of_elements)dequeue(com1_transmission_queue);
 		}
-		else
+		else // polling
 		{
 			while(!(inb(COM1 + LINE_STATUS_REGISTER) & TRANSMITTER_HOLDING_REGISTER_EMPTY));
 			outb(COM1, character);
