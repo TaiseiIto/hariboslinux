@@ -15,6 +15,7 @@ SECTIONS
 	/DISCARD/ :
 	{
 		*(.eh_frame)
+		*(.note.gnu.property)
 	}
 }
 

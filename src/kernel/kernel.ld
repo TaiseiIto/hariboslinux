@@ -140,9 +140,6 @@ SECTIONS
 	/DISCARD/ :
 	{
 		*(.eh_frame)
-	}
-	/DISCARD/ :
-	{
 		*(.note.gnu.property)
 	}
 }
