@@ -211,16 +211,6 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 
 void move_sheet(Sheet *sheet, short x, short y)
 {
-	short previous_x = sheet->x;
-	short previous_y = sheet->y;
-	unsigned short parent_width = (sheet->parent ? sheet->parent->width : get_video_information()->width);
-	unsigned short parent_height = (sheet->parent ? sheet->parent->height : get_video_information()->height);
-	unsigned short refresh_x_begin = (0 <= previous_x ? previous_x : 0);
-	unsigned short refresh_x_end = (previous_x + sheet->width <= parent_width ? previous_x + sheet->width : parent_width);
-	unsigned short refresh_y_begin = (0 <= previous_y ? previous_y : 0);
-	unsigned short refresh_y_end = (previous_y + sheet->height <= parent_height ? previous_y + sheet->height : parent_height);
-	unsigned short refresh_width = refresh_x_end - refresh_x_begin;
-	unsigned short refresh_height = refresh_y_end - refresh_y_begin;
 	// Erase self image at the old coordinate
 	transmit_self_input(sheet);
 	// Set the new coordinate
