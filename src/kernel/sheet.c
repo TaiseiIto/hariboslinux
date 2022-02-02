@@ -642,7 +642,6 @@ void pull_up_sheet(Sheet *sheet)
 		sheet->parent->uppest_child->upper = sheet;
 		sheet->parent->uppest_child = sheet;
 		sti_task();
-		transmit_self_output_rectangle(sheet->parent, sheet->x, sheet->y, sheet->width, sheet->height);
 		refresh_input(sheet);
 		refresh_self_output(sheet);
 		transmit_self_output(sheet);
