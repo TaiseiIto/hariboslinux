@@ -40,6 +40,7 @@ SECTIONS
 		string.o(.text)
 		task.o(.text)
 		timer.o(.text)
+		window.o(.text)
 		main.o(.rodata)
 		cmos.o(.rodata)
 		disk.o(.rodata)
@@ -72,6 +73,7 @@ SECTIONS
 		string.o(.rodata)
 		task.o(.rodata)
 		timer.o(.rodata)
+		window.o(.rodata)
 		main.o(.data)
 		cmos.o(.data)
 		disk.o(.data)
@@ -104,6 +106,7 @@ SECTIONS
 		string.o(.data)
 		task.o(.data)
 		timer.o(.data)
+		window.o(.data)
 		main.o(.bss)
 		cmos.o(.bss)
 		disk.o(.bss)
@@ -136,6 +139,7 @@ SECTIONS
 		string.o(.bss)
 		task.o(.bss)
 		timer.o(.bss)
+		window.o(.bss)
 	}
 	/DISCARD/ :
 	{

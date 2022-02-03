@@ -16,7 +16,7 @@ LINKER_MAP_OPTION = -Map kernel.map
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
-OBJECTS = cmos.o disk.o event.o exception.o font.o fontdata.o gdt.o graphic.o idt.o interrupt_handlers.o keyboard.o libgcc.o main.o math.o memory.o mouse.o mouse_cursor.o parallel.o peripheral.o pic.o pit.o queue.o rtc.o serial.o sheet.o stack.o stdio.o string.o task.o timer.o
+OBJECTS = cmos.o disk.o event.o exception.o font.o fontdata.o gdt.o graphic.o idt.o interrupt_handlers.o keyboard.o libgcc.o main.o math.o memory.o mouse.o mouse_cursor.o parallel.o peripheral.o pic.o pit.o queue.o rtc.o serial.o sheet.o stack.o stdio.o string.o task.o timer.o window.o
 
 all: kernel.bin
 
