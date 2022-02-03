@@ -793,9 +793,10 @@ void transmit_self_output(Sheet *sheet) // transmit image sheet->self_output.
 
 void transmit_self_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_input[x + y * sheet->width].
 {
+	Color family_output = sheet->family_output[x + y * sheet->width];
 	sheet->family_output[x + y * sheet->width] = sheet->input[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
-	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
+	sheet->family_output[x + y * sheet->width] = family_output;
 }
 
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width].
