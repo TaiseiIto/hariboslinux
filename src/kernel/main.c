@@ -15,6 +15,7 @@
 #include "stdio.h"
 #include "task.h"
 #include "timer.h"
+#include "window.h"
 
 void main(void)
 {
@@ -42,6 +43,7 @@ void main(void)
 	unsigned long long timer_counter = 0;
 	unsigned short keyboard_flags = 0;
 	unsigned short screen_text_row = 8;
+	Window *test_window;
 	cli();
 	new_line_serial();
 	print_serial("Hello, kernel.bin!\n\n");
@@ -115,6 +117,7 @@ void main(void)
 	fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
 	fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
 	fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
+	test_window = create_window(background_sheet, 0, 0, 0x0200, 0x0200);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "mouse ID = %#04x", get_mouse_id());
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04x", boot_information->keyboard_state);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04x", boot_information->last_loaded_cylinder);
@@ -128,7 +131,6 @@ void main(void)
 		printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
-	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "memory sections");
 	test_timer = create_timer(0, 100);
 	checking_free_memory_space_size_timer = create_timer(0, 100);
 	while(1)
