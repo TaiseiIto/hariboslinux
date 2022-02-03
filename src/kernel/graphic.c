@@ -444,6 +444,8 @@ void put_dot_screen(unsigned short x, unsigned short y, Color color)
 {
 	if(video_information->width <= x)ERROR_MESSAGE();
 	if(video_information->height <= y)ERROR_MESSAGE();
-	*(unsigned int *)(vram + video_information->pitch * y + video_information->bits_per_pixel / CHAR_BIT * x) = (color.red << video_information->red_position) + (color.green << video_information->green_position) + (color.blue << video_information->blue_position);
+	*(unsigned char *)(vram + video_information->pitch * y + (video_information->bits_per_pixel * x + video_information->red_position) / CHAR_BIT) = color.red;
+	*(unsigned char *)(vram + video_information->pitch * y + (video_information->bits_per_pixel * x + video_information->green_position) / CHAR_BIT) = color.green;
+	*(unsigned char *)(vram + video_information->pitch * y + (video_information->bits_per_pixel * x + video_information->blue_position) / CHAR_BIT) = color.blue;
 }
 
