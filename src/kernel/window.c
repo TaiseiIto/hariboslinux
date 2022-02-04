@@ -20,6 +20,7 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	new_window->root_sheet = create_sheet(background_sheet, x, y, width, height);
 	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, 16);
 	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH);
+	new_window->close_button_sheet = create_sheet(new_window->title_sheet, new_window->title_sheet->width - new_window->title_sheet->height + 1, 1, new_window->title_sheet->height - 2, new_window->title_sheet->height - 2);
 	// Draw root sheet
 	fill_box_sheet(new_window->root_sheet, 0, 0, new_window->root_sheet->width - 1, 1, light_limit_color);
 	fill_box_sheet(new_window->root_sheet, 0, 1, 1, new_window->root_sheet->height - 2, light_limit_color);
@@ -46,6 +47,16 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	fill_box_sheet(new_window->title_sheet, 0, 0, new_window->title_sheet->width, new_window->title_sheet->height, title_background_color);
 	// Draw client sheet
 	fill_box_sheet(new_window->client_sheet, 0, 0, new_window->client_sheet->width, new_window->client_sheet->height, client_background_color);
+	// Draw close button sheet
+	fill_box_sheet(new_window->close_button_sheet, 0, 0, new_window->close_button_sheet->width - 1, 1, light_limit_color);
+	fill_box_sheet(new_window->close_button_sheet, 0, 1, 1, new_window->close_button_sheet->height - 2, light_limit_color);
+	fill_box_sheet(new_window->close_button_sheet, 1, 1, new_window->close_button_sheet->width - 3, 1, semi_light_limit_color);
+	fill_box_sheet(new_window->close_button_sheet, 1, 2, 1, new_window->close_button_sheet->height - 4, semi_light_limit_color);
+	fill_box_sheet(new_window->close_button_sheet, 2, 2, new_window->close_button_sheet->width - 4, new_window->close_button_sheet->height - 4, background_color);
+	fill_box_sheet(new_window->close_button_sheet, 1, new_window->close_button_sheet->height - 2, new_window->close_button_sheet->width - 2, 1, semi_dark_limit_color);
+	fill_box_sheet(new_window->close_button_sheet, new_window->close_button_sheet->width - 2, 1, 1, new_window->close_button_sheet->height - 3, semi_dark_limit_color);
+	fill_box_sheet(new_window->close_button_sheet, 0, new_window->close_button_sheet->height - 1, new_window->close_button_sheet->width, 1, dark_limit_color);
+	fill_box_sheet(new_window->close_button_sheet, new_window->close_button_sheet->width - 1, 0, 1, new_window->close_button_sheet->height - 1, dark_limit_color);
 	return new_window;
 }
 
