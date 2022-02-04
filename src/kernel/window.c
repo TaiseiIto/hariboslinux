@@ -38,7 +38,7 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	// Create sheets
 	new_window = malloc(sizeof(*new_window));
 	new_window->root_sheet = create_sheet(background_sheet, x, y, width, height);
-	new_window->title_sheet = create_sheet(new_window->root_sheet, 6, 6, new_window->root_sheet->width - 12, 8);
+	new_window->title_sheet = create_sheet(new_window->root_sheet, 6, 6, new_window->root_sheet->width - 12, 16);
 	// Draw root sheet
 	fill_box_sheet(new_window->root_sheet, 0, 0, new_window->root_sheet->width - 1, 1, light_limit_color);
 	fill_box_sheet(new_window->root_sheet, 0, 1, 1, new_window->root_sheet->height - 2, light_limit_color);

@@ -25,10 +25,10 @@ void refresh_self_output(Sheet *sheet); // refresh sheet->self_output.
 void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->self_output[x + y * sheet->width].
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width].
 void transmit_self_input(Sheet *sheet); // transmit image sheet->self_input.
-void transmit_self_output(Sheet *sheet); // transmit image sheet->self_output.
 void transmit_self_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_input[x + y * sheet->width].
-void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
 void transmit_self_input_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height); // transmit color sheet->self_input[x + y * sheet->width].
+void transmit_self_output(Sheet *sheet); // transmit image sheet->self_output.
+void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height); // transmit color sheet->self_output[x + y * sheet->width].
 
 Color alpha_blend(Color foreground, Color background)
@@ -786,17 +786,22 @@ void transmit_self_input(Sheet *sheet) // transmit image sheet->self_input.
 	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_input_dot(sheet, x, y);
 }
 
-void transmit_self_output(Sheet *sheet) // transmit image sheet->self_output.
-{
-	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_output_dot(sheet, x, y);
-}
-
 void transmit_self_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_input[x + y * sheet->width].
 {
 	Color family_output = sheet->family_output[x + y * sheet->width];
 	sheet->family_output[x + y * sheet->width] = sheet->input[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
 	sheet->family_output[x + y * sheet->width] = family_output;
+}
+
+void transmit_self_input_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_input[x + y * sheet->width].
+{
+	for(unsigned short y_i = y; y_i < y + height; y_i++)for(unsigned short x_i = x; x_i < x + width; x_i++)transmit_self_input_dot(sheet, x_i, y_i);
+}
+
+void transmit_self_output(Sheet *sheet) // transmit image sheet->self_output.
+{
+	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_output_dot(sheet, x, y);
 }
 
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width].
@@ -818,11 +823,6 @@ void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) 
 	}
 	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
-}
-
-void transmit_self_input_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_input[x + y * sheet->width].
-{
-	for(unsigned short y_i = y; y_i < y + height; y_i++)for(unsigned short x_i = x; x_i < x + width; x_i++)transmit_self_input_dot(sheet, x_i, y_i);
 }
 
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_output[x + y * sheet->width].
