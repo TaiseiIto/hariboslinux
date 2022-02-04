@@ -24,12 +24,15 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // ref
 void refresh_self_output(Sheet *sheet); // refresh sheet->self_output.
 void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->self_output[x + y * sheet->width].
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width].
+void transmit_family_output_dot_through_opaques(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width] through opaque sheets.
 void transmit_self_input(Sheet *sheet); // transmit image sheet->self_input.
 void transmit_self_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_input[x + y * sheet->width].
 void transmit_self_input_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height); // transmit color sheet->self_input[x + y * sheet->width].
 void transmit_self_output(Sheet *sheet); // transmit image sheet->self_output.
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width].
+void transmit_self_output_dot_through_opaques(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->self_output[x + y * sheet->width] through opaque sheets.
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height); // transmit color sheet->self_output[x + y * sheet->width].
+void transmit_self_output_through_opaques(Sheet *sheet); // transmit image sheet->self_output through opaque sheets.
 
 Color alpha_blend(Color foreground, Color background)
 {
@@ -255,7 +258,7 @@ void move_sheet(Sheet *sheet, short x, short y)
 	// Refresh screen 
 	refresh_input(sheet);
 	refresh_self_output(sheet);
-	transmit_self_output(sheet);
+	transmit_self_output_through_opaques(sheet);
 }
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
@@ -644,7 +647,7 @@ void pull_up_sheet(Sheet *sheet)
 		sti_task();
 		refresh_input(sheet);
 		refresh_self_output(sheet);
-		transmit_self_output(sheet);
+		transmit_self_output_through_opaques(sheet);
 	}
 	else ERROR_MESSAGE(); // Sheet that has no parent can't be pulled up.
 }
@@ -781,6 +784,41 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 	if(0 <= x_on_screen && x_on_screen < get_video_information()->width && 0 <= y_on_screen && y_on_screen < get_video_information()->height)put_dot_screen(x_on_screen, y_on_screen, sheet->family_output[x + y * sheet->width]);
 }
 
+void transmit_family_output_dot_through_opaques(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width] through opaque sheets.
+{
+	short x_on_screen;
+	short y_on_screen;
+	if(sheet->upper)
+	{
+		for(Sheet *upper = sheet->upper; upper; upper = upper->upper)
+		{
+			short x_on_upper = (short)x + sheet->x - upper->x;
+			short y_on_upper = (short)y + sheet->y - upper->y;
+			if(0 <= x_on_upper && x_on_upper < upper->width && 0 <= y_on_upper && y_on_upper < upper->height)
+			{
+				upper->input[x_on_upper + y_on_upper * upper->width] = sheet->family_output[x + y * sheet->width];
+				if(upper->image[x_on_upper + y_on_upper * upper->width].alpha != 0xff)upper->self_output[x_on_upper + y_on_upper * upper->width] = alpha_blend(upper->image[x_on_upper + y_on_upper * upper->width], upper->input[x_on_upper + y_on_upper * upper->width]);
+				transmit_self_output_dot_through_opaques(upper, x_on_upper, y_on_upper);
+				return;
+			}
+		}
+	}
+	if(sheet->parent)
+	{
+		short x_on_parent = x + sheet->x;
+		short y_on_parent = y + sheet->y;
+		if(0 <= x_on_parent && x_on_parent < sheet->parent->width && 0 <= y_on_parent && y_on_parent < sheet->parent->height)
+		{
+			sheet->parent->family_output[x_on_parent + y_on_parent * sheet->parent->width] = sheet->family_output[x + y * sheet->width];
+			transmit_family_output_dot(sheet->parent, x_on_parent, y_on_parent);
+			return;
+		}
+	}
+	x_on_screen = x + sheet->x;
+	y_on_screen = y + sheet->y;
+	if(0 <= x_on_screen && x_on_screen < get_video_information()->width && 0 <= y_on_screen && y_on_screen < get_video_information()->height)put_dot_screen(x_on_screen, y_on_screen, sheet->family_output[x + y * sheet->width]);
+}
+
 void transmit_self_input(Sheet *sheet) // transmit image sheet->self_input.
 {
 	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_input_dot(sheet, x, y);
@@ -825,8 +863,30 @@ void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) 
 	transmit_family_output_dot(sheet, x, y);
 }
 
+void transmit_self_output_dot_through_opaques(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width] through opaque sheets.
+{
+	for(Sheet *child = sheet->lowest_child; child; child = child->upper)
+	{
+		short x_on_child = x - child->x;
+		short y_on_child = y - child->y;
+		if(0 <= x_on_child && x_on_child < child->width && 0 <= y_on_child && y_on_child < child->height)
+		{
+			child->input[x_on_child + y_on_child * child->width] = sheet->self_output[x + y * sheet->width];
+			if(child->image[x_on_child + y_on_child * child->width].alpha != 0xff)child->self_output[x_on_child + y_on_child * child->width] = alpha_blend(child->image[x_on_child + y_on_child * child->width], child->input[x_on_child + y_on_child * child->width]);
+			transmit_self_output_dot_through_opaques(child, x_on_child, y_on_child);
+		}
+	}
+	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
+	transmit_family_output_dot(sheet, x, y);
+}
+												     //
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_output[x + y * sheet->width].
 {
 	for(unsigned short y_i = y; y_i < y + height; y_i++)for(unsigned short x_i = x; x_i < x + width; x_i++)transmit_self_output_dot(sheet, x_i, y_i);
+}
+
+void transmit_self_output_through_opaques(Sheet *sheet) // transmit image sheet->self_output through opaque sheets.
+{
+	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_output_dot_through_opaques(sheet, x, y);
 }
 
