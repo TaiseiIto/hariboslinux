@@ -6,6 +6,7 @@
 typedef struct _Window
 {
 	Sheet *root_sheet;
+	Sheet *title_sheet;
 } Window;
 
 Window *create_window(Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height);
