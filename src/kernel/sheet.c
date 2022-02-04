@@ -874,6 +874,7 @@ void transmit_self_output_dot_through_opaques(Sheet *sheet, unsigned short x, un
 			child->input[x_on_child + y_on_child * child->width] = sheet->self_output[x + y * sheet->width];
 			if(child->image[x_on_child + y_on_child * child->width].alpha != 0xff)child->self_output[x_on_child + y_on_child * child->width] = alpha_blend(child->image[x_on_child + y_on_child * child->width], child->input[x_on_child + y_on_child * child->width]);
 			transmit_self_output_dot_through_opaques(child, x_on_child, y_on_child);
+			return;
 		}
 	}
 	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
