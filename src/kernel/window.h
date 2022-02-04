@@ -5,6 +5,7 @@
 
 typedef struct _Window
 {
+	Sheet *client_sheet;
 	Sheet *root_sheet;
 	Sheet *title_sheet;
 } Window;

@@ -8,6 +8,7 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 
 	//					//{red ,green, blue,alpha}
 	const Color background_color		= {0x80, 0x80, 0x80, 0xff};
+	const Color client_background_color	= {0x80, 0x80, 0x80, 0xff};
 	const Color dark_limit_color		= {0x00, 0x00, 0x00, 0xff};
 	const Color light_limit_color		= {0xff, 0xff, 0xff, 0xff};
 	const Color semi_dark_limit_color	= {0x40, 0x40, 0x40, 0xff};
@@ -18,6 +19,7 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	new_window = malloc(sizeof(*new_window));
 	new_window->root_sheet = create_sheet(background_sheet, x, y, width, height);
 	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, 16);
+	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH);
 	// Draw root sheet
 	fill_box_sheet(new_window->root_sheet, 0, 0, new_window->root_sheet->width - 1, 1, light_limit_color);
 	fill_box_sheet(new_window->root_sheet, 0, 1, 1, new_window->root_sheet->height - 2, light_limit_color);
@@ -42,6 +44,8 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	}
 	// Draw title sheet
 	fill_box_sheet(new_window->title_sheet, 0, 0, new_window->title_sheet->width, new_window->title_sheet->height, title_background_color);
+	// Draw client sheet
+	fill_box_sheet(new_window->client_sheet, 0, 0, new_window->client_sheet->width, new_window->client_sheet->height, client_background_color);
 	return new_window;
 }
 
