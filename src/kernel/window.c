@@ -92,7 +92,7 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	fill_box_sheet(new_window->close_button_sheet, new_window->close_button_sheet->width - 1, 0, 1, new_window->close_button_sheet->height - 1, dark_limit_color);
 	for(unsigned short x_i = 2; x_i < new_window->close_button_sheet->width - 2; x_i++)for(unsigned short y_i = 2; y_i < new_window->close_button_sheet->height - 2; y_i++)
 	{
-		if(x_i - y_i <= 1 && y_i - x_i <= 1 || x_i + y_i == new_window->close_button_sheet->width - 1)put_dot_sheet(new_window->close_button_sheet, x_i, y_i, close_button_cross_color);
+		if(x_i - y_i <= 1 && y_i - x_i <= 1 || new_window->close_button_sheet->width - 2 <= x_i + y_i && x_i + y_i <= new_window->close_button_sheet->width)put_dot_sheet(new_window->close_button_sheet, x_i, y_i, close_button_cross_color);
 		else put_dot_sheet(new_window->close_button_sheet, x_i, y_i, background_color);
 	}
 	return new_window;
