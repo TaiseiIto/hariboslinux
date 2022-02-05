@@ -25,7 +25,8 @@ void *client_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *ev
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CREATED:
-		printf_serial("Client sheet %p is created.\n", sheet);
+		// Draw client sheet
+		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, client_background_color);
 		break;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
@@ -42,7 +43,20 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CREATED:
-		printf_serial("Close button sheet %p is created.\n", sheet);
+		// Draw close button sheet
+		fill_box_sheet(sheet, 0, 0, sheet->width - 1, 1, light_limit_color);
+		fill_box_sheet(sheet, 0, 1, 1, sheet->height - 2, light_limit_color);
+		fill_box_sheet(sheet, 1, 1, sheet->width - 3, 1, semi_light_limit_color);
+		fill_box_sheet(sheet, 1, 2, 1, sheet->height - 4, semi_light_limit_color);
+		fill_box_sheet(sheet, 1, sheet->height - 2, sheet->width - 2, 1, semi_dark_limit_color);
+		fill_box_sheet(sheet, sheet->width - 2, 1, 1, sheet->height - 3, semi_dark_limit_color);
+		fill_box_sheet(sheet, 0, sheet->height - 1, sheet->width, 1, dark_limit_color);
+		fill_box_sheet(sheet, sheet->width - 1, 0, 1, sheet->height - 1, dark_limit_color);
+		for(unsigned short x_i = 2; x_i < sheet->width - 2; x_i++)for(unsigned short y_i = 2; y_i < sheet->height - 2; y_i++)
+		{
+			if(2 < x_i && x_i < sheet->width - 3 && 2 < y_i && y_i < sheet->height - 3 && (x_i - y_i <= 1 && y_i - x_i <= 1 || sheet->width - 2 <= x_i + y_i && x_i + y_i <= sheet->width))put_dot_sheet(sheet, x_i, y_i, close_button_cross_color);
+			else put_dot_sheet(sheet, x_i, y_i, background_color);
+		}
 		break;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
@@ -63,24 +77,6 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, TITLE_SHEET_HEIGHT, title_sheet_event_procedure);
 	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure);
 	new_window->close_button_sheet = create_sheet(new_window->title_sheet, new_window->title_sheet->width - new_window->title_sheet->height + 1, 1, new_window->title_sheet->height - 2, new_window->title_sheet->height - 2, close_button_sheet_event_procedure);
-	// Draw title sheet
-	fill_box_sheet(new_window->title_sheet, 0, 0, new_window->title_sheet->width, new_window->title_sheet->height, title_background_color);
-	// Draw client sheet
-	fill_box_sheet(new_window->client_sheet, 0, 0, new_window->client_sheet->width, new_window->client_sheet->height, client_background_color);
-	// Draw close button sheet
-	fill_box_sheet(new_window->close_button_sheet, 0, 0, new_window->close_button_sheet->width - 1, 1, light_limit_color);
-	fill_box_sheet(new_window->close_button_sheet, 0, 1, 1, new_window->close_button_sheet->height - 2, light_limit_color);
-	fill_box_sheet(new_window->close_button_sheet, 1, 1, new_window->close_button_sheet->width - 3, 1, semi_light_limit_color);
-	fill_box_sheet(new_window->close_button_sheet, 1, 2, 1, new_window->close_button_sheet->height - 4, semi_light_limit_color);
-	fill_box_sheet(new_window->close_button_sheet, 1, new_window->close_button_sheet->height - 2, new_window->close_button_sheet->width - 2, 1, semi_dark_limit_color);
-	fill_box_sheet(new_window->close_button_sheet, new_window->close_button_sheet->width - 2, 1, 1, new_window->close_button_sheet->height - 3, semi_dark_limit_color);
-	fill_box_sheet(new_window->close_button_sheet, 0, new_window->close_button_sheet->height - 1, new_window->close_button_sheet->width, 1, dark_limit_color);
-	fill_box_sheet(new_window->close_button_sheet, new_window->close_button_sheet->width - 1, 0, 1, new_window->close_button_sheet->height - 1, dark_limit_color);
-	for(unsigned short x_i = 2; x_i < new_window->close_button_sheet->width - 2; x_i++)for(unsigned short y_i = 2; y_i < new_window->close_button_sheet->height - 2; y_i++)
-	{
-		if(2 < x_i && x_i < new_window->close_button_sheet->width - 3 && 2 < y_i && y_i < new_window->close_button_sheet->height - 3 && (x_i - y_i <= 1 && y_i - x_i <= 1 || new_window->close_button_sheet->width - 2 <= x_i + y_i && x_i + y_i <= new_window->close_button_sheet->width))put_dot_sheet(new_window->close_button_sheet, x_i, y_i, close_button_cross_color);
-		else put_dot_sheet(new_window->close_button_sheet, x_i, y_i, background_color);
-	}
 	return new_window;
 }
 
@@ -123,7 +119,8 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CREATED:
-		printf_serial("Title sheet %p is created.\n", sheet);
+		// Draw title sheet
+		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, title_background_color);
 		break;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
