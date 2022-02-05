@@ -59,8 +59,30 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 	case EVENT_TYPE_SHEET_CLICKED:
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON)
 		{
-			if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("Close button pushed.\n");
-			else if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("Close button released.\n");
+			if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
+			{
+				// Close button is pushed.
+				fill_box_sheet(sheet, 0, 0, sheet->width - 1, 1, dark_limit_color);
+				fill_box_sheet(sheet, 0, 1, 1, sheet->height - 2, dark_limit_color);
+				fill_box_sheet(sheet, 1, 1, sheet->width - 3, 1, semi_dark_limit_color);
+				fill_box_sheet(sheet, 1, 2, 1, sheet->height - 4, semi_dark_limit_color);
+				fill_box_sheet(sheet, 1, sheet->height - 2, sheet->width - 2, 1, semi_light_limit_color);
+				fill_box_sheet(sheet, sheet->width - 2, 1, 1, sheet->height - 3, semi_light_limit_color);
+				fill_box_sheet(sheet, 0, sheet->height - 1, sheet->width, 1, light_limit_color);
+				fill_box_sheet(sheet, sheet->width - 1, 0, 1, sheet->height - 1, light_limit_color);
+			}
+			else if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)
+			{
+				// Close button is released.
+				fill_box_sheet(sheet, 0, 0, sheet->width - 1, 1, light_limit_color);
+				fill_box_sheet(sheet, 0, 1, 1, sheet->height - 2, light_limit_color);
+				fill_box_sheet(sheet, 1, 1, sheet->width - 3, 1, semi_light_limit_color);
+				fill_box_sheet(sheet, 1, 2, 1, sheet->height - 4, semi_light_limit_color);
+				fill_box_sheet(sheet, 1, sheet->height - 2, sheet->width - 2, 1, semi_dark_limit_color);
+				fill_box_sheet(sheet, sheet->width - 2, 1, 1, sheet->height - 3, semi_dark_limit_color);
+				fill_box_sheet(sheet, 0, sheet->height - 1, sheet->width, 1, dark_limit_color);
+				fill_box_sheet(sheet, sheet->width - 1, 0, 1, sheet->height - 1, dark_limit_color);
+			}
 		}
 		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
