@@ -44,7 +44,7 @@ Color alpha_blend(Color foreground, Color background)
 	return blended;
 }
 
-Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height)
+Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event))
 {
 	Sheet *new_sheet = malloc(sizeof(*new_sheet));
 	new_sheet->image = malloc(width * height * sizeof(*new_sheet->image));
@@ -57,7 +57,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	new_sheet->height = height;
 	new_sheet->uppest_child = NULL;
 	new_sheet->lowest_child = NULL;
-	new_sheet->event_procedure = default_event_procedure;
+	new_sheet->event_procedure = event_procedure ? event_procedure : default_event_procedure;
 	cli_task();
 	new_sheet->parent = parent;
 	if(parent)
@@ -216,9 +216,9 @@ Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 {
-	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height);
+	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height, NULL);
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
-	*_mouse_cursor_sheet = create_sheet(NULL, get_video_information()->width / 2, get_video_information()->height / 2, 0x08, 0x10);
+	*_mouse_cursor_sheet = create_sheet(NULL, get_video_information()->width / 2, get_video_information()->height / 2, 0x08, 0x10, NULL);
 	for(unsigned short mouse_cursor_image_y = 0; mouse_cursor_image_y < mouse_cursor_sheet->height; mouse_cursor_image_y++)for(unsigned short mouse_cursor_image_x = 0; mouse_cursor_image_x < mouse_cursor_sheet->width; mouse_cursor_image_x++)put_dot_sheet(mouse_cursor_sheet, mouse_cursor_image_x, mouse_cursor_image_y, mouse_cursor_image[mouse_cursor_image_x + mouse_cursor_image_y * mouse_cursor_sheet->width]);
 }
 
