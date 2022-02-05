@@ -46,6 +46,7 @@ Color alpha_blend(Color foreground, Color background)
 
 Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event))
 {
+	Event sheet_created_event;
 	Sheet *new_sheet = malloc(sizeof(*new_sheet));
 	new_sheet->image = malloc(width * height * sizeof(*new_sheet->image));
 	new_sheet->input = malloc(width * height * sizeof(*new_sheet->image));
@@ -98,7 +99,9 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	}
 	sti_task();
 	refresh_input(new_sheet);
-	fill_box_sheet(new_sheet, 0, 0, new_sheet->width, new_sheet->height, color_transparent);
+	sheet_created_event.type = EVENT_TYPE_SHEET_CREATED;
+	sheet_created_event.event_union.sheet_created_event.sheet = new_sheet;
+	enqueue_event(&sheet_created_event);
 	return new_sheet;
 }
 
@@ -127,6 +130,9 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 			printf_serial("Sheet %p is released by mouse.\n", mouse_catched_sheet);
 			mouse_catched_sheet = NULL;
 		}
+		break;
+	case EVENT_TYPE_SHEET_CREATED:
+		printf_serial("Sheet %p is created.\n", sheet);
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		if(sheet == mouse_catched_sheet)move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_move_event.x_movement, sheet->y + event->event_union.sheet_mouse_move_event.y_movement);

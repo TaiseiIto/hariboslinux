@@ -17,6 +17,11 @@ typedef struct _SheetClickedEvent
 	#define SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON	0x40
 } SheetClickedEvent;
 
+typedef struct _SheetCreatedEvent
+{
+	struct _Sheet *sheet;
+} SheetCreatedEvent;
+
 typedef struct _SheetMouseMoveEvent
 {
 	struct _Sheet *sheet;

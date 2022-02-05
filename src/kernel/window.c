@@ -13,6 +13,9 @@ void *client_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *ev
 {
 	switch(event->type)
 	{
+	case EVENT_TYPE_SHEET_CREATED:
+		printf_serial("Client sheet %p is created.\n", sheet);
+		break;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		sheet->parent->event_procedure(sheet->parent, event);
@@ -27,6 +30,9 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 {
 	switch(event->type)
 	{
+	case EVENT_TYPE_SHEET_CREATED:
+		printf_serial("Close button sheet %p is created.\n", sheet);
+		break;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		sheet->parent->event_procedure(sheet->parent, event);
@@ -103,6 +109,9 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 {
 	switch(event->type)
 	{
+	case EVENT_TYPE_SHEET_CREATED:
+		printf_serial("Title sheet %p is created.\n", sheet);
+		break;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		sheet->parent->event_procedure(sheet->parent, event);

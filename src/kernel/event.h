@@ -18,6 +18,7 @@ typedef union _EventUnion
 	MouseInterrupt mouse_interrupt;
 	RTCInterrupt rtc_interrupt;
 	SheetClickedEvent sheet_clicked_event;
+	SheetCreatedEvent sheet_created_event;
 	SheetMouseMoveEvent sheet_mouse_move_event;
 	TimerEvent timer_event;
 } EventUnion;
@@ -32,8 +33,9 @@ typedef struct _Event
 	#define EVENT_TYPE_PIT_INTERRUPT	0x04
 	#define EVENT_TYPE_RTC_INTERRUPT	0x05
 	#define EVENT_TYPE_SHEET_CLICKED	0x06
-	#define EVENT_TYPE_SHEET_MOUSE_MOVE	0x07
-	#define EVENT_TYPE_TIMER_EVENT		0x08
+	#define EVENT_TYPE_SHEET_CREATED	0x07
+	#define EVENT_TYPE_SHEET_MOUSE_MOVE	0x08
+	#define EVENT_TYPE_TIMER_EVENT		0x09
 	EventUnion event_union;
 } Event;
 
