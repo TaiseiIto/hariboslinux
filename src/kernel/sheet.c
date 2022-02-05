@@ -14,6 +14,8 @@ const Color color_transparent = {0x00, 0x00, 0x00, 0x00};
 Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
 Sheet *mouse_catched_sheet = NULL;
+unsigned short mouse_catched_x;
+unsigned short mouse_catched_y;
 
 Color alpha_blend(Color foreground, Color background);
 void print_sheet_tree(void);
@@ -106,6 +108,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 
 void *default_event_procedure(Sheet *sheet, Event const *event)
 {
+	Event new_event;
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CLICKED:
@@ -122,12 +125,26 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 			printf_serial("pull_up_sheet\n");
 			pull_up_sheet(sheet);
 			mouse_catched_sheet = sheet;
-			printf_serial("Sheet %p is catched by mouse.\n", mouse_catched_sheet);
+			mouse_catched_x = event->event_union.sheet_clicked_event.x;
+			mouse_catched_y = event->event_union.sheet_clicked_event.y;
+			printf_serial("Sheet %p is catched by mouse at (%#04x, %#04x).\n", mouse_catched_sheet, mouse_catched_x, mouse_catched_y);
 		}
 		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_RELEASED))
 		{
-			printf_serial("Sheet %p is released by mouse.\n", mouse_catched_sheet);
-			mouse_catched_sheet = NULL;
+			if(sheet == mouse_catched_sheet)
+			{
+				printf_serial("Sheet %p is released by mouse at (%#04x, %#04x).\n", mouse_catched_sheet, mouse_catched_x, mouse_catched_y);
+				mouse_catched_sheet = NULL;
+			}
+			else
+			{
+				new_event.type = EVENT_TYPE_SHEET_CLICKED;
+				new_event.event_union.sheet_clicked_event.sheet = mouse_catched_sheet;
+				new_event.event_union.sheet_clicked_event.x = mouse_catched_x;
+				new_event.event_union.sheet_clicked_event.y = mouse_catched_y;
+				new_event.event_union.sheet_clicked_event.flags = event->event_union.sheet_clicked_event.flags;
+				enqueue_event(&new_event);
+			}
 		}
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
@@ -137,7 +154,6 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		if(sheet == mouse_catched_sheet)move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_move_event.x_movement, sheet->y + event->event_union.sheet_mouse_move_event.y_movement);
 		else if(mouse_catched_sheet)
 		{
-			Event new_event;
 			new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
 			new_event.event_union.sheet_mouse_move_event.sheet = mouse_catched_sheet;
 			new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.sheet_mouse_move_event.x_movement;

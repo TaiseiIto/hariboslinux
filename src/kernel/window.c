@@ -27,14 +27,12 @@ void *client_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *ev
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw client sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, client_background_color);
-		break;
+		return NULL;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		sheet->parent->event_procedure(sheet->parent, event);
-		break;
+		return sheet->parent->event_procedure(sheet->parent, event);
 	default:
-		default_event_procedure(sheet, event);
-		break;
+		return default_event_procedure(sheet, event);
 	}
 }
 
@@ -57,21 +55,18 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 			if(2 < x_i && x_i < sheet->width - 3 && 2 < y_i && y_i < sheet->height - 3 && (x_i - y_i <= 1 && y_i - x_i <= 1 || sheet->width - 2 <= x_i + y_i && x_i + y_i <= sheet->width))put_dot_sheet(sheet, x_i, y_i, close_button_cross_color);
 			else put_dot_sheet(sheet, x_i, y_i, background_color);
 		}
-		break;
+		return NULL;
 	case EVENT_TYPE_SHEET_CLICKED:
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON)
 		{
 			if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("Close button pushed.\n");
 			else if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("Close button released.\n");
 		}
-		sheet->parent->event_procedure(sheet->parent, event);
-		break;
+		return sheet->parent->event_procedure(sheet->parent, event);
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		sheet->parent->event_procedure(sheet->parent, event);
-		break;
+		return sheet->parent->event_procedure(sheet->parent, event);
 	default:
-		default_event_procedure(sheet, event);
-		break;
+		return default_event_procedure(sheet, event);
 	}
 }
 
@@ -114,10 +109,9 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 			fill_box_sheet(sheet, root_child->x - 2, root_child->y + root_child->height + 1, root_child->width + 4, 1, semi_light_limit_color);
 			fill_box_sheet(sheet, root_child->x + root_child->width + 1, root_child->y - 2, 1, root_child->height + 3, semi_light_limit_color);
 		}
-		break;
+		return NULL;
 	default:
-		default_event_procedure(sheet, event);
-		break;
+		return default_event_procedure(sheet, event);
 	}
 }
 
@@ -128,14 +122,12 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw title sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, title_background_color);
-		break;
+		return NULL;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		sheet->parent->event_procedure(sheet->parent, event);
-		break;
+		return sheet->parent->event_procedure(sheet->parent, event);
 	default:
-		default_event_procedure(sheet, event);
-		break;
+		return default_event_procedure(sheet, event);
 	}
 }
 
