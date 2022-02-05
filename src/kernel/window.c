@@ -3,6 +3,7 @@
 #include "window.h"
 
 #define EDGE_WIDTH 5
+#define TITLE_SHEET_HEIGHT 0x12
 
 void *client_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event);
 void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event);
@@ -52,7 +53,7 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	// Create sheets
 	new_window = malloc(sizeof(*new_window));
 	new_window->root_sheet = create_sheet(background_sheet, x, y, width, height, NULL);
-	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, 16, title_sheet_event_procedure);
+	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, TITLE_SHEET_HEIGHT, title_sheet_event_procedure);
 	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure);
 	new_window->close_button_sheet = create_sheet(new_window->title_sheet, new_window->title_sheet->width - new_window->title_sheet->height + 1, 1, new_window->title_sheet->height - 2, new_window->title_sheet->height - 2, close_button_sheet_event_procedure);
 	// Draw root sheet
