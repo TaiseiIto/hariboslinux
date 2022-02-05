@@ -119,21 +119,21 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON)printf_serial("Mouse 5th button ");
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("pushed ");
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("released ");
-		printf_serial("at (%d, %d)\n", event->event_union.sheet_clicked_event.x, event->event_union.sheet_clicked_event.y);
-		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED) && sheet->parent == background_sheet)
+		printf_serial("at (%#06x, %#06x)\n", event->event_union.sheet_clicked_event.x, event->event_union.sheet_clicked_event.y);
+		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED))
 		{
 			printf_serial("pull_up_sheet\n");
 			pull_up_sheet(sheet);
 			mouse_catched_sheet = sheet;
 			mouse_catched_x = event->event_union.sheet_clicked_event.x;
 			mouse_catched_y = event->event_union.sheet_clicked_event.y;
-			printf_serial("Sheet %p is catched by mouse at (%#04x, %#04x).\n", mouse_catched_sheet, mouse_catched_x, mouse_catched_y);
+			printf_serial("Sheet %p is catched by mouse at (%#06x, %#06x).\n", mouse_catched_sheet, mouse_catched_x, mouse_catched_y);
 		}
 		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_RELEASED))
 		{
 			if(sheet == mouse_catched_sheet)
 			{
-				printf_serial("Sheet %p is released by mouse at (%#04x, %#04x).\n", mouse_catched_sheet, mouse_catched_x, mouse_catched_y);
+				printf_serial("Sheet %p is released by mouse at (%#06x, %#06x).\n", mouse_catched_sheet, mouse_catched_x, mouse_catched_y);
 				mouse_catched_sheet = NULL;
 			}
 			else
@@ -151,14 +151,17 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		printf_serial("Sheet %p is created.\n", sheet);
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		if(sheet == mouse_catched_sheet)move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_move_event.x_movement, sheet->y + event->event_union.sheet_mouse_move_event.y_movement);
-		else if(mouse_catched_sheet)
+		if(mouse_catched_sheet->parent == background_sheet)
 		{
-			new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
-			new_event.event_union.sheet_mouse_move_event.sheet = mouse_catched_sheet;
-			new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.sheet_mouse_move_event.x_movement;
-			new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.sheet_mouse_move_event.y_movement;
-			mouse_catched_sheet->event_procedure(mouse_catched_sheet, &new_event);
+			if(sheet == mouse_catched_sheet)move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_move_event.x_movement, sheet->y + event->event_union.sheet_mouse_move_event.y_movement);
+			else if(mouse_catched_sheet)
+			{
+				new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
+				new_event.event_union.sheet_mouse_move_event.sheet = mouse_catched_sheet;
+				new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.sheet_mouse_move_event.x_movement;
+				new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.sheet_mouse_move_event.y_movement;
+				mouse_catched_sheet->event_procedure(mouse_catched_sheet, &new_event);
+			}
 		}
 		break;
 	default:
