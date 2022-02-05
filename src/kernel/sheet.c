@@ -137,7 +137,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 			new_event.event_union.sheet_mouse_move_event.sheet = mouse_catched_sheet;
 			new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.sheet_mouse_move_event.x_movement;
 			new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.sheet_mouse_move_event.y_movement;
-			enqueue_event(&new_event);
+			mouse_catched_sheet->event_procedure(mouse_catched_sheet, &new_event);
 		}
 		break;
 	default:
