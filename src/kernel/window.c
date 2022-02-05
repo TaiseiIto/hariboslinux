@@ -42,6 +42,7 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	//					//{red ,green, blue,alpha}
 	const Color background_color		= {0x80, 0x80, 0x80, 0xff};
 	const Color client_background_color	= {0x80, 0x80, 0x80, 0xff};
+	const Color close_button_cross_color	= {0x00, 0x00, 0x00, 0xff};
 	const Color dark_limit_color		= {0x00, 0x00, 0x00, 0xff};
 	const Color light_limit_color		= {0xff, 0xff, 0xff, 0xff};
 	const Color semi_dark_limit_color	= {0x40, 0x40, 0x40, 0xff};
@@ -85,11 +86,15 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	fill_box_sheet(new_window->close_button_sheet, 0, 1, 1, new_window->close_button_sheet->height - 2, light_limit_color);
 	fill_box_sheet(new_window->close_button_sheet, 1, 1, new_window->close_button_sheet->width - 3, 1, semi_light_limit_color);
 	fill_box_sheet(new_window->close_button_sheet, 1, 2, 1, new_window->close_button_sheet->height - 4, semi_light_limit_color);
-	fill_box_sheet(new_window->close_button_sheet, 2, 2, new_window->close_button_sheet->width - 4, new_window->close_button_sheet->height - 4, background_color);
 	fill_box_sheet(new_window->close_button_sheet, 1, new_window->close_button_sheet->height - 2, new_window->close_button_sheet->width - 2, 1, semi_dark_limit_color);
 	fill_box_sheet(new_window->close_button_sheet, new_window->close_button_sheet->width - 2, 1, 1, new_window->close_button_sheet->height - 3, semi_dark_limit_color);
 	fill_box_sheet(new_window->close_button_sheet, 0, new_window->close_button_sheet->height - 1, new_window->close_button_sheet->width, 1, dark_limit_color);
 	fill_box_sheet(new_window->close_button_sheet, new_window->close_button_sheet->width - 1, 0, 1, new_window->close_button_sheet->height - 1, dark_limit_color);
+	for(unsigned short x_i = 2; x_i < new_window->close_button_sheet->width - 2; x_i++)for(unsigned short y_i = 2; y_i < new_window->close_button_sheet->height - 2; y_i++)
+	{
+		if(x_i == y_i)put_dot_sheet(new_window->close_button_sheet, x_i, y_i, close_button_cross_color);
+		else put_dot_sheet(new_window->close_button_sheet, x_i, y_i, background_color);
+	}
 	return new_window;
 }
 
