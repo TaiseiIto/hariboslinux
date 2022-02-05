@@ -62,9 +62,9 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 			if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("Close button pushed.\n");
 			else if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("Close button released.\n");
 		}
-		return sheet->parent->event_procedure(sheet->parent, event);
+		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		return sheet->parent->event_procedure(sheet->parent, event);
+		return default_event_procedure(sheet, event);
 	default:
 		return default_event_procedure(sheet, event);
 	}
