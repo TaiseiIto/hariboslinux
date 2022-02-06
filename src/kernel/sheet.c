@@ -13,9 +13,6 @@ const Color color_transparent = {0x00, 0x00, 0x00, 0x00};
 
 Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
-Sheet *mouse_catched_sheet = NULL;
-unsigned short mouse_catched_x;
-unsigned short mouse_catched_y;
 
 Color alpha_blend(Color foreground, Color background);
 void print_sheet_tree(void);
@@ -122,47 +119,19 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		printf_serial("at (%#06x, %#06x)\n", event->event_union.sheet_clicked_event.x, event->event_union.sheet_clicked_event.y);
 		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED))
 		{
-			printf_serial("pull_up_sheet\n");
 			pull_up_sheet(sheet);
-			mouse_catched_sheet = sheet;
-			mouse_catched_x = event->event_union.sheet_clicked_event.x;
-			mouse_catched_y = event->event_union.sheet_clicked_event.y;
-			printf_serial("Sheet %p is catched by mouse at (%#06x, %#06x).\n", mouse_catched_sheet, mouse_catched_x, mouse_catched_y);
+			printf_serial("Sheet %p is catched by mouse.\n", sheet);
 		}
 		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_RELEASED))
 		{
-			if(sheet == mouse_catched_sheet)
-			{
-				printf_serial("Sheet %p is released by mouse at (%#06x, %#06x).\n", mouse_catched_sheet, mouse_catched_x, mouse_catched_y);
-				mouse_catched_sheet = NULL;
-			}
-			else
-			{
-				new_event.type = EVENT_TYPE_SHEET_CLICKED;
-				new_event.event_union.sheet_clicked_event.sheet = mouse_catched_sheet;
-				new_event.event_union.sheet_clicked_event.x = mouse_catched_x;
-				new_event.event_union.sheet_clicked_event.y = mouse_catched_y;
-				new_event.event_union.sheet_clicked_event.flags = event->event_union.sheet_clicked_event.flags;
-				enqueue_event(&new_event);
-			}
+			printf_serial("Sheet %p is released by mouse.\n", sheet);
 		}
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		printf_serial("Sheet %p is created.\n", sheet);
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		if(mouse_catched_sheet->parent == background_sheet)
-		{
-			if(sheet == mouse_catched_sheet)move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_move_event.x_movement, sheet->y + event->event_union.sheet_mouse_move_event.y_movement);
-			else if(mouse_catched_sheet)
-			{
-				new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
-				new_event.event_union.sheet_mouse_move_event.sheet = mouse_catched_sheet;
-				new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.sheet_mouse_move_event.x_movement;
-				new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.sheet_mouse_move_event.y_movement;
-				mouse_catched_sheet->event_procedure(mouse_catched_sheet, &new_event);
-			}
-		}
+		printf_serial("Mouse move (%#06x, %#06x) on sheet %p", event->event_union.sheet_mouse_move_event.x_movement, event->event_union.sheet_mouse_move_event.y_movement, sheet);
 		break;
 	default:
 		ERROR_MESSAGE(); // Event that procedure is not defined.
@@ -768,6 +737,19 @@ void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) /
 {
 	refresh_input_dot(sheet, x, y);
 	sheet->self_output[x + y * sheet->width] = alpha_blend(sheet->image[x + y * sheet->width], sheet->input[x + y * sheet->width]);
+}
+
+void send_sheets_event(Event const *event)
+{
+	switch(event->type)
+	{
+	case EVENT_TYPE_MOUSE_EVENT:
+		if(event->event_union.mouse_event.x_movement || event->event_union.mouse_event.y_movement)
+		{
+			move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
+		}
+		break;
+	}
 }
 
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width].

@@ -61,6 +61,7 @@ void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foregro
 void pull_up_sheet(Sheet *sheet);
 void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char character);
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color);
+void send_sheets_event(struct _Event const *event);
 
 #endif
 
