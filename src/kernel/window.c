@@ -1,5 +1,6 @@
 #include "memory.h"
 #include "serial.h"
+#include "task.h"
 #include "window.h"
 
 #define EDGE_WIDTH 5
@@ -15,12 +16,15 @@ const Color semi_dark_limit_color	= {0x40, 0x40, 0x40, 0xff};
 const Color semi_light_limit_color	= {0xc0, 0xc0, 0xc0, 0xff};
 const Color title_background_color	= {0x00, 0x00, 0x80, 0xff};
 
-void *client_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event);
-void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event);
-void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event);
-void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event);
+Window *windows = NULL;
 
-void *client_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)
+void *client_sheet_event_procedure(Sheet *sheet, Event const *event);
+void *close_button_sheet_event_procedure(Sheet *sheet, Event const *event);
+Window *get_window_from_sheet(Sheet const *sheet);
+void *root_sheet_event_procedure(Sheet *sheet, Event const *event);
+void *title_sheet_event_procedure(Sheet *sheet, Event const *event);
+
+void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 {
 	switch(event->type)
 	{
@@ -35,6 +39,8 @@ void *client_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *ev
 
 void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)
 {
+	Window *window;
+	window = get_window_from_sheet(sheet);
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CREATED:
@@ -79,6 +85,7 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 				fill_box_sheet(sheet, sheet->width - 2, 1, 1, sheet->height - 3, semi_dark_limit_color);
 				fill_box_sheet(sheet, 0, sheet->height - 1, sheet->width, 1, dark_limit_color);
 				fill_box_sheet(sheet, sheet->width - 1, 0, 1, sheet->height - 1, dark_limit_color);
+				delete_window(window);
 			}
 		}
 		return default_event_procedure(sheet, event);
@@ -94,11 +101,43 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 	Window *new_window;
 	// Create sheets
 	new_window = malloc(sizeof(*new_window));
+	cli_task();
+	if(windows)
+	{
+		new_window->next = windows;
+		new_window->previous = windows->previous;
+		new_window->next->previous = new_window;
+		new_window->previous->next = new_window;
+	}
+	else
+	{
+		windows = new_window;
+		new_window->previous = new_window;
+		new_window->next = new_window;
+	}
 	new_window->root_sheet = create_sheet(background_sheet, x, y, width, height, root_sheet_event_procedure);
 	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, TITLE_SHEET_HEIGHT, title_sheet_event_procedure);
 	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure);
 	new_window->close_button_sheet = create_sheet(new_window->title_sheet, new_window->title_sheet->width - new_window->title_sheet->height + 1, 1, new_window->title_sheet->height - 2, new_window->title_sheet->height - 2, close_button_sheet_event_procedure);
+	sti_task();
 	return new_window;
+}
+
+void delete_window(Window *window)
+{
+	printf_serial("Delete window %p\n", window);
+}
+
+Window *get_window_from_sheet(Sheet const *sheet)
+{
+	Window *window = windows;
+	do
+	{
+		if(sheet == window->root_sheet || is_descendant_sheet_of(sheet, window->root_sheet))return window;
+		window = window->next;
+	} while(window != windows);
+	ERROR_MESSAGE(); // Can't find the window.
+	return NULL;
 }
 
 void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)

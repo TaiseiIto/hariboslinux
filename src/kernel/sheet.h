@@ -1,6 +1,8 @@
 #ifndef _SHEET_H_
 #define _SHEET_H_
 
+#include"stdbool.h"
+
 struct _Sheet;
 
 typedef struct _SheetClickedEvent
@@ -55,6 +57,7 @@ short get_sheet_x_on_screen(Sheet const *sheet);
 short get_sheet_y_on_screen(Sheet const *sheet);
 Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y);
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet);
+bool is_descendant_sheet_of(Sheet const *descendant_candidate, Sheet const *ancestor_candidate);
 void move_sheet(Sheet *sheet, short x, short y);
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...);
 void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *string);

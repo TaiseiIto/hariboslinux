@@ -215,6 +215,15 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 	for(unsigned short mouse_cursor_image_y = 0; mouse_cursor_image_y < mouse_cursor_sheet->height; mouse_cursor_image_y++)for(unsigned short mouse_cursor_image_x = 0; mouse_cursor_image_x < mouse_cursor_sheet->width; mouse_cursor_image_x++)put_dot_sheet(mouse_cursor_sheet, mouse_cursor_image_x, mouse_cursor_image_y, mouse_cursor_image[mouse_cursor_image_x + mouse_cursor_image_y * mouse_cursor_sheet->width]);
 }
 
+bool is_descendant_sheet_of(Sheet const *descendant_candidate, Sheet const *ancestor_candidate)
+{
+	for(Sheet const *ancestor_candidate_child = ancestor_candidate->lowest_child; ancestor_candidate_child; ancestor_candidate_child = ancestor_candidate_child->upper)
+	{
+		if(descendant_candidate == ancestor_candidate_child || is_descendant_sheet_of(descendant_candidate, ancestor_candidate_child))return true;
+	}
+	return false;
+}
+
 void move_sheet(Sheet *sheet, short x, short y)
 {
 	// Previous sheet boundary seen from previous sheet
