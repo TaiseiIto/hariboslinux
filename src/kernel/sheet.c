@@ -837,12 +837,17 @@ void send_sheets_event(Event const *event)
 			// Move mouse cursor.
 			move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 			// Move left button catched window.
-			if(left_button_catched_sheet)if(left_button_catched_sheet->parent == background_sheet)move_sheet(left_button_catched_sheet, left_button_catched_sheet->x + event->event_union.mouse_event.x_movement, left_button_catched_sheet->y + event->event_union.mouse_event.y_movement);
+			if(left_button_catched_sheet)
+			{
+				Sheet *dragged_sheet;
+				for(dragged_sheet = left_button_catched_sheet; dragged_sheet; dragged_sheet = dragged_sheet->parent)if(dragged_sheet->parent == background_sheet)break;
+				if(dragged_sheet)move_sheet(dragged_sheet, dragged_sheet->x + event->event_union.mouse_event.x_movement, dragged_sheet->y + event->event_union.mouse_event.y_movement);
+			}
 			else
 			{
-				Sheet *sheet = get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
+				Sheet *sheet_under_cursor = get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 				new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
-				new_event.event_union.sheet_mouse_move_event.sheet = sheet;
+				new_event.event_union.sheet_mouse_move_event.sheet = sheet_under_cursor;
 				new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.mouse_event.x_movement;
 				new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.mouse_event.y_movement;
 				enqueue_event(&new_event);
