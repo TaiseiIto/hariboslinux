@@ -785,11 +785,68 @@ void send_sheets_event(Event const *event)
 			}
 			enqueue_event(&new_event);
 		}
+		if(event->event_union.mouse_event.flags & (MOUSE_LEFT_BUTTON_RELEASED_NOW | MOUSE_MIDDLE_BUTTON_RELEASED_NOW | MOUSE_RIGHT_BUTTON_RELEASED_NOW | MOUSE_4TH_BUTTON_RELEASED_NOW | MOUSE_5TH_BUTTON_RELEASED_NOW))
+		{
+			// Mouse button is released now.
+			new_event.type = EVENT_TYPE_SHEET_CLICKED;
+			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)
+			{
+				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
+				new_event.event_union.sheet_clicked_event.sheet = left_button_catched_sheet;
+				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(left_button_catched_sheet);
+				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(left_button_catched_sheet);
+				left_button_catched_sheet = NULL;
+			}
+			else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)
+			{
+				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
+				new_event.event_union.sheet_clicked_event.sheet = middle_button_catched_sheet;
+				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(middle_button_catched_sheet);
+				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(middle_button_catched_sheet);
+				middle_button_catched_sheet = NULL;
+			}
+			else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)
+			{
+				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
+				new_event.event_union.sheet_clicked_event.sheet = right_button_catched_sheet;
+				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(right_button_catched_sheet);
+				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(right_button_catched_sheet);
+				right_button_catched_sheet = NULL;
+			}
+			else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW)
+			{
+				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON;
+				new_event.event_union.sheet_clicked_event.sheet = fourth_button_catched_sheet;
+				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(fourth_button_catched_sheet);
+				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(fourth_button_catched_sheet);
+				fourth_button_catched_sheet = NULL;
+			}
+			else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)
+			{
+				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
+				new_event.event_union.sheet_clicked_event.sheet = fifth_button_catched_sheet;
+				new_event.event_union.sheet_clicked_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(fifth_button_catched_sheet);
+				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(fifth_button_catched_sheet);
+				fifth_button_catched_sheet = NULL;
+			}
+			enqueue_event(&new_event);
+		}
 		if(event->event_union.mouse_event.x_movement || event->event_union.mouse_event.y_movement)
 		{
 			// Mouse is moving now.
+			// Move mouse cursor.
 			move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
-			if(left_button_catched_sheet)move_sheet(left_button_catched_sheet, left_button_catched_sheet->x + event->event_union.mouse_event.x_movement, left_button_catched_sheet->y + event->event_union.mouse_event.y_movement);
+			// Move left button catched window.
+			if(left_button_catched_sheet)if(left_button_catched_sheet->parent == background_sheet)move_sheet(left_button_catched_sheet, left_button_catched_sheet->x + event->event_union.mouse_event.x_movement, left_button_catched_sheet->y + event->event_union.mouse_event.y_movement);
+			else
+			{
+				Sheet *sheet = get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
+				new_event.type = EVENT_TYPE_SHEET_MOUSE_MOVE;
+				new_event.event_union.sheet_mouse_move_event.sheet = sheet;
+				new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.mouse_event.x_movement;
+				new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.mouse_event.y_movement;
+				enqueue_event(&new_event);
+			}
 		}
 		break;
 	}
