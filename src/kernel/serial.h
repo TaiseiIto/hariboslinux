@@ -3,7 +3,7 @@
 
 #define _STRING(x) #x
 #define _STRING2(x) _STRING(x)
-#define ERROR_MESSAGE() print_serial("ERROR" __FILE__ ":" _STRING2(__LINE__) "\n")
+#define ERROR_MESSAGE() print_serial("ERROR " __FILE__ " : " _STRING2(__LINE__) "\n")
 
 // COM1 interrupt handler
 void com1_interrupt_handler(void);
