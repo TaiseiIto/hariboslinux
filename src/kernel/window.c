@@ -28,9 +28,6 @@ void *client_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *ev
 		// Draw client sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, client_background_color);
 		return NULL;
-	case EVENT_TYPE_SHEET_CLICKED:
-	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		return sheet->parent->event_procedure(sheet->parent, event);
 	default:
 		return default_event_procedure(sheet, event);
 	}
@@ -145,9 +142,6 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 		// Draw title sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, title_background_color);
 		return NULL;
-	case EVENT_TYPE_SHEET_CLICKED:
-	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		return sheet->parent->event_procedure(sheet->parent, event);
 	default:
 		return default_event_procedure(sheet, event);
 	}

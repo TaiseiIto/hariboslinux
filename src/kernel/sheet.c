@@ -131,7 +131,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		printf_serial("Sheet %p is created.\n", sheet);
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		printf_serial("Mouse move (%#06x, %#06x) on sheet %p", event->event_union.sheet_mouse_move_event.x_movement, event->event_union.sheet_mouse_move_event.y_movement, sheet);
+		printf_serial("Mouse move (%d, %d) on sheet %p\n", event->event_union.sheet_mouse_move_event.x_movement, event->event_union.sheet_mouse_move_event.y_movement, sheet);
 		break;
 	default:
 		ERROR_MESSAGE(); // Event that procedure is not defined.
