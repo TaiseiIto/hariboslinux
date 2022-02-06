@@ -119,7 +119,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		printf_serial("at (%#06x, %#06x)\n", event->event_union.sheet_clicked_event.x, event->event_union.sheet_clicked_event.y);
 		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED))
 		{
-			pull_up_sheet(sheet);
+			for(Sheet *pulled_up_sheet = sheet; pulled_up_sheet && pulled_up_sheet != background_sheet; pulled_up_sheet = pulled_up_sheet->parent)pull_up_sheet(pulled_up_sheet);
 			printf_serial("Sheet %p is catched by mouse.\n", sheet);
 		}
 		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_RELEASED))
