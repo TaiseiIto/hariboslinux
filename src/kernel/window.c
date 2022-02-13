@@ -131,6 +131,22 @@ void delete_window(Window *window)
 {
 	// Set event procedure default to prevent window search after window deletion.
 	set_default_procedure(window->root_sheet);
+	// Exclude window from windows chain structure
+	cli_task();
+	if(window->next == window) // Only this window exists
+	{
+		windows = NULL;
+	}
+	else // Other windows exist
+	{
+		if(windows == window)windows = window->next;
+		window->next->previous = window->previous;
+		window->previous->next = window->next;
+	}
+	sti_task();
+	// Delete window
+	free(window);
+	printf_serial("windows = %p\n", windows);
 }
 
 Window *get_window_from_sheet(Sheet const *sheet)
