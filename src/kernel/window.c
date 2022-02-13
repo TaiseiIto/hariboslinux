@@ -129,7 +129,8 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 
 void delete_window(Window *window)
 {
-	printf_serial("Delete window %p\n", window);
+	// Set event procedure default to prevent window search after window deletion.
+	set_default_procedure(window->root_sheet);
 }
 
 Window *get_window_from_sheet(Sheet const *sheet)
@@ -151,7 +152,7 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 	switch(event->type)
 	{
 	case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
-		printf_serial("Close button clicked event! window = %p\n", window);
+		delete_window(window);
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw root sheet

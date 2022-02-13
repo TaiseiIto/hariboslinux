@@ -866,6 +866,12 @@ void send_sheets_event(Event const *event)
 	}
 }
 
+void set_default_procedure(Sheet *sheet)
+{
+	for(Sheet *child = sheet->lowest_child; child; child = child->upper)set_default_procedure(child);
+	sheet->event_procedure = default_event_procedure;
+}
+
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width].
 {
 	short x_on_screen;
@@ -1000,7 +1006,7 @@ void transmit_self_output_dot_through_opaques(Sheet *sheet, unsigned short x, un
 	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
 }
-												     //
+
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_output[x + y * sheet->width].
 {
 	for(unsigned short y_i = y; y_i < y + height; y_i++)for(unsigned short x_i = x; x_i < x + width; x_i++)transmit_self_output_dot(sheet, x_i, y_i);
