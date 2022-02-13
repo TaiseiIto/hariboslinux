@@ -140,6 +140,9 @@ void main(void)
 		event = dequeue_event();
 		if(event)switch(event->type)
 		{
+		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+			event->event_union.close_button_clicked_event.window->root_sheet->event_procedure(event->event_union.close_button_clicked_event.window->root_sheet, event);
+			break;
 		case EVENT_TYPE_KEYBOARD_EVENT:
 			if((keyboard_flags & (KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE)) != (event->event_union.keyboard_event.flags & (KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE)))
 			{

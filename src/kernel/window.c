@@ -39,6 +39,7 @@ void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 
 void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)
 {
+	Event new_event;
 	Window *window;
 	window = get_window_from_sheet(sheet);
 	switch(event->type)
@@ -85,7 +86,10 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 				fill_box_sheet(sheet, sheet->width - 2, 1, 1, sheet->height - 3, semi_dark_limit_color);
 				fill_box_sheet(sheet, 0, sheet->height - 1, sheet->width, 1, dark_limit_color);
 				fill_box_sheet(sheet, sheet->width - 1, 0, 1, sheet->height - 1, dark_limit_color);
-				delete_window(window);
+				// Send close button clicked event
+				new_event.type = EVENT_TYPE_CLOSE_BUTTON_CLICKED;
+				new_event.event_union.close_button_clicked_event.window = window;
+				enqueue_event(&new_event);
 			}
 		}
 		return default_event_procedure(sheet, event);
@@ -142,8 +146,13 @@ Window *get_window_from_sheet(Sheet const *sheet)
 
 void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)
 {
+	Window *window;
+	window = get_window_from_sheet(sheet);
 	switch(event->type)
 	{
+	case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+		printf_serial("Close button clicked event! window = %p\n", window);
+		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw root sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width - 1, 1, light_limit_color);

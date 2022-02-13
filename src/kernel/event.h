@@ -9,9 +9,11 @@ struct _Event;
 #include "rtc.h"
 #include "sheet.h"
 #include "timer.h"
+#include "window.h"
 
 typedef union _EventUnion
 {
+	CloseButtonClickedEvent close_button_clicked_event;
 	KeyboardEvent keyboard_event;
 	KeyboardInterrupt keyboard_interrupt;
 	MouseEvent mouse_event;
@@ -26,16 +28,17 @@ typedef union _EventUnion
 typedef struct _Event
 {
 	unsigned char type;
-	#define EVENT_TYPE_KEYBOARD_EVENT	0x00
-	#define EVENT_TYPE_KEYBOARD_INTERRUPT	0x01
-	#define EVENT_TYPE_MOUSE_EVENT		0x02
-	#define EVENT_TYPE_MOUSE_INTERRUPT	0x03
-	#define EVENT_TYPE_PIT_INTERRUPT	0x04
-	#define EVENT_TYPE_RTC_INTERRUPT	0x05
-	#define EVENT_TYPE_SHEET_CLICKED	0x06
-	#define EVENT_TYPE_SHEET_CREATED	0x07
-	#define EVENT_TYPE_SHEET_MOUSE_MOVE	0x08
-	#define EVENT_TYPE_TIMER_EVENT		0x09
+	#define EVENT_TYPE_CLOSE_BUTTON_CLICKED 0x00
+	#define EVENT_TYPE_KEYBOARD_EVENT	0x01
+	#define EVENT_TYPE_KEYBOARD_INTERRUPT	0x02
+	#define EVENT_TYPE_MOUSE_EVENT		0x03
+	#define EVENT_TYPE_MOUSE_INTERRUPT	0x04
+	#define EVENT_TYPE_PIT_INTERRUPT	0x05
+	#define EVENT_TYPE_RTC_INTERRUPT	0x06
+	#define EVENT_TYPE_SHEET_CLICKED	0x07
+	#define EVENT_TYPE_SHEET_CREATED	0x08
+	#define EVENT_TYPE_SHEET_MOUSE_MOVE	0x09
+	#define EVENT_TYPE_TIMER_EVENT		0x0a
 	EventUnion event_union;
 } Event;
 
