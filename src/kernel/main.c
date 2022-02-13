@@ -193,6 +193,12 @@ void main(void)
 		case EVENT_TYPE_SHEET_CREATED:
 			event->event_union.sheet_created_event.sheet->event_procedure(event->event_union.sheet_created_event.sheet, event);
 			break;
+		case EVENT_TYPE_SHEET_DELETION_REQUEST:
+			event->event_union.sheet_deletion_request_event.sheet->event_procedure(event->event_union.sheet_deletion_request_event.sheet, event);
+			break;
+		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+			printf_serial("Sheet deletion response event!\n");
+			break;
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 			event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 		case EVENT_TYPE_TIMER_EVENT:

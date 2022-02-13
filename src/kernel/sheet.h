@@ -19,6 +19,17 @@ typedef struct _SheetClickedEvent
 	#define SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON	0x40
 } SheetClickedEvent;
 
+typedef struct _SheetDeletionRequestEvent
+{
+	struct _Sheet *sheet;
+} SheetDeletionRequestEvent;
+
+typedef struct _SheetDeletionResponseEvent
+{
+	struct _Sheet *parent;
+	struct _Sheet *sheet;
+} SheetDeletionResponseEvent;
+
 typedef struct _SheetCreatedEvent
 {
 	struct _Sheet *sheet;

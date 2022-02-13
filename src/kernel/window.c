@@ -129,8 +129,10 @@ Window *create_window(Sheet *background_sheet, short x, short y, unsigned short 
 
 void delete_window(Window *window)
 {
+	Event root_sheet_deletion_request_event;
+	Sheet *root_sheet = window->root_sheet;
 	// Set event procedure default to prevent window search after window deletion.
-	set_default_procedure(window->root_sheet);
+	set_default_procedure(root_sheet);
 	// Exclude window from windows chain structure
 	cli_task();
 	if(window->next == window) // Only this window exists
@@ -147,6 +149,10 @@ void delete_window(Window *window)
 	// Delete window
 	free(window);
 	printf_serial("windows = %p\n", windows);
+	// Deletion request to root sheet
+	root_sheet_deletion_request_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
+	root_sheet_deletion_request_event.event_union.sheet_deletion_request_event.sheet = root_sheet;
+	enqueue_event(&root_sheet_deletion_request_event);
 }
 
 Window *get_window_from_sheet(Sheet const *sheet)

@@ -130,6 +130,11 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 	case EVENT_TYPE_SHEET_CREATED:
 		printf_serial("Sheet %p is created.\n", sheet);
 		break;
+	case EVENT_TYPE_SHEET_DELETION_REQUEST:
+		printf_serial("Sheet %p deletion request.\n", sheet);
+		break;
+	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		printf_serial("Mouse move (%d, %d) on sheet %p\n", event->event_union.sheet_mouse_move_event.x_movement, event->event_union.sheet_mouse_move_event.y_movement, sheet);
 		break;
