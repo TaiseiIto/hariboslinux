@@ -132,6 +132,12 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		break;
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		printf_serial("Sheet %p deletion request.\n", sheet);
+		for(Sheet *child = sheet->uppest_child; child; child = child->lower)
+		{
+			new_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
+			new_event.event_union.sheet_deletion_request_event.sheet = child;
+			enqueue_event(&new_event);
+		}
 		break;
 	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
 		break;
