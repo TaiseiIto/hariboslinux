@@ -43,7 +43,6 @@ void main(void)
 	unsigned long long timer_counter = 0;
 	unsigned short keyboard_flags = 0;
 	unsigned short screen_text_row = 8;
-	Window *test_window;
 	cli();
 	new_line_serial();
 	print_serial("Hello, kernel.bin!\n\n");
@@ -117,7 +116,7 @@ void main(void)
 	fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
 	fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
 	fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
-	test_window = create_window(background_sheet, 0, 0, 0x0200, 0x0200);
+	create_window(background_sheet, 0, 0, 0x0200, 0x0200);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "mouse ID = %#04x", get_mouse_id());
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "keyboard state = %#04x", boot_information->keyboard_state);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded cylinder = %#04x", boot_information->last_loaded_cylinder);
@@ -151,6 +150,8 @@ void main(void)
 			}
 			if(event->event_union.keyboard_event.character)printf_sheet(background_sheet, 0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
 			keyboard_flags = event->event_union.keyboard_event.flags;
+			// Open a new window by pressing 'w'
+			if(event->event_union.keyboard_event.keycode == KEY_W)create_window(background_sheet, 0, 0, 0x0200, 0x0200);
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_sheet(background_sheet, 0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
