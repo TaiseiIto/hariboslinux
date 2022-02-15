@@ -58,6 +58,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	new_sheet->uppest_child = NULL;
 	new_sheet->lowest_child = NULL;
 	new_sheet->event_procedure = event_procedure ? event_procedure : default_event_procedure;
+	new_sheet->flags = 0;
 	cli_task();
 	new_sheet->parent = parent;
 	if(parent)
@@ -133,10 +134,19 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		break;
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		printf_serial("Sheet %p deletion request.\n", sheet);
+		sheet->flags |= SHEET_FLAG_RECEIVED_DELETION_REQUEST;
 		for(Sheet *child = sheet->uppest_child; child; child = child->lower)
 		{
 			new_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
 			new_event.event_union.sheet_deletion_request_event.sheet = child;
+			enqueue_event(&new_event);
+		}
+		if(!sheet->lowest_child)
+		{
+			new_event.type = EVENT_TYPE_SHEET_DELETION_RESPONSE;
+			new_event.event_union.sheet_deletion_response_event.sheet = sheet;
+			new_event.event_union.sheet_deletion_response_event.parent = sheet->parent;
+			delete_sheet(sheet);
 			enqueue_event(&new_event);
 		}
 		break;

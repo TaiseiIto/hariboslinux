@@ -58,6 +58,8 @@ typedef struct _Sheet
 	void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event);
 	short x, y; // Coordinate seen from parent
 	unsigned short width, height;
+	unsigned char flags;
+	#define SHEET_FLAG_RECEIVED_DELETION_REQUEST 0x01
 } Sheet;
 
 Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event));
