@@ -151,6 +151,14 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		}
 		break;
 	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+		if(sheet->flags & SHEET_FLAG_RECEIVED_DELETION_REQUEST && !sheet->lowest_child)
+		{
+			new_event.type = EVENT_TYPE_SHEET_DELETION_RESPONSE;
+			new_event.event_union.sheet_deletion_response_event.sheet = sheet;
+			new_event.event_union.sheet_deletion_response_event.parent = sheet->parent;
+			delete_sheet(sheet);
+			enqueue_event(&new_event);
+		}
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		printf_serial("Mouse move (%d, %d) on sheet %p\n", event->event_union.sheet_mouse_move_event.x_movement, event->event_union.sheet_mouse_move_event.y_movement, sheet);

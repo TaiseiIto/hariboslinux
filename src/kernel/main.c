@@ -197,7 +197,7 @@ void main(void)
 			if(sheet_exists(event->event_union.sheet_deletion_request_event.sheet))event->event_union.sheet_deletion_request_event.sheet->event_procedure(event->event_union.sheet_deletion_request_event.sheet, event);
 			break;
 		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
-			printf_serial("Sheet deletion response event!\n");
+			if(sheet_exists(event->event_union.sheet_deletion_response_event.parent))event->event_union.sheet_deletion_response_event.parent->event_procedure(event->event_union.sheet_deletion_response_event.parent, event);
 			break;
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 			if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
