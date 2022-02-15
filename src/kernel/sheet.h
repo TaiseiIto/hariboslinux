@@ -77,6 +77,7 @@ void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color fore
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color);
 void send_sheets_event(struct _Event const *event);
 void set_default_procedure(Sheet *sheet);
+bool sheet_exists(Sheet const *sheet);
 
 #endif
 

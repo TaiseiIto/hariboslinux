@@ -21,6 +21,7 @@ void refresh_input(Sheet *sheet); // refresh sheet->input.
 void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->input[x + y * sheet->width].
 void refresh_self_output(Sheet *sheet); // refresh sheet->self_output.
 void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // refresh sheet->self_output[x + y * sheet->width].
+bool sheet_exists_under(Sheet const *sheet, Sheet const *root);
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width].
 void transmit_family_output_dot_through_opaques(Sheet *sheet, unsigned short x, unsigned short y); // transmit color sheet->family_output[x + y * sheet->width] through opaque sheets.
 void transmit_self_input(Sheet *sheet); // transmit image sheet->self_input.
@@ -809,7 +810,7 @@ void send_sheets_event(Event const *event)
 		{
 			// Mouse button is released now.
 			new_event.type = EVENT_TYPE_SHEET_CLICKED;
-			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW)
+			if(event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_RELEASED_NOW && sheet_exists(left_button_catched_sheet))
 			{
 				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON;
 				new_event.event_union.sheet_clicked_event.sheet = left_button_catched_sheet;
@@ -817,7 +818,7 @@ void send_sheets_event(Event const *event)
 				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(left_button_catched_sheet);
 				left_button_catched_sheet = NULL;
 			}
-			else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW)
+			else if(event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_RELEASED_NOW && sheet_exists(middle_button_catched_sheet))
 			{
 				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON;
 				new_event.event_union.sheet_clicked_event.sheet = middle_button_catched_sheet;
@@ -825,7 +826,7 @@ void send_sheets_event(Event const *event)
 				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(middle_button_catched_sheet);
 				middle_button_catched_sheet = NULL;
 			}
-			else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW)
+			else if(event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_RELEASED_NOW && sheet_exists(right_button_catched_sheet))
 			{
 				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON;
 				new_event.event_union.sheet_clicked_event.sheet = right_button_catched_sheet;
@@ -833,7 +834,7 @@ void send_sheets_event(Event const *event)
 				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(right_button_catched_sheet);
 				right_button_catched_sheet = NULL;
 			}
-			else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW)
+			else if(event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_RELEASED_NOW && sheet_exists(fourth_button_catched_sheet))
 			{
 				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON;
 				new_event.event_union.sheet_clicked_event.sheet = fourth_button_catched_sheet;
@@ -841,7 +842,7 @@ void send_sheets_event(Event const *event)
 				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(fourth_button_catched_sheet);
 				fourth_button_catched_sheet = NULL;
 			}
-			else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW)
+			else if(event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_RELEASED_NOW && sheet_exists(fifth_button_catched_sheet))
 			{
 				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_RELEASED | SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
 				new_event.event_union.sheet_clicked_event.sheet = fifth_button_catched_sheet;
@@ -857,7 +858,7 @@ void send_sheets_event(Event const *event)
 			// Move mouse cursor.
 			move_sheet(mouse_cursor_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
 			// Move left button catched window.
-			if(left_button_catched_sheet)
+			if(sheet_exists(left_button_catched_sheet))
 			{
 				Sheet *dragged_sheet;
 				for(dragged_sheet = left_button_catched_sheet; dragged_sheet; dragged_sheet = dragged_sheet->parent)if(dragged_sheet->parent == background_sheet)break;
@@ -881,6 +882,19 @@ void set_default_procedure(Sheet *sheet)
 {
 	for(Sheet *child = sheet->lowest_child; child; child = child->upper)set_default_procedure(child);
 	sheet->event_procedure = default_event_procedure;
+}
+
+bool sheet_exists(Sheet const *sheet)
+{
+	return sheet_exists_under(sheet, background_sheet);
+}
+
+bool sheet_exists_under(Sheet const *sheet, Sheet const *root)
+{
+	if(root == sheet)return true;
+	for(Sheet *child = root->lowest_child; child; child = child->upper)if(sheet_exists_under(sheet, child))return true;
+	for(Sheet *upper = root->upper; upper; upper = upper->upper)if(sheet_exists_under(sheet, upper))return true;
+	return false;
 }
 
 void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width].

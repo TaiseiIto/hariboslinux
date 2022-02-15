@@ -141,7 +141,7 @@ void main(void)
 		if(event)switch(event->type)
 		{
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
-			event->event_union.close_button_clicked_event.window->root_sheet->event_procedure(event->event_union.close_button_clicked_event.window->root_sheet, event);
+			if(sheet_exists(event->event_union.close_button_clicked_event.window->root_sheet))event->event_union.close_button_clicked_event.window->root_sheet->event_procedure(event->event_union.close_button_clicked_event.window->root_sheet, event);
 			break;
 		case EVENT_TYPE_KEYBOARD_EVENT:
 			if((keyboard_flags & (KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE)) != (event->event_union.keyboard_event.flags & (KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE)))
@@ -188,19 +188,19 @@ void main(void)
 			#endif
 			break;
 		case EVENT_TYPE_SHEET_CLICKED:
-			event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
+			if(sheet_exists(event->event_union.sheet_clicked_event.sheet))event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 			break;
 		case EVENT_TYPE_SHEET_CREATED:
-			event->event_union.sheet_created_event.sheet->event_procedure(event->event_union.sheet_created_event.sheet, event);
+			if(sheet_exists(event->event_union.sheet_created_event.sheet))event->event_union.sheet_created_event.sheet->event_procedure(event->event_union.sheet_created_event.sheet, event);
 			break;
 		case EVENT_TYPE_SHEET_DELETION_REQUEST:
-			event->event_union.sheet_deletion_request_event.sheet->event_procedure(event->event_union.sheet_deletion_request_event.sheet, event);
+			if(sheet_exists(event->event_union.sheet_deletion_request_event.sheet))event->event_union.sheet_deletion_request_event.sheet->event_procedure(event->event_union.sheet_deletion_request_event.sheet, event);
 			break;
 		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
 			printf_serial("Sheet deletion response event!\n");
 			break;
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
-			event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
+			if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
 			{
