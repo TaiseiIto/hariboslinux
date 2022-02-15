@@ -166,6 +166,7 @@ void delete_sheet(Sheet *sheet)
 {
 	if(sheet == background_sheet || sheet == mouse_cursor_sheet)ERROR_MESSAGE();
 	while(sheet->uppest_child && sheet->lowest_child)delete_sheet(sheet->uppest_child);
+	transmit_self_input(sheet);
 	if(sheet->uppest_child || sheet->lowest_child)ERROR_MESSAGE();
 	cli_task();
 	if(sheet->parent)
