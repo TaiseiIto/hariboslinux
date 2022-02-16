@@ -33,6 +33,12 @@ void lgdt(unsigned int limit, SegmentDescriptor *begin);
 // lidt
 void lidt(unsigned int limit, InterruptDescriptor *begin);
 
+// ljmp $segment, %address
+void ljmp(unsigned int address, unsigned short segment);
+
+// ltr
+void ltr(unsigned int tr);
+
 // outb	$value,	$address
 void outb(unsigned short address, unsigned char value);
 

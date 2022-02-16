@@ -80,28 +80,26 @@ void init_gdt(void)
 
 // return a new segment selector
 // return 0 if failed
-unsigned short set_segment(unsigned int base, unsigned int limit, unsigned char access_right)
+unsigned short set_segment(unsigned int base, unsigned int size, unsigned char access_right)
 {
+	size--; // size to limit
 	cli_task();
-	for(SegmentDescriptor *segment_descriptor = GDT_BEGIN; segment_descriptor != GDT_END; segment_descriptor++)
+	for(SegmentDescriptor *segment_descriptor = GDT_BEGIN; segment_descriptor != GDT_END; segment_descriptor++)if(!(segment_descriptor->access_right & SEGMENT_DESCRIPTOR_PRESENT))
 	{
-		if(!(segment_descriptor->access_right & SEGMENT_DESCRIPTOR_PRESENT))
+		segment_descriptor->base_low = (unsigned short)(base & 0x0000ffff);
+		segment_descriptor->base_mid = (unsigned char)(base >> 16 & 0x000000ff);
+		segment_descriptor->base_high = (unsigned char)(base >> 24 & 0x000000ff);
+		segment_descriptor->access_right = access_right | SEGMENT_DESCRIPTOR_PRESENT;
+		segment_descriptor->limit_high = SEGMENT_DESCRIPTOR_SIZE;
+		if(0x00100000 <= size)
 		{
-			segment_descriptor->base_low = (unsigned short)(base & 0x0000ffff);
-			segment_descriptor->base_mid = (unsigned char)(base >> 16 & 0x000000ff);
-			segment_descriptor->base_high = (unsigned char)(base >> 24 & 0x000000ff);
-			segment_descriptor->access_right = access_right | SEGMENT_DESCRIPTOR_PRESENT;
-			segment_descriptor->limit_high = SEGMENT_DESCRIPTOR_SIZE;
-			if(0x00100000 <= limit)
-			{
-				segment_descriptor->limit_high |= SEGMENT_DESCRIPTOR_GRANULARITY;
-				limit >>= 12;
-			}
-			segment_descriptor->limit_low = (unsigned short)(limit & 0x0000ffff);
-			segment_descriptor->limit_high |= (unsigned char)(limit >> 16 & 0x0000000f);
-			sti_task();
-			return (unsigned int)segment_descriptor;
+			segment_descriptor->limit_high |= SEGMENT_DESCRIPTOR_GRANULARITY;
+			size >>= 12;
 		}
+		segment_descriptor->limit_low = (unsigned short)(size & 0x0000ffff);
+		segment_descriptor->limit_high |= (unsigned char)(size >> 16 & 0x0000000f);
+		sti_task();
+		return (unsigned short)((unsigned int)segment_descriptor - (unsigned int)GDT_ADDR);
 	}
 	sti_task();
 	// unused segment not found

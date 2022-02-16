@@ -13,6 +13,8 @@
 	.globl	inl
 	.globl	lgdt
 	.globl	lidt
+	.globl	ljmp
+	.globl	ltr
 	.globl	outb
 	.globl	outw
 	.globl	outl
@@ -35,6 +37,8 @@
 	.type	inl,			@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
+	.type	ljmp,			@function
+	.type	ltr,			@function
 	.type	outb,			@function
 	.type	outw,			@function
 	.type	outl,			@function
@@ -145,6 +149,24 @@ lidt:				# void lidt(unsigned int limit, SegmentDescriptor *begin);
 	movl	%esp,	%ebp
 	shll	$0x10,	0x08(%ebp)
 	lidt	0x0a(%ebp)
+	leave
+	ret
+
+				# // ljmp $segment, %address
+ljmp:				# void ljmp(unsigned int address, unsigned short segment);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	ljmp	0x08(%ebp)
+	leave
+	ret
+
+				# // ltr
+ltr:				# void ltr(unsigned int tr);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	ltr	0x08(%ebp)
 	leave
 	ret
 
