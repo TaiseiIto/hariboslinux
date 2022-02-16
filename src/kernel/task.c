@@ -99,7 +99,7 @@ void test_task_function(void *args)
 	//				{red ,green, blue,alpha}
 	Color background_color =	{0x00, 0x00, 0x00, 0xff};
 	Color foreground_color = 	{0xff, 0xff, 0xff, 0xff};
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "TASK_SWITCH!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "TASK SWITCH!!!\n");
 	while(true)hlt();
 }
 
