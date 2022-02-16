@@ -150,8 +150,17 @@ void main(void)
 			}
 			if(event->event_union.keyboard_event.character)printf_sheet(background_sheet, 0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
 			keyboard_flags = event->event_union.keyboard_event.flags;
-			// Open a new window by pressing 'w'
-			if(event->event_union.keyboard_event.keycode == KEY_W)create_window(background_sheet, 0, 0, 0x0200, 0x0200);
+			switch(event->event_union.keyboard_event.keycode)
+			{
+			case KEY_T:
+				// Far jump test by pressing 't'
+				test_task();
+				break;
+			case KEY_W:
+				// Open a new window by pressing 'w'
+				create_window(background_sheet, 0, 0, 0x0200, 0x0200);
+				break;
+			}
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_sheet(background_sheet, 0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
