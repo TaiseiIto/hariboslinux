@@ -47,7 +47,7 @@ Task *create_task(void (*function)(void *), unsigned int stack_size);
 void init_task(void);
 void sti_task(void);
 void sti_task_interrupt(void);
-void test_task(void);
+void switch_task(void);
 
 #endif
 

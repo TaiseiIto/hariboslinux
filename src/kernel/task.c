@@ -79,7 +79,7 @@ void init_task(void)
 	main_task->task_status_segment.ecx = 0;
 	main_task->task_status_segment.edx = 0;
 	main_task->task_status_segment.ebx = 0;
-	main_task->task_status_segment.esp = main_task->stack;
+	main_task->task_status_segment.esp = (unsigned int)main_task->stack;
 	main_task->task_status_segment.ebp = main_task->task_status_segment.ebp;
 	main_task->task_status_segment.esi = 0;
 	main_task->task_status_segment.edi = 0;
@@ -93,8 +93,8 @@ void init_task(void)
 	main_task->task_status_segment.io = 0x40000000;
 	main_task->segment_selector = set_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
 	main_task->interrupt_prohibition_level = 1;
-	main_task->previous = NULL;
-	main_task->next = NULL;
+	main_task->previous = main_task;
+	main_task->next = main_task;
 	current_task = main_task;
 	ltr(main_task->segment_selector);
 }
@@ -114,18 +114,9 @@ void sti_task_interrupt(void)
 	else ERROR_MESSAGE(); // double sti error!
 }
 
-void test_task(void)
+void switch_task(void)
 {
-	Task *test_task = create_task(test_task_function, 0x00010000);
-	ljmp(0, test_task->segment_selector);
-}
-
-void test_task_function(void *args)
-{
-	//				{red ,green, blue,alpha}
-	Color background_color =	{0x00, 0x00, 0x00, 0xff};
-	Color foreground_color = 	{0xff, 0xff, 0xff, 0xff};
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "TASK SWITCH!!!\n");
-	while(true)hlt();
+	current_task = current_task->next;
+	ljmp(0, current_task->segment_selector);
 }
 

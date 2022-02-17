@@ -17,6 +17,8 @@
 #include "timer.h"
 #include "window.h"
 
+void test_task_function(void *args);
+
 void main(void)
 {
 	BootInformation const * const boot_information = (BootInformation const * const)0x00000800;
@@ -37,6 +39,7 @@ void main(void)
 	Sheet *translucent_red_sheet;
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
+	Task *test_task;
 	Timer *test_timer;
 	Timer *checking_free_memory_space_size_timer;
 	unsigned int memory_region_descriptor_index;
@@ -132,6 +135,7 @@ void main(void)
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
 	test_timer = create_timer(0, 100);
 	checking_free_memory_space_size_timer = create_timer(0, 100);
+	test_task = create_task(test_task_function, 0x00010000);
 	while(1)
 	{
 		Event new_event;
@@ -152,10 +156,6 @@ void main(void)
 			keyboard_flags = event->event_union.keyboard_event.flags;
 			switch(event->event_union.keyboard_event.keycode)
 			{
-			case KEY_T:
-				// Far jump test by pressing 't'
-				test_task();
-				break;
 			case KEY_W:
 				// Open a new window by pressing 'w'
 				create_window(background_sheet, 0, 0, 0x0200, 0x0200);
@@ -234,5 +234,10 @@ void main(void)
 		}
 		else hlt();
 	}
+}
+
+void test_task_function(void *args)
+{
+	while(true)hlt();
 }
 

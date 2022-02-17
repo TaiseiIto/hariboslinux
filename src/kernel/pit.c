@@ -6,6 +6,7 @@
 #include "pic.h"
 #include "pit.h"
 #include "serial.h"
+#include "task.h"
 #include "timer.h"
 
 #define PIT_CHANNEL0			0x0040
@@ -28,9 +29,11 @@ void init_pit(void)
 void pit_interrupt_handler(void)
 {
 	Event event;
+	static unsigned long long tick_count = 0;
 	finish_interruption(IRQ_PIT);
 	event.type = EVENT_TYPE_PIT_INTERRUPT;
 	enqueue_event(&event);
+	if(++tick_count % 100 == 0)switch_task();
 }
 
 void decode_pit_interrupt(void)
