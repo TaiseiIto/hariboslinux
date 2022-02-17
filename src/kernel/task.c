@@ -7,7 +7,7 @@
 #include "task.h"
 
 Task *current_task;
-Task main_task;
+Task *main_task;
 
 void test_task_function(void *args);
 
@@ -53,24 +53,50 @@ Task *create_task(void (*function)(void *), unsigned int stack_size)
 	new_task->task_status_segment.io = 0x40000000;
 	new_task->segment_selector = set_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
 	cli_task();
-	new_task->previous = main_task.previous;
-	new_task->next = &main_task;
-	main_task.previous->next = new_task;
-	main_task.previous = new_task;
+	new_task->previous = main_task->previous;
+	new_task->next = main_task;
+	main_task->previous->next = new_task;
+	main_task->previous = new_task;
 	sti_task();
 	return new_task;
 }
 
 void init_task(void)
 {
-	main_task.task_status_segment.ldtr = 0x00000000;
-	main_task.task_status_segment.io = 0x40000000;
-	main_task.segment_selector = set_segment(&main_task.task_status_segment, sizeof(main_task.task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
-	main_task.interrupt_prohibition_level = 1;
-	main_task.previous = NULL;
-	main_task.next = NULL;
-	current_task = &main_task;
-	ltr(main_task.segment_selector);
+	main_task = malloc(sizeof(*main_task));
+	main_task->stack = (void*)0x00280000;
+	main_task->task_status_segment.link = 0;
+	main_task->task_status_segment.esp0 = 0;
+	main_task->task_status_segment.ss0 = 0;
+	main_task->task_status_segment.esp1 = 0;
+	main_task->task_status_segment.ss1 = 0;
+	main_task->task_status_segment.esp2 = 0;
+	main_task->task_status_segment.ss2 = 0;
+	main_task->task_status_segment.cr3 = 0;
+	main_task->task_status_segment.eip = (unsigned int)0x00006000;
+	main_task->task_status_segment.eflags = 0x00000202;
+	main_task->task_status_segment.eax = 0;
+	main_task->task_status_segment.ecx = 0;
+	main_task->task_status_segment.edx = 0;
+	main_task->task_status_segment.ebx = 0;
+	main_task->task_status_segment.esp = main_task->stack;
+	main_task->task_status_segment.ebp = main_task->task_status_segment.ebp;
+	main_task->task_status_segment.esi = 0;
+	main_task->task_status_segment.edi = 0;
+	main_task->task_status_segment.es = whole_memory_segment_selector;
+	main_task->task_status_segment.cs = kernel_code_segment_selector;
+	main_task->task_status_segment.ss = whole_memory_segment_selector;
+	main_task->task_status_segment.ds = whole_memory_segment_selector;
+	main_task->task_status_segment.fs = whole_memory_segment_selector;
+	main_task->task_status_segment.gs = whole_memory_segment_selector;
+	main_task->task_status_segment.ldtr = 0x00000000;
+	main_task->task_status_segment.io = 0x40000000;
+	main_task->segment_selector = set_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	main_task->interrupt_prohibition_level = 1;
+	main_task->previous = NULL;
+	main_task->next = NULL;
+	current_task = main_task;
+	ltr(main_task->segment_selector);
 }
 
 void sti_task(void)

@@ -50,10 +50,10 @@ void main(void)
 	print_serial("finish init_gdt()\n\n");
 	init_idt();
 	print_serial("finish init_idt()\n\n");
-	init_task();
-	print_serial("finish init_task()\n\n");
 	init_memory();
 	print_serial("finish init_memory()\n\n");
+	init_task();
+	print_serial("finish init_task()\n\n");
 	create_event_queue();
 	print_serial("finish create_event_queue()\n\n");
 	init_pic();
