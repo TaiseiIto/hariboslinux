@@ -116,7 +116,10 @@ void sti_task_interrupt(void)
 
 void switch_task(void)
 {
-	current_task = current_task->next;
-	ljmp(0, current_task->segment_selector);
+	if(current_task != current_task->next)
+	{
+		current_task = current_task->next;
+		ljmp(0, current_task->segment_selector);
+	}
 }
 
