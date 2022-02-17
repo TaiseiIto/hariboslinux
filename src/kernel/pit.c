@@ -33,7 +33,7 @@ void pit_interrupt_handler(void)
 	finish_interruption(IRQ_PIT);
 	event.type = EVENT_TYPE_PIT_INTERRUPT;
 	enqueue_event(&event);
-	if(++tick_count % 100 == 0)switch_task();
+	switch_task();
 }
 
 void decode_pit_interrupt(void)

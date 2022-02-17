@@ -17,6 +17,7 @@
 #include "timer.h"
 #include "window.h"
 
+unsigned long long test_task_counter = 0;
 void test_task_function(void *args);
 
 void main(void)
@@ -40,12 +41,13 @@ void main(void)
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
 	Task *test_task;
-	Timer *test_timer;
 	Timer *checking_free_memory_space_size_timer;
+	Timer *print_test_task_counter_timer;
+	Timer *test_timer;
 	unsigned int memory_region_descriptor_index;
 	unsigned long long timer_counter = 0;
 	unsigned short keyboard_flags = 0;
-	unsigned short screen_text_row = 8;
+	unsigned short screen_text_row = 9;
 	cli();
 	new_line_serial();
 	print_serial("Hello, kernel.bin!\n\n");
@@ -88,8 +90,9 @@ void main(void)
 		printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
-	test_timer = create_timer(0, 100);
 	checking_free_memory_space_size_timer = create_timer(0, 100);
+	print_test_task_counter_timer = create_timer(0, 100);
+	test_timer = create_timer(0, 100);
 	test_task = create_task(test_task_function, 0x00010000);
 	background_color.red = 0x00;
 	background_color.green = 0x00;
@@ -227,6 +230,10 @@ void main(void)
 				printf_serial("free memory space size = %u bytes\n", get_free_memory_space_size());
 				#endif
 			}
+			else if(event->event_union.timer_event.timer == print_test_task_counter_timer)
+			{
+				printf_sheet(background_sheet, 0x0000, 0x0008 * CHAR_HEIGHT, foreground_color, background_color, "test_task_counter = %#018llx", test_task_counter);
+			}
 			break;
 		default: // invalid event->type
 			printf_serial("invalid event->type %#04x\n", event->type);
@@ -238,6 +245,6 @@ void main(void)
 
 void test_task_function(void *args)
 {
-	while(true)hlt();
+	while(true)test_task_counter++;
 }
 
