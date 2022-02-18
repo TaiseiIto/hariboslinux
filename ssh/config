@@ -1,5 +1,5 @@
 Host github github.com
 	HostName github.com
-	IdentityFile /~/hariboslinux/ssh/github
+	IdentityFile /root/hariboslinux/ssh/github
 	User git
 

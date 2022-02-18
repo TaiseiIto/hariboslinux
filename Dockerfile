@@ -11,7 +11,7 @@ RUN apk add --no-cache gdb
 RUN apk add --no-cache qemu-system-i386
 # ssh
 RUN apk add --no-cache openssh
-RUN mkdir ~/.ssh
+RUN mkdir /root/.ssh
 # editor
 RUN apk add --no-cache vim
 # set time zone UTC+9 (Japan)
@@ -20,7 +20,7 @@ RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 RUN apk del tzdata
 
 # clone the repository
-WORKDIR ~
+WORKDIR /root
 RUN git clone https://github.com/TaiseiIto/hariboslinux.git
 
 # make the OS image file
@@ -28,7 +28,7 @@ WORKDIR hariboslinux
 RUN make
 
 # gdb setting
-RUN echo add-auto-load-safe-path `pwd`/gdb/.gdbinit > ~/.gdbinit
+RUN echo add-auto-load-safe-path `pwd`/gdb/.gdbinit > /root/.gdbinit
 
 # gdb real mode disassemble
 RUN wget https://raw.githubusercontent.com/qemu/qemu/master/gdb-xml/i386-32bit.xml -P gdb
