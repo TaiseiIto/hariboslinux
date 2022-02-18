@@ -92,7 +92,7 @@ debug: $(IMAGE_FILE) stop
 # usage : $ make gitconfig KEY=<GitHub private key path>
 gitconfig:
 	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER_NAME):/root/hariboslinux/ssh/github && \
-	$(DOCKER) exec $(DOCKER_CONTAINER_NAME) /root/hariboslinux/git/gitconfig.sh
+	$(DOCKER) exec -it $(DOCKER_CONTAINER_NAME) /root/hariboslinux/git/gitconfig.sh
 
 # rebuild the OS
 rebuild: clean
