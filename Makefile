@@ -81,12 +81,17 @@ docker-stop:
 	$(DOCKER) stop $(DOCKER_CONTAINER_NAME)
 
 download-image:
-	$(DOCKER) cp $(DOCKER_CONTAINER_NAME):/~/hariboslinux/$(IMAGE_FILE) .
+	$(DOCKER) cp $(DOCKER_CONTAINER_NAME):/root/hariboslinux/$(IMAGE_FILE) .
 
 # debug the operating system onQEMU by gdb
 debug: $(IMAGE_FILE) stop
 	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
 	make -C gdb
+
+# Only the developer can execute it.
+# usage : $ make deploy-github-private-key KEY=<GitHub private key path>
+deploy-github-private-key:
+	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER_NAME):/root/hariboslinux/ssh/github
 
 # get setting
 gitconfig:
