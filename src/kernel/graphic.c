@@ -3,11 +3,12 @@
 #include "graphic.h"
 #include "io.h"
 #include "limits.h"
+#include "memory.h"
 #include "serial.h"
 #include "stdio.h"
 
 void *vram;
-VideoInformation const * const video_information = (VideoInformation const * const)0x00000600;
+VideoInformation const * const video_information = (VideoInformation const * const)MEMORY_MAP_VIDEO_INFORMATION;
 
 VideoInformation const *get_video_information(void)
 {

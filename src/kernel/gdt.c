@@ -4,10 +4,11 @@
 #include "gdt.h"
 #include "graphic.h"
 #include "io.h"
+#include "memory.h"
 #include "serial.h"
 #include "task.h"
 
-#define GDT_ADDR ((SegmentDescriptor *)0x00270000)
+#define GDT_ADDR ((SegmentDescriptor *)MEMORY_MAP_GDT_BEGIN)
 #define GDT_BEGIN (GDT_ADDR + 0x00000001)
 #define GDT_END (GDT_ADDR + 0x00002000)
 

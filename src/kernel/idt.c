@@ -4,10 +4,11 @@
 #include "idt.h"
 #include "interrupt_gates.h"
 #include "io.h"
+#include "memory.h"
 #include "serial.h"
 
-#define IDT_BEGIN ((InterruptDescriptor *)0x00268000)
-#define IDT_END (IDT_BEGIN + 0x00000100)
+#define IDT_BEGIN ((InterruptDescriptor *)MEMORY_MAP_IDT_BEGIN)
+#define IDT_END ((InterruptDescriptor *)MEMORY_MAP_IDT_END)
 
 void init_idt(void)
 {

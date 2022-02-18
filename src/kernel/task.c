@@ -34,7 +34,7 @@ Task *create_task(void (*function)(void *), unsigned int stack_size)
 	new_task->task_status_segment.ss2 = 0;
 	new_task->task_status_segment.cr3 = 0;
 	new_task->task_status_segment.eip = (unsigned int)function;
-	new_task->task_status_segment.eflags = 0x00000202;
+	new_task->task_status_segment.eflags = EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG;
 	new_task->task_status_segment.eax = 0;
 	new_task->task_status_segment.ecx = 0;
 	new_task->task_status_segment.edx = 0;
@@ -64,7 +64,7 @@ Task *create_task(void (*function)(void *), unsigned int stack_size)
 void init_task(void)
 {
 	main_task = malloc(sizeof(*main_task));
-	main_task->stack = (void*)0x00280000;
+	main_task->stack = MEMORY_MAP_KERNEL_STACK_BEGIN;
 	main_task->task_status_segment.link = 0;
 	main_task->task_status_segment.esp0 = 0;
 	main_task->task_status_segment.ss0 = 0;
@@ -74,7 +74,7 @@ void init_task(void)
 	main_task->task_status_segment.ss2 = 0;
 	main_task->task_status_segment.cr3 = 0;
 	main_task->task_status_segment.eip = (unsigned int)0x00006000;
-	main_task->task_status_segment.eflags = 0x00000202;
+	main_task->task_status_segment.eflags = EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG;
 	main_task->task_status_segment.eax = 0;
 	main_task->task_status_segment.ecx = 0;
 	main_task->task_status_segment.edx = 0;
