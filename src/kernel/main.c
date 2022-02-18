@@ -22,7 +22,7 @@ void test_task_function(void *args);
 
 void main(void)
 {
-	BootInformation const * const boot_information = (BootInformation const * const)0x00000800;
+	BootInformation const * const boot_information = (BootInformation const * const)MEMORY_MAP_BOOT_INFORMATION;
 	Color background_color;
 	Color foreground_color;
 	Color opaque_red;
