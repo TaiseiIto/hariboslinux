@@ -89,13 +89,10 @@ debug: $(IMAGE_FILE) stop
 	make -C gdb
 
 # Only the developer can execute it.
-# usage : $ make deploy-github-private-key KEY=<GitHub private key path>
-deploy-github-private-key:
-	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER_NAME):/root/hariboslinux/ssh/github
-
-# get setting
+# usage : $ make gitconfig KEY=<GitHub private key path>
 gitconfig:
-	./git/gitconfig.sh
+	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER_NAME):/root/hariboslinux/ssh/github && \
+	$(DOCKER) exec $(DOCKER_CONTAINER_NAME) /root/hariboslinux/git/gitconfig.sh
 
 # rebuild the OS
 rebuild: clean
