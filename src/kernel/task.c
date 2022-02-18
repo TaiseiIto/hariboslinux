@@ -73,7 +73,7 @@ void init_task(void)
 	main_task->task_status_segment.esp2 = 0;
 	main_task->task_status_segment.ss2 = 0;
 	main_task->task_status_segment.cr3 = 0;
-	main_task->task_status_segment.eip = (unsigned int)0x00006000;
+	main_task->task_status_segment.eip = (unsigned int)MEMORY_MAP_KERNEL_BIN_BEGIN;
 	main_task->task_status_segment.eflags = EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG;
 	main_task->task_status_segment.eax = 0;
 	main_task->task_status_segment.ecx = 0;
