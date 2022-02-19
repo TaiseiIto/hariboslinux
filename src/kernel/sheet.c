@@ -241,6 +241,7 @@ Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
 {
 	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height, NULL);
+	printf_serial("background_sheet@init_sheets = %p\n", *_background_sheet);
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
 	*_mouse_cursor_sheet = create_sheet(NULL, get_video_information()->width / 2, get_video_information()->height / 2, 0x08, 0x10, NULL);
 	for(unsigned short mouse_cursor_image_y = 0; mouse_cursor_image_y < mouse_cursor_sheet->height; mouse_cursor_image_y++)for(unsigned short mouse_cursor_image_x = 0; mouse_cursor_image_x < mouse_cursor_sheet->width; mouse_cursor_image_x++)put_dot_sheet(mouse_cursor_sheet, mouse_cursor_image_x, mouse_cursor_image_y, mouse_cursor_image[mouse_cursor_image_x + mouse_cursor_image_y * mouse_cursor_sheet->width]);

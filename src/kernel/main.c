@@ -261,7 +261,9 @@ void main(void)
 void test_task_procedure(void *args)
 {
 	TestTaskArgument *test_task_argument = (TestTaskArgument*)args;
-	Window *window = create_window("Test Task", test_task_argument->background_sheet, 0x0100 * test_task_argument->test_task->segment_selector, 0x0100 * test_task_argument->test_task->segment_selector, 0x0100, 0x0100);
+	printf_serial("background_sheet@test_task_procedure = %p\n", test_task_argument->background_sheet);
+	printf_serial("segment_selector@test_task_procedure = %p\n", test_task_argument->test_task->segment_selector);
+	Window *window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100);
 	while(true)test_task_counter++;
 }
 
