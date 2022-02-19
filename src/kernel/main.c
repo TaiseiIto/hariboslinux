@@ -140,7 +140,7 @@ void main(void)
 	fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
 	fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
 	fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
-	create_window(background_sheet, 0, 0, 0x0200, 0x0200);
+	create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200);
 	while(1)
 	{
 		Event new_event;
@@ -163,7 +163,7 @@ void main(void)
 			{
 			case KEY_W:
 				// Open a new window by pressing 'w'
-				create_window(background_sheet, 0, 0, 0x0200, 0x0200);
+				create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200);
 				break;
 			}
 			break;

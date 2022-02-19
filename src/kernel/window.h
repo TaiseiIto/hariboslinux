@@ -16,11 +16,12 @@ typedef struct _Window
 	struct _Sheet *close_button_sheet;
 	struct _Sheet *root_sheet;
 	struct _Sheet *title_sheet;
+	char *title;
 	struct _Window *previous;
 	struct _Window *next;
 } Window;
 
-Window *create_window(struct _Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height);
+Window *create_window(char *title, struct _Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height);
 void delete_window(Window *window);
 
 #endif

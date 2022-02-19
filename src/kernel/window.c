@@ -1,5 +1,6 @@
 #include "memory.h"
 #include "serial.h"
+#include "string.h"
 #include "task.h"
 #include "window.h"
 
@@ -15,6 +16,7 @@ const Color light_limit_color		= {0xff, 0xff, 0xff, 0xff};
 const Color semi_dark_limit_color	= {0x40, 0x40, 0x40, 0xff};
 const Color semi_light_limit_color	= {0xc0, 0xc0, 0xc0, 0xff};
 const Color title_background_color	= {0x00, 0x00, 0x80, 0xff};
+const Color title_foreground_color	= {0xff, 0xff, 0xff, 0xff};
 
 Window *windows = NULL;
 
@@ -100,11 +102,13 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 	}
 }
 
-Window *create_window(Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height)
+Window *create_window(char *title, Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height)
 {
 	Window *new_window;
 	// Create sheets
 	new_window = malloc(sizeof(*new_window));
+	new_window->title = malloc(strlen(title) + 1);
+	strcpy(new_window->title, title);
 	cli_task();
 	if(windows)
 	{
@@ -207,11 +211,14 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 
 void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)
 {
+	Window *window;
+	window = get_window_from_sheet(sheet);
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw title sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, title_background_color);
+		print_sheet(sheet, 0, 0, title_foreground_color, title_background_color, window->title);
 		return NULL;
 	default:
 		return default_event_procedure(sheet, event);
