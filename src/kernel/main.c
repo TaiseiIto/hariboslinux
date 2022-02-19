@@ -103,6 +103,7 @@ void main(void)
 	print_test_task_counter_timer = create_timer(0, 100);
 	test_timer = create_timer(0, 100);
 	test_task = create_task(test_task_function, 0x00010000);
+	start_task(test_task);
 	opaque_red.red = 0xff;
 	opaque_red.green = 0x00;
 	opaque_red.blue = 0x00;

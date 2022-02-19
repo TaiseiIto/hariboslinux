@@ -151,7 +151,6 @@ void start_task(Task *task)
 	{
 	case TASK_STATUS_SLEEP:
 		task->status = TASK_STATUS_WAIT;
-		printf_serial("Task %p starts.\n", task);
 		break;
 	case TASK_STATUS_WAIT:
 	case TASK_STATUS_RUN:
