@@ -157,7 +157,7 @@ ljmp:				# void ljmp(unsigned int address, unsigned short segment);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	ljmp	0x08(%ebp)
+	ljmp	*0x08(%ebp)
 	leave
 	ret
 
