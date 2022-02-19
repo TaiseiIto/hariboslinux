@@ -256,17 +256,25 @@ void main(void)
 
 void test_task_procedure(void *args)
 {
-	TestTaskArgument *test_task_argument = (TestTaskArgument*)args;
-	Queue *event_queue = create_queue(sizeof(Event), test_task_argument->test_task);
-	printf_serial("background_sheet@test_task_procedure = %p\n", test_task_argument->background_sheet);
-	printf_serial("segment_selector@test_task_procedure = %p\n", test_task_argument->test_task->segment_selector);
-	Window *window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100, event_queue);
+	Color foreground_color = {0x00, 0x00, 0x00, 0xff};
+	Color background_color = {0x80, 0x80, 0x80, 0xff};
+	Queue *event_queue;
+	TestTaskArgument *test_task_argument;
+	Timer *print_counter_timer;
+	unsigned long long counter = 0;
+	Window *window;
+	test_task_argument = (TestTaskArgument*)args;
+	event_queue = create_queue(sizeof(Event), test_task_argument->test_task);
+	window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100, event_queue);
+	print_counter_timer = create_timer(0, 100, event_queue);
 	while(true)
 	{
 		Event const *event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+			// Closing the window is prohibited because closing task is not implemented yet.
+			break;
 			if(sheet_exists(event->event_union.close_button_clicked_event.window->root_sheet))event->event_union.close_button_clicked_event.window->root_sheet->event_procedure(event->event_union.close_button_clicked_event.window->root_sheet, event);
 			break;
 		case EVENT_TYPE_SHEET_CLICKED:
@@ -284,11 +292,18 @@ void test_task_procedure(void *args)
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 			if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 			break;
+		case EVENT_TYPE_TIMER_EVENT:
+			if(event->event_union.timer_event.timer == print_counter_timer)
+			{
+				printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
+			}
+			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();
 			printf_serial("invalid event->type %#04x\n", event->type);
 			break;
 		}
+		else counter++;
 	}
 }
 
