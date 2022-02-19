@@ -253,6 +253,7 @@ void main(void)
 			}
 			break;
 		default: // invalid event->type
+			ERROR_MESSAGE();
 			printf_serial("invalid event->type %#04x\n", event->type);
 			break;
 		}
@@ -272,6 +273,9 @@ void test_task_procedure(void *args)
 		Event const *event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
+		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+			if(sheet_exists(event->event_union.close_button_clicked_event.window->root_sheet))event->event_union.close_button_clicked_event.window->root_sheet->event_procedure(event->event_union.close_button_clicked_event.window->root_sheet, event);
+			break;
 		case EVENT_TYPE_SHEET_CLICKED:
 			if(sheet_exists(event->event_union.sheet_clicked_event.sheet))event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 			break;
@@ -287,8 +291,12 @@ void test_task_procedure(void *args)
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 			if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
 			break;
+		default: // invalid event->type
+			ERROR_MESSAGE();
+			printf_serial("invalid event->type %#04x\n", event->type);
+			break;
 		}
-		test_task_counter++;
+		else test_task_counter++;
 	}
 }
 
