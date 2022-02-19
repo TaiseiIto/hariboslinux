@@ -1,11 +1,11 @@
 #include "event.h"
 #include "queue.h"
 
-Queue * event_queue;
+Queue *event_queue;
 
-void create_event_queue(void)
+void create_event_queue(Task *task)
 {
-	event_queue = create_queue(sizeof(Event));
+	event_queue = create_queue(sizeof(Event), task);
 }
 
 Event const *dequeue_event(void)

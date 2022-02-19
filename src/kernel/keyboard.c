@@ -1196,10 +1196,10 @@ void decode_keyboard_interrupt(unsigned char signal)
 	enqueue_event(&event);
 }
 
-void init_keyboard(void)
+void init_keyboard(Task *task)
 {
 	send_command_to_keyboard(KEYBOARD_COMMAND_SET_MODE, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
-	keyboard_send_buffer = create_queue(sizeof(KeyboardTransmission));
+	keyboard_send_buffer = create_queue(sizeof(KeyboardTransmission), task);
 	keyboard_flags = KEYBOARD_FLAG_INTERRUPT_ENABLED | KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_SEND_READY;
 }
 

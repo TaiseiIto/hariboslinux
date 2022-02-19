@@ -114,7 +114,7 @@ void com2_interrupt_handler(void)
 }
 
 // switch from polling to interrupt
-void init_serial_interrupt(void)
+void init_serial_interrupt(Task *task)
 {
 	unsigned int baud_rate = 115200;
 	unsigned short baud_rate_divisor = SERIAL_FREQUENCY / baud_rate;
@@ -128,7 +128,7 @@ void init_serial_interrupt(void)
 	// 	return;
 	// }
 	// create com1_transmission_queue
-	com1_transmission_queue = create_queue(sizeof(char));
+	com1_transmission_queue = create_queue(sizeof(char), task);
 	// 8 bits per char
 	outb(COM1 + LINE_CONTROL_REGISTER, CHARACTER_LENGTH_8);
 	// enable interrupt

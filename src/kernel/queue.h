@@ -2,6 +2,7 @@
 #define _QUEUE_H_
 
 #include "stddef.h"
+#include "task.h"
 
 typedef struct _QueueElement
 {
@@ -16,9 +17,10 @@ typedef struct _Queue
 	unsigned int number_of_elements;
 	QueueElement *read_head;
 	QueueElement *write_head;
+	Task *task;
 } Queue;
 
-Queue *create_queue(size_t element_size);
+Queue *create_queue(size_t element_size, Task *task);
 void *dequeue(Queue *queue);
 void delete_queue(Queue *queue);
 void enqueue(Queue *queue, void const *data);

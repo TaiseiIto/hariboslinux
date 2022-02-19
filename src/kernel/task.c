@@ -52,6 +52,7 @@ Task *create_task(void (*function)(void *), unsigned int stack_size)
 	new_task->task_status_segment.ldtr = 0x00000000;
 	new_task->task_status_segment.io = 0x40000000;
 	new_task->segment_selector = set_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	new_task->status = TASK_STATUS_SLEEP;
 	cli_task();
 	new_task->previous = main_task->previous;
 	new_task->next = main_task;
@@ -61,7 +62,7 @@ Task *create_task(void (*function)(void *), unsigned int stack_size)
 	return new_task;
 }
 
-void init_task(void)
+Task *init_task(void)
 {
 	main_task = malloc(sizeof(*main_task));
 	main_task->stack = MEMORY_MAP_KERNEL_STACK_BEGIN;
@@ -92,11 +93,77 @@ void init_task(void)
 	main_task->task_status_segment.ldtr = 0x00000000;
 	main_task->task_status_segment.io = 0x40000000;
 	main_task->segment_selector = set_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	main_task->status = TASK_STATUS_RUN;
 	main_task->interrupt_prohibition_level = 1;
 	main_task->previous = main_task;
 	main_task->next = main_task;
 	current_task = main_task;
 	ltr(main_task->segment_selector);
+	return main_task;
+}
+
+void sleep_task(Task *task)
+{
+	cli_task();
+	switch(task->status)
+	{
+	case TASK_STATUS_SLEEP:
+		// The task is already sleeping.
+		ERROR_MESSAGE();
+		break;
+	case TASK_STATUS_WAIT:
+		task->status = TASK_STATUS_SLEEP;
+		break;
+	case TASK_STATUS_RUN:
+		if(task == current_task)
+		{
+			bool next_task_found = false;
+			for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+			{
+				next_task_found = true;
+				task->status = TASK_STATUS_SLEEP;
+				next_task->status = TASK_STATUS_RUN;
+				current_task = next_task;
+				ljmp(0, current_task->segment_selector);
+				break;
+			}
+			if(!next_task_found)
+			{
+				sti_task();
+				hlt();
+				return;
+			}
+		}
+		else ERROR_MESSAGE(); // Task status contradiction
+		break;
+	default:
+		// Invalid task status
+		ERROR_MESSAGE();
+		break;
+	}
+	sti_task();
+}
+
+void start_task(Task *task)
+{
+	cli_task();
+	switch(task->status)
+	{
+	case TASK_STATUS_SLEEP:
+		task->status = TASK_STATUS_WAIT;
+		printf_serial("Task %p starts.\n", task);
+		break;
+	case TASK_STATUS_WAIT:
+	case TASK_STATUS_RUN:
+		// The task has already started.
+		ERROR_MESSAGE();
+		break;
+	default:
+		// Invalid task status
+		ERROR_MESSAGE();
+		break;
+	}
+	sti_task();
 }
 
 void sti_task(void)
@@ -116,10 +183,15 @@ void sti_task_interrupt(void)
 
 void switch_task(void)
 {
-	if(current_task != current_task->next)
+	cli_task();
+	for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
 	{
-		current_task = current_task->next;
+		current_task->status = TASK_STATUS_WAIT;
+		next_task->status = TASK_STATUS_RUN;
+		current_task = next_task;
 		ljmp(0, current_task->segment_selector);
+		break;
 	}
+	sti_task();
 }
 

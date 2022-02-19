@@ -40,6 +40,7 @@ void main(void)
 	Sheet *translucent_red_sheet;
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
+	Task *main_task;
 	Task *test_task;
 	Timer *checking_free_memory_space_size_timer;
 	Timer *print_test_task_counter_timer;
@@ -57,15 +58,15 @@ void main(void)
 	print_serial("finish init_idt()\n\n");
 	init_memory();
 	print_serial("finish init_memory()\n\n");
-	init_task();
+	main_task = init_task();
 	print_serial("finish init_task()\n\n");
-	create_event_queue();
+	create_event_queue(main_task);
 	print_serial("finish create_event_queue()\n\n");
 	init_pic();
 	print_serial("finish init_pic()\n\n");
 	init_pit();
 	print_serial("finish init_pit()\n\n");
-	init_keyboard();
+	init_keyboard(main_task);
 	print_serial("finish init_keyboard()\n\n");
 	init_rtc();
 	print_serial("finish init_rtc()\n\n");
@@ -73,7 +74,7 @@ void main(void)
 	print_serial("finish init_mouse()\n\n");
 	init_screen();
 	print_serial("finish init_screen()\n\n");
-	init_serial_interrupt();
+	init_serial_interrupt(main_task);
 	sti_task();
 	print_serial("finish sti_task()\n\n");
 	init_sheets(&background_sheet, &mouse_cursor_sheet);
@@ -239,7 +240,7 @@ void main(void)
 			printf_serial("invalid event->type %#04x\n", event->type);
 			break;
 		}
-		else hlt();
+		else sleep_task(main_task);
 	}
 }
 

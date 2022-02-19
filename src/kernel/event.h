@@ -8,6 +8,7 @@ struct _Event;
 #include "queue.h"
 #include "rtc.h"
 #include "sheet.h"
+#include "task.h"
 #include "timer.h"
 #include "window.h"
 
@@ -48,7 +49,7 @@ typedef struct _Event
 
 extern Queue * event_queue;
 
-void create_event_queue(void);
+void create_event_queue(Task *task);
 Event const *dequeue_event(void);
 void enqueue_event(Event const *event);
 

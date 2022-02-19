@@ -3,7 +3,7 @@
 #include "string.h"
 #include "task.h"
 
-Queue *create_queue(size_t element_size)
+Queue *create_queue(size_t element_size, Task *task)
 {
 	Queue *queue = malloc(sizeof(*queue));
 	queue->element_size = element_size;
@@ -11,6 +11,7 @@ Queue *create_queue(size_t element_size)
 	queue->number_of_elements = 0;
 	queue->read_head = NULL;
 	queue->write_head = NULL;
+	queue->task = task;
 	return queue;
 }
 
@@ -52,5 +53,6 @@ void enqueue(Queue *queue, void const *data)
 	if(!queue->read_head)queue->read_head = new_element;
 	queue->number_of_elements++;
 	sti_task();
+	if(queue->task)if(queue->task->status == TASK_STATUS_SLEEP)start_task(queue->task);
 }
 

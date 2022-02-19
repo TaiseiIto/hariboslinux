@@ -39,12 +39,18 @@ typedef struct _Task
 	struct _Task *previous;
 	struct _Task *next;
 	unsigned short segment_selector;
+	unsigned char status;
+	#define TASK_STATUS_SLEEP	0x00
+	#define TASK_STATUS_WAIT	0x01
+	#define TASK_STATUS_RUN		0x02
 } Task;
 
 void cli_task(void);
 void cli_task_interrupt(void);
 Task *create_task(void (*function)(void *), unsigned int stack_size);
-void init_task(void);
+Task *init_task(void);
+void sleep_task(Task *task);
+void start_task(Task *task);
 void sti_task(void);
 void sti_task_interrupt(void);
 void switch_task(void);
