@@ -47,11 +47,5 @@ typedef struct _Event
 	EventUnion event_union;
 } Event;
 
-extern Queue * event_queue;
-
-void create_event_queue(Task *task);
-Event const *dequeue_event(void);
-void enqueue_event(Event const *event);
-
 #endif
 

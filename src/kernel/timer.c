@@ -6,11 +6,12 @@
 Timer *next_estimated_timer = NULL;
 unsigned long long tick_count = 0;
 
-Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned long long interval_count/*centisecond*/)
+Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned long long interval_count/*centisecond*/, Queue *event_queue)
 {
 	Timer *new_timer = (Timer *)malloc(sizeof(*new_timer));
 	new_timer->estimated_count = tick_count + estimated_count;
 	new_timer->interval_count = interval_count;
+	new_timer->event_queue = event_queue;
 	cli_task();
 	if(next_estimated_timer)
 	{
@@ -60,7 +61,7 @@ void timers_tick(void)
 		Event event;
 		event.type = EVENT_TYPE_TIMER_EVENT;
 		event.event_union.timer_event.timer = next_estimated_timer;
-		enqueue_event(&event);
+		enqueue(next_estimated_timer->event_queue, &event);
 		if(next_estimated_timer->interval_count)
 		{
 			Timer *repeating_timer = next_estimated_timer;

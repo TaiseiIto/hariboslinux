@@ -21,7 +21,7 @@ typedef struct _Window
 	struct _Window *next;
 } Window;
 
-Window *create_window(char *title, struct _Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height);
+Window *create_window(char *title, struct _Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height, Queue *event_queue);
 void delete_window(Window *window);
 
 #endif

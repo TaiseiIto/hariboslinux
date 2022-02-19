@@ -43,7 +43,7 @@ Color alpha_blend(Color foreground, Color background)
 	return blended;
 }
 
-Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event))
+Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event), Queue *event_queue)
 {
 	Event sheet_created_event;
 	Sheet *new_sheet = malloc(sizeof(*new_sheet));
@@ -58,6 +58,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	new_sheet->uppest_child = NULL;
 	new_sheet->lowest_child = NULL;
 	new_sheet->event_procedure = event_procedure ? event_procedure : default_event_procedure;
+	new_sheet->event_queue = event_queue;
 	new_sheet->flags = 0;
 	cli_task();
 	new_sheet->parent = parent;
@@ -101,7 +102,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	refresh_input(new_sheet);
 	sheet_created_event.type = EVENT_TYPE_SHEET_CREATED;
 	sheet_created_event.event_union.sheet_created_event.sheet = new_sheet;
-	enqueue_event(&sheet_created_event);
+	enqueue(new_sheet->event_queue, &sheet_created_event);
 	return new_sheet;
 }
 
@@ -139,7 +140,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		{
 			new_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
 			new_event.event_union.sheet_deletion_request_event.sheet = child;
-			enqueue_event(&new_event);
+			enqueue(child->event_queue, &new_event);
 		}
 		if(!sheet->lowest_child)
 		{
@@ -147,7 +148,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 			new_event.event_union.sheet_deletion_response_event.sheet = sheet;
 			new_event.event_union.sheet_deletion_response_event.parent = sheet->parent;
 			delete_sheet(sheet);
-			enqueue_event(&new_event);
+			enqueue(sheet->parent->event_queue, &new_event);
 		}
 		break;
 	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
@@ -157,7 +158,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 			new_event.event_union.sheet_deletion_response_event.sheet = sheet;
 			new_event.event_union.sheet_deletion_response_event.parent = sheet->parent;
 			delete_sheet(sheet);
-			enqueue_event(&new_event);
+			enqueue(sheet->parent->event_queue, &new_event);
 		}
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
@@ -238,12 +239,12 @@ Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 	return sheet;
 }
 
-void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet)
+void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet, Queue *event_queue)
 {
-	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height, NULL);
+	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height, NULL, event_queue);
 	printf_serial("background_sheet@init_sheets = %p\n", *_background_sheet);
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
-	*_mouse_cursor_sheet = create_sheet(NULL, get_video_information()->width / 2, get_video_information()->height / 2, 0x08, 0x10, NULL);
+	*_mouse_cursor_sheet = create_sheet(NULL, get_video_information()->width / 2, get_video_information()->height / 2, 0x08, 0x10, NULL, event_queue);
 	for(unsigned short mouse_cursor_image_y = 0; mouse_cursor_image_y < mouse_cursor_sheet->height; mouse_cursor_image_y++)for(unsigned short mouse_cursor_image_x = 0; mouse_cursor_image_x < mouse_cursor_sheet->width; mouse_cursor_image_x++)put_dot_sheet(mouse_cursor_sheet, mouse_cursor_image_x, mouse_cursor_image_y, mouse_cursor_image[mouse_cursor_image_x + mouse_cursor_image_y * mouse_cursor_sheet->width]);
 }
 
@@ -824,7 +825,7 @@ void send_sheets_event(Event const *event)
 				fifth_button_catched_sheet = clicked_sheet;
 				new_event.event_union.sheet_clicked_event.flags = SHEET_CLICKED_EVENT_FLAG_PUSHED | SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON;
 			}
-			enqueue_event(&new_event);
+			enqueue(clicked_sheet->event_queue, &new_event);
 		}
 		if(event->event_union.mouse_event.flags & (MOUSE_LEFT_BUTTON_RELEASED_NOW | MOUSE_MIDDLE_BUTTON_RELEASED_NOW | MOUSE_RIGHT_BUTTON_RELEASED_NOW | MOUSE_4TH_BUTTON_RELEASED_NOW | MOUSE_5TH_BUTTON_RELEASED_NOW))
 		{
@@ -870,7 +871,7 @@ void send_sheets_event(Event const *event)
 				new_event.event_union.sheet_clicked_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(fifth_button_catched_sheet);
 				fifth_button_catched_sheet = NULL;
 			}
-			enqueue_event(&new_event);
+			enqueue(new_event.event_union.sheet_clicked_event.sheet->event_queue, &new_event);
 		}
 		if(event->event_union.mouse_event.x_movement || event->event_union.mouse_event.y_movement)
 		{
@@ -891,7 +892,7 @@ void send_sheets_event(Event const *event)
 				new_event.event_union.sheet_mouse_move_event.sheet = sheet_under_cursor;
 				new_event.event_union.sheet_mouse_move_event.x_movement = event->event_union.mouse_event.x_movement;
 				new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.mouse_event.y_movement;
-				enqueue_event(&new_event);
+				enqueue(new_event.event_union.sheet_mouse_move_event.sheet->event_queue, &new_event);
 			}
 		}
 		break;

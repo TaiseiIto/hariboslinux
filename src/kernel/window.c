@@ -91,7 +91,7 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 				// Send close button clicked event
 				new_event.type = EVENT_TYPE_CLOSE_BUTTON_CLICKED;
 				new_event.event_union.close_button_clicked_event.window = window;
-				enqueue_event(&new_event);
+				enqueue(window->root_sheet->event_queue, &new_event);
 			}
 		}
 		return default_event_procedure(sheet, event);
@@ -102,7 +102,7 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 	}
 }
 
-Window *create_window(char *title, Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height)
+Window *create_window(char *title, Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height, Queue *event_queue)
 {
 	Window *new_window;
 	// Create sheets
@@ -123,10 +123,10 @@ Window *create_window(char *title, Sheet *background_sheet, short x, short y, un
 		new_window->previous = new_window;
 		new_window->next = new_window;
 	}
-	new_window->root_sheet = create_sheet(background_sheet, x, y, width, height, root_sheet_event_procedure);
-	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, TITLE_SHEET_HEIGHT, title_sheet_event_procedure);
-	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure);
-	new_window->close_button_sheet = create_sheet(new_window->title_sheet, new_window->title_sheet->width - new_window->title_sheet->height + 1, 1, new_window->title_sheet->height - 2, new_window->title_sheet->height - 2, close_button_sheet_event_procedure);
+	new_window->root_sheet = create_sheet(background_sheet, x, y, width, height, root_sheet_event_procedure, event_queue);
+	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, TITLE_SHEET_HEIGHT, title_sheet_event_procedure, event_queue);
+	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure, event_queue);
+	new_window->close_button_sheet = create_sheet(new_window->title_sheet, new_window->title_sheet->width - new_window->title_sheet->height + 1, 1, new_window->title_sheet->height - 2, new_window->title_sheet->height - 2, close_button_sheet_event_procedure, event_queue);
 	sti_task();
 	return new_window;
 }
@@ -157,7 +157,7 @@ void delete_window(Window *window)
 	// Deletion request to root sheet
 	root_sheet_deletion_request_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
 	root_sheet_deletion_request_event.event_union.sheet_deletion_request_event.sheet = root_sheet;
-	enqueue_event(&root_sheet_deletion_request_event);
+	enqueue(root_sheet->event_queue, &root_sheet_deletion_request_event);
 }
 
 Window *get_window_from_sheet(Sheet const *sheet)

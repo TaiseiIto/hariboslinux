@@ -45,6 +45,7 @@ typedef union _MousePacket
 } MousePacket;
 
 Event mouse_event;
+Queue *mouse_interrupt_queue;
 unsigned char mouse_id;
 
 void send_to_mouse(unsigned char data);
@@ -111,7 +112,7 @@ void decode_mouse_interrupt(unsigned char signal)
 			else if(get_video_information()->height <= mouse_event.event_union.mouse_event.y)mouse_event.event_union.mouse_event.y = get_video_information()->height - 1;
 			mouse_event.event_union.mouse_event.vertical_wheel_movement = 0;
 			mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
-			enqueue_event(&mouse_event);
+			enqueue(mouse_interrupt_queue, &mouse_event);
 			signal_index = 0;
 		}
 		break;
@@ -169,7 +170,7 @@ void decode_mouse_interrupt(unsigned char signal)
 			if(0 < (char)mouse_packet.signals[3])mouse_event.event_union.mouse_event.vertical_wheel_movement = 1;
 			else if((char)mouse_packet.signals[3] < 0)mouse_event.event_union.mouse_event.vertical_wheel_movement = -1;
 			mouse_event.event_union.mouse_event.horizontal_wheel_movement = 0;
-			enqueue_event(&mouse_event);
+			enqueue(mouse_interrupt_queue, &mouse_event);
 			signal_index = 0;
 		}
 		break;
@@ -279,7 +280,7 @@ void decode_mouse_interrupt(unsigned char signal)
 					mouse_event.event_union.mouse_event.flags |= MOUSE_5TH_BUTTON_RELEASED_NOW;
 				}
 			}
-			enqueue_event(&mouse_event);
+			enqueue(mouse_interrupt_queue, &mouse_event);
 			signal_index = 0;
 		}
 		break;
@@ -294,8 +295,9 @@ unsigned char get_mouse_id(void)
 	return mouse_id;
 }
 
-void init_mouse(void)
+void init_mouse(Queue *interrupt_queue)
 {
+	mouse_interrupt_queue = interrupt_queue;
 	// upgrade mouse ID from 0 to 3
 	set_mouse_sample_rate(200);
 	set_mouse_sample_rate(100);
@@ -336,7 +338,7 @@ void mouse_interrupt_handler(void)
 	finish_interruption(IRQ_MOUSE);
 	event.type = EVENT_TYPE_MOUSE_INTERRUPT;
 	event.event_union.mouse_interrupt.signal = inb(PORT_KEYBOARD_DATA);
-	enqueue_event(&event);
+	enqueue(mouse_interrupt_queue, &event);
 }
 
 void send_to_mouse(unsigned char data)

@@ -56,20 +56,21 @@ typedef struct _Sheet
 	struct _Sheet *uppest_child;
 	struct _Sheet *lowest_child;
 	void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event);
+	Queue *event_queue;
 	short x, y; // Coordinate seen from parent
 	unsigned short width, height;
 	unsigned char flags;
 	#define SHEET_FLAG_RECEIVED_DELETION_REQUEST 0x01
 } Sheet;
 
-Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event));
+Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event), Queue *event_queue);
 void *default_event_procedure(Sheet *sheet, struct _Event const *event);
 void delete_sheet(Sheet *sheet);
 void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsigned short height, Color color);
 short get_sheet_x_on_screen(Sheet const *sheet);
 short get_sheet_y_on_screen(Sheet const *sheet);
 Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y);
-void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet);
+void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet, Queue *event_queue);
 bool is_descendant_sheet_of(Sheet const *descendant_candidate, Sheet const *ancestor_candidate);
 void move_sheet(Sheet *sheet, short x, short y);
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...);

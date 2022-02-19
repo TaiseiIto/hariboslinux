@@ -3,6 +3,8 @@
 
 // Real Time Clock
 
+#include "queue.h"
+
 typedef struct _RTCInterrupt
 {
 	unsigned char second;
@@ -23,7 +25,7 @@ unsigned char get_day_of_week(unsigned short year, unsigned char month, unsigned
 #define RTC_FRIDAY	0x06
 
 char const *get_day_of_week_string(unsigned char day_of_week);
-void init_rtc(void);
+void init_rtc(Queue *interrupt_queue);
 void rtc_interrupt_handler(void);
 
 #endif

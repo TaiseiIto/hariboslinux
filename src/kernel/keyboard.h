@@ -1,6 +1,7 @@
 #ifndef _KEYBOARD_H_
 #define _KEYBOARD_H_
 
+#include "queue.h"
 #include "task.h"
 
 #define PORT_KEYBOARD_COMMAND	0x0064
@@ -175,7 +176,7 @@ typedef struct _KeyboardInterrupt
 } KeyboardInterrupt;
 
 void decode_keyboard_interrupt(unsigned char signal);
-void init_keyboard(Task *task);
+void init_keyboard(Queue *interrupt_queue, Task *task);
 void keyboard_interrupt_handler(void);
 unsigned char receive_from_keyboard(void);
 void send_byte_to_keyboard(unsigned short port, unsigned char data);

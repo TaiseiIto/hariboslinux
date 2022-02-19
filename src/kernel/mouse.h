@@ -1,6 +1,8 @@
 #ifndef _MOUSE_H_
 #define _MOUSE_H_
 
+#include "queue.h"
+
 typedef struct _MouseEvent
 {
 	unsigned int flags;
@@ -34,7 +36,7 @@ typedef struct _MouseInterrupt
 
 void decode_mouse_interrupt(unsigned char signal);
 unsigned char get_mouse_id(void);
-void init_mouse(void);
+void init_mouse(Queue *interrupt_queue);
 void mouse_interrupt_handler(void);
 
 #endif

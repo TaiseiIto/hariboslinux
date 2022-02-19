@@ -1063,6 +1063,7 @@ const char character_map_japanese_caps_lock_shift[0x80] =
 };
 
 unsigned short keyboard_flags = KEYBOARD_FLAG_LAYOUT_ENGLISH;
+Queue *keyboard_interrupt_queue;
 Queue *keyboard_send_buffer;
 KeyboardTransmission last_keyboard_transmission;
 
@@ -1193,12 +1194,13 @@ void decode_keyboard_interrupt(unsigned char signal)
 	event.event_union.keyboard_event.keycode = signal;
 	// Set chatacter
 	event.event_union.keyboard_event.character = get_character(signal);
-	enqueue_event(&event);
+	enqueue(keyboard_interrupt_queue, &event);
 }
 
-void init_keyboard(Task *task)
+void init_keyboard(Queue *interrupt_queue, Task *task)
 {
 	send_command_to_keyboard(KEYBOARD_COMMAND_SET_MODE, KEYBOARD_MODE_KEYBOARD_INTERRUPT | KEYBOARD_MODE_MOUSE_INTERRUPT | KEYBOARD_MODE_SYSTEM_FLAG | KEYBOARD_MODE_SCANCODE01);
+	keyboard_interrupt_queue = interrupt_queue;
 	keyboard_send_buffer = create_queue(sizeof(KeyboardTransmission), task);
 	keyboard_flags = KEYBOARD_FLAG_INTERRUPT_ENABLED | KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_SEND_READY;
 }
@@ -1209,7 +1211,7 @@ void keyboard_interrupt_handler(void)
 	finish_interruption(IRQ_KEYBOARD);
 	event.type = EVENT_TYPE_KEYBOARD_INTERRUPT;
 	event.event_union.keyboard_interrupt.signal = inb(PORT_KEYBOARD_DATA);
-	enqueue_event(&event);
+	enqueue(keyboard_interrupt_queue, &event);
 }
 
 unsigned char receive_from_keyboard(void)

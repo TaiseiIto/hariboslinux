@@ -3,7 +3,9 @@
 
 // Programmable Interval Timer
 
-void init_pit(void);
+#include "queue.h"
+
+void init_pit(Queue *interrupt_queue);
 void pit_interrupt_handler(void);
 void decode_pit_interrupt(void);
 

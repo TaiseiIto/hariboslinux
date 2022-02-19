@@ -19,6 +19,7 @@
 
 typedef struct _TestTaskArgument
 {
+	Queue *main_task_event_queue;
 	Sheet *background_sheet;
 	Task *test_task;
 } TestTaskArgument;
@@ -38,6 +39,7 @@ void main(void)
 	Color translucent_green;
 	Color translucent_blue;
 	MemoryRegionDescriptor memory_region_descriptor;
+	Queue *event_queue;
 	Sheet *background_sheet;
 	Sheet *mouse_cursor_sheet;
 	Sheet *opaque_red_sheet;
@@ -67,24 +69,24 @@ void main(void)
 	print_serial("finish init_memory()\n\n");
 	main_task = init_task();
 	print_serial("finish init_task()\n\n");
-	create_event_queue(main_task);
-	print_serial("finish create_event_queue()\n\n");
+	event_queue = create_queue(sizeof(Event), main_task);
+	print_serial("finish create_queue()\n\n");
 	init_pic();
 	print_serial("finish init_pic()\n\n");
-	init_pit();
+	init_pit(event_queue);
 	print_serial("finish init_pit()\n\n");
-	init_keyboard(main_task);
+	init_keyboard(event_queue, main_task);
 	print_serial("finish init_keyboard()\n\n");
-	init_rtc();
+	init_rtc(event_queue);
 	print_serial("finish init_rtc()\n\n");
-	init_mouse();
+	init_mouse(event_queue);
 	print_serial("finish init_mouse()\n\n");
 	init_screen();
 	print_serial("finish init_screen()\n\n");
 	init_serial_interrupt(main_task);
 	sti_task();
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
-	init_sheets(&background_sheet, &mouse_cursor_sheet);
+	init_sheets(&background_sheet, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;
 	background_color.green = 0x00;
 	background_color.blue = 0x00;
@@ -106,9 +108,9 @@ void main(void)
 		printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
-	checking_free_memory_space_size_timer = create_timer(0, 100);
+	checking_free_memory_space_size_timer = create_timer(0, 100, event_queue);
 	// Test timer
-	test_timer = create_timer(0, 100);
+	test_timer = create_timer(0, 100, event_queue);
 	// Test sheet
 	opaque_red.red = 0xff;
 	opaque_red.green = 0x00;
@@ -134,12 +136,12 @@ void main(void)
 	translucent_blue.green = 0x00;
 	translucent_blue.blue = 0xff;
 	translucent_blue.alpha = 0x80;
-	opaque_red_sheet = create_sheet(background_sheet, 0x0000, 0x0000, 0x0100, 0x0100, NULL);
-	opaque_green_sheet = create_sheet(background_sheet, 0x0100, 0x0100, 0x0100, 0x0100, NULL);
-	opaque_blue_sheet = create_sheet(background_sheet, 0x0200, 0x0200, 0x0100, 0x0100, NULL);
-	translucent_red_sheet = create_sheet(background_sheet, 0x0080, 0x0080, 0x0100, 0x0100, NULL);
-	translucent_green_sheet = create_sheet(background_sheet, 0x0180, 0x0180, 0x0100, 0x0100, NULL);
-	translucent_blue_sheet = create_sheet(background_sheet, 0x0280, 0x0280, 0x0100, 0x0100, NULL);
+	opaque_red_sheet = create_sheet(background_sheet, 0x0000, 0x0000, 0x0100, 0x0100, NULL, event_queue);
+	opaque_green_sheet = create_sheet(background_sheet, 0x0100, 0x0100, 0x0100, 0x0100, NULL, event_queue);
+	opaque_blue_sheet = create_sheet(background_sheet, 0x0200, 0x0200, 0x0100, 0x0100, NULL, event_queue);
+	translucent_red_sheet = create_sheet(background_sheet, 0x0080, 0x0080, 0x0100, 0x0100, NULL, event_queue);
+	translucent_green_sheet = create_sheet(background_sheet, 0x0180, 0x0180, 0x0100, 0x0100, NULL, event_queue);
+	translucent_blue_sheet = create_sheet(background_sheet, 0x0280, 0x0280, 0x0100, 0x0100, NULL, event_queue);
 	fill_box_sheet(opaque_red_sheet, 0, 0, opaque_red_sheet->width, opaque_red_sheet->height, opaque_red);
 	fill_box_sheet(opaque_green_sheet, 0, 0, opaque_green_sheet->width, opaque_green_sheet->height, opaque_green);
 	fill_box_sheet(opaque_blue_sheet, 0, 0, opaque_blue_sheet->width, opaque_blue_sheet->height, opaque_blue);
@@ -147,10 +149,11 @@ void main(void)
 	fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
 	fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
 	// Test window
-	create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200);
+	create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200, event_queue);
 	// Test task
-	print_test_task_counter_timer = create_timer(0, 100);
+	print_test_task_counter_timer = create_timer(0, 100, event_queue);
 	test_task = create_task(test_task_procedure, 0x00010000);
+	test_task_argument.main_task_event_queue = event_queue;
 	test_task_argument.background_sheet = background_sheet;
 	test_task_argument.test_task = test_task;
 	start_task(test_task, &test_task_argument);
@@ -158,7 +161,7 @@ void main(void)
 	{
 		Event new_event;
 		Event const *event;
-		event = dequeue_event();
+		event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
@@ -176,7 +179,7 @@ void main(void)
 			{
 			case KEY_W:
 				// Open a new window by pressing 'w'
-				create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200);
+				create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200, event_queue);
 				break;
 			}
 			break;
@@ -263,7 +266,7 @@ void test_task_procedure(void *args)
 	TestTaskArgument *test_task_argument = (TestTaskArgument*)args;
 	printf_serial("background_sheet@test_task_procedure = %p\n", test_task_argument->background_sheet);
 	printf_serial("segment_selector@test_task_procedure = %p\n", test_task_argument->test_task->segment_selector);
-	Window *window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100);
+	Window *window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100, test_task_argument->main_task_event_queue);
 	while(true)test_task_counter++;
 }
 
