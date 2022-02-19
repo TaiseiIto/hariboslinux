@@ -19,7 +19,6 @@
 
 typedef struct _TestTaskArgument
 {
-	Queue *main_task_event_queue;
 	Sheet *background_sheet;
 	Task *test_task;
 } TestTaskArgument;
@@ -153,7 +152,6 @@ void main(void)
 	// Test task
 	print_test_task_counter_timer = create_timer(0, 100, event_queue);
 	test_task = create_task(test_task_procedure, 0x00010000);
-	test_task_argument.main_task_event_queue = event_queue;
 	test_task_argument.background_sheet = background_sheet;
 	test_task_argument.test_task = test_task;
 	start_task(test_task, &test_task_argument);
@@ -232,6 +230,7 @@ void main(void)
 			break;
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 			if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
+			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
 			{
@@ -264,9 +263,32 @@ void main(void)
 void test_task_procedure(void *args)
 {
 	TestTaskArgument *test_task_argument = (TestTaskArgument*)args;
+	Queue *event_queue = create_queue(sizeof(Event), test_task_argument->test_task);
 	printf_serial("background_sheet@test_task_procedure = %p\n", test_task_argument->background_sheet);
 	printf_serial("segment_selector@test_task_procedure = %p\n", test_task_argument->test_task->segment_selector);
-	Window *window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100, test_task_argument->main_task_event_queue);
-	while(true)test_task_counter++;
+	Window *window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100, event_queue);
+	while(true)
+	{
+		Event const *event = dequeue(event_queue);
+		if(event)switch(event->type)
+		{
+		case EVENT_TYPE_SHEET_CLICKED:
+			if(sheet_exists(event->event_union.sheet_clicked_event.sheet))event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
+			break;
+		case EVENT_TYPE_SHEET_CREATED:
+			if(sheet_exists(event->event_union.sheet_created_event.sheet))event->event_union.sheet_created_event.sheet->event_procedure(event->event_union.sheet_created_event.sheet, event);
+			break;
+		case EVENT_TYPE_SHEET_DELETION_REQUEST:
+			if(sheet_exists(event->event_union.sheet_deletion_request_event.sheet))event->event_union.sheet_deletion_request_event.sheet->event_procedure(event->event_union.sheet_deletion_request_event.sheet, event);
+			break;
+		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+			if(sheet_exists(event->event_union.sheet_deletion_response_event.parent))event->event_union.sheet_deletion_response_event.parent->event_procedure(event->event_union.sheet_deletion_response_event.parent, event);
+			break;
+		case EVENT_TYPE_SHEET_MOUSE_MOVE:
+			if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
+			break;
+		}
+		test_task_counter++;
+	}
 }
 
