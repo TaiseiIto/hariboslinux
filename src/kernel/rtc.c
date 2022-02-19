@@ -23,6 +23,11 @@ unsigned char get_day_of_week(unsigned short year, unsigned char month, unsigned
 {
 	unsigned int year_of_the_century = year % 100;
 	unsigned int zero_based_century = year / 100;
+	if(month <= 2)
+	{
+		month += 12;
+		year--;
+	}
 	return (day + 13 * (month + 1) / 5 + year_of_the_century + year_of_the_century / 4 + zero_based_century / 4 - 2 * zero_based_century) % 7;
 }
 
