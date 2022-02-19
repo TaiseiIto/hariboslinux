@@ -23,7 +23,6 @@ typedef struct _TestTaskArgument
 	Task *test_task;
 } TestTaskArgument;
 
-unsigned long long test_task_counter = 0;
 void test_task_procedure(void *args);
 
 void main(void)
@@ -51,12 +50,11 @@ void main(void)
 	Task *test_task;
 	TestTaskArgument test_task_argument;
 	Timer *checking_free_memory_space_size_timer;
-	Timer *print_test_task_counter_timer;
 	Timer *test_timer;
 	unsigned int memory_region_descriptor_index;
 	unsigned long long timer_counter = 0;
 	unsigned short keyboard_flags = 0;
-	unsigned short screen_text_row = 9;
+	unsigned short screen_text_row = 8;
 	cli();
 	new_line_serial();
 	print_serial("Hello, kernel.bin!\n\n");
@@ -150,7 +148,6 @@ void main(void)
 	// Test window
 	create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200, event_queue);
 	// Test task
-	print_test_task_counter_timer = create_timer(0, 100, event_queue);
 	test_task = create_task(test_task_procedure, 0x00010000);
 	test_task_argument.background_sheet = background_sheet;
 	test_task_argument.test_task = test_task;
@@ -247,10 +244,6 @@ void main(void)
 				printf_serial("free memory space size = %u bytes\n", get_free_memory_space_size());
 				#endif
 			}
-			else if(event->event_union.timer_event.timer == print_test_task_counter_timer)
-			{
-				printf_sheet(background_sheet, 0x0000, 0x0008 * CHAR_HEIGHT, foreground_color, background_color, "test_task_counter = %#018llx", test_task_counter);
-			}
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();
@@ -296,7 +289,6 @@ void test_task_procedure(void *args)
 			printf_serial("invalid event->type %#04x\n", event->type);
 			break;
 		}
-		else test_task_counter++;
 	}
 }
 
