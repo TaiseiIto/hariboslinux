@@ -34,6 +34,8 @@ EMULATOR_MEMORY_OPTION = -m 4G
 # serial console
 EMULATOR_SERIAL_OPTION = -serial stdio
 EMULATOR_SERIAL_OUT = serialout.txt
+# timezone
+EMULATOR_TIMEZONE_OPTION = -rtc base=localtime
 # VESA VBE 2.0
 EMULATOR_VIDEO_OPTION = -vga std
 # virtual network computing for all ip address
@@ -101,7 +103,7 @@ rebuild: clean
 
 # run the OS on QEMU
 run: $(IMAGE_FILE) stop
-	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) | tee $(EMULATOR_SERIAL_OUT) &
+	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_TIMEZONE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) | tee $(EMULATOR_SERIAL_OUT) &
 
 src/kernel.bin: $(wildcard src/kernel/*.c src/kernel/*.h)
 	make -C src
