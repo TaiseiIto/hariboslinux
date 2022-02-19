@@ -9,8 +9,6 @@
 Task *current_task;
 Task *main_task;
 
-void test_task_function(void *args);
-
 void cli_task(void)
 {
 	if(!(current_task->interrupt_prohibition_level++))cli();
@@ -21,7 +19,7 @@ void cli_task_interrupt(void)
 	current_task->interrupt_prohibition_level++;
 }
 
-Task *create_task(void (*function)(void *), unsigned int stack_size)
+Task *create_task(void (*procedure)(void *), unsigned int stack_size)
 {
 	Task *new_task = malloc(sizeof(*new_task));
 	new_task->stack = malloc(stack_size);
@@ -33,13 +31,13 @@ Task *create_task(void (*function)(void *), unsigned int stack_size)
 	new_task->task_status_segment.esp2 = 0;
 	new_task->task_status_segment.ss2 = 0;
 	new_task->task_status_segment.cr3 = 0;
-	new_task->task_status_segment.eip = (unsigned int)function;
+	new_task->task_status_segment.eip = (unsigned int)procedure;
 	new_task->task_status_segment.eflags = EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG;
 	new_task->task_status_segment.eax = 0;
 	new_task->task_status_segment.ecx = 0;
 	new_task->task_status_segment.edx = 0;
 	new_task->task_status_segment.ebx = 0;
-	new_task->task_status_segment.esp = (unsigned int)new_task->stack + stack_size - sizeof(/*argument of the function*/void *);
+	new_task->task_status_segment.esp = (unsigned int)new_task->stack + stack_size - sizeof(/*argument of the procedure*/void *);
 	new_task->task_status_segment.ebp = new_task->task_status_segment.ebp;
 	new_task->task_status_segment.esi = 0;
 	new_task->task_status_segment.edi = 0;

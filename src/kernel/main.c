@@ -18,7 +18,7 @@
 #include "window.h"
 
 unsigned long long test_task_counter = 0;
-void test_task_function(void *args);
+void test_task_procedure(void *args);
 
 void main(void)
 {
@@ -102,7 +102,7 @@ void main(void)
 	checking_free_memory_space_size_timer = create_timer(0, 100);
 	print_test_task_counter_timer = create_timer(0, 100);
 	test_timer = create_timer(0, 100);
-	test_task = create_task(test_task_function, 0x00010000);
+	test_task = create_task(test_task_procedure, 0x00010000);
 	start_task(test_task);
 	opaque_red.red = 0xff;
 	opaque_red.green = 0x00;
@@ -245,7 +245,7 @@ void main(void)
 	}
 }
 
-void test_task_function(void *args)
+void test_task_procedure(void *args)
 {
 	while(true)test_task_counter++;
 }
