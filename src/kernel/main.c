@@ -17,6 +17,12 @@
 #include "timer.h"
 #include "window.h"
 
+typedef struct _TestTaskArgument
+{
+	Sheet *background_sheet;
+	Task *test_task;
+} TestTaskArgument;
+
 unsigned long long test_task_counter = 0;
 void test_task_procedure(void *args);
 
@@ -42,6 +48,7 @@ void main(void)
 	Sheet *translucent_blue_sheet;
 	Task *main_task;
 	Task *test_task;
+	TestTaskArgument test_task_argument;
 	Timer *checking_free_memory_space_size_timer;
 	Timer *print_test_task_counter_timer;
 	Timer *test_timer;
@@ -76,7 +83,7 @@ void main(void)
 	print_serial("finish init_screen()\n\n");
 	init_serial_interrupt(main_task);
 	sti_task();
-	print_serial("finish sti_task()\n\n");
+	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
 	init_sheets(&background_sheet, &mouse_cursor_sheet);
 	background_color.red = 0x00;
 	background_color.green = 0x00;
@@ -100,10 +107,9 @@ void main(void)
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
 	checking_free_memory_space_size_timer = create_timer(0, 100);
-	print_test_task_counter_timer = create_timer(0, 100);
+	// Test timer
 	test_timer = create_timer(0, 100);
-	test_task = create_task(test_task_procedure, 0x00010000);
-	start_task(test_task);
+	// Test sheet
 	opaque_red.red = 0xff;
 	opaque_red.green = 0x00;
 	opaque_red.blue = 0x00;
@@ -140,7 +146,14 @@ void main(void)
 	fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
 	fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
 	fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
+	// Test window
 	create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200);
+	// Test task
+	print_test_task_counter_timer = create_timer(0, 100);
+	test_task = create_task(test_task_procedure, 0x00010000);
+	test_task_argument.background_sheet = background_sheet;
+	test_task_argument.test_task = test_task;
+	start_task(test_task, &test_task_argument);
 	while(1)
 	{
 		Event new_event;
@@ -247,6 +260,8 @@ void main(void)
 
 void test_task_procedure(void *args)
 {
+	TestTaskArgument *test_task_argument = (TestTaskArgument*)args;
+	Window *window = create_window("Test Task", test_task_argument->background_sheet, 0x0100 * test_task_argument->test_task->segment_selector, 0x0100 * test_task_argument->test_task->segment_selector, 0x0100, 0x0100);
 	while(true)test_task_counter++;
 }
 

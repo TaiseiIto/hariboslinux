@@ -53,6 +53,6 @@ void enqueue(Queue *queue, void const *data)
 	if(!queue->read_head)queue->read_head = new_element;
 	queue->number_of_elements++;
 	sti_task();
-	if(queue->task)if(queue->task->status == TASK_STATUS_SLEEP)start_task(queue->task);
+	if(queue->task)if(queue->task->status == TASK_STATUS_SLEEP)continue_task(queue->task);
 }
 

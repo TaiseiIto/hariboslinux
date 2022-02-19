@@ -19,6 +19,27 @@ void cli_task_interrupt(void)
 	current_task->interrupt_prohibition_level++;
 }
 
+void continue_task(Task *task)
+{
+	cli_task();
+	switch(task->status)
+	{
+	case TASK_STATUS_SLEEP:
+		task->status = TASK_STATUS_WAIT;
+		break;
+	case TASK_STATUS_WAIT:
+	case TASK_STATUS_RUN:
+		// The task has already started.
+		ERROR_MESSAGE();
+		break;
+	default:
+		// Invalid task status
+		ERROR_MESSAGE();
+		break;
+	}
+	sti_task();
+}
+
 Task *create_task(void (*procedure)(void *), unsigned int stack_size)
 {
 	Task *new_task = malloc(sizeof(*new_task));
@@ -37,7 +58,7 @@ Task *create_task(void (*procedure)(void *), unsigned int stack_size)
 	new_task->task_status_segment.ecx = 0;
 	new_task->task_status_segment.edx = 0;
 	new_task->task_status_segment.ebx = 0;
-	new_task->task_status_segment.esp = (unsigned int)new_task->stack + stack_size - sizeof(/*argument of the procedure*/void *);
+	new_task->task_status_segment.esp = (unsigned int)new_task->stack + stack_size - sizeof(/*exclusive stack floor*/void *) - sizeof(/*argument of the procedure*/void *);
 	new_task->task_status_segment.ebp = new_task->task_status_segment.ebp;
 	new_task->task_status_segment.esi = 0;
 	new_task->task_status_segment.edi = 0;
@@ -142,12 +163,13 @@ void sleep_task(Task *task)
 	sti_task();
 }
 
-void start_task(Task *task)
+void start_task(Task *task, void *arguments)
 {
 	cli_task();
 	switch(task->status)
 	{
 	case TASK_STATUS_SLEEP:
+		*(void **)(task->task_status_segment.esp + sizeof(void *)) = arguments;
 		task->status = TASK_STATUS_WAIT;
 		break;
 	case TASK_STATUS_WAIT:
