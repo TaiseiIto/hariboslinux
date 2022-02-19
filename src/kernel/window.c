@@ -151,8 +151,9 @@ void delete_window(Window *window)
 	}
 	sti_task();
 	// Delete window
+	free(window->title);
 	free(window);
-	printf_serial("windows = %p\n", windows);
+	printf_serial("Delete windows %p\n", window);
 	// Deletion request to root sheet
 	root_sheet_deletion_request_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
 	root_sheet_deletion_request_event.event_union.sheet_deletion_request_event.sheet = root_sheet;
