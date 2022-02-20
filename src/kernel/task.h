@@ -60,6 +60,7 @@ typedef struct _TaskDeletionResponseEvent
 {
 	Task *task;
 	void *return_values;
+	unsigned short segment_selector;
 } TaskDeletionResponseEvent;
 
 void cli_task(void);

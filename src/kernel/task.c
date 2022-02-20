@@ -29,8 +29,6 @@ void close_task(Task *task)
 		
 		if(next_task == current_task)ERROR_MESSAGE(); // Can't close task!
 	}
-	// free task status segment
-	free_segment(task->segment_selector);
 	// exclude the task
 	if(task->previous != task && task->next != task)
 	{

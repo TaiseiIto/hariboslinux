@@ -212,6 +212,7 @@ void main(void)
 			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
 			printf_serial("Detect task deletion response.\n");
+			free_segment(event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
@@ -294,12 +295,15 @@ void test_task_procedure(void *args)
 			}
 			break;
 		case EVENT_TYPE_TASK_DELETION_REQUEST:
+			cli();
 			printf_serial("Detect task deletion request.\n");
 			new_event.type = EVENT_TYPE_TASK_DELETION_RESPONSE;
 			new_event.event_union.task_deletion_response_event.task = test_task;
 			new_event.event_union.task_deletion_response_event.return_values = NULL;
+			new_event.event_union.task_deletion_response_event.segment_selector = test_task->segment_selector;
 			enqueue(test_task->parent->event_queue, &new_event);
 			close_task(test_task);
+			sti();
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();
