@@ -279,8 +279,11 @@ void test_task_procedure(void *args)
 		case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+			distribute_event(event);
+			break;
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			distribute_event(event);
+			if(event->event_union.window_deletion_response_event.window == window)printf_serial("Test task window is deleted!!!\n");
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();
