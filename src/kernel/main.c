@@ -245,8 +245,8 @@ void main(void)
 				#endif
 			}
 			break;
-		case EVENT_TYPE_WINDOW_DELETED:
-			printf_serial("Window %p deleted @ main task\n", event->event_union.window_deleted_event.window);
+		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+			printf_serial("Window %p deleted @ main task\n", event->event_union.window_deletion_response_event.window);
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();
@@ -301,8 +301,8 @@ void test_task_procedure(void *args)
 				printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
 			}
 			break;
-		case EVENT_TYPE_WINDOW_DELETED:
-			printf_serial("Window %p deleted @ test task\n", event->event_union.window_deleted_event.window);
+		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+			printf_serial("Window %p deleted @ test task\n", event->event_union.window_deletion_response_event.window);
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();

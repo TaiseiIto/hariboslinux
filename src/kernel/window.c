@@ -131,9 +131,9 @@ Window *create_window(char *title, Sheet *background_sheet, short x, short y, un
 	return new_window;
 }
 
-void delete_window(Window *window, Queue *window_deleted_event_queue)
+void delete_window(Window *window, Queue *window_deletion_response_event_queue)
 {
-	Event window_deleted_event;
+	Event window_deletion_response_event;
 	// Exclude window from windows chain structure
 	cli_task();
 	if(window->next == window) // Only this window exists
@@ -152,9 +152,9 @@ void delete_window(Window *window, Queue *window_deleted_event_queue)
 	free(window);
 	printf_serial("Delete window %p\n", window);
 	// Send window deleted event
-	window_deleted_event.type = EVENT_TYPE_WINDOW_DELETED;
-	window_deleted_event.event_union.window_deleted_event.window = window;
-	enqueue(window_deleted_event_queue, &window_deleted_event);
+	window_deletion_response_event.type = EVENT_TYPE_WINDOW_DELETION_RESPONSE;
+	window_deletion_response_event.event_union.window_deletion_response_event.window = window;
+	enqueue(window_deletion_response_event_queue, &window_deletion_response_event);
 }
 
 Window *get_window_from_sheet(Sheet const *sheet)
