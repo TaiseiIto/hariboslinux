@@ -47,6 +47,7 @@ typedef struct _Task
 
 void cli_task(void);
 void cli_task_interrupt(void);
+void close_task(Task *task);
 void continue_task(Task *task);
 Task *create_task(void (*procedure)(void *), unsigned int stack_size);
 Task const *get_current_task(void);

@@ -19,6 +19,37 @@ void cli_task_interrupt(void)
 	current_task->interrupt_prohibition_level++;
 }
 
+void close_task(Task *task)
+{
+	Task *next_task = NULL;
+	cli_task();
+	if(task == current_task)
+	{
+		for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)break;
+		
+		if(next_task == current_task)ERROR_MESSAGE(); // Can't close task!
+	}
+	// free task status segment
+	free_segment(task->segment_selector);
+	// exclude the task
+	if(task->previous != task && task->next != task)
+	{
+		task->previous->next = task->next;
+		task->next->previous = task->previous;
+	}
+	else ERROR_MESSAGE(); // Can't close task!
+	// free the task
+	free(task->stack);
+	free(task);
+	if(next_task)
+	{
+		next_task->status = TASK_STATUS_RUN;
+		current_task = next_task;
+		ljmp(0, current_task->segment_selector);
+	}
+	sti_task();
+}
+
 void continue_task(Task *task)
 {
 	cli_task();

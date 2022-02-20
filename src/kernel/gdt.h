@@ -72,5 +72,6 @@ void init_gdt(void);
 // return a new segment selector
 // return 0 if failed
 unsigned short set_segment(void *base, unsigned int size, unsigned char access_right);
+void free_segment(unsigned short segment_selector);
 
 #endif
