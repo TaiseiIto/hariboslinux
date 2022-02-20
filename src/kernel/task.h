@@ -59,6 +59,7 @@ typedef struct _TaskDeletionRequestEvent
 typedef struct _TaskDeletionResponseEvent
 {
 	Task *task;
+	void *return_values;
 } TaskDeletionResponseEvent;
 
 void cli_task(void);

@@ -210,6 +210,9 @@ void main(void)
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
 			#endif
 			break;
+		case EVENT_TYPE_TASK_DELETION_RESPONSE:
+			printf_serial("Detect task deletion response.\n");
+			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
 			{
@@ -252,13 +255,15 @@ void test_task_procedure(void *args)
 	Color foreground_color = {0x00, 0x00, 0x00, 0xff};
 	Color background_color = {0x80, 0x80, 0x80, 0xff};
 	Queue *event_queue;
+	Task *test_task;
 	TestTaskArgument *test_task_argument;
 	Timer *print_counter_timer;
 	unsigned long long counter = 0;
 	Window *window;
 	test_task_argument = (TestTaskArgument*)args;
-	event_queue = create_event_queue(test_task_argument->test_task);
-	window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100, event_queue);
+	test_task = test_task_argument->test_task;
+	event_queue = create_event_queue(test_task);
+	window = create_window("Test Task", test_task_argument->background_sheet, test_task->segment_selector, test_task->segment_selector, 0x0100, 0x0100, event_queue);
 	print_counter_timer = create_timer(0, 100, event_queue);
 	while(true)
 	{
@@ -284,12 +289,17 @@ void test_task_procedure(void *args)
 			if(event->event_union.window_deletion_response_event.window == window)
 			{
 				new_event.type = EVENT_TYPE_TASK_DELETION_REQUEST;
-				new_event.event_union.task_deletion_request_event.task = test_task_argument->test_task;
+				new_event.event_union.task_deletion_request_event.task = test_task;
 				enqueue(event_queue, &new_event);
 			}
 			break;
 		case EVENT_TYPE_TASK_DELETION_REQUEST:
 			printf_serial("Detect task deletion request.\n");
+			new_event.type = EVENT_TYPE_TASK_DELETION_RESPONSE;
+			new_event.event_union.task_deletion_response_event.task = test_task;
+			new_event.event_union.task_deletion_response_event.return_values = NULL;
+			enqueue(test_task->parent->event_queue, &new_event);
+			close_task(test_task);
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();
