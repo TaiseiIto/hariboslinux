@@ -262,14 +262,12 @@ void test_task_procedure(void *args)
 	print_counter_timer = create_timer(0, 100, event_queue);
 	while(true)
 	{
+		Event new_event;
 		Event const *event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
 		case EVENT_TYPE_TIMER_EVENT:
-			if(event->event_union.timer_event.timer == print_counter_timer)
-			{
-				if(sheet_exists(window->client_sheet))printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
-			}
+			if(event->event_union.timer_event.timer == print_counter_timer)if(sheet_exists(window->client_sheet))printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
 			break;
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
 		case EVENT_TYPE_SHEET_CLICKED:
@@ -283,7 +281,15 @@ void test_task_procedure(void *args)
 			break;
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			distribute_event(event);
-			if(event->event_union.window_deletion_response_event.window == window)printf_serial("Test task window is deleted!!!\n");
+			if(event->event_union.window_deletion_response_event.window == window)
+			{
+				new_event.type = EVENT_TYPE_TASK_DELETION_REQUEST;
+				new_event.event_union.task_deletion_request_event.task = test_task_argument->test_task;
+				enqueue(event_queue, &new_event);
+			}
+			break;
+		case EVENT_TYPE_TASK_DELETION_REQUEST:
+			printf_serial("Detect task deletion request.\n");
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();

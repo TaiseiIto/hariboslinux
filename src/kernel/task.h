@@ -45,6 +45,11 @@ typedef struct _Task
 	#define TASK_STATUS_RUN		0x02
 } Task;
 
+typedef struct _TaskDeletionRequestEvent
+{
+	Task *task;
+} TaskDeletionRequestEvent;
+
 void cli_task(void);
 void cli_task_interrupt(void);
 void close_task(Task *task);
