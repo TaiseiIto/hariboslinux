@@ -148,7 +148,7 @@ void main(void)
 	// Test window
 	create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200, event_queue);
 	// Test task
-	test_task = create_task(test_task_procedure, 0x00010000);
+	test_task = create_task(main_task, test_task_procedure, 0x00010000);
 	test_task_argument.background_sheet = background_sheet;
 	test_task_argument.test_task = test_task;
 	start_task(test_task, &test_task_argument);

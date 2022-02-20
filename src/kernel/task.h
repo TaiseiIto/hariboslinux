@@ -41,6 +41,7 @@ typedef struct _Task
 	void *stack;
 	struct _Queue *event_queue;
 	unsigned int interrupt_prohibition_level;
+	struct _Task *parent;
 	struct _Task *previous;
 	struct _Task *next;
 	unsigned short segment_selector;
@@ -55,11 +56,16 @@ typedef struct _TaskDeletionRequestEvent
 	Task *task;
 } TaskDeletionRequestEvent;
 
+typedef struct _TaskDeletionResponseEvent
+{
+	Task *task;
+} TaskDeletionResponseEvent;
+
 void cli_task(void);
 void cli_task_interrupt(void);
 void close_task(Task *task);
 void continue_task(Task *task);
-Task *create_task(void (*procedure)(void *), unsigned int stack_size);
+Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size);
 Task const *get_current_task(void);
 Task *init_task(void);
 void sleep_task(Task *task);

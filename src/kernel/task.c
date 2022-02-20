@@ -71,7 +71,7 @@ void continue_task(Task *task)
 	sti_task();
 }
 
-Task *create_task(void (*procedure)(void *), unsigned int stack_size)
+Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size)
 {
 	Task *new_task = malloc(sizeof(*new_task));
 	new_task->stack = malloc(stack_size);
@@ -104,6 +104,7 @@ Task *create_task(void (*procedure)(void *), unsigned int stack_size)
 	new_task->segment_selector = set_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
 	new_task->status = TASK_STATUS_SLEEP;
 	cli_task();
+	new_task->parent = parent;
 	new_task->previous = main_task->previous;
 	new_task->next = main_task;
 	main_task->previous->next = new_task;
@@ -150,6 +151,7 @@ Task *init_task(void)
 	main_task->segment_selector = set_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
 	main_task->status = TASK_STATUS_RUN;
 	main_task->interrupt_prohibition_level = 1;
+	main_task->parent = NULL;
 	main_task->previous = main_task;
 	main_task->next = main_task;
 	current_task = main_task;
