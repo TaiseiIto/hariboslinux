@@ -296,6 +296,8 @@ void test_task_procedure(void *args)
 			break;
 		case EVENT_TYPE_TASK_DELETION_REQUEST:
 			cli();
+			delete_queue(event_queue);
+			delete_timer(print_counter_timer);
 			printf_serial("Detect task deletion request.\n");
 			new_event.type = EVENT_TYPE_TASK_DELETION_RESPONSE;
 			new_event.event_union.task_deletion_response_event.task = test_task;
