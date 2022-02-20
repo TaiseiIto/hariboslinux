@@ -211,7 +211,7 @@ void main(void)
 			#endif
 			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
-			printf_serial("Detect task deletion response.\n");
+			printf_serial("Detect task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			free_segment(event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case EVENT_TYPE_TIMER_EVENT:

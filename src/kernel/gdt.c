@@ -110,6 +110,6 @@ unsigned short set_segment(void *base, unsigned int size, unsigned char access_r
 
 void free_segment(unsigned short segment_selector)
 {
-	GDT_BEGIN[segment_selector / 8].access_right &= ~SEGMENT_DESCRIPTOR_PRESENT;
+	GDT_ADDR[segment_selector / 8].access_right &= ~SEGMENT_DESCRIPTOR_PRESENT;
 }
 
