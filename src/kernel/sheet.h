@@ -35,6 +35,12 @@ typedef struct _SheetCreatedEvent
 	struct _Sheet *sheet;
 } SheetCreatedEvent;
 
+typedef struct _SheetMouseDragEvent
+{
+	struct _Sheet *sheet;
+	short x_movement, y_movement;
+} SheetMouseDragEvent;
+
 typedef struct _SheetMouseMoveEvent
 {
 	struct _Sheet *sheet;

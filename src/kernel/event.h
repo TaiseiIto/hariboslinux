@@ -24,6 +24,7 @@ typedef union _EventUnion
 	SheetCreatedEvent sheet_created_event;
 	SheetDeletionRequestEvent sheet_deletion_request_event;
 	SheetDeletionResponseEvent sheet_deletion_response_event;
+	SheetMouseDragEvent sheet_mouse_drag_event;
 	SheetMouseMoveEvent sheet_mouse_move_event;
 	TimerEvent timer_event;
 	WindowDeletionRequestEvent window_deletion_request_event;
@@ -44,10 +45,11 @@ typedef struct _Event
 	#define EVENT_TYPE_SHEET_CREATED		0x08
 	#define EVENT_TYPE_SHEET_DELETION_REQUEST	0x09
 	#define EVENT_TYPE_SHEET_DELETION_RESPONSE	0x0a
-	#define EVENT_TYPE_SHEET_MOUSE_MOVE		0x0b
-	#define EVENT_TYPE_TIMER_EVENT			0x0c
-	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x0d
-	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x0e
+	#define EVENT_TYPE_SHEET_MOUSE_DRAG		0x0b
+	#define EVENT_TYPE_SHEET_MOUSE_MOVE		0x0c
+	#define EVENT_TYPE_TIMER_EVENT			0x0d
+	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x0e
+	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x0f
 	EventUnion event_union;
 } Event;
 

@@ -161,6 +161,9 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 			enqueue(sheet->parent->event_queue, &new_event);
 		}
 		break;
+	case EVENT_TYPE_SHEET_MOUSE_DRAG:
+		move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_drag_event.x_movement, sheet->y + event->event_union.sheet_mouse_drag_event.y_movement);
+		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		printf_serial("Mouse move (%d, %d) on sheet %p\n", event->event_union.sheet_mouse_move_event.x_movement, event->event_union.sheet_mouse_move_event.y_movement, sheet);
 		break;
@@ -212,8 +215,11 @@ void distribute_event(struct _Event const *event)
 	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
 		if(sheet_exists(event->event_union.sheet_deletion_response_event.parent))event->event_union.sheet_deletion_response_event.parent->event_procedure(event->event_union.sheet_deletion_response_event.parent, event);
 		break;
+	case EVENT_TYPE_SHEET_MOUSE_DRAG:
+		if(sheet_exists(event->event_union.sheet_mouse_drag_event.sheet))event->event_union.sheet_mouse_drag_event.sheet->event_procedure(event->event_union.sheet_mouse_drag_event.sheet, event);
+		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
+		if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_mouse_move_event.sheet, event);
 		break;
 	case EVENT_TYPE_WINDOW_DELETION_REQUEST:
 		if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);
@@ -914,7 +920,14 @@ void send_sheets_event(Event const *event)
 			{
 				Sheet *dragged_sheet;
 				for(dragged_sheet = left_button_catched_sheet; dragged_sheet; dragged_sheet = dragged_sheet->parent)if(dragged_sheet->parent == background_sheet)break;
-				if(dragged_sheet)move_sheet(dragged_sheet, dragged_sheet->x + event->event_union.mouse_event.x_movement, dragged_sheet->y + event->event_union.mouse_event.y_movement);
+				if(dragged_sheet)
+				{
+					new_event.type = EVENT_TYPE_SHEET_MOUSE_DRAG;
+					new_event.event_union.sheet_mouse_drag_event.sheet = dragged_sheet;
+					new_event.event_union.sheet_mouse_drag_event.x_movement = event->event_union.mouse_event.x_movement;
+					new_event.event_union.sheet_mouse_drag_event.y_movement = event->event_union.mouse_event.y_movement;
+					enqueue(dragged_sheet->event_queue, &new_event);
+				}
 			}
 			else
 			{
