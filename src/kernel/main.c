@@ -265,15 +265,13 @@ void test_task_procedure(void *args)
 		Event const *event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
-		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
-			// Closing the window is prohibited because closing task is not implemented yet.
-			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == print_counter_timer)
 			{
-				printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
+				if(sheet_exists(window->client_sheet))printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
 			}
 			break;
+		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
 		case EVENT_TYPE_SHEET_CLICKED:
 		case EVENT_TYPE_SHEET_CREATED:
 		case EVENT_TYPE_SHEET_DELETION_REQUEST:
