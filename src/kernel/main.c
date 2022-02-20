@@ -27,6 +27,7 @@ void test_task_procedure(void *args);
 
 void main(void)
 {
+	cli();
 	BootInformation const * const boot_information = (BootInformation const * const)MEMORY_MAP_BOOT_INFORMATION;
 	Color background_color;
 	Color foreground_color;
@@ -55,7 +56,6 @@ void main(void)
 	unsigned long long timer_counter = 0;
 	unsigned short keyboard_flags = 0;
 	unsigned short screen_text_row = 8;
-	cli();
 	new_line_serial();
 	print_serial("Hello, kernel.bin!\n\n");
 	init_gdt();
