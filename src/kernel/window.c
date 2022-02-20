@@ -133,10 +133,6 @@ Window *create_window(char *title, Sheet *background_sheet, short x, short y, un
 
 void delete_window(Window *window)
 {
-	Event root_sheet_deletion_request_event;
-	Sheet *root_sheet = window->root_sheet;
-	// Set event procedure default to prevent window search after window deletion.
-	set_default_procedure(root_sheet);
 	// Exclude window from windows chain structure
 	cli_task();
 	if(window->next == window) // Only this window exists
@@ -154,10 +150,6 @@ void delete_window(Window *window)
 	free(window->title);
 	free(window);
 	printf_serial("Delete window %p\n", window);
-	// Deletion request to root sheet
-	root_sheet_deletion_request_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
-	root_sheet_deletion_request_event.event_union.sheet_deletion_request_event.sheet = root_sheet;
-	enqueue(root_sheet->event_queue, &root_sheet_deletion_request_event);
 }
 
 Window *get_window_from_sheet(Sheet const *sheet)
@@ -175,12 +167,15 @@ Window *get_window_from_sheet(Sheet const *sheet)
 void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)
 {
 	Event new_event;
+	void *return_value;
 	Window *window;
 	window = get_window_from_sheet(sheet);
 	switch(event->type)
 	{
 	case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
-		delete_window(window);
+		new_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
+		new_event.event_union.sheet_deletion_request_event.sheet = sheet;
+		enqueue(sheet->event_queue, &new_event);
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw root sheet
@@ -207,13 +202,9 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 		}
 		return NULL;
 	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
-		if(sheet->flags & SHEET_FLAG_RECEIVED_DELETION_REQUEST && !sheet->lowest_child)
-		{
-			new_event.type = EVENT_TYPE_WINDOW_DELETED;
-			new_event.event_union.window_deleted_event.window = window;
-			enqueue(sheet->event_queue, &new_event);
-		}
-		return default_event_procedure(sheet, event);
+		return_value = default_event_procedure(sheet, event);
+		if(sheet->flags & SHEET_FLAG_RECEIVED_DELETION_REQUEST && !sheet->lowest_child)delete_window(window);
+		return return_value;
 	default:
 		return default_event_procedure(sheet, event);
 	}
