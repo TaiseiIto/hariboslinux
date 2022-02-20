@@ -245,6 +245,9 @@ void main(void)
 				#endif
 			}
 			break;
+		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+			if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);
+			break;
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			printf_serial("Window %p deleted @ main task\n", event->event_union.window_deletion_response_event.window);
 			break;
@@ -300,6 +303,9 @@ void test_task_procedure(void *args)
 			{
 				printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
 			}
+			break;
+		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+			if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);
 			break;
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			printf_serial("Window %p deleted @ test task\n", event->event_union.window_deletion_response_event.window);

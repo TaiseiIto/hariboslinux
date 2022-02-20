@@ -177,8 +177,8 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 	switch(event->type)
 	{
 	case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
-		new_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
-		new_event.event_union.sheet_deletion_request_event.sheet = sheet;
+		new_event.type = EVENT_TYPE_WINDOW_DELETION_REQUEST;
+		new_event.event_union.window_deletion_request_event.window = window;
 		enqueue(sheet->event_queue, &new_event);
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
@@ -208,6 +208,11 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
 		if(sheet->flags & SHEET_FLAG_RECEIVED_DELETION_REQUEST && !sheet->lowest_child)delete_window(window, sheet->event_queue);
 		return default_event_procedure(sheet, event);
+	case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+		new_event.type = EVENT_TYPE_SHEET_DELETION_REQUEST;
+		new_event.event_union.sheet_deletion_request_event.sheet = sheet;
+		enqueue(sheet->event_queue, &new_event);
+		return NULL;
 	default:
 		return default_event_procedure(sheet, event);
 	}

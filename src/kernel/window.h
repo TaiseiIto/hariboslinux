@@ -8,6 +8,11 @@ typedef struct _CloseButtonClickedEvent
 	struct _Window *window;
 } CloseButtonClickedEvent;
 
+typedef struct _WindowDeletionRequestEvent
+{
+	struct _Window *window;
+} WindowDeletionRequestEvent;
+
 typedef struct _WindowDeletionResponseEvent
 {
 	struct _Window *window;
