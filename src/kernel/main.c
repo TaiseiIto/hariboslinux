@@ -48,7 +48,6 @@ void main(void)
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
 	Task *main_task;
-	Task *test_task;
 	TestTaskArgument test_task_argument;
 	Timer *checking_free_memory_space_size_timer;
 	Timer *test_timer;
@@ -145,17 +144,11 @@ void main(void)
 	fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
 	fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
 	fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
-	// Test window
-	create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200, event_queue);
-	// Test task
-	test_task = create_task(main_task, test_task_procedure, 0x00010000);
-	test_task_argument.background_sheet = background_sheet;
-	test_task_argument.test_task = test_task;
-	start_task(test_task, &test_task_argument);
 	while(1)
 	{
 		Event new_event;
 		Event const *event;
+		Task *test_task;
 		event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
@@ -169,6 +162,13 @@ void main(void)
 			keyboard_flags = event->event_union.keyboard_event.flags;
 			switch(event->event_union.keyboard_event.keycode)
 			{
+			case KEY_T:
+				// Start test task by pressing 't'
+				test_task = create_task(main_task, test_task_procedure, 0x00010000);
+				test_task_argument.background_sheet = background_sheet;
+				test_task_argument.test_task = test_task;
+				start_task(test_task, &test_task_argument);
+				break;
 			case KEY_W:
 				// Open a new window by pressing 'w'
 				create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200, event_queue);
