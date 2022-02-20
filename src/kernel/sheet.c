@@ -193,6 +193,37 @@ void delete_sheet(Sheet *sheet)
 	free(sheet);
 }
 
+void distribute_event(struct _Event const *event)
+{
+	switch(event->type)
+	{
+	case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+		if(sheet_exists(event->event_union.close_button_clicked_event.window->root_sheet))event->event_union.close_button_clicked_event.window->root_sheet->event_procedure(event->event_union.close_button_clicked_event.window->root_sheet, event);
+		break;
+	case EVENT_TYPE_SHEET_CLICKED:
+		if(sheet_exists(event->event_union.sheet_clicked_event.sheet))event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
+		break;
+	case EVENT_TYPE_SHEET_CREATED:
+		if(sheet_exists(event->event_union.sheet_created_event.sheet))event->event_union.sheet_created_event.sheet->event_procedure(event->event_union.sheet_created_event.sheet, event);
+		break;
+	case EVENT_TYPE_SHEET_DELETION_REQUEST:
+		if(sheet_exists(event->event_union.sheet_deletion_request_event.sheet))event->event_union.sheet_deletion_request_event.sheet->event_procedure(event->event_union.sheet_deletion_request_event.sheet, event);
+		break;
+	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+		if(sheet_exists(event->event_union.sheet_deletion_response_event.parent))event->event_union.sheet_deletion_response_event.parent->event_procedure(event->event_union.sheet_deletion_response_event.parent, event);
+		break;
+	case EVENT_TYPE_SHEET_MOUSE_MOVE:
+		if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
+		break;
+	case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+		if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);
+		break;
+	case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+		printf_serial("Window %p deleted @ task segment selector = %#06x.\n", event->event_union.window_deletion_response_event.window, get_current_task()->segment_selector);
+		break;
+	}
+}
+
 void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsigned short height, Color color)
 {
 	for(short y_i = y; y_i < y + (short)height; y_i++)

@@ -66,6 +66,7 @@ typedef struct _Sheet
 Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event), Queue *event_queue);
 void *default_event_procedure(Sheet *sheet, struct _Event const *event);
 void delete_sheet(Sheet *sheet);
+void distribute_event(struct _Event const *event);
 void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsigned short height, Color color);
 short get_sheet_x_on_screen(Sheet const *sheet);
 short get_sheet_y_on_screen(Sheet const *sheet);

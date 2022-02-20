@@ -81,6 +81,11 @@ Task *create_task(void (*procedure)(void *), unsigned int stack_size)
 	return new_task;
 }
 
+Task const *get_current_task(void)
+{
+	return current_task;
+}
+
 Task *init_task(void)
 {
 	main_task = malloc(sizeof(*main_task));

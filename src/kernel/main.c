@@ -159,9 +159,6 @@ void main(void)
 		event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
-		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
-			if(sheet_exists(event->event_union.close_button_clicked_event.window->root_sheet))event->event_union.close_button_clicked_event.window->root_sheet->event_procedure(event->event_union.close_button_clicked_event.window->root_sheet, event);
-			break;
 		case EVENT_TYPE_KEYBOARD_EVENT:
 			if((keyboard_flags & (KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE)) != (event->event_union.keyboard_event.flags & (KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE)))
 			{
@@ -213,21 +210,6 @@ void main(void)
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
 			#endif
 			break;
-		case EVENT_TYPE_SHEET_CLICKED:
-			if(sheet_exists(event->event_union.sheet_clicked_event.sheet))event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
-			break;
-		case EVENT_TYPE_SHEET_CREATED:
-			if(sheet_exists(event->event_union.sheet_created_event.sheet))event->event_union.sheet_created_event.sheet->event_procedure(event->event_union.sheet_created_event.sheet, event);
-			break;
-		case EVENT_TYPE_SHEET_DELETION_REQUEST:
-			if(sheet_exists(event->event_union.sheet_deletion_request_event.sheet))event->event_union.sheet_deletion_request_event.sheet->event_procedure(event->event_union.sheet_deletion_request_event.sheet, event);
-			break;
-		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
-			if(sheet_exists(event->event_union.sheet_deletion_response_event.parent))event->event_union.sheet_deletion_response_event.parent->event_procedure(event->event_union.sheet_deletion_response_event.parent, event);
-			break;
-		case EVENT_TYPE_SHEET_MOUSE_MOVE:
-			if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
-			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
 			{
@@ -245,11 +227,15 @@ void main(void)
 				#endif
 			}
 			break;
+		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+		case EVENT_TYPE_SHEET_CLICKED:
+		case EVENT_TYPE_SHEET_CREATED:
+		case EVENT_TYPE_SHEET_DELETION_REQUEST:
+		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
-			if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);
-			break;
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
-			printf_serial("Window %p deleted @ main task\n", event->event_union.window_deletion_response_event.window);
+			distribute_event(event);
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();
@@ -281,34 +267,20 @@ void test_task_procedure(void *args)
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
 			// Closing the window is prohibited because closing task is not implemented yet.
 			break;
-			if(sheet_exists(event->event_union.close_button_clicked_event.window->root_sheet))event->event_union.close_button_clicked_event.window->root_sheet->event_procedure(event->event_union.close_button_clicked_event.window->root_sheet, event);
-			break;
-		case EVENT_TYPE_SHEET_CLICKED:
-			if(sheet_exists(event->event_union.sheet_clicked_event.sheet))event->event_union.sheet_clicked_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
-			break;
-		case EVENT_TYPE_SHEET_CREATED:
-			if(sheet_exists(event->event_union.sheet_created_event.sheet))event->event_union.sheet_created_event.sheet->event_procedure(event->event_union.sheet_created_event.sheet, event);
-			break;
-		case EVENT_TYPE_SHEET_DELETION_REQUEST:
-			if(sheet_exists(event->event_union.sheet_deletion_request_event.sheet))event->event_union.sheet_deletion_request_event.sheet->event_procedure(event->event_union.sheet_deletion_request_event.sheet, event);
-			break;
-		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
-			if(sheet_exists(event->event_union.sheet_deletion_response_event.parent))event->event_union.sheet_deletion_response_event.parent->event_procedure(event->event_union.sheet_deletion_response_event.parent, event);
-			break;
-		case EVENT_TYPE_SHEET_MOUSE_MOVE:
-			if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_clicked_event.sheet, event);
-			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == print_counter_timer)
 			{
 				printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
 			}
 			break;
+		case EVENT_TYPE_SHEET_CLICKED:
+		case EVENT_TYPE_SHEET_CREATED:
+		case EVENT_TYPE_SHEET_DELETION_REQUEST:
+		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
-			if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);
-			break;
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
-			printf_serial("Window %p deleted @ test task\n", event->event_union.window_deletion_response_event.window);
+			distribute_event(event);
 			break;
 		default: // invalid event->type
 			ERROR_MESSAGE();
