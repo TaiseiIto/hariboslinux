@@ -174,6 +174,7 @@ Window *get_window_from_sheet(Sheet const *sheet)
 
 void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)
 {
+	Event new_event;
 	Window *window;
 	window = get_window_from_sheet(sheet);
 	switch(event->type)
@@ -205,6 +206,14 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 			fill_box_sheet(sheet, root_child->x + root_child->width + 1, root_child->y - 2, 1, root_child->height + 3, semi_light_limit_color);
 		}
 		return NULL;
+	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+		if(sheet->flags & SHEET_FLAG_RECEIVED_DELETION_REQUEST && !sheet->lowest_child)
+		{
+			new_event.type = EVENT_TYPE_WINDOW_DELETED;
+			new_event.event_union.window_deleted_event.window = window;
+			enqueue(sheet->event_queue, &new_event);
+		}
+		return default_event_procedure(sheet, event);
 	default:
 		return default_event_procedure(sheet, event);
 	}

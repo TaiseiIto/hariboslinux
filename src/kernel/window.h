@@ -8,6 +8,11 @@ typedef struct _CloseButtonClickedEvent
 	struct _Window *window;
 } CloseButtonClickedEvent;
 
+typedef struct _WindowDeletedEvent
+{
+	struct _Window *window;
+} WindowDeletedEvent;
+
 #include "sheet.h"
 
 typedef struct _Window
