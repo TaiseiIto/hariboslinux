@@ -1,6 +1,10 @@
 #ifndef _TASK_H_
 #define _TASK_H_
 
+struct _Task;
+
+#include "queue.h"
+
 typedef struct _TaskStatusSegment
 {
 	unsigned int link;
@@ -35,6 +39,7 @@ typedef struct _Task
 {
 	TaskStatusSegment task_status_segment;
 	void *stack;
+	struct _Queue *event_queue;
 	unsigned int interrupt_prohibition_level;
 	struct _Task *previous;
 	struct _Task *next;

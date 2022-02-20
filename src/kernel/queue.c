@@ -1,7 +1,21 @@
+#include "event.h"
 #include "memory.h"
 #include "queue.h"
 #include "string.h"
 #include "task.h"
+
+Queue *create_event_queue(Task *task)
+{
+	Queue *queue = malloc(sizeof(*queue));
+	queue->element_size = sizeof(Event);
+	queue->io = malloc(queue->element_size);
+	queue->number_of_elements = 0;
+	queue->read_head = NULL;
+	queue->write_head = NULL;
+	queue->task = task;
+	queue->task->event_queue = queue;
+	return queue;
+}
 
 Queue *create_queue(size_t element_size, Task *task)
 {

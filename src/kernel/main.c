@@ -66,7 +66,7 @@ void main(void)
 	print_serial("finish init_memory()\n\n");
 	main_task = init_task();
 	print_serial("finish init_task()\n\n");
-	event_queue = create_queue(sizeof(Event), main_task);
+	event_queue = create_event_queue(main_task);
 	print_serial("finish create_queue()\n\n");
 	init_pic();
 	print_serial("finish init_pic()\n\n");
@@ -257,7 +257,7 @@ void test_task_procedure(void *args)
 	unsigned long long counter = 0;
 	Window *window;
 	test_task_argument = (TestTaskArgument*)args;
-	event_queue = create_queue(sizeof(Event), test_task_argument->test_task);
+	event_queue = create_event_queue(test_task_argument->test_task);
 	window = create_window("Test Task", test_task_argument->background_sheet, test_task_argument->test_task->segment_selector, test_task_argument->test_task->segment_selector, 0x0100, 0x0100, event_queue);
 	print_counter_timer = create_timer(0, 100, event_queue);
 	while(true)
