@@ -101,6 +101,7 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->task_status_segment.io = 0x40000000;
 	new_task->segment_selector = set_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
 	new_task->status = TASK_STATUS_SLEEP;
+	new_task->interrupt_prohibition_level = 0;
 	cli_task();
 	new_task->parent = parent;
 	new_task->previous = main_task->previous;

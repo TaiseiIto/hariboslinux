@@ -70,7 +70,7 @@ void init_rtc(Queue *interrupt_queue)
 	// Enable IRQ8
 	status_register_b = read_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT) | RTC_STATUS_REGISTER_B_ENABLE_UPDATE_INTERRUPT;
 	write_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, status_register_b);
-	// read statuc register c
+	// read status register c
 	read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
 }
 
@@ -78,7 +78,7 @@ void rtc_interrupt_handler(void)
 {
 	unsigned char status_register_c;
 	finish_interruption(IRQ_REAL_TIME_CLOCK);
-	// read statuc register c
+	// read status register c
 	status_register_c = read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
 	#ifdef LOGGING
 	printf_serial("RTC interrupt status register c = %#04x\n", status_register_c);
