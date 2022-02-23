@@ -12,7 +12,7 @@ Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned 
 	new_timer->estimated_count = tick_count + estimated_count;
 	new_timer->interval_count = interval_count;
 	new_timer->event_queue = event_queue;
-	cli_task();
+	prohibit_switch_task();
 	if(next_estimated_timer)
 	{
 		Timer *previous_timer;
@@ -38,24 +38,24 @@ Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned 
 		new_timer->next = NULL;
 		next_estimated_timer = new_timer;
 	}
-	sti_task();
+	allow_switch_task();
 	return new_timer;
 }
 
 void delete_timer(Timer *timer)
 {
-	cli_task();
+	prohibit_switch_task();
 	if(next_estimated_timer == timer)next_estimated_timer = timer->next;
 	if(timer->previous)timer->previous->next = timer->next;
 	if(timer->next)timer->next->previous = timer->previous;
-	sti_task();
+	allow_switch_task();
 	free(timer);
 }
 
 void timers_tick(void)
 {
 	tick_count++;
-	cli_task();
+	prohibit_switch_task();
 	if(next_estimated_timer)while(next_estimated_timer->estimated_count <= tick_count)
 	{
 		Event event;
@@ -94,6 +94,6 @@ void timers_tick(void)
 		}
 		else next_estimated_timer = next_estimated_timer->next;
 	}
-	sti_task();
+	allow_switch_task();
 }
 
