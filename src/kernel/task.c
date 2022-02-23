@@ -63,7 +63,7 @@ void close_task(Task *task)
 
 void continue_task(Task *task)
 {
-	cli_task();
+	prohibit_switch_task();
 	switch(task->status)
 	{
 	case TASK_STATUS_SLEEP:
@@ -79,7 +79,7 @@ void continue_task(Task *task)
 		ERROR();
 		break;
 	}
-	sti_task();
+	allow_switch_task();
 }
 
 Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size)
@@ -117,13 +117,13 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->status = TASK_STATUS_SLEEP;
 	new_task->interrupt_prohibition_level = 0;
 	new_task->switch_prohibition_level = 0;
-	cli_task();
+	prohibit_switch_task();
 	new_task->parent = parent;
 	new_task->previous = main_task->previous;
 	new_task->next = main_task;
 	main_task->previous->next = new_task;
 	main_task->previous = new_task;
-	sti_task();
+	allow_switch_task();
 	return new_task;
 }
 
@@ -224,7 +224,7 @@ void sleep_task(Task *task)
 
 void start_task(Task *task, void *arguments)
 {
-	cli_task();
+	prohibit_switch_task();
 	switch(task->status)
 	{
 	case TASK_STATUS_SLEEP:
@@ -241,7 +241,7 @@ void start_task(Task *task, void *arguments)
 		ERROR();
 		break;
 	}
-	sti_task();
+	allow_switch_task();
 }
 
 void sti_task(void)
@@ -261,9 +261,9 @@ void sti_task_interrupt(void)
 
 void switch_task(void)
 {
+	cli_task();
 	if(!current_task->switch_prohibition_level)
 	{
-		cli_task();
 		for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
 		{
 			current_task->status = TASK_STATUS_WAIT;
@@ -272,8 +272,8 @@ void switch_task(void)
 			ljmp(0, current_task->segment_selector);
 			break;
 		}
-		sti_task();
 	}
 	else current_task->flags |= TASK_FLAG_SWITCH_PENDING;
+	sti_task();
 }
 
