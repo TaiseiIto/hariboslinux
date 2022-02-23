@@ -84,7 +84,7 @@ void init_gdt(void)
 unsigned short set_segment(void *base, unsigned int size, unsigned char access_right)
 {
 	size--; // size to limit
-	cli_task();
+	prohibit_switch_task();
 	for(SegmentDescriptor *segment_descriptor = GDT_BEGIN; segment_descriptor != GDT_END; segment_descriptor++)if(!(segment_descriptor->access_right & SEGMENT_DESCRIPTOR_PRESENT))
 	{
 		segment_descriptor->base_low = (unsigned short)((unsigned int)base & 0x0000ffff);
@@ -99,10 +99,10 @@ unsigned short set_segment(void *base, unsigned int size, unsigned char access_r
 		}
 		segment_descriptor->limit_low = (unsigned short)(size & 0x0000ffff);
 		segment_descriptor->limit_high |= (unsigned char)(size >> 16 & 0x0000000f);
-		sti_task();
+		allow_switch_task();
 		return (unsigned short)((unsigned int)segment_descriptor - (unsigned int)GDT_ADDR);
 	}
-	sti_task();
+	allow_switch_task();
 	// unused segment not found
 	ERROR();
 	return 0x0000;
