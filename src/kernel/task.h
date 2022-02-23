@@ -41,14 +41,17 @@ typedef struct _Task
 	void *stack;
 	struct _Queue *event_queue;
 	unsigned int interrupt_prohibition_level;
+	unsigned int switch_prohibition_level;
 	struct _Task *parent;
 	struct _Task *previous;
 	struct _Task *next;
 	unsigned short segment_selector;
+	unsigned char flags;
+	#define TASK_FLAG_SWITCH_PENDING	0x01
 	unsigned char status;
-	#define TASK_STATUS_SLEEP	0x00
-	#define TASK_STATUS_WAIT	0x01
-	#define TASK_STATUS_RUN		0x02
+	#define TASK_STATUS_SLEEP		0x00
+	#define TASK_STATUS_WAIT		0x01
+	#define TASK_STATUS_RUN			0x02
 } Task;
 
 typedef struct _TaskDeletionRequestEvent
@@ -63,6 +66,7 @@ typedef struct _TaskDeletionResponseEvent
 	unsigned short segment_selector;
 } TaskDeletionResponseEvent;
 
+void allow_switch_task(void);
 void cli_task(void);
 void cli_task_interrupt(void);
 void close_task(Task *task);
@@ -70,6 +74,7 @@ void continue_task(Task *task);
 Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size);
 Task const *get_current_task(void);
 Task *init_task(void);
+void prohibit_switch_task(void);
 void sleep_task(Task *task);
 void start_task(Task *task, void *arguments);
 void sti_task(void);

@@ -9,6 +9,19 @@
 Task *current_task;
 Task *main_task;
 
+void allow_switch_task(void)
+{
+	if(current_task->switch_prohibition_level)
+	{
+		if(!--current_task->switch_prohibition_level)if(current_task->flags & TASK_FLAG_SWITCH_PENDING)
+		{
+			current_task->flags &= ~TASK_FLAG_SWITCH_PENDING;
+			switch_task();
+		}
+	}
+	else ERROR_MESSAGE(); // already allowed.
+}
+
 void cli_task(void)
 {
 	if(!(current_task->interrupt_prohibition_level++))cli();
@@ -100,8 +113,10 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->task_status_segment.ldtr = 0x00000000;
 	new_task->task_status_segment.io = 0x40000000;
 	new_task->segment_selector = set_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	new_task->flags = 0;
 	new_task->status = TASK_STATUS_SLEEP;
 	new_task->interrupt_prohibition_level = 0;
+	new_task->switch_prohibition_level = 0;
 	cli_task();
 	new_task->parent = parent;
 	new_task->previous = main_task->previous;
@@ -148,14 +163,21 @@ Task *init_task(void)
 	main_task->task_status_segment.ldtr = 0x00000000;
 	main_task->task_status_segment.io = 0x40000000;
 	main_task->segment_selector = set_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	main_task->flags = 0;
 	main_task->status = TASK_STATUS_RUN;
 	main_task->interrupt_prohibition_level = 1;
+	main_task->switch_prohibition_level = 0;
 	main_task->parent = NULL;
 	main_task->previous = main_task;
 	main_task->next = main_task;
 	current_task = main_task;
 	ltr(main_task->segment_selector);
 	return main_task;
+}
+
+void prohibit_switch_task(void)
+{
+	if(!++current_task->switch_prohibition_level)ERROR_MESSAGE(); // switch prohibition level is broken.
 }
 
 void sleep_task(Task *task)
@@ -239,15 +261,19 @@ void sti_task_interrupt(void)
 
 void switch_task(void)
 {
-	cli_task();
-	for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+	if(!current_task->switch_prohibition_level)
 	{
-		current_task->status = TASK_STATUS_WAIT;
-		next_task->status = TASK_STATUS_RUN;
-		current_task = next_task;
-		ljmp(0, current_task->segment_selector);
-		break;
+		cli_task();
+		for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+		{
+			current_task->status = TASK_STATUS_WAIT;
+			next_task->status = TASK_STATUS_RUN;
+			current_task = next_task;
+			ljmp(0, current_task->segment_selector);
+			break;
+		}
+		sti_task();
 	}
-	sti_task();
+	else current_task->flags |= TASK_FLAG_SWITCH_PENDING;
 }
 
