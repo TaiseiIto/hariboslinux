@@ -295,7 +295,7 @@ void test_task_procedure(void *args)
 			}
 			break;
 		case EVENT_TYPE_TASK_DELETION_REQUEST:
-			cli();
+			cli_task();
 			delete_queue(event_queue);
 			delete_timer(print_counter_timer);
 			printf_serial("Detect task deletion request.\n");
@@ -305,7 +305,7 @@ void test_task_procedure(void *args)
 			new_event.event_union.task_deletion_response_event.segment_selector = test_task->segment_selector;
 			enqueue(test_task->parent->event_queue, &new_event);
 			close_task(test_task);
-			sti();
+			sti_task();
 			break;
 		default: // invalid event->type
 			ERROR();
