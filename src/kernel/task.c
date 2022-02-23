@@ -112,7 +112,7 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->task_status_segment.gs = whole_memory_segment_selector;
 	new_task->task_status_segment.ldtr = 0x00000000;
 	new_task->task_status_segment.io = 0x40000000;
-	new_task->segment_selector = set_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	new_task->segment_selector = alloc_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
 	new_task->flags = 0;
 	new_task->status = TASK_STATUS_SLEEP;
 	new_task->interrupt_prohibition_level = 0;
@@ -135,6 +135,7 @@ Task const *get_current_task(void)
 Task *init_task(void)
 {
 	main_task = malloc(sizeof(*main_task));
+	current_task = main_task;
 	main_task->stack = MEMORY_MAP_KERNEL_STACK_BEGIN;
 	main_task->task_status_segment.link = 0;
 	main_task->task_status_segment.esp0 = 0;
@@ -162,7 +163,7 @@ Task *init_task(void)
 	main_task->task_status_segment.gs = whole_memory_segment_selector;
 	main_task->task_status_segment.ldtr = 0x00000000;
 	main_task->task_status_segment.io = 0x40000000;
-	main_task->segment_selector = set_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	main_task->segment_selector = alloc_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
 	main_task->flags = 0;
 	main_task->status = TASK_STATUS_RUN;
 	main_task->interrupt_prohibition_level = 1;
@@ -170,7 +171,6 @@ Task *init_task(void)
 	main_task->parent = NULL;
 	main_task->previous = main_task;
 	main_task->next = main_task;
-	current_task = main_task;
 	ltr(main_task->segment_selector);
 	return main_task;
 }

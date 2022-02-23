@@ -81,7 +81,7 @@ void init_gdt(void)
 
 // return a new segment selector
 // return 0 if failed
-unsigned short set_segment(void *base, unsigned int size, unsigned char access_right)
+unsigned short alloc_segment(void *base, unsigned int size, unsigned char access_right)
 {
 	size--; // size to limit
 	prohibit_switch_task();
