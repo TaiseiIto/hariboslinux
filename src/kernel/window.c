@@ -109,7 +109,7 @@ Window *create_window(char *title, Sheet *background_sheet, short x, short y, un
 	new_window = malloc(sizeof(*new_window));
 	new_window->title = malloc(strlen(title) + 1);
 	strcpy(new_window->title, title);
-	cli_task();
+	prohibit_switch_task();
 	if(windows)
 	{
 		new_window->next = windows;
@@ -127,7 +127,7 @@ Window *create_window(char *title, Sheet *background_sheet, short x, short y, un
 	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, TITLE_SHEET_HEIGHT, title_sheet_event_procedure, event_queue);
 	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure, event_queue);
 	new_window->close_button_sheet = create_sheet(new_window->title_sheet, new_window->title_sheet->width - new_window->title_sheet->height + 1, 1, new_window->title_sheet->height - 2, new_window->title_sheet->height - 2, close_button_sheet_event_procedure, event_queue);
-	sti_task();
+	allow_switch_task();
 	return new_window;
 }
 
@@ -135,7 +135,7 @@ void delete_window(Window *window, Queue *window_deletion_response_event_queue)
 {
 	Event window_deletion_response_event;
 	// Exclude window from windows chain structure
-	cli_task();
+	prohibit_switch_task();
 	if(window->next == window) // Only this window exists
 	{
 		windows = NULL;
@@ -146,7 +146,7 @@ void delete_window(Window *window, Queue *window_deletion_response_event_queue)
 		window->next->previous = window->previous;
 		window->previous->next = window->next;
 	}
-	sti_task();
+	allow_switch_task();
 	// Delete window
 	free(window->title);
 	free(window);
