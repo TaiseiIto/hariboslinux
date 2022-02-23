@@ -443,8 +443,8 @@ void put_char_screen(unsigned short x, unsigned short y, Color foreground, Color
 // 0 <= y < screen height
 void put_dot_screen(unsigned short x, unsigned short y, Color color)
 {
-	if(video_information->width <= x)ERROR_MESSAGE();
-	if(video_information->height <= y)ERROR_MESSAGE();
+	if(video_information->width <= x)ERROR();
+	if(video_information->height <= y)ERROR();
 	*(unsigned char *)(vram + video_information->pitch * y + (video_information->bits_per_pixel * x + video_information->red_position) / CHAR_BIT) = color.red;
 	*(unsigned char *)(vram + video_information->pitch * y + (video_information->bits_per_pixel * x + video_information->green_position) / CHAR_BIT) = color.green;
 	*(unsigned char *)(vram + video_information->pitch * y + (video_information->bits_per_pixel * x + video_information->blue_position) / CHAR_BIT) = color.blue;

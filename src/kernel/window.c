@@ -165,7 +165,7 @@ Window *get_window_from_sheet(Sheet const *sheet)
 		if(sheet == window->root_sheet || is_descendant_sheet_of(sheet, window->root_sheet))return window;
 		window = window->next;
 	} while(window != windows);
-	ERROR_MESSAGE(); // Can't find the window.
+	ERROR(); // Can't find the window.
 	return NULL;
 }
 

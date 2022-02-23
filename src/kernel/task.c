@@ -19,7 +19,7 @@ void allow_switch_task(void)
 			switch_task();
 		}
 	}
-	else ERROR_MESSAGE(); // already allowed.
+	else ERROR(); // already allowed.
 }
 
 void cli_task(void)
@@ -40,7 +40,7 @@ void close_task(Task *task)
 	{
 		for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)break;
 		
-		if(next_task == current_task)ERROR_MESSAGE(); // Can't close task!
+		if(next_task == current_task)ERROR(); // Can't close task!
 	}
 	// exclude the task
 	if(task->previous != task && task->next != task)
@@ -48,7 +48,7 @@ void close_task(Task *task)
 		task->previous->next = task->next;
 		task->next->previous = task->previous;
 	}
-	else ERROR_MESSAGE(); // Can't close task!
+	else ERROR(); // Can't close task!
 	// free the task
 	free(task->stack);
 	free(task);
@@ -72,11 +72,11 @@ void continue_task(Task *task)
 	case TASK_STATUS_WAIT:
 	case TASK_STATUS_RUN:
 		// The task has already started.
-		ERROR_MESSAGE();
+		ERROR();
 		break;
 	default:
 		// Invalid task status
-		ERROR_MESSAGE();
+		ERROR();
 		break;
 	}
 	sti_task();
@@ -177,7 +177,7 @@ Task *init_task(void)
 
 void prohibit_switch_task(void)
 {
-	if(!++current_task->switch_prohibition_level)ERROR_MESSAGE(); // switch prohibition level is broken.
+	if(!++current_task->switch_prohibition_level)ERROR(); // switch prohibition level is broken.
 }
 
 void sleep_task(Task *task)
@@ -187,7 +187,7 @@ void sleep_task(Task *task)
 	{
 	case TASK_STATUS_SLEEP:
 		// The task is already sleeping.
-		ERROR_MESSAGE();
+		ERROR();
 		break;
 	case TASK_STATUS_WAIT:
 		task->status = TASK_STATUS_SLEEP;
@@ -212,11 +212,11 @@ void sleep_task(Task *task)
 				return;
 			}
 		}
-		else ERROR_MESSAGE(); // Task status contradiction
+		else ERROR(); // Task status contradiction
 		break;
 	default:
 		// Invalid task status
-		ERROR_MESSAGE();
+		ERROR();
 		break;
 	}
 	sti_task();
@@ -234,11 +234,11 @@ void start_task(Task *task, void *arguments)
 	case TASK_STATUS_WAIT:
 	case TASK_STATUS_RUN:
 		// The task has already started.
-		ERROR_MESSAGE();
+		ERROR();
 		break;
 	default:
 		// Invalid task status
-		ERROR_MESSAGE();
+		ERROR();
 		break;
 	}
 	sti_task();
@@ -250,13 +250,13 @@ void sti_task(void)
 	{
 		if(!(--current_task->interrupt_prohibition_level))sti();
 	}
-	else ERROR_MESSAGE(); // double sti error!
+	else ERROR(); // double sti error!
 }
 
 void sti_task_interrupt(void)
 {
 	if(current_task->interrupt_prohibition_level)current_task->interrupt_prohibition_level--;
-	else ERROR_MESSAGE(); // double sti error!
+	else ERROR(); // double sti error!
 }
 
 void switch_task(void)

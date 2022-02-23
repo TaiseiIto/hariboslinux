@@ -104,7 +104,7 @@ unsigned short set_segment(void *base, unsigned int size, unsigned char access_r
 	}
 	sti_task();
 	// unused segment not found
-	ERROR_MESSAGE();
+	ERROR();
 	return 0x0000;
 }
 

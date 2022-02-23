@@ -78,7 +78,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 			parent->uppest_child = new_sheet;
 			parent->lowest_child = new_sheet;
 		}
-		else ERROR_MESSAGE();
+		else ERROR();
 	}
 	else
 	{
@@ -96,7 +96,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 			background_sheet = new_sheet;
 			mouse_cursor_sheet = new_sheet;
 		}
-		else ERROR_MESSAGE();
+		else ERROR();
 	}
 	sti_task();
 	refresh_input(new_sheet);
@@ -167,7 +167,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		break;
 	default:
-		ERROR_MESSAGE(); // Event that procedure is not defined.
+		ERROR(); // Event that procedure is not defined.
 		break;
 	}
 	return NULL;
@@ -175,10 +175,10 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 
 void delete_sheet(Sheet *sheet)
 {
-	if(sheet == background_sheet || sheet == mouse_cursor_sheet)ERROR_MESSAGE();
+	if(sheet == background_sheet || sheet == mouse_cursor_sheet)ERROR();
 	while(sheet->uppest_child && sheet->lowest_child)delete_sheet(sheet->uppest_child);
 	transmit_self_input(sheet);
-	if(sheet->uppest_child || sheet->lowest_child)ERROR_MESSAGE();
+	if(sheet->uppest_child || sheet->lowest_child)ERROR();
 	cli_task();
 	if(sheet->parent)
 	{
@@ -720,7 +720,7 @@ void pull_up_sheet(Sheet *sheet)
 		refresh_self_output(sheet);
 		transmit_self_output_through_opaques(sheet);
 	}
-	else ERROR_MESSAGE(); // Sheet that has no parent can't be pulled up.
+	else ERROR(); // Sheet that has no parent can't be pulled up.
 }
 
 void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char character)
@@ -768,7 +768,7 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 			transmit_self_output_dot(sheet, x, y);
 		}
 	}
-	else ERROR_MESSAGE();
+	else ERROR();
 }
 
 void refresh_input(Sheet *sheet) // refresh sheet->input.
@@ -803,7 +803,7 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refr
 		}
 		else sheet->input[x + y * sheet->width] = color_black;
 	}
-	else ERROR_MESSAGE();
+	else ERROR();
 }
 
 void refresh_self_output(Sheet *sheet) // refresh sheet->self_output.

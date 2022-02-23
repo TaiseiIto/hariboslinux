@@ -243,7 +243,7 @@ void main(void)
 			distribute_event(event);
 			break;
 		default: // invalid event->type
-			ERROR_MESSAGE();
+			ERROR();
 			printf_serial("invalid event->type %#04x\n", event->type);
 			break;
 		}
@@ -308,7 +308,7 @@ void test_task_procedure(void *args)
 			sti();
 			break;
 		default: // invalid event->type
-			ERROR_MESSAGE();
+			ERROR();
 			printf_serial("invalid event->type %#04x\n", event->type);
 			break;
 		}
