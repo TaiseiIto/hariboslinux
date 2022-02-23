@@ -60,7 +60,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 	new_sheet->event_procedure = event_procedure ? event_procedure : default_event_procedure;
 	new_sheet->event_queue = event_queue;
 	new_sheet->flags = 0;
-	cli_task();
+	prohibit_switch_task();
 	new_sheet->parent = parent;
 	if(parent)
 	{
@@ -98,7 +98,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 		}
 		else ERROR();
 	}
-	sti_task();
+	allow_switch_task();
 	refresh_input(new_sheet);
 	sheet_created_event.type = EVENT_TYPE_SHEET_CREATED;
 	sheet_created_event.event_union.sheet_created_event.sheet = new_sheet;
@@ -179,7 +179,7 @@ void delete_sheet(Sheet *sheet)
 	while(sheet->uppest_child && sheet->lowest_child)delete_sheet(sheet->uppest_child);
 	transmit_self_input(sheet);
 	if(sheet->uppest_child || sheet->lowest_child)ERROR();
-	cli_task();
+	prohibit_switch_task();
 	if(sheet->parent)
 	{
 		if(sheet == sheet->parent->uppest_child)sheet->parent->uppest_child = sheet->lower;
@@ -187,7 +187,7 @@ void delete_sheet(Sheet *sheet)
 	}
 	if(sheet->upper)sheet->upper->lower = sheet->lower;
 	if(sheet->lower)sheet->lower->upper = sheet->upper;
-	sti_task();
+	allow_switch_task();
 	free(sheet->image);
 	free(sheet->input);
 	free(sheet->self_output);
@@ -707,7 +707,7 @@ void pull_up_sheet(Sheet *sheet)
 		// erase the sheet before pulled up
 		transmit_self_input(sheet);
 		// Pull up the sheet
-		cli_task();
+		prohibit_switch_task();
 		if(sheet->parent->lowest_child == sheet)sheet->parent->lowest_child = sheet->upper;
 		if(sheet->upper)sheet->upper->lower = sheet->lower;
 		if(sheet->lower)sheet->lower->upper = sheet->upper;
@@ -715,7 +715,7 @@ void pull_up_sheet(Sheet *sheet)
 		sheet->lower = sheet->parent->uppest_child;
 		sheet->parent->uppest_child->upper = sheet;
 		sheet->parent->uppest_child = sheet;
-		sti_task();
+		allow_switch_task();
 		refresh_input(sheet);
 		refresh_self_output(sheet);
 		transmit_self_output_through_opaques(sheet);
