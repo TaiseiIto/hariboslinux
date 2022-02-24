@@ -189,16 +189,17 @@ void delete_sheet(Sheet *sheet)
 	}
 	if(sheet->upper)sheet->upper->lower = sheet->lower;
 	if(sheet->lower)sheet->lower->upper = sheet->upper;
+	allow_switch_task();
 	free(sheet->image);
 	free(sheet->input);
 	free(sheet->self_output);
 	free(sheet->family_output);
 	free(sheet);
-	allow_switch_task();
 }
 
 void distribute_event(struct _Event const *event)
 {
+	prohibit_switch_task();
 	switch(event->type)
 	{
 	case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
@@ -229,6 +230,7 @@ void distribute_event(struct _Event const *event)
 		printf_serial("Window %p deleted @ task segment selector = %#06x.\n", event->event_union.window_deletion_response_event.window, get_current_task()->segment_selector);
 		break;
 	}
+	allow_switch_task();
 }
 
 void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsigned short height, Color color)
