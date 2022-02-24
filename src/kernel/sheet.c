@@ -1053,6 +1053,7 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 {
 	short x_on_screen;
 	short y_on_screen;
+	prohibit_switch_task();
 	if(sheet->upper)
 	{
 		for(Sheet *upper = sheet->upper; upper; upper = upper->upper)
@@ -1067,6 +1068,7 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 					upper->self_output[x_on_upper + y_on_upper * upper->width] = alpha_blend(upper->image[x_on_upper + y_on_upper * upper->width], upper->input[x_on_upper + y_on_upper * upper->width]);
 					transmit_self_output_dot(upper, x_on_upper, y_on_upper);
 				}
+				allow_switch_task();
 				return;
 			}
 		}
@@ -1079,18 +1081,21 @@ void transmit_family_output_dot(Sheet *sheet, unsigned short x, unsigned short y
 		{
 			sheet->parent->family_output[x_on_parent + y_on_parent * sheet->parent->width] = sheet->family_output[x + y * sheet->width];
 			transmit_family_output_dot(sheet->parent, x_on_parent, y_on_parent);
+			allow_switch_task();
 			return;
 		}
 	}
 	x_on_screen = x + sheet->x;
 	y_on_screen = y + sheet->y;
 	if(0 <= x_on_screen && x_on_screen < get_video_information()->width && 0 <= y_on_screen && y_on_screen < get_video_information()->height)put_dot_screen(x_on_screen, y_on_screen, sheet->family_output[x + y * sheet->width]);
+	allow_switch_task();
 }
 
 void transmit_family_output_dot_through_opaques(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->family_output[x + y * sheet->width] through opaque sheets.
 {
 	short x_on_screen;
 	short y_on_screen;
+	prohibit_switch_task();
 	if(sheet->upper)
 	{
 		for(Sheet *upper = sheet->upper; upper; upper = upper->upper)
@@ -1102,6 +1107,7 @@ void transmit_family_output_dot_through_opaques(Sheet *sheet, unsigned short x, 
 				upper->input[x_on_upper + y_on_upper * upper->width] = sheet->family_output[x + y * sheet->width];
 				if(upper->image[x_on_upper + y_on_upper * upper->width].alpha != 0xff)upper->self_output[x_on_upper + y_on_upper * upper->width] = alpha_blend(upper->image[x_on_upper + y_on_upper * upper->width], upper->input[x_on_upper + y_on_upper * upper->width]);
 				transmit_self_output_dot_through_opaques(upper, x_on_upper, y_on_upper);
+				allow_switch_task();
 				return;
 			}
 		}
@@ -1114,39 +1120,51 @@ void transmit_family_output_dot_through_opaques(Sheet *sheet, unsigned short x, 
 		{
 			sheet->parent->family_output[x_on_parent + y_on_parent * sheet->parent->width] = sheet->family_output[x + y * sheet->width];
 			transmit_family_output_dot(sheet->parent, x_on_parent, y_on_parent);
+			allow_switch_task();
 			return;
 		}
 	}
 	x_on_screen = x + sheet->x;
 	y_on_screen = y + sheet->y;
 	if(0 <= x_on_screen && x_on_screen < get_video_information()->width && 0 <= y_on_screen && y_on_screen < get_video_information()->height)put_dot_screen(x_on_screen, y_on_screen, sheet->family_output[x + y * sheet->width]);
+	allow_switch_task();
 }
 
 void transmit_self_input(Sheet *sheet) // transmit image sheet->self_input.
 {
+	prohibit_switch_task();
 	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_input_dot(sheet, x, y);
+	allow_switch_task();
 }
 
 void transmit_self_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_input[x + y * sheet->width].
 {
-	Color family_output = sheet->family_output[x + y * sheet->width];
+	Color family_output;
+	prohibit_switch_task();
+	family_output = sheet->family_output[x + y * sheet->width];
 	sheet->family_output[x + y * sheet->width] = sheet->input[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
 	sheet->family_output[x + y * sheet->width] = family_output;
+	allow_switch_task();
 }
 
 void transmit_self_input_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_input[x + y * sheet->width].
 {
+	prohibit_switch_task();
 	for(unsigned short y_i = y; y_i < y + height; y_i++)for(unsigned short x_i = x; x_i < x + width; x_i++)transmit_self_input_dot(sheet, x_i, y_i);
+	allow_switch_task();
 }
 
 void transmit_self_output(Sheet *sheet) // transmit image sheet->self_output.
 {
+	prohibit_switch_task();
 	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_output_dot(sheet, x, y);
+	allow_switch_task();
 }
 
 void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width].
 {
+	prohibit_switch_task();
 	for(Sheet *child = sheet->lowest_child; child; child = child->upper)
 	{
 		short x_on_child = x - child->x;
@@ -1159,15 +1177,18 @@ void transmit_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) 
 				child->self_output[x_on_child + y_on_child * child->width] = alpha_blend(child->image[x_on_child + y_on_child * child->width], child->input[x_on_child + y_on_child * child->width]);
 				transmit_self_output_dot(child, x_on_child, y_on_child);
 			}
+			allow_switch_task();
 			return;
 		}
 	}
 	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
+	allow_switch_task();
 }
 
 void transmit_self_output_dot_through_opaques(Sheet *sheet, unsigned short x, unsigned short y) // transmit color sheet->self_output[x + y * sheet->width] through opaque sheets.
 {
+	prohibit_switch_task();
 	for(Sheet *child = sheet->lowest_child; child; child = child->upper)
 	{
 		short x_on_child = x - child->x;
@@ -1177,20 +1198,26 @@ void transmit_self_output_dot_through_opaques(Sheet *sheet, unsigned short x, un
 			child->input[x_on_child + y_on_child * child->width] = sheet->self_output[x + y * sheet->width];
 			if(child->image[x_on_child + y_on_child * child->width].alpha != 0xff)child->self_output[x_on_child + y_on_child * child->width] = alpha_blend(child->image[x_on_child + y_on_child * child->width], child->input[x_on_child + y_on_child * child->width]);
 			transmit_self_output_dot_through_opaques(child, x_on_child, y_on_child);
+			allow_switch_task();
 			return;
 		}
 	}
 	sheet->family_output[x + y * sheet->width] = sheet->self_output[x + y * sheet->width];
 	transmit_family_output_dot(sheet, x, y);
+	allow_switch_task();
 }
 
 void transmit_self_output_rectangle(Sheet *sheet, unsigned short x, unsigned short y, unsigned short width, unsigned short height) // transmit color sheet->self_output[x + y * sheet->width].
 {
+	prohibit_switch_task();
 	for(unsigned short y_i = y; y_i < y + height; y_i++)for(unsigned short x_i = x; x_i < x + width; x_i++)transmit_self_output_dot(sheet, x_i, y_i);
+	allow_switch_task();
 }
 
 void transmit_self_output_through_opaques(Sheet *sheet) // transmit image sheet->self_output through opaque sheets.
 {
+	prohibit_switch_task();
 	for(unsigned short y = 0; y < sheet->height; y++)for(unsigned short x = 0; x < sheet->width; x++)transmit_self_output_dot_through_opaques(sheet, x, y);
+	allow_switch_task();
 }
 
