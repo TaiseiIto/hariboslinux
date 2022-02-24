@@ -891,6 +891,7 @@ void send_sheets_event(Event const *event)
 	static Sheet *right_button_catched_sheet = NULL;
 	static Sheet *fourth_button_catched_sheet = NULL;
 	static Sheet *fifth_button_catched_sheet = NULL;
+	prohibit_switch_task();
 	switch(event->type)
 	{
 	case EVENT_TYPE_MOUSE_EVENT:
@@ -1006,6 +1007,7 @@ void send_sheets_event(Event const *event)
 		}
 		break;
 	}
+	allow_switch_task();
 }
 
 void set_default_procedure(Sheet *sheet)
