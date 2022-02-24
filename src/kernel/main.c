@@ -17,11 +17,20 @@
 #include "timer.h"
 #include "window.h"
 
+struct _TestTaskArgument;
+struct _TestTaskReturn;
+
 typedef struct _TestTaskArgument
 {
 	Sheet *background_sheet;
 	Task *test_task;
+	struct _TestTaskReturn *test_task_return;
 } TestTaskArgument;
+
+typedef struct _TestTaskReturn
+{
+	struct _TestTaskArgument *test_task_argument;
+} TestTaskReturn;
 
 void test_task_procedure(void *args);
 
@@ -48,7 +57,8 @@ void main(void)
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
 	Task *main_task;
-	TestTaskArgument test_task_argument;
+	TestTaskArgument *test_task_argument;
+	TestTaskReturn *test_task_return;
 	Timer *checking_free_memory_space_size_timer;
 	Timer *test_timer;
 	unsigned int memory_region_descriptor_index;
@@ -166,9 +176,12 @@ void main(void)
 				// Start test task by pressing 't'
 				test_task = create_task(main_task, test_task_procedure, 0x00010000);
 				printf_serial("test_task->segment_selector = %#06x\n", test_task->segment_selector);
-				test_task_argument.background_sheet = background_sheet;
-				test_task_argument.test_task = test_task;
-				start_task(test_task, &test_task_argument);
+				test_task_argument = malloc(sizeof(*test_task_argument));
+				test_task_return = malloc(sizeof(*test_task_return));
+				test_task_argument->background_sheet = background_sheet;
+				test_task_argument->test_task = test_task;
+				test_task_argument->test_task_return = test_task_return;
+				start_task(test_task, test_task_argument);
 				break;
 			case KEY_W:
 				// Open a new window by pressing 'w'
@@ -213,6 +226,9 @@ void main(void)
 			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
 			printf_serial("Detect task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
+			test_task_return = (TestTaskReturn*)event->event_union.task_deletion_response_event.return_values;
+			free(test_task_return->test_task_argument);
+			free(test_task_return);
 			free_segment(event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case EVENT_TYPE_TIMER_EVENT:
@@ -259,11 +275,13 @@ void test_task_procedure(void *args)
 	Queue *event_queue;
 	Task *test_task;
 	TestTaskArgument *test_task_argument;
+	TestTaskReturn *test_task_return;
 	Timer *print_counter_timer;
 	unsigned long long counter = 0;
 	Window *window;
 	test_task_argument = (TestTaskArgument*)args;
 	test_task = test_task_argument->test_task;
+	test_task_return = test_task_argument->test_task_return;
 	event_queue = create_event_queue(test_task);
 	window = create_window("Test Task", test_task_argument->background_sheet, 4 * test_task->segment_selector, 4 * test_task->segment_selector, 0x0100, 0x0100, event_queue);
 	print_counter_timer = create_timer(0, 100, event_queue);
@@ -296,14 +314,16 @@ void test_task_procedure(void *args)
 			}
 			break;
 		case EVENT_TYPE_TASK_DELETION_REQUEST:
-			delete_timer(print_counter_timer);
 			printf_serial("Detect task deletion request.\n");
+			delete_timer(print_counter_timer);
+			test_task_return->test_task_argument = test_task_argument;
 			new_event.type = EVENT_TYPE_TASK_DELETION_RESPONSE;
 			new_event.event_union.task_deletion_response_event.task = test_task;
-			new_event.event_union.task_deletion_response_event.return_values = NULL;
+			new_event.event_union.task_deletion_response_event.return_values = (void *)test_task_return;
 			new_event.event_union.task_deletion_response_event.segment_selector = test_task->segment_selector;
 			enqueue(test_task->parent->event_queue, &new_event);
 			close_task(test_task);
+			ERROR(); // Can't close task!
 			break;
 		default: // invalid event->type
 			ERROR();
