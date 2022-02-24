@@ -33,8 +33,9 @@ void *dequeue(Queue *queue)
 {
 	if(queue->read_head)
 	{
-		QueueElement *dequeued_element = queue->read_head;
+		QueueElement *dequeued_element;
 		cli_task();
+		dequeued_element = queue->read_head;
 		memcpy(queue->io, dequeued_element->data, queue->element_size);
 		queue->read_head = queue->read_head->next;
 		if(!queue->read_head)queue->write_head = NULL; // dequeue last element

@@ -118,15 +118,6 @@ void init_serial_interrupt(Task *task)
 {
 	unsigned int baud_rate = 115200;
 	unsigned short baud_rate_divisor = SERIAL_FREQUENCY / baud_rate;
-	// // check COM1 availability
-	// outb(COM1 + MODEM_CONTROL_REGISTER, LOOP_BACK_FEATURE);
-	// outb(COM1 + DATA_REGISTER, 0xae);
-	// if(inb(COM1 + DATA_REGISTER) != 0xae)
-	// {
-	// 	// COM1 unavailable
-	// 	com1_flags = 0;
-	// 	return;
-	// }
 	// create com1_transmission_queue
 	com1_transmission_queue = create_queue(sizeof(char), task);
 	// 8 bits per char
