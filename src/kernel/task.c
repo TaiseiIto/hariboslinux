@@ -50,6 +50,7 @@ void close_task(Task *task)
 	}
 	else ERROR(); // Can't close task!
 	// free the task
+	delete_queue(task->event_queue);
 	free(task->stack);
 	free(task);
 	if(next_task)
