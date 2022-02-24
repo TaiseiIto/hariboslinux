@@ -1012,20 +1012,40 @@ void send_sheets_event(Event const *event)
 
 void set_default_procedure(Sheet *sheet)
 {
+	prohibit_switch_task();
 	for(Sheet *child = sheet->lowest_child; child; child = child->upper)set_default_procedure(child);
 	sheet->event_procedure = default_event_procedure;
+	allow_switch_task();
 }
 
 bool sheet_exists(Sheet const *sheet)
 {
-	return sheet_exists_under(sheet, background_sheet);
+	bool result;
+	prohibit_switch_task();
+	result = sheet_exists_under(sheet, background_sheet);
+	allow_switch_task();
+	return result;
 }
 
 bool sheet_exists_under(Sheet const *sheet, Sheet const *root)
 {
-	if(root == sheet)return true;
-	for(Sheet *child = root->lowest_child; child; child = child->upper)if(sheet_exists_under(sheet, child))return true;
-	for(Sheet *upper = root->upper; upper; upper = upper->upper)if(sheet_exists_under(sheet, upper))return true;
+	prohibit_switch_task();
+	if(root == sheet)
+	{
+		allow_switch_task();
+		return true;
+	}
+	for(Sheet *child = root->lowest_child; child; child = child->upper)if(sheet_exists_under(sheet, child))
+	{
+		allow_switch_task();
+		return true;
+	}
+	for(Sheet *upper = root->upper; upper; upper = upper->upper)if(sheet_exists_under(sheet, upper))
+	{
+		allow_switch_task();
+		return true;
+	}
+	allow_switch_task();
 	return false;
 }
 
