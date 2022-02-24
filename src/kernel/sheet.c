@@ -778,6 +778,7 @@ void pull_up_sheet(Sheet *sheet)
 
 void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char character)
 {
+	prohibit_switch_task();
 	switch(character)
 	{
 	case '\t':
@@ -808,10 +809,12 @@ void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color fore
 		}
 		break;
 	}
+	allow_switch_task();
 }
 
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color)
 {
+	prohibit_switch_task();
 	if(x < sheet->width && y < sheet->height)
 	{
 		sheet->image[x + y * sheet->width] = color;
@@ -822,15 +825,19 @@ void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color
 		}
 	}
 	else ERROR();
+	allow_switch_task();
 }
 
 void refresh_input(Sheet *sheet) // refresh sheet->input.
 {
+	prohibit_switch_task();
 	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)refresh_input_dot(sheet, x, y);
+	allow_switch_task();
 }
 
 void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refresh sheet->input[x + y * sheet->width].
 {
+	prohibit_switch_task();
 	if(x < sheet->width && y < sheet->height)
 	{
 		if(sheet->parent || sheet->lower)
@@ -848,6 +855,7 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refr
 					if(0 <= x_on_lower && x_on_lower < lower->width && 0 <= y_on_lower && y_on_lower < lower->height)
 					{
 						sheet->input[x + y * sheet->width] = lower->family_output[x_on_lower + y_on_lower * lower->width];
+						allow_switch_task();
 						return;
 					}
 				}
@@ -857,17 +865,22 @@ void refresh_input_dot(Sheet *sheet, unsigned short x, unsigned short y) // refr
 		else sheet->input[x + y * sheet->width] = color_black;
 	}
 	else ERROR();
+	allow_switch_task();
 }
 
 void refresh_self_output(Sheet *sheet) // refresh sheet->self_output.
 {
+	prohibit_switch_task();
 	for(unsigned short x = 0; x < sheet->width; x++)for(unsigned short y = 0; y < sheet->height; y++)refresh_self_output_dot(sheet, x, y);
+	allow_switch_task();
 }
 
 void refresh_self_output_dot(Sheet *sheet, unsigned short x, unsigned short y) // refresh sheet->self_output[x + y * sheet->width].
 {
+	prohibit_switch_task();
 	refresh_input_dot(sheet, x, y);
 	sheet->self_output[x + y * sheet->width] = alpha_blend(sheet->image[x + y * sheet->width], sheet->input[x + y * sheet->width]);
+	allow_switch_task();
 }
 
 void send_sheets_event(Event const *event)
