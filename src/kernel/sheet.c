@@ -109,6 +109,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 void *default_event_procedure(Sheet *sheet, Event const *event)
 {
 	Event new_event;
+	prohibit_switch_task();
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CLICKED:
@@ -170,6 +171,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		ERROR(); // Event that procedure is not defined.
 		break;
 	}
+	allow_switch_task();
 	return NULL;
 }
 
