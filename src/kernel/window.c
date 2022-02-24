@@ -159,13 +159,20 @@ void delete_window(Window *window, Queue *window_deletion_response_event_queue)
 
 Window *get_window_from_sheet(Sheet const *sheet)
 {
-	Window *window = windows;
+	Window *window;
+	prohibit_switch_task();
+	window = windows;
 	do
 	{
-		if(sheet == window->root_sheet || is_descendant_sheet_of(sheet, window->root_sheet))return window;
+		if(sheet == window->root_sheet || is_descendant_sheet_of(sheet, window->root_sheet))
+		{
+			allow_switch_task();
+			return window;
+		}
 		window = window->next;
 	} while(window != windows);
 	ERROR(); // Can't find the window.
+	allow_switch_task();
 	return NULL;
 }
 
