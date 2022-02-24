@@ -690,6 +690,7 @@ void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foregro
 	unsigned int char_pos_x = 0;
 	unsigned int char_pos_y = 0;
 	unsigned int char_pos_x_destroyable;
+	prohibit_switch_task();
 	while(*string)
 	{
 		switch(*string)
@@ -714,16 +715,20 @@ void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foregro
 		}
 		string++;
 	}
+	allow_switch_task();
 }
 
 void print_sheet_tree(void)
 {
+	prohibit_switch_task();
 	printf_serial("sheet tree\n");
 	print_sheet_tree_level(background_sheet, 0);
+	allow_switch_task();
 }
 
 void print_sheet_tree_level(Sheet *sheet, unsigned int level)
 {
+	prohibit_switch_task();
 	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
 	printf_serial("sheet = %p\n", sheet);
 	for(unsigned int i = 0; i < level; i++)printf_serial("\t");
@@ -738,13 +743,19 @@ void print_sheet_tree_level(Sheet *sheet, unsigned int level)
 	printf_serial("\tlowest_child = %p\n", sheet->lowest_child);
 	if(sheet->lowest_child)print_sheet_tree_level(sheet->lowest_child, level + 1);
 	if(sheet->upper)print_sheet_tree_level(sheet->upper, level);
+	allow_switch_task();
 }
 
 void pull_up_sheet(Sheet *sheet)
 {
+	prohibit_switch_task();
 	if(sheet->parent)
 	{
-		if(sheet->parent->uppest_child == sheet)return; // The sheet is already the uppest
+		if(sheet->parent->uppest_child == sheet)
+		{
+			allow_switch_task();
+			return; // The sheet is already the uppest
+		}
 		// erase the sheet before pulled up
 		transmit_self_input(sheet);
 		// Pull up the sheet
@@ -762,6 +773,7 @@ void pull_up_sheet(Sheet *sheet)
 		transmit_self_output_through_opaques(sheet);
 	}
 	else ERROR(); // Sheet that has no parent can't be pulled up.
+	allow_switch_task();
 }
 
 void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char character)
