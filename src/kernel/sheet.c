@@ -258,24 +258,51 @@ void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsign
 
 short get_sheet_x_on_screen(Sheet const *sheet)
 {
-	if(sheet->parent)return get_sheet_x_on_screen(sheet->parent) + sheet->x;
-	else return sheet->x;
+	short result;
+	prohibit_switch_task();
+	if(sheet->parent)
+	{
+		result = get_sheet_x_on_screen(sheet->parent) + sheet->x;
+	}
+	else
+	{
+		result = sheet->x;
+	}
+	allow_switch_task();
+	return result;
 }
 
 short get_sheet_y_on_screen(Sheet const *sheet)
 {
-	if(sheet->parent)return get_sheet_y_on_screen(sheet->parent) + sheet->y;
-	else return sheet->y;
+	short result;
+	prohibit_switch_task();
+	if(sheet->parent)
+	{
+		result = get_sheet_y_on_screen(sheet->parent) + sheet->y;
+	}
+	else
+	{
+		result = sheet->y;
+	}
+	allow_switch_task();
+	return result;
 }
 
 Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 {
+	prohibit_switch_task();
 	for(Sheet *child = sheet->uppest_child; child; child = child->lower)
 	{
 		short x_on_child = (short)x -child->x;
 		short y_on_child = (short)y -child->y;
-		if(0 <= x_on_child && x_on_child < child->width && 0 <= y_on_child && y_on_child < child->height)return get_uppest_sheet(child, x_on_child, y_on_child);
+		if(0 <= x_on_child && x_on_child < child->width && 0 <= y_on_child && y_on_child < child->height)
+		{
+			Sheet *result = get_uppest_sheet(child, x_on_child, y_on_child);
+			allow_switch_task();
+			return result;
+		}
 	}
+	allow_switch_task();
 	return sheet;
 }
 
