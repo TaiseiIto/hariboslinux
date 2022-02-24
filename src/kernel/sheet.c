@@ -317,15 +317,22 @@ void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet, Queue *
 
 bool is_descendant_sheet_of(Sheet const *descendant_candidate, Sheet const *ancestor_candidate)
 {
+	prohibit_switch_task();
 	for(Sheet const *ancestor_candidate_child = ancestor_candidate->lowest_child; ancestor_candidate_child; ancestor_candidate_child = ancestor_candidate_child->upper)
 	{
-		if(descendant_candidate == ancestor_candidate_child || is_descendant_sheet_of(descendant_candidate, ancestor_candidate_child))return true;
+		if(descendant_candidate == ancestor_candidate_child || is_descendant_sheet_of(descendant_candidate, ancestor_candidate_child))
+		{
+			allow_switch_task();
+			return true;
+		}
 	}
+	allow_switch_task();
 	return false;
 }
 
 void move_sheet(Sheet *sheet, short x, short y)
 {
+	prohibit_switch_task();
 	// Previous sheet boundary seen from previous sheet
 	short previous_top = 0;
 	short previous_bottom = sheet->height;
@@ -361,6 +368,7 @@ void move_sheet(Sheet *sheet, short x, short y)
 	refresh_input(sheet);
 	refresh_self_output(sheet);
 	transmit_self_output_through_opaques(sheet);
+	allow_switch_task();
 }
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
@@ -373,6 +381,7 @@ void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foregr
 	unsigned int char_pos_x = 0;
 	unsigned int char_pos_y = 0;
 	unsigned int char_pos_x_destroyable;
+	prohibit_switch_task();
 	while(*format)
 	{
 		if(*format == '%')
@@ -673,6 +682,7 @@ void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foregr
 		}
 		format++;
 	}
+	allow_switch_task();
 }
 
 void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *string)
