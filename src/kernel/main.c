@@ -165,6 +165,7 @@ void main(void)
 			case KEY_T:
 				// Start test task by pressing 't'
 				test_task = create_task(main_task, test_task_procedure, 0x00010000);
+				printf_serial("test_task->segment_selector = %#06x\n", test_task->segment_selector);
 				test_task_argument.background_sheet = background_sheet;
 				test_task_argument.test_task = test_task;
 				start_task(test_task, &test_task_argument);
