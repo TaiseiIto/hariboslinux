@@ -177,11 +177,11 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 
 void delete_sheet(Sheet *sheet)
 {
+	prohibit_switch_task();
 	if(sheet == background_sheet || sheet == mouse_cursor_sheet)ERROR();
 	while(sheet->uppest_child && sheet->lowest_child)delete_sheet(sheet->uppest_child);
 	transmit_self_input(sheet);
 	if(sheet->uppest_child || sheet->lowest_child)ERROR();
-	prohibit_switch_task();
 	if(sheet->parent)
 	{
 		if(sheet == sheet->parent->uppest_child)sheet->parent->uppest_child = sheet->lower;
@@ -189,12 +189,12 @@ void delete_sheet(Sheet *sheet)
 	}
 	if(sheet->upper)sheet->upper->lower = sheet->lower;
 	if(sheet->lower)sheet->lower->upper = sheet->upper;
-	allow_switch_task();
 	free(sheet->image);
 	free(sheet->input);
 	free(sheet->self_output);
 	free(sheet->family_output);
 	free(sheet);
+	allow_switch_task();
 }
 
 void distribute_event(struct _Event const *event)
