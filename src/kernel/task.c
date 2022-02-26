@@ -56,7 +56,6 @@ void close_task(Task *task)
 	if(next_task)
 	{
 		next_task->status = TASK_STATUS_RUN;
-		next_task->elapsed_time = 0;
 		current_task = next_task;
 		ljmp(0, current_task->segment_selector);
 	}
@@ -207,7 +206,6 @@ void sleep_task(Task *task)
 				next_task_found = true;
 				task->status = TASK_STATUS_SLEEP;
 				next_task->status = TASK_STATUS_RUN;
-				next_task->elapsed_time = 0;
 				current_task = next_task;
 				ljmp(0, current_task->segment_selector);
 				break;
@@ -271,15 +269,15 @@ void sti_task_interrupt(void)
 void switch_task(void)
 {
 	cli_task();
-	if(++current_task->elapsed_time == current_task->occupancy_time)
+	if(current_task->occupancy_time <= ++current_task->elapsed_time)
 	{
 		if(!current_task->switch_prohibition_level)
 		{
 			for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
 			{
+				current_task->elapsed_time = 0;
 				current_task->status = TASK_STATUS_WAIT;
 				next_task->status = TASK_STATUS_RUN;
-				next_task->elapsed_time = 0;
 				current_task = next_task;
 				ljmp(0, current_task->segment_selector);
 				break;
