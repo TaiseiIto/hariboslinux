@@ -56,6 +56,7 @@ void close_task(Task *task)
 	if(next_task)
 	{
 		next_task->status = TASK_STATUS_RUN;
+		next_task->elapsed_time = 0;
 		current_task = next_task;
 		ljmp(0, current_task->segment_selector);
 	}
@@ -114,7 +115,9 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->task_status_segment.ldtr = 0x00000000;
 	new_task->task_status_segment.io = 0x40000000;
 	new_task->segment_selector = alloc_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	new_task->elapsed_time = 0;
 	new_task->flags = 0;
+	new_task->occupancy_time = 0;
 	new_task->status = TASK_STATUS_SLEEP;
 	new_task->interrupt_prohibition_level = 0;
 	new_task->switch_prohibition_level = 0;
@@ -165,7 +168,9 @@ Task *init_task(void)
 	main_task->task_status_segment.ldtr = 0x00000000;
 	main_task->task_status_segment.io = 0x40000000;
 	main_task->segment_selector = alloc_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	main_task->elapsed_time = 0;
 	main_task->flags = 0;
+	main_task->occupancy_time = 1;
 	main_task->status = TASK_STATUS_RUN;
 	main_task->interrupt_prohibition_level = 1;
 	main_task->switch_prohibition_level = 0;
@@ -202,6 +207,7 @@ void sleep_task(Task *task)
 				next_task_found = true;
 				task->status = TASK_STATUS_SLEEP;
 				next_task->status = TASK_STATUS_RUN;
+				next_task->elapsed_time = 0;
 				current_task = next_task;
 				ljmp(0, current_task->segment_selector);
 				break;
@@ -223,12 +229,14 @@ void sleep_task(Task *task)
 	sti_task();
 }
 
-void start_task(Task *task, void *arguments)
+void start_task(Task *task, void *arguments, unsigned char occupancy_time)
 {
 	prohibit_switch_task();
 	switch(task->status)
 	{
 	case TASK_STATUS_SLEEP:
+		task->occupancy_time = occupancy_time;
+		task->elapsed_time = 0;
 		*(void **)(task->task_status_segment.esp + sizeof(void *)) = arguments;
 		task->status = TASK_STATUS_WAIT;
 		break;
@@ -263,18 +271,22 @@ void sti_task_interrupt(void)
 void switch_task(void)
 {
 	cli_task();
-	if(!current_task->switch_prohibition_level)
+	if(++current_task->elapsed_time == current_task->occupancy_time)
 	{
-		for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+		if(!current_task->switch_prohibition_level)
 		{
-			current_task->status = TASK_STATUS_WAIT;
-			next_task->status = TASK_STATUS_RUN;
-			current_task = next_task;
-			ljmp(0, current_task->segment_selector);
-			break;
+			for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+			{
+				current_task->status = TASK_STATUS_WAIT;
+				next_task->status = TASK_STATUS_RUN;
+				next_task->elapsed_time = 0;
+				current_task = next_task;
+				ljmp(0, current_task->segment_selector);
+				break;
+			}
 		}
+		else current_task->flags |= TASK_FLAG_SWITCH_PENDING;
 	}
-	else current_task->flags |= TASK_FLAG_SWITCH_PENDING;
 	sti_task();
 }
 

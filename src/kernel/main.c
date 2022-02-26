@@ -181,7 +181,7 @@ void main(void)
 				test_task_argument->background_sheet = background_sheet;
 				test_task_argument->test_task = test_task;
 				test_task_argument->test_task_return = test_task_return;
-				start_task(test_task, test_task_argument);
+				start_task(test_task, test_task_argument, 1);
 				break;
 			case KEY_W:
 				// Open a new window by pressing 'w'

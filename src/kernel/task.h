@@ -46,8 +46,10 @@ typedef struct _Task
 	struct _Task *previous;
 	struct _Task *next;
 	unsigned short segment_selector;
+	unsigned char elapsed_time;		// centi second
 	unsigned char flags;
 	#define TASK_FLAG_SWITCH_PENDING	0x01
+	unsigned char occupancy_time;		// centi second
 	unsigned char status;
 	#define TASK_STATUS_SLEEP		0x00
 	#define TASK_STATUS_WAIT		0x01
@@ -76,7 +78,7 @@ Task const *get_current_task(void);
 Task *init_task(void);
 void prohibit_switch_task(void);
 void sleep_task(Task *task);
-void start_task(Task *task, void *arguments);
+void start_task(Task *task, void *arguments, unsigned char occupancy_time);
 void sti_task(void);
 void sti_task_interrupt(void);
 void switch_task(void);
