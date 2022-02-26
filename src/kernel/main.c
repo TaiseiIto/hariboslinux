@@ -283,7 +283,7 @@ void test_task_procedure(void *args)
 	test_task = test_task_argument->test_task;
 	test_task_return = test_task_argument->test_task_return;
 	event_queue = create_event_queue(test_task);
-	window = create_window("Test Task", test_task_argument->background_sheet, 4 * test_task->segment_selector, 4 * test_task->segment_selector, 0x0100, 0x0100, event_queue);
+	window = create_window("Test Task", test_task_argument->background_sheet, 8 * test_task->segment_selector, 8 * test_task->segment_selector, 0x0100, 0x0100, event_queue);
 	print_counter_timer = create_timer(0, 100, event_queue);
 	while(true)
 	{
