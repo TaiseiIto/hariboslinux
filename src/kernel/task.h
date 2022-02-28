@@ -35,16 +35,19 @@ typedef struct _TaskStatusSegment
 	unsigned int io;
 } TaskStatusSegment;
 
+struct _TaskLevel;
+
 typedef struct _Task
 {
 	TaskStatusSegment task_status_segment;
 	void *stack;
 	struct _Queue *event_queue;
-	unsigned int interrupt_prohibition_level;
-	unsigned int switch_prohibition_level;
 	struct _Task *parent;
 	struct _Task *previous;
 	struct _Task *next;
+	struct _TaskLevel *task_level;
+	unsigned int interrupt_prohibition_level;
+	unsigned int switch_prohibition_level;
 	unsigned short segment_selector;
 	unsigned char elapsed_time;		// centi second
 	unsigned char flags;
@@ -59,6 +62,12 @@ typedef struct _Task
 typedef struct _TaskLevel
 {
 	struct _Task *current_task;
+	struct _TaskLevel *higher;
+	struct _TaskLevel *lower;
+	int priority;
+	#define TASK_PRIORITY_KERNEL		0x40000000
+	#define TASK_PRIORITY_APPLICATION	0x00000000
+	#define TASK_PRIORITY_IDLE		-0x40000000
 } TaskLevel;
 
 typedef struct _TaskDeletionRequestEvent

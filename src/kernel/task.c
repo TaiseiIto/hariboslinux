@@ -7,6 +7,8 @@
 #include "task.h"
 
 TaskLevel *current_task_level;
+TaskLevel *highest_task_level;
+TaskLevel *lowest_task_level;
 
 void allow_switch_task(void)
 {
@@ -137,6 +139,11 @@ Task const *get_current_task(void)
 Task *init_task(void)
 {
 	current_task_level = malloc(sizeof(*current_task_level));
+	highest_task_level = current_task_level;
+	lowest_task_level = current_task_level;
+	current_task_level->higher = NULL;
+	current_task_level->lower = NULL;
+	current_task_level->priority = TASK_PRIORITY_KERNEL;
 	current_task_level->current_task = malloc(sizeof(*current_task_level->current_task));
 	current_task_level->current_task->stack = MEMORY_MAP_KERNEL_STACK_BEGIN;
 	current_task_level->current_task->task_status_segment.link = 0;
