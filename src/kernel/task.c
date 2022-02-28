@@ -35,28 +35,46 @@ void cli_task_interrupt(void)
 
 void close_task(Task *task)
 {
-	Task *next_task = NULL;
+	bool next_task_found = false;
+	Task *next_task;
+	TaskLevel *next_task_level;
 	cli_task();
 	if(task == current_task_level->current_task)
 	{
-		for(Task *next_task = current_task_level->current_task->next; next_task != current_task_level->current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)break;
-		
-		if(next_task == current_task_level->current_task)ERROR(); // Can't close task!
+		for(next_task_level = highest_task_level; next_task_level; next_task_level = next_task_level->lower)
+		{
+			for(next_task = next_task_level->current_task->next; next_task != next_task_level->current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+			{
+				next_task_found = true;
+				break;
+			}
+			if(next_task_found)break;
+		}
+		if(next_task_found)ERROR(); // Can't close task!
 	}
-	// exclude the task
-	if(task->previous != task && task->next != task)
+	if(task->previous == task && task->next == task)// Close the task level
 	{
+		if(task->task_level->higher)task->task_level->higher->lower = task->task_level->lower;
+		if(task->task_level->lower)task->task_level->lower->higher = task->task_level->higher;
+		if(task->task_level == highest_task_level)highest_task_level = highest_task_level->lower;
+		if(task->task_level == lowest_task_level)lowest_task_level = lowest_task_level->higher;
+		free(task->task_level);
+	}
+	else if(task->previous != task && task->next != task)// exclude the task
+	{
+		if(task->task_level->current_task == task)task->task_level->current_task = task->previous;
 		task->previous->next = task->next;
 		task->next->previous = task->previous;
 	}
-	else ERROR(); // Can't close task!
+	else ERROR(); // Task structure is broken!
 	// free the task
 	delete_queue(task->event_queue);
 	free(task->stack);
 	free(task);
-	if(next_task)
+	if(next_task_found)
 	{
 		next_task->status = TASK_STATUS_RUN;
+		current_task_level = next_task_level;
 		current_task_level->current_task = next_task;
 		ljmp(0, current_task_level->current_task->segment_selector);
 	}
@@ -173,15 +191,16 @@ Task *init_task(void)
 	current_task_level->current_task->task_status_segment.ldtr = 0x00000000;
 	current_task_level->current_task->task_status_segment.io = 0x40000000;
 	current_task_level->current_task->segment_selector = alloc_segment(&current_task_level->current_task->task_status_segment, sizeof(current_task_level->current_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	current_task_level->current_task->parent = NULL;
+	current_task_level->current_task->previous = current_task_level->current_task;
+	current_task_level->current_task->next = current_task_level->current_task;
+	current_task_level->current_task->task_level = current_task_level;
 	current_task_level->current_task->elapsed_time = 0;
 	current_task_level->current_task->flags = 0;
 	current_task_level->current_task->occupancy_time = 1;
 	current_task_level->current_task->status = TASK_STATUS_RUN;
 	current_task_level->current_task->interrupt_prohibition_level = 1;
 	current_task_level->current_task->switch_prohibition_level = 0;
-	current_task_level->current_task->parent = NULL;
-	current_task_level->current_task->previous = current_task_level->current_task;
-	current_task_level->current_task->next = current_task_level->current_task;
 	ltr(current_task_level->current_task->segment_selector);
 	return current_task_level->current_task;
 }
