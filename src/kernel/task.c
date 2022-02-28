@@ -6,16 +6,15 @@
 #include "stdbool.h"
 #include "task.h"
 
-Task *current_task;
-Task *main_task;
+TaskLevel *current_task_level;
 
 void allow_switch_task(void)
 {
-	if(current_task->switch_prohibition_level)
+	if(current_task_level->current_task->switch_prohibition_level)
 	{
-		if(!--current_task->switch_prohibition_level)if(current_task->flags & TASK_FLAG_SWITCH_PENDING)
+		if(!--current_task_level->current_task->switch_prohibition_level)if(current_task_level->current_task->flags & TASK_FLAG_SWITCH_PENDING)
 		{
-			current_task->flags &= ~TASK_FLAG_SWITCH_PENDING;
+			current_task_level->current_task->flags &= ~TASK_FLAG_SWITCH_PENDING;
 			switch_task();
 		}
 	}
@@ -24,23 +23,23 @@ void allow_switch_task(void)
 
 void cli_task(void)
 {
-	if(!(current_task->interrupt_prohibition_level++))cli();
+	if(!(current_task_level->current_task->interrupt_prohibition_level++))cli();
 }
 
 void cli_task_interrupt(void)
 {
-	current_task->interrupt_prohibition_level++;
+	current_task_level->current_task->interrupt_prohibition_level++;
 }
 
 void close_task(Task *task)
 {
 	Task *next_task = NULL;
 	cli_task();
-	if(task == current_task)
+	if(task == current_task_level->current_task)
 	{
-		for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)break;
+		for(Task *next_task = current_task_level->current_task->next; next_task != current_task_level->current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)break;
 		
-		if(next_task == current_task)ERROR(); // Can't close task!
+		if(next_task == current_task_level->current_task)ERROR(); // Can't close task!
 	}
 	// exclude the task
 	if(task->previous != task && task->next != task)
@@ -56,8 +55,8 @@ void close_task(Task *task)
 	if(next_task)
 	{
 		next_task->status = TASK_STATUS_RUN;
-		current_task = next_task;
-		ljmp(0, current_task->segment_selector);
+		current_task_level->current_task = next_task;
+		ljmp(0, current_task_level->current_task->segment_selector);
 	}
 	sti_task();
 }
@@ -122,67 +121,67 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->switch_prohibition_level = 0;
 	prohibit_switch_task();
 	new_task->parent = parent;
-	new_task->previous = main_task->previous;
-	new_task->next = main_task;
-	main_task->previous->next = new_task;
-	main_task->previous = new_task;
+	new_task->previous = current_task_level->current_task->previous;
+	new_task->next = current_task_level->current_task;
+	current_task_level->current_task->previous->next = new_task;
+	current_task_level->current_task->previous = new_task;
 	allow_switch_task();
 	return new_task;
 }
 
 Task const *get_current_task(void)
 {
-	return current_task;
+	return current_task_level->current_task;
 }
 
 Task *init_task(void)
 {
-	main_task = malloc(sizeof(*main_task));
-	current_task = main_task;
-	main_task->stack = MEMORY_MAP_KERNEL_STACK_BEGIN;
-	main_task->task_status_segment.link = 0;
-	main_task->task_status_segment.esp0 = 0;
-	main_task->task_status_segment.ss0 = 0;
-	main_task->task_status_segment.esp1 = 0;
-	main_task->task_status_segment.ss1 = 0;
-	main_task->task_status_segment.esp2 = 0;
-	main_task->task_status_segment.ss2 = 0;
-	main_task->task_status_segment.cr3 = 0;
-	main_task->task_status_segment.eip = (unsigned int)MEMORY_MAP_KERNEL_BIN_BEGIN;
-	main_task->task_status_segment.eflags = EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG;
-	main_task->task_status_segment.eax = 0;
-	main_task->task_status_segment.ecx = 0;
-	main_task->task_status_segment.edx = 0;
-	main_task->task_status_segment.ebx = 0;
-	main_task->task_status_segment.esp = (unsigned int)main_task->stack;
-	main_task->task_status_segment.ebp = main_task->task_status_segment.ebp;
-	main_task->task_status_segment.esi = 0;
-	main_task->task_status_segment.edi = 0;
-	main_task->task_status_segment.es = whole_memory_segment_selector;
-	main_task->task_status_segment.cs = kernel_code_segment_selector;
-	main_task->task_status_segment.ss = whole_memory_segment_selector;
-	main_task->task_status_segment.ds = whole_memory_segment_selector;
-	main_task->task_status_segment.fs = whole_memory_segment_selector;
-	main_task->task_status_segment.gs = whole_memory_segment_selector;
-	main_task->task_status_segment.ldtr = 0x00000000;
-	main_task->task_status_segment.io = 0x40000000;
-	main_task->segment_selector = alloc_segment(&main_task->task_status_segment, sizeof(main_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
-	main_task->elapsed_time = 0;
-	main_task->flags = 0;
-	main_task->occupancy_time = 1;
-	main_task->status = TASK_STATUS_RUN;
-	main_task->interrupt_prohibition_level = 1;
-	main_task->switch_prohibition_level = 0;
-	main_task->parent = NULL;
-	main_task->previous = main_task;
-	main_task->next = main_task;
-	ltr(main_task->segment_selector);
-	return main_task;
+	current_task_level = malloc(sizeof(*current_task_level));
+	current_task_level->current_task = malloc(sizeof(*current_task_level->current_task));
+	current_task_level->current_task->stack = MEMORY_MAP_KERNEL_STACK_BEGIN;
+	current_task_level->current_task->task_status_segment.link = 0;
+	current_task_level->current_task->task_status_segment.esp0 = 0;
+	current_task_level->current_task->task_status_segment.ss0 = 0;
+	current_task_level->current_task->task_status_segment.esp1 = 0;
+	current_task_level->current_task->task_status_segment.ss1 = 0;
+	current_task_level->current_task->task_status_segment.esp2 = 0;
+	current_task_level->current_task->task_status_segment.ss2 = 0;
+	current_task_level->current_task->task_status_segment.cr3 = 0;
+	current_task_level->current_task->task_status_segment.eip = (unsigned int)MEMORY_MAP_KERNEL_BIN_BEGIN;
+	current_task_level->current_task->task_status_segment.eflags = EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG;
+	current_task_level->current_task->task_status_segment.eax = 0;
+	current_task_level->current_task->task_status_segment.ecx = 0;
+	current_task_level->current_task->task_status_segment.edx = 0;
+	current_task_level->current_task->task_status_segment.ebx = 0;
+	current_task_level->current_task->task_status_segment.esp = (unsigned int)current_task_level->current_task->stack;
+	current_task_level->current_task->task_status_segment.ebp = current_task_level->current_task->task_status_segment.ebp;
+	current_task_level->current_task->task_status_segment.esi = 0;
+	current_task_level->current_task->task_status_segment.edi = 0;
+	current_task_level->current_task->task_status_segment.es = whole_memory_segment_selector;
+	current_task_level->current_task->task_status_segment.cs = kernel_code_segment_selector;
+	current_task_level->current_task->task_status_segment.ss = whole_memory_segment_selector;
+	current_task_level->current_task->task_status_segment.ds = whole_memory_segment_selector;
+	current_task_level->current_task->task_status_segment.fs = whole_memory_segment_selector;
+	current_task_level->current_task->task_status_segment.gs = whole_memory_segment_selector;
+	current_task_level->current_task->task_status_segment.ldtr = 0x00000000;
+	current_task_level->current_task->task_status_segment.io = 0x40000000;
+	current_task_level->current_task->segment_selector = alloc_segment(&current_task_level->current_task->task_status_segment, sizeof(current_task_level->current_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	current_task_level->current_task->elapsed_time = 0;
+	current_task_level->current_task->flags = 0;
+	current_task_level->current_task->occupancy_time = 1;
+	current_task_level->current_task->status = TASK_STATUS_RUN;
+	current_task_level->current_task->interrupt_prohibition_level = 1;
+	current_task_level->current_task->switch_prohibition_level = 0;
+	current_task_level->current_task->parent = NULL;
+	current_task_level->current_task->previous = current_task_level->current_task;
+	current_task_level->current_task->next = current_task_level->current_task;
+	ltr(current_task_level->current_task->segment_selector);
+	return current_task_level->current_task;
 }
 
 void prohibit_switch_task(void)
 {
-	if(!++current_task->switch_prohibition_level)ERROR(); // switch prohibition level is broken.
+	if(!++current_task_level->current_task->switch_prohibition_level)ERROR(); // switch prohibition level is broken.
 }
 
 void sleep_task(Task *task)
@@ -198,16 +197,16 @@ void sleep_task(Task *task)
 		task->status = TASK_STATUS_SLEEP;
 		break;
 	case TASK_STATUS_RUN:
-		if(task == current_task)
+		if(task == current_task_level->current_task)
 		{
 			bool next_task_found = false;
-			for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+			for(Task *next_task = current_task_level->current_task->next; next_task != current_task_level->current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
 			{
 				next_task_found = true;
 				task->status = TASK_STATUS_SLEEP;
 				next_task->status = TASK_STATUS_RUN;
-				current_task = next_task;
-				ljmp(0, current_task->segment_selector);
+				current_task_level->current_task = next_task;
+				ljmp(0, current_task_level->current_task->segment_selector);
 				break;
 			}
 			if(!next_task_found)
@@ -253,37 +252,37 @@ void start_task(Task *task, void *arguments, unsigned char occupancy_time)
 
 void sti_task(void)
 {
-	if(current_task->interrupt_prohibition_level)
+	if(current_task_level->current_task->interrupt_prohibition_level)
 	{
-		if(!(--current_task->interrupt_prohibition_level))sti();
+		if(!(--current_task_level->current_task->interrupt_prohibition_level))sti();
 	}
 	else ERROR(); // double sti error!
 }
 
 void sti_task_interrupt(void)
 {
-	if(current_task->interrupt_prohibition_level)current_task->interrupt_prohibition_level--;
+	if(current_task_level->current_task->interrupt_prohibition_level)current_task_level->current_task->interrupt_prohibition_level--;
 	else ERROR(); // double sti error!
 }
 
 void switch_task(void)
 {
 	cli_task();
-	if(current_task->occupancy_time <= ++current_task->elapsed_time)
+	if(current_task_level->current_task->occupancy_time <= ++current_task_level->current_task->elapsed_time)
 	{
-		if(!current_task->switch_prohibition_level)
+		if(!current_task_level->current_task->switch_prohibition_level)
 		{
-			for(Task *next_task = current_task->next; next_task != current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+			for(Task *next_task = current_task_level->current_task->next; next_task != current_task_level->current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
 			{
-				current_task->elapsed_time = 0;
-				current_task->status = TASK_STATUS_WAIT;
+				current_task_level->current_task->elapsed_time = 0;
+				current_task_level->current_task->status = TASK_STATUS_WAIT;
 				next_task->status = TASK_STATUS_RUN;
-				current_task = next_task;
-				ljmp(0, current_task->segment_selector);
+				current_task_level->current_task = next_task;
+				ljmp(0, current_task_level->current_task->segment_selector);
 				break;
 			}
 		}
-		else current_task->flags |= TASK_FLAG_SWITCH_PENDING;
+		else current_task_level->current_task->flags |= TASK_FLAG_SWITCH_PENDING;
 	}
 	sti_task();
 }

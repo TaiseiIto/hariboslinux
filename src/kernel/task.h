@@ -56,6 +56,11 @@ typedef struct _Task
 	#define TASK_STATUS_RUN			0x02
 } Task;
 
+typedef struct _TaskLevel
+{
+	struct _Task *current_task;
+} TaskLevel;
+
 typedef struct _TaskDeletionRequestEvent
 {
 	Task *task;
