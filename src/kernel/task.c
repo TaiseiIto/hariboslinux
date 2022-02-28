@@ -88,6 +88,7 @@ void continue_task(Task *task)
 	{
 	case TASK_STATUS_SLEEP:
 		task->status = TASK_STATUS_WAIT;
+		if(current_task_level->priority < task->task_level->priority)switch_task();
 		break;
 	case TASK_STATUS_WAIT:
 	case TASK_STATUS_RUN:
@@ -102,7 +103,7 @@ void continue_task(Task *task)
 	allow_switch_task();
 }
 
-Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size)
+Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size, int priority)
 {
 	Task *new_task = malloc(sizeof(*new_task));
 	new_task->stack = malloc(stack_size);
@@ -141,10 +142,47 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->switch_prohibition_level = 0;
 	prohibit_switch_task();
 	new_task->parent = parent;
-	new_task->previous = current_task_level->current_task->previous;
-	new_task->next = current_task_level->current_task;
-	current_task_level->current_task->previous->next = new_task;
-	current_task_level->current_task->previous = new_task;
+	new_task->task_level = NULL;
+	for(TaskLevel *task_level = highest_task_level; task_level; task_level = task_level->lower)
+	{
+		if(task_level->priority == priority)
+		{
+			new_task->task_level = task_level;
+			new_task->previous = task_level->current_task->previous;
+			new_task->next = task_level->current_task;
+			task_level->current_task->previous->next = new_task;
+			task_level->current_task->previous = new_task;
+			break;
+		}
+		else if(task_level->priority < priority)
+		{
+			TaskLevel *new_task_level = malloc(sizeof(*new_task_level));
+			new_task_level->current_task = new_task;
+			new_task_level->priority = priority;
+			new_task_level->higher = task_level->higher;
+			new_task_level->lower = task_level;
+			if(task_level->higher)task_level->higher->lower = new_task_level;
+			else highest_task_level = new_task_level;
+			task_level->higher = new_task_level;
+			new_task->task_level = new_task_level;
+			new_task->previous = new_task;
+			new_task->next = new_task;
+			break;
+		}
+	}
+	if(!new_task->task_level)
+	{
+		TaskLevel *new_task_level = malloc(sizeof(*new_task_level));
+		new_task_level->current_task = new_task;
+		new_task_level->priority = priority;
+		new_task_level->higher = lowest_task_level;
+		new_task_level->lower = NULL;
+		lowest_task_level->lower = new_task_level;
+		lowest_task_level = new_task_level;
+		new_task->task_level = new_task_level;
+		new_task->previous = new_task;
+		new_task->next = new_task;
+	}
 	allow_switch_task();
 	return new_task;
 }
