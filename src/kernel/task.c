@@ -58,7 +58,7 @@ void close_task(Task *task)
 			} while(next_task != next_task_level->current_task);
 			if(next_task_found)break;
 		}
-		if(next_task_found)ERROR(); // Can't close task!
+		if(!next_task_found)sleep_task(task); // The other tasks are sleeping.
 	}
 	if(task->previous == task && task->next == task)// Close the task level
 	{
@@ -87,7 +87,6 @@ void close_task(Task *task)
 		current_task_level->current_task = next_task;
 		ljmp(0, current_task_level->current_task->segment_selector);
 	}
-	else sti_task();
 }
 
 void continue_task(Task *task)
