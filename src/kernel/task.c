@@ -1,3 +1,4 @@
+#include "event.h"
 #include "font.h"
 #include "graphic.h"
 #include "io.h"
@@ -35,15 +36,23 @@ void cli_task_interrupt(void)
 	current_task_level->current_task->interrupt_prohibition_level++;
 }
 
-void close_task(Task *task)
+void close_task(Task *task, void *return_values)
 {
 	bool next_task_found = false;
+	Event task_deletion_response_event;
 	Task *next_task;
 	TaskLevel *next_task_level;
 	printf_serial("close task\n");
 	cli_task();
+	// Enqueue task deletion response event.
+	task_deletion_response_event.type = EVENT_TYPE_TASK_DELETION_RESPONSE;
+	task_deletion_response_event.event_union.task_deletion_response_event.task = task;
+	task_deletion_response_event.event_union.task_deletion_response_event.return_values = return_values;
+	task_deletion_response_event.event_union.task_deletion_response_event.segment_selector = task->segment_selector;
+	enqueue(task->parent->event_queue, &task_deletion_response_event);
 	if(task == current_task_level->current_task)
 	{
+		// Find next task.
 		for(next_task_level = highest_task_level; next_task_level; next_task_level = next_task_level->lower)
 		{
 			next_task = next_task_level->current_task;
@@ -58,7 +67,7 @@ void close_task(Task *task)
 			} while(next_task != next_task_level->current_task);
 			if(next_task_found)break;
 		}
-		if(!next_task_found)sleep_task(task); // The other tasks are sleeping.
+		if(!next_task_found)ERROR(); // The other tasks are sleeping.
 	}
 	if(task->previous == task && task->next == task)// Close the task level
 	{
@@ -96,7 +105,6 @@ void continue_task(Task *task)
 	{
 	case TASK_STATUS_SLEEP:
 		task->status = TASK_STATUS_WAIT;
-		if(current_task_level->priority < task->task_level->priority)switch_task();
 		break;
 	case TASK_STATUS_WAIT:
 	case TASK_STATUS_RUN:

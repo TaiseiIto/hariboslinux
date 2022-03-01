@@ -85,7 +85,7 @@ typedef struct _TaskDeletionResponseEvent
 void allow_switch_task(void);
 void cli_task(void);
 void cli_task_interrupt(void);
-void close_task(Task *task);
+void close_task(Task *task, void *return_values);
 void continue_task(Task *task);
 Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size, int priority);
 Task const *get_current_task(void);

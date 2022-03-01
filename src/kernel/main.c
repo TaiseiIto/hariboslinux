@@ -319,12 +319,7 @@ void test_task_procedure(void *args)
 			printf_serial("Detect task deletion request.\n");
 			delete_timer(print_counter_timer);
 			test_task_return->test_task_argument = test_task_argument;
-			new_event.type = EVENT_TYPE_TASK_DELETION_RESPONSE;
-			new_event.event_union.task_deletion_response_event.task = test_task;
-			new_event.event_union.task_deletion_response_event.return_values = (void *)test_task_return;
-			new_event.event_union.task_deletion_response_event.segment_selector = test_task->segment_selector;
-			enqueue(test_task->parent->event_queue, &new_event);
-			close_task(test_task);
+			close_task(test_task, test_task_return);
 			ERROR(); // Can't close task!
 			break;
 		default: // invalid event->type
