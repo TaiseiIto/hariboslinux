@@ -279,6 +279,7 @@ void test_task_procedure(void *args)
 	Timer *print_counter_timer;
 	unsigned long long counter = 0;
 	Window *window;
+	printf_serial("Hello, Test Task!\n");
 	test_task_argument = (TestTaskArgument*)args;
 	test_task = test_task_argument->test_task;
 	test_task_return = test_task_argument->test_task_return;
@@ -311,6 +312,7 @@ void test_task_procedure(void *args)
 				new_event.type = EVENT_TYPE_TASK_DELETION_REQUEST;
 				new_event.event_union.task_deletion_request_event.task = test_task;
 				enqueue(event_queue, &new_event);
+				printf_serial("Enqueue task deletion request!\n");
 			}
 			break;
 		case EVENT_TYPE_TASK_DELETION_REQUEST:
