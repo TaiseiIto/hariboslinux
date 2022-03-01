@@ -40,6 +40,7 @@ void close_task(Task *task)
 	bool next_task_found = false;
 	Task *next_task;
 	TaskLevel *next_task_level;
+	printf_serial("close task\n");
 	cli_task();
 	if(task == current_task_level->current_task)
 	{
@@ -86,7 +87,7 @@ void close_task(Task *task)
 		current_task_level->current_task = next_task;
 		ljmp(0, current_task_level->current_task->segment_selector);
 	}
-	sti_task();
+	else sti_task();
 }
 
 void continue_task(Task *task)
