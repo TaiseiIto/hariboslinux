@@ -45,11 +45,16 @@ void close_task(Task *task)
 	{
 		for(next_task_level = highest_task_level; next_task_level; next_task_level = next_task_level->lower)
 		{
-			for(next_task = next_task_level->current_task->next; next_task != next_task_level->current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+			next_task = next_task_level->current_task;
+			do
 			{
-				next_task_found = true;
-				break;
-			}
+				next_task = next_task->next;
+				if(next_task != task && next_task->status == TASK_STATUS_WAIT)
+				{
+					next_task_found = true;
+					break;
+				}
+			} while(next_task != next_task_level->current_task);
 			if(next_task_found)break;
 		}
 		if(next_task_found)ERROR(); // Can't close task!
@@ -73,6 +78,7 @@ void close_task(Task *task)
 	delete_queue(task->event_queue);
 	free(task->stack);
 	free(task);
+	print_task_structure();
 	if(next_task_found)
 	{
 		next_task->status = TASK_STATUS_RUN;
@@ -81,7 +87,6 @@ void close_task(Task *task)
 		ljmp(0, current_task_level->current_task->segment_selector);
 	}
 	sti_task();
-	print_task_structure();
 }
 
 void continue_task(Task *task)
