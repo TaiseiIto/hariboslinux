@@ -10,6 +10,8 @@ TaskLevel *current_task_level;
 TaskLevel *highest_task_level;
 TaskLevel *lowest_task_level;
 
+void print_task_structure(void);
+
 void allow_switch_task(void)
 {
 	if(current_task_level->current_task->switch_prohibition_level)
@@ -79,6 +81,7 @@ void close_task(Task *task)
 		ljmp(0, current_task_level->current_task->segment_selector);
 	}
 	sti_task();
+	print_task_structure();
 }
 
 void continue_task(Task *task)
@@ -184,6 +187,7 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 		new_task->next = new_task;
 	}
 	allow_switch_task();
+	print_task_structure();
 	return new_task;
 }
 
@@ -241,6 +245,24 @@ Task *init_task(void)
 	current_task_level->current_task->switch_prohibition_level = 0;
 	ltr(current_task_level->current_task->segment_selector);
 	return current_task_level->current_task;
+}
+
+void print_task_structure(void)
+{
+	prohibit_switch_task();
+	printf_serial("highest_task_level = %p\n", highest_task_level);
+	for(TaskLevel *task_level = highest_task_level; task_level; task_level = task_level->lower)
+	{
+		Task *task = task_level->current_task;
+		printf_serial(task_level == current_task_level ? "\tcurrent_task_level %p\n" : "\ttask_level %p\n", task_level);
+		do
+		{
+			task = task->next;
+			printf_serial(task == task_level->current_task ? "\t\tcurrent_task %p\n" : "\t\ttask %p\n", task);
+		} while(task != task_level->current_task);
+	}
+	printf_serial("lowest_task_level = %p\n", lowest_task_level);
+	allow_switch_task();
 }
 
 void prohibit_switch_task(void)
