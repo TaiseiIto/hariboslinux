@@ -264,14 +264,24 @@ void sleep_task(Task *task)
 		if(task == current_task_level->current_task)
 		{
 			bool next_task_found = false;
-			for(Task *next_task = current_task_level->current_task->next; next_task != current_task_level->current_task; next_task = next_task->next)if(next_task->status == TASK_STATUS_WAIT)
+			for(TaskLevel *next_task_level = highest_task_level; next_task_level; next_task_level = next_task_level->lower)
 			{
-				next_task_found = true;
-				task->status = TASK_STATUS_SLEEP;
-				next_task->status = TASK_STATUS_RUN;
-				current_task_level->current_task = next_task;
-				ljmp(0, current_task_level->current_task->segment_selector);
-				break;
+				Task *next_task = next_task_level->current_task;
+				do
+				{
+					next_task = next_task->next;
+					if(next_task->status == TASK_STATUS_WAIT)
+					{
+						next_task_found = true;
+						task->status = TASK_STATUS_SLEEP;
+						next_task->status = TASK_STATUS_RUN;
+						current_task_level = next_task_level;
+						current_task_level->current_task = next_task;
+						ljmp(0, current_task_level->current_task->segment_selector);
+						break;
+					}
+				} while(next_task != next_task_level->current_task);
+				if(next_task_found)break;
 			}
 			if(!next_task_found)
 			{
