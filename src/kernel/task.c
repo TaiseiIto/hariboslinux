@@ -356,7 +356,7 @@ void switch_task(void)
 					if(next_task->status == TASK_STATUS_WAIT)
 					{
 						next_task_found = true;
-						current_task_level->current_task->status = TASK_STATUS_SLEEP;
+						current_task_level->current_task->status = TASK_STATUS_WAIT;
 						next_task->status = TASK_STATUS_RUN;
 						current_task_level = next_task_level;
 						current_task_level->current_task = next_task;
