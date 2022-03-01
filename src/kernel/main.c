@@ -174,7 +174,7 @@ void main(void)
 			{
 			case KEY_T:
 				// Start test task by pressing 't'
-				test_task = create_task(main_task, test_task_procedure, 0x00010000, TASK_PRIORITY_KERNEL);
+				test_task = create_task(main_task, test_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
 				printf_serial("test_task->segment_selector = %#06x\n", test_task->segment_selector);
 				test_task_argument = malloc(sizeof(*test_task_argument));
 				test_task_return = malloc(sizeof(*test_task_return));
