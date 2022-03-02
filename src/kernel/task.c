@@ -229,7 +229,7 @@ void idle_task_procedure(void *arguments)
 			ERROR();
 			break;
 		}
-		else sleep_task(current_task_level->current_task);
+		else hlt();
 	}
 }
 
