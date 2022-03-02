@@ -6,6 +6,7 @@
 #include "serial.h"
 #include "stdbool.h"
 #include "task.h"
+#include "timer.h"
 
 TaskLevel *current_task_level;
 TaskLevel *highest_task_level;
@@ -212,7 +213,24 @@ Task const *get_current_task(void)
 
 void idle_task_procedure(void *arguments)
 {
-	while(true)hlt();
+	Queue *event_queue;
+	Timer *message_timer;
+	event_queue = create_event_queue(current_task_level->current_task);
+	message_timer = create_timer(0, 100, event_queue);
+	while(true)
+	{
+		Event const *event = dequeue(event_queue);
+		if(event)switch(event->type)
+		{
+		case EVENT_TYPE_TIMER_EVENT:
+			if(event->event_union.timer_event.timer == message_timer)printf_serial("Hello, idle task!\n");
+			break;
+		default: // Invalid event->type
+			ERROR();
+			break;
+		}
+		else sleep_task(current_task_level->current_task);
+	}
 }
 
 Task *init_task(void)
