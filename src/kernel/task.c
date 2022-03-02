@@ -345,12 +345,7 @@ void sleep_task(Task *task)
 				} while(next_task != next_task_level->current_task);
 				if(next_task_found)break;
 			}
-			if(!next_task_found)
-			{
-				sti_task();
-				hlt();
-				return;
-			}
+			if(!next_task_found)ERROR(); // Next task is not found
 		}
 		else ERROR(); // Task status contradiction
 		break;
