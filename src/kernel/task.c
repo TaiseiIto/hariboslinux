@@ -11,6 +11,7 @@ TaskLevel *current_task_level;
 TaskLevel *highest_task_level;
 TaskLevel *lowest_task_level;
 
+void idle_task_procedure(void *arguments);
 void print_task_structure(void);
 
 void allow_switch_task(void)
@@ -209,8 +210,14 @@ Task const *get_current_task(void)
 	return current_task_level->current_task;
 }
 
+void idle_task_procedure(void *arguments)
+{
+	while(true)hlt();
+}
+
 Task *init_task(void)
 {
+	// Create kernel main task
 	current_task_level = malloc(sizeof(*current_task_level));
 	highest_task_level = current_task_level;
 	lowest_task_level = current_task_level;
@@ -257,6 +264,8 @@ Task *init_task(void)
 	current_task_level->current_task->interrupt_prohibition_level = 1;
 	current_task_level->current_task->switch_prohibition_level = 0;
 	ltr(current_task_level->current_task->segment_selector);
+	// Create idle task
+	start_task(create_task(current_task_level->current_task, idle_task_procedure, 0x00010000, TASK_PRIORITY_IDLE), NULL, 1);
 	return current_task_level->current_task;
 }
 
