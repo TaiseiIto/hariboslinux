@@ -4,7 +4,6 @@
 #include "queue.h"
 #include "serial.h"
 #include "stdio.h"
-#include "task.h"
 
 #define SERIAL_FREQUENCY 115200
 
@@ -408,7 +407,6 @@ void print_word_hex_serial(unsigned short value)
 // print a character to serial port COM1
 void put_char_serial(char character)
 {
-	prohibit_switch_task();
 	if(com1_flags & COM_AVAILABLE)
 	{
 		if(com1_flags & COM_INTERRUPT) // interrupt
@@ -428,6 +426,5 @@ void put_char_serial(char character)
 			outb(COM1, character);
 		}
 	}
-	allow_switch_task();
 }
 
