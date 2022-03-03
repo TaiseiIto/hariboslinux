@@ -141,6 +141,12 @@ void new_line_serial(void)
 	put_char_serial('\n');
 }
 
+// number of unoutput characters
+unsigned int number_of_unoutput_characters(void)
+{
+	return com1_transmission_queue->number_of_elements;
+}
+
 // printf
 void printf_serial(char const *format, ...)
 {

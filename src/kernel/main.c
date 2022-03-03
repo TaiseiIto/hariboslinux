@@ -60,10 +60,11 @@ void main(void)
 	TestTaskReturn *test_task_return;
 	Timer *checking_free_memory_space_size_timer;
 	Timer *test_timer;
+	Timer *serial_status_timer;
 	unsigned int memory_region_descriptor_index;
 	unsigned long long timer_counter = 0;
 	unsigned short keyboard_flags = 0;
-	unsigned short screen_text_row = 8;
+	unsigned short screen_text_row = 9;
 	new_line_serial();
 	print_serial("Hello, kernel.bin!\n\n");
 	init_gdt();
@@ -116,6 +117,8 @@ void main(void)
 	checking_free_memory_space_size_timer = create_timer(0, 100, event_queue);
 	// Test timer
 	test_timer = create_timer(0, 100, event_queue);
+	// Serial status timer
+	serial_status_timer = create_timer(0, 100, event_queue);
 	// Test sheet
 	opaque_red.red = 0xff;
 	opaque_red.green = 0x00;
@@ -245,6 +248,10 @@ void main(void)
 				#ifdef LOGGING
 				printf_serial("free memory space size = %u bytes\n", get_free_memory_space_size());
 				#endif
+			}
+			else if(event->event_union.timer_event.timer == serial_status_timer)
+			{
+				printf_sheet(background_sheet, 0x0000, 0x0008 * CHAR_HEIGHT, foreground_color, background_color, "number of unoutput characters = %#010x", number_of_unoutput_characters());
 			}
 			break;
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:

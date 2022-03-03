@@ -19,6 +19,9 @@ void init_serial_interrupt(Task *task);
 // print LF
 void new_line_serial(void);
 
+// number of unoutput characters
+unsigned int number_of_unoutput_characters(void);
+
 // printf
 void printf_serial(char const *format, ...);
 
