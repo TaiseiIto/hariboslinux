@@ -36,7 +36,6 @@ void test_task_procedure(void *args);
 
 void main(void)
 {
-	cli();
 	BootInformation const * const boot_information = (BootInformation const * const)MEMORY_MAP_BOOT_INFORMATION;
 	Color background_color;
 	Color foreground_color;
