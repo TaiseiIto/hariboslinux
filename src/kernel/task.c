@@ -409,7 +409,9 @@ void switch_task(void)
 			bool next_task_found = false;
 			for(TaskLevel *next_task_level = highest_task_level; next_task_level; next_task_level = next_task_level->lower)
 			{
-				Task *next_task = next_task_level->current_task;
+				Task *next_task;
+				if(next_task_level->priority < current_task_level->priority)break;
+				next_task = next_task_level->current_task;
 				do
 				{
 					next_task = next_task->next;
