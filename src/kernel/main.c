@@ -229,9 +229,13 @@ void main(void)
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
 			printf_serial("Detect task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			test_task_return = (TestTaskReturn*)event->event_union.task_deletion_response_event.return_values;
+			printf_serial("test_task_return = %p\n", test_task_return);
 			free(test_task_return->test_task_argument);
+			printf_serial("free(test_task_return->test_task_argument)\n");
 			free(test_task_return);
+			printf_serial("free(test_task_return)\n");
 			free_segment(event->event_union.task_deletion_response_event.segment_selector);
+			printf_serial("free_segment\n");
 			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
