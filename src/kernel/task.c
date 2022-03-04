@@ -109,6 +109,7 @@ void continue_task(Task *task)
 	{
 	case TASK_STATUS_SLEEP:
 		task->status = TASK_STATUS_WAIT;
+		if(current_task_level->priority < task->task_level->priority)switch_task();
 		break;
 	case TASK_STATUS_WAIT:
 	case TASK_STATUS_RUN:
