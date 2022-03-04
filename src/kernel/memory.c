@@ -11,37 +11,29 @@ void free(void *address)
 {
 	MemorySection *memory_section;
 	cli_task();
-	memory_section = root_memory_section;
-	do
+	memory_section = (MemorySection *)(address - sizeof(*memory_section));
+	if(memory_section->flags & MEMORY_SECTION_ALLOCATED)
 	{
-		if((void *)memory_section + sizeof(*memory_section) == address)
+		memory_section->flags &= ~MEMORY_SECTION_ALLOCATED;
+		if((void *)memory_section->previous + sizeof(*memory_section->previous) + memory_section->previous->size == (void *)memory_section && memory_section->previous->flags == memory_section->flags) // merge memory_section and memory_section->previous
 		{
-			if(memory_section->flags & MEMORY_SECTION_ALLOCATED)
-			{
-				memory_section->flags &= ~MEMORY_SECTION_ALLOCATED;
-				if((void *)memory_section->previous + sizeof(*memory_section->previous) + memory_section->previous->size == (void *)memory_section && memory_section->previous->flags == memory_section->flags) // merge memory_section and memory_section->previous
-				{
-					if(root_memory_section == memory_section)root_memory_section = memory_section->previous;
-					memory_section->previous->next = memory_section->next;
-					memory_section->next->previous = memory_section->previous;
-					memory_section->previous->size += sizeof(*memory_section) + memory_section->size;
-					memory_section = memory_section->previous;
-				}
-				if((void *)memory_section + sizeof(*memory_section) + memory_section->size == (void *)memory_section->next && memory_section->next->flags == memory_section->flags) // merge memory_section and memory_section->next
-				{
-					if(root_memory_section == memory_section->next)root_memory_section = memory_section;
-					memory_section->size += sizeof(*memory_section->next) + memory_section->next->size;
-					memory_section->next->next->previous = memory_section;
-					memory_section->next = memory_section->next->next;
-				}
-			}
-			else ERROR(); // double free error!
-			sti_task();
-			return;
+			if(root_memory_section == memory_section)root_memory_section = memory_section->previous;
+			memory_section->previous->next = memory_section->next;
+			memory_section->next->previous = memory_section->previous;
+			memory_section->previous->size += sizeof(*memory_section) + memory_section->size;
+			memory_section = memory_section->previous;
 		}
-		memory_section = memory_section->next;
-	} while(memory_section != root_memory_section);
-	ERROR(); // Can't find the memory section!
+		if((void *)memory_section + sizeof(*memory_section) + memory_section->size == (void *)memory_section->next && memory_section->next->flags == memory_section->flags) // merge memory_section and memory_section->next
+		{
+			if(root_memory_section == memory_section->next)root_memory_section = memory_section;
+			memory_section->size += sizeof(*memory_section->next) + memory_section->next->size;
+			memory_section->next->next->previous = memory_section;
+			memory_section->next = memory_section->next->next;
+		}
+	}
+	else ERROR(); // double free error!
+	sti_task();
+	return;
 }
 
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index)
