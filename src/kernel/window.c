@@ -28,8 +28,16 @@ void *title_sheet_event_procedure(Sheet *sheet, Event const *event);
 
 void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 {
+	Window *window;
+	window = get_window_from_sheet(sheet);
 	switch(event->type)
 	{
+	case EVENT_TYPE_SHEET_CLICKED:
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
+		{
+			printf_serial("Window %p is focused.\n", window);
+		}
+		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw client sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, client_background_color);
@@ -188,6 +196,12 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 		new_event.event_union.window_deletion_request_event.window = window;
 		enqueue(sheet->event_queue, &new_event);
 		break;
+	case EVENT_TYPE_SHEET_CLICKED:
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
+		{
+			printf_serial("Window %p is focused.\n", window);
+		}
+		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw root sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width - 1, 1, light_limit_color);
@@ -231,6 +245,12 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 	window = get_window_from_sheet(sheet);
 	switch(event->type)
 	{
+	case EVENT_TYPE_SHEET_CLICKED:
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
+		{
+			printf_serial("Window %p is focused.\n", window);
+		}
+		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw title sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, title_background_color);
