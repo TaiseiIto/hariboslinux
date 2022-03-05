@@ -23,6 +23,7 @@ Window *windows = NULL;
 
 void *client_sheet_event_procedure(Sheet *sheet, Event const *event);
 void *close_button_sheet_event_procedure(Sheet *sheet, Event const *event);
+void focus_window(Window *window);
 Window *get_window_from_sheet(Sheet const *sheet);
 void *root_sheet_event_procedure(Sheet *sheet, Event const *event);
 void *title_sheet_event_procedure(Sheet *sheet, Event const *event);
@@ -34,11 +35,7 @@ void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CLICKED:
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
-		{
-			focused_window = window;
-			printf_serial("Window %p is focused.\n", window);
-		}
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)focus_window(window);
 		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw client sheet
@@ -168,6 +165,24 @@ void delete_window(Window *window, Queue *window_deletion_response_event_queue)
 	enqueue(window_deletion_response_event_queue, &window_deletion_response_event);
 }
 
+void focus_window(Window *window)
+{
+	Event window_focused_event;
+	prohibit_switch_task();
+	if(focused_window)
+	{
+		Event window_unfocused_event;
+		window_unfocused_event.type = EVENT_TYPE_WINDOW_UNFOCUSED;
+		window_unfocused_event.event_union.window_unfocused_event.window = focused_window;
+		enqueue(window_unfocused_event.event_union.window_unfocused_event.window->root_sheet->event_queue, &window_unfocused_event);
+	}
+	focused_window = window;
+	window_focused_event.type = EVENT_TYPE_WINDOW_FOCUSED;
+	window_focused_event.event_union.window_focused_event.window = focused_window;
+	enqueue(window_focused_event.event_union.window_focused_event.window->root_sheet->event_queue, &window_focused_event);
+	allow_switch_task();
+}
+
 Window *get_window_from_sheet(Sheet const *sheet)
 {
 	Window *window;
@@ -200,11 +215,7 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 		enqueue(sheet->event_queue, &new_event);
 		break;
 	case EVENT_TYPE_SHEET_CLICKED:
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
-		{
-			focused_window = window;
-			printf_serial("Window %p is focused.\n", window);
-		}
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)focus_window(window);
 		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw root sheet
@@ -238,6 +249,12 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 		new_event.event_union.sheet_deletion_request_event.sheet = sheet;
 		enqueue(sheet->event_queue, &new_event);
 		return NULL;
+	case EVENT_TYPE_WINDOW_FOCUSED:
+		printf_serial("Window %p is focused.\n", window);
+		return NULL;
+	case EVENT_TYPE_WINDOW_UNFOCUSED:
+		printf_serial("Window %p is unfocused.\n", window);
+		return NULL;
 	default:
 		return default_event_procedure(sheet, event);
 	}
@@ -250,11 +267,7 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CLICKED:
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
-		{
-			focused_window = window;
-			printf_serial("Window %p is focused.\n", window);
-		}
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)focus_window(window);
 		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw title sheet

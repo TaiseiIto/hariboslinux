@@ -31,6 +31,8 @@ typedef union _EventUnion
 	TimerEvent timer_event;
 	WindowDeletionRequestEvent window_deletion_request_event;
 	WindowDeletionResponseEvent window_deletion_response_event;
+	WindowFocusedEvent window_focused_event;
+	WindowUnfocusedEvent window_unfocused_event;
 } EventUnion;
 
 typedef struct _Event
@@ -54,6 +56,8 @@ typedef struct _Event
 	#define EVENT_TYPE_TIMER_EVENT			0x0f
 	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x10
 	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x11
+	#define EVENT_TYPE_WINDOW_FOCUSED		0x12
+	#define EVENT_TYPE_WINDOW_UNFOCUSED		0x13
 	EventUnion event_union;
 } Event;
 

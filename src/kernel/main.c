@@ -267,6 +267,8 @@ void main(void)
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+		case EVENT_TYPE_WINDOW_FOCUSED:
+		case EVENT_TYPE_WINDOW_UNFOCUSED:
 			distribute_event(event);
 			break;
 		default: // invalid event->type
@@ -313,6 +315,8 @@ void test_task_procedure(void *args)
 		case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+		case EVENT_TYPE_WINDOW_FOCUSED:
+		case EVENT_TYPE_WINDOW_UNFOCUSED:
 			distribute_event(event);
 			break;
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:

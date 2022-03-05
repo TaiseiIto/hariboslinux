@@ -18,6 +18,16 @@ typedef struct _WindowDeletionResponseEvent
 	struct _Window *window;
 } WindowDeletionResponseEvent;
 
+typedef struct _WindowFocusedEvent
+{
+	struct _Window *window;
+} WindowFocusedEvent;
+
+typedef struct _WindowUnfocusedEvent
+{
+	struct _Window *window;
+} WindowUnfocusedEvent;
+
 #include "sheet.h"
 
 typedef struct _Window

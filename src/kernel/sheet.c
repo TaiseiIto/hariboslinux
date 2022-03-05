@@ -229,6 +229,12 @@ void distribute_event(struct _Event const *event)
 	case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 		printf_serial("Window %p deleted @ task segment selector = %#06x.\n", event->event_union.window_deletion_response_event.window, get_current_task()->segment_selector);
 		break;
+	case EVENT_TYPE_WINDOW_FOCUSED:
+		if(sheet_exists(event->event_union.window_focused_event.window->root_sheet))event->event_union.window_focused_event.window->root_sheet->event_procedure(event->event_union.window_focused_event.window->root_sheet, event);
+		break;
+	case EVENT_TYPE_WINDOW_UNFOCUSED:
+		if(sheet_exists(event->event_union.window_unfocused_event.window->root_sheet))event->event_union.window_unfocused_event.window->root_sheet->event_procedure(event->event_union.window_unfocused_event.window->root_sheet, event);
+		break;
 	}
 	allow_switch_task();
 }
