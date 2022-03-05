@@ -7,16 +7,17 @@
 #define EDGE_WIDTH 5
 #define TITLE_SHEET_HEIGHT 0x12
 
-//					//{red ,green, blue,alpha}
-const Color background_color		= {0x80, 0x80, 0x80, 0xff};
-const Color client_background_color	= {0x80, 0x80, 0x80, 0xff};
-const Color close_button_cross_color	= {0x00, 0x00, 0x00, 0xff};
-const Color dark_limit_color		= {0x00, 0x00, 0x00, 0xff};
-const Color light_limit_color		= {0xff, 0xff, 0xff, 0xff};
-const Color semi_dark_limit_color	= {0x40, 0x40, 0x40, 0xff};
-const Color semi_light_limit_color	= {0xc0, 0xc0, 0xc0, 0xff};
-const Color title_background_color	= {0x00, 0x00, 0x80, 0xff};
-const Color title_foreground_color	= {0xff, 0xff, 0xff, 0xff};
+//						//{red ,green, blue,alpha}
+const Color background_color			= {0x80, 0x80, 0x80, 0xff};
+const Color client_background_color		= {0x80, 0x80, 0x80, 0xff};
+const Color close_button_cross_color		= {0x00, 0x00, 0x00, 0xff};
+const Color dark_limit_color			= {0x00, 0x00, 0x00, 0xff};
+const Color light_limit_color			= {0xff, 0xff, 0xff, 0xff};
+const Color semi_dark_limit_color		= {0x40, 0x40, 0x40, 0xff};
+const Color semi_light_limit_color		= {0xc0, 0xc0, 0xc0, 0xff};
+const Color title_background_color		= {0x00, 0x00, 0x80, 0xff};
+const Color title_foreground_color		= {0xff, 0xff, 0xff, 0xff};
+const Color unfocused_title_background_color	= {0x80, 0x80, 0x80, 0xff};
 
 Window *focused_window = NULL;
 Window *windows = NULL;
@@ -250,10 +251,8 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 		enqueue(sheet->event_queue, &new_event);
 		return NULL;
 	case EVENT_TYPE_WINDOW_FOCUSED:
-		printf_serial("Window %p is focused.\n", window);
-		return NULL;
 	case EVENT_TYPE_WINDOW_UNFOCUSED:
-		printf_serial("Window %p is unfocused.\n", window);
+		window->title_sheet->event_procedure(window->title_sheet, event);
 		return NULL;
 	default:
 		return default_event_procedure(sheet, event);
@@ -273,6 +272,14 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 		// Draw title sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, title_background_color);
 		print_sheet(sheet, 0, 0, title_foreground_color, title_background_color, window->title);
+		return NULL;
+	case EVENT_TYPE_WINDOW_FOCUSED:
+		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, title_background_color);
+		print_sheet(sheet, 0, 0, title_foreground_color, title_background_color, window->title);
+		return NULL;
+	case EVENT_TYPE_WINDOW_UNFOCUSED:
+		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, unfocused_title_background_color);
+		print_sheet(sheet, 0, 0, title_foreground_color, unfocused_title_background_color, window->title);
 		return NULL;
 	default:
 		return default_event_procedure(sheet, event);
