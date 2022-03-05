@@ -48,6 +48,7 @@ void close_task(Task *task, void *return_values)
 	TaskLevel *next_task_level;
 	printf_serial("close task\n");
 	cli_task();
+	prohibit_switch_task();
 	// Enqueue task deletion response event.
 	task_deletion_response_event.type = EVENT_TYPE_TASK_DELETION_RESPONSE;
 	task_deletion_response_event.event_union.task_deletion_response_event.task = task;
@@ -100,6 +101,8 @@ void close_task(Task *task, void *return_values)
 		current_task_level->current_task = next_task;
 		ljmp(0, current_task_level->current_task->segment_selector);
 	}
+	allow_switch_task();
+	sti_task();
 }
 
 void continue_task(Task *task)
