@@ -18,6 +18,7 @@ const Color semi_light_limit_color	= {0xc0, 0xc0, 0xc0, 0xff};
 const Color title_background_color	= {0x00, 0x00, 0x80, 0xff};
 const Color title_foreground_color	= {0xff, 0xff, 0xff, 0xff};
 
+Window *focused_window = NULL;
 Window *windows = NULL;
 
 void *client_sheet_event_procedure(Sheet *sheet, Event const *event);
@@ -35,6 +36,7 @@ void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 	case EVENT_TYPE_SHEET_CLICKED:
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
 		{
+			focused_window = window;
 			printf_serial("Window %p is focused.\n", window);
 		}
 		return default_event_procedure(sheet, event);
@@ -144,6 +146,7 @@ void delete_window(Window *window, Queue *window_deletion_response_event_queue)
 	Event window_deletion_response_event;
 	// Exclude window from windows chain structure
 	prohibit_switch_task();
+	if(window == focused_window)focused_window = NULL;
 	if(window->next == window) // Only this window exists
 	{
 		windows = NULL;
@@ -199,6 +202,7 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 	case EVENT_TYPE_SHEET_CLICKED:
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
 		{
+			focused_window = window;
 			printf_serial("Window %p is focused.\n", window);
 		}
 		return default_event_procedure(sheet, event);
@@ -248,6 +252,7 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 	case EVENT_TYPE_SHEET_CLICKED:
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
 		{
+			focused_window = window;
 			printf_serial("Window %p is focused.\n", window);
 		}
 		return default_event_procedure(sheet, event);
