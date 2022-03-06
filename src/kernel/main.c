@@ -239,6 +239,10 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 		printf_serial("Keyboard event @ background sheet.\n");
 		switch(event->event_union.keyboard_event.keycode)
 		{
+		case KEY_C:
+			// Open a new console by pressing 'c'
+			printf_serial("Open a new console.\n");
+			break;
 		case KEY_T:
 			// Start test task by pressing 't'
 			test_task = create_task(get_current_task(), test_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
