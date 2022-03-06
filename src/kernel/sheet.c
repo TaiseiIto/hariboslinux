@@ -204,6 +204,7 @@ void delete_sheet(Sheet *sheet)
 	if(sheet->upper)sheet->upper->lower = sheet->lower;
 	if(sheet->lower)sheet->lower->upper = sheet->upper;
 	allow_switch_task();
+	focus_sheet(sheet->parent);
 	free(sheet->image);
 	free(sheet->input);
 	free(sheet->self_output);
