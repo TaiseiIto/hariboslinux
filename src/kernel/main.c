@@ -14,6 +14,7 @@
 #include "sheet.h"
 #include "stdio.h"
 #include "task.h"
+#include "text_box.h"
 #include "timer.h"
 #include "window.h"
 
@@ -349,6 +350,7 @@ void console_task_procedure(void *arguments)
 	task = get_current_task();
 	event_queue = create_event_queue(task);
 	window = create_window("Console", task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
+	make_sheet_text_box(window->client_sheet);
 	while(true)
 	{
 		Event new_event;
