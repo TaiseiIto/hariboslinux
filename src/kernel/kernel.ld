@@ -71,7 +71,7 @@ SECTIONS
 		stdio.o(.rodata)
 		string.o(.rodata)
 		task.o(.rodata)
-		text_box.o(.rodate)
+		text_box.o(.rodata)
 		timer.o(.rodata)
 		window.o(.rodata)
 		main.o(.data)
