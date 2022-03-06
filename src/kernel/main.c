@@ -299,6 +299,8 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	case EVENT_TYPE_TIMER_EVENT:
 		printf_serial("Timer event @ background sheet.\n");
 		return NULL;
+	case EVENT_TYPE_SHEET_CLICKED:
+		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_CREATED:
 		printf_serial("Sheet created event @ background sheet.\n");
 		return NULL;
