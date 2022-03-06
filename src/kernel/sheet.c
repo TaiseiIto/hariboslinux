@@ -16,6 +16,7 @@ Sheet *focused_sheet = NULL;
 Sheet *mouse_cursor_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
+void focus_sheet(Sheet *sheet);
 void print_sheet_tree(void);
 void print_sheet_tree_level(Sheet *sheet, unsigned int level);
 void refresh_input(Sheet *sheet); // refresh sheet->input.
@@ -131,19 +132,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		{
 			printf_serial("Sheet %p is released by mouse.\n", sheet);
 		}
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
-		{
-			if(focused_sheet)
-			{
-				new_event.type = EVENT_TYPE_SHEET_UNFOCUSED;
-				new_event.event_union.sheet_unfocused_event.sheet = focused_sheet;
-				enqueue(new_event.event_union.sheet_unfocused_event.sheet->event_queue, &new_event);
-			}
-			focused_sheet = sheet;
-			new_event.type = EVENT_TYPE_SHEET_FOCUSED;
-			new_event.event_union.sheet_focused_event.sheet = focused_sheet;
-			enqueue(new_event.event_union.sheet_focused_event.sheet->event_queue, &new_event);
-		}
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)focus_sheet(sheet);
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		printf_serial("Sheet %p is created.\n", sheet);
@@ -293,6 +282,22 @@ void fill_box_sheet(Sheet *sheet, short x, short y, unsigned short width, unsign
 			put_dot_sheet(sheet, (unsigned short)x_i, (unsigned short)y_i, color);
 		}
 	}
+}
+
+void focus_sheet(Sheet *sheet)
+{
+	Event sheet_focused_event;
+	if(focused_sheet)
+	{
+		Event sheet_unfocused_event;
+		sheet_unfocused_event.type = EVENT_TYPE_SHEET_UNFOCUSED;
+		sheet_unfocused_event.event_union.sheet_unfocused_event.sheet = focused_sheet;
+		enqueue(sheet_unfocused_event.event_union.sheet_unfocused_event.sheet->event_queue, &sheet_unfocused_event);
+	}
+	focused_sheet = sheet;
+	sheet_focused_event.type = EVENT_TYPE_SHEET_FOCUSED;
+	sheet_focused_event.event_union.sheet_focused_event.sheet = focused_sheet;
+	enqueue(sheet_focused_event.event_union.sheet_focused_event.sheet->event_queue, &sheet_focused_event);
 }
 
 short get_sheet_x_on_screen(Sheet const *sheet)
