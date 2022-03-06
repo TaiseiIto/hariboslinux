@@ -341,6 +341,9 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 
 void console_task_procedure(void *arguments)
 {
+				//{red ,green, blue,alpha}
+	Color background_color	= {0x00, 0x00, 0x00, 0xff};
+	Color foreground_color	= {0xff, 0xff, 0xff, 0xff};
 	ConsoleTaskArgument *task_argument;
 	Queue *event_queue;
 	Task *task;
@@ -350,7 +353,7 @@ void console_task_procedure(void *arguments)
 	task = get_current_task();
 	event_queue = create_event_queue(task);
 	window = create_window("Console", task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
-	make_sheet_text_box(window->client_sheet);
+	make_sheet_text_box(window->client_sheet, foreground_color, background_color);
 	while(true)
 	{
 		Event new_event;
@@ -398,8 +401,9 @@ void console_task_procedure(void *arguments)
 
 void test_task_procedure(void *arguments)
 {
-	Color foreground_color = {0x00, 0x00, 0x00, 0xff};
-	Color background_color = {0x80, 0x80, 0x80, 0xff};
+				//{red ,green, blue,alpha}
+	Color foreground_color	= {0x00, 0x00, 0x00, 0xff};
+	Color background_color	= {0x80, 0x80, 0x80, 0xff};
 	Queue *event_queue;
 	Task *task;
 	TestTaskArgument *task_argument;

@@ -39,7 +39,7 @@ TextBox *get_text_box_from_sheet(Sheet *sheet)
 	return NULL;
 }
 
-TextBox *make_sheet_text_box(Sheet *sheet)
+TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color background_color)
 {
 	TextBox *new_text_box = malloc(sizeof(*new_text_box));
 	printf_serial("Make sheet %p text box %p\n", sheet, new_text_box);
@@ -47,6 +47,8 @@ TextBox *make_sheet_text_box(Sheet *sheet)
 	new_text_box->sheet = sheet;
 	new_text_box->default_event_procedure = new_text_box->sheet->event_procedure;
 	new_text_box->sheet->event_procedure = text_box_event_procedure;
+	new_text_box->foreground_color = foreground_color;
+	new_text_box->background_color = background_color;
 	if(root_text_box)
 	{
 		new_text_box->next = root_text_box;
@@ -69,6 +71,9 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	TextBox *text_box = get_text_box_from_sheet(sheet);
 	switch(event->type)
 	{
+	case EVENT_TYPE_SHEET_CREATED:
+		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, text_box->background_color);
+		break;
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		delete_text_box(text_box);
 		break;
