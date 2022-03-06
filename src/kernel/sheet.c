@@ -179,6 +179,9 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 	case EVENT_TYPE_SHEET_FOCUSED:
 		printf_serial("Sheet %p is focused.\n", sheet);
 		break;
+	case EVENT_TYPE_SHEET_KEYBOARD:
+		printf_serial("Sheet keyboard event @ sheet %p\n", sheet);
+		break;
 	case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_drag_event.x_movement, sheet->y + event->event_union.sheet_mouse_drag_event.y_movement);
 		break;
@@ -240,6 +243,9 @@ void distribute_event(struct _Event const *event)
 		break;
 	case EVENT_TYPE_SHEET_FOCUSED:
 		if(sheet_exists(event->event_union.sheet_focused_event.sheet))event->event_union.sheet_focused_event.sheet->event_procedure(event->event_union.sheet_focused_event.sheet, event);
+		break;
+	case EVENT_TYPE_SHEET_KEYBOARD:
+		if(sheet_exists(event->event_union.sheet_keyboard_event.sheet))event->event_union.sheet_keyboard_event.sheet->event_procedure(event->event_union.sheet_keyboard_event.sheet, event);
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		if(sheet_exists(event->event_union.sheet_mouse_drag_event.sheet))event->event_union.sheet_mouse_drag_event.sheet->event_procedure(event->event_union.sheet_mouse_drag_event.sheet, event);
@@ -339,9 +345,9 @@ Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 	return sheet;
 }
 
-void init_sheets(Sheet **_background_sheet, Sheet **_mouse_cursor_sheet, Queue *event_queue)
+void init_sheets(Sheet **_background_sheet, void *(*background_sheet_procedure)(struct _Sheet *sheet, struct _Event const *event), Sheet **_mouse_cursor_sheet, Queue *event_queue)
 {
-	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height, NULL, event_queue);
+	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height, background_sheet_procedure, event_queue);
 	printf_serial("background_sheet@init_sheets = %p\n", *_background_sheet);
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
 	*_mouse_cursor_sheet = create_sheet(NULL, get_video_information()->width / 2, get_video_information()->height / 2, 0x08, 0x10, NULL, event_queue);
@@ -927,6 +933,15 @@ void send_sheets_event(Event const *event)
 	prohibit_switch_task();
 	switch(event->type)
 	{
+	case EVENT_TYPE_KEYBOARD_EVENT:
+		if(focused_sheet)
+		{
+			new_event.type = EVENT_TYPE_SHEET_KEYBOARD;
+			new_event.event_union.sheet_keyboard_event.keyboard_event = event->event_union.keyboard_event;
+			new_event.event_union.sheet_keyboard_event.sheet = focused_sheet;
+			enqueue(new_event.event_union.sheet_keyboard_event.sheet->event_queue, &new_event);
+		}
+		break;
 	case EVENT_TYPE_MOUSE_EVENT:
 		if(event->event_union.mouse_event.flags & (MOUSE_LEFT_BUTTON_PUSHED_NOW | MOUSE_MIDDLE_BUTTON_PUSHED_NOW | MOUSE_RIGHT_BUTTON_PUSHED_NOW | MOUSE_4TH_BUTTON_PUSHED_NOW | MOUSE_5TH_BUTTON_PUSHED_NOW))
 		{

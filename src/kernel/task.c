@@ -212,7 +212,7 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	return new_task;
 }
 
-Task const *get_current_task(void)
+Task *get_current_task(void)
 {
 	return current_task_level->current_task;
 }

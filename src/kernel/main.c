@@ -32,6 +32,7 @@ typedef struct _TestTaskReturn
 	struct _TestTaskArgument *test_task_argument;
 } TestTaskReturn;
 
+void *background_sheet_procedure(Sheet *sheet, struct _Event const *event);
 void test_task_procedure(void *args);
 
 void main(void)
@@ -56,7 +57,6 @@ void main(void)
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
 	Task *main_task;
-	TestTaskArgument *test_task_argument;
 	TestTaskReturn *test_task_return;
 	Timer *checking_free_memory_space_size_timer;
 	Timer *test_timer;
@@ -92,7 +92,7 @@ void main(void)
 	init_serial_interrupt(main_task);
 	sti_task();
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
-	init_sheets(&background_sheet, &mouse_cursor_sheet, event_queue);
+	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;
 	background_color.green = 0x00;
 	background_color.blue = 0x00;
@@ -160,7 +160,6 @@ void main(void)
 	{
 		Event new_event;
 		Event const *event;
-		Task *test_task;
 		event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
@@ -172,24 +171,7 @@ void main(void)
 			}
 			if(event->event_union.keyboard_event.character)printf_sheet(background_sheet, 0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
 			keyboard_flags = event->event_union.keyboard_event.flags;
-			switch(event->event_union.keyboard_event.keycode)
-			{
-			case KEY_T:
-				// Start test task by pressing 't'
-				test_task = create_task(main_task, test_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
-				printf_serial("test_task->segment_selector = %#06x\n", test_task->segment_selector);
-				test_task_argument = malloc(sizeof(*test_task_argument));
-				test_task_return = malloc(sizeof(*test_task_return));
-				test_task_argument->background_sheet = background_sheet;
-				test_task_argument->test_task = test_task;
-				test_task_argument->test_task_return = test_task_return;
-				start_task(test_task, test_task_argument, 1);
-				break;
-			case KEY_W:
-				// Open a new window by pressing 'w'
-				create_window("Hello, World!", background_sheet, 0, 0, 0x0200, 0x0200, event_queue);
-				break;
-			}
+			send_sheets_event(event);
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_sheet(background_sheet, 0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
@@ -227,8 +209,8 @@ void main(void)
 			#endif
 			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
-			printf_serial("Detect task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			test_task_return = (TestTaskReturn*)event->event_union.task_deletion_response_event.return_values;
+			printf_serial("Detect task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			printf_serial("test_task_return = %p\n", test_task_return);
 			free(test_task_return->test_task_argument);
 			printf_serial("free(test_task_return->test_task_argument)\n");
@@ -264,6 +246,7 @@ void main(void)
 		case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
 		case EVENT_TYPE_SHEET_FOCUSED:
+		case EVENT_TYPE_SHEET_KEYBOARD:
 		case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_SHEET_UNFOCUSED:
@@ -279,6 +262,48 @@ void main(void)
 			break;
 		}
 		else sleep_task(main_task);
+	}
+}
+
+void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
+{
+	Task *test_task;
+	TestTaskArgument *test_task_argument;
+	TestTaskReturn *test_task_return;
+	switch(event->type)
+	{
+	case EVENT_TYPE_KEYBOARD_EVENT:
+		printf_serial("Keyboard event @ background sheet.\n");
+		switch(event->event_union.keyboard_event.keycode)
+		{
+		case KEY_T:
+			// Start test task by pressing 't'
+			test_task = create_task(get_current_task(), test_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
+			test_task_argument = malloc(sizeof(*test_task_argument));
+			test_task_return = malloc(sizeof(*test_task_return));
+			printf_serial("test_task->segment_selector = %#06x\n", test_task->segment_selector);
+			test_task_argument->background_sheet = sheet;
+			test_task_argument->test_task = test_task;
+			test_task_argument->test_task_return = test_task_return;
+			start_task(test_task, test_task_argument, 1);
+			break;
+		case KEY_W:
+			// Open a new window by pressing 'w'
+			create_window("Hello, World!", sheet, 0, 0, 0x0200, 0x0200, get_current_task()->event_queue);
+			break;
+		}
+		return NULL;
+	case EVENT_TYPE_MOUSE_EVENT:
+		printf_serial("Mouse event @ background sheet.\n");
+		return NULL;
+	case EVENT_TYPE_TIMER_EVENT:
+		printf_serial("Timer event @ background sheet.\n");
+		return NULL;
+	case EVENT_TYPE_SHEET_CREATED:
+		printf_serial("Sheet created event @ background sheet.\n");
+		return NULL;
+	default:
+		return NULL;
 	}
 }
 

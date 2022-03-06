@@ -88,7 +88,7 @@ void cli_task_interrupt(void);
 void close_task(Task *task, void *return_values);
 void continue_task(Task *task);
 Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size, int priority);
-Task const *get_current_task(void);
+Task *get_current_task(void);
 Task *init_task(void);
 void prohibit_switch_task(void);
 void sleep_task(Task *task);
