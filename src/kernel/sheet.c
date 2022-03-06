@@ -136,6 +136,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		printf_serial("Sheet %p is created.\n", sheet);
+		focus_sheet(sheet);
 		break;
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		printf_serial("Sheet %p deletion request.\n", sheet);
