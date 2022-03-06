@@ -41,6 +41,8 @@ typedef struct _Task
 {
 	TaskStatusSegment task_status_segment;
 	void *stack;
+	void *arguments;
+	void *returns;
 	struct _Queue *event_queue;
 	struct _Task *parent;
 	struct _Task *previous;
@@ -78,21 +80,22 @@ typedef struct _TaskDeletionRequestEvent
 typedef struct _TaskDeletionResponseEvent
 {
 	Task *task;
-	void *return_values;
+	void *arguments;
+	void *returns;
 	unsigned short segment_selector;
 } TaskDeletionResponseEvent;
 
 void allow_switch_task(void);
 void cli_task(void);
 void cli_task_interrupt(void);
-void close_task(Task *task, void *return_values);
+void close_task(Task *task);
 void continue_task(Task *task);
 Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size, int priority);
 Task *get_current_task(void);
 Task *init_task(void);
 void prohibit_switch_task(void);
 void sleep_task(Task *task);
-void start_task(Task *task, void *arguments, unsigned char occupancy_time);
+void start_task(Task *task, void *arguments, void *returns, unsigned char occupancy_time);
 void sti_task(void);
 void sti_task_interrupt(void);
 void switch_task(void);

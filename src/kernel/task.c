@@ -40,7 +40,7 @@ void cli_task_interrupt(void)
 	current_task_level->current_task->interrupt_prohibition_level++;
 }
 
-void close_task(Task *task, void *return_values)
+void close_task(Task *task)
 {
 	bool next_task_found = false;
 	Event task_deletion_response_event;
@@ -52,7 +52,8 @@ void close_task(Task *task, void *return_values)
 	// Enqueue task deletion response event.
 	task_deletion_response_event.type = EVENT_TYPE_TASK_DELETION_RESPONSE;
 	task_deletion_response_event.event_union.task_deletion_response_event.task = task;
-	task_deletion_response_event.event_union.task_deletion_response_event.return_values = return_values;
+	task_deletion_response_event.event_union.task_deletion_response_event.arguments = task->arguments;
+	task_deletion_response_event.event_union.task_deletion_response_event.returns = task->returns;
 	task_deletion_response_event.event_union.task_deletion_response_event.segment_selector = task->segment_selector;
 	enqueue(task->parent->event_queue, &task_deletion_response_event);
 	if(task == current_task_level->current_task)
@@ -289,7 +290,7 @@ Task *init_task(void)
 	current_task_level->current_task->switch_prohibition_level = 0;
 	ltr(current_task_level->current_task->segment_selector);
 	// Create idle task
-	start_task(create_task(current_task_level->current_task, idle_task_procedure, 0x00010000, TASK_PRIORITY_IDLE), NULL, 1);
+	start_task(create_task(current_task_level->current_task, idle_task_procedure, 0x00010000, TASK_PRIORITY_IDLE), NULL, NULL, 1);
 	return current_task_level->current_task;
 }
 
@@ -363,14 +364,16 @@ void sleep_task(Task *task)
 	sti_task();
 }
 
-void start_task(Task *task, void *arguments, unsigned char occupancy_time)
+void start_task(Task *task, void *arguments, void *returns, unsigned char occupancy_time)
 {
 	prohibit_switch_task();
 	switch(task->status)
 	{
 	case TASK_STATUS_SLEEP:
-		task->occupancy_time = occupancy_time;
+		task->arguments = arguments;
 		task->elapsed_time = 0;
+		task->occupancy_time = occupancy_time;
+		task->returns = returns;
 		*(void **)(task->task_status_segment.esp + sizeof(void *)) = arguments;
 		task->status = TASK_STATUS_WAIT;
 		break;
