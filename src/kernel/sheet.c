@@ -353,6 +353,7 @@ Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y)
 void init_sheets(Sheet **_background_sheet, void *(*background_sheet_procedure)(struct _Sheet *sheet, struct _Event const *event), Sheet **_mouse_cursor_sheet, Queue *event_queue)
 {
 	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height, background_sheet_procedure, event_queue);
+	focus_sheet(*_background_sheet);
 	printf_serial("background_sheet@init_sheets = %p\n", *_background_sheet);
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
 	*_mouse_cursor_sheet = create_sheet(NULL, get_video_information()->width / 2, get_video_information()->height / 2, 0x08, 0x10, NULL, event_queue);
