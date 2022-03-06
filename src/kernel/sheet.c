@@ -11,8 +11,9 @@
 const Color color_black	      = {0x00, 0x00, 0x00, 0xff};
 const Color color_transparent = {0x00, 0x00, 0x00, 0x00};
 
-Sheet *mouse_cursor_sheet = NULL;
 Sheet *background_sheet = NULL;
+Sheet *focused_sheet = NULL;
+Sheet *mouse_cursor_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
 void print_sheet_tree(void);
@@ -130,6 +131,19 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		{
 			printf_serial("Sheet %p is released by mouse.\n", sheet);
 		}
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
+		{
+			if(focused_sheet)
+			{
+				new_event.type = EVENT_TYPE_SHEET_UNFOCUSED;
+				new_event.event_union.sheet_unfocused_event.sheet = focused_sheet;
+				enqueue(new_event.event_union.sheet_unfocused_event.sheet->event_queue, &new_event);
+			}
+			focused_sheet = sheet;
+			new_event.type = EVENT_TYPE_SHEET_FOCUSED;
+			new_event.event_union.sheet_focused_event.sheet = focused_sheet;
+			enqueue(new_event.event_union.sheet_focused_event.sheet->event_queue, &new_event);
+		}
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		printf_serial("Sheet %p is created.\n", sheet);
@@ -162,10 +176,16 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 			enqueue(sheet->parent->event_queue, &new_event);
 		}
 		break;
+	case EVENT_TYPE_SHEET_FOCUSED:
+		printf_serial("Sheet %p is focused.\n", sheet);
+		break;
 	case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_drag_event.x_movement, sheet->y + event->event_union.sheet_mouse_drag_event.y_movement);
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
+		break;
+	case EVENT_TYPE_SHEET_UNFOCUSED:
+		printf_serial("Sheet %p is unfocused.\n", sheet);
 		break;
 	default:
 		ERROR(); // Event that procedure is not defined.
@@ -217,11 +237,17 @@ void distribute_event(struct _Event const *event)
 	case EVENT_TYPE_SHEET_DELETION_RESPONSE:
 		if(sheet_exists(event->event_union.sheet_deletion_response_event.parent))event->event_union.sheet_deletion_response_event.parent->event_procedure(event->event_union.sheet_deletion_response_event.parent, event);
 		break;
+	case EVENT_TYPE_SHEET_FOCUSED:
+		if(sheet_exists(event->event_union.sheet_focused_event.sheet))event->event_union.sheet_focused_event.sheet->event_procedure(event->event_union.sheet_focused_event.sheet, event);
+		break;
 	case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		if(sheet_exists(event->event_union.sheet_mouse_drag_event.sheet))event->event_union.sheet_mouse_drag_event.sheet->event_procedure(event->event_union.sheet_mouse_drag_event.sheet, event);
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		if(sheet_exists(event->event_union.sheet_mouse_move_event.sheet))event->event_union.sheet_mouse_move_event.sheet->event_procedure(event->event_union.sheet_mouse_move_event.sheet, event);
+		break;
+	case EVENT_TYPE_SHEET_UNFOCUSED:
+		if(sheet_exists(event->event_union.sheet_unfocused_event.sheet))event->event_union.sheet_unfocused_event.sheet->event_procedure(event->event_union.sheet_unfocused_event.sheet, event);
 		break;
 	case EVENT_TYPE_WINDOW_DELETION_REQUEST:
 		if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);

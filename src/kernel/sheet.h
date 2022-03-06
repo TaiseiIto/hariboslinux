@@ -19,6 +19,11 @@ typedef struct _SheetClickedEvent
 	#define SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON	0x40
 } SheetClickedEvent;
 
+typedef struct _SheetCreatedEvent
+{
+	struct _Sheet *sheet;
+} SheetCreatedEvent;
+
 typedef struct _SheetDeletionRequestEvent
 {
 	struct _Sheet *sheet;
@@ -30,10 +35,10 @@ typedef struct _SheetDeletionResponseEvent
 	struct _Sheet *sheet;
 } SheetDeletionResponseEvent;
 
-typedef struct _SheetCreatedEvent
+typedef struct _SheetFocusedEvent
 {
 	struct _Sheet *sheet;
-} SheetCreatedEvent;
+} SheetFocusedEvent;
 
 typedef struct _SheetMouseDragEvent
 {
@@ -46,6 +51,11 @@ typedef struct _SheetMouseMoveEvent
 	struct _Sheet *sheet;
 	short x_movement, y_movement;
 } SheetMouseMoveEvent;
+
+typedef struct _SheetUnfocusedEvent
+{
+	struct _Sheet *sheet;
+} SheetUnfocusedEvent;
 
 #include "event.h"
 #include "graphic.h"
