@@ -200,6 +200,7 @@ void delete_sheet(Sheet *sheet)
 	prohibit_switch_task();
 	if(sheet == background_sheet || sheet == mouse_cursor_sheet)ERROR();
 	while(sheet->uppest_child && sheet->lowest_child)delete_sheet(sheet->uppest_child);
+	if(focused_sheet == sheet)focused_sheet = NULL;
 	transmit_self_input(sheet);
 	if(sheet->uppest_child || sheet->lowest_child)ERROR();
 	if(sheet->parent)
