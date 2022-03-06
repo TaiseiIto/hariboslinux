@@ -17,8 +17,6 @@
 #include "timer.h"
 #include "window.h"
 
-struct _TestTaskArgument;
-
 typedef struct _TestTaskArgument
 {
 	Sheet *background_sheet;
@@ -155,7 +153,7 @@ void main(void)
 			free(event->event_union.task_deletion_response_event.arguments);
 			printf_serial("free(event->event_union.task_deletion_response_event.arguments)\n");
 			free_segment(event->event_union.task_deletion_response_event.segment_selector);
-			printf_serial("free_segment\n");
+			printf_serial("free_segment %#06x\n", event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
