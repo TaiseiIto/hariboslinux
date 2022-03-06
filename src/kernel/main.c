@@ -272,7 +272,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	TestTaskReturn *test_task_return;
 	switch(event->type)
 	{
-	case EVENT_TYPE_KEYBOARD_EVENT:
+	case EVENT_TYPE_SHEET_KEYBOARD:
 		printf_serial("Keyboard event @ background sheet.\n");
 		switch(event->event_union.keyboard_event.keycode)
 		{
