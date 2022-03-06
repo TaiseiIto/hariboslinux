@@ -17,6 +17,13 @@
 #include "timer.h"
 #include "window.h"
 
+typedef struct _TaskReturn
+{
+	unsigned char task_type;
+	#define TASK_TYPE_TEST		0x00
+	#define TASK_TYPE_CONSOLE	0x00
+} TaskReturn;
+
 typedef struct _TestTaskArgument
 {
 	Sheet *background_sheet;
@@ -149,11 +156,7 @@ void main(void)
 			#endif
 			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
-			printf_serial("Detect task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
-			free(event->event_union.task_deletion_response_event.arguments);
-			printf_serial("free(event->event_union.task_deletion_response_event.arguments)\n");
-			free_segment(event->event_union.task_deletion_response_event.segment_selector);
-			printf_serial("free_segment %#06x\n", event->event_union.task_deletion_response_event.segment_selector);
+			background_sheet->event_procedure(background_sheet, event);
 			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == test_timer)
@@ -216,6 +219,8 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
 	Task *test_task;
+	TaskReturn *task_return;
+	TaskReturn *test_task_return;
 	TestTaskArgument *test_task_argument;
 	switch(event->type)
 	{
@@ -231,9 +236,11 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			// Start test task by pressing 't'
 			test_task = create_task(get_current_task(), test_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
 			test_task_argument = malloc(sizeof(*test_task_argument));
+			test_task_return = malloc(sizeof(*test_task_return));
+			test_task_return->task_type = TASK_TYPE_TEST;
 			printf_serial("test_task->segment_selector = %#06x\n", test_task->segment_selector);
 			test_task_argument->background_sheet = sheet;
-			start_task(test_task, test_task_argument, NULL, 1);
+			start_task(test_task, test_task_argument, test_task_return, 1);
 			break;
 		case KEY_W:
 			// Open a new window by pressing 'w'
@@ -291,6 +298,23 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	case EVENT_TYPE_SHEET_FOCUSED:
 	case EVENT_TYPE_SHEET_UNFOCUSED:
 		return default_event_procedure(sheet, event);
+	case EVENT_TYPE_TASK_DELETION_RESPONSE:
+		task_return = (TaskReturn*)event->event_union.task_deletion_response_event.returns;
+		switch(task_return->task_type)
+		{
+		case TASK_TYPE_TEST:
+			printf_serial("Detect test task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
+			break;
+		default:
+			ERROR(); // Invalid task type
+			break;
+		}
+		free(event->event_union.task_deletion_response_event.returns);
+		free(event->event_union.task_deletion_response_event.arguments);
+		printf_serial("free(event->event_union.task_deletion_response_event.arguments)\n");
+		free_segment(event->event_union.task_deletion_response_event.segment_selector);
+		printf_serial("free_segment %#06x\n", event->event_union.task_deletion_response_event.segment_selector);
+		return NULL;
 	default:
 		return NULL;
 	}
