@@ -73,14 +73,15 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	{
 	case EVENT_TYPE_SHEET_CREATED:
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, text_box->background_color);
-		break;
+		return NULL;
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		delete_text_box(text_box);
-		break;
+		return text_box->default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_KEYBOARD:
 		printf_serial("Keyboard event @ text box %p keycode = %#04x\n", text_box, event->event_union.sheet_keyboard_event.keyboard_event.keycode);
-		break;
+		return NULL;
+	default:
+		return text_box->default_event_procedure(sheet, event);
 	}
-	return text_box->default_event_procedure(sheet, event);
 }
 
