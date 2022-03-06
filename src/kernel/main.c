@@ -40,22 +40,10 @@ void main(void)
 	BootInformation const * const boot_information = (BootInformation const * const)MEMORY_MAP_BOOT_INFORMATION;
 	Color background_color;
 	Color foreground_color;
-	Color opaque_red;
-	Color opaque_green;
-	Color opaque_blue;
-	Color translucent_red;
-	Color translucent_green;
-	Color translucent_blue;
 	MemoryRegionDescriptor memory_region_descriptor;
 	Queue *event_queue;
 	Sheet *background_sheet;
 	Sheet *mouse_cursor_sheet;
-	Sheet *opaque_red_sheet;
-	Sheet *opaque_green_sheet;
-	Sheet *opaque_blue_sheet;
-	Sheet *translucent_red_sheet;
-	Sheet *translucent_green_sheet;
-	Sheet *translucent_blue_sheet;
 	Task *main_task;
 	TestTaskReturn *test_task_return;
 	Timer *checking_free_memory_space_size_timer;
@@ -119,43 +107,6 @@ void main(void)
 	test_timer = create_timer(0, 100, event_queue);
 	// Serial status timer
 	serial_status_timer = create_timer(0, 100, event_queue);
-	// Test sheet
-	opaque_red.red = 0xff;
-	opaque_red.green = 0x00;
-	opaque_red.blue = 0x00;
-	opaque_red.alpha = 0xff;
-	opaque_green.red = 0x00;
-	opaque_green.green = 0xff;
-	opaque_green.blue = 0x00;
-	opaque_green.alpha = 0xff;
-	opaque_blue.red = 0x00;
-	opaque_blue.green = 0x00;
-	opaque_blue.blue = 0xff;
-	opaque_blue.alpha = 0xff;
-	translucent_red.red = 0xff;
-	translucent_red.green = 0x00;
-	translucent_red.blue = 0x00;
-	translucent_red.alpha = 0x80;
-	translucent_green.red = 0x00;
-	translucent_green.green = 0xff;
-	translucent_green.blue = 0x00;
-	translucent_green.alpha = 0x80;
-	translucent_blue.red = 0x00;
-	translucent_blue.green = 0x00;
-	translucent_blue.blue = 0xff;
-	translucent_blue.alpha = 0x80;
-	opaque_red_sheet = create_sheet(background_sheet, 0x0000, 0x0000, 0x0100, 0x0100, NULL, event_queue);
-	opaque_green_sheet = create_sheet(background_sheet, 0x0100, 0x0100, 0x0100, 0x0100, NULL, event_queue);
-	opaque_blue_sheet = create_sheet(background_sheet, 0x0200, 0x0200, 0x0100, 0x0100, NULL, event_queue);
-	translucent_red_sheet = create_sheet(background_sheet, 0x0080, 0x0080, 0x0100, 0x0100, NULL, event_queue);
-	translucent_green_sheet = create_sheet(background_sheet, 0x0180, 0x0180, 0x0100, 0x0100, NULL, event_queue);
-	translucent_blue_sheet = create_sheet(background_sheet, 0x0280, 0x0280, 0x0100, 0x0100, NULL, event_queue);
-	fill_box_sheet(opaque_red_sheet, 0, 0, opaque_red_sheet->width, opaque_red_sheet->height, opaque_red);
-	fill_box_sheet(opaque_green_sheet, 0, 0, opaque_green_sheet->width, opaque_green_sheet->height, opaque_green);
-	fill_box_sheet(opaque_blue_sheet, 0, 0, opaque_blue_sheet->width, opaque_blue_sheet->height, opaque_blue);
-	fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
-	fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
-	fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
 	while(true)
 	{
 		Event new_event;
@@ -267,6 +218,18 @@ void main(void)
 
 void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 {
+	Color opaque_red;
+	Color opaque_green;
+	Color opaque_blue;
+	Color translucent_red;
+	Color translucent_green;
+	Color translucent_blue;
+	Sheet *opaque_red_sheet;
+	Sheet *opaque_green_sheet;
+	Sheet *opaque_blue_sheet;
+	Sheet *translucent_red_sheet;
+	Sheet *translucent_green_sheet;
+	Sheet *translucent_blue_sheet;
 	Task *test_task;
 	TestTaskArgument *test_task_argument;
 	TestTaskReturn *test_task_return;
@@ -301,6 +264,43 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 		return NULL;
 	case EVENT_TYPE_SHEET_CREATED:
 		printf_serial("Sheet created event @ background sheet.\n");
+		// Test sheet
+		opaque_red.red = 0xff;
+		opaque_red.green = 0x00;
+		opaque_red.blue = 0x00;
+		opaque_red.alpha = 0xff;
+		opaque_green.red = 0x00;
+		opaque_green.green = 0xff;
+		opaque_green.blue = 0x00;
+		opaque_green.alpha = 0xff;
+		opaque_blue.red = 0x00;
+		opaque_blue.green = 0x00;
+		opaque_blue.blue = 0xff;
+		opaque_blue.alpha = 0xff;
+		translucent_red.red = 0xff;
+		translucent_red.green = 0x00;
+		translucent_red.blue = 0x00;
+		translucent_red.alpha = 0x80;
+		translucent_green.red = 0x00;
+		translucent_green.green = 0xff;
+		translucent_green.blue = 0x00;
+		translucent_green.alpha = 0x80;
+		translucent_blue.red = 0x00;
+		translucent_blue.green = 0x00;
+		translucent_blue.blue = 0xff;
+		translucent_blue.alpha = 0x80;
+		opaque_red_sheet = create_sheet(sheet, 0x0000, 0x0000, 0x0100, 0x0100, NULL, get_current_task()->event_queue);
+		opaque_green_sheet = create_sheet(sheet, 0x0100, 0x0100, 0x0100, 0x0100, NULL, get_current_task()->event_queue);
+		opaque_blue_sheet = create_sheet(sheet, 0x0200, 0x0200, 0x0100, 0x0100, NULL, get_current_task()->event_queue);
+		translucent_red_sheet = create_sheet(sheet, 0x0080, 0x0080, 0x0100, 0x0100, NULL, get_current_task()->event_queue);
+		translucent_green_sheet = create_sheet(sheet, 0x0180, 0x0180, 0x0100, 0x0100, NULL, get_current_task()->event_queue);
+		translucent_blue_sheet = create_sheet(sheet, 0x0280, 0x0280, 0x0100, 0x0100, NULL, get_current_task()->event_queue);
+		fill_box_sheet(opaque_red_sheet, 0, 0, opaque_red_sheet->width, opaque_red_sheet->height, opaque_red);
+		fill_box_sheet(opaque_green_sheet, 0, 0, opaque_green_sheet->width, opaque_green_sheet->height, opaque_green);
+		fill_box_sheet(opaque_blue_sheet, 0, 0, opaque_blue_sheet->width, opaque_blue_sheet->height, opaque_blue);
+		fill_box_sheet(translucent_red_sheet, 0, 0, translucent_red_sheet->width, translucent_red_sheet->height, translucent_red);
+		fill_box_sheet(translucent_green_sheet, 0, 0, translucent_green_sheet->width, translucent_green_sheet->height, translucent_green);
+		fill_box_sheet(translucent_blue_sheet, 0, 0, translucent_blue_sheet->width, translucent_blue_sheet->height, translucent_blue);
 		return NULL;
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_FOCUSED:
