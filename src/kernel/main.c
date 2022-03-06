@@ -23,7 +23,6 @@ struct _TestTaskReturn;
 typedef struct _TestTaskArgument
 {
 	Sheet *background_sheet;
-	Task *test_task;
 	struct _TestTaskReturn *test_task_return;
 } TestTaskArgument;
 
@@ -250,7 +249,6 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			test_task_return = malloc(sizeof(*test_task_return));
 			printf_serial("test_task->segment_selector = %#06x\n", test_task->segment_selector);
 			test_task_argument->background_sheet = sheet;
-			test_task_argument->test_task = test_task;
 			test_task_argument->test_task_return = test_task_return;
 			start_task(test_task, test_task_argument, 1);
 			break;
@@ -328,7 +326,7 @@ void test_task_procedure(void *args)
 	Window *window;
 	printf_serial("Hello, Test Task!\n");
 	test_task_argument = (TestTaskArgument*)args;
-	test_task = test_task_argument->test_task;
+	test_task = get_current_task();
 	test_task_return = test_task_argument->test_task_return;
 	event_queue = create_event_queue(test_task);
 	window = create_window("Test Task", test_task_argument->background_sheet, 8 * test_task->segment_selector, 8 * test_task->segment_selector, 0x0100, 0x0100, event_queue);
