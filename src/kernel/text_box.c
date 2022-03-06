@@ -4,8 +4,21 @@
 
 TextBox *root_text_box = NULL;
 
+void delete_text_box(TextBox *text_box);
 TextBox *get_text_box_from_sheet(Sheet *sheet);
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event);
+
+void delete_text_box(TextBox *text_box)
+{
+	printf_serial("Delete text box %p\n", text_box);
+	prohibit_switch_task();
+	if(root_text_box == text_box)root_text_box = root_text_box->next;
+	if(root_text_box == text_box)root_text_box = NULL;
+	text_box->previous->next = text_box->next;
+	text_box->next->previous = text_box->previous;
+	free(text_box);
+	allow_switch_task();
+}
 
 TextBox *get_text_box_from_sheet(Sheet *sheet)
 {
@@ -54,6 +67,12 @@ TextBox *make_sheet_text_box(Sheet *sheet)
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 {
 	TextBox *text_box = get_text_box_from_sheet(sheet);
+	switch(event->type)
+	{
+	case EVENT_TYPE_SHEET_DELETION_REQUEST:
+		delete_text_box(text_box);
+		break;
+	}
 	return text_box->default_event_procedure(sheet, event);
 }
 
