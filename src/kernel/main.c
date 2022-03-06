@@ -20,9 +20,14 @@
 typedef struct _TaskReturn
 {
 	unsigned char task_type;
-	#define TASK_TYPE_TEST		0x00
 	#define TASK_TYPE_CONSOLE	0x00
+	#define TASK_TYPE_TEST		0x01
 } TaskReturn;
+
+typedef struct _ConsoleTaskArgument
+{
+	Sheet *background_sheet;
+} ConsoleTaskArgument;
 
 typedef struct _TestTaskArgument
 {
@@ -30,7 +35,8 @@ typedef struct _TestTaskArgument
 } TestTaskArgument;
 
 void *background_sheet_procedure(Sheet *sheet, struct _Event const *event);
-void test_task_procedure(void *args);
+void console_task_procedure(void *arguments);
+void test_task_procedure(void *arguments);
 
 void main(void)
 {
@@ -219,9 +225,12 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
 	Task *test_task;
-	TaskReturn *task_return;
-	TaskReturn *test_task_return;
 	TestTaskArgument *test_task_argument;
+	TaskReturn *task_return;
+	Task *console_task;
+	ConsoleTaskArgument *console_task_argument;
+	TaskReturn *console_task_return;
+	TaskReturn *test_task_return;
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_KEYBOARD:
@@ -230,16 +239,22 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 		{
 		case KEY_C:
 			// Open a new console by pressing 'c'
-			printf_serial("Open a new console.\n");
+			console_task = create_task(get_current_task(), console_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
+			console_task_argument = malloc(sizeof(*console_task_argument));
+			console_task_argument->background_sheet = sheet;
+			console_task_return = malloc(sizeof(*console_task_return));
+			console_task_return->task_type = TASK_TYPE_CONSOLE;
+			printf_serial("console_task->segment_selector = %#06x\n", console_task->segment_selector);
+			start_task(console_task, console_task_argument, console_task_return, 1);
 			break;
 		case KEY_T:
 			// Start test task by pressing 't'
 			test_task = create_task(get_current_task(), test_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
 			test_task_argument = malloc(sizeof(*test_task_argument));
+			test_task_argument->background_sheet = sheet;
 			test_task_return = malloc(sizeof(*test_task_return));
 			test_task_return->task_type = TASK_TYPE_TEST;
 			printf_serial("test_task->segment_selector = %#06x\n", test_task->segment_selector);
-			test_task_argument->background_sheet = sheet;
 			start_task(test_task, test_task_argument, test_task_return, 1);
 			break;
 		case KEY_W:
@@ -302,6 +317,9 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 		task_return = (TaskReturn*)event->event_union.task_deletion_response_event.returns;
 		switch(task_return->task_type)
 		{
+		case TASK_TYPE_CONSOLE:
+			printf_serial("Detect console task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
+			break;
 		case TASK_TYPE_TEST:
 			printf_serial("Detect test task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			break;
@@ -320,21 +338,77 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	}
 }
 
-void test_task_procedure(void *args)
+void console_task_procedure(void *arguments)
+{
+	ConsoleTaskArgument *task_argument;
+	Queue *event_queue;
+	Task *task;
+	Window *window;
+	printf_serial("Hello, Console Task!\n");
+	task_argument = (ConsoleTaskArgument*)arguments;
+	task = get_current_task();
+	event_queue = create_event_queue(task);
+	window = create_window("Console", task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
+	while(true)
+	{
+		Event new_event;
+		Event const *event = dequeue(event_queue);
+		if(event)switch(event->type)
+		{
+		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+		case EVENT_TYPE_SHEET_CLICKED:
+		case EVENT_TYPE_SHEET_CREATED:
+		case EVENT_TYPE_SHEET_DELETION_REQUEST:
+		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+		case EVENT_TYPE_SHEET_FOCUSED:
+		case EVENT_TYPE_SHEET_KEYBOARD:
+		case EVENT_TYPE_SHEET_MOUSE_DRAG:
+		case EVENT_TYPE_SHEET_MOUSE_MOVE:
+		case EVENT_TYPE_SHEET_UNFOCUSED:
+		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+		case EVENT_TYPE_WINDOW_FOCUSED:
+		case EVENT_TYPE_WINDOW_UNFOCUSED:
+			distribute_event(event);
+			break;
+		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+			distribute_event(event);
+			if(event->event_union.window_deletion_response_event.window == window)
+			{
+				new_event.type = EVENT_TYPE_TASK_DELETION_REQUEST;
+				new_event.event_union.task_deletion_request_event.task = task;
+				enqueue(event_queue, &new_event);
+				printf_serial("Enqueue console task deletion request!\n");
+			}
+			break;
+		case EVENT_TYPE_TASK_DELETION_REQUEST:
+			printf_serial("Detect console task deletion request.\n");
+			close_task(task);
+			ERROR(); // Can't close task!
+			break;
+		default: // invalid event->type
+			ERROR();
+			printf_serial("invalid event->type %#04x\n", event->type);
+			break;
+		}
+		else sleep_task(task);
+	}
+}
+
+void test_task_procedure(void *arguments)
 {
 	Color foreground_color = {0x00, 0x00, 0x00, 0xff};
 	Color background_color = {0x80, 0x80, 0x80, 0xff};
 	Queue *event_queue;
-	Task *test_task;
-	TestTaskArgument *test_task_argument;
+	Task *task;
+	TestTaskArgument *task_argument;
 	Timer *print_counter_timer;
 	unsigned long long counter = 0;
 	Window *window;
 	printf_serial("Hello, Test Task!\n");
-	test_task_argument = (TestTaskArgument*)args;
-	test_task = get_current_task();
-	event_queue = create_event_queue(test_task);
-	window = create_window("Test Task", test_task_argument->background_sheet, 8 * test_task->segment_selector, 8 * test_task->segment_selector, 0x0100, 0x0100, event_queue);
+	task_argument = (TestTaskArgument*)arguments;
+	task = get_current_task();
+	event_queue = create_event_queue(task);
+	window = create_window("Test Task", task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
 	print_counter_timer = create_timer(0, 100, event_queue);
 	while(true)
 	{
@@ -365,15 +439,15 @@ void test_task_procedure(void *args)
 			if(event->event_union.window_deletion_response_event.window == window)
 			{
 				new_event.type = EVENT_TYPE_TASK_DELETION_REQUEST;
-				new_event.event_union.task_deletion_request_event.task = test_task;
+				new_event.event_union.task_deletion_request_event.task = task;
 				enqueue(event_queue, &new_event);
-				printf_serial("Enqueue task deletion request!\n");
+				printf_serial("Enqueue test task deletion request!\n");
 			}
 			break;
 		case EVENT_TYPE_TASK_DELETION_REQUEST:
-			printf_serial("Detect task deletion request.\n");
+			printf_serial("Detect test task deletion request.\n");
 			delete_timer(print_counter_timer);
-			close_task(test_task);
+			close_task(task);
 			ERROR(); // Can't close task!
 			break;
 		default: // invalid event->type
