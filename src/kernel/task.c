@@ -223,7 +223,7 @@ void idle_task_procedure(void *arguments)
 	Queue *event_queue;
 	Timer *message_timer;
 	event_queue = create_event_queue(current_task_level->current_task);
-	message_timer = create_timer(0, 100, event_queue);
+	message_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	while(true)
 	{
 		Event const *event = dequeue(event_queue);

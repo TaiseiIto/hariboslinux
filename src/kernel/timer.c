@@ -6,12 +6,15 @@
 Timer *next_estimated_timer = NULL;
 unsigned long long tick_count = 0;
 
-Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned long long interval_count/*centisecond*/, Queue *event_queue)
+Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned long long interval_count/*centisecond*/, Queue *event_queue, void *(*procedure)(void *arguments), void *arguments, void *returns)
 {
 	Timer *new_timer = (Timer *)malloc(sizeof(*new_timer));
 	new_timer->estimated_count = tick_count + estimated_count;
 	new_timer->interval_count = interval_count;
 	new_timer->event_queue = event_queue;
+	new_timer->procedure = procedure;
+	new_timer->arguments = arguments;
+	new_timer->returns = returns;
 	prohibit_switch_task();
 	if(next_estimated_timer)
 	{

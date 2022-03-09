@@ -105,11 +105,11 @@ void main(void)
 		printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
-	checking_free_memory_space_size_timer = create_timer(0, 100, event_queue);
+	checking_free_memory_space_size_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	// Test timer
-	test_timer = create_timer(0, 100, event_queue);
+	test_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	// Serial status timer
-	serial_status_timer = create_timer(0, 100, event_queue);
+	serial_status_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	while(true)
 	{
 		Event new_event;
@@ -415,7 +415,7 @@ void test_task_procedure(void *arguments)
 	task = get_current_task();
 	event_queue = create_event_queue(task);
 	window = create_window("Test Task", task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
-	print_counter_timer = create_timer(0, 100, event_queue);
+	print_counter_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	while(true)
 	{
 		Event new_event;
