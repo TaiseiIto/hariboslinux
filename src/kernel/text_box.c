@@ -9,9 +9,11 @@ void delete_text_box(TextBox *text_box);
 TextBox *get_text_box_from_sheet(Sheet *sheet);
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event);
 
-void *cursor_blink(void *text_box)
+void *cursor_blink(void *arguments)
 {
-	printf_serial("Cursor blinks @ text_box %p\n", text_box);
+	TextBox *text_box = (TextBox *)arguments;
+	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
+	put_char_sheet(text_box->sheet, 0, 0, text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, ' ');
 	return NULL;
 }
 
@@ -58,6 +60,9 @@ TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color backgro
 	new_text_box->cursor_blink_timer = create_timer(0, 100, get_current_task()->event_queue, cursor_blink, (void *)new_text_box, NULL);
 	new_text_box->foreground_color = foreground_color;
 	new_text_box->background_color = background_color;
+	new_text_box->cursor_position_x = 0;
+	new_text_box->cursor_position_y = 0;
+	new_text_box->flags = 0;
 	if(root_text_box)
 	{
 		new_text_box->next = root_text_box;
