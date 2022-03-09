@@ -4,16 +4,16 @@
 
 TextBox *root_text_box = NULL;
 
-void *cursor_blink(void *text_box);
+void *cursor_blink(TextBox *text_box);
 void delete_text_box(TextBox *text_box);
 TextBox *get_text_box_from_sheet(Sheet *sheet);
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event);
 
-void *cursor_blink(void *arguments)
+void *cursor_blink(TextBox *text_box)
 {
-	TextBox *text_box = (TextBox *)arguments;
+	bool blink_on;
 	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
-	bool blink_on = text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && is_focused_sheet(text_box->sheet);
+	blink_on = text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && is_focused_sheet(text_box->sheet);
 	put_char_sheet(text_box->sheet, 0, 0, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, ' ');
 	return NULL;
 }
@@ -58,7 +58,7 @@ TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color backgro
 	new_text_box->sheet = sheet;
 	new_text_box->default_event_procedure = new_text_box->sheet->event_procedure;
 	new_text_box->sheet->event_procedure = text_box_event_procedure;
-	new_text_box->cursor_blink_timer = create_timer(0, 100, get_current_task()->event_queue, cursor_blink, (void *)new_text_box, NULL);
+	new_text_box->cursor_blink_timer = create_timer(0, 100, get_current_task()->event_queue, (void *(*)(void *))cursor_blink, (void *)new_text_box, NULL);
 	new_text_box->foreground_color = foreground_color;
 	new_text_box->background_color = background_color;
 	new_text_box->cursor_position_x = 0;
