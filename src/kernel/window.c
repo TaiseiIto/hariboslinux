@@ -42,7 +42,7 @@ void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 	case EVENT_TYPE_SHEET_CREATED:
 		// Draw client sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, client_background_color);
-		return NULL;
+		return default_event_procedure(sheet, event);
 	default:
 		return default_event_procedure(sheet, event);
 	}
@@ -134,8 +134,8 @@ Window *create_window(char *title, Sheet *background_sheet, short x, short y, un
 	}
 	new_window->root_sheet = create_sheet(background_sheet, x, y, width, height, root_sheet_event_procedure, event_queue);
 	new_window->title_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, TITLE_SHEET_HEIGHT, title_sheet_event_procedure, event_queue);
-	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure, event_queue);
 	new_window->close_button_sheet = create_sheet(new_window->title_sheet, new_window->title_sheet->width - new_window->title_sheet->height + 1, 1, new_window->title_sheet->height - 2, new_window->title_sheet->height - 2, close_button_sheet_event_procedure, event_queue);
+	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure, event_queue);
 	focus_window(new_window);
 	allow_switch_task();
 	return new_window;

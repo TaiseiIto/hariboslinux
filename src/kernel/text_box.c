@@ -88,6 +88,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	{
 	case EVENT_TYPE_SHEET_CREATED:
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, text_box->background_color);
+		focus_sheet(sheet);
 		return NULL;
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		delete_text_box(text_box);
