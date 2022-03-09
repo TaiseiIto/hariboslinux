@@ -361,6 +361,9 @@ void console_task_procedure(void *arguments)
 		Event const *event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
+		case EVENT_TYPE_TIMER_EVENT:
+			call_timer_procedure(event->event_union.timer_event.timer);
+			break;
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
 		case EVENT_TYPE_SHEET_CLICKED:
 		case EVENT_TYPE_SHEET_CREATED:
