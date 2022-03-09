@@ -6,6 +6,12 @@
 Timer *next_estimated_timer = NULL;
 unsigned long long tick_count = 0;
 
+void *call_timer_procedure(Timer *timer)
+{
+	if(timer->procedure)return timer->procedure(timer->arguments);
+	else return NULL;
+}
+
 Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned long long interval_count/*centisecond*/, Queue *event_queue, void *(*procedure)(void *arguments), void *arguments, void *returns)
 {
 	Timer *new_timer = (Timer *)malloc(sizeof(*new_timer));

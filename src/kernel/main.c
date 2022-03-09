@@ -185,6 +185,7 @@ void main(void)
 			{
 				printf_sheet(background_sheet, 0x0000, 0x0008 * CHAR_HEIGHT, foreground_color, background_color, "number of unoutput characters = %#010x", number_of_unoutput_characters());
 			}
+			else call_timer_procedure(event->event_union.timer_event.timer);
 			break;
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
 		case EVENT_TYPE_SHEET_CLICKED:
@@ -424,6 +425,7 @@ void test_task_procedure(void *arguments)
 		{
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == print_counter_timer)if(sheet_exists(window->client_sheet))printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
+			else call_timer_procedure(event->event_union.timer_event.timer);
 			break;
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
 		case EVENT_TYPE_SHEET_CLICKED:

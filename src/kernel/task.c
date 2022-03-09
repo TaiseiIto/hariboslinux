@@ -231,6 +231,7 @@ void idle_task_procedure(void *arguments)
 		{
 		case EVENT_TYPE_TIMER_EVENT:
 			if(event->event_union.timer_event.timer == message_timer)printf_serial("Hello, idle task!\n");
+			else call_timer_procedure(event->event_union.timer_event.timer);
 			break;
 		default: // Invalid event->type
 			ERROR();

@@ -21,6 +21,7 @@ typedef struct _TimerEvent
 	Timer *timer;
 } TimerEvent;
 
+void *call_timer_procedure(Timer *timer);
 Timer *create_timer(unsigned long long estimated_count/*centisecond*/, unsigned long long interval_count/*centisecond*/, Queue *event_queue, void *(*procedure)(void *arguments), void *arguments, void *returns);
 void delete_timer(Timer *timer);
 void init_timer(void);
