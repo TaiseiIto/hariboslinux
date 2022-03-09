@@ -18,6 +18,7 @@ void *cursor_blink(void *text_box)
 void delete_text_box(TextBox *text_box)
 {
 	printf_serial("Delete text box %p\n", text_box);
+	delete_timer(text_box->cursor_blink_timer);
 	prohibit_switch_task();
 	if(root_text_box == text_box)root_text_box = root_text_box->next;
 	if(root_text_box == text_box)root_text_box = NULL;
@@ -49,12 +50,12 @@ TextBox *get_text_box_from_sheet(Sheet *sheet)
 TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color background_color)
 {
 	TextBox *new_text_box = malloc(sizeof(*new_text_box));
-	Timer *cursor_blink_timer;
 	printf_serial("Make sheet %p text box %p\n", sheet, new_text_box);
 	prohibit_switch_task();
 	new_text_box->sheet = sheet;
 	new_text_box->default_event_procedure = new_text_box->sheet->event_procedure;
 	new_text_box->sheet->event_procedure = text_box_event_procedure;
+	new_text_box->cursor_blink_timer = create_timer(0, 100, get_current_task()->event_queue, cursor_blink, (void *)new_text_box, NULL);
 	new_text_box->foreground_color = foreground_color;
 	new_text_box->background_color = background_color;
 	if(root_text_box)
@@ -71,7 +72,6 @@ TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color backgro
 		root_text_box = new_text_box;
 	}
 	allow_switch_task();
-	cursor_blink_timer = create_timer(0, 100, get_current_task()->event_queue, cursor_blink, (void *)new_text_box, NULL);
 	return new_text_box;
 }
 

@@ -6,9 +6,10 @@
 typedef struct _TextBox
 {
 	Sheet *sheet;
+	void *(*default_event_procedure)(struct _Sheet *sheet, struct _Event const *event);
+	Timer *cursor_blink_timer;
 	struct _TextBox *next;
 	struct _TextBox *previous;
-	void *(*default_event_procedure)(struct _Sheet *sheet, struct _Event const *event);
 	Color foreground_color;
 	Color background_color;
 } TextBox;
