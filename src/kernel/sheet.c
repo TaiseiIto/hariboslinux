@@ -377,6 +377,11 @@ bool is_descendant_sheet_of(Sheet const *descendant_candidate, Sheet const *ance
 	return false;
 }
 
+bool is_focused_sheet(Sheet const *sheet)
+{
+	return sheet == focused_sheet;
+}
+
 void move_sheet(Sheet *sheet, short x, short y)
 {
 	prohibit_switch_task();

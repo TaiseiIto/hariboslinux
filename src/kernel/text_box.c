@@ -13,7 +13,8 @@ void *cursor_blink(void *arguments)
 {
 	TextBox *text_box = (TextBox *)arguments;
 	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
-	put_char_sheet(text_box->sheet, 0, 0, text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, ' ');
+	bool blink_on = text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && is_focused_sheet(text_box->sheet);
+	put_char_sheet(text_box->sheet, 0, 0, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, ' ');
 	return NULL;
 }
 

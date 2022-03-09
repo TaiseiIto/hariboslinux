@@ -96,6 +96,7 @@ short get_sheet_y_on_screen(Sheet const *sheet);
 Sheet *get_uppest_sheet(Sheet *sheet, unsigned short x, unsigned short y);
 void init_sheets(Sheet **_background_sheet, void *(*background_sheet_procedure)(struct _Sheet *sheet, struct _Event const *event), Sheet **_mouse_cursor_sheet, Queue *event_queue);
 bool is_descendant_sheet_of(Sheet const *descendant_candidate, Sheet const *ancestor_candidate);
+bool is_focused_sheet(Sheet const *sheet);
 void move_sheet(Sheet *sheet, short x, short y);
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...);
 void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *string);
