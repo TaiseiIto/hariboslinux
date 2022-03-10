@@ -36,8 +36,8 @@ typedef struct _TestTaskArgument
 } TestTaskArgument;
 
 void *background_sheet_procedure(Sheet *sheet, struct _Event const *event);
-void console_task_procedure(void *arguments);
-void test_task_procedure(void *arguments);
+void console_task_procedure(ConsoleTaskArgument *console_task_argument);
+void test_task_procedure(TestTaskArgument *test_task_argument);
 
 void main(void)
 {
@@ -241,7 +241,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 		{
 		case KEY_C:
 			// Open a new console by pressing 'c'
-			console_task = create_task(get_current_task(), console_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
+			console_task = create_task(get_current_task(), (void (*)(void *))console_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
 			console_task_argument = malloc(sizeof(*console_task_argument));
 			console_task_argument->background_sheet = sheet;
 			console_task_return = malloc(sizeof(*console_task_return));
@@ -251,7 +251,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			break;
 		case KEY_T:
 			// Start test task by pressing 't'
-			test_task = create_task(get_current_task(), test_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
+			test_task = create_task(get_current_task(), (void (*)(void *))test_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
 			test_task_argument = malloc(sizeof(*test_task_argument));
 			test_task_argument->background_sheet = sheet;
 			test_task_return = malloc(sizeof(*test_task_return));
@@ -340,20 +340,18 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	}
 }
 
-void console_task_procedure(void *arguments)
+void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 {
 				//{red ,green, blue,alpha}
 	Color background_color	= {0x00, 0x00, 0x00, 0xff};
 	Color foreground_color	= {0xff, 0xff, 0xff, 0xff};
-	ConsoleTaskArgument *task_argument;
 	Queue *event_queue;
 	Task *task;
 	Window *window;
 	printf_serial("Hello, Console Task!\n");
-	task_argument = (ConsoleTaskArgument*)arguments;
 	task = get_current_task();
 	event_queue = create_event_queue(task);
-	window = create_window("Console", task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
+	window = create_window("Console", console_task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
 	make_sheet_text_box(window->client_sheet, foreground_color, background_color);
 	while(true)
 	{
@@ -403,22 +401,20 @@ void console_task_procedure(void *arguments)
 	}
 }
 
-void test_task_procedure(void *arguments)
+void test_task_procedure(TestTaskArgument *test_task_argument)
 {
 				//{red ,green, blue,alpha}
 	Color foreground_color	= {0x00, 0x00, 0x00, 0xff};
 	Color background_color	= {0x80, 0x80, 0x80, 0xff};
 	Queue *event_queue;
 	Task *task;
-	TestTaskArgument *task_argument;
 	Timer *print_counter_timer;
 	unsigned long long counter = 0;
 	Window *window;
 	printf_serial("Hello, Test Task!\n");
-	task_argument = (TestTaskArgument*)arguments;
 	task = get_current_task();
 	event_queue = create_event_queue(task);
-	window = create_window("Test Task", task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
+	window = create_window("Test Task", test_task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0100, 0x0100, event_queue);
 	print_counter_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	while(true)
 	{
