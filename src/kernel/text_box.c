@@ -96,7 +96,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		delete_text_box(text_box);
 		return text_box->default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_KEYBOARD:
-		if(event->event_union.keyboard_event.character)
+		if(event->event_union.keyboard_event.character && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
 		{
 			char *string;
 			insert_char(text_box->chain_string, text_box->chain_string->last_character, event->event_union.keyboard_event.character);
