@@ -35,10 +35,12 @@ void delete_chain_string(ChainString *string)
 void delete_char(ChainString *string, ChainCharacter *position)
 {
 	if(!string || !position)ERROR(); // The string or the position doesn't exist.
+	if(!string->length)ERROR(); // There is no char in the string.
 	if(position == string->first_character)string->first_character = position->next;
 	if(position == string->last_character)string->last_character = position->previous;
 	if(position->next)position->next->previous = position->previous;
 	if(position->previous)position->previous->next = position->next;
+	string->length--;
 	free(position);
 }
 
@@ -87,6 +89,7 @@ void insert_char(ChainString *string, ChainCharacter *position, char wedge)
 		}
 	}
 	else ERROR(); // The string is broken.
+	string->length++;
 }
 
 void insert_char_array(ChainString *string, ChainCharacter *position, char const *wedge)
