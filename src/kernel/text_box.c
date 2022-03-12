@@ -182,7 +182,7 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 {
 	CharacterPosition *new_position;
 	// Insert the character
-	insert_char_front(text_box->string, position->character, wedge);
+	insert_char_front(text_box->string, position ? position->character : NULL, wedge);
 	// Prepare new position for the new character.
 	new_position = malloc(sizeof(*new_position));
 	if(position)
