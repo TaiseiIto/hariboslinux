@@ -15,7 +15,7 @@ void *cursor_blink(TextBox *text_box)
 	bool blink_on;
 	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
 	blink_on = text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && is_focused_sheet(text_box->sheet);
-	put_char_sheet(text_box->sheet, CHAR_WIDTH * text_box->cursor_position_x, CHAR_HEIGHT * text_box->cursor_position_y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, text_box->characters[text_box->width * text_box->cursor_position_y + text_box->cursor_position_x]->character);
+	put_char_sheet(text_box->sheet, CHAR_WIDTH * text_box->cursor_position->x, CHAR_HEIGHT * text_box->cursor_position->y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, text_box->cursor_position->character->character);
 	return NULL;
 }
 
@@ -23,8 +23,7 @@ void delete_text_box(TextBox *text_box)
 {
 	printf_serial("Delete text box %p\n", text_box);
 	prohibit_switch_task();
-	free(text_box->characters);
-	delete_chain_string(text_box->string);
+	text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
 	delete_timer(text_box->cursor_blink_timer);
 	if(root_text_box == text_box)root_text_box = root_text_box->next;
 	if(root_text_box == text_box)root_text_box = NULL;
@@ -59,18 +58,17 @@ TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color backgro
 	printf_serial("Make sheet %p text box %p\n", sheet, new_text_box);
 	prohibit_switch_task();
 	new_text_box->string = create_chain_string("");
+	new_text_box->cursor_position = NULL;
+	new_text_box->first_position = NULL;
+	new_text_box->last_position = NULL;
 	new_text_box->sheet = sheet;
 	new_text_box->default_event_procedure = new_text_box->sheet->event_procedure;
 	new_text_box->sheet->event_procedure = text_box_event_procedure;
 	new_text_box->cursor_blink_timer = create_timer(0, 100, get_current_task()->event_queue, (void *(*)(void *))cursor_blink, (void *)new_text_box, NULL);
 	new_text_box->foreground_color = foreground_color;
 	new_text_box->background_color = background_color;
-	new_text_box->cursor_position_x = 0;
-	new_text_box->cursor_position_y = 0;
 	new_text_box->height = new_text_box->sheet->height / CHAR_HEIGHT;
 	new_text_box->width = new_text_box->sheet->width / CHAR_WIDTH;
-	new_text_box->characters = malloc(new_text_box->height * new_text_box->width * sizeof(*new_text_box->characters));
-	for(unsigned int y = 0; y < new_text_box->height; y++)for(unsigned int x = 0; x < new_text_box->width; x++)new_text_box->characters[new_text_box->width * y + x] = NULL;
 	new_text_box->flags = 0;
 	if(root_text_box)
 	{
@@ -105,13 +103,9 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		if(event->event_union.keyboard_event.character && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
 		{
 			// Insert input character.
-			text_box_insert_char_front(text_box, text_box->cursor_position_x, text_box->cursor_position_y, event->event_union.keyboard_event.character);
+			text_box_insert_char_front(text_box, text_box->cursor_position, event->event_union.keyboard_event.character);
 			// Move cursor.
-			if(text_box->width <= ++text_box->cursor_position_x)
-			{
-				text_box->cursor_position_x -= text_box->width;
-				text_box->cursor_position_y++;
-			}
+			text_box->cursor_position = text_box->cursor_position->next;
 		}
 		return NULL;
 	default:
@@ -119,14 +113,101 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	}
 }
 
-void text_box_insert_char_front(TextBox *text_box, unsigned int x, unsigned int y, char wedge)
+void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 {
-	insert_char_front(text_box->string, text_box->characters[text_box->width * y + x], wedge);
-	// Characters relocation
-	for(ChainCharacter *character = text_box->characters[text_box->width * y + x]->previous; character; character = character->next)
+	unsigned int x = position->x;
+	unsigned int y = position->y;
+	// Delete the character
+	delete_char(text_box->string, position->character);
+	if(position->previous)position->previous->next = position->next;
+	else if(position == text_box->first_position)text_box->first_position = position->next;
+	else ERROR();
+	if(position->next)position->next->previous = position->previous;
+	else if(position == text_box->last_position)text_box->last_position = position->previous;
+	else ERROR();
+	// Relocate characters.
+	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)
 	{
-		text_box->characters[text_box->width * y + x] = character;
-		if(CHAR_HEIGHT * y < text_box->sheet->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, text_box->foreground_color, text_box->background_color, character->character);
+		position_i->x = x;
+		position_i->y = y;
+		put_char_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT + y, text_box->foreground_color, text_box->background_color, position_i->character->character);
+		if(text_box->width <= ++x)
+		{
+			x -= text_box->width;
+			y++;
+		}
+	}
+	free(position);
+}
+
+void text_box_delete_chars(TextBox *text_box, CharacterPosition *position, unsigned int length)
+{
+	CharacterPosition *next_position;
+	for(unsigned int i = 0; i < length; i++)
+	{
+		if(!position)ERROR(); // The position doesn't exist.
+		next_position = position->next;
+		text_box_delete_char(text_box, position);
+		position = next_position;
+	}
+}
+
+void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, char wedge)
+{
+	CharacterPosition *new_position;
+	// Insert the character
+	insert_char_front(text_box->string, position->character, wedge);
+	// Prepare new position for the new character.
+	new_position = malloc(sizeof(*new_position));
+	if(position)
+	{
+		new_position->character = position->character->previous;
+		new_position->x = position->x;
+		new_position->y = position->y;
+		new_position->next = position;
+		new_position->previous = position->previous;
+		if(position->previous)position->previous->next = new_position;
+		else if(position == text_box->first_position)text_box->first_position = new_position;
+		else ERROR();
+		position->previous = new_position;
+	}
+	else
+	{
+		if(text_box->first_position && text_box->last_position)
+		{
+			new_position->character = text_box->string->last_character;
+			new_position->x = text_box->last_position->x;
+			new_position->y = text_box->last_position->y;
+			if(text_box->width <= ++new_position->x)
+			{
+				new_position->x -= text_box->width;
+				new_position->y++;
+			}
+			new_position->previous = text_box->last_position;
+			new_position->next = NULL;
+			text_box->last_position->next = new_position;
+			text_box->last_position = new_position;
+		}
+		else if(!text_box->first_position && !text_box->last_position)
+		{
+			new_position->character = text_box->string->last_character;
+			new_position->x = 0;
+			new_position->y = 0;
+			new_position->previous = NULL;
+			new_position->next = NULL;
+			text_box->first_position = new_position;
+			text_box->last_position = new_position;
+		}
+		else ERROR(); // The position list is broken.
+	}
+	// Relocate characters.
+	unsigned int x = new_position->x;
+	unsigned int y = new_position->y;
+	for(CharacterPosition *position_i = new_position; position_i; position_i = position_i->next)
+	{
+		position_i->x = x;
+		position_i->y = y;
+		put_char_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT + y, text_box->foreground_color, text_box->background_color, position_i->character->character);
 		if(text_box->width <= ++x)
 		{
 			x -= text_box->width;

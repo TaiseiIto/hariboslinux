@@ -4,10 +4,21 @@
 #include "chain_string.h"
 #include "sheet.h"
 
+typedef struct _CharacterPosition
+{
+	ChainCharacter *character;
+	unsigned int x;
+	unsigned int y;
+	struct _CharacterPosition *previous;
+	struct _CharacterPosition *next;
+} CharacterPosition;
+
 typedef struct _TextBox
 {
-	ChainCharacter **characters; // characters[width * y + x] is a character at position (x, y) on the text box.
 	ChainString *string;
+	CharacterPosition *cursor_position;
+	CharacterPosition *first_position;
+	CharacterPosition *last_position;
 	Sheet *sheet;
 	void *(*default_event_procedure)(struct _Sheet *sheet, struct _Event const *event);
 	Timer *cursor_blink_timer;
@@ -15,8 +26,6 @@ typedef struct _TextBox
 	struct _TextBox *previous;
 	Color foreground_color;
 	Color background_color;
-	unsigned int cursor_position_x;
-	unsigned int cursor_position_y;
 	unsigned int height; // sheet height / CHAR_HEIGHT
 	unsigned int width; // sheet width / CHAR_WIDTH
 	unsigned char flags;
@@ -24,7 +33,9 @@ typedef struct _TextBox
 } TextBox;
 
 TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color background_color);
-void text_box_insert_char_front(TextBox *text_box, unsigned int x, unsigned int y, char wedge);
+void text_box_delete_char(TextBox *text_box, CharacterPosition *position);
+void text_box_delete_chars(TextBox *text_box, CharacterPosition *position, unsigned int length);
+void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, char wedge);
 
 #endif
 
