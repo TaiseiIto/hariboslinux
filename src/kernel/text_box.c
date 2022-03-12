@@ -1,3 +1,4 @@
+#include "font.h"
 #include "memory.h"
 #include "serial.h"
 #include "text_box.h"
@@ -65,6 +66,10 @@ TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color backgro
 	new_text_box->background_color = background_color;
 	new_text_box->cursor_position_x = 0;
 	new_text_box->cursor_position_y = 0;
+	new_text_box->height = new_text_box->sheet->height / CHAR_HEIGHT;
+	new_text_box->width = new_text_box->sheet->width / CHAR_WIDTH;
+	new_text_box->characters = malloc(new_text_box->height * new_text_box->width * sizeof(*new_text_box->characters));
+	for(unsigned int y = 0; y < new_text_box->height; y++)for(unsigned int x = 0; x < new_text_box->width; x++)new_text_box->characters[new_text_box->width * y + x] = NULL;
 	new_text_box->flags = 0;
 	if(root_text_box)
 	{
