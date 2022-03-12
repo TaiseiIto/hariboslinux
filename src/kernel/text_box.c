@@ -104,15 +104,34 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	case EVENT_TYPE_SHEET_KEYBOARD:
 		if(event->event_union.keyboard_event.character && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
 		{
-			char *string;
-			insert_char_back(text_box->string, text_box->string->last_character, event->event_union.keyboard_event.character);
-			string = create_char_array_from_chain_string(text_box->string);
-			printf_serial(string);
-			free(string);
+			// Insert input character.
+			text_box_insert_char_front(text_box, text_box->cursor_position_x, text_box->cursor_position_y, event->event_union.keyboard_event.character);
+			// Move cursor.
+			if(text_box->width <= ++text_box->cursor_position_x)
+			{
+				text_box->cursor_position_x -= text_box->width;
+				text_box->cursor_position_y++;
+			}
 		}
 		return NULL;
 	default:
 		return text_box->default_event_procedure(sheet, event);
+	}
+}
+
+void text_box_insert_char_front(TextBox *text_box, unsigned int x, unsigned int y, char wedge)
+{
+	insert_char_front(text_box->string, text_box->characters[text_box->width * y + x], wedge);
+	// Characters relocation
+	for(ChainCharacter *character = text_box->characters[text_box->width * y + x]->previous; character; character = character->next)
+	{
+		text_box->characters[text_box->width * y + x] = character;
+		if(CHAR_HEIGHT * y < text_box->sheet->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, text_box->foreground_color, text_box->background_color, character->character);
+		if(text_box->width <= ++x)
+		{
+			x -= text_box->width;
+			y++;
+		}
 	}
 }
 

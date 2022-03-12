@@ -24,6 +24,7 @@ typedef struct _TextBox
 } TextBox;
 
 TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color background_color);
+void text_box_insert_char_front(TextBox *text_box, unsigned int x, unsigned int y, char wedge);
 
 #endif
 
