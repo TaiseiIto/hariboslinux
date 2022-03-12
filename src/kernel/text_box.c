@@ -135,6 +135,7 @@ void refresh_text_box(TextBox *text_box)
 		x = position->x;
 		y = position->y;
 		put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * position->y, text_box->foreground_color, text_box->background_color, position->character->character);
+		if(position->character->character == '\n')fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, text_box->sheet->width - CHAR_WIDTH * x, CHAR_HEIGHT, text_box->background_color);
 	}
 	if(x < text_box->width - 1)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (x + 1), CHAR_HEIGHT * y, CHAR_WIDTH * (text_box->width - (x + 1)), CHAR_HEIGHT, text_box->background_color);
 	if(CHAR_HEIGHT * (y + 1) < text_box->sheet->height)fill_box_sheet(text_box->sheet, 0, CHAR_HEIGHT * (y + 1), CHAR_WIDTH * text_box->width, text_box->sheet->height - CHAR_HEIGHT * (y + 1), text_box->background_color);
