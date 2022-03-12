@@ -178,8 +178,16 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	case EVENT_TYPE_SHEET_KEYBOARD:
 		if(event->event_union.keyboard_event.character && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
 		{
-			// Insert input character.
-			text_box_insert_char_front(text_box, text_box->cursor_position, event->event_union.keyboard_event.character);
+			switch(event->event_union.keyboard_event.character)
+			{
+			case '\b':
+				printf_serial("BACKSPACE!!!\n");
+				break;
+			default:
+				// Insert input character.
+				text_box_insert_char_front(text_box, text_box->cursor_position, event->event_union.keyboard_event.character);
+				break;
+			}
 		}
 		return NULL;
 	default:
