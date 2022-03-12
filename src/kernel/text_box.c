@@ -15,7 +15,7 @@ void *cursor_blink(TextBox *text_box)
 	bool blink_on;
 	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
 	blink_on = text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && is_focused_sheet(text_box->sheet);
-	put_char_sheet(text_box->sheet, 0, 0, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, ' ');
+	put_char_sheet(text_box->sheet, CHAR_WIDTH * text_box->cursor_position_x, CHAR_HEIGHT * text_box->cursor_position_y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, text_box->characters[text_box->width * text_box->cursor_position_y + text_box->cursor_position_x]->character);
 	return NULL;
 }
 
