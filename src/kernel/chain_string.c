@@ -8,7 +8,7 @@ ChainString *create_chain_string(char const *string)
 	chain_string->first_character = NULL;
 	chain_string->last_character = NULL;
 	chain_string->length = 0;
-	if(string)insert_char_array_back(chain_string, NULL, string);
+	if(string)insert_char_array_front(chain_string, NULL, string);
 	return chain_string;
 }
 
