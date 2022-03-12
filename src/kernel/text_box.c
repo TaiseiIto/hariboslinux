@@ -233,7 +233,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 			y++;
 		}
 	}
-	refresh_text_box_after_position(text_box, position->next);
+	if(position->next)refresh_text_box_after_position(text_box, position->next);
 	free(position);
 }
 
