@@ -22,9 +22,10 @@ void *cursor_blink(TextBox *text_box)
 void delete_text_box(TextBox *text_box)
 {
 	printf_serial("Delete text box %p\n", text_box);
+	prohibit_switch_task();
+	free(text_box->characters);
 	delete_chain_string(text_box->string);
 	delete_timer(text_box->cursor_blink_timer);
-	prohibit_switch_task();
 	if(root_text_box == text_box)root_text_box = root_text_box->next;
 	if(root_text_box == text_box)root_text_box = NULL;
 	text_box->previous->next = text_box->next;
