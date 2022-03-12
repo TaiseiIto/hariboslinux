@@ -132,9 +132,6 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		{
 			// Insert input character.
 			text_box_insert_char_front(text_box, text_box->cursor_position, event->event_union.keyboard_event.character);
-			// Move cursor.
-			if(text_box->cursor_position)text_box->cursor_position = text_box->cursor_position->next;
-			else text_box->cursor_position = text_box->first_position;
 		}
 		return NULL;
 	default:
