@@ -172,11 +172,19 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	{
 		position_i->x = x;
 		position_i->y = y;
-		put_char_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, text_box->foreground_color, text_box->background_color, position_i->character->character);
-		if(text_box->width <= ++x)
+		switch(position_i->character->character)
 		{
-			x -= text_box->width;
+		case '\n':
+			x = 0;
 			y++;
+			break;
+		default:
+			if(text_box->width <= ++x)
+			{
+				x -= text_box->width;
+				y++;
+			}
+			break;
 		}
 	}
 	free(position);
@@ -250,10 +258,19 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 	{
 		position_i->x = x;
 		position_i->y = y;
-		if(text_box->width <= ++x)
+		switch(position_i->character->character)
 		{
-			x -= text_box->width;
+		case '\n':
+			x = 0;
 			y++;
+			break;
+		default:
+			if(text_box->width <= ++x)
+			{
+				x -= text_box->width;
+				y++;
+			}
+			break;
 		}
 	}
 	refresh_text_box(text_box);
