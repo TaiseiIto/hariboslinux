@@ -1,4 +1,5 @@
 #include "boot.h"
+#include "chain_string.h"
 #include "event.h"
 #include "font.h"
 #include "gdt.h"
@@ -214,6 +215,8 @@ void main(void)
 
 void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 {
+	ChainString *chain_string;
+	char *string;
 	Color opaque_red;
 	Color opaque_green;
 	Color opaque_blue;
@@ -239,6 +242,14 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 		printf_serial("Keyboard event @ background sheet.\n");
 		switch(event->event_union.keyboard_event.keycode)
 		{
+		case KEY_A:
+			// Chain string test
+			chain_string = create_chain_string("Hello, chain string!\n");
+			string = create_char_array_from_chain_string(chain_string);
+			printf_serial(string);
+			free(string);
+			delete_chain_string(chain_string);
+			break;
 		case KEY_C:
 			// Open a new console by pressing 'c'
 			console_task = create_task(get_current_task(), (void (*)(void *))console_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
