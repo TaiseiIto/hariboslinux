@@ -21,7 +21,7 @@ void *cursor_blink(TextBox *text_box)
 void delete_text_box(TextBox *text_box)
 {
 	printf_serial("Delete text box %p\n", text_box);
-	delete_chain_string(text_box->chain_string);
+	delete_chain_string(text_box->string);
 	delete_timer(text_box->cursor_blink_timer);
 	prohibit_switch_task();
 	if(root_text_box == text_box)root_text_box = root_text_box->next;
@@ -56,7 +56,7 @@ TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color backgro
 	TextBox *new_text_box = malloc(sizeof(*new_text_box));
 	printf_serial("Make sheet %p text box %p\n", sheet, new_text_box);
 	prohibit_switch_task();
-	new_text_box->chain_string = create_chain_string("");
+	new_text_box->string = create_chain_string("");
 	new_text_box->sheet = sheet;
 	new_text_box->default_event_procedure = new_text_box->sheet->event_procedure;
 	new_text_box->sheet->event_procedure = text_box_event_procedure;
@@ -99,8 +99,8 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		if(event->event_union.keyboard_event.character && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
 		{
 			char *string;
-			insert_char(text_box->chain_string, text_box->chain_string->last_character, event->event_union.keyboard_event.character);
-			string = create_char_array_from_chain_string(text_box->chain_string);
+			insert_char(text_box->string, text_box->string->last_character, event->event_union.keyboard_event.character);
+			string = create_char_array_from_chain_string(text_box->string);
 			printf_serial(string);
 			free(string);
 		}
