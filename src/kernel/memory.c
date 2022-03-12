@@ -116,6 +116,11 @@ void init_memory(void)
 void *malloc(size_t size)
 {
 	MemorySection *memory_section;
+	if(!size)
+	{
+		ERROR();
+		return NULL;
+	}
 	cli_task();
 	memory_section = root_memory_section;
 	do

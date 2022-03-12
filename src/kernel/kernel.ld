@@ -9,6 +9,7 @@ SECTIONS
 	.text :
 	{
 		main.o(.text)
+		chain_string.o(.text)
 		cmos.o(.text)
 		disk.o(.text)
 		exception.o(.text)
@@ -42,6 +43,7 @@ SECTIONS
 		timer.o(.text)
 		window.o(.text)
 		main.o(.rodata)
+		chain_string.o(.rodata)
 		cmos.o(.rodata)
 		disk.o(.rodata)
 		exception.o(.rodata)
@@ -75,6 +77,7 @@ SECTIONS
 		timer.o(.rodata)
 		window.o(.rodata)
 		main.o(.data)
+		chain_string.o(.data)
 		cmos.o(.data)
 		disk.o(.data)
 		exception.o(.data)
@@ -108,6 +111,7 @@ SECTIONS
 		timer.o(.data)
 		window.o(.data)
 		main.o(.bss)
+		chain_string.o(.bss)
 		cmos.o(.bss)
 		disk.o(.bss)
 		exception.o(.bss)
