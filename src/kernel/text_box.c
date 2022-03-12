@@ -25,12 +25,20 @@ void *cursor_blink(TextBox *text_box)
 	else
 	{
 		character = ' ';
-		position_x = text_box->last_position->x;
-		position_y = text_box->last_position->y;
-		if(text_box->width <= ++position_x)
+		if(text_box->last_position)
 		{
-			position_x -= text_box->width;
-			position_y++;
+			position_x = text_box->last_position->x;
+			position_y = text_box->last_position->y;
+			if(text_box->width <= ++position_x)
+			{
+				position_x -= text_box->width;
+				position_y++;
+			}
+		}
+		else
+		{
+			position_x = 0;
+			position_y = 0;
 		}
 	}
 	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
