@@ -105,7 +105,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		if(event->event_union.keyboard_event.character && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
 		{
 			char *string;
-			insert_char(text_box->string, text_box->string->last_character, event->event_union.keyboard_event.character);
+			insert_char_back(text_box->string, text_box->string->last_character, event->event_union.keyboard_event.character);
 			string = create_char_array_from_chain_string(text_box->string);
 			printf_serial(string);
 			free(string);

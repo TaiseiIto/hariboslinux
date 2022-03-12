@@ -8,7 +8,7 @@ ChainString *create_chain_string(char const *string)
 	chain_string->first_character = NULL;
 	chain_string->last_character = NULL;
 	chain_string->length = 0;
-	if(string)insert_char_array(chain_string, NULL, string);
+	if(string)insert_char_array_back(chain_string, NULL, string);
 	return chain_string;
 }
 
@@ -57,7 +57,7 @@ void delete_chars(ChainString *string, ChainCharacter *position, unsigned int le
 	}
 }
 
-void insert_char(ChainString *string, ChainCharacter *position, char wedge)
+void insert_char_back(ChainString *string, ChainCharacter *position, char wedge)
 {
 	ChainCharacter *new_chain_character;
 	if(!string)ERROR(); // The string doesn't exist.
@@ -92,21 +92,21 @@ void insert_char(ChainString *string, ChainCharacter *position, char wedge)
 	string->length++;
 }
 
-void insert_char_array(ChainString *string, ChainCharacter *position, char const *wedge)
+void insert_char_array_back(ChainString *string, ChainCharacter *position, char const *wedge)
 {
 	for(; *wedge; wedge++)
 	{
-		insert_char(string, position, *wedge);
+		insert_char_back(string, position, *wedge);
 		if(position)position = position->next;
 		else position = string->first_character;
 	}
 }
 
-void insert_chain_string(ChainString *string, ChainCharacter *position, ChainString const *wedge)
+void insert_chain_string_back(ChainString *string, ChainCharacter *position, ChainString const *wedge)
 {
 	for(ChainCharacter const *wedge_character = wedge->first_character; wedge_character; wedge_character = wedge_character->next)
 	{
-		insert_char(string, position, wedge_character->character);
+		insert_char_back(string, position, wedge_character->character);
 		if(position)position = position->next;
 		else position = string->first_character;
 	}
