@@ -57,6 +57,51 @@ void delete_chars(ChainString *string, ChainCharacter *position, unsigned int le
 	}
 }
 
+void insert_char_front(ChainString *string, ChainCharacter *position, char wedge)
+{
+	ChainCharacter *new_chain_character;
+	if(!string)ERROR(); // The string doesn't exist.
+	new_chain_character = malloc(sizeof(*new_chain_character));
+	new_chain_character->character = wedge;
+	if(!string->first_character && !string->last_character)
+	{
+		new_chain_character->previous = NULL;
+		new_chain_character->next = NULL;
+		string->first_character = new_chain_character;
+		string->last_character = new_chain_character;
+	}
+	else if(string->first_character && string->last_character)
+	{
+		if(!position) // Insert the wedge after the last character.
+		{
+			new_chain_character->previous = string->last_character;
+			new_chain_character->next = NULL;
+			string->last_character->next = new_chain_character;
+			string->last_character = new_chain_character;
+		}
+		else
+		{
+			new_chain_character->previous = position->previous;
+			new_chain_character->next = position;
+			if(position->previous)position->previous->next = new_chain_character;
+			position->previous = new_chain_character;
+			if(position == string->first_character)string->first_character = new_chain_character;
+		}
+	}
+	else ERROR(); // The string is broken.
+	string->length++;
+}
+
+void insert_char_array_front(ChainString *string, ChainCharacter *position, char const *wedge)
+{
+	for(; *wedge; wedge++)insert_char_front(string, position, *wedge);
+}
+
+void insert_chain_string_front(ChainString *string, ChainCharacter *position, ChainString const *wedge)
+{
+	for(ChainCharacter const *wedge_character = wedge->first_character; wedge_character; wedge_character = wedge_character->next)insert_char_front(string, position, wedge_character->character);
+}
+
 void insert_char_back(ChainString *string, ChainCharacter *position, char wedge)
 {
 	ChainCharacter *new_chain_character;
