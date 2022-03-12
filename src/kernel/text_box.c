@@ -13,9 +13,29 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event);
 void *cursor_blink(TextBox *text_box)
 {
 	bool blink_on;
+	char character;
+	unsigned int position_x;
+	unsigned int position_y;
+	if(text_box->cursor_position)
+	{
+		character = text_box->cursor_position->character->character;
+		position_x = text_box->cursor_position->x;
+		position_y = text_box->cursor_position->y;
+	}
+	else
+	{
+		character = ' ';
+		position_x = text_box->last_position->x;
+		position_y = text_box->last_position->y;
+		if(text_box->width <= ++position_x)
+		{
+			position_x -= text_box->width;
+			position_y++;
+		}
+	}
 	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
 	blink_on = text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && is_focused_sheet(text_box->sheet);
-	put_char_sheet(text_box->sheet, CHAR_WIDTH * text_box->cursor_position->x, CHAR_HEIGHT * text_box->cursor_position->y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, text_box->cursor_position->character->character);
+	put_char_sheet(text_box->sheet, CHAR_WIDTH * position_x, CHAR_HEIGHT * position_y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, character);
 	return NULL;
 }
 
