@@ -5,9 +5,10 @@
 
 TextBox *root_text_box = NULL;
 
+TextBox *get_text_box_from_sheet(Sheet *sheet);
 void *cursor_blink(TextBox *text_box);
 void delete_text_box(TextBox *text_box);
-TextBox *get_text_box_from_sheet(Sheet *sheet);
+void refresh_text_box(TextBox *text_box);
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event);
 
 void *cursor_blink(TextBox *text_box)
@@ -115,6 +116,20 @@ TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color backgro
 	return new_text_box;
 }
 
+void refresh_text_box(TextBox *text_box)
+{
+	unsigned int x = 0;
+	unsigned int y = 0;
+	for(CharacterPosition *position = text_box->first_position; position; position = position->next)
+	{
+		x = position->x;
+		y = position->y;
+		put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * position->y, text_box->foreground_color, text_box->background_color, position->character->character);
+	}
+	if(x < text_box->width - 1)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (x + 1), CHAR_HEIGHT * y, CHAR_WIDTH * (text_box->width - (x + 1)), CHAR_HEIGHT, text_box->background_color);
+	if(y < text_box->height - 1)fill_box_sheet(text_box->sheet, 0, CHAR_HEIGHT * (y + 1), CHAR_WIDTH * text_box->width, CHAR_HEIGHT + (text_box->height - (y + 1)), text_box->background_color);
+}
+
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 {
 	TextBox *text_box = get_text_box_from_sheet(sheet);
@@ -164,6 +179,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 		}
 	}
 	free(position);
+	refresh_text_box(text_box);
 }
 
 void text_box_delete_chars(TextBox *text_box, CharacterPosition *position, unsigned int length)
@@ -233,13 +249,13 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 	{
 		position_i->x = x;
 		position_i->y = y;
-		put_char_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, text_box->foreground_color, text_box->background_color, position_i->character->character);
 		if(text_box->width <= ++x)
 		{
 			x -= text_box->width;
 			y++;
 		}
 	}
+	refresh_text_box(text_box);
 	// Check text_box->string.
 	char *string = create_char_array_from_chain_string(text_box->string);
 	printf_serial(string);
