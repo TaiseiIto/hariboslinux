@@ -181,7 +181,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 			switch(event->event_union.keyboard_event.character)
 			{
 			case '\b':
-				printf_serial("BACKSPACE!!!\n");
+				if(text_box->first_position && text_box->last_position)text_box_delete_char(text_box, text_box->cursor_position && text_box->cursor_position->previous ? text_box->cursor_position->previous : text_box->last_position);
 				break;
 			default:
 				// Insert input character.
