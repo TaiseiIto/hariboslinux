@@ -240,5 +240,9 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 			y++;
 		}
 	}
+	// Check text_box->string.
+	char *string = create_char_array_from_chain_string(text_box->string);
+	printf_serial(string);
+	free(string);
 }
 
