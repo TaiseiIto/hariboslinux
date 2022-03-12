@@ -36,13 +36,19 @@ void *cursor_blink(TextBox *text_box)
 				position_x = 0;
 				position_y++;
 				break;
-			default:
-				if(text_box->width <= ++position_x)
-				{
-					position_x -= text_box->width;
-					position_y++;
-				}
+			case '\t':
+				position_x += TAB_LENGTH;
+				position_x /= TAB_LENGTH;
+				position_x *= TAB_LENGTH;
 				break;
+			default:
+				position_x++;
+				break;
+			}
+			if(text_box->width <= position_x)
+			{
+				position_x -= text_box->width;
+				position_y++;
 			}
 		}
 		else
@@ -188,13 +194,19 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 			x = 0;
 			y++;
 			break;
-		default:
-			if(text_box->width <= ++x)
-			{
-				x -= text_box->width;
-				y++;
-			}
+		case '\t':
+			x += TAB_LENGTH;
+			x /= TAB_LENGTH;
+			x *= TAB_LENGTH;
 			break;
+		default:
+			x++;
+			break;
+		}
+		if(text_box->width <= x)
+		{
+			x -= text_box->width;
+			y++;
 		}
 	}
 	free(position);
@@ -245,13 +257,19 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 				new_position->x = 0;
 				new_position->y++;
 				break;
-			default:
-				if(text_box->width <= ++new_position->x)
-				{
-					new_position->x -= text_box->width;
-					new_position->y++;
-				}
+			case '\t':
+				new_position->x += TAB_LENGTH;
+				new_position->x /= TAB_LENGTH;
+				new_position->x *= TAB_LENGTH;
 				break;
+			default:
+				new_position->x++;
+				break;
+			}
+			if(text_box->width <= new_position->x)
+			{
+				new_position->x -= text_box->width;
+				new_position->y++;
 			}
 			new_position->previous = text_box->last_position;
 			new_position->next = NULL;
@@ -283,13 +301,19 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 			x = 0;
 			y++;
 			break;
-		default:
-			if(text_box->width <= ++x)
-			{
-				x -= text_box->width;
-				y++;
-			}
+		case '\t':
+			x += TAB_LENGTH;
+			x /= TAB_LENGTH;
+			x *= TAB_LENGTH;
 			break;
+		default:
+			x++;
+			break;
+		}
+		if(text_box->width <= x)
+		{
+			x -= text_box->width;
+			y++;
 		}
 	}
 	refresh_text_box(text_box);
