@@ -20,7 +20,7 @@ char *create_char_array_from_chain_string(ChainString const *string)
 	if(!string->length)return NULL;
 	char_array = malloc(string->length + 1);
 	writer = char_array;
-	for(ChainCharacter *position = string->first_character; position != string->last_character; position = position->next)*writer++ = position->character;
+	for(ChainCharacter *position = string->first_character; position; position = position->next)*writer++ = position->character;
 	*writer = '\0';
 	return char_array;
 }
@@ -98,6 +98,7 @@ void insert_char_array(ChainString *string, ChainCharacter *position, char const
 	{
 		insert_char(string, position, *wedge);
 		if(position)position = position->next;
+		else position = string->first_character;
 	}
 }
 
@@ -107,6 +108,7 @@ void insert_chain_string(ChainString *string, ChainCharacter *position, ChainStr
 	{
 		insert_char(string, position, wedge_character->character);
 		if(position)position = position->next;
+		else position = string->first_character;
 	}
 }
 
