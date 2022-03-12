@@ -177,7 +177,7 @@ void main(void)
 			}
 			else if(event->event_union.timer_event.timer == checking_free_memory_space_size_timer)
 			{
-				printf_sheet(background_sheet, 0x0000, 0x0007 * CHAR_HEIGHT, foreground_color, background_color, "free memory space size = %u bytes", get_free_memory_space_size());
+				printf_sheet(background_sheet, 0x0000, 0x0007 * CHAR_HEIGHT, foreground_color, background_color, "free memory space size = %#010x bytes", get_free_memory_space_size());
 				#ifdef LOGGING
 				printf_serial("free memory space size = %u bytes\n", get_free_memory_space_size());
 				#endif
