@@ -229,10 +229,19 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 			new_position->character = text_box->string->last_character;
 			new_position->x = text_box->last_position->x;
 			new_position->y = text_box->last_position->y;
-			if(text_box->width <= ++new_position->x)
+			switch(text_box->last_position->character->character)
 			{
-				new_position->x -= text_box->width;
+			case '\n':
+				new_position->x = 0;
 				new_position->y++;
+				break;
+			default:
+				if(text_box->width <= ++new_position->x)
+				{
+					new_position->x -= text_box->width;
+					new_position->y++;
+				}
+				break;
 			}
 			new_position->previous = text_box->last_position;
 			new_position->next = NULL;
