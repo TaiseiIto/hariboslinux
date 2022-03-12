@@ -30,10 +30,19 @@ void *cursor_blink(TextBox *text_box)
 		{
 			position_x = text_box->last_position->x;
 			position_y = text_box->last_position->y;
-			if(text_box->width <= ++position_x)
+			switch(text_box->last_position->character->character)
 			{
-				position_x -= text_box->width;
+			case '\n':
+				position_x = 0;
 				position_y++;
+				break;
+			default:
+				if(text_box->width <= ++position_x)
+				{
+					position_x -= text_box->width;
+					position_y++;
+				}
+				break;
 			}
 		}
 		else
