@@ -299,6 +299,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	if(position->next)position->next->previous = position->previous;
 	else if(position == text_box->last_position)text_box->last_position = position->previous;
 	else ERROR();
+	if(position == text_box->cursor_position)text_box->cursor_position = position->next;
 	// Relocate characters.
 	x = position->x;
 	y = position->y;
