@@ -197,7 +197,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				else text_box->cursor_position = text_box->last_position;
 				// Print new cursor.
 				cursor_position = get_cursor_position(text_box);
-				if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+				if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
 				break;
 			case KEY_RIGHT_ARROW:
 				if(text_box->cursor_position)
@@ -208,7 +208,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 					text_box->cursor_position = text_box->cursor_position->next;
 					// Print new cursor.
 					cursor_position = get_cursor_position(text_box);
-					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
 				}
 				break;
 			case KEY_UP_ARROW:
