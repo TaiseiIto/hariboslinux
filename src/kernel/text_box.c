@@ -211,16 +211,16 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	else if(position == text_box->last_position)text_box->last_position = position->previous;
 	else ERROR();
 	// Relocate characters.
-	is_erased_position = malloc(text_box->height * text_box->width * sizeof(*is_erased_position));
-	for(y = 0; y < text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
-	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)is_erased_position[text_box->width * position_i->y + position_i->x] = true;
+	is_erased_position = malloc((text_box->height + 1) * text_box->width * sizeof(*is_erased_position));
+	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
+	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = true;
 	x = position->x;
 	y = position->y;
 	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)
 	{
 		position_i->x = x;
 		position_i->y = y;
-		is_erased_position[text_box->width * position_i->y + position_i->x] = false;
+		if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = false;
 		switch(position_i->character->character)
 		{
 		case '\n':
@@ -243,7 +243,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 		}
 	}
 	refresh_text_box_after_position(text_box, position->next);
-	for(y = 0; y < text_box->height; y++)for(x = 0; x < text_box->width; x++)if(is_erased_position[text_box->width * y + x])fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, CHAR_WIDTH, CHAR_HEIGHT, text_box->background_color);
+	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)if(is_erased_position[text_box->width * y + x])fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, CHAR_WIDTH, CHAR_HEIGHT, text_box->background_color);
 	free(is_erased_position);
 	free(position);
 }
