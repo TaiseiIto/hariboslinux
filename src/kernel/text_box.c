@@ -184,21 +184,23 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 			switch(event->event_union.keyboard_event.keycode)
 			{
 			case KEY_DOWN_ARROW:
-				printf_serial("Down arrow pushed.\n");
-				CharacterPosition *new_position = NULL;
-				// Find the position 1 line down.
-				for(CharacterPosition *new_position_candidate = text_box->cursor_position; new_position_candidate; new_position_candidate = new_position_candidate->next)if((cursor_position.x <= new_position_candidate->x || new_position_candidate->next && (cursor_position.x < new_position_candidate->next->x || cursor_position.y + 1 < new_position_candidate->next->y)) && new_position_candidate->y == cursor_position.y + 1)
+				if(text_box->cursor_position)
 				{
-					new_position = new_position_candidate;
-					break;
+					CharacterPosition *new_position = NULL;
+					// Find the position 1 line down.
+					for(CharacterPosition *new_position_candidate = text_box->cursor_position; new_position_candidate; new_position_candidate = new_position_candidate->next)if((cursor_position.x <= new_position_candidate->x || new_position_candidate->next && (cursor_position.x < new_position_candidate->next->x || cursor_position.y + 1 < new_position_candidate->next->y)) && new_position_candidate->y == cursor_position.y + 1)
+					{
+						new_position = new_position_candidate;
+						break;
+					}
+					// Delete previous cursor.
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+					// Move cursor.
+					text_box->cursor_position = new_position;
+					// Print new cursor.
+					cursor_position = get_cursor_position(text_box);
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
 				}
-				// Delete previous cursor.
-				if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
-				// Move cursor.
-				text_box->cursor_position = new_position;
-				// Print new cursor.
-				cursor_position = get_cursor_position(text_box);
-				if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
 				break;
 			case KEY_LEFT_ARROW:
 				// Delete previous cursor.
