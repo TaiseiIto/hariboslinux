@@ -157,8 +157,10 @@ void refresh_text_box_after_position(TextBox *text_box, CharacterPosition const 
 		x = position_i->x;
 		y = position_i->y;
 		put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, text_box->foreground_color, text_box->background_color, position_i->character->character);
-		if(position_i->character->character == '\n')fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, text_box->sheet->width - CHAR_WIDTH * x, CHAR_HEIGHT, text_box->background_color);
+		if(position_i->character->character == '\n')fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, CHAR_WIDTH * (text_box->width - x), CHAR_HEIGHT, text_box->background_color);
 	}
+	x = text_box->last_position->x;
+	y = text_box->last_position->y;
 	if(x < text_box->width - 1)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (x + 1), CHAR_HEIGHT * y, CHAR_WIDTH * (text_box->width - (x + 1)), CHAR_HEIGHT, text_box->background_color);
 	if(CHAR_HEIGHT * (y + 1) < text_box->sheet->height)fill_box_sheet(text_box->sheet, 0, CHAR_HEIGHT * (y + 1), CHAR_WIDTH * text_box->width, text_box->sheet->height - CHAR_HEIGHT * (y + 1), text_box->background_color);
 }
@@ -233,7 +235,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 			y++;
 		}
 	}
-	if(position->next)refresh_text_box_after_position(text_box, position->next);
+	refresh_text_box_after_position(text_box, position->next);
 	free(position);
 }
 
