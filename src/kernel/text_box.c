@@ -251,7 +251,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				}
 				break;
 			case KEY_DELETE:
-				printf_serial("Delete pushed.\n");
+				if(text_box->cursor_position)text_box_delete_char(text_box, text_box->cursor_position);
 				break;
 			default:
 				switch(event->event_union.keyboard_event.character)
