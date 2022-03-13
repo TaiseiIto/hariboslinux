@@ -10,7 +10,8 @@ TextBox *get_text_box_from_sheet(Sheet *sheet);
 void *cursor_blink(TextBox *text_box);
 void delete_text_box(TextBox *text_box);
 void refresh_text_box(TextBox *text_box);
-void refresh_text_box_after_position(TextBox *text_box, CharacterPosition const *position);
+void scroll_down(TextBox *text_box);
+void scroll_up(TextBox *text_box);
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event);
 
 CharacterPosition get_cursor_position(TextBox const *text_box)
@@ -141,6 +142,7 @@ void refresh_text_box(TextBox *text_box)
 {
 	unsigned int x = 0;
 	unsigned int y = 0;
+	// Print text
 	for(CharacterPosition *position = text_box->first_position; position; position = position->next)
 	{
 		x = position->x;
@@ -151,24 +153,27 @@ void refresh_text_box(TextBox *text_box)
 			else put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), text_box->foreground_color, text_box->background_color, position->character->character);
 		}
 	}
+	// Print
 	if(y - text_box->scroll_amount <= text_box->height && x < text_box->width - 1)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (x + 1), CHAR_HEIGHT * (y - text_box->scroll_amount), CHAR_WIDTH * (text_box->width - (x + 1)), CHAR_HEIGHT, text_box->background_color);
 	if(CHAR_HEIGHT * (y + 1 - text_box->scroll_amount) < text_box->sheet->height)fill_box_sheet(text_box->sheet, 0, CHAR_HEIGHT * (y + 1 - text_box->scroll_amount), CHAR_WIDTH * text_box->width, text_box->sheet->height - CHAR_HEIGHT * (y + 1 - text_box->scroll_amount), text_box->background_color);
 }
 
-void refresh_text_box_after_position(TextBox *text_box, CharacterPosition const *position)
+void scroll_down(TextBox *text_box)
 {
-	unsigned int x = 0;
-	unsigned int y = 0;
-	for(CharacterPosition const *position_i = position; position_i; position_i = position_i->next)
+	if(text_box->last_position && text_box->height <= text_box->last_position->y - text_box->scroll_amount)
 	{
-		x = position_i->x;
-		y = position_i->y;
-		if(position_i->y - text_box->scroll_amount <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * (position_i->y - text_box->scroll_amount), position_i == text_box->cursor_position ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position ? text_box->foreground_color : text_box->background_color, position_i->character->character);
+		text_box->scroll_amount++;
+		refresh_text_box(text_box);
 	}
-	x = text_box->last_position->x;
-	y = text_box->last_position->y;
-	if(y - text_box->scroll_amount <= text_box->height && x < text_box->width - 1)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (x + 1), CHAR_HEIGHT * (y - text_box->scroll_amount), CHAR_WIDTH * (text_box->width - (x + 1)), CHAR_HEIGHT, text_box->background_color);
-	if(CHAR_HEIGHT * (y + 1 - text_box->scroll_amount) < text_box->sheet->height)fill_box_sheet(text_box->sheet, 0, CHAR_HEIGHT * (y + 1 - text_box->scroll_amount), CHAR_WIDTH * text_box->width, text_box->sheet->height - CHAR_HEIGHT * (y + 1 - text_box->scroll_amount), text_box->background_color);
+}
+
+void scroll_up(TextBox *text_box)
+{
+	if(text_box->scroll_amount)
+	{
+		text_box->scroll_amount--;
+		refresh_text_box(text_box);
+	}
 }
 
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
@@ -206,6 +211,8 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 					// Print new cursor.
 					cursor_position = get_cursor_position(text_box);
 					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && (cursor_position.y - text_box->scroll_amount) <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
+					// Scroll the text box.
+					if(text_box->height <= cursor_position.y - text_box->scroll_amount)scroll_down(text_box);
 				}
 				break;
 			case KEY_LEFT_ARROW:
@@ -222,6 +229,8 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 					// Print new cursor.
 					cursor_position = get_cursor_position(text_box);
 					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && (cursor_position.y - text_box->scroll_amount) <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
+					// Scroll the text box.
+					if(cursor_position.y < text_box->scroll_amount)scroll_up(text_box);
 				}
 				break;
 			case KEY_RIGHT_ARROW:
@@ -234,6 +243,8 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 					// Print new cursor.
 					cursor_position = get_cursor_position(text_box);
 					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && (cursor_position.y - text_box->scroll_amount) <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
+					// Scroll the text box.
+					if(text_box->height <= cursor_position.y - text_box->scroll_amount)scroll_down(text_box);
 				}
 				break;
 			case KEY_UP_ARROW:
@@ -254,6 +265,8 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 					// Print new cursor.
 					cursor_position = get_cursor_position(text_box);
 					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && (cursor_position.y - text_box->scroll_amount) <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
+					// Scroll the text box.
+					if(cursor_position.y < text_box->scroll_amount)scroll_up(text_box);
 				}
 				break;
 			case KEY_DELETE:
@@ -265,11 +278,18 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				case '\0':
 					break;
 				case '\b':
-					if(cursor_position.previous)text_box_delete_char(text_box, cursor_position.previous);
+					if(cursor_position.previous)
+					{
+						text_box_delete_char(text_box, cursor_position.previous);
+						// Scroll the text box.
+						if(get_cursor_position(text_box).y < text_box->scroll_amount)scroll_up(text_box);
+					}
 					break;
 				default:
 					// Insert input character.
 					text_box_insert_char_front(text_box, text_box->cursor_position, event->event_union.keyboard_event.character);
+					// Scroll the text box.
+					if(text_box->height <= get_cursor_position(text_box).y - text_box->scroll_amount)scroll_down(text_box);
 					break;
 				}
 				break;
