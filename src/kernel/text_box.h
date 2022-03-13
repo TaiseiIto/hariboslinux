@@ -28,6 +28,7 @@ typedef struct _TextBox
 	Color background_color;
 	unsigned int height; // sheet height / CHAR_HEIGHT
 	unsigned int width; // sheet width / CHAR_WIDTH
+	unsigned int scroll_amount;
 	unsigned char flags;
 	#define TEXT_BOX_FLAG_CURSOR_BLINK_ON 0x01
 } TextBox;
