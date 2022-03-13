@@ -264,7 +264,14 @@ void text_box_delete_chars(TextBox *text_box, CharacterPosition *position, unsig
 
 void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, char wedge)
 {
+	bool *is_erased_position;
 	CharacterPosition *new_position;
+	unsigned int x;
+	unsigned int y;
+	// Register erased positions.
+	is_erased_position = malloc((text_box->height + 1) * text_box->width * sizeof(*is_erased_position));
+	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
+	for(CharacterPosition *position_i = position; position_i; position_i = position_i->next)if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = true;
 	// Insert the character
 	insert_char_front(text_box->string, position ? position->character : NULL, wedge);
 	// Prepare new position for the new character.
@@ -326,12 +333,15 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 		else ERROR(); // The position list is broken.
 	}
 	// Relocate characters.
-	unsigned int x = new_position->x;
-	unsigned int y = new_position->y;
+	x = new_position->x;
+	y = new_position->y;
 	for(CharacterPosition *position_i = new_position; position_i; position_i = position_i->next)
 	{
+		bool position_changed = ((position_i->x != x) || (position_i->y != y));
 		position_i->x = x;
 		position_i->y = y;
+		if(position_changed || position_i == new_position)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position ? text_box->foreground_color : text_box->background_color, position_i->character->character);
+		if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = false;
 		switch(position_i->character->character)
 		{
 		case '\n':
@@ -353,7 +363,8 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 			y++;
 		}
 	}
-	refresh_text_box_after_position(text_box, new_position);
+	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)if(is_erased_position[text_box->width * y + x])fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, CHAR_WIDTH, CHAR_HEIGHT, text_box->background_color);
+	free(is_erased_position);
 	// Check text_box->string.
 	char *string = create_char_array_from_chain_string(text_box->string);
 	printf_serial(string);
