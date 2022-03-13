@@ -5,6 +5,7 @@
 
 TextBox *root_text_box = NULL;
 
+CharacterPosition get_cursor_position(TextBox const *text_box);
 TextBox *get_text_box_from_sheet(Sheet *sheet);
 void *cursor_blink(TextBox *text_box);
 void delete_text_box(TextBox *text_box);
@@ -12,55 +13,57 @@ void refresh_text_box(TextBox *text_box);
 void refresh_text_box_after_position(TextBox *text_box, CharacterPosition const *position);
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event);
 
-void *cursor_blink(TextBox *text_box)
+CharacterPosition get_cursor_position(TextBox const *text_box)
 {
-	bool blink_on;
-	char character;
-	unsigned int position_x;
-	unsigned int position_y;
-	if(text_box->cursor_position)
-	{
-		character = text_box->cursor_position->character->character;
-		position_x = text_box->cursor_position->x;
-		position_y = text_box->cursor_position->y;
-	}
+	if(text_box->cursor_position)return *text_box->cursor_position;
 	else
 	{
-		character = ' ';
-		if(text_box->last_position)
+		CharacterPosition cursor_position;
+		cursor_position.character = NULL;
+		cursor_position.next = NULL;
+		cursor_position.previous = text_box->last_position;
+		if(cursor_position.previous)
 		{
-			position_x = text_box->last_position->x;
-			position_y = text_box->last_position->y;
-			switch(text_box->last_position->character->character)
+			cursor_position.x = cursor_position.previous->x;
+			cursor_position.y = cursor_position.previous->y;
+			switch(cursor_position.previous->character->character)
 			{
 			case '\n':
-				position_x = 0;
-				position_y++;
+				cursor_position.x = 0;
+				cursor_position.y++;
 				break;
 			case '\t':
-				position_x += TAB_LENGTH;
-				position_x /= TAB_LENGTH;
-				position_x *= TAB_LENGTH;
+				cursor_position.x += TAB_LENGTH;
+				cursor_position.x /= TAB_LENGTH;
+				cursor_position.x *= TAB_LENGTH;
 				break;
 			default:
-				position_x++;
+				cursor_position.x++;
 				break;
 			}
-			if(text_box->width <= position_x)
+			if(text_box->width <= cursor_position.x)
 			{
-				position_x -= text_box->width;
-				position_y++;
+				cursor_position.x -= text_box->width;
+				cursor_position.y++;
 			}
+
 		}
 		else
 		{
-			position_x = 0;
-			position_y = 0;
+			cursor_position.x = 0;
+			cursor_position.y = 0;
 		}
+		return cursor_position;
 	}
+}
+
+void *cursor_blink(TextBox *text_box)
+{
+	bool blink_on;
+	CharacterPosition cursor_position = get_cursor_position(text_box);
 	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
 	blink_on = text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && is_focused_sheet(text_box->sheet);
-	put_char_sheet(text_box->sheet, CHAR_WIDTH * position_x, CHAR_HEIGHT * position_y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, character);
+	put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
 	return NULL;
 }
 
