@@ -156,7 +156,7 @@ void refresh_text_box_after_position(TextBox *text_box, CharacterPosition const 
 	{
 		x = position_i->x;
 		y = position_i->y;
-		put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, text_box->foreground_color, text_box->background_color, position_i->character->character);
+		put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position ? text_box->foreground_color : text_box->background_color, position_i->character->character);
 	}
 	x = text_box->last_position->x;
 	y = text_box->last_position->y;
