@@ -219,8 +219,10 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	y = position->y;
 	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)
 	{
+		bool position_changed = ((position_i->x != x) || (position_i->y != y));
 		position_i->x = x;
 		position_i->y = y;
+		if(position_changed)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position ? text_box->foreground_color : text_box->background_color, position_i->character->character);
 		if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = false;
 		switch(position_i->character->character)
 		{
@@ -243,7 +245,6 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 			y++;
 		}
 	}
-	refresh_text_box_after_position(text_box, position->next);
 	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)if(is_erased_position[text_box->width * y + x])fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, CHAR_WIDTH, CHAR_HEIGHT, text_box->background_color);
 	free(is_erased_position);
 	free(position);
