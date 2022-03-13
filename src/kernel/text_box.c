@@ -160,7 +160,8 @@ void refresh_text_box(TextBox *text_box)
 
 void scroll_down(TextBox *text_box)
 {
-	if(text_box->last_position && text_box->height <= text_box->last_position->y - text_box->scroll_amount)
+	CharacterPosition cursor_position = get_cursor_position(text_box);
+	if(text_box->last_position && text_box->height <= (cursor_position.y < text_box->last_position->y ? text_box->last_position->y : cursor_position.y) - text_box->scroll_amount)
 	{
 		text_box->scroll_amount++;
 		refresh_text_box(text_box);
