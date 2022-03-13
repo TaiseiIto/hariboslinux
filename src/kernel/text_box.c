@@ -187,7 +187,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				printf_serial("Down arrow pushed.\n");
 				CharacterPosition *new_position = NULL;
 				// Find the position 1 line down.
-				for(CharacterPosition *new_position_candidate = text_box->cursor_position; new_position_candidate; new_position_candidate = new_position_candidate->next)if((new_position_candidate->x == cursor_position.x || new_position_candidate->next && cursor_position.y + 1 < new_position_candidate->next->y) && new_position_candidate->y == cursor_position.y + 1)
+				for(CharacterPosition *new_position_candidate = text_box->cursor_position; new_position_candidate; new_position_candidate = new_position_candidate->next)if((cursor_position.x <= new_position_candidate->x || new_position_candidate->next && cursor_position.y + 1 < new_position_candidate->next->y) && new_position_candidate->y == cursor_position.y + 1)
 				{
 					new_position = new_position_candidate;
 					break;
