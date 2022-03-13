@@ -63,7 +63,7 @@ void *cursor_blink(TextBox *text_box)
 	CharacterPosition cursor_position = get_cursor_position(text_box);
 	text_box->flags ^= TEXT_BOX_FLAG_CURSOR_BLINK_ON;
 	blink_on = text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && is_focused_sheet(text_box->sheet);
-	put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+	if(cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, blink_on ? text_box->background_color : text_box->foreground_color, blink_on ? text_box->foreground_color : text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
 	return NULL;
 }
 
@@ -144,7 +144,7 @@ void refresh_text_box(TextBox *text_box)
 	{
 		x = position->x;
 		y = position->y;
-		put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * position->y, text_box->foreground_color, text_box->background_color, position->character->character);
+		if(position->y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * position->y, text_box->foreground_color, text_box->background_color, position->character->character);
 		if(position->character->character == '\n')fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, text_box->sheet->width - CHAR_WIDTH * x, CHAR_HEIGHT, text_box->background_color);
 	}
 	if(x < text_box->width - 1)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (x + 1), CHAR_HEIGHT * y, CHAR_WIDTH * (text_box->width - (x + 1)), CHAR_HEIGHT, text_box->background_color);
@@ -159,7 +159,7 @@ void refresh_text_box_after_position(TextBox *text_box, CharacterPosition const 
 	{
 		x = position_i->x;
 		y = position_i->y;
-		put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position ? text_box->foreground_color : text_box->background_color, position_i->character->character);
+		if(position_i->y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position ? text_box->foreground_color : text_box->background_color, position_i->character->character);
 	}
 	x = text_box->last_position->x;
 	y = text_box->last_position->y;
@@ -254,7 +254,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 		bool position_changed = ((position_i->x != x) || (position_i->y != y));
 		position_i->x = x;
 		position_i->y = y;
-		if(position_changed)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position_i->character->character);
+		if(position_changed && position_i->y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position_i->character->character);
 		if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = false;
 		switch(position_i->character->character)
 		{
@@ -378,7 +378,7 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 		bool position_changed = ((position_i->x != x) || (position_i->y != y));
 		position_i->x = x;
 		position_i->y = y;
-		if(position_changed || position_i == new_position)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position_i->character->character);
+		if((position_changed || position_i == new_position) && position_i->y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position_i->character->character);
 		if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = false;
 		switch(position_i->character->character)
 		{
