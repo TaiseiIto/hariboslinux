@@ -180,20 +180,36 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	case EVENT_TYPE_SHEET_KEYBOARD:
 		if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
 		{
+			CharacterPosition cursor_position = get_cursor_position(text_box);
 			switch(event->event_union.keyboard_event.keycode)
 			{
 			case KEY_DOWN_ARROW:
 				printf_serial("Down arrow pushed.\n");
 				break;
 			case KEY_LEFT_ARROW:
+				// Delete previous cursor.
+				if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+				// Move cursor.
 				if(text_box->cursor_position)
 				{
 					if(text_box->cursor_position->previous)text_box->cursor_position = text_box->cursor_position->previous;
 				}
 				else text_box->cursor_position = text_box->last_position;
+				// Print new cursor.
+				cursor_position = get_cursor_position(text_box);
+				if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
 				break;
 			case KEY_RIGHT_ARROW:
-				if(text_box->cursor_position)text_box->cursor_position = text_box->cursor_position->next;
+				if(text_box->cursor_position)
+				{
+					// Delete previous cursor.
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+					// Move cursor.
+					text_box->cursor_position = text_box->cursor_position->next;
+					// Print new cursor.
+					cursor_position = get_cursor_position(text_box);
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+				}
 				break;
 			case KEY_UP_ARROW:
 				printf_serial("Up arrow pushed.\n");
