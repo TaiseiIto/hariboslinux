@@ -178,10 +178,30 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		delete_text_box(text_box);
 		return text_box->default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_KEYBOARD:
-		if(event->event_union.keyboard_event.character && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
+		if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)
 		{
+			switch(event->event_union.keyboard_event.keycode)
+			{
+			case KEY_DOWN_ARROW:
+				printf_serial("Down arrow pushed.\n");
+				break;
+			case KEY_LEFT_ARROW:
+				printf_serial("Left arrow pushed.\n");
+				break;
+			case KEY_RIGHT_ARROW:
+				printf_serial("Right arrow pushed.\n");
+				break;
+			case KEY_UP_ARROW:
+				printf_serial("Up arrow pushed.\n");
+				break;
+			case KEY_DELETE:
+				printf_serial("Delete pushed.\n");
+				break;
+			}
 			switch(event->event_union.keyboard_event.character)
 			{
+			case '\0':
+				break;
 			case '\b':
 				if(text_box->first_position && text_box->last_position)text_box_delete_char(text_box, text_box->cursor_position && text_box->cursor_position->previous ? text_box->cursor_position->previous : text_box->last_position);
 				break;
