@@ -157,12 +157,9 @@ void refresh_text_box_after_position(TextBox *text_box, CharacterPosition const 
 		x = position_i->x;
 		y = position_i->y;
 		put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * position_i->y, text_box->foreground_color, text_box->background_color, position_i->character->character);
-		if(position_i->character->character == '\n')fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, CHAR_WIDTH * (text_box->width - x), CHAR_HEIGHT, text_box->background_color);
 	}
 	x = text_box->last_position->x;
 	y = text_box->last_position->y;
-	if(x < text_box->width - 1)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (x + 1), CHAR_HEIGHT * y, CHAR_WIDTH * (text_box->width - (x + 1)), CHAR_HEIGHT, text_box->background_color);
-	if(CHAR_HEIGHT * (y + 1) < text_box->sheet->height)fill_box_sheet(text_box->sheet, 0, CHAR_HEIGHT * (y + 1), CHAR_WIDTH * text_box->width, text_box->sheet->height - CHAR_HEIGHT * (y + 1), text_box->background_color);
 }
 
 void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
@@ -199,8 +196,9 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 
 void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 {
-	unsigned int x = position->x;
-	unsigned int y = position->y;
+	bool *is_erased_position;
+	unsigned int x;
+	unsigned int y;
 	// Delete the character
 	delete_char(text_box->string, position->character);
 	if(position->previous)position->previous->next = position->next;
@@ -210,10 +208,16 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	else if(position == text_box->last_position)text_box->last_position = position->previous;
 	else ERROR();
 	// Relocate characters.
+	is_erased_position = malloc(text_box->height * text_box->width * sizeof(*is_erased_position));
+	for(y = 0; y < text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
+	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)is_erased_position[text_box->width * position_i->y + position_i->x] = true;
+	x = position->x;
+	y = position->y;
 	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)
 	{
 		position_i->x = x;
 		position_i->y = y;
+		is_erased_position[text_box->width * position_i->y + position_i->x] = false;
 		switch(position_i->character->character)
 		{
 		case '\n':
@@ -236,6 +240,8 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 		}
 	}
 	refresh_text_box_after_position(text_box, position->next);
+	for(y = 0; y < text_box->height; y++)for(x = 0; x < text_box->width; x++)if(is_erased_position[text_box->width * y + x])fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, CHAR_WIDTH, CHAR_HEIGHT, text_box->background_color);
+	free(is_erased_position);
 	free(position);
 }
 
