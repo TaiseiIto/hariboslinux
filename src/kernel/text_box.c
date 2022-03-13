@@ -223,7 +223,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				case '\0':
 					break;
 				case '\b':
-					if(text_box->first_position && text_box->last_position)text_box_delete_char(text_box, text_box->cursor_position && text_box->cursor_position->previous ? text_box->cursor_position->previous : text_box->last_position);
+					if(cursor_position.previous)text_box_delete_char(text_box, cursor_position.previous);
 					break;
 				default:
 					// Insert input character.
@@ -244,6 +244,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	bool *is_erased_position;
 	unsigned int x;
 	unsigned int y;
+	if(!position)ERROR(); // The position is not found.
 	// Register erased positions.
 	is_erased_position = malloc((text_box->height + 1) * text_box->width * sizeof(*is_erased_position));
 	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
