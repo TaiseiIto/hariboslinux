@@ -186,10 +186,14 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				printf_serial("Down arrow pushed.\n");
 				break;
 			case KEY_LEFT_ARROW:
-				printf_serial("Left arrow pushed.\n");
+				if(text_box->cursor_position)
+				{
+					if(text_box->cursor_position->previous)text_box->cursor_position = text_box->cursor_position->previous;
+				}
+				else text_box->cursor_position = text_box->last_position;
 				break;
 			case KEY_RIGHT_ARROW:
-				printf_serial("Right arrow pushed.\n");
+				if(text_box->cursor_position)text_box->cursor_position = text_box->cursor_position->next;
 				break;
 			case KEY_UP_ARROW:
 				printf_serial("Up arrow pushed.\n");
