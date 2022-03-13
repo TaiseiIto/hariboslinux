@@ -248,6 +248,12 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)if(is_erased_position[text_box->width * y + x])fill_box_sheet(text_box->sheet, CHAR_WIDTH * x, CHAR_HEIGHT * y, CHAR_WIDTH, CHAR_HEIGHT, text_box->background_color);
 	free(is_erased_position);
 	free(position);
+	// print cursor
+	if(!text_box->cursor_position)
+	{
+		CharacterPosition cursor_position = get_cursor_position(text_box);
+		if(cursor_position.y <= text_box->height && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON)fill_box_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, CHAR_WIDTH, CHAR_HEIGHT, text_box->foreground_color);
+	}
 }
 
 void text_box_delete_chars(TextBox *text_box, CharacterPosition *position, unsigned int length)
