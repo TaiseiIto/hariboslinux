@@ -197,17 +197,19 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 			case KEY_DELETE:
 				printf_serial("Delete pushed.\n");
 				break;
-			}
-			switch(event->event_union.keyboard_event.character)
-			{
-			case '\0':
-				break;
-			case '\b':
-				if(text_box->first_position && text_box->last_position)text_box_delete_char(text_box, text_box->cursor_position && text_box->cursor_position->previous ? text_box->cursor_position->previous : text_box->last_position);
-				break;
 			default:
-				// Insert input character.
-				text_box_insert_char_front(text_box, text_box->cursor_position, event->event_union.keyboard_event.character);
+				switch(event->event_union.keyboard_event.character)
+				{
+				case '\0':
+					break;
+				case '\b':
+					if(text_box->first_position && text_box->last_position)text_box_delete_char(text_box, text_box->cursor_position && text_box->cursor_position->previous ? text_box->cursor_position->previous : text_box->last_position);
+					break;
+				default:
+					// Insert input character.
+					text_box_insert_char_front(text_box, text_box->cursor_position, event->event_union.keyboard_event.character);
+					break;
+				}
 				break;
 			}
 		}
