@@ -150,12 +150,18 @@ void refresh_text_box(TextBox *text_box)
 		if((position->y - text_box->scroll_amount) <= text_box->height)
 		{
 			if(position->character->character == '\n')fill_box_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), text_box->sheet->width - CHAR_WIDTH * position->x, CHAR_HEIGHT, text_box->background_color);
-			else put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), text_box->foreground_color, text_box->background_color, position->character->character);
+			else put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position->character->character);
 		}
 	}
-	// Print
+	// Print blank space
 	if(y - text_box->scroll_amount <= text_box->height && x < text_box->width - 1)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (x + 1), CHAR_HEIGHT * (y - text_box->scroll_amount), CHAR_WIDTH * (text_box->width - (x + 1)), CHAR_HEIGHT, text_box->background_color);
 	if(CHAR_HEIGHT * (y + 1 - text_box->scroll_amount) < text_box->sheet->height)fill_box_sheet(text_box->sheet, 0, CHAR_HEIGHT * (y + 1 - text_box->scroll_amount), CHAR_WIDTH * text_box->width, text_box->sheet->height - CHAR_HEIGHT * (y + 1 - text_box->scroll_amount), text_box->background_color);
+	// Print Cursor
+	if(!text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON)
+	{
+		CharacterPosition cursor_position = get_cursor_position(text_box);
+		if(cursor_position.y - text_box->scroll_amount <= text_box->height)fill_box_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), CHAR_WIDTH, CHAR_HEIGHT, text_box->foreground_color);
+	}
 }
 
 void scroll_down(TextBox *text_box)
