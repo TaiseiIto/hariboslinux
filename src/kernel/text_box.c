@@ -203,17 +203,20 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				}
 				break;
 			case KEY_LEFT_ARROW:
-				// Delete previous cursor.
-				if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
-				// Move cursor.
-				if(text_box->cursor_position)
+				if(text_box->cursor_position != text_box->first_position)
 				{
-					if(text_box->cursor_position->previous)text_box->cursor_position = text_box->cursor_position->previous;
+					// Delete previous cursor.
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+					// Move cursor.
+					if(text_box->cursor_position)
+					{
+						if(text_box->cursor_position->previous)text_box->cursor_position = text_box->cursor_position->previous;
+					}
+					else text_box->cursor_position = text_box->last_position;
+					// Print new cursor.
+					cursor_position = get_cursor_position(text_box);
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
 				}
-				else text_box->cursor_position = text_box->last_position;
-				// Print new cursor.
-				cursor_position = get_cursor_position(text_box);
-				if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
 				break;
 			case KEY_RIGHT_ARROW:
 				if(text_box->cursor_position)
@@ -228,7 +231,24 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				}
 				break;
 			case KEY_UP_ARROW:
-				printf_serial("Up arrow pushed.\n");
+				if(text_box->cursor_position != text_box->first_position)
+				{
+					CharacterPosition *new_position = NULL;
+					// Find the position 1 line down.
+					for(CharacterPosition *new_position_candidate = text_box->cursor_position ? text_box->cursor_position : text_box->last_position; new_position_candidate; new_position_candidate = new_position_candidate->previous)if(new_position_candidate->x <= cursor_position.x && new_position_candidate->y < cursor_position.y)
+					{
+						new_position = new_position_candidate;
+						break;
+					}
+					if(!new_position)new_position = text_box->first_position;
+					// Delete previous cursor.
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+					// Move cursor.
+					text_box->cursor_position = new_position;
+					// Print new cursor.
+					cursor_position = get_cursor_position(text_box);
+					if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && cursor_position.y <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * cursor_position.y, text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
+				}
 				break;
 			case KEY_DELETE:
 				printf_serial("Delete pushed.\n");
