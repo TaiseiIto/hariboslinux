@@ -202,7 +202,11 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	bool *is_erased_position;
 	unsigned int x;
 	unsigned int y;
-	// Delete the character
+	// Register erased positions.
+	is_erased_position = malloc((text_box->height + 1) * text_box->width * sizeof(*is_erased_position));
+	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
+	for(CharacterPosition *position_i = position; position_i; position_i = position_i->next)if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = true;
+	// Delete the character.
 	delete_char(text_box->string, position->character);
 	if(position->previous)position->previous->next = position->next;
 	else if(position == text_box->first_position)text_box->first_position = position->next;
@@ -211,9 +215,6 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	else if(position == text_box->last_position)text_box->last_position = position->previous;
 	else ERROR();
 	// Relocate characters.
-	is_erased_position = malloc((text_box->height + 1) * text_box->width * sizeof(*is_erased_position));
-	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
-	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = true;
 	x = position->x;
 	y = position->y;
 	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)
