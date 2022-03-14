@@ -9,6 +9,8 @@ typedef struct _CharacterPosition
 	ChainCharacter *character;
 	unsigned int x;
 	unsigned int y;
+	int past_x_on_sheet;
+	int past_y_on_sheet;
 	struct _CharacterPosition *previous;
 	struct _CharacterPosition *next;
 } CharacterPosition;
