@@ -465,8 +465,8 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 		else ERROR(); // The position list is broken.
 	}
 	// Relocate characters.
-	x = new_position->x;
-	y = new_position->y;
+	x = 0;
+	y = 0;
 	for(CharacterPosition *position_i = text_box->first_position; position_i; position_i = position_i->next)
 	{
 		position_i->past_x_on_sheet = (int)position_i->x;
