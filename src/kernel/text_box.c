@@ -327,9 +327,9 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	else ERROR();
 	if(position == text_box->cursor_position)text_box->cursor_position = position->next;
 	// Relocate characters.
-	x = position->x;
-	y = position->y;
-	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)
+	x = 0;
+	y = 0;
+	for(CharacterPosition *position_i = text_box->first_position; position_i; position_i = position_i->next)
 	{
 		position_i->past_x_on_sheet = (int)position_i->x;
 		position_i->past_y_on_sheet = (int)position_i->y - (int)text_box->scroll_amount;
