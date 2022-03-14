@@ -317,12 +317,12 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	// Register erased positions.
 	is_erased_position = malloc((text_box->height + 1) * text_box->width * sizeof(*is_erased_position));
 	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
-	for(CharacterPosition *position_i = position; position_i; position_i = position_i->next)if(text_box->width * position_i->y + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * position_i->y + position_i->x] = true;
+	for(CharacterPosition *position_i = position; position_i; position_i = position_i->next)if(text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x] = true;
 	// Delete cursor.
 	if(!text_box->cursor_position)
 	{
 		CharacterPosition cursor_position = get_cursor_position(text_box);
-		if((cursor_position.y - text_box->scroll_amount) <= text_box->height)fill_box_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), CHAR_WIDTH, CHAR_HEIGHT, text_box->background_color);
+		if(text_box->width * (cursor_position.y - text_box->scroll_amount) + cursor_position.x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * (cursor_position.y - text_box->scroll_amount) + cursor_position.x] = true;
 	}
 	// Delete the character.
 	delete_char(text_box->string, position->character);
