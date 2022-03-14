@@ -310,7 +310,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	// Register erased positions.
 	is_erased_position = malloc((text_box->height + 1) * text_box->width * sizeof(*is_erased_position));
 	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
-	for(CharacterPosition *position_i = position; position_i; position_i = position_i->next)if(text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x] = true;
+	for(CharacterPosition *position_i = text_box->first_position; position_i; position_i = position_i->next)if(text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x] = true;
 	// Delete cursor.
 	if(!text_box->cursor_position)
 	{
@@ -359,7 +359,7 @@ void text_box_delete_char(TextBox *text_box, CharacterPosition *position)
 	// Scroll the text box.
 	if(get_cursor_position(text_box).y < text_box->scroll_amount)text_box->scroll_amount--;
 	// Reprint characters.
-	for(CharacterPosition *position_i = position->next; position_i; position_i = position_i->next)
+	for(CharacterPosition *position_i = text_box->first_position; position_i; position_i = position_i->next)
 	{
 		if(((int)position_i->x != position_i->past_x_on_sheet || (int)position_i->y - (int)text_box->scroll_amount != position_i->past_y_on_sheet) && (position_i->y - text_box->scroll_amount) <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * position_i->x, CHAR_HEIGHT * (position_i->y - text_box->scroll_amount), position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position_i == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position_i->character->character);
 		if(text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x] = false;
@@ -397,7 +397,7 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 	// Register erased positions.
 	is_erased_position = malloc((text_box->height + 1) * text_box->width * sizeof(*is_erased_position));
 	for(y = 0; y <= text_box->height; y++)for(x = 0; x < text_box->width; x++)is_erased_position[text_box->width * y + x] = false;
-	for(CharacterPosition *position_i = position; position_i; position_i = position_i->next)if(text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x] = true;
+	for(CharacterPosition *position_i = text_box->first_position; position_i; position_i = position_i->next)if(text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x < (text_box->height + 1) * text_box->width)is_erased_position[text_box->width * (position_i->y - text_box->scroll_amount) + position_i->x] = true;
 	// Insert the character
 	insert_char_front(text_box->string, position ? position->character : NULL, wedge);
 	// Prepare new position for the new character.
