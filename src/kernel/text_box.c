@@ -324,6 +324,34 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		return NULL;
 	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
 		printf_serial("Vetrical wheel rotation %d on TextBox %p.\n", event->event_union.sheet_vertical_wheel_event.rotation, text_box);
+		if(0 < event->event_union.sheet_vertical_wheel_event.rotation)
+		{
+			CharacterPosition cursor_position = get_cursor_position(text_box);
+			// Scroll down.
+			if(text_box->scroll_amount + text_box->height <= text_box->last_position->y)
+			{
+				// Change scroll amount.
+				text_box->scroll_amount += event->event_union.sheet_vertical_wheel_event.rotation;
+				if(text_box->last_position->y + 1 < text_box->scroll_amount + text_box->height)text_box->scroll_amount = text_box->last_position->y + 1 - text_box->height;
+				if(cursor_position.y < text_box->scroll_amount)
+				{
+					// Move cursor.
+					unsigned int new_cursor_position_x = cursor_position.x;
+					unsigned int new_cursor_position_y = text_box->scroll_amount;
+					for(CharacterPosition *new_cursor_position_candidate = text_box->cursor_position; new_cursor_position_candidate; new_cursor_position_candidate = new_cursor_position_candidate->next)if(new_cursor_position_candidate->next)if(text_box->width * new_cursor_position_y + new_cursor_position_x < text_box->width * new_cursor_position_candidate->next->y + new_cursor_position_candidate->next->x)
+					{
+						text_box->cursor_position = new_cursor_position_candidate;
+						break;
+					}
+				}
+				refresh_text_box(text_box);
+			}
+			// else Can't scroll down.
+		}
+		else if(event->event_union.sheet_vertical_wheel_event.rotation < 0)
+		{
+			// Scroll up.
+		}
 		return text_box->default_event_procedure(sheet, event);
 	default:
 		return text_box->default_event_procedure(sheet, event);
