@@ -180,6 +180,9 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 	case EVENT_TYPE_SHEET_UNFOCUSED:
 		printf_serial("Sheet %p is unfocused.\n", sheet);
 		break;
+	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
+		printf_serial("Vertical wheel %d on Sheet %p.\n", event->event_union.sheet_vertical_wheel_event.rotation, sheet);
+		break;
 	default:
 		ERROR(); // Event that procedure is not defined.
 		break;
@@ -246,6 +249,9 @@ void distribute_event(struct _Event const *event)
 		break;
 	case EVENT_TYPE_SHEET_UNFOCUSED:
 		if(sheet_exists(event->event_union.sheet_unfocused_event.sheet))event->event_union.sheet_unfocused_event.sheet->event_procedure(event->event_union.sheet_unfocused_event.sheet, event);
+		break;
+	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
+		if(sheet_exists(event->event_union.sheet_vertical_wheel_event.sheet))event->event_union.sheet_vertical_wheel_event.sheet->event_procedure(event->event_union.sheet_vertical_wheel_event.sheet, event);
 		break;
 	case EVENT_TYPE_WINDOW_DELETION_REQUEST:
 		if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);
@@ -1065,6 +1071,14 @@ void send_sheets_event(Event const *event)
 				new_event.event_union.sheet_mouse_move_event.y_movement = event->event_union.mouse_event.y_movement;
 				enqueue(new_event.event_union.sheet_mouse_move_event.sheet->event_queue, &new_event);
 			}
+		}
+		if(event->event_union.mouse_event.vertical_wheel_movement)
+		{
+			Sheet *sheet_under_cursor = get_uppest_sheet(background_sheet, event->event_union.mouse_event.x, event->event_union.mouse_event.y);
+			new_event.type = EVENT_TYPE_SHEET_VERTICAL_WHEEL;
+			new_event.event_union.sheet_vertical_wheel_event.sheet = sheet_under_cursor;
+			new_event.event_union.sheet_vertical_wheel_event.rotation = event->event_union.mouse_event.vertical_wheel_movement;
+			enqueue(new_event.event_union.sheet_vertical_wheel_event.sheet->event_queue, &new_event);
 		}
 		break;
 	}

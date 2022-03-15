@@ -64,6 +64,12 @@ typedef struct _SheetUnfocusedEvent
 	struct _Sheet *sheet;
 } SheetUnfocusedEvent;
 
+typedef struct _SheetVerticalWheelEvent
+{
+	struct _Sheet *sheet;
+	char rotation;
+} SheetVerticalWheelEvent;
+
 #include "event.h"
 #include "graphic.h"
 

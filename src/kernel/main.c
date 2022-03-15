@@ -198,6 +198,7 @@ void main(void)
 		case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_SHEET_UNFOCUSED:
+		case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
 		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
 		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 		case EVENT_TYPE_WINDOW_FOCUSED:
@@ -301,6 +302,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	case EVENT_TYPE_SHEET_CLICKED:
 	case EVENT_TYPE_SHEET_FOCUSED:
 	case EVENT_TYPE_SHEET_UNFOCUSED:
+	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
 		return default_event_procedure(sheet, event);
 	case EVENT_TYPE_TASK_DELETION_RESPONSE:
 		task_return = (TaskReturn*)event->event_union.task_deletion_response_event.returns;
@@ -359,6 +361,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 		case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_SHEET_UNFOCUSED:
+		case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
 		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
 		case EVENT_TYPE_WINDOW_FOCUSED:
 		case EVENT_TYPE_WINDOW_UNFOCUSED:
@@ -423,6 +426,7 @@ void test_task_procedure(TestTaskArgument *test_task_argument)
 		case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		case EVENT_TYPE_SHEET_UNFOCUSED:
+		case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
 		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
 		case EVENT_TYPE_WINDOW_FOCUSED:
 		case EVENT_TYPE_WINDOW_UNFOCUSED:
