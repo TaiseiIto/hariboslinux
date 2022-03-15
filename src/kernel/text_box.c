@@ -350,7 +350,26 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		}
 		else if(event->event_union.sheet_vertical_wheel_event.rotation < 0)
 		{
+			CharacterPosition cursor_position = get_cursor_position(text_box);
 			// Scroll up.
+			if(text_box->scroll_amount)
+			{
+				// Change scroll amount.
+				text_box->scroll_amount -= -event->event_union.sheet_vertical_wheel_event.rotation < text_box->scroll_amount ? -event->event_union.sheet_vertical_wheel_event.rotation : text_box->scroll_amount;
+				if(text_box->scroll_amount + text_box->height < cursor_position.y + 1)
+				{
+					// Move cursor.
+					unsigned int new_cursor_position_x = cursor_position.x;
+					unsigned int new_cursor_position_y = text_box->scroll_amount + text_box->height - 1;
+					for(CharacterPosition *new_cursor_position_candidate = cursor_position.previous; new_cursor_position_candidate; new_cursor_position_candidate = new_cursor_position_candidate->previous)if(text_box->width * new_cursor_position_candidate->y + new_cursor_position_candidate->x < text_box->width * new_cursor_position_y + new_cursor_position_x)
+					{
+						text_box->cursor_position = new_cursor_position_candidate;
+						break;
+					}
+				}
+				refresh_text_box(text_box);
+			}
+			// else Can't scroll up.
 		}
 		return text_box->default_event_procedure(sheet, event);
 	default:
