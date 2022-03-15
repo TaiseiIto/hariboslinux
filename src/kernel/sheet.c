@@ -181,7 +181,7 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		printf_serial("Sheet %p is unfocused.\n", sheet);
 		break;
 	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
-		printf_serial("Vertical wheel %d on Sheet %p.\n", event->event_union.sheet_vertical_wheel_event.rotation, sheet);
+		printf_serial("Vertical wheel rotation %d on Sheet %p.\n", event->event_union.sheet_vertical_wheel_event.rotation, sheet);
 		break;
 	default:
 		ERROR(); // Event that procedure is not defined.

@@ -322,6 +322,9 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 			}
 		}
 		return NULL;
+	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
+		printf_serial("Vetrical wheel rotation %d on TextBox %p.\n", event->event_union.sheet_vertical_wheel_event.rotation, text_box);
+		return text_box->default_event_procedure(sheet, event);
 	default:
 		return text_box->default_event_procedure(sheet, event);
 	}
