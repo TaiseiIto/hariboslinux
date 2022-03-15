@@ -192,11 +192,28 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
 		{
 			// Move cursor to clicked position.
+			CharacterPosition cursor_position = get_cursor_position(text_box);
+			CharacterPosition *next_cursor_position = NULL;
 			unsigned int clicked_position_x = event->event_union.sheet_clicked_event.x / CHAR_WIDTH;
 			unsigned int clicked_position_y = event->event_union.sheet_clicked_event.y / CHAR_HEIGHT + text_box->scroll_amount;
 			printf_serial("TextBox %p is clicked at (%u, %u).\n", text_box, clicked_position_x, clicked_position_y);
+			// Search next cursor position.
+			for(CharacterPosition *next_cursor_position_candidate = text_box->first_position; next_cursor_position_candidate; next_cursor_position_candidate = next_cursor_position_candidate->next)if(next_cursor_position_candidate->next)if(text_box->width * clicked_position_y + clicked_position_x < text_box->width * next_cursor_position_candidate->next->y + next_cursor_position_candidate->next->x)
+			{
+				next_cursor_position = next_cursor_position_candidate;
+				break;
+			}
+			// Erase cursor
+			if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && (cursor_position.y - text_box->scroll_amount) <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), text_box->foreground_color, text_box->background_color, cursor_position.character ? cursor_position.character->character : ' ');
+			// Move cursor.
+			text_box->cursor_position = next_cursor_position;
+			// Print new cursor.
+			cursor_position = get_cursor_position(text_box);
+			if(text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON && (cursor_position.y - text_box->scroll_amount) <= text_box->height)put_char_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), text_box->background_color, text_box->foreground_color, cursor_position.character ? cursor_position.character->character : ' ');
+			// Scroll the text box.
+			if(text_box->height <= cursor_position.y - text_box->scroll_amount)scroll_down(text_box);
 		}
-		break;
+		return text_box->default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_CREATED:
 		text_box->default_event_procedure(sheet, event);
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, text_box->background_color);
