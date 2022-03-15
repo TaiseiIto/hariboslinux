@@ -188,6 +188,9 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	TextBox *text_box = get_text_box_from_sheet(sheet);
 	switch(event->type)
 	{
+	case EVENT_TYPE_SHEET_CLICKED:
+		printf_serial("TextBox %p is clicked.\n", text_box);
+		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		text_box->default_event_procedure(sheet, event);
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, text_box->background_color);
