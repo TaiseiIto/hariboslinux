@@ -189,7 +189,13 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CLICKED:
-		printf_serial("TextBox %p is clicked.\n", text_box);
+		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)
+		{
+			// Move cursor to clicked position.
+			unsigned int clicked_position_x = event->event_union.sheet_clicked_event.x / CHAR_WIDTH;
+			unsigned int clicked_position_y = event->event_union.sheet_clicked_event.y / CHAR_HEIGHT + text_box->scroll_amount;
+			printf_serial("TextBox %p is clicked at (%u, %u).\n", text_box, clicked_position_x, clicked_position_y);
+		}
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
 		text_box->default_event_procedure(sheet, event);
