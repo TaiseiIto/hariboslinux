@@ -46,7 +46,7 @@ SECTIONS
 		main.o(.rodata)
 		chain_string.o(.rodata)
 		cmos.o(.rodata)
-		console.o(.rodate)
+		console.o(.rodata)
 		disk.o(.rodata)
 		exception.o(.rodata)
 		font.o(.rodata)
