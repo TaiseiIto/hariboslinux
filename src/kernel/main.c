@@ -1,5 +1,6 @@
 #include "boot.h"
 #include "chain_string.h"
+#include "console.h"
 #include "event.h"
 #include "font.h"
 #include "gdt.h"
@@ -341,7 +342,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 	task = get_current_task();
 	event_queue = create_event_queue(task);
 	window = create_window("Console", console_task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0200, 0x0200, event_queue);
-	make_sheet_text_box(window->client_sheet, foreground_color, background_color);
+	make_sheet_console(window->client_sheet, foreground_color, background_color);
 	while(true)
 	{
 		Event new_event;
