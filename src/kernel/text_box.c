@@ -70,9 +70,16 @@ void *cursor_blink(TextBox *text_box)
 
 void delete_text_box(TextBox *text_box)
 {
+	CharacterPosition *position;
+	CharacterPosition *next_position;
 	printf_serial("Delete text box %p\n", text_box);
 	prohibit_switch_task();
-	text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
+	text_box->sheet->event_procedure = text_box->default_event_procedure;
+	for(position = text_box->first_position; position; position = next_position)
+	{
+		next_position = position->next;
+		free(position);
+	}
 	delete_chain_string(text_box->string);
 	delete_timer(text_box->cursor_blink_timer);
 	if(root_text_box == text_box)root_text_box = root_text_box->next;
