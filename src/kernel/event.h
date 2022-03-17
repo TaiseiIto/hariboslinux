@@ -29,6 +29,7 @@ typedef union _EventUnion
 	SheetMouseDragEvent sheet_mouse_drag_event;
 	SheetMouseMoveEvent sheet_mouse_move_event;
 	SheetUnfocusedEvent sheet_unfocused_event;
+	SheetUserDefinedEvent sheet_user_defined_event;
 	SheetVerticalWheelEvent sheet_vertical_wheel_event;
 	TaskDeletionRequestEvent task_deletion_request_event;
 	TaskDeletionResponseEvent task_deletion_response_event;
@@ -58,14 +59,15 @@ typedef struct _Event
 	#define EVENT_TYPE_SHEET_MOUSE_DRAG		0x0d
 	#define EVENT_TYPE_SHEET_MOUSE_MOVE		0x0e
 	#define EVENT_TYPE_SHEET_UNFOCUSED		0x0f
-	#define EVENT_TYPE_SHEET_VERTICAL_WHEEL		0x10
-	#define EVENT_TYPE_TASK_DELETION_REQUEST	0x11
-	#define EVENT_TYPE_TASK_DELETION_RESPONSE	0x12
-	#define EVENT_TYPE_TIMER_EVENT			0x13
-	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x14
-	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x15
-	#define EVENT_TYPE_WINDOW_FOCUSED		0x16
-	#define EVENT_TYPE_WINDOW_UNFOCUSED		0x17
+	#define EVENT_TYPE_SHEET_USER_DEFINED		0x10
+	#define EVENT_TYPE_SHEET_VERTICAL_WHEEL		0x11
+	#define EVENT_TYPE_TASK_DELETION_REQUEST	0x12
+	#define EVENT_TYPE_TASK_DELETION_RESPONSE	0x13
+	#define EVENT_TYPE_TIMER_EVENT			0x14
+	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x15
+	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x16
+	#define EVENT_TYPE_WINDOW_FOCUSED		0x17
+	#define EVENT_TYPE_WINDOW_UNFOCUSED		0x18
 	EventUnion event_union;
 } Event;
 

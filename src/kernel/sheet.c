@@ -180,6 +180,8 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 	case EVENT_TYPE_SHEET_UNFOCUSED:
 		printf_serial("Sheet %p is unfocused.\n", sheet);
 		break;
+	case EVENT_TYPE_SHEET_USER_DEFINED:
+		break;
 	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
 		printf_serial("Vertical wheel rotation %d on Sheet %p.\n", event->event_union.sheet_vertical_wheel_event.rotation, sheet);
 		break;
@@ -249,6 +251,9 @@ void distribute_event(struct _Event const *event)
 		break;
 	case EVENT_TYPE_SHEET_UNFOCUSED:
 		if(sheet_exists(event->event_union.sheet_unfocused_event.sheet))event->event_union.sheet_unfocused_event.sheet->event_procedure(event->event_union.sheet_unfocused_event.sheet, event);
+		break;
+	case EVENT_TYPE_SHEET_USER_DEFINED:
+		if(sheet_exists(event->event_union.sheet_user_defined_event.sheet))event->event_union.sheet_user_defined_event.sheet->event_procedure(event->event_union.sheet_user_defined_event.sheet, event);
 		break;
 	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
 		if(sheet_exists(event->event_union.sheet_vertical_wheel_event.sheet))event->event_union.sheet_vertical_wheel_event.sheet->event_procedure(event->event_union.sheet_vertical_wheel_event.sheet, event);

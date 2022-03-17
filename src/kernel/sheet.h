@@ -64,6 +64,12 @@ typedef struct _SheetUnfocusedEvent
 	struct _Sheet *sheet;
 } SheetUnfocusedEvent;
 
+typedef struct _SheetUserDefinedEvent
+{
+	struct _Sheet *sheet;
+	void *any;
+} SheetUserDefinedEvent;
+
 typedef struct _SheetVerticalWheelEvent
 {
 	struct _Sheet *sheet;

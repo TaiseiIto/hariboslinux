@@ -2,6 +2,12 @@
 #include "memory.h"
 #include "serial.h"
 
+typedef struct _ConsoleEvent
+{
+	unsigned char type;
+	#define CONSOLE_EVENT_TYPE_PROMPT 0x00
+} ConsoleEvent;
+
 Console *root_console = NULL;
 
 void *console_event_procedure(Sheet *sheet, struct _Event const *event);
@@ -11,11 +17,39 @@ Console *get_console_from_sheet(Sheet const *sheet);
 void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 {
 	Console *console = get_console_from_sheet(sheet);
+	ConsoleEvent *console_event;
+	Event new_event;
+	void *return_value;
 	switch(event->type)
 	{
+	case EVENT_TYPE_SHEET_CREATED:
+		return_value = console->default_event_procedure(sheet, event);
+		// Send the first prompt event.
+		console_event = malloc(sizeof(*console_event));
+		console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
+		new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+		new_event.event_union.sheet_user_defined_event.sheet = sheet;
+		new_event.event_union.sheet_user_defined_event.any = console_event;
+		enqueue(sheet->event_queue, &new_event);
+		return return_value;
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		delete_console(console);
 		return console->default_event_procedure(sheet, event);
+	case EVENT_TYPE_SHEET_USER_DEFINED:
+		console_event = (ConsoleEvent *)event->event_union.sheet_user_defined_event.any;
+		switch(console_event->type)
+		{
+		case CONSOLE_EVENT_TYPE_PROMPT:
+			printf_serial("Prompt event @ console %p\n", console);
+			return_value = NULL;
+			break;
+		default:
+			ERROR();
+			return_value = NULL;
+			break;
+		}
+		free(console_event);
+		return return_value;
 	default:
 		return console->default_event_procedure(sheet, event);
 	}
