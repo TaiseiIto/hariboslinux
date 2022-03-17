@@ -8,6 +8,7 @@ typedef struct _ConsoleEvent
 	#define CONSOLE_EVENT_TYPE_PROMPT 0x00
 } ConsoleEvent;
 
+char const * const prompt = "> ";
 Console *root_console = NULL;
 
 void *console_event_procedure(Sheet *sheet, struct _Event const *event);
@@ -43,7 +44,8 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 			switch(console_event->type)
 			{
 			case CONSOLE_EVENT_TYPE_PROMPT:
-				printf_serial("Prompt event @ console %p\n", console);
+				// Print prompt.
+				text_box_insert_string_back(console->text_box, console->text_box->last_position, prompt);
 				break;
 			default:
 				ERROR();

@@ -38,7 +38,10 @@ typedef struct _TextBox
 TextBox *make_sheet_text_box(Sheet *sheet, Color foreground_color, Color background_color);
 void text_box_delete_char(TextBox *text_box, CharacterPosition *position);
 void text_box_delete_chars(TextBox *text_box, CharacterPosition *position, unsigned int length);
+void text_box_insert_char_back(TextBox *text_box, CharacterPosition *position, char wedge);
 void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, char wedge);
+void text_box_insert_string_back(TextBox *text_box, CharacterPosition *position, char const *wedge);
+void text_box_insert_string_front(TextBox *text_box, CharacterPosition *position, char const *wedge);
 
 #endif
 
