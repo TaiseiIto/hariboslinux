@@ -4,6 +4,7 @@
 #include "keyboard.h"
 #include "stdbool.h"
 
+struct _Event;
 struct _Sheet;
 
 typedef struct _SheetClickedEvent
@@ -67,6 +68,7 @@ typedef struct _SheetUnfocusedEvent
 typedef struct _SheetUserDefinedEvent
 {
 	struct _Sheet *sheet;
+	void *(*procedure)(struct _Sheet *sheet, struct _Event const *event);
 	void *any;
 } SheetUserDefinedEvent;
 

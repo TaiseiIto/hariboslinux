@@ -29,6 +29,7 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 		console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
 		new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
 		new_event.event_union.sheet_user_defined_event.sheet = sheet;
+		new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
 		new_event.event_union.sheet_user_defined_event.any = console_event;
 		enqueue(sheet->event_queue, &new_event);
 		return return_value;
@@ -36,20 +37,22 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 		delete_console(console);
 		return console->default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_USER_DEFINED:
-		console_event = (ConsoleEvent *)event->event_union.sheet_user_defined_event.any;
-		switch(console_event->type)
+		if(event->event_union.sheet_user_defined_event.procedure == console_event_procedure)
 		{
-		case CONSOLE_EVENT_TYPE_PROMPT:
-			printf_serial("Prompt event @ console %p\n", console);
-			return_value = NULL;
-			break;
-		default:
-			ERROR();
-			return_value = NULL;
-			break;
+			console_event = (ConsoleEvent *)event->event_union.sheet_user_defined_event.any;
+			switch(console_event->type)
+			{
+			case CONSOLE_EVENT_TYPE_PROMPT:
+				printf_serial("Prompt event @ console %p\n", console);
+				break;
+			default:
+				ERROR();
+				break;
+			}
+			free(console_event);
+			return NULL;
 		}
-		free(console_event);
-		return return_value;
+		else return console->default_event_procedure(sheet, event);
 	default:
 		return console->default_event_procedure(sheet, event);
 	}
