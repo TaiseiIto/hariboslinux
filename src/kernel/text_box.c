@@ -748,7 +748,7 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 
 void text_box_insert_string_back(TextBox *text_box, CharacterPosition *position, char const *wedge)
 {
-	for(char const *wedge_reverse_iterator = wedge + strlen(wedge); wedge_reverse_iterator != wedge; wedge_reverse_iterator--)text_box_insert_char_back(text_box, position, *wedge_reverse_iterator);
+	if(0 < strlen(wedge))for(char const *wedge_reverse_iterator = wedge + strlen(wedge) - 1; wedge <= wedge_reverse_iterator; wedge_reverse_iterator--)text_box_insert_char_back(text_box, position, *wedge_reverse_iterator);
 }
 
 void text_box_insert_string_front(TextBox *text_box, CharacterPosition *position, char const *wedge)
