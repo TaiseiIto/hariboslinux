@@ -498,55 +498,55 @@ void text_box_insert_char_back(TextBox *text_box, CharacterPosition *position, c
 	new_position = malloc(sizeof(*new_position));
 	if(position)
 	{
-		new_position->character = position->character->previous;
+		new_position->character = position->character->next;
 		new_position->x = position->x;
 		new_position->y = position->y;
-		new_position->past_x_on_sheet = (int)position->x;
-		new_position->past_y_on_sheet = (int)position->y - (int)text_box->scroll_amount;
-		new_position->next = position;
-		new_position->previous = position->previous;
-		if(position->previous)position->previous->next = new_position;
-		else if(position == text_box->first_position)text_box->first_position = new_position;
+		switch(position->character->character)
+		{
+		case '\n':
+			new_position->x = 0;
+			new_position->y++;
+			break;
+		case '\t':
+			new_position->x += TAB_LENGTH;
+			new_position->x /= TAB_LENGTH;
+			new_position->x *= TAB_LENGTH;
+			break;
+		default:
+			new_position->x++;
+			break;
+		}
+		if(text_box->width <= new_position->x)
+		{
+			new_position->x -= text_box->width;
+			new_position->y++;
+		}
+		new_position->past_x_on_sheet = (int)new_position->x;
+		new_position->past_y_on_sheet = (int)new_position->y - (int)text_box->scroll_amount;
+		new_position->next = position->next;
+		new_position->previous = position;
+		if(position->next)position->next->previous = new_position;
+		else if(position == text_box->last_position)text_box->last_position = new_position;
 		else ERROR();
-		position->previous = new_position;
+		position->next = new_position;
 	}
 	else
 	{
 		if(text_box->first_position && text_box->last_position)
 		{
-			new_position->character = text_box->string->last_character;
-			new_position->x = text_box->last_position->x;
-			new_position->y = text_box->last_position->y;
-			switch(text_box->last_position->character->character)
-			{
-			case '\n':
-				new_position->x = 0;
-				new_position->y++;
-				break;
-			case '\t':
-				new_position->x += TAB_LENGTH;
-				new_position->x /= TAB_LENGTH;
-				new_position->x *= TAB_LENGTH;
-				break;
-			default:
-				new_position->x++;
-				break;
-			}
-			if(text_box->width <= new_position->x)
-			{
-				new_position->x -= text_box->width;
-				new_position->y++;
-			}
-			new_position->past_x_on_sheet = (int)position->x;
-			new_position->past_y_on_sheet = (int)position->y - (int)text_box->scroll_amount;
-			new_position->previous = text_box->last_position;
-			new_position->next = NULL;
-			text_box->last_position->next = new_position;
-			text_box->last_position = new_position;
+			new_position->character = text_box->string->first_character;
+			new_position->x = 0;
+			new_position->y = 0;
+			new_position->past_x_on_sheet = (int)new_position->x;
+			new_position->past_y_on_sheet = (int)new_position->y - (int)text_box->scroll_amount;
+			new_position->previous = NULL;
+			new_position->next = text_box->first_position;
+			text_box->first_position->previous = new_position;
+			text_box->first_position = new_position;
 		}
 		else if(!text_box->first_position && !text_box->last_position)
 		{
-			new_position->character = text_box->string->last_character;
+			new_position->character = text_box->string->first_character;
 			new_position->x = 0;
 			new_position->y = 0;
 			new_position->past_x_on_sheet = (int)position->x;
