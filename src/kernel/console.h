@@ -5,6 +5,7 @@
 
 typedef struct _Console
 {
+	CharacterPosition *prompt_position;
 	TextBox *text_box;
 	void *(*default_event_procedure)(struct _Sheet *sheet, struct _Event const *event);
 	struct _Console *next;

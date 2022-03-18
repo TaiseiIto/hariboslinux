@@ -2,10 +2,22 @@
 #include "memory.h"
 #include "serial.h"
 
+typedef struct _CommandIssuedEvent
+{
+	char *command;
+} CommandIssuedEvent;
+
+typedef union _ConsoleEventUnion
+{
+	CommandIssuedEvent command_issued_event;
+} ConsoleEventUnion;
+
 typedef struct _ConsoleEvent
 {
 	unsigned char type;
-	#define CONSOLE_EVENT_TYPE_PROMPT 0x00
+	#define CONSOLE_EVENT_TYPE_PROMPT		0x00
+	#define CONSOLE_EVENT_TYPE_COMMAND_ISSUED	0x01
+	ConsoleEventUnion console_event_union;
 } ConsoleEvent;
 
 char const * const prompt = "> ";
@@ -44,7 +56,16 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 		case '\n':
 			if(!console->text_box->cursor_position)
 			{
-				// Send the first event.
+				// Send command issued event.
+				console_event = malloc(sizeof(*console_event));
+				console_event->type = CONSOLE_EVENT_TYPE_COMMAND_ISSUED;
+				console_event->console_event_union.command_issued_event.command = create_char_array_from_chain_string(console->text_box->string);
+				new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+				new_event.event_union.sheet_user_defined_event.sheet = sheet;
+				new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+				new_event.event_union.sheet_user_defined_event.any = console_event;
+				enqueue(sheet->event_queue, &new_event);
+				// Send prompt event.
 				console_event = malloc(sizeof(*console_event));
 				console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
 				new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
@@ -62,9 +83,16 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 			console_event = (ConsoleEvent *)event->event_union.sheet_user_defined_event.any;
 			switch(console_event->type)
 			{
+			case CONSOLE_EVENT_TYPE_COMMAND_ISSUED:
+				// Execute the command.
+				printf_serial("Command \"%s\" issued.\n", console_event->console_event_union.command_issued_event.command);
+				free(console_event->console_event_union.command_issued_event.command);
+				break;
 			case CONSOLE_EVENT_TYPE_PROMPT:
 				// Print prompt.
+				console->prompt_position = console->text_box->last_position;
 				text_box_insert_string_back(console->text_box, console->text_box->last_position, prompt);
+				console->prompt_position = console->prompt_position->next;
 				break;
 			default:
 				ERROR();
@@ -116,6 +144,7 @@ Console *make_sheet_console(Sheet *sheet, Color foreground_color, Color backgrou
 	Console *new_console = malloc(sizeof(*new_console));
 	printf_serial("Make sheet %p console %p\n", sheet, new_console);
 	prohibit_switch_task();
+	new_console->prompt_position = NULL;
 	new_console->text_box = make_sheet_text_box(sheet, foreground_color, background_color);
 	new_console->default_event_procedure = new_console->text_box->sheet->event_procedure;
 	new_console->text_box->sheet->event_procedure = console_event_procedure;
