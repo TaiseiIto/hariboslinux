@@ -62,11 +62,11 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 				ChainString *command;
 				command_start_point = console->prompt_position->character;
 				for(unsigned int i = 0; i < strlen(prompt); i++)command_start_point = command_start_point->next;
-				command = create_chain_substring(command_start_point, console->text_box->string->last_character);
+				command = create_chain_substring(command_start_point, console->text_box->string->last_character->previous);
 				console_event = malloc(sizeof(*console_event));
 				console_event->type = CONSOLE_EVENT_TYPE_COMMAND_ISSUED;
 				console_event->console_event_union.command_issued_event.command = create_char_array_from_chain_string(command);
-				free(command);
+				delete_chain_string(command);
 				new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
 				new_event.event_union.sheet_user_defined_event.sheet = sheet;
 				new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;

@@ -15,14 +15,11 @@ ChainString *create_chain_string(char const *string)
 ChainString *create_chain_substring(ChainCharacter *first_character, ChainCharacter *last_character)
 {
 	ChainString *chain_string = malloc(sizeof(*chain_string));
-	chain_string->first_character = first_character;
-	chain_string->last_character = last_character;
-	if(!first_character && !last_character)chain_string->length = 0;
-	else if(first_character && last_character)
-	{
-		chain_string->length = 1;
-		for(ChainCharacter *length_counter = first_character; length_counter != last_character; length_counter = length_counter->next)chain_string->length++;
-	}
+	chain_string->first_character = NULL;
+	chain_string->last_character = NULL;
+	chain_string->length = 0;
+	if(!first_character && !last_character)return chain_string;
+	else if(first_character && last_character)for(ChainCharacter *character = first_character; character != last_character->next; character = character->next)insert_char_front(chain_string, NULL, character->character);
 	else ERROR(); // The arguments first_character and last_character are inconsistent.
 	return chain_string;
 }
