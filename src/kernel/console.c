@@ -37,6 +37,25 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
 		delete_console(console);
 		return console->default_event_procedure(sheet, event);
+	case EVENT_TYPE_SHEET_KEYBOARD:
+		return_value = console->default_event_procedure(sheet, event);
+		if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)switch(event->event_union.keyboard_event.character)
+		{
+		case '\n':
+			if(!console->text_box->cursor_position)
+			{
+				// Send the first event.
+				console_event = malloc(sizeof(*console_event));
+				console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
+				new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+				new_event.event_union.sheet_user_defined_event.sheet = sheet;
+				new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+				new_event.event_union.sheet_user_defined_event.any = console_event;
+				enqueue(sheet->event_queue, &new_event);
+			}
+			break;
+		}
+		return return_value;
 	case EVENT_TYPE_SHEET_USER_DEFINED:
 		if(event->event_union.sheet_user_defined_event.procedure == console_event_procedure)
 		{
