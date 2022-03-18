@@ -16,6 +16,7 @@ typedef struct _ChainString
 } ChainString;
 
 ChainString *create_chain_string(char const *string);
+ChainString *create_chain_substring(ChainCharacter *first_character, ChainCharacter *last_character);
 char *create_char_array_from_chain_string(ChainString const *string);
 void delete_chain_string(ChainString *string);
 void delete_char(ChainString *string, ChainCharacter *position);
