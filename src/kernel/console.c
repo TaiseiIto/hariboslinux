@@ -99,7 +99,8 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 				// Print prompt.
 				console->prompt_position = console->text_box->last_position;
 				text_box_insert_string_back(console->text_box, console->text_box->last_position, prompt);
-				console->prompt_position = console->prompt_position->next;
+				if(console->prompt_position)console->prompt_position = console->prompt_position->next;
+				else console->prompt_position = console->text_box->first_position;
 				break;
 			default:
 				ERROR();
