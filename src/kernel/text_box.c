@@ -605,10 +605,6 @@ void text_box_insert_char_back(TextBox *text_box, CharacterPosition *position, c
 		CharacterPosition cursor_position = get_cursor_position(text_box);
 		if((cursor_position.y - text_box->scroll_amount) <= text_box->height && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON)fill_box_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), CHAR_WIDTH, CHAR_HEIGHT, text_box->foreground_color);
 	}
-	// Check text_box->string.
-	char *string = create_char_array_from_chain_string(text_box->string);
-	printf_serial(string);
-	free(string);
 }
 
 void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, char wedge)
@@ -740,10 +736,6 @@ void text_box_insert_char_front(TextBox *text_box, CharacterPosition *position, 
 		CharacterPosition cursor_position = get_cursor_position(text_box);
 		if((cursor_position.y - text_box->scroll_amount) <= text_box->height && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON)fill_box_sheet(text_box->sheet, CHAR_WIDTH * cursor_position.x, CHAR_HEIGHT * (cursor_position.y - text_box->scroll_amount), CHAR_WIDTH, CHAR_HEIGHT, text_box->foreground_color);
 	}
-	// Check text_box->string.
-	char *string = create_char_array_from_chain_string(text_box->string);
-	printf_serial(string);
-	free(string);
 }
 
 void text_box_insert_string_back(TextBox *text_box, CharacterPosition *position, char const *wedge)
