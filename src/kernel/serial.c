@@ -98,7 +98,7 @@ void com1_interrupt_handler(void)
 	case MODEM_STATUS_INTERRUPT:
 		break;
 	case RECEIVED_DATA_INTERRUPT:
-		inb(COM1 + DATA_REGISTER);
+		put_char_serial(inb(COM1 + DATA_REGISTER));
 		break;
 	case TRANSMITTER_EMPTY_INTERRUPT:
 		if(character_to_send = dequeue(com1_transmission_queue))outb(COM1 + DATA_REGISTER, *character_to_send);
