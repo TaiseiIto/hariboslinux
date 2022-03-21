@@ -3,6 +3,7 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreviousInstance, LPSTR lpCommandLIne, int nCommandShow)
 {
+	COMMTIMEOUTS timeout;
 	FILE *fReopenedStandardError;
 	FILE *fReopenedStandardInput;
 	FILE *fReopenedStandardOutput;
@@ -52,8 +53,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreviousInstance, LPSTR lpCom
 		LPCSTR message = "failed to connect to a virtual machine\n";
 		WriteConsole(hStandardError, message, lstrlen(message), NULL, NULL);
 	}
-	// Receive from the named pipe and output string
-	while(ReadFile(hNamedPipe, sBuffer, sizeof(sBuffer) / sizeof(sBuffer[0]), &dwStringLength, NULL))if(dwStringLength)WriteConsole(hStandardOutput, sBuffer, dwStringLength, NULL, NULL);
+	// Set timeout.
+	timeout.ReadIntervalTimeout = 1;
+	timeout.ReadTotalTimeoutMultiplier = 1;
+	timeout.ReadTotalTimeoutConstant = 1;
+	timeout.WriteTotalTimeoutMultiplier = 1;
+	timeout.WriteTotalTimeoutConstant = 1;
+	SetCommTimeouts(hNamedPipe, &timeout);
+	timeout.ReadIntervalTimeout = 1;
+	timeout.ReadTotalTimeoutMultiplier = 1;
+	timeout.ReadTotalTimeoutConstant = 1;
+	timeout.WriteTotalTimeoutMultiplier = 1;
+	timeout.WriteTotalTimeoutConstant = 1;
+	SetCommTimeouts(hStandardInput, &timeout);
+	// Receive from the named pipe and output string.
+	while(ReadFile(hNamedPipe, sBuffer, sizeof(sBuffer) / sizeof(sBuffer[0]), &dwStringLength, NULL))
+	{
+		if(dwStringLength)WriteConsole(hStandardOutput, sBuffer, dwStringLength, NULL, NULL);
+		memset(sBuffer, '\0', sizeof(sBuffer) / sizeof(sBuffer[0]));
+		ReadConsole(hStandardInput, sBuffer, sizeof(sBuffer) / sizeof(sBuffer[0]), &dwStringLength, NULL);
+		if(dwStringLength)WriteFile(hNamedPipe, sBuffer, dwStringLength, &dwStringLength, NULL);
+	}
 	DisconnectNamedPipe(hNamedPipe);
 	CloseHandle(hNamedPipe);
 	fclose(fReopenedStandardError);
