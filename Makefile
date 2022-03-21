@@ -101,13 +101,13 @@ gitconfig:
 rebuild: clean
 	make 2>&1 | tee $(MAKE_OUT)
 
-# run the OS on QEMU
-run: $(IMAGE_FILE) stop
-	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_TIMEZONE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) | tee $(EMULATOR_SERIAL_OUT) &
-
 # run the OS on QEMU with interactive serial interface
-run-serial: $(IMAGE_FILE) stop
+run:
 	tmux new-session \; source-file tmux/.tmux.run-haribos.conf
+
+# run the OS on QEMU
+run-qemu: $(IMAGE_FILE) stop
+	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_TIMEZONE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION)
 
 src/kernel.bin: $(wildcard src/kernel/*.c src/kernel/*.h)
 	make -C src
