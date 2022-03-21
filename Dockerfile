@@ -7,17 +7,19 @@ RUN apk add --no-cache alpine-sdk
 RUN git config --global pull.rebase false
 # debugger
 RUN apk add --no-cache gdb
-# emulator
-RUN apk add --no-cache qemu-system-i386
 # ssh
 RUN apk add --no-cache openssh
 RUN mkdir /root/.ssh
-# editor
-RUN apk add --no-cache vim
+# emulator
+RUN apk add --no-cache qemu-system-i386
+# tmux
+RUN apk add --no-cache tmux
 # set time zone UTC+9 (Japan)
 RUN apk add --no-cache tzdata
 RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 RUN apk del tzdata
+# editor
+RUN apk add --no-cache vim
 
 # clone the repository
 WORKDIR /root
