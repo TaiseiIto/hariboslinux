@@ -14,6 +14,12 @@ WINAPI_LIBS = "kernel32.lib" "user32.lib" "gdi32.lib" "winspool.lib" "comdlg32.l
 
 all: $(TARGET)
 
+clean:
+	del $(TARGET) $(OBJECT)
+
+rebuild: clean
+	make
+
 $(TARGET): $(OBJECT)
 	$(LINKER) $^ $(WINAPI_LIBS) $(LINKER_OUTPUT_OPTION)$@
 
