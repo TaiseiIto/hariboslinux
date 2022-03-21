@@ -164,6 +164,9 @@ void main(void)
 			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
 			#endif
 			break;
+		case EVENT_TYPE_SERIAL_INTERRUPT:
+			printf_serial("Serial Interrupt data = %#04x\n", event->event_union.serial_interrupt.data);
+			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
 			background_sheet->event_procedure(background_sheet, event);
 			break;

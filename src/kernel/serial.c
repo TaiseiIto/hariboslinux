@@ -1,3 +1,4 @@
+#include "event.h"
 #include "io.h"
 #include "limits.h"
 #include "pic.h"
@@ -82,12 +83,14 @@
 #define COM_WRITABLE 0x04
 unsigned char com1_flags = COM_AVAILABLE;
 
+Queue *serial_interrupt_queue;
 Queue *com1_transmission_queue;
 #define MAX_LENGTH_OF_TRANSMISSION_QUEUE 0x0400
 
 // COM1 interrupt handler
 void com1_interrupt_handler(void)
 {
+	Event serial_event;
 	unsigned char *character_to_send;
 	unsigned char interrupt_ID = inb(COM1 + INTERRUPT_IDENTIFICATION_REGISTER);
 	finish_interruption(IRQ_COM1);
@@ -98,8 +101,10 @@ void com1_interrupt_handler(void)
 	case MODEM_STATUS_INTERRUPT:
 		break;
 	case RECEIVED_DATA_INTERRUPT:
-		put_char_serial(inb(COM1 + DATA_REGISTER));
-		break;
+		serial_event.type = EVENT_TYPE_SERIAL_INTERRUPT;
+		serial_event.event_union.serial_interrupt.data = inb(COM1 + DATA_REGISTER);
+		enqueue(serial_interrupt_queue, &serial_event);
+		// Continue to the case TRANSMITTER_EMPTY_INTERRUPT.
 	case TRANSMITTER_EMPTY_INTERRUPT:
 		if(character_to_send = dequeue(com1_transmission_queue))outb(COM1 + DATA_REGISTER, *character_to_send);
 		else com1_flags |= COM_WRITABLE;
@@ -120,6 +125,7 @@ void init_serial_interrupt(Task *task)
 	unsigned short baud_rate_divisor = SERIAL_FREQUENCY / baud_rate;
 	// create com1_transmission_queue
 	com1_transmission_queue = create_queue(sizeof(char), task);
+	serial_interrupt_queue = task->event_queue;
 	// 8 bits per char
 	outb(COM1 + LINE_CONTROL_REGISTER, CHARACTER_LENGTH_8);
 	// enable interrupt

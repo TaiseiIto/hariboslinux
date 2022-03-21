@@ -7,6 +7,7 @@ struct _Event;
 #include "mouse.h"
 #include "queue.h"
 #include "rtc.h"
+#include "serial.h"
 #include "sheet.h"
 #include "task.h"
 #include "timer.h"
@@ -20,6 +21,7 @@ typedef union _EventUnion
 	MouseEvent mouse_event;
 	MouseInterrupt mouse_interrupt;
 	RTCInterrupt rtc_interrupt;
+	SerialInterrupt serial_interrupt;
 	SheetClickedEvent sheet_clicked_event;
 	SheetCreatedEvent sheet_created_event;
 	SheetDeletionRequestEvent sheet_deletion_request_event;
@@ -50,24 +52,25 @@ typedef struct _Event
 	#define EVENT_TYPE_MOUSE_INTERRUPT		0x04
 	#define EVENT_TYPE_PIT_INTERRUPT		0x05
 	#define EVENT_TYPE_RTC_INTERRUPT		0x06
-	#define EVENT_TYPE_SHEET_CLICKED		0x07
-	#define EVENT_TYPE_SHEET_CREATED		0x08
-	#define EVENT_TYPE_SHEET_DELETION_REQUEST	0x09
-	#define EVENT_TYPE_SHEET_DELETION_RESPONSE	0x0a
-	#define EVENT_TYPE_SHEET_FOCUSED		0x0b
-	#define EVENT_TYPE_SHEET_KEYBOARD		0x0c
-	#define EVENT_TYPE_SHEET_MOUSE_DRAG		0x0d
-	#define EVENT_TYPE_SHEET_MOUSE_MOVE		0x0e
-	#define EVENT_TYPE_SHEET_UNFOCUSED		0x0f
-	#define EVENT_TYPE_SHEET_USER_DEFINED		0x10
-	#define EVENT_TYPE_SHEET_VERTICAL_WHEEL		0x11
-	#define EVENT_TYPE_TASK_DELETION_REQUEST	0x12
-	#define EVENT_TYPE_TASK_DELETION_RESPONSE	0x13
-	#define EVENT_TYPE_TIMER_EVENT			0x14
-	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x15
-	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x16
-	#define EVENT_TYPE_WINDOW_FOCUSED		0x17
-	#define EVENT_TYPE_WINDOW_UNFOCUSED		0x18
+	#define EVENT_TYPE_SERIAL_INTERRUPT		0x07
+	#define EVENT_TYPE_SHEET_CLICKED		0x08
+	#define EVENT_TYPE_SHEET_CREATED		0x09
+	#define EVENT_TYPE_SHEET_DELETION_REQUEST	0x0a
+	#define EVENT_TYPE_SHEET_DELETION_RESPONSE	0x0b
+	#define EVENT_TYPE_SHEET_FOCUSED		0x0c
+	#define EVENT_TYPE_SHEET_KEYBOARD		0x0d
+	#define EVENT_TYPE_SHEET_MOUSE_DRAG		0x0e
+	#define EVENT_TYPE_SHEET_MOUSE_MOVE		0x0f
+	#define EVENT_TYPE_SHEET_UNFOCUSED		0x10
+	#define EVENT_TYPE_SHEET_USER_DEFINED		0x11
+	#define EVENT_TYPE_SHEET_VERTICAL_WHEEL		0x12
+	#define EVENT_TYPE_TASK_DELETION_REQUEST	0x13
+	#define EVENT_TYPE_TASK_DELETION_RESPONSE	0x14
+	#define EVENT_TYPE_TIMER_EVENT			0x15
+	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x16
+	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x17
+	#define EVENT_TYPE_WINDOW_FOCUSED		0x18
+	#define EVENT_TYPE_WINDOW_UNFOCUSED		0x19
 	EventUnion event_union;
 } Event;
 
