@@ -105,6 +105,10 @@ rebuild: clean
 run: $(IMAGE_FILE) stop
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_TIMEZONE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) | tee $(EMULATOR_SERIAL_OUT) &
 
+# run the OS on QEMU with interactive serial interface
+run-serial: $(IMAGE_FILE) stop
+	tmux new-session \; source-file tmux/.tmux.run-haribos.conf
+
 src/kernel.bin: $(wildcard src/kernel/*.c src/kernel/*.h)
 	make -C src
 
