@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <winsock2.h>
 #include <windows.h>
+
+char GetInput(HANDLE hStandardInput);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreviousInstance, LPSTR lpCommandLIne, int nCommandShow)
 {
@@ -69,10 +72,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreviousInstance, LPSTR lpCom
 	// Receive from the named pipe and output string.
 	while(ReadFile(hNamedPipe, sBuffer, sizeof(sBuffer) / sizeof(sBuffer[0]), &dwStringLength, NULL))
 	{
+		char input;
 		if(dwStringLength)WriteConsole(hStandardOutput, sBuffer, dwStringLength, NULL, NULL);
 		memset(sBuffer, '\0', sizeof(sBuffer) / sizeof(sBuffer[0]));
-		ReadConsole(hStandardInput, sBuffer, sizeof(sBuffer) / sizeof(sBuffer[0]), &dwStringLength, NULL);
-		if(dwStringLength)WriteFile(hNamedPipe, sBuffer, dwStringLength, &dwStringLength, NULL);
+		input = GetInput(hStandardInput);
+		if(input)WriteFile(hNamedPipe, &input, 1, NULL, NULL);
 	}
 	DisconnectNamedPipe(hNamedPipe);
 	CloseHandle(hNamedPipe);
@@ -84,5 +88,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreviousInstance, LPSTR lpCom
 	CloseHandle(hStandardOutput);
 	FreeConsole();
 	return EXIT_SUCCESS;
+}
+
+char GetInput(HANDLE hStandardInput)
+{
+	INPUT_RECORD input;
+	DWORD length;
+	if(WSAWaitForMultipleEvents(1, &hStandardInput, FALSE, 1, TRUE) != WSA_WAIT_EVENT_0)return '\0';
+	if(!ReadConsoleInput(hStandardInput, &input, 1, &length))return '\0';
+	if(input.EventType != KEY_EVENT)return '\0';
+	if(!input.Event.KeyEvent.bKeyDown)return '\0';
+	return input.Event.KeyEvent.uChar.AsciiChar;
 }
 
