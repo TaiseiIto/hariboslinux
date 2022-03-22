@@ -30,6 +30,7 @@ Console *get_console_from_sheet(Sheet const *sheet);
 
 void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 {
+	bool prompt_position_exists;
 	Console *console = get_console_from_sheet(sheet);
 	ConsoleEvent *console_event;
 	Event new_event;
@@ -52,28 +53,39 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 		return console->default_event_procedure(sheet, event);
 	case EVENT_TYPE_SHEET_KEYBOARD:
 		return_value = console->default_event_procedure(sheet, event);
+		// Check that there is the prompt position in the text.
+		prompt_position_exists = false;
+		for(CharacterPosition *character_position = console->text_box->last_position; character_position; character_position = character_position->previous)if(character_position == console->prompt_position)
+		{
+			prompt_position_exists = true;
+			break;
+		}
+		if(!prompt_position_exists)console->prompt_position = NULL;
 		if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)switch(event->event_union.keyboard_event.character)
 		{
 		case '\n':
 			if(!console->text_box->cursor_position)
 			{
-				// Send command issued event.
-				ChainCharacter *command_start_point;
-				ChainString *command;
-				command_start_point = console->prompt_position->character;
-				for(unsigned int i = 0; i < strlen(prompt); i++)command_start_point = command_start_point->next;
-				if(command_start_point != console->text_box->string->last_character)
+				if(console->prompt_position)
 				{
-					command = create_chain_substring(command_start_point, console->text_box->string->last_character->previous);
-					console_event = malloc(sizeof(*console_event));
-					console_event->type = CONSOLE_EVENT_TYPE_COMMAND_ISSUED;
-					console_event->console_event_union.command_issued_event.command = create_char_array_from_chain_string(command);
-					delete_chain_string(command);
-					new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
-					new_event.event_union.sheet_user_defined_event.sheet = sheet;
-					new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
-					new_event.event_union.sheet_user_defined_event.any = console_event;
-					enqueue(sheet->event_queue, &new_event);
+					// Send command issued event.
+					ChainCharacter *command_start_point;
+					ChainString *command;
+					command_start_point = console->prompt_position->character;
+					for(unsigned int i = 0; i < strlen(prompt); i++)command_start_point = command_start_point->next;
+					if(command_start_point != console->text_box->string->last_character)
+					{
+						command = create_chain_substring(command_start_point, console->text_box->string->last_character->previous);
+						console_event = malloc(sizeof(*console_event));
+						console_event->type = CONSOLE_EVENT_TYPE_COMMAND_ISSUED;
+						console_event->console_event_union.command_issued_event.command = create_char_array_from_chain_string(command);
+						delete_chain_string(command);
+						new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+						new_event.event_union.sheet_user_defined_event.sheet = sheet;
+						new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+						new_event.event_union.sheet_user_defined_event.any = console_event;
+						enqueue(sheet->event_queue, &new_event);
+					}
 				}
 				// Send prompt event.
 				console_event = malloc(sizeof(*console_event));
