@@ -104,7 +104,7 @@ void com1_interrupt_handler(void)
 		serial_event.type = EVENT_TYPE_SERIAL_INTERRUPT;
 		serial_event.event_union.serial_interrupt.data = inb(COM1 + DATA_REGISTER);
 		enqueue(serial_interrupt_queue, &serial_event);
-		// Continue to the case TRANSMITTER_EMPTY_INTERRUPT.
+		break;
 	case TRANSMITTER_EMPTY_INTERRUPT:
 		if(character_to_send = dequeue(com1_transmission_queue))outb(COM1 + DATA_REGISTER, *character_to_send);
 		else com1_flags |= COM_WRITABLE;
