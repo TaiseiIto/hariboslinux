@@ -451,6 +451,9 @@ void serial_console_input(char character)
 	put_char_serial(character);
 	switch(character)
 	{
+	case '\b':
+		if(serial_console_input_string->length)delete_char(serial_console_input_string, serial_console_input_string->last_character);
+		break;
 	case '\n':
 		command_line = create_char_array_from_chain_string(serial_console_input_string);
 		printf_serial("Command \"%s\" issued.\n", command_line);
