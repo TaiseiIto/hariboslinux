@@ -455,10 +455,13 @@ void serial_console_input(char character)
 		if(serial_console_input_string->length)delete_char(serial_console_input_string, serial_console_input_string->last_character);
 		break;
 	case '\n':
-		command_line = create_char_array_from_chain_string(serial_console_input_string);
-		printf_serial("Command \"%s\" issued.\n", command_line);
-		free(command_line);
-		delete_chars(serial_console_input_string, serial_console_input_string->first_character, serial_console_input_string->length);
+		if(serial_console_input_string->length)
+		{
+			command_line = create_char_array_from_chain_string(serial_console_input_string);
+			printf_serial("Command \"%s\" issued.\n", command_line);
+			free(command_line);
+			delete_chars(serial_console_input_string, serial_console_input_string->first_character, serial_console_input_string->length);
+		}
 		break;
 	default:
 		insert_char_back(serial_console_input_string, serial_console_input_string->last_character, character);
