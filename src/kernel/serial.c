@@ -1,6 +1,8 @@
+#include "chain_string.h"
 #include "event.h"
 #include "io.h"
 #include "limits.h"
+#include "memory.h"
 #include "pic.h"
 #include "queue.h"
 #include "serial.h"
@@ -443,6 +445,21 @@ void put_char_serial(char character)
 // input a character to serial console
 void serial_console_input(char character)
 {
+	static ChainString *serial_console_input_string = NULL;
+	char *command_line;
+	if(!serial_console_input_string)serial_console_input_string = create_chain_string("");
 	put_char_serial(character);
+	switch(character)
+	{
+	case '\n':
+		command_line = create_char_array_from_chain_string(serial_console_input_string);
+		printf_serial("Command \"%s\" issued.\n", command_line);
+		free(command_line);
+		delete_chars(serial_console_input_string, serial_console_input_string->first_character, serial_console_input_string->length);
+		break;
+	default:
+		insert_char_back(serial_console_input_string, serial_console_input_string->last_character, character);
+		break;
+	}
 }
 
