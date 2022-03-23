@@ -440,3 +440,9 @@ void put_char_serial(char character)
 	}
 }
 
+// input a character to serial console
+void serial_console_input(char character)
+{
+	put_char_serial(character);
+}
+

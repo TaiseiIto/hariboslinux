@@ -168,10 +168,10 @@ void main(void)
 			switch(event->event_union.serial_interrupt.data)
 			{
 			case '\r':
-				put_char_serial('\n');
+				serial_console_input('\n');
 				break;
 			default:
-				put_char_serial(event->event_union.serial_interrupt.data);
+				serial_console_input(event->event_union.serial_interrupt.data);
 				break;
 			}
 			break;

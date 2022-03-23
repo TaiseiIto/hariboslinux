@@ -45,5 +45,8 @@ void print_word_hex_serial(unsigned short value);
 // print a character to serial port COM1
 void put_char_serial(char character);
 
+// input a character to serial console
+void serial_console_input(char character);
+
 #endif
 
