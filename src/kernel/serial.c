@@ -447,6 +447,15 @@ void serial_console_input(char character)
 {
 	static ChainString *serial_console_input_string = NULL;
 	char *command_line;
+	switch(character)
+	{
+	case '\r':
+		character = '\n';
+		break;
+	case '\x7f':
+		character = '\b';
+		break;
+	}
 	if(!serial_console_input_string)serial_console_input_string = create_chain_string("");
 	put_char_serial(character);
 	switch(character)

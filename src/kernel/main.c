@@ -165,19 +165,7 @@ void main(void)
 			#endif
 			break;
 		case EVENT_TYPE_SERIAL_INTERRUPT:
-			printf_serial("Serial input = %#04x\n", event->event_union.serial_interrupt.data);
-			switch(event->event_union.serial_interrupt.data)
-			{
-			case '\r':
-				serial_console_input('\n');
-				break;
-			case '\x7f':
-				serial_console_input('\b');
-				break;
-			default:
-				serial_console_input(event->event_union.serial_interrupt.data);
-				break;
-			}
+			serial_console_input(event->event_union.serial_interrupt.data);
 			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
 			background_sheet->event_procedure(background_sheet, event);
