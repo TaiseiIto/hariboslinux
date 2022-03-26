@@ -26,7 +26,7 @@ void delete_shell(Shell *shell)
 
 void *execute_command(Shell *shell, char const * const command)
 {
-	printf_serial("Shell %p executes command %s\n", shell, command);
+	printf_serial("%s shell %p executes command \"%s\"\n", shell->type == SHELL_TYPE_CONSOLE ? "Console" : "Serial" , shell, command);
 	return NULL;
 }
 

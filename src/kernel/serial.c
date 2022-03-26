@@ -6,6 +6,7 @@
 #include "pic.h"
 #include "queue.h"
 #include "serial.h"
+#include "shell.h"
 #include "stdio.h"
 
 #define SERIAL_FREQUENCY 115200
@@ -446,6 +447,7 @@ void put_char_serial(char character)
 void serial_console_input(char character)
 {
 	static ChainString *serial_console_input_string = NULL;
+	static Shell *serial_shell = NULL;
 	char *command_line;
 	switch(character)
 	{
@@ -457,6 +459,7 @@ void serial_console_input(char character)
 		break;
 	}
 	if(!serial_console_input_string)serial_console_input_string = create_chain_string("");
+	if(!serial_shell)serial_shell = create_shell(NULL);
 	put_char_serial(character);
 	switch(character)
 	{
@@ -467,7 +470,7 @@ void serial_console_input(char character)
 		if(serial_console_input_string->length)
 		{
 			command_line = create_char_array_from_chain_string(serial_console_input_string);
-			printf_serial("Command \"%s\" issued.\n", command_line);
+			execute_command(serial_shell, command_line);
 			free(command_line);
 			delete_chars(serial_console_input_string, serial_console_input_string->first_character, serial_console_input_string->length);
 		}
