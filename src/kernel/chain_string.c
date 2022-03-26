@@ -31,7 +31,6 @@ char *create_char_array_from_chain_string(ChainString const *string)
 	char *char_array;
 	char *writer;
 	if(!string)ERROR(); // The string doesn't exist.
-	if(!string->length)return NULL;
 	char_array = malloc(string->length + 1);
 	writer = char_array;
 	for(ChainCharacter *position = string->first_character; position; position = position->next)*writer++ = position->character;
