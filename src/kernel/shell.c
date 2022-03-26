@@ -34,18 +34,21 @@ char **create_argv(char const *command)
 	{
 	case ' ':
 	case '\t':
-		if(!(flags & (INSIDE_QUOTATION | INSIDE_DOUBLE_QUOTATION)))
+		if(last_argument->chain_string->length)
 		{
-			// Create a new argument.
-			CommandLineArgument *new_argument = malloc(sizeof(*new_argument));
-			new_argument->chain_string = create_chain_string("");
-			new_argument->previous = last_argument;
-			new_argument->next = NULL;
-			last_argument->next = new_argument;
-			last_argument = new_argument;
-			argc++;
+			if(!(flags & (INSIDE_QUOTATION | INSIDE_DOUBLE_QUOTATION)))
+			{
+				// Create a new argument.
+				CommandLineArgument *new_argument = malloc(sizeof(*new_argument));
+				new_argument->chain_string = create_chain_string("");
+				new_argument->previous = last_argument;
+				new_argument->next = NULL;
+				last_argument->next = new_argument;
+				last_argument = new_argument;
+				argc++;
+			}
+			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
 		}
-		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
 		break;
 	default:
 		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
