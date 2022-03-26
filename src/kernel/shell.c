@@ -51,12 +51,22 @@ char **create_argv(char const *command)
 		}
 		break;
 	case '\'':
-		if(!last_argument->chain_string->length)flags ^= INSIDE_QUOTATION;
-		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		if(flags & INSIDE_QUOTATION)flags &= ~INSIDE_QUOTATION;
+		if(flags & INSIDE_DOUBLE_QUOTATION)insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		else
+		{
+			if(!last_argument->chain_string->length)flags |= INSIDE_QUOTATION;
+			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		}
 		break;
 	case '\"':
-		if(!last_argument->chain_string->length)flags ^= INSIDE_DOUBLE_QUOTATION;
-		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		if(flags & INSIDE_QUOTATION)insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		if(flags & INSIDE_DOUBLE_QUOTATION)flags &= ~INSIDE_DOUBLE_QUOTATION;
+		else
+		{
+			if(!last_argument->chain_string->length)flags ^= INSIDE_DOUBLE_QUOTATION;
+			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		}
 		break;
 	default:
 		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
