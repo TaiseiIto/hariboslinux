@@ -50,6 +50,14 @@ char **create_argv(char const *command)
 			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
 		}
 		break;
+	case '\'':
+		if(!last_argument->chain_string->length)flags ^= INSIDE_QUOTATION;
+		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		break;
+	case '\"':
+		if(!last_argument->chain_string->length)flags ^= INSIDE_DOUBLE_QUOTATION;
+		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		break;
 	default:
 		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
 		break;
