@@ -5,7 +5,7 @@ const Color b = {0x00, 0x00,  0x00, 0xff}; // black
 const Color t = {0x00, 0x00,  0x00, 0x00}; // transparent
 const Color w = {0xff, 0xff,  0xff, 0xff}; // white
 
-Color mouse_cursor_image[MOUSE_CURSOR_HEIGHT * MOUSE_CURSOR_WIDTH] =
+const Color mouse_cursor_image[MOUSE_CURSOR_HEIGHT * MOUSE_CURSOR_WIDTH] =
 {
 	b,t,t,t,t,t,t,t,
 	b,b,t,t,t,t,t,t,
