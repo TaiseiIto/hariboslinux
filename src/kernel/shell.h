@@ -15,7 +15,10 @@ typedef struct _Shell
 
 Shell *create_shell(struct _Console *console);
 void delete_shell(Shell *shell);
-void *execute_command(Shell *shell, char const * const command);
+void *execute_command(Shell *shell, char const *command);
+void print_shell(Shell *shell, char const *string);
+void printf_shell(Shell *shell, char const *format, ...);
+void put_char_shell(Shell *shell, char character);
 
 #endif
 
