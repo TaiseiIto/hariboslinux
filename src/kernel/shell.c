@@ -167,13 +167,17 @@ void *execute_command(Shell *shell, char const *command)
 	printf_shell(shell, "%s shell %p executes command \"%s\"\n", shell->type == SHELL_TYPE_CONSOLE ? "Console" : "Serial" , shell, command);
 	// Create argv.
 	argv = create_argv(command);
-	// Count argc.
-	for(argc = 0; argv[argc]; argc++);
-	// Print argv.
-	for(unsigned int argv_index = 0; argv_index < argc; argv_index++)printf_shell(shell, "argv[%d] = \"%s\"\n", argv_index, argv[argv_index]);
-	// Discard argv.
-	for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
-	free(argv);
+	if(argv)
+	{
+		// Count argc.
+		for(argc = 0; argv[argc]; argc++);
+		// Print argv.
+		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)printf_shell(shell, "argv[%d] = \"%s\"\n", argv_index, argv[argv_index]);
+		// Discard argv.
+		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
+		free(argv);
+		return NULL;
+	}
 	return NULL;
 }
 
