@@ -24,12 +24,32 @@ char **create_argv(char const *command)
 	unsigned int argc = 1;
 	char **argv;
 	unsigned char flags = 0;
-	#define INSIDE_DOUBLE_QUOTATION 0x01
+	#define INSIDE_QUOTATION 0x01
+	#define INSIDE_DOUBLE_QUOTATION 0x02
 	first_argument->chain_string = create_chain_string("");
 	first_argument->previous = NULL;
 	first_argument->next = NULL;
 	// Parse the command.
-	for(; *command; command++)insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+	for(; *command; command++)switch(*command)
+	{
+	case ' ':
+		if(!(flags & (INSIDE_QUOTATION | INSIDE_DOUBLE_QUOTATION)))
+		{
+			// Create a new argument.
+			CommandLineArgument *new_argument = malloc(sizeof(*new_argument));
+			new_argument->chain_string = create_chain_string("");
+			new_argument->previous = last_argument;
+			new_argument->next = NULL;
+			last_argument->next = new_argument;
+			last_argument = new_argument;
+			argc++;
+		}
+		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		break;
+	default:
+		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		break;
+	}
 	// Create argv.
 	argv = malloc((argc + 1) * sizeof(*argv));
 	argument = first_argument;
@@ -83,7 +103,7 @@ void *execute_command(Shell *shell, char const *command)
 	// Count argc.
 	for(argc = 0; argv[argc]; argc++);
 	// Print argv.
-	for(unsigned int argv_index = 0; argv_index < argc; argv_index++)printf_shell(shell, "argv[%d] = %s\n", argv_index, argv[argv_index]);
+	for(unsigned int argv_index = 0; argv_index < argc; argv_index++)printf_shell(shell, "argv[%d] = \"%s\"\n", argv_index, argv[argv_index]);
 	// Discard argv.
 	for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
 	free(argv);
