@@ -72,7 +72,18 @@ char **create_argv(char const *command)
 		if(*(command + 1))
 		{
 			command++;
-			insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+			switch(*command)
+			{
+			case 'n':
+				insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, '\n');
+				break;
+			case 't':
+				insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, '\t');
+				break;
+			default:
+				insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+				break;
+			}
 		}
 		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
 		break;
