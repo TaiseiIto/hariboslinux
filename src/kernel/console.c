@@ -21,7 +21,6 @@ typedef struct _ConsoleEvent
 	ConsoleEventUnion console_event_union;
 } ConsoleEvent;
 
-char const * const prompt = "> ";
 Console *root_console = NULL;
 
 void *console_event_procedure(Sheet *sheet, struct _Event const *event);

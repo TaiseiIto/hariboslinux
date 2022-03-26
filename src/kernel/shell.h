@@ -13,6 +13,8 @@ typedef struct _Shell
 	#define SHELL_TYPE_SERIAL	0x01
 } Shell;
 
+extern char const * const prompt;
+
 Shell *create_shell(struct _Console *console);
 void delete_shell(Shell *shell);
 void *execute_command(Shell *shell, char const *command);

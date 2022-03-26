@@ -3,6 +3,8 @@
 #include "shell.h"
 #include "stdio.h"
 
+char const * const prompt = "> ";
+
 Shell *create_shell(Console *console)
 {
 	Shell *shell;
