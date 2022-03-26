@@ -1,6 +1,8 @@
 #include "chain_string.h"
+#include "io.h"
 #include "memory.h"
 #include "serial.h"
+#include "stdio.h"
 
 ChainString *create_chain_string(char const *string)
 {
@@ -35,6 +37,239 @@ char *create_char_array_from_chain_string(ChainString const *string)
 	for(ChainCharacter *position = string->first_character; position; position = position->next)*writer++ = position->character;
 	*writer = '\0';
 	return char_array;
+}
+
+ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
+{
+	unsigned int arg_pos = format_arg_pos;
+	char character;
+	char const *format = (char const *)get_caller_variadic_arg(arg_pos++);
+	char const *input_string;
+	VariadicArg integer;
+	VariadicArg integer_destroyable;
+	ChainString *output_chain_string = create_chain_string("");
+	while(*format)
+	{
+		if(*format == '%')
+		{
+			unsigned char flags = 0;
+			#define SPRINTF_MINUS_FLAG 0x01
+			#define SPRINTF_TYPE_FLAG 0x02
+			#define SPRINTF_ZERO_FLAG 0x04
+			#define SPRINTF_LONG_FLAG 0x08
+			#define SPRINTF_LONG_LONG_FLAG 0x10
+			unsigned int length = 0;
+			unsigned int num_of_digits = 0;
+			format++;
+			switch(*format)
+			{
+			case '%':
+				insert_char_back(output_chain_string, output_chain_string->last_character, '%');
+				format++;
+				continue;
+			case '#':
+				flags |= SPRINTF_TYPE_FLAG;
+				format++;
+				break;
+			}
+			if(*format == '0')
+			{
+				flags |= SPRINTF_ZERO_FLAG;
+				format++;
+			}
+			while('0' <= *format && *format <= '9')
+			{
+				length *= 10;
+				length += *format - '0';
+				format++;
+			}
+			switch(*format)
+			{
+			case 'l':
+				flags |= SPRINTF_LONG_FLAG;
+				format++;
+			}
+			switch(*format)
+			{
+			case 'l':
+				if(flags | SPRINTF_LONG_FLAG)
+				{
+					flags &= ~SPRINTF_LONG_FLAG;
+					flags |= SPRINTF_LONG_LONG_FLAG;
+					format++;
+				}
+			}
+			switch(*format)
+			{
+			case 'c':
+				character = get_caller_variadic_arg(arg_pos++);
+				insert_char_back(output_chain_string, output_chain_string->last_character, character);
+				break;
+			case 'd':
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+					integer.unsigned_ints[1] = get_caller_variadic_arg(arg_pos++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+					integer.ints[1] = -(integer.ints[0] < 0);
+				}
+				if(integer.long_long_int < 0)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, '-');
+					integer.long_long_int *= -1;
+					if(0 < length)length--;
+					flags |= SPRINTF_MINUS_FLAG;
+				}
+				integer_destroyable = integer;
+				if(integer.long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.long_long_int; integer_destroyable.long_long_int /= 10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					length--;
+				}
+				while(0 < num_of_digits)
+				{
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.long_long_int /= 10;
+					insert_char_back(output_chain_string, output_chain_string->last_character, '0' + integer_destroyable.long_long_int % 10);
+					num_of_digits--;
+				}
+				break;
+			case 'p':
+				length = 10;
+				integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+				integer.unsigned_ints[1] = 0;
+				insert_char_back(output_chain_string, output_chain_string->last_character, '0');
+				if(0 < length)length--;
+				insert_char_back(output_chain_string, output_chain_string->last_character, 'x');
+				if(0 < length)length--;
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, '0');
+					length--;
+				}
+				while(0 < num_of_digits)
+				{
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					insert_char_back(output_chain_string, output_chain_string->last_character, integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10);
+					num_of_digits--;
+				}
+				break;
+			case 's':
+				input_string = (char const *)get_caller_variadic_arg(arg_pos++);
+				while(*input_string && (!length || num_of_digits++ < length))insert_char_back(output_chain_string, output_chain_string->last_character, *input_string++);
+				break;
+			case 'u':
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+					integer.unsigned_ints[1] = get_caller_variadic_arg(arg_pos++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+					integer.unsigned_ints[1] = 0;
+				}
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					length--;
+				}
+				while(0 < num_of_digits)
+				{
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 10;
+					insert_char_back(output_chain_string, output_chain_string->last_character, '0' + integer_destroyable.unsigned_long_long_int % 10);
+					num_of_digits--;
+				}
+				break;
+			case 'x':
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+					integer.unsigned_ints[1] = get_caller_variadic_arg(arg_pos++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+					integer.unsigned_ints[1] = 0;
+				}
+				if(flags & SPRINTF_TYPE_FLAG)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, '0');
+					if(0 < length)length--;
+					insert_char_back(output_chain_string, output_chain_string->last_character, 'x');
+					if(0 < length)length--;
+				}
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					length--;
+				}
+				while(0 < num_of_digits)
+				{
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					insert_char_back(output_chain_string, output_chain_string->last_character, integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'a' + integer_destroyable.unsigned_long_long_int % 0x10 - 10);
+					num_of_digits--;
+				}
+				break;
+			case 'X':
+				if(flags & SPRINTF_LONG_LONG_FLAG)
+				{
+					integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+					integer.unsigned_ints[1] = get_caller_variadic_arg(arg_pos++);
+				}
+				else
+				{
+					integer.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+					integer.unsigned_ints[1] = 0;
+				}
+				if(flags & SPRINTF_TYPE_FLAG)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, '0');
+					if(0 < length)length--;
+					insert_char_back(output_chain_string, output_chain_string->last_character, 'X');
+					if(0 < length)length--;
+				}
+				integer_destroyable = integer;
+				if(integer.unsigned_long_long_int)for(num_of_digits = 0; 0 < integer_destroyable.unsigned_long_long_int; integer_destroyable.unsigned_long_long_int /= 0x10)num_of_digits++;
+				else num_of_digits = 1;
+				if(num_of_digits < length)while(num_of_digits < length)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, flags & SPRINTF_ZERO_FLAG ? '0' : ' ');
+					length--;
+				}
+				while(0 < num_of_digits)
+				{
+					integer_destroyable = integer;
+					for(unsigned int i = 0; i + 1 < num_of_digits; i++)integer_destroyable.unsigned_long_long_int /= 0x10;
+					insert_char_back(output_chain_string, output_chain_string->last_character, integer_destroyable.unsigned_long_long_int % 0x10 < 10 ? '0' + integer_destroyable.unsigned_long_long_int % 0x10 : 'A' + integer_destroyable.unsigned_long_long_int % 0x10 - 10);
+					num_of_digits--;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		else insert_char_back(output_chain_string, output_chain_string->last_character, *format);
+		format++;
+	}
+	return output_chain_string;
 }
 
 void delete_chain_string(ChainString *string)
