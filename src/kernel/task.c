@@ -220,25 +220,7 @@ Task *get_current_task(void)
 
 void idle_task_procedure(void *arguments)
 {
-	Queue *event_queue;
-	Timer *message_timer;
-	event_queue = create_event_queue(current_task_level->current_task);
-	message_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
-	while(true)
-	{
-		Event const *event = dequeue(event_queue);
-		if(event)switch(event->type)
-		{
-		case EVENT_TYPE_TIMER_EVENT:
-			if(event->event_union.timer_event.timer == message_timer)printf_serial("Hello, idle task!\n");
-			else call_timer_procedure(event->event_union.timer_event.timer);
-			break;
-		default: // Invalid event->type
-			ERROR();
-			break;
-		}
-		else hlt();
-	}
+	while(true)hlt();
 }
 
 Task *init_task(void)
