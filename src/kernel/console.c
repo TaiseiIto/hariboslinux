@@ -107,7 +107,7 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 			{
 			case CONSOLE_EVENT_TYPE_COMMAND_ISSUED:
 				// Execute the command.
-				printf_serial("Command \"%s\" issued.\n", console_event->console_event_union.command_issued_event.command);
+				execute_command(console->shell, console_event->console_event_union.command_issued_event.command);
 				free(console_event->console_event_union.command_issued_event.command);
 				break;
 			case CONSOLE_EVENT_TYPE_PROMPT:
@@ -134,6 +134,7 @@ void delete_console(Console *console)
 {
 	printf_serial("Delete console %p\n", console);
 	prohibit_switch_task();
+	delete_shell(console->shell);
 	console->text_box->sheet->event_procedure = console->default_event_procedure;
 	if(root_console == console)root_console = root_console->next;
 	if(root_console == console)root_console = NULL;
@@ -168,6 +169,7 @@ Console *make_sheet_console(Sheet *sheet, Color foreground_color, Color backgrou
 	printf_serial("Make sheet %p console %p\n", sheet, new_console);
 	prohibit_switch_task();
 	new_console->prompt_position = NULL;
+	new_console->shell = create_shell(new_console);
 	new_console->text_box = make_sheet_text_box(sheet, foreground_color, background_color);
 	new_console->default_event_procedure = new_console->text_box->sheet->event_procedure;
 	new_console->text_box->sheet->event_procedure = console_event_procedure;
