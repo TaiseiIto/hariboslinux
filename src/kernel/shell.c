@@ -33,6 +33,7 @@ char **create_argv(char const *command)
 	for(; *command; command++)switch(*command)
 	{
 	case ' ':
+	case '\t':
 		if(!(flags & (INSIDE_QUOTATION | INSIDE_DOUBLE_QUOTATION)))
 		{
 			// Create a new argument.
