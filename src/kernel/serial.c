@@ -159,6 +159,16 @@ unsigned int number_of_unoutput_characters(void)
 // printf
 void printf_serial(char const *format, ...)
 {
+	ChainString *output_chain_string = create_caller_format_chain_string(0);
+	char *output_string = create_char_array_from_chain_string(output_chain_string);
+	print_serial(output_string);
+	free(output_string);
+	delete_chain_string(output_chain_string);
+}
+
+// printf used before init_memory
+void printf_serial_without_malloc(char const *format, ...)
+{
 	int arg_num = 1;
 	char character;
 	char const *input_string;

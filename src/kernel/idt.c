@@ -324,12 +324,12 @@ void init_idt(void)
 	// check IDT
 	for(InterruptDescriptor const *interrupt_descriptor_checker = IDT_BEGIN; interrupt_descriptor_checker < IDT_END; interrupt_descriptor_checker++)
 	{
-		printf_serial("Interrupt Descriptor %p\n", interrupt_descriptor_checker);
-		printf_serial("\t offset_low\t%#06x\n", interrupt_descriptor_checker->offset_low);
-		printf_serial("\t selector\t%#06x\n", interrupt_descriptor_checker->selector);
-		printf_serial("\t zero\t\t%#04x\n", interrupt_descriptor_checker->zero);
-		printf_serial("\t flags\t\t%#04x\n", interrupt_descriptor_checker->flags);
-		printf_serial("\t offset_high\t%#06x\n", interrupt_descriptor_checker->offset_high);
+		printf_serial_without_malloc("Interrupt Descriptor %p\n", interrupt_descriptor_checker);
+		printf_serial_without_malloc("\t offset_low\t%#06x\n", interrupt_descriptor_checker->offset_low);
+		printf_serial_without_malloc("\t selector\t%#06x\n", interrupt_descriptor_checker->selector);
+		printf_serial_without_malloc("\t zero\t\t%#04x\n", interrupt_descriptor_checker->zero);
+		printf_serial_without_malloc("\t flags\t\t%#04x\n", interrupt_descriptor_checker->flags);
+		printf_serial_without_malloc("\t offset_high\t%#06x\n", interrupt_descriptor_checker->offset_high);
 	}
 	new_line_serial();
 }

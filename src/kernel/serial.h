@@ -30,6 +30,9 @@ unsigned int number_of_unoutput_characters(void);
 // printf
 void printf_serial(char const *format, ...);
 
+// printf used before init_memory
+void printf_serial_without_malloc(char const *format, ...);
+
 // print value as hexadecimal
 void print_byte_hex_serial(unsigned char value);
 

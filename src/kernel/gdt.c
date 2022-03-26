@@ -61,19 +61,19 @@ void init_gdt(void)
 
 	// check new GDT
 	print_serial("check new GDT\n");
-	printf_serial("whole_memory_segment_selector = %#06x\n", whole_memory_segment_selector);
-	printf_serial("kernel_code_segment_selector = %#06x\n", kernel_code_segment_selector);
+	printf_serial_without_malloc("whole_memory_segment_selector = %#06x\n", whole_memory_segment_selector);
+	printf_serial_without_malloc("kernel_code_segment_selector = %#06x\n", kernel_code_segment_selector);
 	new_line_serial();
 	segment_checker = GDT_BEGIN;
 	do
 	{
-		printf_serial("Segment Descriptor %p\n", segment_checker);
-		printf_serial("\tlimit_low\t%#06x\n", segment_checker->limit_low);
-		printf_serial("\tbase_low\t%#06x\n", segment_checker->base_low);
-		printf_serial("\tbase_mid\t%#04x\n", segment_checker->base_mid);
-		printf_serial("\taccess_right\t%#04x\n", segment_checker->access_right);
-		printf_serial("\tlimit_high\t%#04x\n", segment_checker->limit_high);
-		printf_serial("\tbase_high\t%#04x\n", segment_checker->base_high);
+		printf_serial_without_malloc("Segment Descriptor %p\n", segment_checker);
+		printf_serial_without_malloc("\tlimit_low\t%#06x\n", segment_checker->limit_low);
+		printf_serial_without_malloc("\tbase_low\t%#06x\n", segment_checker->base_low);
+		printf_serial_without_malloc("\tbase_mid\t%#04x\n", segment_checker->base_mid);
+		printf_serial_without_malloc("\taccess_right\t%#04x\n", segment_checker->access_right);
+		printf_serial_without_malloc("\tlimit_high\t%#04x\n", segment_checker->limit_high);
+		printf_serial_without_malloc("\tbase_high\t%#04x\n", segment_checker->base_high);
 		segment_checker++;
 	}while(segment_checker->access_right & SEGMENT_DESCRIPTOR_PRESENT);
 	new_line_serial();
