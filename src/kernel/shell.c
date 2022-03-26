@@ -68,6 +68,14 @@ char **create_argv(char const *command)
 			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
 		}
 		break;
+	case '\\':
+		if(*(command + 1))
+		{
+			command++;
+			insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		}
+		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		break;
 	default:
 		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
 		break;
