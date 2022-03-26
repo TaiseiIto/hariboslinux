@@ -7,6 +7,10 @@
 // disable all interrupts
 void cli(void);
 
+// get nth arg in caller variadic arg function
+// the first arg is 0th
+unsigned int get_caller_variadic_arg(unsigned int);
+
 // get eflags register
 unsigned int get_eflags(void);
 #define EFLAGS_NOTHING		0x00000002

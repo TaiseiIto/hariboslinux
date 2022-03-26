@@ -5,6 +5,7 @@
 # preserved registers: ebx, esi, edi, ebp, esp
 
 	.globl	cli
+	.globl	get_caller_variadic_arg
 	.globl	get_eflags
 	.globl	get_variadic_arg
 	.globl	hlt
@@ -29,6 +30,7 @@
 	.globl	writes
 
 	.type	cli,			@function
+	.type	get_caller_variadic_arg,@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
 	.type	hlt,			@function
@@ -60,6 +62,21 @@ cli:				# void cli(void);
 	pushl	%ebp
 	movl	%esp,	%ebp
 	cli	
+	leave
+	ret
+
+				# // get nth arg in caller variadic arg function
+				# // the first arg is 0th
+get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	movl	(%ebp),	%esi
+	movl	(%esi),	%esi
+	movl	0x08(%ebp),%edx
+	movl	%ss:0x08(%esi,%edx,0x04),%eax
+	popl	%esi
 	leave
 	ret
 
