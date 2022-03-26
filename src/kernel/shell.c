@@ -91,6 +91,32 @@ char **create_argv(char const *command)
 		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
 		break;
 	}
+	if(!last_argument->chain_string->length)
+	{
+		if(last_argument->previous)
+		{
+			CommandLineArgument *empty_argument = last_argument;
+			// Discard last empty argv.
+			last_argument->previous->next = NULL;
+			last_argument = last_argument->previous;
+			delete_chain_string(empty_argument->chain_string);
+			free(empty_argument);
+			argc--;
+		}
+		else
+		{
+			// The command is empty.
+			// Discard chain strings.
+			for(argument = first_argument; argument; argument = argument->next)delete_chain_string(argument->chain_string);
+			// Discard arguments.
+			for(argument = first_argument; argument; argument = next_argument)
+			{
+				next_argument = argument->next;
+				free(argument);
+			}
+			return NULL;
+		}
+	}
 	// Create argv.
 	argv = malloc((argc + 1) * sizeof(*argv));
 	argument = first_argument;
