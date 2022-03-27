@@ -193,7 +193,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			break;
 		case 'd':
 		case 'i':
-			if(arg_size == 4)arg.ints[1] = -(arg.ints[0] < 0);
+			if(arg_size < 8)arg.ints[1] = -(arg.ints[0] < 0);
 			if(0 <= arg.long_long_int)
 			{
 				if(flags & FORMAT_FLAG_EXPLICIT_PLUS)
@@ -292,6 +292,36 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		case 'u':
+			if(arg_size < 8)arg.unsigned_ints[1] = 0;
+			if(flags & FORMAT_FLAG_EXPLICIT_PLUS)
+			{
+				insert_char_back(output_chain_string, output_chain_string->last_character, '+');
+				output_length++;
+				sign_character = output_chain_string->last_character;
+			}
+			else if(flags & FORMAT_FLAG_BLANK_SIGN)
+			{
+				insert_char_back(output_chain_string, output_chain_string->last_character, ' ');
+				output_length++;
+				sign_character = output_chain_string->last_character;
+			}
+			while(arg.unsigned_long_long_int)
+			{
+				insert_char_back(output_chain_string, sign_character, arg.unsigned_long_long_int % 10 + '0');
+				output_length++;
+				arg.unsigned_long_long_int /= 10;
+			}
+			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+			while(output_length < precision)
+			{
+				insert_char_back(output_chain_string, sign_character, '0');
+				output_length++;
+			}
+			while(output_length < width)
+			{
+				insert_char_back(output_chain_string, previous_character, ' ');
+				output_length++;
+			}
 			break;
 		case 'x':
 			break;
