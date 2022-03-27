@@ -43,10 +43,61 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	unsigned int arg_pos = format_arg_pos;
 	char const *format = (char const *)get_caller_variadic_arg(arg_pos++);
 	ChainString *output_chain_string = create_chain_string("");
+	unsigned int arg_size;
+	unsigned char flags;
+	#define FORMAT_FLAG_BLANK_SIGN		0x01
+	#define FORMAT_FLAG_EXPLICIT_PLUS	0x02
+	#define FORMAT_FLAG_EXPLICIT_RADIX	0x04
+	#define FORMAT_FLAG_LEFT_JUSTIFIED	0x08
+	#define FORMAT_FLAG_PRECISION_SPECIFIED 0x10
+	#define FORMAT_FLAG_THOUSAND_SEPARATOR	0x20
+	#define FORMAT_FLAG_WIDTH_SPECIFIED	0x40
+	#define FORMAT_FLAG_ZERO_FILLED		0x80
+	unsigned char format_phase;
+	#define	FORMAT_PHASE_FLAGS	0x00
+	#define	FORMAT_PHASE_WIDTH	0x01
+	#define	FORMAT_PHASE_PRECISION	0x02
+	#define	FORMAT_PHASE_MODIFIER	0x03
+	#define	FORMAT_PHASE_TYPE	0x04
+	#define	FORMAT_PHASE_FINISHED	0x05
+	int precision;
+	int width;
 	while(*format)switch(*format)
 	{
 	case '%':
-		format++;
+		arg_size = 0;
+		flags = 0;
+		format_phase = FORMAT_PHASE_FLAGS;
+		precision = 0;
+		width = 0;
+		while(format_phase == FORMAT_PHASE_FLAGS)
+		{
+			switch(*++format)
+			{
+			case ' ':
+				flags |= FORMAT_FLAG_BLANK_SIGN;
+				break;
+			case '#':
+				flags |= FORMAT_FLAG_EXPLICIT_RADIX;
+				break;
+			case '%':
+				insert_char_back(output_chain_string, output_chain_string->last_character, '%');
+				format_phase = FORMAT_PHASE_FINISHED;
+				break;
+			case '\'':
+				flags |= FORMAT_FLAG_THOUSAND_SEPARATOR;
+				break;
+			case '+':
+				flags |= FORMAT_FLAG_EXPLICIT_PLUS;
+				break;
+			case '-':
+				flags |= FORMAT_FLAG_LEFT_JUSTIFIED;
+				break;
+			default:
+				format_phase = FORMAT_PHASE_WIDTH;
+				break;
+			}
+		}
 		break;
 	default:
 		insert_char_back(output_chain_string, output_chain_string->last_character, *format++);
