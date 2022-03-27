@@ -88,6 +88,7 @@ void main(void)
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
 	// Print boot sector
 	printf_serial("Jump instruction = %#04x %#04x %#04x\n", boot_sector->jump_instruction[0], boot_sector->jump_instruction[1], boot_sector->jump_instruction[2]);
+	printf_serial("Product name = \"%.8s\"\n", boot_sector->product_name);
 	// Init background sheet
 	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;

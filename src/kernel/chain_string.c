@@ -57,8 +57,10 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			#define SPRINTF_ZERO_FLAG 0x04
 			#define SPRINTF_LONG_FLAG 0x08
 			#define SPRINTF_LONG_LONG_FLAG 0x10
+			unsigned int accuracy = 0;
 			unsigned int length = 0;
 			unsigned int num_of_digits = 0;
+			ChainCharacter *previous_character;
 			format++;
 			switch(*format)
 			{
@@ -84,9 +86,21 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			switch(*format)
 			{
+			case '.':
+				while('0' <= *format && *format <= '9')
+				{
+					accuracy *= 10;
+					accuracy += *format - '0';
+					format++;
+				}
+				break;
+			}
+			switch(*format)
+			{
 			case 'l':
 				flags |= SPRINTF_LONG_FLAG;
 				format++;
+				break;
 			}
 			switch(*format)
 			{
@@ -97,6 +111,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 					flags |= SPRINTF_LONG_LONG_FLAG;
 					format++;
 				}
+				break;
 			}
 			switch(*format)
 			{
@@ -163,8 +178,14 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				}
 				break;
 			case 's':
+				previous_character = output_chain_string->last_character;
 				input_string = (char const *)get_caller_variadic_arg(arg_pos++);
-				while(*input_string && (!length || num_of_digits++ < length))insert_char_back(output_chain_string, output_chain_string->last_character, *input_string++);
+				while(*input_string && (!accuracy || num_of_digits++ < accuracy))insert_char_back(output_chain_string, output_chain_string->last_character, *input_string++);
+				while(num_of_digits < length)
+				{
+					insert_char_back(output_chain_string, previous_character, ' ');
+					num_of_digits++;
+				}
 				break;
 			case 'u':
 				if(flags & SPRINTF_LONG_LONG_FLAG)
