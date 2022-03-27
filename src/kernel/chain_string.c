@@ -116,6 +116,23 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		}
+		while(format_phase == FORMAT_PHASE_PRECISION)switch(*++format)
+		{
+		case '.':
+			break;
+		default:
+			if('0' <= *format && *format <= '9')
+			{
+				precision *= 10;
+				precision += (int)(*format - '0');
+			}
+			else
+			{
+				format_phase = FORMAT_PHASE_MODIFIER;
+				format--;
+			}
+			break;
+		}
 		format++;
 		break;
 	default:
