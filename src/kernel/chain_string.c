@@ -43,10 +43,14 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	unsigned int arg_pos = format_arg_pos;
 	char const *format = (char const *)get_caller_variadic_arg(arg_pos++);
 	ChainString *output_chain_string = create_chain_string("");
-	while(*format)
+	while(*format)switch(*format)
 	{
-		insert_char_back(output_chain_string, output_chain_string->last_character, *format);
+	case '%':
 		format++;
+		break;
+	default:
+		insert_char_back(output_chain_string, output_chain_string->last_character, *format++);
+		break;
 	}
 	return output_chain_string;
 }
