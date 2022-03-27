@@ -72,7 +72,7 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 					ChainString *command;
 					command_start_point = console->prompt_position->character;
 					for(unsigned int i = 0; i < strlen(prompt); i++)command_start_point = command_start_point->next;
-					if(command_start_point != console->text_box->string->last_character)
+					if(command_start_point && command_start_point != console->text_box->string->last_character)
 					{
 						command = create_chain_substring(command_start_point, console->text_box->string->last_character->previous);
 						console_event = malloc(sizeof(*console_event));
