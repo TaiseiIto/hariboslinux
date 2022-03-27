@@ -43,6 +43,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	unsigned int arg_pos = format_arg_pos;
 	char const *format = (char const *)get_caller_variadic_arg(arg_pos++);
 	ChainString *output_chain_string = create_chain_string("");
+	ChainCharacter *previous_character;
 	VariadicArg arg;
 	unsigned int arg_size;
 	unsigned char flags;
@@ -67,6 +68,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	while(*format)switch(*format)
 	{
 	case '%':
+		previous_character = output_chain_string->last_character;
 		arg_size = 4;
 		flags = 0;
 		format_phase = FORMAT_PHASE_FLAGS;
@@ -198,6 +200,11 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			while(*arg.string || flags & FORMAT_FLAG_PRECISION_SPECIFIED && output_length < precision)
 			{
 				insert_char_back(output_chain_string, output_chain_string->last_character, *arg.string++);
+				output_length++;
+			}
+			while(flags & FORMAT_FLAG_WIDTH_SPECIFIED && output_length < width)
+			{
+				insert_char_back(output_chain_string, previous_character, ' ');
 				output_length++;
 			}
 			break;
