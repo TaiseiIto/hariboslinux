@@ -67,6 +67,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	unsigned int precision;
 	int width;
 	unsigned int output_length;
+	unsigned int num_of_digits;
 	while(*format)switch(*format)
 	{
 	case '%':
@@ -78,6 +79,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 		precision = 0;
 		width = 0;
 		output_length = 0;
+		num_of_digits = 0;
 		while(format_phase == FORMAT_PHASE_FLAGS)switch(*++format)
 		{
 		case ' ':
@@ -220,13 +222,15 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			{
 				insert_char_back(output_chain_string, sign_character, arg.long_long_int % 10 + '0');
 				output_length++;
+				num_of_digits++;
 				arg.long_long_int /= 10;
 			}
 			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
-			while(output_length < precision)
+			while(num_of_digits < precision)
 			{
 				insert_char_back(output_chain_string, sign_character, '0');
 				output_length++;
+				num_of_digits++;
 			}
 			while(output_length < width)
 			{
@@ -249,12 +253,15 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			{
 				insert_char_back(output_chain_string, sign_character, arg.unsigned_long_long_int % 8 + '0');
 				output_length++;
+				num_of_digits++;
 				arg.unsigned_long_long_int /= 8;
 			}
-			while(output_length < precision)
+			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+			while(num_of_digits < precision)
 			{
 				insert_char_back(output_chain_string, sign_character, '0');
 				output_length++;
+				num_of_digits++;
 			}
 			while(output_length < width)
 			{
@@ -309,13 +316,15 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			{
 				insert_char_back(output_chain_string, sign_character, arg.unsigned_long_long_int % 10 + '0');
 				output_length++;
+				num_of_digits++;
 				arg.unsigned_long_long_int /= 10;
 			}
 			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
-			while(output_length < precision)
+			while(num_of_digits < precision)
 			{
 				insert_char_back(output_chain_string, sign_character, '0');
 				output_length++;
+				num_of_digits++;
 			}
 			while(output_length < width)
 			{
@@ -336,12 +345,15 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				unsigned char digit = arg.unsigned_long_long_int % 0x10;
 				insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'a');
 				output_length++;
+				num_of_digits++;
 				arg.unsigned_long_long_int /= 0x10;
 			}
-			while(output_length < precision)
+			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+			while(num_of_digits < precision)
 			{
 				insert_char_back(output_chain_string, sign_character, '0');
 				output_length++;
+				num_of_digits++;
 			}
 			while(output_length < width)
 			{
@@ -362,12 +374,15 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				unsigned char digit = arg.unsigned_long_long_int % 0x10;
 				insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'A');
 				output_length++;
+				num_of_digits++;
 				arg.unsigned_long_long_int /= 0x10;
 			}
-			while(output_length < precision)
+			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+			while(num_of_digits < precision)
 			{
 				insert_char_back(output_chain_string, sign_character, '0');
 				output_length++;
+				num_of_digits++;
 			}
 			while(output_length < width)
 			{
