@@ -217,7 +217,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			while(arg.long_long_int)
 			{
-				insert_char_back(output_chain_string, output_chain_string->last_character, arg.long_long_int % 10 + '0');
+				insert_char_back(output_chain_string, sign_character, arg.long_long_int % 10 + '0');
 				output_length++;
 				arg.long_long_int /= 10;
 			}
