@@ -227,6 +227,11 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				insert_char_back(output_chain_string, sign_character, '0');
 				output_length++;
 			}
+			while(output_length < width)
+			{
+				insert_char_back(output_chain_string, previous_character, ' ');
+				output_length++;
+			}
 			break;
 		case 'n':
 			break;
