@@ -234,6 +234,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		case 'n':
+			*arg.unsigned_int_pointer = output_chain_string->length;
 			break;
 		case 'o':
 			break;
