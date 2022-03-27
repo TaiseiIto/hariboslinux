@@ -1,6 +1,7 @@
 #include "boot.h"
 #include "chain_string.h"
 #include "console.h"
+#include "disk.h"
 #include "event.h"
 #include "font.h"
 #include "gdt.h"
@@ -85,6 +86,9 @@ void main(void)
 	init_serial_interrupt(main_task);
 	sti_task();
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
+	// Print boot sector
+	printf_serial("Jump instruction = %#04x %#04x %#04x\n", boot_sector->jump_instruction[0], boot_sector->jump_instruction[1], boot_sector->jump_instruction[2]);
+	// Init background sheet
 	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;
 	background_color.green = 0x00;
@@ -100,6 +104,7 @@ void main(void)
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded head = %#04x", boot_information->last_loaded_head);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "last loaded sector = %#04x", boot_information->last_loaded_sector);
 	printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "memory regions");
+	// Print memory regions
 	memory_region_descriptor_index = 0;
 	do
 	{

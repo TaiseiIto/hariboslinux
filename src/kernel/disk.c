@@ -1,6 +1,9 @@
 #include "disk.h"
+#include "memory.h"
 #include "pic.h"
 #include "serial.h"
+
+BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOADED_DISK_BEGIN;
 
 void disk_interrupt_handler(void)
 {
