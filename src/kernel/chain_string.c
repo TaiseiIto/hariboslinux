@@ -70,34 +70,53 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 		format_phase = FORMAT_PHASE_FLAGS;
 		precision = 0;
 		width = 0;
-		while(format_phase == FORMAT_PHASE_FLAGS)
+		while(format_phase == FORMAT_PHASE_FLAGS)switch(*++format)
 		{
-			switch(*++format)
-			{
-			case ' ':
-				flags |= FORMAT_FLAG_BLANK_SIGN;
-				break;
-			case '#':
-				flags |= FORMAT_FLAG_EXPLICIT_RADIX;
-				break;
-			case '%':
-				insert_char_back(output_chain_string, output_chain_string->last_character, '%');
-				format_phase = FORMAT_PHASE_FINISHED;
-				break;
-			case '\'':
-				flags |= FORMAT_FLAG_THOUSAND_SEPARATOR;
-				break;
-			case '+':
-				flags |= FORMAT_FLAG_EXPLICIT_PLUS;
-				break;
-			case '-':
-				flags |= FORMAT_FLAG_LEFT_JUSTIFIED;
-				break;
-			default:
-				format_phase = FORMAT_PHASE_WIDTH;
-				break;
-			}
+		case ' ':
+			flags |= FORMAT_FLAG_BLANK_SIGN;
+			break;
+		case '#':
+			flags |= FORMAT_FLAG_EXPLICIT_RADIX;
+			break;
+		case '%':
+			insert_char_back(output_chain_string, output_chain_string->last_character, '%');
+			format_phase = FORMAT_PHASE_FINISHED;
+			break;
+		case '\'':
+			flags |= FORMAT_FLAG_THOUSAND_SEPARATOR;
+			break;
+		case '+':
+			flags |= FORMAT_FLAG_EXPLICIT_PLUS;
+			break;
+		case '-':
+			flags |= FORMAT_FLAG_LEFT_JUSTIFIED;
+			break;
+		default:
+			format_phase = FORMAT_PHASE_WIDTH;
+			format--;
+			break;
 		}
+		while(format_phase == FORMAT_PHASE_WIDTH)switch(*++format)
+		{
+		case '*':
+			width = get_caller_variadic_arg(arg_pos++);
+			format_phase = FORMAT_PHASE_PRECISION;
+			break;
+		default:
+			if('0' <= *format && *format <= '9')
+			{
+				width *= 10;
+				width += (int)(*format - '0');
+				if(*format == '0' && !width)flags |= FORMAT_FLAG_ZERO_FILLED;
+			}
+			else
+			{
+				format_phase = FORMAT_PHASE_PRECISION;
+				format--;
+			}
+			break;
+		}
+		format++;
 		break;
 	default:
 		insert_char_back(output_chain_string, output_chain_string->last_character, *format++);
