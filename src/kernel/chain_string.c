@@ -324,6 +324,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		case 'x':
+			if(arg_size < 8)arg.unsigned_ints[1] = 0;
 			if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
 			{
 				insert_char_array_back(output_chain_string, output_chain_string->last_character, "0x");
@@ -349,6 +350,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		case 'X':
+			if(arg_size < 8)arg.unsigned_ints[1] = 0;
 			if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
 			{
 				insert_char_array_back(output_chain_string, output_chain_string->last_character, "0X");
