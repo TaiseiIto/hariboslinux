@@ -44,6 +44,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	char const *format = (char const *)get_caller_variadic_arg(arg_pos++);
 	ChainString *output_chain_string = create_chain_string("");
 	ChainCharacter *previous_character;
+	ChainCharacter *sign_character;
 	VariadicArg arg;
 	unsigned int arg_size;
 	unsigned char flags;
@@ -69,6 +70,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	{
 	case '%':
 		previous_character = output_chain_string->last_character;
+		sign_character = output_chain_string->last_character;
 		arg_size = 4;
 		flags = 0;
 		format_phase = FORMAT_PHASE_FLAGS;
@@ -197,17 +199,20 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				{
 					insert_char_back(output_chain_string, output_chain_string->last_character, '+');
 					output_length++;
+					sign_character = output_chain_string->last_character;
 				}
 				else if(flags & FORMAT_FLAG_BLANK_SIGN)
 				{
 					insert_char_back(output_chain_string, output_chain_string->last_character, ' ');
 					output_length++;
+					sign_character = output_chain_string->last_character;
 				}
 			}
 			else
 			{
 				insert_char_back(output_chain_string, output_chain_string->last_character, '-');
 				output_length++;
+				sign_character = output_chain_string->last_character;
 				arg.long_long_int *= -1;
 			}
 			while(arg.long_long_int)
@@ -215,6 +220,12 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				insert_char_back(output_chain_string, output_chain_string->last_character, arg.long_long_int % 10 + '0');
 				output_length++;
 				arg.long_long_int /= 10;
+			}
+			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+			while(output_length < precision)
+			{
+				insert_char_back(output_chain_string, sign_character, '0');
+				output_length++;
 			}
 			break;
 		case 'n':
