@@ -65,7 +65,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	while(*format)switch(*format)
 	{
 	case '%':
-		arg_size = 0;
+		arg_size = 4;
 		flags = 0;
 		format_phase = FORMAT_PHASE_FLAGS;
 		precision = 0;
@@ -131,6 +131,64 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				format_phase = FORMAT_PHASE_MODIFIER;
 				format--;
 			}
+			break;
+		}
+		switch(*++format)
+		{
+		case 'h':
+			arg_size = 2;
+			switch(*++format)
+			{
+			case 'h':
+				arg_size = 1;
+				break;
+			default:
+				format--;
+				break;
+			}
+			break;
+		case 'l':
+			arg_size = 4;
+			switch(*++format)
+			{
+			case 'l':
+				arg_size = 8;
+				break;
+			default:
+				format--;
+				break;
+			}
+			break;
+		case 'z':
+			arg_size = 4;
+			break;
+		default:
+			format--;
+			break;
+		}
+		format_phase = FORMAT_PHASE_TYPE;
+		switch(*++format)
+		{
+		case 'c':
+		case 'C':
+			break;
+		case 'd':
+			break;
+		case 'i':
+			break;
+		case 'n':
+			break;
+		case 'o':
+			break;
+		case 'p':
+			break;
+		case 's':
+			break;
+		case 'u':
+			break;
+		case 'x':
+			break;
+		case 'X':
 			break;
 		}
 		format++;
