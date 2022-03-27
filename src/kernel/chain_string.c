@@ -287,7 +287,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		case 's':
-			while(*arg.string || flags & FORMAT_FLAG_PRECISION_SPECIFIED && output_length < precision)
+			while(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED) && *arg.string || flags & FORMAT_FLAG_PRECISION_SPECIFIED && (output_length < precision && *arg.string))
 			{
 				insert_char_back(output_chain_string, output_chain_string->last_character, *arg.string++);
 				output_length++;
