@@ -73,10 +73,12 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				format++;
 				break;
 			}
-			if(*format == '0')
+			switch(*format)
 			{
+			case '0':
 				flags |= SPRINTF_ZERO_FLAG;
 				format++;
+				break;
 			}
 			while('0' <= *format && *format <= '9')
 			{
@@ -87,6 +89,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			switch(*format)
 			{
 			case '.':
+				format++;
 				while('0' <= *format && *format <= '9')
 				{
 					accuracy *= 10;
