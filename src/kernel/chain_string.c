@@ -1,5 +1,6 @@
 #include "chain_string.h"
 #include "io.h"
+#include "limits.h"
 #include "memory.h"
 #include "serial.h"
 #include "stdio.h"
@@ -237,18 +238,18 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			*arg.unsigned_int_pointer = output_chain_string->length;
 			break;
 		case 'o':
-			if(arg_size == 4)arg.ints[1] = 0;
+			if(arg_size == 4)arg.unsigned_ints[1] = 0;
 			if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
 			{
 				insert_char_back(output_chain_string, output_chain_string->last_character, '0');
 				output_length++;
 				sign_character = output_chain_string->last_character;
 			}
-			while(arg.long_long_int)
+			while(arg.unsigned_long_long_int)
 			{
-				insert_char_back(output_chain_string, sign_character, arg.long_long_int % 8 + '0');
+				insert_char_back(output_chain_string, sign_character, arg.unsigned_long_long_int % 8 + '0');
 				output_length++;
-				arg.long_long_int /= 8;
+				arg.unsigned_long_long_int /= 8;
 			}
 			while(output_length < precision)
 			{
@@ -262,6 +263,21 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		case 'p':
+			insert_char_array_back(output_chain_string, output_chain_string->last_character, "0x");
+			output_length += 2;
+			sign_character = output_chain_string->last_character;
+			for(unsigned int digit_num = 0; digit_num < sizeof(void *) * CHAR_BIT / 4; digit_num++)
+			{
+				unsigned char digit = arg.unsigned_ints[0] % 0x10;
+				insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'a');
+				output_length++;
+				arg.unsigned_ints[0] /= 0x10;
+			}
+			while(output_length < width)
+			{
+				insert_char_back(output_chain_string, previous_character, ' ');
+				output_length++;
+			}
 			break;
 		case 's':
 			while(*arg.string || flags & FORMAT_FLAG_PRECISION_SPECIFIED && output_length < precision)
