@@ -7,7 +7,7 @@ typedef struct _BootSector
 	char product_name[8];
 	unsigned short sector_size;
 	unsigned char number_of_sectors_per_cluster;
-	unsigned short first_sector_numbr;
+	unsigned short first_sector_number;
 	unsigned char number_of_file_allocation_tables;
 	unsigned short number_of_root_directory_entries;
 	unsigned short number_of_sectors;
