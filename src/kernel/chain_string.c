@@ -237,6 +237,29 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			*arg.unsigned_int_pointer = output_chain_string->length;
 			break;
 		case 'o':
+			if(arg_size == 4)arg.ints[1] = 0;
+			if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
+			{
+				insert_char_back(output_chain_string, output_chain_string->last_character, '0');
+				output_length++;
+				sign_character = output_chain_string->last_character;
+			}
+			while(arg.long_long_int)
+			{
+				insert_char_back(output_chain_string, sign_character, arg.long_long_int % 8 + '0');
+				output_length++;
+				arg.long_long_int /= 8;
+			}
+			while(output_length < precision)
+			{
+				insert_char_back(output_chain_string, sign_character, '0');
+				output_length++;
+			}
+			while(output_length < width)
+			{
+				insert_char_back(output_chain_string, previous_character, ' ');
+				output_length++;
+			}
 			break;
 		case 'p':
 			break;
