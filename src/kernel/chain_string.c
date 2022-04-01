@@ -106,7 +106,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			format--;
 			break;
 		}
-		while(format_phase == FORMAT_PHASE_WIDTH)switch(*++format)
+		while(format_phase <= FORMAT_PHASE_WIDTH)switch(*++format)
 		{
 		case '*':
 			width = get_caller_variadic_arg(arg_pos++);
@@ -128,7 +128,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		}
-		while(format_phase == FORMAT_PHASE_PRECISION)switch(*++format)
+		while(format_phase <= FORMAT_PHASE_PRECISION)switch(*++format)
 		{
 		case '*':
 			precision = get_caller_variadic_arg(arg_pos++);
@@ -151,53 +151,160 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			}
 			break;
 		}
-		switch(*++format)
+		if(format_phase <= FORMAT_PHASE_MODIFIER)
 		{
-		case 'h':
-			arg_size = 2;
 			switch(*++format)
 			{
 			case 'h':
-				arg_size = 1;
+				arg_size = 2;
+				switch(*++format)
+				{
+				case 'h':
+					arg_size = 1;
+					break;
+				default:
+					format--;
+					break;
+				}
+				break;
+			case 'l':
+				arg_size = 4;
+				switch(*++format)
+				{
+				case 'l':
+					arg_size = 8;
+					break;
+				default:
+					format--;
+					break;
+				}
+				break;
+			case 'z':
+				arg_size = 4;
 				break;
 			default:
 				format--;
 				break;
 			}
-			break;
-		case 'l':
-			arg_size = 4;
+			format_phase = FORMAT_PHASE_TYPE;
+		}
+		if(format_phase <= FORMAT_PHASE_TYPE)
+		{
+			arg.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
+			if(arg_size == 8)arg.unsigned_ints[1] = get_caller_variadic_arg(arg_pos++);
 			switch(*++format)
 			{
-			case 'l':
-				arg_size = 8;
+			case 'c':
+			case 'C':
+				insert_char_back(output_chain_string, output_chain_string->last_character, arg.chars[0]);
 				break;
-			default:
-				format--;
+			case 'd':
+			case 'i':
+				if(arg_size < 8)arg.ints[1] = -(arg.ints[0] < 0);
+				if(0 <= arg.long_long_int)
+				{
+					if(flags & FORMAT_FLAG_EXPLICIT_PLUS)
+					{
+						insert_char_back(output_chain_string, output_chain_string->last_character, '+');
+						output_length++;
+						sign_character = output_chain_string->last_character;
+					}
+					else if(flags & FORMAT_FLAG_BLANK_SIGN)
+					{
+						insert_char_back(output_chain_string, output_chain_string->last_character, ' ');
+						output_length++;
+						sign_character = output_chain_string->last_character;
+					}
+				}
+				else
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, '-');
+					output_length++;
+					sign_character = output_chain_string->last_character;
+					arg.long_long_int *= -1;
+				}
+				while(arg.long_long_int)
+				{
+					insert_char_back(output_chain_string, sign_character, arg.long_long_int % 10 + '0');
+					output_length++;
+					num_of_digits++;
+					arg.long_long_int /= 10;
+				}
+				if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+				while(num_of_digits < precision)
+				{
+					insert_char_back(output_chain_string, sign_character, '0');
+					output_length++;
+					num_of_digits++;
+				}
+				while(output_length < width)
+				{
+					insert_char_back(output_chain_string, previous_character, ' ');
+					output_length++;
+				}
 				break;
-			}
-			break;
-		case 'z':
-			arg_size = 4;
-			break;
-		default:
-			format--;
-			break;
-		}
-		format_phase = FORMAT_PHASE_TYPE;
-		arg.unsigned_ints[0] = get_caller_variadic_arg(arg_pos++);
-		if(arg_size == 8)arg.unsigned_ints[1] = get_caller_variadic_arg(arg_pos++);
-		switch(*++format)
-		{
-		case 'c':
-		case 'C':
-			insert_char_back(output_chain_string, output_chain_string->last_character, arg.chars[0]);
-			break;
-		case 'd':
-		case 'i':
-			if(arg_size < 8)arg.ints[1] = -(arg.ints[0] < 0);
-			if(0 <= arg.long_long_int)
-			{
+			case 'n':
+				*arg.unsigned_int_pointer = output_chain_string->length;
+				break;
+			case 'o':
+				if(arg_size == 4)arg.unsigned_ints[1] = 0;
+				if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, '0');
+					output_length++;
+					sign_character = output_chain_string->last_character;
+				}
+				while(arg.unsigned_long_long_int)
+				{
+					insert_char_back(output_chain_string, sign_character, arg.unsigned_long_long_int % 8 + '0');
+					output_length++;
+					num_of_digits++;
+					arg.unsigned_long_long_int /= 8;
+				}
+				if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+				while(num_of_digits < precision)
+				{
+					insert_char_back(output_chain_string, sign_character, '0');
+					output_length++;
+					num_of_digits++;
+				}
+				while(output_length < width)
+				{
+					insert_char_back(output_chain_string, previous_character, ' ');
+					output_length++;
+				}
+				break;
+			case 'p':
+				insert_char_array_back(output_chain_string, output_chain_string->last_character, "0x");
+				output_length += 2;
+				sign_character = output_chain_string->last_character;
+				for(unsigned int digit_num = 0; digit_num < sizeof(void *) * CHAR_BIT / 4; digit_num++)
+				{
+					unsigned char digit = arg.unsigned_ints[0] % 0x10;
+					insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'a');
+					output_length++;
+					arg.unsigned_ints[0] /= 0x10;
+				}
+				while(output_length < width)
+				{
+					insert_char_back(output_chain_string, previous_character, ' ');
+					output_length++;
+				}
+				break;
+			case 's':
+				while(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED) && *arg.string || flags & FORMAT_FLAG_PRECISION_SPECIFIED && (output_length < precision && *arg.string))
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, *arg.string++);
+					output_length++;
+				}
+				while(flags & FORMAT_FLAG_WIDTH_SPECIFIED && output_length < width)
+				{
+					insert_char_back(output_chain_string, previous_character, ' ');
+					output_length++;
+				}
+				break;
+			case 'u':
+				if(arg_size < 8)arg.unsigned_ints[1] = 0;
 				if(flags & FORMAT_FLAG_EXPLICIT_PLUS)
 				{
 					insert_char_back(output_chain_string, output_chain_string->last_character, '+');
@@ -210,186 +317,85 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 					output_length++;
 					sign_character = output_chain_string->last_character;
 				}
+				while(arg.unsigned_long_long_int)
+				{
+					insert_char_back(output_chain_string, sign_character, arg.unsigned_long_long_int % 10 + '0');
+					output_length++;
+					num_of_digits++;
+					arg.unsigned_long_long_int /= 10;
+				}
+				if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+				while(num_of_digits < precision)
+				{
+					insert_char_back(output_chain_string, sign_character, '0');
+					output_length++;
+					num_of_digits++;
+				}
+				while(output_length < width)
+				{
+					insert_char_back(output_chain_string, previous_character, ' ');
+					output_length++;
+				}
+				break;
+			case 'x':
+				if(arg_size < 8)arg.unsigned_ints[1] = 0;
+				if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
+				{
+					insert_char_array_back(output_chain_string, output_chain_string->last_character, "0x");
+					output_length += 2;
+					sign_character = output_chain_string->last_character;
+				}
+				while(arg.unsigned_long_long_int)
+				{
+					unsigned char digit = arg.unsigned_long_long_int % 0x10;
+					insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'a');
+					output_length++;
+					num_of_digits++;
+					arg.unsigned_long_long_int /= 0x10;
+				}
+				if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+				while(num_of_digits < precision)
+				{
+					insert_char_back(output_chain_string, sign_character, '0');
+					output_length++;
+					num_of_digits++;
+				}
+				while(output_length < width)
+				{
+					insert_char_back(output_chain_string, previous_character, ' ');
+					output_length++;
+				}
+				break;
+			case 'X':
+				if(arg_size < 8)arg.unsigned_ints[1] = 0;
+				if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
+				{
+					insert_char_array_back(output_chain_string, output_chain_string->last_character, "0X");
+					output_length += 2;
+					sign_character = output_chain_string->last_character;
+				}
+				while(arg.unsigned_long_long_int)
+				{
+					unsigned char digit = arg.unsigned_long_long_int % 0x10;
+					insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'A');
+					output_length++;
+					num_of_digits++;
+					arg.unsigned_long_long_int /= 0x10;
+				}
+				if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
+				while(num_of_digits < precision)
+				{
+					insert_char_back(output_chain_string, sign_character, '0');
+					output_length++;
+					num_of_digits++;
+				}
+				while(output_length < width)
+				{
+					insert_char_back(output_chain_string, previous_character, ' ');
+					output_length++;
+				}
+				break;
 			}
-			else
-			{
-				insert_char_back(output_chain_string, output_chain_string->last_character, '-');
-				output_length++;
-				sign_character = output_chain_string->last_character;
-				arg.long_long_int *= -1;
-			}
-			while(arg.long_long_int)
-			{
-				insert_char_back(output_chain_string, sign_character, arg.long_long_int % 10 + '0');
-				output_length++;
-				num_of_digits++;
-				arg.long_long_int /= 10;
-			}
-			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
-			while(num_of_digits < precision)
-			{
-				insert_char_back(output_chain_string, sign_character, '0');
-				output_length++;
-				num_of_digits++;
-			}
-			while(output_length < width)
-			{
-				insert_char_back(output_chain_string, previous_character, ' ');
-				output_length++;
-			}
-			break;
-		case 'n':
-			*arg.unsigned_int_pointer = output_chain_string->length;
-			break;
-		case 'o':
-			if(arg_size == 4)arg.unsigned_ints[1] = 0;
-			if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
-			{
-				insert_char_back(output_chain_string, output_chain_string->last_character, '0');
-				output_length++;
-				sign_character = output_chain_string->last_character;
-			}
-			while(arg.unsigned_long_long_int)
-			{
-				insert_char_back(output_chain_string, sign_character, arg.unsigned_long_long_int % 8 + '0');
-				output_length++;
-				num_of_digits++;
-				arg.unsigned_long_long_int /= 8;
-			}
-			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
-			while(num_of_digits < precision)
-			{
-				insert_char_back(output_chain_string, sign_character, '0');
-				output_length++;
-				num_of_digits++;
-			}
-			while(output_length < width)
-			{
-				insert_char_back(output_chain_string, previous_character, ' ');
-				output_length++;
-			}
-			break;
-		case 'p':
-			insert_char_array_back(output_chain_string, output_chain_string->last_character, "0x");
-			output_length += 2;
-			sign_character = output_chain_string->last_character;
-			for(unsigned int digit_num = 0; digit_num < sizeof(void *) * CHAR_BIT / 4; digit_num++)
-			{
-				unsigned char digit = arg.unsigned_ints[0] % 0x10;
-				insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'a');
-				output_length++;
-				arg.unsigned_ints[0] /= 0x10;
-			}
-			while(output_length < width)
-			{
-				insert_char_back(output_chain_string, previous_character, ' ');
-				output_length++;
-			}
-			break;
-		case 's':
-			while(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED) && *arg.string || flags & FORMAT_FLAG_PRECISION_SPECIFIED && (output_length < precision && *arg.string))
-			{
-				insert_char_back(output_chain_string, output_chain_string->last_character, *arg.string++);
-				output_length++;
-			}
-			while(flags & FORMAT_FLAG_WIDTH_SPECIFIED && output_length < width)
-			{
-				insert_char_back(output_chain_string, previous_character, ' ');
-				output_length++;
-			}
-			break;
-		case 'u':
-			if(arg_size < 8)arg.unsigned_ints[1] = 0;
-			if(flags & FORMAT_FLAG_EXPLICIT_PLUS)
-			{
-				insert_char_back(output_chain_string, output_chain_string->last_character, '+');
-				output_length++;
-				sign_character = output_chain_string->last_character;
-			}
-			else if(flags & FORMAT_FLAG_BLANK_SIGN)
-			{
-				insert_char_back(output_chain_string, output_chain_string->last_character, ' ');
-				output_length++;
-				sign_character = output_chain_string->last_character;
-			}
-			while(arg.unsigned_long_long_int)
-			{
-				insert_char_back(output_chain_string, sign_character, arg.unsigned_long_long_int % 10 + '0');
-				output_length++;
-				num_of_digits++;
-				arg.unsigned_long_long_int /= 10;
-			}
-			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
-			while(num_of_digits < precision)
-			{
-				insert_char_back(output_chain_string, sign_character, '0');
-				output_length++;
-				num_of_digits++;
-			}
-			while(output_length < width)
-			{
-				insert_char_back(output_chain_string, previous_character, ' ');
-				output_length++;
-			}
-			break;
-		case 'x':
-			if(arg_size < 8)arg.unsigned_ints[1] = 0;
-			if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
-			{
-				insert_char_array_back(output_chain_string, output_chain_string->last_character, "0x");
-				output_length += 2;
-				sign_character = output_chain_string->last_character;
-			}
-			while(arg.unsigned_long_long_int)
-			{
-				unsigned char digit = arg.unsigned_long_long_int % 0x10;
-				insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'a');
-				output_length++;
-				num_of_digits++;
-				arg.unsigned_long_long_int /= 0x10;
-			}
-			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
-			while(num_of_digits < precision)
-			{
-				insert_char_back(output_chain_string, sign_character, '0');
-				output_length++;
-				num_of_digits++;
-			}
-			while(output_length < width)
-			{
-				insert_char_back(output_chain_string, previous_character, ' ');
-				output_length++;
-			}
-			break;
-		case 'X':
-			if(arg_size < 8)arg.unsigned_ints[1] = 0;
-			if(flags & FORMAT_FLAG_EXPLICIT_RADIX)
-			{
-				insert_char_array_back(output_chain_string, output_chain_string->last_character, "0X");
-				output_length += 2;
-				sign_character = output_chain_string->last_character;
-			}
-			while(arg.unsigned_long_long_int)
-			{
-				unsigned char digit = arg.unsigned_long_long_int % 0x10;
-				insert_char_back(output_chain_string, sign_character, digit < 10 ? digit + '0' : digit - 10 + 'A');
-				output_length++;
-				num_of_digits++;
-				arg.unsigned_long_long_int /= 0x10;
-			}
-			if(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED))precision = 1;
-			while(num_of_digits < precision)
-			{
-				insert_char_back(output_chain_string, sign_character, '0');
-				output_length++;
-				num_of_digits++;
-			}
-			while(output_length < width)
-			{
-				insert_char_back(output_chain_string, previous_character, ' ');
-				output_length++;
-			}
-			break;
 		}
 		format++;
 		break;
