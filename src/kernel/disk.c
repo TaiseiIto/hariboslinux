@@ -20,7 +20,7 @@ char *create_file_name(FileInformation const *file_information)
 	for(extension_length = 0; extension_length < _countof(file_information->extension); extension_length++)if(file_information->extension[extension_length] == ' ')break;
 	printf_serial("name_length = %d\n", name_length);
 	printf_serial("extension_length = %d\n", extension_length);
-	return create_format_char_array("%*s.%*s", name_length, file_information->name, extension_length, file_information->extension);
+	return create_format_char_array("%.*s.%.*s", name_length, file_information->name, extension_length, file_information->extension);
 }
 
 void disk_interrupt_handler(void)
