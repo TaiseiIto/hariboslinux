@@ -86,26 +86,6 @@ void main(void)
 	init_serial_interrupt(main_task);
 	sti_task();
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
-	// Print boot sector
-	printf_serial("Jump instruction = %#04x %#04x %#04x\n", boot_sector->jump_instruction[0], boot_sector->jump_instruction[1], boot_sector->jump_instruction[2]);
-	printf_serial("Product name = \"%.8s\"\n", boot_sector->product_name);
-	printf_serial("Sector size = %#06.4x\n", boot_sector->sector_size);
-	printf_serial("Number of sectors per cluster = %#04.2x\n", boot_sector->number_of_sectors_per_cluster);
-	printf_serial("First sector number = %#06.4x\n", boot_sector->first_sector_number);
-	printf_serial("Number of file allocation tables = %#04.2x\n", boot_sector->number_of_file_allocation_tables);
-	printf_serial("Number of root directory entries = %#06.4x\n", boot_sector->number_of_root_directory_entries);
-	printf_serial("Number of sectors = %#06.4x\n", boot_sector->number_of_sectors);
-	printf_serial("Media type = %#04.2x\n", boot_sector->media_type);
-	printf_serial("Number of sectors per file allocation table = %#06.4x\n", boot_sector->number_of_sectors_per_file_allocation_table);
-	printf_serial("Number of sectors per track = %#06.4x\n", boot_sector->number_of_sectors_per_track);
-	printf_serial("Number of heads = %#06.4x\n", boot_sector->number_of_heads);
-	printf_serial("Number of hidden sectors = %#010.8x\n", boot_sector->number_of_hidden_sectors);
-	printf_serial("Number of sectors double word = %#010.8x\n", boot_sector->number_of_sectors_double_word);
-	printf_serial("Drive number = %#04.2x\n", boot_sector->drive_number);
-	printf_serial("Boot signature = %#04.2x\n", boot_sector->boot_signature);
-	printf_serial("Volume serial number = %#010.8x\n", boot_sector->volume_serial_number);
-	printf_serial("Volume label = \"%.11s\"\n", boot_sector->volume_label);
-	printf_serial("File system name = \"%.8s\"\n", boot_sector->file_system_name);
 	init_file_system();
 	// Init background sheet
 	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
