@@ -51,6 +51,7 @@ typedef struct _FileIntormation
 
 extern BootSector const * const boot_sector;
 
+char *create_file_name(FileInformation const *file_information);
 void disk_interrupt_handler(void);
 void init_file_system(void);
 void primary_ATA_hard_disk_interrupt_handler(void);

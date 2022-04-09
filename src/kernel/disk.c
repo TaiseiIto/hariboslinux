@@ -1,14 +1,25 @@
+#include "chain_string.h"
 #include "disk.h"
 #include "memory.h"
 #include "pic.h"
 #include "serial.h"
+#include "stdlib.h"
 
 BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOADED_DISK_BEGIN;
 
 unsigned int cluster_size;
 void **file_allocation_tables;
 void *first_sector;
-FileInformation *root_directory;
+FileInformation *root_directory_entries;
+
+char *create_file_name(FileInformation const *file_information)
+{
+	unsigned char name_length;
+	unsigned char extension_length;
+	for(name_length = 0; name_length <= _countof(file_information->name); name_length++)if(file_information->name[name_length] == ' ')break;
+	for(extension_length = 0; extension_length < _countof(file_information->extension); extension_length++)if(file_information->extension[extension_length] == ' ')break;
+	return create_format_char_array("%*s.%*s", name_length, file_information->name, extension_length, file_information->extension);
+}
 
 void disk_interrupt_handler(void)
 {
@@ -23,7 +34,7 @@ void init_file_system(void)
 	first_sector = (void *)boot_sector + boot_sector->first_sector_number * boot_sector->sector_size;
 	file_allocation_tables = malloc(boot_sector->number_of_file_allocation_tables * sizeof(*file_allocation_tables));
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)file_allocation_tables[i] = first_sector + i * boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size;
-	root_directory = (FileInformation *)(file_allocation_tables[boot_sector->number_of_file_allocation_tables - 1] + boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size);
+	root_directory_entries = (FileInformation *)(file_allocation_tables[boot_sector->number_of_file_allocation_tables - 1] + boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size);
 	printf_serial("Jump instruction = %#04x %#04x %#04x\n", boot_sector->jump_instruction[0], boot_sector->jump_instruction[1], boot_sector->jump_instruction[2]);
 	printf_serial("Product name = \"%.8s\"\n", boot_sector->product_name);
 	printf_serial("Sector size = %#06.4x\n", boot_sector->sector_size);
@@ -47,6 +58,13 @@ void init_file_system(void)
 	printf_serial("cluster_size = %#010.8x\n", cluster_size);
 	printf_serial("first_sector = %p\n", first_sector);
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)printf_serial("file_allocation_tables[%#04.2x] = %p\n", i, file_allocation_tables[i]);
+	printf_serial("root_directory_entries = %p\n", root_directory_entries);
+	for(FileInformation const *file_information = root_directory_entries; file_information->name[0]; file_information++)
+	{
+		char *file_name = create_file_name(file_information);
+		printf_serial("%s\n", file_name);
+		free(file_name);
+	}
 }
 
 void primary_ATA_hard_disk_interrupt_handler(void)

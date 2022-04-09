@@ -406,6 +406,14 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	return output_chain_string;
 }
 
+char *create_format_char_array(char const *format, ...)
+{
+	ChainString *output_chain_string = create_caller_format_chain_string(0);
+	char *output_string = create_char_array_from_chain_string(output_chain_string);
+	delete_chain_string(output_chain_string);
+	return output_string;
+}
+
 void delete_chain_string(ChainString *string)
 {
 	if(!string)ERROR(); // The string doesn't exist.
