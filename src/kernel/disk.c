@@ -16,8 +16,10 @@ char *create_file_name(FileInformation const *file_information)
 {
 	unsigned char name_length;
 	unsigned char extension_length;
-	for(name_length = 0; name_length <= _countof(file_information->name); name_length++)if(file_information->name[name_length] == ' ')break;
+	for(name_length = 0; name_length < _countof(file_information->name); name_length++)if(file_information->name[name_length] == ' ')break;
 	for(extension_length = 0; extension_length < _countof(file_information->extension); extension_length++)if(file_information->extension[extension_length] == ' ')break;
+	printf_serial("name_length = %d\n", name_length);
+	printf_serial("extension_length = %d\n", extension_length);
 	return create_format_char_array("%*s.%*s", name_length, file_information->name, extension_length, file_information->extension);
 }
 
