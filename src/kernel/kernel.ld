@@ -162,6 +162,49 @@ SECTIONS
 		timer.o(.bss)
 		window.o(.bss)
 	}
+	COMMON :
+	{
+		main.o(COMMON)
+		chain_string.o(COMMON)
+		cmos.o(COMMON)
+		console.o(COMMON)
+		disk.o(COMMON)
+		exception.o(COMMON)
+		font.o(COMMON)
+		fontdata.o(COMMON)
+		gdt.o(COMMON)
+		graphic.o(COMMON)
+		idt.o(COMMON)
+		interrupt_gates.o(COMMON)
+		interrupt_handlers.o(COMMON)
+		io.o(COMMON)
+		keyboard.o(COMMON)
+		libgcc.o(COMMON)
+		math.o(COMMON)
+		memory.o(COMMON)
+		mouse.o(COMMON)
+		mouse_cursor.o(COMMON)
+		parallel.o(COMMON)
+		peripheral.o(COMMON)
+		pic.o(COMMON)
+		pit.o(COMMON)
+		queue.o(COMMON)
+		rtc.o(COMMON)
+		serial.o(COMMON)
+		sheet.o(COMMON)
+		shell.o(COMMON)
+		stack.o(COMMON)
+		stdio.o(COMMON)
+		string.o(COMMON)
+		task.o(COMMON)
+		text_box.o(COMMON)
+		timer.o(COMMON)
+		window.o(COMMON)
+	}
+	.common_deletion_prevention :
+	{
+		BYTE(0xff);
+	}
 	/DISCARD/ :
 	{
 		*(.eh_frame)
