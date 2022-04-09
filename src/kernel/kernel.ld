@@ -44,6 +44,9 @@ SECTIONS
 		text_box.o(.text)
 		timer.o(.text)
 		window.o(.text)
+	}
+	.rodata :
+	{
 		main.o(.rodata)
 		chain_string.o(.rodata)
 		cmos.o(.rodata)
@@ -80,6 +83,9 @@ SECTIONS
 		text_box.o(.rodata)
 		timer.o(.rodata)
 		window.o(.rodata)
+	}
+	.data :
+	{
 		main.o(.data)
 		chain_string.o(.data)
 		cmos.o(.data)
@@ -116,6 +122,9 @@ SECTIONS
 		text_box.o(.date)
 		timer.o(.data)
 		window.o(.data)
+	}
+	.bss :
+	{
 		main.o(.bss)
 		chain_string.o(.bss)
 		cmos.o(.bss)
