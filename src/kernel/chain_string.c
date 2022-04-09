@@ -239,7 +239,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				}
 				while(output_length < width)
 				{
-					insert_char_back(output_chain_string, previous_character, ' ');
+					insert_char_back(output_chain_string, previous_character, flags & FORMAT_FLAG_ZERO_FILLED ? '0' : ' ');
 					output_length++;
 				}
 				break;
