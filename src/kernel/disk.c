@@ -89,15 +89,26 @@ void init_file_system(void)
 	printf_serial("first_sector = %p\n", first_sector);
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)printf_serial("file_allocation_tables[%#04.2x] = %p\n", i, file_allocation_tables[i]);
 	printf_serial("root_directory_entries = %p\n", root_directory_entries);
-	for(FileInformation const *file_information = root_directory_entries; file_information->name[0]; file_information++)
+	for(unsigned int i = 0; i < boot_sector->number_of_root_directory_entries; i++)
 	{
-		char *file_name = create_file_name(file_information);
-		printf_serial("%s\n", file_name);
-		free(file_name);
-		printf_serial("\tupdated time %04d/%02d/%02d %02d:%02d:%02d\n", get_file_updated_year(file_information), get_file_updated_month(file_information), get_file_updated_day(file_information), get_file_updated_hour(file_information), get_file_updated_minute(file_information), get_file_updated_second(file_information));
-		printf_serial("\tsize %#010.8x bytes\n", file_information->size);
-		printf_serial("\tcluster number %#06.4x\n", file_information->cluster_number);
+		FileInformation const *file_information;
+		file_information = root_directory_entries + i;
+		if(file_information->name[0])
+		{
+			char *file_name;
+			file_name = create_file_name(file_information);
+			printf_serial("%s\n", file_name);
+			free(file_name);
+			printf_serial("\tupdated time %04d/%02d/%02d %02d:%02d:%02d\n", get_file_updated_year(file_information), get_file_updated_month(file_information), get_file_updated_day(file_information), get_file_updated_hour(file_information), get_file_updated_minute(file_information), get_file_updated_second(file_information));
+			printf_serial("\tsize %#010.8x bytes\n", file_information->size);
+			printf_serial("\tcluster number %#06.4x\n", file_information->cluster_number);
+		}
 	}
+}
+
+void *load_file(char *file_name)
+{
+	return NULL;
 }
 
 void primary_ATA_hard_disk_interrupt_handler(void)

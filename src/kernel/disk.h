@@ -60,6 +60,7 @@ unsigned char get_file_updated_hour(FileInformation const *file_information);
 unsigned char get_file_updated_minute(FileInformation const *file_information);
 unsigned char get_file_updated_second(FileInformation const *file_information);
 void init_file_system(void);
+void *load_file(char *file_name);
 void primary_ATA_hard_disk_interrupt_handler(void);
 void secondary_ATA_hard_disk_interrupt_handler(void);
 
