@@ -53,6 +53,12 @@ extern BootSector const * const boot_sector;
 
 char *create_file_name(FileInformation const *file_information);
 void disk_interrupt_handler(void);
+unsigned int get_file_updated_year(FileInformation const *file_information);
+unsigned char get_file_updated_month(FileInformation const *file_information);
+unsigned char get_file_updated_day(FileInformation const *file_information);
+unsigned char get_file_updated_hour(FileInformation const *file_information);
+unsigned char get_file_updated_minute(FileInformation const *file_information);
+unsigned char get_file_updated_second(FileInformation const *file_information);
 void init_file_system(void);
 void primary_ATA_hard_disk_interrupt_handler(void);
 void secondary_ATA_hard_disk_interrupt_handler(void);

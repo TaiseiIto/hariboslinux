@@ -29,6 +29,36 @@ void disk_interrupt_handler(void)
 	print_serial("disk interrupt\n");
 }
 
+unsigned int get_file_updated_year(FileInformation const *file_information)
+{
+	return 1980 + ((file_information->date & FILE_INFORMATION_DATE_MASK_YEAR) >> 9);
+}
+
+unsigned char get_file_updated_month(FileInformation const *file_information)
+{
+	return (file_information->date & FILE_INFORMATION_DATE_MASK_MONTH) >> 5;
+}
+
+unsigned char get_file_updated_day(FileInformation const *file_information)
+{
+	return file_information->date & FILE_INFORMATION_DATE_MASK_DAY;
+}
+
+unsigned char get_file_updated_hour(FileInformation const *file_information)
+{
+	return (file_information->time & FILE_INFORMATION_TIME_MASK_HOUR) >> 11;
+}
+
+unsigned char get_file_updated_minute(FileInformation const *file_information)
+{
+	return (file_information->time & FILE_INFORMATION_TIME_MASK_MINUTE) >> 5;
+}
+
+unsigned char get_file_updated_second(FileInformation const *file_information)
+{
+	return 2 * file_information->time & FILE_INFORMATION_TIME_MASK_BISECOND;
+}
+
 void init_file_system(void)
 {
 
@@ -66,6 +96,9 @@ void init_file_system(void)
 		char *file_name = create_file_name(file_information);
 		printf_serial("%s\n", file_name);
 		free(file_name);
+		printf_serial("\tupdated time %04d/%02d/%02d %02d:%02d:%02d\n", get_file_updated_year(file_information), get_file_updated_month(file_information), get_file_updated_day(file_information), get_file_updated_hour(file_information), get_file_updated_minute(file_information), get_file_updated_second(file_information));
+		printf_serial("\tsize %#010.8x bytes\n", file_information->size);
+		printf_serial("\tcluster number %#06.4x\n", file_information->cluster_number);
 	}
 }
 
