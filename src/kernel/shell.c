@@ -175,8 +175,6 @@ void *execute_command(Shell *shell, char const *command)
 		for(argc = 0; argv[argc]; argc++);
 		// Print argv.
 		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)printf_shell(shell, "argv[%d] = \"%s\"\n", argv_index, argv[argv_index]);
-		// Discard argv.
-		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
 		// Load a file specified by argv[0].
 		executable_file_binary = load_file(argv[0]);
 		if(executable_file_binary)
@@ -185,6 +183,8 @@ void *execute_command(Shell *shell, char const *command)
 			free(executable_file_binary);
 		}
 		else printf_shell(shell, "Executable file \"%s\" is not found.\n", argv[0]);
+		// Discard argv.
+		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
 		free(argv);
 		return NULL;
 	}
