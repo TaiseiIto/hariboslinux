@@ -1,6 +1,9 @@
 #ifndef _STDIO_H_
 #define _STDIO_H_
 
+#include "stdbool.h"
+#include "stddef.h"
+
 typedef union
 {
 	long long int long_long_int;

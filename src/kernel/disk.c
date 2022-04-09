@@ -4,13 +4,16 @@
 #include "pic.h"
 #include "serial.h"
 #include "stdlib.h"
+#include "string.h"
 
 BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOADED_DISK_BEGIN;
 
 unsigned int cluster_size;
-void **file_allocation_tables;
-void *first_sector;
-FileInformation *root_directory_entries;
+unsigned int number_of_clusters;
+void const *cluster0;
+void const **file_allocation_tables;
+void const *first_sector;
+FileInformation const *root_directory_entries;
 
 char *create_file_name(FileInformation const *file_information)
 {
@@ -25,6 +28,30 @@ void disk_interrupt_handler(void)
 {
 	finish_interruption(IRQ_DISK);
 	print_serial("disk interrupt\n");
+}
+
+void const *get_cluster(unsigned short cluster_number)
+{
+	return cluster0 + cluster_number * cluster_size;
+}
+
+FileInformation const *get_file_information(char *file_name)
+{
+	bool found = false;
+	for(unsigned int i = 0; i < boot_sector->number_of_root_directory_entries; i++) // Search file informations.
+	{
+		FileInformation const *candidate;
+		candidate = root_directory_entries + i;
+		if(candidate->name[0])
+		{
+			char *candidate_name = create_file_name(candidate);
+			if(!strcmp(file_name, candidate_name))found = true;
+			free(candidate_name);
+			if(found)return candidate;
+		}
+		else break;
+	}
+	return NULL; // The file is not found.
 }
 
 unsigned int get_file_updated_year(FileInformation const *file_information)
@@ -57,14 +84,34 @@ unsigned char get_file_updated_second(FileInformation const *file_information)
 	return 2 * file_information->time & FILE_INFORMATION_TIME_MASK_BISECOND;
 }
 
+unsigned short get_next_cluster_number(unsigned short cluster_number)
+{
+	unsigned short next_cluster_number = 0;
+	if(cluster_number % 2)
+	{
+		next_cluster_number = ((unsigned char const **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 2];
+		next_cluster_number <<= 4;
+		next_cluster_number += ((unsigned char const **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 1] >> 4 & 0x0f;
+	}
+	else
+	{
+		next_cluster_number = ((unsigned char const **)file_allocation_tables)[0][cluster_number / 2 * 3 + 1] & 0x0f;
+		next_cluster_number <<= 8;
+		next_cluster_number += ((unsigned char const **)file_allocation_tables)[0][cluster_number / 2 * 3];
+	}
+	return next_cluster_number;
+}
+
 void init_file_system(void)
 {
 
 	cluster_size = boot_sector->number_of_sectors_per_cluster * boot_sector->sector_size;
+	number_of_clusters = (boot_sector->number_of_sectors + boot_sector->number_of_sectors_per_cluster - 1) / boot_sector->number_of_sectors_per_cluster;
 	first_sector = (void *)boot_sector + boot_sector->first_sector_number * boot_sector->sector_size;
 	file_allocation_tables = malloc(boot_sector->number_of_file_allocation_tables * sizeof(*file_allocation_tables));
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)file_allocation_tables[i] = first_sector + i * boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size;
 	root_directory_entries = (FileInformation *)(file_allocation_tables[boot_sector->number_of_file_allocation_tables - 1] + boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size);
+	cluster0 = (void const *)(((unsigned int)(root_directory_entries + boot_sector->number_of_root_directory_entries) + cluster_size - 1) / cluster_size * cluster_size);
 	printf_serial("Jump instruction = %#04x %#04x %#04x\n", boot_sector->jump_instruction[0], boot_sector->jump_instruction[1], boot_sector->jump_instruction[2]);
 	printf_serial("Product name = \"%.8s\"\n", boot_sector->product_name);
 	printf_serial("Sector size = %#06.4x\n", boot_sector->sector_size);
@@ -108,7 +155,22 @@ void init_file_system(void)
 
 void *load_file(char *file_name)
 {
-	return NULL;
+	FileInformation const * file_information = get_file_information(file_name);
+	if(file_information)
+	{
+		void *loaded_address = malloc(file_information->size);
+		void *writer = loaded_address;
+		unsigned int unwritten_size = file_information->size;
+		for(unsigned short cluster_number = file_information->cluster_number; cluster_number <= number_of_clusters + 1; cluster_number = get_next_cluster_number(cluster_number))
+		{
+			unsigned int copied_size = cluster_size <= unwritten_size ? cluster_size : unwritten_size;
+			memcpy(writer, get_cluster(cluster_number), copied_size);
+			writer += copied_size;
+			unwritten_size -= copied_size;
+		}
+		return loaded_address;
+	}
+	else return NULL; // The file is not found.
 }
 
 void primary_ATA_hard_disk_interrupt_handler(void)
