@@ -1,4 +1,5 @@
 #include "chain_string.h"
+#include "disk.h"
 #include "io.h"
 #include "memory.h"
 #include "shell.h"
@@ -169,12 +170,21 @@ void *execute_command(Shell *shell, char const *command)
 	argv = create_argv(command);
 	if(argv)
 	{
+		void *executable_file_binary;
 		// Count argc.
 		for(argc = 0; argv[argc]; argc++);
 		// Print argv.
 		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)printf_shell(shell, "argv[%d] = \"%s\"\n", argv_index, argv[argv_index]);
 		// Discard argv.
 		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
+		// Load a file specified by argv[0].
+		executable_file_binary = load_file(argv[0]);
+		if(executable_file_binary)
+		{
+			printf_shell(shell, "%.*s\n", get_file_information(argv[0])->size, executable_file_binary);
+			free(executable_file_binary);
+		}
+		else printf_shell(shell, "Executable file \"%s\" is not found.\n", argv[0]);
 		free(argv);
 		return NULL;
 	}
