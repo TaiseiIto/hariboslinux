@@ -106,6 +106,7 @@ void main(void)
 	printf_serial("Volume serial number = %#010.8x\n", boot_sector->volume_serial_number);
 	printf_serial("Volume label = \"%.11s\"\n", boot_sector->volume_label);
 	printf_serial("File system name = \"%.8s\"\n", boot_sector->file_system_name);
+	init_file_system();
 	// Init background sheet
 	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;
