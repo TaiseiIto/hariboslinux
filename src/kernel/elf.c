@@ -3,6 +3,7 @@
 char const *elf_header_ability(ELFHeader const *elf_header);
 int elf_header_cpu_bits(ELFHeader const *elf_header);
 char const *elf_header_endian(ELFHeader const *elf_header);
+char const *elf_header_instruction_set(ELFHeader const *elf_header);
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header)
 {
@@ -13,6 +14,7 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 	printf_shell(shell, "ELF header version = %#04.2x\n", elf_header->version);
 	printf_shell(shell, "ABI = %#04.2x\n", elf_header->application_binary_interface);
 	printf_shell(shell, "Ability = %s\n", elf_header_ability(elf_header));
+	printf_shell(shell, "Instruction set = %s\n", elf_header_instruction_set(elf_header));
 }
 
 char const *elf_header_ability(ELFHeader const *elf_header)
@@ -61,6 +63,49 @@ char const *elf_header_endian(ELFHeader const *elf_header)
 		return little_endian;
 	case ELF_HEADER_BIG_ENDIAN:
 		return big_endian;
+	default:
+		return invalid;
+	}
+}
+
+char const *elf_header_instruction_set(ELFHeader const *elf_header)
+{
+	static char const * const no_specific = "No specific";
+	static char const * const spark = "Spark";
+	static char const * const x86 = "x86";
+	static char const * const mips = "MIPS";
+	static char const * const powerpc = "PowerPC";
+	static char const * const arm = "ARM";
+	static char const * const superh = "SuperH";
+	static char const * const ia64 = "IA-64";
+	static char const * const x86_64 = "x86-64";
+	static char const * const aarch64 = "AARCH64";
+	static char const * const risc_v = "RISC-V";
+	static char const * const invalid = "Invalid";
+	switch(elf_header->instruction_set)
+	{
+	case ELF_HEADER_INSTRUCTION_SET_NO_SPECIFIC:
+		return no_specific ;
+	case ELF_HEADER_INSTRUCTION_SET_SPARK:
+		return spark;
+	case ELF_HEADER_INSTRUCTION_X86:
+		return x86;
+	case ELF_HEADER_INSTRUCTION_MIPS:
+		return mips;
+	case ELF_HEADER_INSTRUCTION_POWERPC:
+		return powerpc;
+	case ELF_HEADER_INSTRUCTION_ARM:
+		return arm;
+	case ELF_HEADER_INSTRUCTION_SUPERH:
+		return superh;
+	case ELF_HEADER_INSTRUCTION_IA64:
+		return ia64;
+	case ELF_HEADER_INSTRUCTION_X86_64:
+		return x86_64;
+	case ELF_HEADER_INSTRUCTION_AARCH64:
+		return aarch64;
+	case ELF_HEADER_INSTRUCTION_RISC_V:
+		return risc_v;
 	default:
 		return invalid;
 	}
