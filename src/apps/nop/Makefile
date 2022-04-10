@@ -1,3 +1,10 @@
+APP_NAME = $(shell basename `pwd`)
+TARGET = $(APP_NAME:=.elf)
+SOURCE = $(shell ls *.c)
+ASSEMBLY = $(SOURCE:.c=.s)
+OBJECTS = $(ASSEMBLY:.s=.o)
+MAP = $(APP_NAME:=.map)
+
 # Compiler
 COMPILER = gcc
 COMPILER_CODE32_OPTION = -m32
@@ -9,16 +16,18 @@ COMPILER_WARNING_OPTION = -Wall -Wextra
 # Linker
 LINKER = ld
 LINKER_I386_OPTION = -m elf_i386
-LINKER_MAP_OPTION = -Map nop.map
+LINKER_MAP_OPTION = -Map $(MAP)
 LINKER_OUTPUT_OPTION = -o
 
-SOURCE = nop.c
-ASSEMBLY = $(SOURCE:.c=.s)
-OBJECTS = $(ASSEMBLY:.s=.o)
+all: $(TARGET)
 
-all: nop.elf
+clean:
+	rm -f $(ASSEMBLY) $(MAP) $(OBJECTS) $(TARGET)
 
-nop.elf: $(OBJECTS)
+rebuild: clean
+	make
+
+$(TARGET): $(OBJECTS)
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_MAP_OPTION) $(LINKER_OUTPUT_OPTION) $@
 
 $(OBJECTS): $(@:.o=.s)
