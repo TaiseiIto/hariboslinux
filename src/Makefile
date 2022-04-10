@@ -11,13 +11,18 @@ LINKER_MAP_OPTION = -Map
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
+APPNAMES = $(shell for i in `ls -d apps/*/`; do basename $$i; done)
+APPS = $(APPNAMES:=.elf)
+
 BINSRCS = $(shell ls *.s)
 BINARIES = $(BINSRCS:.s=.bin)
 
-all: $(BINARIES) kernel.bin
+all: $(BINARIES) kernel.bin $(APPS)
 
 clean:
 	rm -f kernel.s *.bin *.o 
+	make clean -C apps
+	make clean -C libs
 	make clean -C kernel
 
 kernel.bin: kernel/kernel.bin
@@ -31,6 +36,10 @@ rebuild: clean
 
 %.bin: %.o
 	$(LINKER) $^ $(LINKER_MAP_OPTION) $(@:.bin=.map) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
+
+%.elf:
+	make -C apps
+	cp apps/$@ .
 
 %.o: %.s
 	$(COMPILER) $^ $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
