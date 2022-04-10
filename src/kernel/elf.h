@@ -25,7 +25,7 @@ typedef struct _ELFHeader
 	unsigned short ability;
 } ELFHeader;
 
-void execute_elf(Shell *shell, ELFHeader const *elf);
+void execute_elf(Shell *shell, ELFHeader const *elf_header);
 
 #endif
 
