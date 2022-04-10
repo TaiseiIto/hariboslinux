@@ -31,7 +31,7 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 	{
 		ELFProgramHeader const *program_header = (ELFProgramHeader const *)((void const *)elf_header + elf_header->program_header + program_header_index * elf_header->program_header_size);
 		printf_shell(shell, "Program Header [%#06.4x]\n", program_header_index);
-		printf_shell(shell, " Segment type %s", elf_program_header_type(program_header));
+		printf_shell(shell, " Segment type %s\n", elf_program_header_type(program_header));
 	}
 }
 
@@ -134,8 +134,8 @@ char const *elf_program_header_type(ELFProgramHeader const *elf_program_header)
 	static char const * const null = "Null";
 	static char const * const load = "Load";
 	static char const * const dynamic = "Dynamic";
-	static char const * const interp = "INterp";
-	static char const * const note = "Node";
+	static char const * const interp = "Interp";
+	static char const * const note = "Note";
 	static char const * const invalid = "Invalid";
 	switch(elf_program_header->type)
 	{
