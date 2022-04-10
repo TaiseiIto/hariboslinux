@@ -44,6 +44,12 @@ typedef struct _ELFHeader
 	unsigned int program_header_table;
 	unsigned int section_header_table;
 	unsigned int flags;
+	unsigned short header_size;
+	unsigned short program_header_table_entry_size;
+	unsigned short number_of_program_header_table_entries;
+	unsigned short section_header_table_entry_size;
+	unsigned short number_of_section_header_table_entries;
+	unsigned short section_names_entry_index;
 } ELFHeader;
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header);

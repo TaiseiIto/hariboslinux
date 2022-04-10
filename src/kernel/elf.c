@@ -20,6 +20,12 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 	printf_shell(shell, "Program header table = %#010.8x\n", elf_header->program_header_table);
 	printf_shell(shell, "Section header table = %#010.8x\n", elf_header->section_header_table);
 	printf_shell(shell, "Flags = %#010.8x\n", elf_header->flags);
+	printf_shell(shell, "Header size = %#06.4x\n", elf_header->header_size);
+	printf_shell(shell, "Program header table entry size = %#06.4x\n", elf_header->program_header_table_entry_size);
+	printf_shell(shell, "Number of program header table entries = %#06.4x\n", elf_header->number_of_program_header_table_entries);
+	printf_shell(shell, "Section header table entry size = %#06.4x\n", elf_header->section_header_table_entry_size);
+	printf_shell(shell, "Number of section header table entries = %#06.4x\n", elf_header->number_of_section_header_table_entries);
+	printf_shell(shell, "Section names entry index = %#06.4x\n", elf_header->section_names_entry_index);
 }
 
 char const *elf_header_ability(ELFHeader const *elf_header)
