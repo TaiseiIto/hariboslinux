@@ -1,8 +1,11 @@
 # floppy disk image file of the built operating system
 IMAGE_FILE = haribos.img
 BOOT_SECTORS = diskcontents/bootsector.bin
+# Applications
+APP_NAMES = $(shell for i in `ls -d src/apps/*/`; do basename $$i; done)
+APPS = $(shell for i in $(APP_NAMES); do echo diskcontents/$${i}.elf; done)
 # files included in the floppy disk
-FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/kernel.bin diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
+FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/kernel.bin $(APPS) diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
 
 # tcp ports
 DEBUG_PORT = 2159
@@ -61,6 +64,9 @@ diskcontents/kernel.bin: src/kernel.bin
 diskcontents/%.bin: src/%.bin
 	cp $^ $@
 
+diskcontents/%.elf: src/%.elf
+	cp $^ $@
+
 docker-build:
 	$(DOCKER) build --no-cache -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
 
@@ -113,6 +119,9 @@ src/kernel.bin: $(wildcard src/kernel/*.c src/kernel/*.h)
 	make -C src
 
 src/%.bin: src/%.s src/%.ld
+	make -C src
+
+src/%.elf:
 	make -C src
 
 # stop QEMU
