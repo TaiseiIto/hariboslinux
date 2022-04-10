@@ -157,12 +157,25 @@ void refresh_text_box(TextBox *text_box)
 		y = position->y;
 		if((position->y - text_box->scroll_amount) <= text_box->height)
 		{
-			if(position->character->character == '\n')
+			unsigned int x_after_tab;
+			switch(position->character->character)
 			{
+			case '\n':
 				fill_box_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), text_box->sheet->width - CHAR_WIDTH * position->x, CHAR_HEIGHT, position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color);
 				if(position->x + 1 < text_box->width)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (position->x + 1), CHAR_HEIGHT * (position->y - text_box->scroll_amount), text_box->sheet->width - CHAR_WIDTH * (position->x + 1), CHAR_HEIGHT, text_box->background_color);
+				break;
+			case '\t':
+				x_after_tab = x;
+				x_after_tab += TAB_LENGTH;
+				x_after_tab /= TAB_LENGTH;
+				x_after_tab *= TAB_LENGTH;
+				if(text_box->width <= x_after_tab)x_after_tab = text_box->width - 1;
+				fill_box_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), CHAR_WIDTH * (x_after_tab - x), CHAR_HEIGHT, text_box->background_color);
+				break;
+			default:
+				put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position->character->character);
+				break;
 			}
-			else put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position->character->character);
 		}
 	}
 	// Print blank space
