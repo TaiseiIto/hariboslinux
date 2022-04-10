@@ -4,6 +4,7 @@ char const *elf_header_ability(ELFHeader const *elf_header);
 int elf_header_cpu_bits(ELFHeader const *elf_header);
 char const *elf_header_endian(ELFHeader const *elf_header);
 char const *elf_header_instruction_set(ELFHeader const *elf_header);
+char const *elf_program_header_type(ELFProgramHeader const *elf_program_header);
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header)
 {
@@ -17,8 +18,8 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 	printf_shell(shell, "Instruction set = %s\n", elf_header_instruction_set(elf_header));
 	printf_shell(shell, "ELF version = %#010.8x\n", elf_header->elf_version);
 	printf_shell(shell, "Entry point = %#010.8x\n", elf_header->entry_point);
-	printf_shell(shell, "Program header table = %#010.8x\n", elf_header->program_header_table);
-	printf_shell(shell, "Section header table = %#010.8x\n", elf_header->section_header_table);
+	printf_shell(shell, "Program header = %#010.8x\n", elf_header->program_header);
+	printf_shell(shell, "Section header = %#010.8x\n", elf_header->section_header);
 	printf_shell(shell, "Flags = %#010.8x\n", elf_header->flags);
 	printf_shell(shell, "ELF header size = %#06.4x\n", elf_header->elf_header_size);
 	printf_shell(shell, "Program header size = %#06.4x\n", elf_header->program_header_size);
@@ -26,6 +27,12 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 	printf_shell(shell, "Section header size = %#06.4x\n", elf_header->section_header_size);
 	printf_shell(shell, "Number of section headers = %#06.4x\n", elf_header->number_of_section_headers);
 	printf_shell(shell, "Section names header index = %#06.4x\n", elf_header->section_names_header_index);
+	for(unsigned int program_header_index = 0; program_header_index < elf_header->number_of_program_headers; program_header_index++)
+	{
+		ELFProgramHeader const *program_header = (ELFProgramHeader const *)((void const *)elf_header + elf_header->program_header + program_header_index * elf_header->program_header_size);
+		printf_shell(shell, "Program Header [%#06.4x]\n", program_header_index);
+		printf_shell(shell, " Segment type %s", elf_program_header_type(program_header));
+	}
 }
 
 char const *elf_header_ability(ELFHeader const *elf_header)
@@ -117,6 +124,31 @@ char const *elf_header_instruction_set(ELFHeader const *elf_header)
 		return aarch64;
 	case ELF_HEADER_INSTRUCTION_RISC_V:
 		return risc_v;
+	default:
+		return invalid;
+	}
+}
+
+char const *elf_program_header_type(ELFProgramHeader const *elf_program_header)
+{
+	static char const * const null = "Null";
+	static char const * const load = "Load";
+	static char const * const dynamic = "Dynamic";
+	static char const * const interp = "INterp";
+	static char const * const note = "Node";
+	static char const * const invalid = "Invalid";
+	switch(elf_program_header->type)
+	{
+	case ELF_PROGRAM_HEADER_TYPE_NULL:
+		return null;
+	case ELF_PROGRAM_HEADER_TYPE_LOAD:
+		return load;
+	case ELF_PROGRAM_HEADER_TYPE_DYNAMIC:
+		return dynamic;
+	case ELF_PROGRAM_HEADER_TYPE_INTERP:
+		return interp;
+	case ELF_PROGRAM_HEADER_TYPE_NOTE:
+		return note;
 	default:
 		return invalid;
 	}

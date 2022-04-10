@@ -41,8 +41,8 @@ typedef struct _ELFHeader
 	#define ELF_HEADER_INSTRUCTION_RISC_V		0x00f3
 	unsigned int elf_version;
 	unsigned int entry_point;
-	unsigned int program_header_table;
-	unsigned int section_header_table;
+	unsigned int program_header;
+	unsigned int section_header;
 	unsigned int flags;
 	unsigned short elf_header_size;
 	unsigned short program_header_size;
@@ -51,6 +51,16 @@ typedef struct _ELFHeader
 	unsigned short number_of_section_headers;
 	unsigned short section_names_header_index;
 } ELFHeader;
+
+typedef struct _ELFProgramHeader
+{
+	unsigned int type;
+	#define ELF_PROGRAM_HEADER_TYPE_NULL	0x00000000
+	#define ELF_PROGRAM_HEADER_TYPE_LOAD	0x00000001
+	#define ELF_PROGRAM_HEADER_TYPE_DYNAMIC	0x00000002
+	#define ELF_PROGRAM_HEADER_TYPE_INTERP	0x00000003
+	#define ELF_PROGRAM_HEADER_TYPE_NOTE	0x00000004
+} ELFProgramHeader;
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header);
 
