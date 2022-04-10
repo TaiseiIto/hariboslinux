@@ -60,6 +60,16 @@ typedef struct _ELFProgramHeader
 	#define ELF_PROGRAM_HEADER_TYPE_DYNAMIC	0x00000002
 	#define ELF_PROGRAM_HEADER_TYPE_INTERP	0x00000003
 	#define ELF_PROGRAM_HEADER_TYPE_NOTE	0x00000004
+	unsigned int offset_in_file;
+	unsigned int deployment_destination;
+	unsigned int undefined;
+	unsigned int size_in_file;
+	unsigned int size_in_memory;
+	unsigned int flags;
+	#define ELF_PROGRAM_HEADER_FLAG_EXECUTABLE	0x00000001
+	#define ELF_PROGRAM_HEADER_FLAG_WRITABLE	0x00000002
+	#define ELF_PROGRAM_HEADER_FLAG_READABLE	0x00000004
+	unsigned int alignment;
 } ELFProgramHeader;
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header);

@@ -31,7 +31,17 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 	{
 		ELFProgramHeader const *program_header = (ELFProgramHeader const *)((void const *)elf_header + elf_header->program_header + program_header_index * elf_header->program_header_size);
 		printf_shell(shell, "Program Header [%#06.4x]\n", program_header_index);
-		printf_shell(shell, " Segment type %s\n", elf_program_header_type(program_header));
+		printf_shell(shell, "\tSegment type %s\n", elf_program_header_type(program_header));
+		printf_shell(shell, "\tOffset in file = %#010.8x\n", program_header->offset_in_file);
+		printf_shell(shell, "\tDeployment destination = %#010.8x\n", program_header->deployment_destination);
+		printf_shell(shell, "\tSize in file = %#010.8x\n", program_header->size_in_file);
+		printf_shell(shell, "\tSize in memory = %#010.8x\n", program_header->size_in_memory);
+		printf_shell(shell, "\tFlags :");
+		if(program_header->flags & ELF_PROGRAM_HEADER_FLAG_EXECUTABLE)print_shell(shell, " Executable");
+		if(program_header->flags & ELF_PROGRAM_HEADER_FLAG_WRITABLE)print_shell(shell, " Writable");
+		if(program_header->flags & ELF_PROGRAM_HEADER_FLAG_READABLE)print_shell(shell, " Readable");
+		print_shell(shell, "\n");
+		printf_shell(shell, "\tAlignment = %#010.8x\n", program_header->alignment);
 	}
 }
 
