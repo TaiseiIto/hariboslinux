@@ -5,6 +5,7 @@ int elf_header_cpu_bits(ELFHeader const *elf_header);
 char const *elf_header_endian(ELFHeader const *elf_header);
 char const *elf_header_instruction_set(ELFHeader const *elf_header);
 char const *elf_program_header_type(ELFProgramHeader const *elf_program_header);
+char const *elf_section_header_type(ELFSectionHeader const *elf_section_header);
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header)
 {
@@ -42,6 +43,13 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 		if(program_header->flags & ELF_PROGRAM_HEADER_FLAG_READABLE)print_shell(shell, " Readable");
 		print_shell(shell, "\n");
 		printf_shell(shell, "\tAlignment = %#010.8x\n", program_header->alignment);
+	}
+	for(unsigned int section_header_index = 0; section_header_index < elf_header->number_of_section_headers; section_header_index++)
+	{
+		ELFSectionHeader const *section_header = (ELFSectionHeader const *)((void const *)elf_header + elf_header->section_header + section_header_index * elf_header->section_header_size);
+		printf_shell(shell, "Section Header [%#06.4x]\n", section_header_index);
+		printf_shell(shell, "\tName index = %#010.8x\n", section_header->name_index);
+		printf_shell(shell, "\tSegment type %s\n", elf_section_header_type(section_header));
 	}
 }
 
@@ -159,6 +167,85 @@ char const *elf_program_header_type(ELFProgramHeader const *elf_program_header)
 		return interp;
 	case ELF_PROGRAM_HEADER_TYPE_NOTE:
 		return note;
+	default:
+		return invalid;
+	}
+}
+
+char const *elf_section_header_type(ELFSectionHeader const *elf_section_header)
+{
+	static char const * const null = "NULL";
+	static char const * const progbits = "PROGBITS";
+	static char const * const symtab = "SYMTAB";
+	static char const * const strtab = "STRTAB";
+	static char const * const rela = "RELA";
+	static char const * const hash = "HASH";
+	static char const * const dynamic = "DYNAMIC";
+	static char const * const note = "NOTE";
+	static char const * const nobits = "NOBITS";
+	static char const * const rel = "REL";
+	static char const * const shlib = "SHLIB";
+	static char const * const dynsym = "DYNSYM";
+	static char const * const init_array = "INIT_ARRAY";
+	static char const * const fini_array = "FINI_ARRAY";
+	static char const * const preinit_array = "PREINIT_ARRAY";
+	static char const * const group = "GROUP";
+	static char const * const symtab_shndx = "SYMTAB_SHNDX";
+	static char const * const loos = "LOOS";
+	static char const * const hios = "HIOS";
+	static char const * const loproc = "LOPROC";
+	static char const * const hiproc = "HIPROC";
+	static char const * const louser = "LOUSER";
+	static char const * const hiuser = "HIUSER";
+	static char const * const invalid = "Invalid";
+	switch(elf_section_header->type)
+	{
+	case ELF_SECTION_HEADER_TYPE_NULL:
+		return null;
+	case ELF_SECTION_HEADER_TYPE_PROGBITS:
+		return progbits;
+	case ELF_SECTION_HEADER_TYPE_SYMTAB:
+		return symtab;
+	case ELF_SECTION_HEADER_TYPE_STRTAB:
+		return strtab;
+	case ELF_SECTION_HEADER_TYPE_RELA:
+		return rela;
+	case ELF_SECTION_HEADER_TYPE_HASH:
+		return hash;
+	case ELF_SECTION_HEADER_TYPE_DYNAMIC:
+		return dynamic;
+	case ELF_SECTION_HEADER_TYPE_NOTE:
+		return note;
+	case ELF_SECTION_HEADER_TYPE_NOBITS:
+		return nobits;
+	case ELF_SECTION_HEADER_TYPE_REL:
+		return rel;
+	case ELF_SECTION_HEADER_TYPE_SHLIB:
+		return shlib;
+	case ELF_SECTION_HEADER_TYPE_DYNSYM:
+		return dynsym;
+	case ELF_SECTION_HEADER_TYPE_INIT_ARRAY:
+		return init_array;
+	case ELF_SECTION_HEADER_TYPE_FINI_ARRAY:
+		return fini_array;
+	case ELF_SECTION_HEADER_TYPE_PREINIT_ARRAY:
+		return preinit_array;
+	case ELF_SECTION_HEADER_TYPE_GROUP:
+		return group;
+	case ELF_SECTION_HEADER_TYPE_SYMTAB_SHNDX:
+		return symtab_shndx;
+	case ELF_SECTION_HEADER_TYPE_LOOS:
+		return loos;
+	case ELF_SECTION_HEADER_TYPE_HIOS:
+		return hios;
+	case ELF_SECTION_HEADER_TYPE_LOPROC:
+		return loproc;
+	case ELF_SECTION_HEADER_TYPE_HIPROC:
+		return hiproc;
+	case ELF_SECTION_HEADER_TYPE_LOUSER:
+		return louser;
+	case ELF_SECTION_HEADER_TYPE_HIUSER:
+		return hiuser;
 	default:
 		return invalid;
 	}
