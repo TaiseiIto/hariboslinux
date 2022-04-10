@@ -1,5 +1,6 @@
 #include "chain_string.h"
 #include "disk.h"
+#include "elf.h"
 #include "io.h"
 #include "memory.h"
 #include "shell.h"
@@ -181,7 +182,7 @@ void *execute_command(Shell *shell, char const *command)
 		executable_file_binary = load_file(executable_file_name);
 		if(executable_file_binary)
 		{
-			printf_shell(shell, "%.*s", get_file_information(argv[0])->size, executable_file_binary);
+			execute_elf(shell, (ELFHeader const *)executable_file_binary);
 			free(executable_file_binary);
 		}
 		else printf_shell(shell, "Executable file \"%s\" is not found.\n", executable_file_name);
