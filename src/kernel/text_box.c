@@ -170,7 +170,12 @@ void refresh_text_box(TextBox *text_box)
 				x_after_tab /= TAB_LENGTH;
 				x_after_tab *= TAB_LENGTH;
 				if(text_box->width <= x_after_tab)x_after_tab = text_box->width - 1;
-				fill_box_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), CHAR_WIDTH * (x_after_tab - x), CHAR_HEIGHT, text_box->background_color);
+				if(position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON)
+				{
+					fill_box_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), CHAR_WIDTH, CHAR_HEIGHT, text_box->foreground_color);
+					if(x + 1 < x_after_tab)fill_box_sheet(text_box->sheet, CHAR_WIDTH * (position->x + 1), CHAR_HEIGHT * (position->y - text_box->scroll_amount), CHAR_WIDTH * (x_after_tab - (x + 1)), CHAR_HEIGHT, text_box->background_color);
+				}
+				else fill_box_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), CHAR_WIDTH * (x_after_tab - x), CHAR_HEIGHT, text_box->background_color);
 				break;
 			default:
 				put_char_sheet(text_box->sheet, CHAR_WIDTH * position->x, CHAR_HEIGHT * (position->y - text_box->scroll_amount), position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->background_color : text_box->foreground_color, position == text_box->cursor_position && text_box->flags & TEXT_BOX_FLAG_CURSOR_BLINK_ON ? text_box->foreground_color : text_box->background_color, position->character->character);
