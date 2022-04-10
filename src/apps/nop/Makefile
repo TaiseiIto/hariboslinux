@@ -2,7 +2,7 @@ APP_NAME = $(shell basename `pwd`)
 TARGET = $(APP_NAME:=.elf)
 SOURCE = $(shell ls *.c)
 ASSEMBLY = $(SOURCE:.c=.s)
-OBJECTS = $(ASSEMBLY:.s=.o)
+OBJECTS = $(ASSEMBLY:.s=.o) ../../libs/crt.o
 MAP = $(APP_NAME:=.map)
 
 # Compiler
