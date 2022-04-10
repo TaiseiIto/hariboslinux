@@ -8,7 +8,7 @@ char const *elf_header_instruction_set(ELFHeader const *elf_header);
 void execute_elf(Shell *shell, ELFHeader const *elf_header)
 {
 	printf_shell(shell, "ELF magic number is %s.\n", elf_header->magic_number == ELF_HEADER_MAGIC_NUMBER ? "correct" : "wrong");
-	printf_shell(shell, "ELF sign is \"%3s\".\n", elf_header->elf_sign);
+	printf_shell(shell, "ELF sign is \"%.3s\".\n", elf_header->elf_sign);
 	printf_shell(shell, "%d bits CPU\n", elf_header_cpu_bits(elf_header));
 	printf_shell(shell, "Endian = %s\n", elf_header_endian(elf_header));
 	printf_shell(shell, "ELF header version = %#04.2x\n", elf_header->version);
