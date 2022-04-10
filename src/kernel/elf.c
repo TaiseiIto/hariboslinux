@@ -19,6 +19,7 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 	printf_shell(shell, "Entry point = %#010.8x\n", elf_header->entry_point);
 	printf_shell(shell, "Program header table = %#010.8x\n", elf_header->program_header_table);
 	printf_shell(shell, "Section header table = %#010.8x\n", elf_header->section_header_table);
+	printf_shell(shell, "Flags = %#010.8x\n", elf_header->flags);
 }
 
 char const *elf_header_ability(ELFHeader const *elf_header)

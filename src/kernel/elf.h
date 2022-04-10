@@ -43,6 +43,7 @@ typedef struct _ELFHeader
 	unsigned int entry_point;
 	unsigned int program_header_table;
 	unsigned int section_header_table;
+	unsigned int flags;
 } ELFHeader;
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header);
