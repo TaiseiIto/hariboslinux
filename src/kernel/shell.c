@@ -179,7 +179,7 @@ void *execute_command(Shell *shell, char const *command)
 		executable_file_binary = load_file(argv[0]);
 		if(executable_file_binary)
 		{
-			printf_shell(shell, "%.*s\n", get_file_information(argv[0])->size, executable_file_binary);
+			printf_shell(shell, "%.*s", get_file_information(argv[0])->size, executable_file_binary);
 			free(executable_file_binary);
 		}
 		else printf_shell(shell, "Executable file \"%s\" is not found.\n", argv[0]);
