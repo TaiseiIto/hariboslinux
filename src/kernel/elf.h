@@ -40,6 +40,7 @@ typedef struct _ELFHeader
 	#define ELF_HEADER_INSTRUCTION_AARCH64		0x00b7
 	#define ELF_HEADER_INSTRUCTION_RISC_V		0x00f3
 	unsigned int elf_version;
+	unsigned int entry_point;
 } ELFHeader;
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header);
