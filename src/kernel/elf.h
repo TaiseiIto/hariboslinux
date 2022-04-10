@@ -13,9 +13,9 @@ typedef struct _ELFHeader
 	#define ELF_HEADER_MAGIC_NUMBER	0x7f
 	// The ELF sign must be "ELF"
 	char elf_sign[3];
-	unsigned char cpu_bit;
-	#define ELF_HEADER_CPU_32BIT	0x01
-	#define ELF_HEADER_CPU_64BIT	0x02
+	unsigned char cpu_bits;
+	#define ELF_HEADER_CPU_32BITS	0x01
+	#define ELF_HEADER_CPU_64BITS	0x02
 	unsigned char endian;
 	#define ELF_HEADER_LITTLE_ENDIAN	0x01
 	#define ELF_HEADER_BIG_ENDIAN		0x02
@@ -23,6 +23,10 @@ typedef struct _ELFHeader
 	unsigned char application_binary_interface;
 	unsigned long long unused;
 	unsigned short ability;
+	#define ELF_HEADER_RELOCATABLE	0x01
+	#define ELF_HEADER_EXECUTABLE	0x02
+	#define ELF_HEADER_SHARED	0x03
+	#define ELF_HEADER_CORE		0x04
 } ELFHeader;
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header);
