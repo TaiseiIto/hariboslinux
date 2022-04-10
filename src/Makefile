@@ -11,7 +11,10 @@ LINKER_MAP_OPTION = -Map
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
-all: bootsector.bin loaddisk.bin getmemmp.bin initscrn.bin mv2prtmd.bin dplydisk.bin kernel.bin
+BINSRCS = $(shell ls *.s)
+BINARIES = $(BINSRCS:.s=.bin)
+
+all: $(BINARIES) kernel.bin
 
 clean:
 	rm -f kernel.s *.bin *.o 
