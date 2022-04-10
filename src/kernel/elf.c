@@ -37,7 +37,7 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 		printf_shell(shell, "\tDeployment destination = %#010.8x\n", program_header->deployment_destination);
 		printf_shell(shell, "\tSize in file = %#010.8x\n", program_header->size_in_file);
 		printf_shell(shell, "\tSize in memory = %#010.8x\n", program_header->size_in_memory);
-		printf_shell(shell, "\tFlags :");
+		print_shell(shell, "\tFlags :");
 		if(program_header->flags & ELF_PROGRAM_HEADER_FLAG_EXECUTABLE)print_shell(shell, " Executable");
 		if(program_header->flags & ELF_PROGRAM_HEADER_FLAG_WRITABLE)print_shell(shell, " Writable");
 		if(program_header->flags & ELF_PROGRAM_HEADER_FLAG_READABLE)print_shell(shell, " Readable");
@@ -50,6 +50,27 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 		printf_shell(shell, "Section Header [%#06.4x]\n", section_header_index);
 		printf_shell(shell, "\tName index = %#010.8x\n", section_header->name_index);
 		printf_shell(shell, "\tSegment type %s\n", elf_section_header_type(section_header));
+		print_shell(shell, "\tFlags :");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_WRITE)print_shell(shell, " WRITE");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_ALLOC)print_shell(shell, " ALLOC");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_EXECINSTR)print_shell(shell, " EXECINSTR");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_MERGE)print_shell(shell, " MERGE");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_STRINGS)print_shell(shell, " STRINGS");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_INFO_LINK)print_shell(shell, " INFO_LINK");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_LINK_ORDER)print_shell(shell, " LINK_ORDER");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_OS_NONCONFORMING)print_shell(shell, " NONCONFORMING");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_GROUP)print_shell(shell, " GROUP");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_TLS)print_shell(shell, " TLS");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_MASKOS)print_shell(shell, " MASKOS");
+		if(section_header->flags & ELF_SECTION_HEADER_FLAG_MASKPROC)print_shell(shell, " MASKPROC");
+		print_shell(shell, "\n");
+		printf_shell(shell, "\tDeployment destination = %#010.8x\n", section_header->deployment_destination);
+		printf_shell(shell, "\tOffset in file = %#010.8x\n", section_header->offset_in_file);
+		printf_shell(shell, "\tSize = %#010.8x\n", section_header->size);
+		printf_shell(shell, "\tLinked section header index = %#010.8x\n", section_header->linked_section_header_index);
+		printf_shell(shell, "\tExtra information = %#010.8x\n", section_header->extra_information);
+		printf_shell(shell, "\tAlignment = %#010.8x\n", section_header->alignment);
+		printf_shell(shell, "\tEntry size = %#010.8x\n", section_header->entry_size);
 	}
 }
 
