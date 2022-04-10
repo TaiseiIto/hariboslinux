@@ -19,7 +19,7 @@ typedef struct _ELFHeader
 	unsigned char endian;
 	#define ELF_HEADER_LITTLE_ENDIAN	0x01
 	#define ELF_HEADER_BIG_ENDIAN		0x02
-	unsigned char version;
+	unsigned char elf_header_version;
 	unsigned char application_binary_interface;
 	unsigned long long unused;
 	unsigned short ability;
@@ -39,6 +39,7 @@ typedef struct _ELFHeader
 	#define ELF_HEADER_INSTRUCTION_X86_64		0x003e
 	#define ELF_HEADER_INSTRUCTION_AARCH64		0x00b7
 	#define ELF_HEADER_INSTRUCTION_RISC_V		0x00f3
+	unsigned int elf_version;
 } ELFHeader;
 
 void execute_elf(Shell *shell, ELFHeader const *elf_header);

@@ -11,10 +11,11 @@ void execute_elf(Shell *shell, ELFHeader const *elf_header)
 	printf_shell(shell, "ELF sign is \"%.3s\".\n", elf_header->elf_sign);
 	printf_shell(shell, "%d bits CPU\n", elf_header_cpu_bits(elf_header));
 	printf_shell(shell, "Endian = %s\n", elf_header_endian(elf_header));
-	printf_shell(shell, "ELF header version = %#04.2x\n", elf_header->version);
+	printf_shell(shell, "ELF header version = %#04.2x\n", elf_header->elf_header_version);
 	printf_shell(shell, "ABI = %#04.2x\n", elf_header->application_binary_interface);
 	printf_shell(shell, "Ability = %s\n", elf_header_ability(elf_header));
 	printf_shell(shell, "Instruction set = %s\n", elf_header_instruction_set(elf_header));
+	printf_shell(shell, "ELF version = %#010.8x\n", elf_header->elf_version);
 }
 
 char const *elf_header_ability(ELFHeader const *elf_header)
