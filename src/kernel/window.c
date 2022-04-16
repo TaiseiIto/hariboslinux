@@ -67,7 +67,7 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 		fill_box_sheet(sheet, sheet->width - 1, 0, 1, sheet->height - 1, dark_limit_color);
 		for(unsigned short x_i = 2; x_i < sheet->width - 2; x_i++)for(unsigned short y_i = 2; y_i < sheet->height - 2; y_i++)
 		{
-			if(2 < x_i && x_i < sheet->width - 3 && 2 < y_i && y_i < sheet->height - 3 && (x_i - y_i <= 1 && y_i - x_i <= 1 || sheet->width - 2 <= x_i + y_i && x_i + y_i <= sheet->width))put_dot_sheet(sheet, x_i, y_i, close_button_cross_color);
+			if(2 < x_i && x_i < sheet->width - 3 && 2 < y_i && y_i < sheet->height - 3 && ((x_i - y_i <= 1 && y_i - x_i <= 1) || (sheet->width - 2 <= x_i + y_i && x_i + y_i <= sheet->width)))put_dot_sheet(sheet, x_i, y_i, close_button_cross_color);
 			else put_dot_sheet(sheet, x_i, y_i, background_color);
 		}
 		return NULL;
@@ -259,6 +259,7 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 	default:
 		return default_event_procedure(sheet, event);
 	}
+	return NULL;
 }
 
 void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)

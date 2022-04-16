@@ -262,7 +262,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 				{
 					CharacterPosition *new_position = NULL;
 					// Find the position 1 line down.
-					for(CharacterPosition *new_position_candidate = text_box->cursor_position; new_position_candidate; new_position_candidate = new_position_candidate->next)if((cursor_position.x <= new_position_candidate->x || new_position_candidate->next && (cursor_position.x < new_position_candidate->next->x || cursor_position.y + 1 < new_position_candidate->next->y)) && new_position_candidate->y == cursor_position.y + 1)
+					for(CharacterPosition *new_position_candidate = text_box->cursor_position; new_position_candidate; new_position_candidate = new_position_candidate->next)if((cursor_position.x <= new_position_candidate->x || (new_position_candidate->next && (cursor_position.x < new_position_candidate->next->x || cursor_position.y + 1 < new_position_candidate->next->y))) && new_position_candidate->y == cursor_position.y + 1)
 					{
 						new_position = new_position_candidate;
 						break;
@@ -385,7 +385,7 @@ void *text_box_event_procedure(Sheet *sheet, struct _Event const *event)
 			if(text_box->scroll_amount)
 			{
 				// Change scroll amount.
-				text_box->scroll_amount -= -event->event_union.sheet_vertical_wheel_event.rotation < text_box->scroll_amount ? -event->event_union.sheet_vertical_wheel_event.rotation : text_box->scroll_amount;
+				text_box->scroll_amount -= (unsigned int)(-event->event_union.sheet_vertical_wheel_event.rotation) < text_box->scroll_amount ? (unsigned int)-event->event_union.sheet_vertical_wheel_event.rotation : text_box->scroll_amount;
 				if(text_box->scroll_amount + text_box->height < cursor_position.y + 1)
 				{
 					// Move cursor.
