@@ -1,6 +1,6 @@
 SOURCE = $(shell ls *.c)
 ASSEMBLY = $(SOURCE:.c=.s)
-OBJECTS = $(ASSEMBLY:.s=.o) io.o
+OBJECTS = $(ASSEMBLY:.s=.o) crt.o
 
 # Compiler
 COMPILER = gcc
