@@ -159,7 +159,7 @@ unsigned int number_of_unoutput_characters(void)
 // printf
 void printf_serial(char const *format, ...)
 {
-	ChainString *output_chain_string = create_caller_format_chain_string(0);
+	ChainString *output_chain_string = create_caller_format_chain_string(((unsigned int)&format - (unsigned int)&format) / sizeof(unsigned int));
 	char *output_string = create_char_array_from_chain_string(output_chain_string);
 	print_serial(output_string);
 	free(output_string);

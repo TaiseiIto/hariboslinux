@@ -437,7 +437,7 @@ void move_sheet(Sheet *sheet, short x, short y)
 
 void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
 {
-	ChainString *output_chain_string = create_caller_format_chain_string(5);
+	ChainString *output_chain_string = create_caller_format_chain_string(((unsigned int)&format - (unsigned int)&sheet) / sizeof(unsigned int));
 	char *output_string = create_char_array_from_chain_string(output_chain_string);
 	print_sheet(sheet, x, y, foreground, background, output_string);
 	free(output_string);
