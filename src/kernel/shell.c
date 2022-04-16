@@ -172,6 +172,7 @@ void *execute_command(Shell *shell, char const *command)
 	{
 		char *com_file_name;
 		void *com_file_binary;
+		unsigned int com_file_size;
 		// Count argc.
 		for(argc = 0; argv[argc]; argc++);
 		// Print argv.
@@ -179,8 +180,12 @@ void *execute_command(Shell *shell, char const *command)
 		// Load a file specified by argv[0].
 		com_file_name = create_format_char_array("%s.com", argv[0]);
 		com_file_binary = load_file(com_file_name);
+		com_file_size = get_file_information(com_file_name)->size;
 		if(com_file_binary)
 		{
+			unsigned int code_segment = alloc_segment(com_file_binary, com_file_size, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+			ljmp(0, code_segment);
+			free_segment(code_segment);
 			free(com_file_binary);
 		}
 		else printf_shell(shell, "Executable file \"%s\" is not found.\n", com_file_name);
