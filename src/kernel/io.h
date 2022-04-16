@@ -32,6 +32,9 @@ unsigned short inw(unsigned short address);
 // inl	$address,	%eax
 unsigned int inl(unsigned short address);
 
+// lcall $segment, %address
+void lcall(unsigned int address, unsigned short segment);
+
 // lgdt
 void lgdt(unsigned int limit, SegmentDescriptor *begin);
 

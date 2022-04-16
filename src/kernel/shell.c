@@ -184,7 +184,7 @@ void *execute_command(Shell *shell, char const *command)
 		if(com_file_binary)
 		{
 			unsigned int code_segment = alloc_segment(com_file_binary, com_file_size, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-			ljmp(0, code_segment);
+			lcall(0, code_segment);
 			free_segment(code_segment);
 			free(com_file_binary);
 		}

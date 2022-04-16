@@ -12,6 +12,7 @@
 	.globl	inb
 	.globl	inw
 	.globl	inl
+	.globl	lcall
 	.globl	lgdt
 	.globl	lidt
 	.globl	ljmp
@@ -37,6 +38,7 @@
 	.type	inb,			@function
 	.type	inw,			@function
 	.type	inl,			@function
+	.type	lcall,			@function
 	.type	lgdt,			@function
 	.type	lidt,			@function
 	.type	ljmp,			@function
@@ -146,6 +148,15 @@ inl:				# unsigned int io_inl(unsigned short address);
 	xorl	%edx,	%edx
 	movw	0x08(%ebp),%dx
 	inl	%dx,	%eax
+	leave
+	ret
+
+				# // lcall $segment, %address
+lcall:				# void lcall(unsigned int address, unsigned short segment);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	lcall	*0x08(%ebp)
 	leave
 	ret
 
