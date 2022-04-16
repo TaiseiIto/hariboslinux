@@ -12,7 +12,7 @@ LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
 APPNAMES = $(shell for i in `ls -d apps/*/`; do basename $$i; done)
-APPS = $(APPNAMES:=.elf)
+APPS = $(APPNAMES:=.com)
 
 BINSRCS = $(shell ls *.s)
 BINARIES = $(BINSRCS:.s=.bin)
@@ -37,7 +37,8 @@ rebuild: clean
 %.bin: %.o
 	$(LINKER) $^ $(LINKER_MAP_OPTION) $(@:.bin=.map) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
-%.elf:
+%.com:
+	make -C libs
 	make -C apps
 	cp apps/$@ .
 

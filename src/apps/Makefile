@@ -1,5 +1,5 @@
 APPDIRS = $(shell ls -d */ | sed -e "s/\///g")
-APPS = $(APPDIRS:=.elf)
+APPS = $(APPDIRS:=.com)
 
 all: $(APPS)
 
@@ -11,7 +11,7 @@ rebuild: clean
 %.clean:
 	make clean -C $(@:.clean=)
 
-%.elf:
-	make -C $(@:.elf=)
-	cp $(@:.elf=)/$@ .
+%.com:
+	make -C $(@:.com=)
+	cp $(@:.com=)/$@ .
 

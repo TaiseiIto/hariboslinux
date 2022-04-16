@@ -2,7 +2,7 @@ gdb/i386-32bit.xml
 makeout.txt
 serialout.txt
 *.bin
-*.elf
+*.com
 *.exe
 *.img
 *.map
