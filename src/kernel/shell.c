@@ -12,9 +12,19 @@ typedef struct _CommandLineArgument
 	struct _CommandLineArgument *next;
 } CommandLineArgument;
 
+typedef struct _ComTaskArgument
+{
+	char *com_file_name;
+	void *com_file_binary;
+	unsigned int com_file_size;
+	unsigned int argc;
+	char **argv;
+} ComTaskArgument;
+
 char const * const prompt = "> ";
 
 char **create_argv(char const *command);
+void command_task_procedure(ComTaskArgument *arguments);
 
 char **create_argv(char const *command)
 {
@@ -138,6 +148,19 @@ char **create_argv(char const *command)
 	return argv;
 }
 
+void command_task_procedure(ComTaskArgument *arguments)
+{
+	unsigned int code_segment = alloc_segment(arguments->com_file_binary, arguments->com_file_size, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	lcall(0, code_segment);
+	free_segment(code_segment);
+	free(arguments->com_file_binary);
+	free(arguments->com_file_name);
+	for(unsigned int argv_index = 0; argv_index < arguments->argc; argv_index++)free(arguments->argv[argv_index]);
+	free(arguments->argv);
+	free(arguments);
+	close_task(get_current_task());
+}
+
 Shell *create_shell(Console *console)
 {
 	Shell *shell;
@@ -183,16 +206,16 @@ void *execute_command(Shell *shell, char const *command)
 		com_file_size = get_file_information(com_file_name)->size;
 		if(com_file_binary)
 		{
-			unsigned int code_segment = alloc_segment(com_file_binary, com_file_size, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-			lcall(0, code_segment);
-			free_segment(code_segment);
-			free(com_file_binary);
+			ComTaskArgument *com_task_argument = malloc(sizeof(*com_task_argument));
+			Task *com_task = create_task(get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
+			com_task_argument->com_file_name = com_file_name;
+			com_task_argument->com_file_binary = com_file_binary;
+			com_task_argument->com_file_size = com_file_size;
+			com_task_argument->argc = argc;
+			com_task_argument->argv = argv;
+			start_task(com_task, com_task_argument, NULL, 1);
 		}
 		else printf_shell(shell, "Executable file \"%s\" is not found.\n", com_file_name);
-		// Discard file name and argv.
-		free(com_file_name);
-		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
-		free(argv);
 		return NULL;
 	}
 	return NULL;
