@@ -1101,7 +1101,6 @@ char get_character(unsigned char signal)
 void decode_keyboard_interrupt(unsigned char signal)
 {
 	Event event;
-	unsigned char keyboard_command;
 	KeyboardTransmission *keyboard_transmission;
 	event.type = EVENT_TYPE_KEYBOARD_EVENT;
 	// Pushed or released
@@ -1164,7 +1163,7 @@ void decode_keyboard_interrupt(unsigned char signal)
 		if(keyboard_flags & KEYBOARD_FLAG_SUPER_KEY_PUSHED)keyboard_flags ^= KEYBOARD_FLAG_LAYOUT_ENGLISH | KEYBOARD_FLAG_LAYOUT_JAPANESE; // Switch keyboard layout
 		break;
 	case KEYBOARD_SUCCESS_ACK:
-		if(keyboard_transmission = dequeue(keyboard_send_buffer))
+		if((keyboard_transmission = dequeue(keyboard_send_buffer)))
 		{
 			outb(keyboard_transmission->port, keyboard_transmission->data);
 			last_keyboard_transmission = *keyboard_transmission;
@@ -1229,7 +1228,7 @@ void send_byte_to_keyboard(unsigned short port, unsigned char data)
 		keyboard_transmission.port = port;
 		keyboard_transmission.data = data;
 		enqueue(keyboard_send_buffer, &keyboard_transmission);
-		if(keyboard_flags & KEYBOARD_FLAG_SEND_READY)if(first_keyboard_transmission = dequeue(keyboard_send_buffer))
+		if(keyboard_flags & KEYBOARD_FLAG_SEND_READY)if((first_keyboard_transmission = dequeue(keyboard_send_buffer)))
 		{
 			keyboard_flags &= ~KEYBOARD_FLAG_SEND_READY;
 			outb(first_keyboard_transmission->port, first_keyboard_transmission->data);

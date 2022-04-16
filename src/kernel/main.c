@@ -42,7 +42,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event);
 void console_task_procedure(ConsoleTaskArgument *console_task_argument);
 void test_task_procedure(TestTaskArgument *test_task_argument);
 
-void main(void)
+int main(void)
 {
 	BootInformation const * const boot_information = (BootInformation const * const)MEMORY_MAP_BOOT_INFORMATION;
 	Color background_color;
@@ -118,7 +118,6 @@ void main(void)
 	serial_status_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	while(true)
 	{
-		Event new_event;
 		Event const *event;
 		event = dequeue(event_queue);
 		if(event)switch(event->type)
@@ -424,7 +423,10 @@ void test_task_procedure(TestTaskArgument *test_task_argument)
 		if(event)switch(event->type)
 		{
 		case EVENT_TYPE_TIMER_EVENT:
-			if(event->event_union.timer_event.timer == print_counter_timer)if(sheet_exists(window->client_sheet))printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
+			if(event->event_union.timer_event.timer == print_counter_timer)
+			{
+				if(sheet_exists(window->client_sheet))printf_sheet(window->client_sheet, 0, 0, foreground_color, background_color, "counter = %#018llx", counter);
+			}
 			else call_timer_procedure(event->event_union.timer_event.timer);
 			break;
 		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:

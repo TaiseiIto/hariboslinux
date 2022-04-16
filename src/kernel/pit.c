@@ -32,7 +32,6 @@ void init_pit(Queue *interrupt_queue)
 void pit_interrupt_handler(void)
 {
 	Event event;
-	static unsigned long long tick_count = 0;
 	finish_interruption(IRQ_PIT);
 	event.type = EVENT_TYPE_PIT_INTERRUPT;
 	enqueue(pit_interrupt_queue, &event);
