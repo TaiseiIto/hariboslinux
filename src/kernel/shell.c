@@ -215,7 +215,13 @@ void *execute_command(Shell *shell, char const *command)
 			com_task_argument->argv = argv;
 			start_task(com_task, com_task_argument, NULL, 1);
 		}
-		else printf_shell(shell, "Executable file \"%s\" is not found.\n", com_file_name);
+		else
+		{
+			printf_shell(shell, "Executable file \"%s\" is not found.\n", com_file_name);
+			free(com_file_name);
+			for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
+			free(argv);
+		}
 		return NULL;
 	}
 	return NULL;
