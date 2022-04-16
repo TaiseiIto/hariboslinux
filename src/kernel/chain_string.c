@@ -65,7 +65,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 	#define	FORMAT_PHASE_TYPE	0x04
 	#define	FORMAT_PHASE_FINISHED	0x05
 	unsigned int precision;
-	int width;
+	unsigned int width;
 	unsigned int output_length;
 	unsigned int num_of_digits;
 	while(*format)switch(*format)
@@ -292,7 +292,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				}
 				break;
 			case 's':
-				while(!(flags & FORMAT_FLAG_PRECISION_SPECIFIED) && *arg.string || flags & FORMAT_FLAG_PRECISION_SPECIFIED && (output_length < precision && *arg.string))
+				while((!(flags & FORMAT_FLAG_PRECISION_SPECIFIED) && *arg.string) || (flags & FORMAT_FLAG_PRECISION_SPECIFIED && (output_length < precision && *arg.string)))
 				{
 					insert_char_back(output_chain_string, output_chain_string->last_character, *arg.string++);
 					output_length++;
@@ -408,7 +408,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 
 char *create_format_char_array(char const *format, ...)
 {
-	ChainString *output_chain_string = create_caller_format_chain_string(0);
+	ChainString *output_chain_string = create_caller_format_chain_string(((unsigned int)&format - (unsigned int)&format) / sizeof(unsigned int));
 	char *output_string = create_char_array_from_chain_string(output_chain_string);
 	delete_chain_string(output_chain_string);
 	return output_string;
@@ -437,7 +437,7 @@ void delete_chars(ChainString *string, ChainCharacter *position, unsigned int le
 {
 	ChainCharacter *next_position;
 	if(!string)ERROR(); // The string doesn't exitst.
-	for(int i = 0; i < length; i++)
+	for(unsigned int i = 0; i < length; i++)
 	{
 		next_position = position->next;
 		if(!position)ERROR(); // Deletion length overflows.

@@ -63,7 +63,7 @@ void init_screen(void)
 // printf to screen
 void printf_screen(unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...)
 {
-	ChainString *output_chain_string = create_caller_format_chain_string(4);
+	ChainString *output_chain_string = create_caller_format_chain_string(((unsigned int)&format - (unsigned int)&x) / sizeof(unsigned int));
 	char *output_string = create_char_array_from_chain_string(output_chain_string);
 	print_screen(x, y, foreground, background, output_string);
 	free(output_string);
