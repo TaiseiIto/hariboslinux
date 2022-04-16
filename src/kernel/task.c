@@ -1,3 +1,4 @@
+#include "common.h"
 #include "event.h"
 #include "font.h"
 #include "graphic.h"
@@ -220,6 +221,7 @@ Task *get_current_task(void)
 
 void idle_task_procedure(void *arguments)
 {
+	UNUSED_ARGUMENT(arguments);
 	while(true)hlt();
 }
 
