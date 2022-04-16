@@ -109,7 +109,7 @@ void com1_interrupt_handler(void)
 		enqueue(serial_interrupt_queue, &serial_event);
 		break;
 	case TRANSMITTER_EMPTY_INTERRUPT:
-		if(character_to_send = dequeue(com1_transmission_queue))outb(COM1 + DATA_REGISTER, *character_to_send);
+		if((character_to_send = dequeue(com1_transmission_queue)))outb(COM1 + DATA_REGISTER, *character_to_send);
 		else com1_flags |= COM_WRITABLE;
 		break;
 	}
