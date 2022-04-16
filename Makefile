@@ -55,7 +55,7 @@ all: build
 build: $(IMAGE_FILE)
 
 clean:
-	rm -f diskcontents/*.bin $(IMAGE_PACKER) *.bin *.o *.img
+	rm -f diskcontents/*.bin diskcontents/*.com $(IMAGE_PACKER) *.bin *.o *.img
 	make clean -C src
 
 diskcontents/kernel.bin: src/kernel.bin

@@ -4,6 +4,7 @@ APPS = $(APPDIRS:=.com)
 all: $(APPS)
 
 clean: $(APPDIRS:=.clean)
+	rm -f *.com
 
 rebuild: clean
 	make
