@@ -92,7 +92,7 @@ void close_task(Task *task)
 	}
 	else ERROR(); // Task structure is broken!
 	// free the task
-	delete_queue(task->event_queue);
+	if(task->event_queue)delete_queue(task->event_queue);
 	free(task->stack);
 	free(task);
 	print_task_structure();
@@ -356,6 +356,7 @@ void start_task(Task *task, void *arguments, void *returns, unsigned char occupa
 	{
 	case TASK_STATUS_SLEEP:
 		task->arguments = arguments;
+		task->event_queue = NULL;
 		task->elapsed_time = 0;
 		task->occupancy_time = occupancy_time;
 		task->returns = returns;
