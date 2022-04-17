@@ -16,7 +16,13 @@ typedef struct _Console
 	struct _Shell *shell;
 } Console;
 
+typedef struct _ConsoleTaskArgument
+{
+	Sheet *background_sheet;
+} ConsoleTaskArgument;
+
 Console *make_sheet_console(Sheet *sheet, Color foreground_color, Color background_color);
+void console_task_procedure(ConsoleTaskArgument *console_task_argument);
 
 #endif
 

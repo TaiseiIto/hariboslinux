@@ -1,4 +1,5 @@
 #include "console.h"
+#include "gdt.h"
 #include "memory.h"
 #include "serial.h"
 #include "string.h"
@@ -126,6 +127,79 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 		else return console->default_event_procedure(sheet, event);
 	default:
 		return console->default_event_procedure(sheet, event);
+	}
+}
+
+void console_task_procedure(ConsoleTaskArgument *console_task_argument)
+{
+				//{red ,green, blue,alpha}
+	Color background_color	= {0x00, 0x00, 0x00, 0xff};
+	Color foreground_color	= {0xff, 0xff, 0xff, 0xff};
+	ComTaskArgument *com_task_argument;
+	Queue *event_queue;
+	Task *task;
+	Window *window;
+	printf_serial("Hello, Console Task!\n");
+	task = get_current_task();
+	event_queue = create_event_queue(task);
+	window = create_window("Console", console_task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0200, 0x0200, event_queue);
+	make_sheet_console(window->client_sheet, foreground_color, background_color);
+	while(true)
+	{
+		Event new_event;
+		Event const *event = dequeue(event_queue);
+		if(event)switch(event->type)
+		{
+		case EVENT_TYPE_TIMER_EVENT:
+			call_timer_procedure(event->event_union.timer_event.timer);
+			break;
+		case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+		case EVENT_TYPE_SHEET_CLICKED:
+		case EVENT_TYPE_SHEET_CREATED:
+		case EVENT_TYPE_SHEET_DELETION_REQUEST:
+		case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+		case EVENT_TYPE_SHEET_FOCUSED:
+		case EVENT_TYPE_SHEET_KEYBOARD:
+		case EVENT_TYPE_SHEET_MOUSE_DRAG:
+		case EVENT_TYPE_SHEET_MOUSE_MOVE:
+		case EVENT_TYPE_SHEET_UNFOCUSED:
+		case EVENT_TYPE_SHEET_USER_DEFINED:
+		case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
+		case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+		case EVENT_TYPE_WINDOW_FOCUSED:
+		case EVENT_TYPE_WINDOW_UNFOCUSED:
+			distribute_event(event);
+			break;
+		case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+			distribute_event(event);
+			if(event->event_union.window_deletion_response_event.window == window)
+			{
+				new_event.type = EVENT_TYPE_TASK_DELETION_REQUEST;
+				new_event.event_union.task_deletion_request_event.task = task;
+				enqueue(event_queue, &new_event);
+				printf_serial("Enqueue console task deletion request!\n");
+			}
+			break;
+		case EVENT_TYPE_TASK_DELETION_REQUEST:
+			printf_serial("Detect console task deletion request.\n");
+			close_task(task);
+			ERROR(); // Can't close task!
+			break;
+		case EVENT_TYPE_TASK_DELETION_RESPONSE:
+			com_task_argument = event->event_union.task_deletion_response_event.arguments;
+			free(com_task_argument->com_file_binary);
+			free(com_task_argument->com_file_name);
+			for(unsigned int argv_index = 0; argv_index < com_task_argument->argc; argv_index++)free(com_task_argument->argv[argv_index]);
+			free(com_task_argument->argv);
+			free(com_task_argument);
+			free_segment(event->event_union.task_deletion_response_event.segment_selector);
+			break;
+		default: // invalid event->type
+			ERROR();
+			printf_serial("invalid event->type %#04x\n", event->type);
+			break;
+		}
+		else sleep_task(task);
 	}
 }
 

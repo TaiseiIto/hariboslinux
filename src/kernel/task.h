@@ -72,6 +72,13 @@ typedef struct _TaskLevel
 	#define TASK_PRIORITY_IDLE		-0x40000000
 } TaskLevel;
 
+typedef struct _TaskReturn
+{
+	unsigned char task_type;
+	#define TASK_TYPE_CONSOLE	0x00
+	#define TASK_TYPE_TEST		0x01
+} TaskReturn;
+
 typedef struct _TaskDeletionRequestEvent
 {
 	Task *task;
