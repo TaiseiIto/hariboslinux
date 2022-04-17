@@ -138,6 +138,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 	CommandTaskArgument *command_task_argument;
 	Queue *event_queue;
 	Task *task;
+	TaskReturn *task_return;
 	Window *window;
 	printf_serial("Hello, Console Task!\n");
 	task = get_current_task();
@@ -186,14 +187,24 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 			ERROR(); // Can't close task!
 			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
-			command_task_argument = event->event_union.task_deletion_response_event.arguments;
-			free(command_task_argument->com_file_binary);
-			free(command_task_argument->com_file_name);
-			for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
-			free(command_task_argument->argv);
-			free(command_task_argument->task_return);
-			free(command_task_argument);
+			task_return = (TaskReturn*)event->event_union.task_deletion_response_event.returns;
+			switch(task_return->task_type)
+			{
+			case TASK_TYPE_COMMAND:
+				command_task_argument = event->event_union.task_deletion_response_event.arguments;
+				free(command_task_argument->com_file_binary);
+				free(command_task_argument->com_file_name);
+				for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
+				free(command_task_argument->argv);
+				break;
+			default:
+				ERROR(); // Invalid task type
+				break;
+			}
+			free(event->event_union.task_deletion_response_event.returns);
+			free(event->event_union.task_deletion_response_event.arguments);
 			free_segment(event->event_union.task_deletion_response_event.segment_selector);
+			printf_serial("free_segment %#06x\n", event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		default: // invalid event->type
 			ERROR();

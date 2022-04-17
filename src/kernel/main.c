@@ -314,9 +314,6 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			free(command_task_argument->com_file_name);
 			for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
 			free(command_task_argument->argv);
-			free(command_task_argument->task_return);
-			free(command_task_argument);
-			free_segment(event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case TASK_TYPE_TEST:
 			printf_serial("Detect test task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
@@ -327,7 +324,6 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 		}
 		free(event->event_union.task_deletion_response_event.returns);
 		free(event->event_union.task_deletion_response_event.arguments);
-		printf_serial("free(event->event_union.task_deletion_response_event.arguments)\n");
 		free_segment(event->event_union.task_deletion_response_event.segment_selector);
 		printf_serial("free_segment %#06x\n", event->event_union.task_deletion_response_event.segment_selector);
 		return NULL;
