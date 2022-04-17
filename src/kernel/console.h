@@ -16,11 +16,30 @@ typedef struct _Console
 	struct _Shell *shell;
 } Console;
 
+typedef struct _CommandIssuedEvent
+{
+	char *command;
+} CommandIssuedEvent;
+
+typedef union _ConsoleEventUnion
+{
+	CommandIssuedEvent command_issued_event;
+} ConsoleEventUnion;
+
+typedef struct _ConsoleEvent
+{
+	unsigned char type;
+	#define CONSOLE_EVENT_TYPE_PROMPT		0x00
+	#define CONSOLE_EVENT_TYPE_COMMAND_ISSUED	0x01
+	ConsoleEventUnion console_event_union;
+} ConsoleEvent;
+
 typedef struct _ConsoleTaskArgument
 {
 	Sheet *background_sheet;
 } ConsoleTaskArgument;
 
+void *console_event_procedure(Sheet *sheet, struct _Event const *event);
 Console *make_sheet_console(Sheet *sheet, Color foreground_color, Color background_color);
 void console_task_procedure(ConsoleTaskArgument *console_task_argument);
 

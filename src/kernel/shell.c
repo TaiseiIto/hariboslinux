@@ -1,4 +1,5 @@
 #include "chain_string.h"
+#include "console.h"
 #include "disk.h"
 #include "io.h"
 #include "memory.h"
@@ -19,10 +20,31 @@ void command_task_procedure(CommandTaskArgument *arguments);
 
 void clean_up_command_task(CommandTaskArgument *command_task_argument)
 {
+	ConsoleEvent *console_event;
+	Event new_event;
 	free(command_task_argument->com_file_binary);
 	free(command_task_argument->com_file_name);
 	for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
 	free(command_task_argument->argv);
+	switch(command_task_argument->shell->type)
+	{
+	case SHELL_TYPE_CONSOLE:
+		// Send prompt event.
+		console_event = malloc(sizeof(*console_event));
+		console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
+		new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+		new_event.event_union.sheet_user_defined_event.sheet = command_task_argument->shell->console->text_box->sheet;
+		new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+		new_event.event_union.sheet_user_defined_event.any = console_event;
+		enqueue(command_task_argument->shell->console->text_box->sheet->event_queue, &new_event);
+		break;
+	case SHELL_TYPE_SERIAL:
+		print_serial(prompt);
+		break;
+	default:
+		ERROR(); // Invalid shell type
+		break;
+	}
 }
 
 char **create_argv(char const *command)
@@ -207,6 +229,7 @@ void *execute_command(Shell *shell, char const *command)
 			command_task_argument->com_file_size = com_file_size;
 			command_task_argument->argc = argc;
 			command_task_argument->argv = argv;
+			command_task_argument->shell = shell;
 			command_task_argument->task_return = malloc(sizeof(*command_task_argument->task_return));
 			command_task_argument->task_return->task_type = TASK_TYPE_COMMAND;
 			start_task(command_task, command_task_argument, command_task_argument->task_return, 1);

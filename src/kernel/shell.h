@@ -21,6 +21,7 @@ typedef struct _CommandTaskArgument
 	unsigned int com_file_size;
 	unsigned int argc;
 	char **argv;
+	Shell *shell;
 	TaskReturn *task_return;
 } CommandTaskArgument;
 

@@ -4,27 +4,8 @@
 #include "serial.h"
 #include "string.h"
 
-typedef struct _CommandIssuedEvent
-{
-	char *command;
-} CommandIssuedEvent;
-
-typedef union _ConsoleEventUnion
-{
-	CommandIssuedEvent command_issued_event;
-} ConsoleEventUnion;
-
-typedef struct _ConsoleEvent
-{
-	unsigned char type;
-	#define CONSOLE_EVENT_TYPE_PROMPT		0x00
-	#define CONSOLE_EVENT_TYPE_COMMAND_ISSUED	0x01
-	ConsoleEventUnion console_event_union;
-} ConsoleEvent;
-
 Console *root_console = NULL;
 
-void *console_event_procedure(Sheet *sheet, struct _Event const *event);
 void delete_console(Console *console);
 Console *get_console_from_sheet(Sheet const *sheet);
 
@@ -86,15 +67,29 @@ void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 						new_event.event_union.sheet_user_defined_event.any = console_event;
 						enqueue(sheet->event_queue, &new_event);
 					}
+					else
+					{
+						// Send prompt event.
+						console_event = malloc(sizeof(*console_event));
+						console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
+						new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+						new_event.event_union.sheet_user_defined_event.sheet = sheet;
+						new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+						new_event.event_union.sheet_user_defined_event.any = console_event;
+						enqueue(sheet->event_queue, &new_event);
+					}
 				}
-				// Send prompt event.
-				console_event = malloc(sizeof(*console_event));
-				console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
-				new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
-				new_event.event_union.sheet_user_defined_event.sheet = sheet;
-				new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
-				new_event.event_union.sheet_user_defined_event.any = console_event;
-				enqueue(sheet->event_queue, &new_event);
+				else
+				{
+					// Send prompt event.
+					console_event = malloc(sizeof(*console_event));
+					console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
+					new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+					new_event.event_union.sheet_user_defined_event.sheet = sheet;
+					new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+					new_event.event_union.sheet_user_defined_event.any = console_event;
+					enqueue(sheet->event_queue, &new_event);
+				}
 			}
 			break;
 		}

@@ -484,7 +484,7 @@ void serial_console_input(char character)
 			free(command_line);
 			delete_chars(serial_console_input_string, serial_console_input_string->first_character, serial_console_input_string->length);
 		}
-		print_serial(prompt);
+		else print_serial(prompt);
 		break;
 	default:
 		insert_char_back(serial_console_input_string, serial_console_input_string->last_character, character);
