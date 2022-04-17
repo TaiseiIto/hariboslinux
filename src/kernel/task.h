@@ -68,7 +68,8 @@ typedef struct _TaskLevel
 	struct _TaskLevel *lower;
 	int priority;
 	#define TASK_PRIORITY_KERNEL		0x40000000
-	#define TASK_PRIORITY_APPLICATION	0x00000000
+	#define TASK_PRIORITY_SHELL		0x20000000
+	#define TASK_PRIORITY_USER		0x00000000
 	#define TASK_PRIORITY_IDLE		-0x40000000
 } TaskLevel;
 
