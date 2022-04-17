@@ -135,7 +135,6 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 				//{red ,green, blue,alpha}
 	Color background_color	= {0x00, 0x00, 0x00, 0xff};
 	Color foreground_color	= {0xff, 0xff, 0xff, 0xff};
-	CommandTaskArgument *command_task_argument;
 	Queue *event_queue;
 	Task *task;
 	TaskReturn *task_return;
@@ -191,11 +190,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 			switch(task_return->task_type)
 			{
 			case TASK_TYPE_COMMAND:
-				command_task_argument = event->event_union.task_deletion_response_event.arguments;
-				free(command_task_argument->com_file_binary);
-				free(command_task_argument->com_file_name);
-				for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
-				free(command_task_argument->argv);
+				clean_up_command_task(event->event_union.task_deletion_response_event.arguments);
 				break;
 			default:
 				ERROR(); // Invalid task type

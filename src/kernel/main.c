@@ -216,7 +216,6 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 	Color translucent_red;
 	Color translucent_green;
 	Color translucent_blue;
-	CommandTaskArgument *command_task_argument;
 	Sheet *translucent_red_sheet;
 	Sheet *translucent_green_sheet;
 	Sheet *translucent_blue_sheet;
@@ -309,11 +308,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			printf_serial("Detect console task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case TASK_TYPE_COMMAND:
-			command_task_argument = event->event_union.task_deletion_response_event.arguments;
-			free(command_task_argument->com_file_binary);
-			free(command_task_argument->com_file_name);
-			for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
-			free(command_task_argument->argv);
+			clean_up_command_task(event->event_union.task_deletion_response_event.arguments);
 			break;
 		case TASK_TYPE_TEST:
 			printf_serial("Detect test task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);

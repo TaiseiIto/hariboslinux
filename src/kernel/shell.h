@@ -26,6 +26,7 @@ typedef struct _CommandTaskArgument
 
 extern char const * const prompt;
 
+void clean_up_command_task(CommandTaskArgument *command_task_argument);
 Shell *create_shell(struct _Console *console);
 void delete_shell(Shell *shell);
 void *execute_command(Shell *shell, char const *command);

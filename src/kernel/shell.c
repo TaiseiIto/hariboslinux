@@ -17,6 +17,14 @@ char const * const prompt = "> ";
 char **create_argv(char const *command);
 void command_task_procedure(CommandTaskArgument *arguments);
 
+void clean_up_command_task(CommandTaskArgument *command_task_argument)
+{
+	free(command_task_argument->com_file_binary);
+	free(command_task_argument->com_file_name);
+	for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
+	free(command_task_argument->argv);
+}
+
 char **create_argv(char const *command)
 {
 	CommandLineArgument *first_argument = malloc(sizeof(*first_argument));
