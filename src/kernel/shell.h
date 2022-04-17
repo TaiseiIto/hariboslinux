@@ -4,6 +4,7 @@
 struct _Shell;
 
 #include "console.h"
+#include "task.h"
 
 typedef struct _Shell
 {
@@ -13,14 +14,15 @@ typedef struct _Shell
 	#define SHELL_TYPE_SERIAL	0x01
 } Shell;
 
-typedef struct _ComTaskArgument
+typedef struct _CommandTaskArgument
 {
 	char *com_file_name;
 	void *com_file_binary;
 	unsigned int com_file_size;
 	unsigned int argc;
 	char **argv;
-} ComTaskArgument;
+	TaskReturn *task_return;
+} CommandTaskArgument;
 
 extern char const * const prompt;
 

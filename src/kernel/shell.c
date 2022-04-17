@@ -15,7 +15,7 @@ typedef struct _CommandLineArgument
 char const * const prompt = "> ";
 
 char **create_argv(char const *command);
-void command_task_procedure(ComTaskArgument *arguments);
+void command_task_procedure(CommandTaskArgument *arguments);
 
 char **create_argv(char const *command)
 {
@@ -139,7 +139,7 @@ char **create_argv(char const *command)
 	return argv;
 }
 
-void command_task_procedure(ComTaskArgument *arguments)
+void command_task_procedure(CommandTaskArgument *arguments)
 {
 	unsigned int code_segment = alloc_segment(arguments->com_file_binary, arguments->com_file_size, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	lcall(0, code_segment);
@@ -192,14 +192,16 @@ void *execute_command(Shell *shell, char const *command)
 		com_file_size = get_file_information(com_file_name)->size;
 		if(com_file_binary)
 		{
-			ComTaskArgument *com_task_argument = malloc(sizeof(*com_task_argument));
-			Task *com_task = create_task(get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
-			com_task_argument->com_file_name = com_file_name;
-			com_task_argument->com_file_binary = com_file_binary;
-			com_task_argument->com_file_size = com_file_size;
-			com_task_argument->argc = argc;
-			com_task_argument->argv = argv;
-			start_task(com_task, com_task_argument, NULL, 1);
+			CommandTaskArgument *command_task_argument = malloc(sizeof(*command_task_argument));
+			Task *command_task = create_task(get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_APPLICATION);
+			command_task_argument->com_file_name = com_file_name;
+			command_task_argument->com_file_binary = com_file_binary;
+			command_task_argument->com_file_size = com_file_size;
+			command_task_argument->argc = argc;
+			command_task_argument->argv = argv;
+			command_task_argument->task_return = malloc(sizeof(*command_task_argument->task_return));
+			command_task_argument->task_return->task_type = TASK_TYPE_COMMAND;
+			start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
 		}
 		else
 		{

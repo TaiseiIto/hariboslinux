@@ -135,7 +135,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 				//{red ,green, blue,alpha}
 	Color background_color	= {0x00, 0x00, 0x00, 0xff};
 	Color foreground_color	= {0xff, 0xff, 0xff, 0xff};
-	ComTaskArgument *com_task_argument;
+	CommandTaskArgument *command_task_argument;
 	Queue *event_queue;
 	Task *task;
 	Window *window;
@@ -186,12 +186,13 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 			ERROR(); // Can't close task!
 			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
-			com_task_argument = event->event_union.task_deletion_response_event.arguments;
-			free(com_task_argument->com_file_binary);
-			free(com_task_argument->com_file_name);
-			for(unsigned int argv_index = 0; argv_index < com_task_argument->argc; argv_index++)free(com_task_argument->argv[argv_index]);
-			free(com_task_argument->argv);
-			free(com_task_argument);
+			command_task_argument = event->event_union.task_deletion_response_event.arguments;
+			free(command_task_argument->com_file_binary);
+			free(command_task_argument->com_file_name);
+			for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
+			free(command_task_argument->argv);
+			free(command_task_argument->task_return);
+			free(command_task_argument);
 			free_segment(event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		default: // invalid event->type

@@ -76,7 +76,9 @@ typedef struct _TaskReturn
 {
 	unsigned char task_type;
 	#define TASK_TYPE_CONSOLE	0x00
-	#define TASK_TYPE_TEST		0x01
+	#define TASK_TYPE_COMMAND	0x01
+	#define TASK_TYPE_TEST		0x02
+	void *task_return;
 } TaskReturn;
 
 typedef struct _TaskDeletionRequestEvent
