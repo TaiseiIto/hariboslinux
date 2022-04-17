@@ -12,15 +12,6 @@ typedef struct _CommandLineArgument
 	struct _CommandLineArgument *next;
 } CommandLineArgument;
 
-typedef struct _ComTaskArgument
-{
-	char *com_file_name;
-	void *com_file_binary;
-	unsigned int com_file_size;
-	unsigned int argc;
-	char **argv;
-} ComTaskArgument;
-
 char const * const prompt = "> ";
 
 char **create_argv(char const *command);
@@ -153,11 +144,6 @@ void command_task_procedure(ComTaskArgument *arguments)
 	unsigned int code_segment = alloc_segment(arguments->com_file_binary, arguments->com_file_size, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
 	lcall(0, code_segment);
 	free_segment(code_segment);
-	free(arguments->com_file_binary);
-	free(arguments->com_file_name);
-	for(unsigned int argv_index = 0; argv_index < arguments->argc; argv_index++)free(arguments->argv[argv_index]);
-	free(arguments->argv);
-	free(arguments);
 	close_task(get_current_task());
 }
 

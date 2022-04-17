@@ -13,6 +13,15 @@ typedef struct _Shell
 	#define SHELL_TYPE_SERIAL	0x01
 } Shell;
 
+typedef struct _ComTaskArgument
+{
+	char *com_file_name;
+	void *com_file_binary;
+	unsigned int com_file_size;
+	unsigned int argc;
+	char **argv;
+} ComTaskArgument;
+
 extern char const * const prompt;
 
 Shell *create_shell(struct _Console *console);
