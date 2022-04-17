@@ -236,10 +236,30 @@ void *execute_command(Shell *shell, char const *command)
 		}
 		else
 		{
+			ConsoleEvent *console_event;
+			Event new_event;
 			printf_shell(shell, "Executable file \"%s\" is not found.\n", com_file_name);
 			free(com_file_name);
 			for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
 			free(argv);
+			switch(shell->type)
+			{
+			case SHELL_TYPE_CONSOLE:
+				// Send prompt event.
+				console_event = malloc(sizeof(*console_event));
+				console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
+				new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+				new_event.event_union.sheet_user_defined_event.sheet = shell->console->text_box->sheet;
+				new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+				new_event.event_union.sheet_user_defined_event.any = console_event;
+				enqueue(shell->console->text_box->sheet->event_queue, &new_event);
+				break;
+			case SHELL_TYPE_SERIAL:
+				break;
+			default:
+				ERROR(); // Invalid shell type
+				break;
+			}
 		}
 		return NULL;
 	}
