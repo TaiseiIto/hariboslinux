@@ -7,13 +7,6 @@
 MemorySection *root_memory_section;
 void * const heap_base = MEMORY_MAP_KERNEL_HEAP_BEGIN;
 
-void break_point(void);
-
-void break_point(void)
-{
-	return;
-}
-
 void free(void *address)
 {
 	MemorySection *memory_section;
@@ -38,11 +31,7 @@ void free(void *address)
 			memory_section->next = memory_section->next->next;
 		}
 	}
-	else
-	{
-		break_point();
-		ERROR(); // double free error!
-	}
+	else ERROR(); // double free error!
 	sti_task();
 	return;
 }
