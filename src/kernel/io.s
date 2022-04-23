@@ -85,7 +85,7 @@ call_application:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	pushal
-	movl	0x48(%ebp),%edi	# Application stack floor
+	movl	0x48(%ebp),%edi		# edi = application_stack_floor
 	# Push kernel registers to the application stack.
 	movw	%gs,	-0x04(%edi)
 	movw	%fs,	-0x08(%edi)
@@ -105,38 +105,92 @@ call_application:
 	popl	%eax			# Push kernel eflags
 	movl	%eax,	-0x3a(%edi)
 	# Push application registers to the application stack.
-	movw	%dx	,0x44(%ebp)	# Push application gs
-	movw	-0x40(%edi),%dx
-	movw	%dx	,0x40(%ebp)	# Push application fs
-	movw	-0x44(%edi),%dx
-	movw	%dx	,0x3a(%ebp)	# Push application ds
-	movw	-0x48(%edi),%dx
-	movw	%dx	,0x38(%ebp)	# Push application ss
-	movw	-0x4a(%edi),%dx
-	movw	%dx	,0x34(%ebp)	# Push application cs
-	movw	-0x50(%edi),%dx
-	movw	%dx	,0x30(%ebp)	# Push application es
-	movw	-0x54(%edi),%dx
-	movl	%edx	,0x2a(%ebp)	# Push application edi
-	movl	-0x58(%edi),%edx
-	movl	%edx	,0x28(%ebp)	# Push application esi
-	movl	-0x5a(%edi),%edx
-	movl	%edx	,0x24(%ebp)	# Push application ebp
-	movl	-0x60(%edi),%edx
-	movl	%edx	,0x20(%ebp)	# Push application esp
-	movl	-0x64(%edi),%edx
-	movl	%edx	,0x1a(%ebp)	# Push application ebx
-	movl	-0x68(%edi),%edx
-	movl	%edx	,0x18(%ebp)	# Push application edx
-	movl	-0x6a(%edi),%edx
-	movl	%edx	,0x14(%ebp)	# Push application ecx
-	movl	-0x70(%edi),%edx
-	movl	%edx	,0x10(%ebp)	# Push application eax
-	movl	-0x74(%edi),%edx
-	movl	%edx	,0x0a(%ebp)	# Push application eflags
-	movl	-0x78(%edi),%edx
-	movl	%edx	,0x08(%ebp)	# Push application eip
-	movl	-0x7a(%edi),%edx
+	movw	0x44(%ebp),%dx		# Push application gs
+	movw	%dx,	-0x40(%edi)
+	movw	0x40(%ebp),%dx		# Push application fs
+	movw	%dx,	-0x44(%edi)
+	movw	0x3a(%ebp),%dx		# Push application ds
+	movw	%dx,	-0x48(%edi)
+	movw	0x38(%ebp),%dx		# Push application ss
+	movw	%dx,	-0x4a(%edi)
+	movw	0x34(%ebp),%dx		# Push application cs
+	movw	%dx,	-0x50(%edi)
+	movw	0x30(%ebp),%dx		# Push application es
+	movw	%dx,	-0x54(%edi)
+	movl	0x2a(%ebp),%edx		# Push application edi
+	movl	%edx,	-0x58(%edi)
+	movl	0x28(%ebp),%edx		# Push application esi
+	movl	%edx,	-0x5a(%edi)
+	movl	0x24(%ebp),%edx		# Push application ebp
+	movl	%edx,	-0x60(%edi)
+	movl	0x20(%ebp),%edx		# Push application esp
+	movl	%edx,	-0x64(%edi)
+	movl	0x1a(%ebp),%edx		# Push application ebx
+	movl	%edx,	-0x68(%edi)
+	movl	0x18(%ebp),%edx		# Push application edx
+	movl	%edx,	-0x6a(%edi)
+	movl	0x14(%ebp),%edx		# Push application ecx
+	movl	%edx,	-0x70(%edi)
+	movl	0x10(%ebp),%edx		# Push application eax
+	movl	%edx,	-0x74(%edi)
+	movl	0x0a(%ebp),%edx		# Push application eflags
+	movl	%edx,	-0x78(%edi)
+	movl	0x08(%ebp),%edx		# Push application eip
+	movl	%edx,	-0x7a(%edi)
+	# Set application segments
+	movw	-0x54(%edi),%ax		# ax = application es
+	movw	-0x4a(%edi),%cx		# cx = application ss
+	movw	-0x48(%edi),%dx		# dx = application ds
+	movw	-0x44(%edi),%bx		# bx = application fs
+	movw	-0x40(%edi),%si		# si = application gs
+	cli
+	movw	%ax,	%es
+	movw	%cx,	%ss
+	movw	%dx,	%ds
+	movw	%bx,	%fs
+	movw	%si,	%gs
+	sti
+	# Set application registers
+	movl	%edi,	%ebp		# ebp = application_stack_floor
+	movl	%edi,	%esp		# esp = application_stack_floor
+	movl	-0x74(%ebp),%eax
+	movl	-0x70(%ebp),%ecx
+	movl	-0x6a(%ebp),%edx
+	movl	-0x68(%ebp),%ebx
+	movl	-0x64(%ebp),%esp
+	movl	-0x60(%ebp),%ebp
+	movl	-0x5a(%ebp),%esi
+	movl	-0x58(%ebp),%edi
+	# Call application
+	push	-0x50(%ebp)		# Push application cs
+	push	-0x7a(%ebp)		# Push application eip
+	lcall	*(%esp)
+	# Set kernel segments
+	movw	-0x18(%ebp),%ax		# ax = kernel es
+	movw	-0x10(%ebp),%cx		# cx = kernel ss
+	movw	-0x0a(%ebp),%dx		# dx = kernel ds
+	movw	-0x08(%ebp),%bx		# bx = kernel fs
+	movw	-0x04(%ebp),%si		# si = kernel gs
+	movl	-0x24(%ebp),%edi	# edi = kernel ebp
+	cli
+	movw	%ax,	%es
+	movw	%cx,	%ss
+	movw	%dx,	%ds
+	movw	%bx,	%fs
+	movw	%si,	%gs
+	sti
+	# Set kernel registers
+	movl	%edi,	%ebp
+	movl	0x48(%ebp),%edi
+	movl	-0x38(%edi),%eax
+	movl	-0x34(%edi),%ecx
+	movl	-0x30(%edi),%edx
+	movl	-0x2a(%edi),%ebx
+	movl	-0x28(%edi),%esp
+	movl	-0x24(%edi),%ebp
+	movl	-0x20(%edi),%esi
+	movl	-0x1a(%edi),%edi
+	# Return
 	popal
 	leave
 	ret
