@@ -6,6 +6,10 @@ BASE = 0x00000000;
 SECTIONS
 {
 	. = BASE;
+	.header :
+	{
+		LONG(0x00100000); /* Size of heap and stack */
+	}
 	.text :
 	{
 		crt.o(.text)
