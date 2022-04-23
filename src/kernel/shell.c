@@ -9,6 +9,13 @@
 
 typedef struct _ComHeader
 {
+	unsigned int text_base;
+	unsigned int rodata_base;
+	unsigned int data_base;
+	unsigned int bss_base;
+	unsigned int common_base;
+	unsigned int common_deletion_prevention_base;
+	unsigned int heap_and_stack_base;
 	unsigned int heap_and_stack_size;
 } ComHeader;
 
@@ -180,7 +187,14 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	ComHeader const *com_header = arguments->com_file_binary;
 	void *application_memory = malloc(arguments->com_file_size + com_header->heap_and_stack_size);
 	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
-	printf_serial("Heap and stack size = %#010.8x\n", com_header->heap_and_stack_size);
+	printf_serial("text_base = %#010.8x\n", com_header->text_base);
+	printf_serial("rodata_base = %#010.8x\n", com_header->rodata_base);
+	printf_serial("data_base = %#010.8x\n", com_header->data_base);
+	printf_serial("bss_base = %#010.8x\n", com_header->bss_base);
+	printf_serial("common_base = %#010.8x\n", com_header->common_base);
+	printf_serial("common_deletion_prevention_base = %#010.8x\n", com_header->common_deletion_prevention_base);
+	printf_serial("heap_and_stack_base = %#010.8x\n", com_header->heap_and_stack_base);
+	printf_serial("heap_and_stack_size = %#010.8x\n", com_header->heap_and_stack_size);
 	free(application_memory);
 	close_task(get_current_task());
 }
