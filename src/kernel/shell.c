@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "shell.h"
 #include "stdio.h"
+#include "string.h"
 
 typedef struct _ComHeader
 {
@@ -177,7 +178,10 @@ char **create_argv(char const *command)
 void command_task_procedure(CommandTaskArgument *arguments)
 {
 	ComHeader const *com_header = arguments->com_file_binary;
+	void *application_memory = malloc(arguments->com_file_size + com_header->heap_and_stack_size);
+	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
 	printf_serial("Heap and stack size = %#010.8x\n", com_header->heap_and_stack_size);
+	free(application_memory);
 	close_task(get_current_task());
 }
 
