@@ -199,6 +199,26 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	printf_serial("common_deletion_prevention_base = %#010.8x\n", com_header->common_deletion_prevention_base);
 	printf_serial("heap_and_stack_base = %#010.8x\n", com_header->heap_and_stack_base);
 	printf_serial("heap_and_stack_size = %#010.8x\n", com_header->heap_and_stack_size);
+	call_application
+	(
+		com_header->text_base/* eip */,
+		EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG/* eflags */,
+		0/* eax */,
+		0/* ecx */,
+		0/* ebx */,
+		0/* edx */,
+		arguments->com_file_size + com_header->heap_and_stack_size - 0x80/* esp */,
+		arguments->com_file_size + com_header->heap_and_stack_size/* ebp */,
+		0/* esi */,
+		0/* edi */,
+		data_segment/* es */,
+		executable_segment/* cs */,
+		data_segment/* ss */,
+		data_segment/* ds */,
+		data_segment/* fs */,
+		data_segment/* gs */,
+		application_memory + arguments->com_file_size + com_header->heap_and_stack_size/* application_stack_floor */
+	);
 	free_segment(data_segment);
 	free_segment(executable_segment);
 	free(application_memory);
