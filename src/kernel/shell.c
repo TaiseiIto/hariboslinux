@@ -6,6 +6,11 @@
 #include "shell.h"
 #include "stdio.h"
 
+typedef struct _ComHeader
+{
+	unsigned int heap_and_stack_size;
+} ComHeader;
+
 typedef struct _CommandLineArgument
 {
 	ChainString *chain_string;
@@ -171,9 +176,8 @@ char **create_argv(char const *command)
 
 void command_task_procedure(CommandTaskArgument *arguments)
 {
-	unsigned int code_segment = alloc_segment(arguments->com_file_binary, arguments->com_file_size, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	lcall(0, code_segment);
-	free_segment(code_segment);
+	ComHeader const *com_header = arguments->com_file_binary;
+	printf_serial("Heap and stack size = %#010.8x\n", com_header->heap_and_stack_size);
 	close_task(get_current_task());
 }
 
