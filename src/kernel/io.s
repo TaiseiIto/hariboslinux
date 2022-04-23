@@ -4,6 +4,7 @@
 # scratch registers: eax, ecx, edx
 # preserved registers: ebx, esi, edi, ebp, esp
 
+	.globl	call_application
 	.globl	cli
 	.globl	get_caller_variadic_arg
 	.globl	get_eflags
@@ -30,6 +31,7 @@
 	.globl	writel
 	.globl	writes
 
+	.type	call_application,	@function
 	.type	cli,			@function
 	.type	get_caller_variadic_arg,@function
 	.type	get_eflags,		@function
@@ -57,6 +59,87 @@
 	.type	writes,			@function
 
 	.text
+
+# void call_application
+# (
+# 	unsigned int eip;		// 0x08(%ebp)
+# 	unsigned int eflags;		// 0x0a(%ebp)
+# 	unsigned int eax;		// 0x10(%ebp)
+# 	unsigned int ecx;		// 0x14(%ebp)
+# 	unsigned int edx;		// 0x18(%ebp)
+# 	unsigned int ebx;		// 0x1a(%ebp)
+# 	unsigned int esp;		// 0x20(%ebp)
+# 	unsigned int ebp;		// 0x24(%ebp)
+# 	unsigned int esi;		// 0x28(%ebp)
+# 	unsigned int edi;		// 0x2a(%ebp)
+# 	unsigned int es;		// 0x30(%ebp)
+# 	unsigned int cs;		// 0x34(%ebp)
+# 	unsigned int ss;		// 0x38(%ebp)
+# 	unsigned int ds;		// 0x3a(%ebp)
+# 	unsigned int fs;		// 0x40(%ebp)
+# 	unsigned int gs;		// 0x44(%ebp)
+#	void *application_stack_floor;	// 0x48(%ebp)
+# );
+call_application:
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushal
+	movl	0x48(%ebp),%edi	# Application stack floor
+	# Push kernel registers to the application stack.
+	movw	%gs,	-0x04(%edi)
+	movw	%fs,	-0x08(%edi)
+	movw	%ds,	-0x0a(%edi)
+	movw	%ss,	-0x10(%edi)
+	movw	%cs,	-0x14(%edi)
+	movw	%es,	-0x18(%edi)
+	movl	%edi,	-0x1a(%edi)
+	movl	%esi,	-0x20(%edi)
+	movl	%ebp,	-0x24(%edi)
+	movl	%esp,	-0x28(%edi)
+	movl	%ebx,	-0x2a(%edi)
+	movl	%edx,	-0x30(%edi)
+	movl	%ecx,	-0x34(%edi)
+	movl	%eax,	-0x38(%edi)
+	pushf
+	popl	%eax			# Push kernel eflags
+	movl	%eax,	-0x3a(%edi)
+	# Push application registers to the application stack.
+	movw	%dx	,0x44(%ebp)	# Push application gs
+	movw	-0x40(%edi),%dx
+	movw	%dx	,0x40(%ebp)	# Push application fs
+	movw	-0x44(%edi),%dx
+	movw	%dx	,0x3a(%ebp)	# Push application ds
+	movw	-0x48(%edi),%dx
+	movw	%dx	,0x38(%ebp)	# Push application ss
+	movw	-0x4a(%edi),%dx
+	movw	%dx	,0x34(%ebp)	# Push application cs
+	movw	-0x50(%edi),%dx
+	movw	%dx	,0x30(%ebp)	# Push application es
+	movw	-0x54(%edi),%dx
+	movl	%edx	,0x2a(%ebp)	# Push application edi
+	movl	-0x58(%edi),%edx
+	movl	%edx	,0x28(%ebp)	# Push application esi
+	movl	-0x5a(%edi),%edx
+	movl	%edx	,0x24(%ebp)	# Push application ebp
+	movl	-0x60(%edi),%edx
+	movl	%edx	,0x20(%ebp)	# Push application esp
+	movl	-0x64(%edi),%edx
+	movl	%edx	,0x1a(%ebp)	# Push application ebx
+	movl	-0x68(%edi),%edx
+	movl	%edx	,0x18(%ebp)	# Push application edx
+	movl	-0x6a(%edi),%edx
+	movl	%edx	,0x14(%ebp)	# Push application ecx
+	movl	-0x70(%edi),%edx
+	movl	%edx	,0x10(%ebp)	# Push application eax
+	movl	-0x74(%edi),%edx
+	movl	%edx	,0x0a(%ebp)	# Push application eflags
+	movl	-0x78(%edi),%edx
+	movl	%edx	,0x08(%ebp)	# Push application eip
+	movl	-0x7a(%edi),%edx
+	popal
+	leave
+	ret
 
 				# // disable all interrupts
 cli:				# void cli(void);

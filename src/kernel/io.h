@@ -4,6 +4,27 @@
 #include "gdt.h"
 #include "idt.h"
 
+void call_application
+(
+	unsigned int eip;
+	unsigned int eflags;
+	unsigned int eax;
+	unsigned int ecx;
+	unsigned int edx;
+	unsigned int ebx;
+	unsigned int esp;
+	unsigned int ebp;
+	unsigned int esi;
+	unsigned int edi;
+	unsigned int es;
+	unsigned int cs;
+	unsigned int ss;
+	unsigned int ds;
+	unsigned int fs;
+	unsigned int gs;
+	void *application_stack_floor;
+);
+
 // disable all interrupts
 void cli(void);
 
