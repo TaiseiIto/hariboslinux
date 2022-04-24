@@ -98,7 +98,6 @@
 	.extern interrupt_handler0x7d
 	.extern interrupt_handler0x7e
 	.extern interrupt_handler0x7f
-	.extern interrupt_handler0x80
 	.extern interrupt_handler0x81
 	.extern interrupt_handler0x82
 	.extern interrupt_handler0x83
@@ -260,6 +259,7 @@
 	.extern slave_pic_interrupt_handler
 	.extern	stack_segment_fault_exception_handler
 	.extern sti_task_interrupt
+	.extern system_call
 	.extern	virtualization_exception_handler
 	.extern	x87_floating_point_exception_handler
 
@@ -5325,9 +5325,25 @@ interrupt_gate0x80:		# void interrupt_gate0x80(void);
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
-	call	cli_task_interrupt
-	call	interrupt_handler0x80
-	call	sti_task_interrupt
+	# Push system_call arguments
+	subl	$0x0000001c,%esp
+	movl	0x30(%esp),%edx		# Push ebp
+	movl	%edx,	0x18(%esp)
+	movl	0x28(%esp),%edx		# Push edi
+	movl	%edx,	0x14(%esp)
+	movl	0x2c(%esp),%edx		# Push esi
+	movl	%edx,	0x10(%esp)
+	movl	0x3c(%esp),%edx		# Push edx
+	movl	%edx,	0x0c(%esp)
+	movl	0x40(%esp),%edx		# Push ecx
+	movl	%edx,	0x08(%esp)
+	movl	0x38(%esp),%edx		# Push ebx
+	movl	%edx,	0x04(%esp)
+	movl	0x44(%esp),%edx		# Push eax
+	movl	%edx,	(%esp)
+	sti
+	call	system_call
+	addl	$0x0000001c,%esp
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
