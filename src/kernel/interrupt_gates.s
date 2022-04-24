@@ -795,6 +795,9 @@ interrupt_gate0x00:		# void interrupt_gate0x00(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	devide_by_zero_exception_handler
@@ -828,6 +831,9 @@ interrupt_gate0x01:		# void interrupt_gate0x01(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	debug_exception_handler
@@ -861,6 +867,9 @@ interrupt_gate0x02:		# void interrupt_gate0x02(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	non_maskable_interrupt_handler
@@ -894,6 +903,9 @@ interrupt_gate0x03:		# void interrupt_gate0x03(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	breakpoint_exception_handler
@@ -927,6 +939,9 @@ interrupt_gate0x04:		# void interrupt_gate0x04(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	overflow_exception_handler
@@ -960,6 +975,9 @@ interrupt_gate0x05:		# void interrupt_gate0x05(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	bound_range_exceeded_exception_handler
@@ -993,6 +1011,9 @@ interrupt_gate0x06:		# void interrupt_gate0x06(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	invalid_opcode_exception_handler
@@ -1026,6 +1047,9 @@ interrupt_gate0x07:		# void interrupt_gate0x07(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	device_not_available_exception_handler
@@ -1059,6 +1083,9 @@ interrupt_gate0x08:		# void interrupt_gate0x08(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	double_fault_exception_handler
@@ -1092,6 +1119,9 @@ interrupt_gate0x09:		# void interrupt_gate0x09(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	coprocessor_segment_overrun_exception_handler
@@ -1125,6 +1155,9 @@ interrupt_gate0x0a:		# void interrupt_gate0x0a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	invalid_TSS_exception_handler
@@ -1158,6 +1191,9 @@ interrupt_gate0x0b:		# void interrupt_gate0x0b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	segment_not_present_exception_handler
@@ -1191,6 +1227,9 @@ interrupt_gate0x0c:		# void interrupt_gate0x0c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	stack_segment_fault_exception_handler
@@ -1224,6 +1263,9 @@ interrupt_gate0x0d:		# void interrupt_gate0x0d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	general_protection_fault_exception_handler
@@ -1257,6 +1299,9 @@ interrupt_gate0x0e:		# void interrupt_gate0x0e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	page_fault_exception_handler
@@ -1290,6 +1335,9 @@ interrupt_gate0x0f:		# void interrupt_gate0x0e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x00
@@ -1323,6 +1371,9 @@ interrupt_gate0x10:		# void interrupt_gate0x10(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	x87_floating_point_exception_handler
@@ -1356,6 +1407,9 @@ interrupt_gate0x11:		# void interrupt_gate0x11(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	alignment_check_exception_handler
@@ -1389,6 +1443,9 @@ interrupt_gate0x12:		# void interrupt_gate0x12(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	machine_check_exception_handler
@@ -1422,6 +1479,9 @@ interrupt_gate0x13:		# void interrupt_gate0x13(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	simd_floating_point_exception_handler
@@ -1455,6 +1515,9 @@ interrupt_gate0x14:		# void interrupt_gate0x14(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	virtualization_exception_handler
@@ -1488,6 +1551,9 @@ interrupt_gate0x15:		# void interrupt_gate0x15(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x01
@@ -1521,6 +1587,9 @@ interrupt_gate0x16:		# void interrupt_gate0x16(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x02
@@ -1554,6 +1623,9 @@ interrupt_gate0x17:		# void interrupt_gate0x17(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x03
@@ -1587,6 +1659,9 @@ interrupt_gate0x18:		# void interrupt_gate0x18(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x04
@@ -1620,6 +1695,9 @@ interrupt_gate0x19:		# void interrupt_gate0x19(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x05
@@ -1653,6 +1731,9 @@ interrupt_gate0x1a:		# void interrupt_gate0x1a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x06
@@ -1686,6 +1767,9 @@ interrupt_gate0x1b:		# void interrupt_gate0x1b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x07
@@ -1719,6 +1803,9 @@ interrupt_gate0x1c:		# void interrupt_gate0x1c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x08
@@ -1752,6 +1839,9 @@ interrupt_gate0x1d:		# void interrupt_gate0x1d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x09
@@ -1785,6 +1875,9 @@ interrupt_gate0x1e:		# void interrupt_gate0x1e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	security_exception_handler
@@ -1818,6 +1911,9 @@ interrupt_gate0x1f:		# void interrupt_gate0x1f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	reserved_exception_handler0x0a
@@ -1851,6 +1947,9 @@ interrupt_gate0x20:		# void interrupt_gate0x20(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	pit_interrupt_handler
@@ -1884,6 +1983,9 @@ interrupt_gate0x21:		# void interrupt_gate0x21(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	keyboard_interrupt_handler
@@ -1917,6 +2019,9 @@ interrupt_gate0x22:		# void interrupt_gate0x22(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	slave_pic_interrupt_handler
@@ -1950,6 +2055,9 @@ interrupt_gate0x23:		# void interrupt_gate0x23(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	com2_interrupt_handler
@@ -1983,6 +2091,9 @@ interrupt_gate0x24:		# void interrupt_gate0x24(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	com1_interrupt_handler
@@ -2016,6 +2127,9 @@ interrupt_gate0x25:		# void interrupt_gate0x25(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	lpt2_interrupt_handler
@@ -2049,6 +2163,9 @@ interrupt_gate0x26:		# void interrupt_gate0x26(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	disk_interrupt_handler
@@ -2082,6 +2199,9 @@ interrupt_gate0x27:		# void interrupt_gate0x27(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	lpt1_interrupt_handler
@@ -2115,6 +2235,9 @@ interrupt_gate0x28:		# void interrupt_gate0x28(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	rtc_interrupt_handler
@@ -2147,6 +2270,9 @@ interrupt_gate0x29:		# void interrupt_gate0x29(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	peripheral0_interrupt_handler
@@ -2180,6 +2306,9 @@ interrupt_gate0x2a:		# void interrupt_gate0x2a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	peripheral1_interrupt_handler
@@ -2213,6 +2342,9 @@ interrupt_gate0x2b:		# void interrupt_gate0x2b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	peripheral2_interrupt_handler
@@ -2246,6 +2378,9 @@ interrupt_gate0x2c:		# void interrupt_gate0x2c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	mouse_interrupt_handler
@@ -2279,6 +2414,9 @@ interrupt_gate0x2d:		# void interrupt_gate0x2d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	fpu_error_exception_handler
@@ -2312,6 +2450,9 @@ interrupt_gate0x2e:		# void interrupt_gate0x2e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	primary_ATA_hard_disk_interrupt_handler
@@ -2345,6 +2486,9 @@ interrupt_gate0x2f:		# void interrupt_gate0x2f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	secondary_ATA_hard_disk_interrupt_handler
@@ -2377,6 +2521,9 @@ interrupt_gate0x30:		# void interrupt_gate0x30(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x30
@@ -2409,6 +2556,9 @@ interrupt_gate0x31:		# void interrupt_gate0x31(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x31
@@ -2441,6 +2591,9 @@ interrupt_gate0x32:		# void interrupt_gate0x32(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x32
@@ -2473,6 +2626,9 @@ interrupt_gate0x33:		# void interrupt_gate0x33(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x33
@@ -2505,6 +2661,9 @@ interrupt_gate0x34:		# void interrupt_gate0x34(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x34
@@ -2537,6 +2696,9 @@ interrupt_gate0x35:		# void interrupt_gate0x35(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x35
@@ -2569,6 +2731,9 @@ interrupt_gate0x36:		# void interrupt_gate0x36(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x36
@@ -2601,6 +2766,9 @@ interrupt_gate0x37:		# void interrupt_gate0x37(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x37
@@ -2633,6 +2801,9 @@ interrupt_gate0x38:		# void interrupt_gate0x38(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x38
@@ -2665,6 +2836,9 @@ interrupt_gate0x39:		# void interrupt_gate0x39(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x39
@@ -2697,6 +2871,9 @@ interrupt_gate0x3a:		# void interrupt_gate0x3a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x3a
@@ -2729,6 +2906,9 @@ interrupt_gate0x3b:		# void interrupt_gate0x3b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x3b
@@ -2761,6 +2941,9 @@ interrupt_gate0x3c:		# void interrupt_gate0x3c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x3c
@@ -2793,6 +2976,9 @@ interrupt_gate0x3d:		# void interrupt_gate0x3d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x3d
@@ -2825,6 +3011,9 @@ interrupt_gate0x3e:		# void interrupt_gate0x3e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x3e
@@ -2857,6 +3046,9 @@ interrupt_gate0x3f:		# void interrupt_gate0x3f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x3f
@@ -2889,6 +3081,9 @@ interrupt_gate0x40:		# void interrupt_gate0x40(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x40
@@ -2921,6 +3116,9 @@ interrupt_gate0x41:		# void interrupt_gate0x41(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x41
@@ -2953,6 +3151,9 @@ interrupt_gate0x42:		# void interrupt_gate0x42(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x42
@@ -2985,6 +3186,9 @@ interrupt_gate0x43:		# void interrupt_gate0x43(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x43
@@ -3017,6 +3221,9 @@ interrupt_gate0x44:		# void interrupt_gate0x44(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x44
@@ -3049,6 +3256,9 @@ interrupt_gate0x45:		# void interrupt_gate0x45(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x45
@@ -3081,6 +3291,9 @@ interrupt_gate0x46:		# void interrupt_gate0x46(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x46
@@ -3113,6 +3326,9 @@ interrupt_gate0x47:		# void interrupt_gate0x47(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x47
@@ -3145,6 +3361,9 @@ interrupt_gate0x48:		# void interrupt_gate0x48(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x48
@@ -3177,6 +3396,9 @@ interrupt_gate0x49:		# void interrupt_gate0x49(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x49
@@ -3209,6 +3431,9 @@ interrupt_gate0x4a:		# void interrupt_gate0x4a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x4a
@@ -3241,6 +3466,9 @@ interrupt_gate0x4b:		# void interrupt_gate0x4b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x4b
@@ -3273,6 +3501,9 @@ interrupt_gate0x4c:		# void interrupt_gate0x4c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x4c
@@ -3305,6 +3536,9 @@ interrupt_gate0x4d:		# void interrupt_gate0x4d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x4d
@@ -3337,6 +3571,9 @@ interrupt_gate0x4e:		# void interrupt_gate0x4e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x4e
@@ -3369,6 +3606,9 @@ interrupt_gate0x4f:		# void interrupt_gate0x4f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x4f
@@ -3401,6 +3641,9 @@ interrupt_gate0x50:		# void interrupt_gate0x50(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x50
@@ -3433,6 +3676,9 @@ interrupt_gate0x51:		# void interrupt_gate0x51(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x51
@@ -3465,6 +3711,9 @@ interrupt_gate0x52:		# void interrupt_gate0x52(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x52
@@ -3497,6 +3746,9 @@ interrupt_gate0x53:		# void interrupt_gate0x53(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x53
@@ -3529,6 +3781,9 @@ interrupt_gate0x54:		# void interrupt_gate0x54(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x54
@@ -3561,6 +3816,9 @@ interrupt_gate0x55:		# void interrupt_gate0x55(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x55
@@ -3593,6 +3851,9 @@ interrupt_gate0x56:		# void interrupt_gate0x56(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x56
@@ -3625,6 +3886,9 @@ interrupt_gate0x57:		# void interrupt_gate0x57(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x57
@@ -3657,6 +3921,9 @@ interrupt_gate0x58:		# void interrupt_gate0x58(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x58
@@ -3689,6 +3956,9 @@ interrupt_gate0x59:		# void interrupt_gate0x59(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x59
@@ -3721,6 +3991,9 @@ interrupt_gate0x5a:		# void interrupt_gate0x5a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x5a
@@ -3753,6 +4026,9 @@ interrupt_gate0x5b:		# void interrupt_gate0x5b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x5b
@@ -3785,6 +4061,9 @@ interrupt_gate0x5c:		# void interrupt_gate0x5c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x5c
@@ -3817,6 +4096,9 @@ interrupt_gate0x5d:		# void interrupt_gate0x5d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x5d
@@ -3849,6 +4131,9 @@ interrupt_gate0x5e:		# void interrupt_gate0x5e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x5e
@@ -3881,6 +4166,9 @@ interrupt_gate0x5f:		# void interrupt_gate0x5f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x5f
@@ -3913,6 +4201,9 @@ interrupt_gate0x60:		# void interrupt_gate0x60(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x60
@@ -3945,6 +4236,9 @@ interrupt_gate0x61:		# void interrupt_gate0x61(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x61
@@ -3977,6 +4271,9 @@ interrupt_gate0x62:		# void interrupt_gate0x62(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x62
@@ -4009,6 +4306,9 @@ interrupt_gate0x63:		# void interrupt_gate0x63(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x63
@@ -4041,6 +4341,9 @@ interrupt_gate0x64:		# void interrupt_gate0x64(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x64
@@ -4073,6 +4376,9 @@ interrupt_gate0x65:		# void interrupt_gate0x65(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x65
@@ -4105,6 +4411,9 @@ interrupt_gate0x66:		# void interrupt_gate0x66(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x66
@@ -4137,6 +4446,9 @@ interrupt_gate0x67:		# void interrupt_gate0x67(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x67
@@ -4169,6 +4481,9 @@ interrupt_gate0x68:		# void interrupt_gate0x68(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x68
@@ -4201,6 +4516,9 @@ interrupt_gate0x69:		# void interrupt_gate0x69(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x69
@@ -4233,6 +4551,9 @@ interrupt_gate0x6a:		# void interrupt_gate0x6a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x6a
@@ -4265,6 +4586,9 @@ interrupt_gate0x6b:		# void interrupt_gate0x6b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x6b
@@ -4297,6 +4621,9 @@ interrupt_gate0x6c:		# void interrupt_gate0x6c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x6c
@@ -4329,6 +4656,9 @@ interrupt_gate0x6d:		# void interrupt_gate0x6d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x6d
@@ -4361,6 +4691,9 @@ interrupt_gate0x6e:		# void interrupt_gate0x6e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x6e
@@ -4393,6 +4726,9 @@ interrupt_gate0x6f:		# void interrupt_gate0x6f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x6f
@@ -4425,6 +4761,9 @@ interrupt_gate0x70:		# void interrupt_gate0x70(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x70
@@ -4457,6 +4796,9 @@ interrupt_gate0x71:		# void interrupt_gate0x71(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x71
@@ -4489,6 +4831,9 @@ interrupt_gate0x72:		# void interrupt_gate0x72(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x72
@@ -4521,6 +4866,9 @@ interrupt_gate0x73:		# void interrupt_gate0x73(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x73
@@ -4553,6 +4901,9 @@ interrupt_gate0x74:		# void interrupt_gate0x74(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x74
@@ -4585,6 +4936,9 @@ interrupt_gate0x75:		# void interrupt_gate0x75(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x75
@@ -4617,6 +4971,9 @@ interrupt_gate0x76:		# void interrupt_gate0x76(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x76
@@ -4649,6 +5006,9 @@ interrupt_gate0x77:		# void interrupt_gate0x77(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x77
@@ -4681,6 +5041,9 @@ interrupt_gate0x78:		# void interrupt_gate0x78(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x78
@@ -4713,6 +5076,9 @@ interrupt_gate0x79:		# void interrupt_gate0x79(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x79
@@ -4745,6 +5111,9 @@ interrupt_gate0x7a:		# void interrupt_gate0x7a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x7a
@@ -4777,6 +5146,9 @@ interrupt_gate0x7b:		# void interrupt_gate0x7b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x7b
@@ -4809,6 +5181,9 @@ interrupt_gate0x7c:		# void interrupt_gate0x7c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x7c
@@ -4841,6 +5216,9 @@ interrupt_gate0x7d:		# void interrupt_gate0x7d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x7d
@@ -4873,6 +5251,9 @@ interrupt_gate0x7e:		# void interrupt_gate0x7e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x7e
@@ -4905,6 +5286,9 @@ interrupt_gate0x7f:		# void interrupt_gate0x7f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x7f
@@ -4937,6 +5321,9 @@ interrupt_gate0x80:		# void interrupt_gate0x80(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x80
@@ -4969,6 +5356,9 @@ interrupt_gate0x81:		# void interrupt_gate0x81(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x81
@@ -5001,6 +5391,9 @@ interrupt_gate0x82:		# void interrupt_gate0x82(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x82
@@ -5033,6 +5426,9 @@ interrupt_gate0x83:		# void interrupt_gate0x83(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x83
@@ -5065,6 +5461,9 @@ interrupt_gate0x84:		# void interrupt_gate0x84(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x84
@@ -5097,6 +5496,9 @@ interrupt_gate0x85:		# void interrupt_gate0x85(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x85
@@ -5129,6 +5531,9 @@ interrupt_gate0x86:		# void interrupt_gate0x86(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x86
@@ -5161,6 +5566,9 @@ interrupt_gate0x87:		# void interrupt_gate0x87(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x87
@@ -5193,6 +5601,9 @@ interrupt_gate0x88:		# void interrupt_gate0x88(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x88
@@ -5225,6 +5636,9 @@ interrupt_gate0x89:		# void interrupt_gate0x89(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x89
@@ -5257,6 +5671,9 @@ interrupt_gate0x8a:		# void interrupt_gate0x8a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x8a
@@ -5289,6 +5706,9 @@ interrupt_gate0x8b:		# void interrupt_gate0x8b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x8b
@@ -5321,6 +5741,9 @@ interrupt_gate0x8c:		# void interrupt_gate0x8c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x8c
@@ -5353,6 +5776,9 @@ interrupt_gate0x8d:		# void interrupt_gate0x8d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x8d
@@ -5385,6 +5811,9 @@ interrupt_gate0x8e:		# void interrupt_gate0x8e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x8e
@@ -5417,6 +5846,9 @@ interrupt_gate0x8f:		# void interrupt_gate0x8f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x8f
@@ -5449,6 +5881,9 @@ interrupt_gate0x90:		# void interrupt_gate0x90(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x90
@@ -5481,6 +5916,9 @@ interrupt_gate0x91:		# void interrupt_gate0x91(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x91
@@ -5513,6 +5951,9 @@ interrupt_gate0x92:		# void interrupt_gate0x92(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x92
@@ -5545,6 +5986,9 @@ interrupt_gate0x93:		# void interrupt_gate0x93(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x93
@@ -5577,6 +6021,9 @@ interrupt_gate0x94:		# void interrupt_gate0x94(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x94
@@ -5609,6 +6056,9 @@ interrupt_gate0x95:		# void interrupt_gate0x95(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x95
@@ -5641,6 +6091,9 @@ interrupt_gate0x96:		# void interrupt_gate0x96(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x96
@@ -5673,6 +6126,9 @@ interrupt_gate0x97:		# void interrupt_gate0x97(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x97
@@ -5705,6 +6161,9 @@ interrupt_gate0x98:		# void interrupt_gate0x98(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x98
@@ -5737,6 +6196,9 @@ interrupt_gate0x99:		# void interrupt_gate0x99(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x99
@@ -5769,6 +6231,9 @@ interrupt_gate0x9a:		# void interrupt_gate0x9a(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x9a
@@ -5801,6 +6266,9 @@ interrupt_gate0x9b:		# void interrupt_gate0x9b(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x9b
@@ -5833,6 +6301,9 @@ interrupt_gate0x9c:		# void interrupt_gate0x9c(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x9c
@@ -5865,6 +6336,9 @@ interrupt_gate0x9d:		# void interrupt_gate0x9d(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x9d
@@ -5897,6 +6371,9 @@ interrupt_gate0x9e:		# void interrupt_gate0x9e(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x9e
@@ -5929,6 +6406,9 @@ interrupt_gate0x9f:		# void interrupt_gate0x9f(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0x9f
@@ -5961,6 +6441,9 @@ interrupt_gate0xa0:		# void interrupt_gate0xa0(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa0
@@ -5993,6 +6476,9 @@ interrupt_gate0xa1:		# void interrupt_gate0xa1(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa1
@@ -6025,6 +6511,9 @@ interrupt_gate0xa2:		# void interrupt_gate0xa2(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa2
@@ -6057,6 +6546,9 @@ interrupt_gate0xa3:		# void interrupt_gate0xa3(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa3
@@ -6089,6 +6581,9 @@ interrupt_gate0xa4:		# void interrupt_gate0xa4(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa4
@@ -6121,6 +6616,9 @@ interrupt_gate0xa5:		# void interrupt_gate0xa5(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa5
@@ -6153,6 +6651,9 @@ interrupt_gate0xa6:		# void interrupt_gate0xa6(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa6
@@ -6185,6 +6686,9 @@ interrupt_gate0xa7:		# void interrupt_gate0xa7(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa7
@@ -6217,6 +6721,9 @@ interrupt_gate0xa8:		# void interrupt_gate0xa8(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa8
@@ -6249,6 +6756,9 @@ interrupt_gate0xa9:		# void interrupt_gate0xa9(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xa9
@@ -6281,6 +6791,9 @@ interrupt_gate0xaa:		# void interrupt_gate0xaa(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xaa
@@ -6313,6 +6826,9 @@ interrupt_gate0xab:		# void interrupt_gate0xab(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xab
@@ -6345,6 +6861,9 @@ interrupt_gate0xac:		# void interrupt_gate0xac(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xac
@@ -6377,6 +6896,9 @@ interrupt_gate0xad:		# void interrupt_gate0xad(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xad
@@ -6409,6 +6931,9 @@ interrupt_gate0xae:		# void interrupt_gate0xae(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xae
@@ -6441,6 +6966,9 @@ interrupt_gate0xaf:		# void interrupt_gate0xaf(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xaf
@@ -6473,6 +7001,9 @@ interrupt_gate0xb0:		# void interrupt_gate0xb0(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb0
@@ -6505,6 +7036,9 @@ interrupt_gate0xb1:		# void interrupt_gate0xb1(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb1
@@ -6537,6 +7071,9 @@ interrupt_gate0xb2:		# void interrupt_gate0xb2(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb2
@@ -6569,6 +7106,9 @@ interrupt_gate0xb3:		# void interrupt_gate0xb3(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb3
@@ -6601,6 +7141,9 @@ interrupt_gate0xb4:		# void interrupt_gate0xb4(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb4
@@ -6633,6 +7176,9 @@ interrupt_gate0xb5:		# void interrupt_gate0xb5(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb5
@@ -6665,6 +7211,9 @@ interrupt_gate0xb6:		# void interrupt_gate0xb6(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb6
@@ -6697,6 +7246,9 @@ interrupt_gate0xb7:		# void interrupt_gate0xb7(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb7
@@ -6729,6 +7281,9 @@ interrupt_gate0xb8:		# void interrupt_gate0xb8(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb8
@@ -6761,6 +7316,9 @@ interrupt_gate0xb9:		# void interrupt_gate0xb9(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xb9
@@ -6793,6 +7351,9 @@ interrupt_gate0xba:		# void interrupt_gate0xba(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xba
@@ -6825,6 +7386,9 @@ interrupt_gate0xbb:		# void interrupt_gate0xbb(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xbb
@@ -6857,6 +7421,9 @@ interrupt_gate0xbc:		# void interrupt_gate0xbc(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xbc
@@ -6889,6 +7456,9 @@ interrupt_gate0xbd:		# void interrupt_gate0xbd(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xbd
@@ -6921,6 +7491,9 @@ interrupt_gate0xbe:		# void interrupt_gate0xbe(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xbe
@@ -6953,6 +7526,9 @@ interrupt_gate0xbf:		# void interrupt_gate0xbf(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xbf
@@ -6985,6 +7561,9 @@ interrupt_gate0xc0:		# void interrupt_gate0xc0(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc0
@@ -7017,6 +7596,9 @@ interrupt_gate0xc1:		# void interrupt_gate0xc1(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc1
@@ -7049,6 +7631,9 @@ interrupt_gate0xc2:		# void interrupt_gate0xc2(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc2
@@ -7081,6 +7666,9 @@ interrupt_gate0xc3:		# void interrupt_gate0xc3(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc3
@@ -7113,6 +7701,9 @@ interrupt_gate0xc4:		# void interrupt_gate0xc4(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc4
@@ -7145,6 +7736,9 @@ interrupt_gate0xc5:		# void interrupt_gate0xc5(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc5
@@ -7177,6 +7771,9 @@ interrupt_gate0xc6:		# void interrupt_gate0xc6(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc6
@@ -7209,6 +7806,9 @@ interrupt_gate0xc7:		# void interrupt_gate0xc7(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc7
@@ -7241,6 +7841,9 @@ interrupt_gate0xc8:		# void interrupt_gate0xc8(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc8
@@ -7273,6 +7876,9 @@ interrupt_gate0xc9:		# void interrupt_gate0xc9(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xc9
@@ -7305,6 +7911,9 @@ interrupt_gate0xca:		# void interrupt_gate0xca(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xca
@@ -7337,6 +7946,9 @@ interrupt_gate0xcb:		# void interrupt_gate0xcb(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xcb
@@ -7369,6 +7981,9 @@ interrupt_gate0xcc:		# void interrupt_gate0xcc(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xcc
@@ -7401,6 +8016,9 @@ interrupt_gate0xcd:		# void interrupt_gate0xcd(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xcd
@@ -7433,6 +8051,9 @@ interrupt_gate0xce:		# void interrupt_gate0xce(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xce
@@ -7465,6 +8086,9 @@ interrupt_gate0xcf:		# void interrupt_gate0xcf(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xcf
@@ -7497,6 +8121,9 @@ interrupt_gate0xd0:		# void interrupt_gate0xd0(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd0
@@ -7529,6 +8156,9 @@ interrupt_gate0xd1:		# void interrupt_gate0xd1(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd1
@@ -7561,6 +8191,9 @@ interrupt_gate0xd2:		# void interrupt_gate0xd2(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd2
@@ -7593,6 +8226,9 @@ interrupt_gate0xd3:		# void interrupt_gate0xd3(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd3
@@ -7625,6 +8261,9 @@ interrupt_gate0xd4:		# void interrupt_gate0xd4(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd4
@@ -7657,6 +8296,9 @@ interrupt_gate0xd5:		# void interrupt_gate0xd5(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd5
@@ -7689,6 +8331,9 @@ interrupt_gate0xd6:		# void interrupt_gate0xd6(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd6
@@ -7721,6 +8366,9 @@ interrupt_gate0xd7:		# void interrupt_gate0xd7(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd7
@@ -7753,6 +8401,9 @@ interrupt_gate0xd8:		# void interrupt_gate0xd8(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd8
@@ -7785,6 +8436,9 @@ interrupt_gate0xd9:		# void interrupt_gate0xd9(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xd9
@@ -7817,6 +8471,9 @@ interrupt_gate0xda:		# void interrupt_gate0xda(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xda
@@ -7849,6 +8506,9 @@ interrupt_gate0xdb:		# void interrupt_gate0xdb(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xdb
@@ -7881,6 +8541,9 @@ interrupt_gate0xdc:		# void interrupt_gate0xdc(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xdc
@@ -7913,6 +8576,9 @@ interrupt_gate0xdd:		# void interrupt_gate0xdd(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xdd
@@ -7945,6 +8611,9 @@ interrupt_gate0xde:		# void interrupt_gate0xde(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xde
@@ -7977,6 +8646,9 @@ interrupt_gate0xdf:		# void interrupt_gate0xdf(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xdf
@@ -8009,6 +8681,9 @@ interrupt_gate0xe0:		# void interrupt_gate0xe0(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe0
@@ -8041,6 +8716,9 @@ interrupt_gate0xe1:		# void interrupt_gate0xe1(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe1
@@ -8073,6 +8751,9 @@ interrupt_gate0xe2:		# void interrupt_gate0xe2(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe2
@@ -8105,6 +8786,9 @@ interrupt_gate0xe3:		# void interrupt_gate0xe3(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe3
@@ -8137,6 +8821,9 @@ interrupt_gate0xe4:		# void interrupt_gate0xe4(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe4
@@ -8169,6 +8856,9 @@ interrupt_gate0xe5:		# void interrupt_gate0xe5(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe5
@@ -8201,6 +8891,9 @@ interrupt_gate0xe6:		# void interrupt_gate0xe6(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe6
@@ -8233,6 +8926,9 @@ interrupt_gate0xe7:		# void interrupt_gate0xe7(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe7
@@ -8265,6 +8961,9 @@ interrupt_gate0xe8:		# void interrupt_gate0xe8(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe8
@@ -8297,6 +8996,9 @@ interrupt_gate0xe9:		# void interrupt_gate0xe9(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xe9
@@ -8329,6 +9031,9 @@ interrupt_gate0xea:		# void interrupt_gate0xea(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xea
@@ -8361,6 +9066,9 @@ interrupt_gate0xeb:		# void interrupt_gate0xeb(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xeb
@@ -8393,6 +9101,9 @@ interrupt_gate0xec:		# void interrupt_gate0xec(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xec
@@ -8425,6 +9136,9 @@ interrupt_gate0xed:		# void interrupt_gate0xed(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xed
@@ -8457,6 +9171,9 @@ interrupt_gate0xee:		# void interrupt_gate0xee(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xee
@@ -8489,6 +9206,9 @@ interrupt_gate0xef:		# void interrupt_gate0xef(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xef
@@ -8521,6 +9241,9 @@ interrupt_gate0xf0:		# void interrupt_gate0xf0(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf0
@@ -8553,6 +9276,9 @@ interrupt_gate0xf1:		# void interrupt_gate0xf1(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf1
@@ -8585,6 +9311,9 @@ interrupt_gate0xf2:		# void interrupt_gate0xf2(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf2
@@ -8617,6 +9346,9 @@ interrupt_gate0xf3:		# void interrupt_gate0xf3(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf3
@@ -8649,6 +9381,9 @@ interrupt_gate0xf4:		# void interrupt_gate0xf4(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf4
@@ -8681,6 +9416,9 @@ interrupt_gate0xf5:		# void interrupt_gate0xf5(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf5
@@ -8713,6 +9451,9 @@ interrupt_gate0xf6:		# void interrupt_gate0xf6(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf6
@@ -8745,6 +9486,9 @@ interrupt_gate0xf7:		# void interrupt_gate0xf7(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf7
@@ -8777,6 +9521,9 @@ interrupt_gate0xf8:		# void interrupt_gate0xf8(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf8
@@ -8809,6 +9556,9 @@ interrupt_gate0xf9:		# void interrupt_gate0xf9(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xf9
@@ -8841,6 +9591,9 @@ interrupt_gate0xfa:		# void interrupt_gate0xfa(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xfa
@@ -8873,6 +9626,9 @@ interrupt_gate0xfb:		# void interrupt_gate0xfb(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xfb
@@ -8905,6 +9661,9 @@ interrupt_gate0xfc:		# void interrupt_gate0xfc(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xfc
@@ -8937,6 +9696,9 @@ interrupt_gate0xfd:		# void interrupt_gate0xfd(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xfd
@@ -8969,6 +9731,9 @@ interrupt_gate0xfe:		# void interrupt_gate0xfe(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xfe
@@ -9001,6 +9766,9 @@ interrupt_gate0xff:		# void interrupt_gate0xff(void);
 	pushl	%edx
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
+	movw	%dx	,%es
+	movw	%dx	,%fs
+	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
 	call	interrupt_handler0xff
