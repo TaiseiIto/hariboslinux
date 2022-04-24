@@ -191,13 +191,14 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
 	data_segment = alloc_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	executable_segment = alloc_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
-	printf_serial("text_base = %#010.8x\n", com_header->text_base);
-	printf_serial("rodata_base = %#010.8x\n", com_header->rodata_base);
-	printf_serial("data_base = %#010.8x\n", com_header->data_base);
-	printf_serial("bss_base = %#010.8x\n", com_header->bss_base);
-	printf_serial("common_base = %#010.8x\n", com_header->common_base);
-	printf_serial("common_deletion_prevention_base = %#010.8x\n", com_header->common_deletion_prevention_base);
-	printf_serial("heap_and_stack_base = %#010.8x\n", com_header->heap_and_stack_base);
+	printf_serial("application_memory = %p\n", application_memory);
+	printf_serial("text_base = %p\n", com_header->text_base);
+	printf_serial("rodata_base = %p\n", com_header->rodata_base);
+	printf_serial("data_base = %p\n", com_header->data_base);
+	printf_serial("bss_base = %p\n", com_header->bss_base);
+	printf_serial("common_base = %p\n", com_header->common_base);
+	printf_serial("common_deletion_prevention_base = %p\n", com_header->common_deletion_prevention_base);
+	printf_serial("heap_and_stack_base = %p\n", com_header->heap_and_stack_base);
 	printf_serial("heap_and_stack_size = %#010.8x\n", com_header->heap_and_stack_size);
 	call_application
 	(
