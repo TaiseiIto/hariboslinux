@@ -100,7 +100,7 @@ unsigned short alloc_segment(void *base, unsigned int size, unsigned char access
 		segment_descriptor->limit_low = (unsigned short)(limit & 0x0000ffff);
 		segment_descriptor->limit_high |= (unsigned char)(limit >> 16 & 0x0000000f);
 		allow_switch_task();
-		return (unsigned short)((unsigned int)segment_descriptor - (unsigned int)GDT_ADDR);
+		return (unsigned short)((unsigned int)segment_descriptor - (unsigned int)GDT_ADDR) + (access_right & SEGMENT_DESCRIPTOR_PRIVILEGE ? 3 : 0);
 	}
 	allow_switch_task();
 	// unused segment not found
