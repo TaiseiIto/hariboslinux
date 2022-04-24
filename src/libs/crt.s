@@ -15,9 +15,27 @@
 
 _start:
 0:
+	# Initialize segments
+	popl	%gs
+	popl	%fs
+	popl	%ds
+	popl	%es
+	# Initialize registers
+	popfl
+	popal
+	# Push registers
+	pushal
+	pushfl
+	# Push segments
+	pushl	%es
+	pushl	%ds
+	pushl	%fs
+	pushl	%gs
+	# Call main
 	pushl	%ebp
 	movl	%esp,	%ebp
 	call	main
+	# Return to kernel
 	leave
-	lret
+	ret
 

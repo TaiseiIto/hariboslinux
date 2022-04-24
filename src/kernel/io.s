@@ -99,8 +99,6 @@ call_application:
 	movw	%ss,0x08(%edi)
 	# Push application registers to application stack
 	movl	0x48(%ebp),%edi		# edi = application_stack_floor
-	movl	0x0c(%ebp),%edx		# Push application eflags
-	movl	%edx,	-0x04(%edi)
 	movl	0x10(%ebp),%edx		# Push application eax
 	movl	%edx,	-0x08(%edi)
 	movl	0x14(%ebp),%edx		# Push application ecx
@@ -117,6 +115,8 @@ call_application:
 	movl	%edx,	-0x20(%edi)
 	movl	0x2c(%ebp),%edx		# Push application edi
 	movl	%edx,	-0x24(%edi)
+	movl	0x0c(%ebp),%edx		# Push application eflags
+	movl	%edx,	-0x04(%edi)
 	# Push application segments except cs and ss to application stack
 	movl	0x30(%ebp),%edx		# Push application es
 	movl	%edx,	-0x28(%edi)

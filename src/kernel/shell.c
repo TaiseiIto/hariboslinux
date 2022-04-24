@@ -207,7 +207,7 @@ void command_task_procedure(CommandTaskArgument *arguments)
 		0/* ecx */,
 		0/* ebx */,
 		0/* edx */,
-		arguments->com_file_size + com_header->heap_and_stack_size - 0x80/* esp */,
+		arguments->com_file_size + com_header->heap_and_stack_size - 0x34/* esp */,
 		arguments->com_file_size + com_header->heap_and_stack_size/* ebp */,
 		0/* esi */,
 		0/* edi */,
