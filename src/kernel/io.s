@@ -128,11 +128,11 @@ call_application:
 	movl	%edx,	-0x34(%edi)
 	# Return to application
 	movl	0x38(%ebp),%edx		# Push application ss to kernel stack
-	orl	0x00000003,%edx
+	orl	$0x00000003,%edx
 	pushl	%edx
 	pushl	0x20(%ebp)		# Push application esp to kernel stack
 	movl	0x34(%ebp),%edx		# Push application cs to kernel stack
-	orl	0x00000003,%edx
+	orl	$0x00000003,%edx
 	pushl	%edx
 	pushl	0x08(%ebp)		# Push application eip to kernel stack
 	lret
