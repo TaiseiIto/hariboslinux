@@ -62,31 +62,36 @@
 
 # void call_application
 # (
-# 	unsigned int eip;		// 0x08(%ebp)
-# 	unsigned int eflags;		// 0x0c(%ebp)
-# 	unsigned int eax;		// 0x10(%ebp)
-# 	unsigned int ecx;		// 0x14(%ebp)
-# 	unsigned int edx;		// 0x18(%ebp)
-# 	unsigned int ebx;		// 0x1c(%ebp)
-# 	unsigned int esp;		// 0x20(%ebp)
-# 	unsigned int ebp;		// 0x24(%ebp)
-# 	unsigned int esi;		// 0x28(%ebp)
-# 	unsigned int edi;		// 0x2c(%ebp)
-# 	unsigned int es;		// 0x30(%ebp)
-# 	unsigned int cs;		// 0x34(%ebp)
-# 	unsigned int ss;		// 0x38(%ebp)
-# 	unsigned int ds;		// 0x3c(%ebp)
-# 	unsigned int fs;		// 0x40(%ebp)
-# 	unsigned int gs;		// 0x44(%ebp)
-#	void *application_stack_floor;	// 0x48(%ebp)
+# 	unsigned int eip;				// 0x08(%ebp)
+# 	unsigned int eflags;				// 0x0c(%ebp)
+# 	unsigned int eax;				// 0x10(%ebp)
+# 	unsigned int ecx;				// 0x14(%ebp)
+# 	unsigned int edx;				// 0x18(%ebp)
+# 	unsigned int ebx;				// 0x1c(%ebp)
+# 	unsigned int esp;				// 0x20(%ebp)
+# 	unsigned int ebp;				// 0x24(%ebp)
+# 	unsigned int esi;				// 0x28(%ebp)
+# 	unsigned int edi;				// 0x2c(%ebp)
+# 	unsigned int es;				// 0x30(%ebp)
+# 	unsigned int cs;				// 0x34(%ebp)
+# 	unsigned int ss;				// 0x38(%ebp)
+# 	unsigned int ds;				// 0x3c(%ebp)
+# 	unsigned int fs;				// 0x40(%ebp)
+# 	unsigned int gs;				// 0x44(%ebp)
+#	void *application_stack_floor;			// 0x48(%ebp)
+#	TaskStatusSegment *kernel_task_status_segment;	// 0x4c(%ebp)
 # );
 call_application:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	pushal
-	movl	0x48(%ebp),%edi		# edi = application_stack_floor
+	# Set esp0 and ss0
+	movl	0x4c(%ebp),%edi		# edi = kernel_task_status_segment
+	movl	%esp,0x04(%edi)
+	movw	%ss,0x08(%edi)
 	# Push kernel registers to the application stack.
+	movl	0x48(%ebp),%edi		# edi = application_stack_floor
 	movw	%gs,	-0x04(%edi)
 	movw	%fs,	-0x08(%edi)
 	movw	%ds,	-0x0c(%edi)
@@ -144,13 +149,11 @@ call_application:
 	movw	-0x44(%edi),%bx		# bx = application fs
 	movw	-0x40(%edi),%si		# si = application gs
 	movl	-0x60(%edi),%edi	# edi = application ebp
-	cli
 	movw	%ax,	%es
 	movw	%cx,	%ss
 	movw	%dx,	%ds
 	movw	%bx,	%fs
 	movw	%si,	%gs
-	sti
 	# Set application registers
 	movl	%edi,	%ebp		# ebp = application ebp
 	movl	%edi,	%esp		# esp = application ebp
@@ -163,9 +166,8 @@ call_application:
 	movl	-0x5c(%ebp),%esi
 	movl	-0x58(%ebp),%edi
 	# Call application
-	push	-0x50(%ebp)		# Push application cs
-	push	-0x7c(%ebp)		# Push application eip
-	lcall	*(%esp)
+	pushl	-0x50(%ebp)		# Push application cs
+	pushl	-0x7c(%ebp)		# Push application eip
 	# Set kernel segments
 	movw	-0x18(%ebp),%ax		# ax = kernel es
 	movw	-0x10(%ebp),%cx		# cx = kernel ss
@@ -173,13 +175,11 @@ call_application:
 	movw	-0x08(%ebp),%bx		# bx = kernel fs
 	movw	-0x04(%ebp),%si		# si = kernel gs
 	movl	-0x24(%ebp),%edi	# edi = kernel ebp
-	cli
 	movw	%ax,	%es
 	movw	%cx,	%ss
 	movw	%dx,	%ds
 	movw	%bx,	%fs
 	movw	%si,	%gs
-	sti
 	# Set kernel registers
 	movl	%edi,	%ebp
 	movl	0x48(%ebp),%edi

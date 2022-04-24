@@ -189,8 +189,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	unsigned short executable_segment;
 	unsigned short data_segment;
 	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
-	data_segment = alloc_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	executable_segment = alloc_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	data_segment = alloc_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
+	executable_segment = alloc_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	printf_serial("text_base = %#010.8x\n", com_header->text_base);
 	printf_serial("rodata_base = %#010.8x\n", com_header->rodata_base);
 	printf_serial("data_base = %#010.8x\n", com_header->data_base);

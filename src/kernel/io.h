@@ -3,6 +3,7 @@
 
 #include "gdt.h"
 #include "idt.h"
+#include "task.h"
 
 void call_application
 (
@@ -23,6 +24,7 @@ void call_application
 	unsigned int fs;
 	unsigned int gs;
 	void *application_stack_floor;
+	TaskStatusSegment *kernel_task_status_segment;
 );
 
 // disable all interrupts
