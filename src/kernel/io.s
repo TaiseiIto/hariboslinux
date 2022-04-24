@@ -100,23 +100,23 @@ call_application:
 	# Push application registers to application stack
 	movl	0x48(%ebp),%edi		# edi = application_stack_floor
 	movl	0x10(%ebp),%edx		# Push application eax
-	movl	%edx,	-0x08(%edi)
-	movl	0x14(%ebp),%edx		# Push application ecx
-	movl	%edx,	-0x0c(%edi)
-	movl	0x18(%ebp),%edx		# Push application edx
-	movl	%edx,	-0x10(%edi)
-	movl	0x1c(%ebp),%edx		# Push application ebx
-	movl	%edx,	-0x14(%edi)
-	movl	0x20(%ebp),%edx		# Push application esp
-	movl	%edx,	-0x18(%edi)
-	movl	0x24(%ebp),%edx		# Push application ebp
-	movl	%edx,	-0x1c(%edi)
-	movl	0x28(%ebp),%edx		# Push application esi
-	movl	%edx,	-0x20(%edi)
-	movl	0x2c(%ebp),%edx		# Push application edi
-	movl	%edx,	-0x24(%edi)
-	movl	0x0c(%ebp),%edx		# Push application eflags
 	movl	%edx,	-0x04(%edi)
+	movl	0x14(%ebp),%edx		# Push application ecx
+	movl	%edx,	-0x08(%edi)
+	movl	0x18(%ebp),%edx		# Push application edx
+	movl	%edx,	-0x0c(%edi)
+	movl	0x1c(%ebp),%edx		# Push application ebx
+	movl	%edx,	-0x10(%edi)
+	movl	0x20(%ebp),%edx		# Push application esp
+	movl	%edx,	-0x14(%edi)
+	movl	0x24(%ebp),%edx		# Push application ebp
+	movl	%edx,	-0x18(%edi)
+	movl	0x28(%ebp),%edx		# Push application esi
+	movl	%edx,	-0x1c(%edi)
+	movl	0x2c(%ebp),%edx		# Push application edi
+	movl	%edx,	-0x20(%edi)
+	movl	0x0c(%ebp),%edx		# Push application eflags
+	movl	%edx,	-0x24(%edi)
 	# Push application segments except cs and ss to application stack
 	movl	0x30(%ebp),%edx		# Push application es
 	movl	%edx,	-0x28(%edi)
