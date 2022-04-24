@@ -63,19 +63,19 @@
 # void call_application
 # (
 # 	unsigned int eip;		// 0x08(%ebp)
-# 	unsigned int eflags;		// 0x0a(%ebp)
+# 	unsigned int eflags;		// 0x0c(%ebp)
 # 	unsigned int eax;		// 0x10(%ebp)
 # 	unsigned int ecx;		// 0x14(%ebp)
 # 	unsigned int edx;		// 0x18(%ebp)
-# 	unsigned int ebx;		// 0x1a(%ebp)
+# 	unsigned int ebx;		// 0x1c(%ebp)
 # 	unsigned int esp;		// 0x20(%ebp)
 # 	unsigned int ebp;		// 0x24(%ebp)
 # 	unsigned int esi;		// 0x28(%ebp)
-# 	unsigned int edi;		// 0x2a(%ebp)
+# 	unsigned int edi;		// 0x2c(%ebp)
 # 	unsigned int es;		// 0x30(%ebp)
 # 	unsigned int cs;		// 0x34(%ebp)
 # 	unsigned int ss;		// 0x38(%ebp)
-# 	unsigned int ds;		// 0x3a(%ebp)
+# 	unsigned int ds;		// 0x3c(%ebp)
 # 	unsigned int fs;		// 0x40(%ebp)
 # 	unsigned int gs;		// 0x44(%ebp)
 #	void *application_stack_floor;	// 0x48(%ebp)
@@ -89,57 +89,57 @@ call_application:
 	# Push kernel registers to the application stack.
 	movw	%gs,	-0x04(%edi)
 	movw	%fs,	-0x08(%edi)
-	movw	%ds,	-0x0a(%edi)
+	movw	%ds,	-0x0c(%edi)
 	movw	%ss,	-0x10(%edi)
 	movw	%cs,	-0x14(%edi)
 	movw	%es,	-0x18(%edi)
-	movl	%edi,	-0x1a(%edi)
+	movl	%edi,	-0x1c(%edi)
 	movl	%esi,	-0x20(%edi)
 	movl	%ebp,	-0x24(%edi)
 	movl	%esp,	-0x28(%edi)
-	movl	%ebx,	-0x2a(%edi)
+	movl	%ebx,	-0x2c(%edi)
 	movl	%edx,	-0x30(%edi)
 	movl	%ecx,	-0x34(%edi)
 	movl	%eax,	-0x38(%edi)
 	pushf
 	popl	%eax			# Push kernel eflags
-	movl	%eax,	-0x3a(%edi)
+	movl	%eax,	-0x3c(%edi)
 	# Push application registers to the application stack.
 	movw	0x44(%ebp),%dx		# Push application gs
 	movw	%dx,	-0x40(%edi)
 	movw	0x40(%ebp),%dx		# Push application fs
 	movw	%dx,	-0x44(%edi)
-	movw	0x3a(%ebp),%dx		# Push application ds
+	movw	0x3c(%ebp),%dx		# Push application ds
 	movw	%dx,	-0x48(%edi)
 	movw	0x38(%ebp),%dx		# Push application ss
-	movw	%dx,	-0x4a(%edi)
+	movw	%dx,	-0x4c(%edi)
 	movw	0x34(%ebp),%dx		# Push application cs
 	movw	%dx,	-0x50(%edi)
 	movw	0x30(%ebp),%dx		# Push application es
 	movw	%dx,	-0x54(%edi)
-	movl	0x2a(%ebp),%edx		# Push application edi
+	movl	0x2c(%ebp),%edx		# Push application edi
 	movl	%edx,	-0x58(%edi)
 	movl	0x28(%ebp),%edx		# Push application esi
-	movl	%edx,	-0x5a(%edi)
+	movl	%edx,	-0x5c(%edi)
 	movl	0x24(%ebp),%edx		# Push application ebp
 	movl	%edx,	-0x60(%edi)
 	movl	0x20(%ebp),%edx		# Push application esp
 	movl	%edx,	-0x64(%edi)
-	movl	0x1a(%ebp),%edx		# Push application ebx
+	movl	0x1c(%ebp),%edx		# Push application ebx
 	movl	%edx,	-0x68(%edi)
 	movl	0x18(%ebp),%edx		# Push application edx
-	movl	%edx,	-0x6a(%edi)
+	movl	%edx,	-0x6c(%edi)
 	movl	0x14(%ebp),%edx		# Push application ecx
 	movl	%edx,	-0x70(%edi)
 	movl	0x10(%ebp),%edx		# Push application eax
 	movl	%edx,	-0x74(%edi)
-	movl	0x0a(%ebp),%edx		# Push application eflags
+	movl	0x0c(%ebp),%edx		# Push application eflags
 	movl	%edx,	-0x78(%edi)
 	movl	0x08(%ebp),%edx		# Push application eip
-	movl	%edx,	-0x7a(%edi)
+	movl	%edx,	-0x7c(%edi)
 	# Set application segments
 	movw	-0x54(%edi),%ax		# ax = application es
-	movw	-0x4a(%edi),%cx		# cx = application ss
+	movw	-0x4c(%edi),%cx		# cx = application ss
 	movw	-0x48(%edi),%dx		# dx = application ds
 	movw	-0x44(%edi),%bx		# bx = application fs
 	movw	-0x40(%edi),%si		# si = application gs
@@ -155,20 +155,20 @@ call_application:
 	movl	%edi,	%esp		# esp = application_stack_floor
 	movl	-0x74(%ebp),%eax
 	movl	-0x70(%ebp),%ecx
-	movl	-0x6a(%ebp),%edx
+	movl	-0x6c(%ebp),%edx
 	movl	-0x68(%ebp),%ebx
 	movl	-0x64(%ebp),%esp
 	movl	-0x60(%ebp),%ebp
-	movl	-0x5a(%ebp),%esi
+	movl	-0x5c(%ebp),%esi
 	movl	-0x58(%ebp),%edi
 	# Call application
 	push	-0x50(%ebp)		# Push application cs
-	push	-0x7a(%ebp)		# Push application eip
+	push	-0x7c(%ebp)		# Push application eip
 	lcall	*(%esp)
 	# Set kernel segments
 	movw	-0x18(%ebp),%ax		# ax = kernel es
 	movw	-0x10(%ebp),%cx		# cx = kernel ss
-	movw	-0x0a(%ebp),%dx		# dx = kernel ds
+	movw	-0x0c(%ebp),%dx		# dx = kernel ds
 	movw	-0x08(%ebp),%bx		# bx = kernel fs
 	movw	-0x04(%ebp),%si		# si = kernel gs
 	movl	-0x24(%ebp),%edi	# edi = kernel ebp
@@ -185,11 +185,11 @@ call_application:
 	movl	-0x38(%edi),%eax
 	movl	-0x34(%edi),%ecx
 	movl	-0x30(%edi),%edx
-	movl	-0x2a(%edi),%ebx
+	movl	-0x2c(%edi),%ebx
 	movl	-0x28(%edi),%esp
 	movl	-0x24(%edi),%ebp
 	movl	-0x20(%edi),%esi
-	movl	-0x1a(%edi),%edi
+	movl	-0x1c(%edi),%edi
 	# Return
 	popal
 	leave
