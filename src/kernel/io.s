@@ -143,6 +143,7 @@ call_application:
 	movw	-0x48(%edi),%dx		# dx = application ds
 	movw	-0x44(%edi),%bx		# bx = application fs
 	movw	-0x40(%edi),%si		# si = application gs
+	movl	-0x60(%edi),%edi	# edi = application ebp
 	cli
 	movw	%ax,	%es
 	movw	%cx,	%ss
@@ -151,8 +152,8 @@ call_application:
 	movw	%si,	%gs
 	sti
 	# Set application registers
-	movl	%edi,	%ebp		# ebp = application_stack_floor
-	movl	%edi,	%esp		# esp = application_stack_floor
+	movl	%edi,	%ebp		# ebp = application ebp
+	movl	%edi,	%esp		# esp = application ebp
 	movl	-0x74(%ebp),%eax
 	movl	-0x70(%ebp),%ecx
 	movl	-0x6c(%ebp),%edx
