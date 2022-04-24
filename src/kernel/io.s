@@ -85,116 +85,57 @@ call_application:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
+	# Push kernel registers to kernel stack
 	pushal
-	# Set esp0 and ss0
+	pushfl
+	# Push kernel segments except cs and ss to kernel stack
+	pushl	%es
+	pushl	%ds
+	pushl	%fs
+	pushl	%gs
+	# Register kernel stack to kernel_task_status_segment
 	movl	0x4c(%ebp),%edi		# edi = kernel_task_status_segment
 	movl	%esp,0x04(%edi)
 	movw	%ss,0x08(%edi)
-	# Push kernel registers to the application stack.
+	# Push application registers to application stack
 	movl	0x48(%ebp),%edi		# edi = application_stack_floor
-	movw	%gs,	-0x04(%edi)
-	movw	%fs,	-0x08(%edi)
-	movw	%ds,	-0x0c(%edi)
-	movw	%ss,	-0x10(%edi)
-	movw	%cs,	-0x14(%edi)
-	movw	%es,	-0x18(%edi)
-	movl	%edi,	-0x1c(%edi)
-	movl	%esi,	-0x20(%edi)
-	movl	%ebp,	-0x24(%edi)
-	movl	%esp,	-0x28(%edi)
-	movl	%ebx,	-0x2c(%edi)
-	movl	%edx,	-0x30(%edi)
-	movl	%ecx,	-0x34(%edi)
-	movl	%eax,	-0x38(%edi)
-	pushf
-	popl	%eax			# Push kernel eflags
-	movl	%eax,	-0x3c(%edi)
-	# Push application registers to the application stack.
-	movw	0x44(%ebp),%dx		# Push application gs
-	movw	%dx,	-0x40(%edi)
-	movw	0x40(%ebp),%dx		# Push application fs
-	movw	%dx,	-0x44(%edi)
-	movw	0x3c(%ebp),%dx		# Push application ds
-	movw	%dx,	-0x48(%edi)
-	movw	0x38(%ebp),%dx		# Push application ss
-	movw	%dx,	-0x4c(%edi)
-	movw	0x34(%ebp),%dx		# Push application cs
-	movw	%dx,	-0x50(%edi)
-	movw	0x30(%ebp),%dx		# Push application es
-	movw	%dx,	-0x54(%edi)
-	movl	0x2c(%ebp),%edx		# Push application edi
-	movl	%edx,	-0x58(%edi)
-	movl	0x28(%ebp),%edx		# Push application esi
-	movl	%edx,	-0x5c(%edi)
-	movl	0x24(%ebp),%edx		# Push application ebp
-	movl	%edx,	-0x60(%edi)
-	movl	0x20(%ebp),%edx		# Push application esp
-	movl	%edx,	-0x64(%edi)
-	movl	0x1c(%ebp),%edx		# Push application ebx
-	movl	%edx,	-0x68(%edi)
-	movl	0x18(%ebp),%edx		# Push application edx
-	movl	%edx,	-0x6c(%edi)
-	movl	0x14(%ebp),%edx		# Push application ecx
-	movl	%edx,	-0x70(%edi)
-	movl	0x10(%ebp),%edx		# Push application eax
-	movl	%edx,	-0x74(%edi)
 	movl	0x0c(%ebp),%edx		# Push application eflags
-	movl	%edx,	-0x78(%edi)
-	movl	0x08(%ebp),%edx		# Push application eip
-	movl	%edx,	-0x7c(%edi)
-	# Set application segments
-	movw	-0x54(%edi),%ax		# ax = application es
-	movw	-0x4c(%edi),%cx		# cx = application ss
-	movw	-0x48(%edi),%dx		# dx = application ds
-	movw	-0x44(%edi),%bx		# bx = application fs
-	movw	-0x40(%edi),%si		# si = application gs
-	movl	-0x60(%edi),%edi	# edi = application ebp
-	movw	%ax,	%es
-	movw	%cx,	%ss
-	movw	%dx,	%ds
-	movw	%bx,	%fs
-	movw	%si,	%gs
-	# Set application registers
-	movl	%edi,	%ebp		# ebp = application ebp
-	movl	%edi,	%esp		# esp = application ebp
-	movl	-0x74(%ebp),%eax
-	movl	-0x70(%ebp),%ecx
-	movl	-0x6c(%ebp),%edx
-	movl	-0x68(%ebp),%ebx
-	movl	-0x64(%ebp),%esp
-	movl	-0x60(%ebp),%ebp
-	movl	-0x5c(%ebp),%esi
-	movl	-0x58(%ebp),%edi
-	# Call application
-	pushl	-0x50(%ebp)		# Push application cs
-	pushl	-0x7c(%ebp)		# Push application eip
-	# Set kernel segments
-	movw	-0x18(%ebp),%ax		# ax = kernel es
-	movw	-0x10(%ebp),%cx		# cx = kernel ss
-	movw	-0x0c(%ebp),%dx		# dx = kernel ds
-	movw	-0x08(%ebp),%bx		# bx = kernel fs
-	movw	-0x04(%ebp),%si		# si = kernel gs
-	movl	-0x24(%ebp),%edi	# edi = kernel ebp
-	movw	%ax,	%es
-	movw	%cx,	%ss
-	movw	%dx,	%ds
-	movw	%bx,	%fs
-	movw	%si,	%gs
-	# Set kernel registers
-	movl	%edi,	%ebp
-	movl	0x48(%ebp),%edi
-	movl	-0x38(%edi),%eax
-	movl	-0x34(%edi),%ecx
-	movl	-0x30(%edi),%edx
-	movl	-0x2c(%edi),%ebx
-	movl	-0x28(%edi),%esp
-	movl	-0x24(%edi),%ebp
-	movl	-0x20(%edi),%esi
-	movl	-0x1c(%edi),%edi
-	# Return
-	popal
-	leave
-	ret
+	movl	%edx,	-0x04(%edi)
+	movl	0x10(%ebp),%edx		# Push application eax
+	movl	%edx,	-0x08(%edi)
+	movl	0x14(%ebp),%edx		# Push application ecx
+	movl	%edx,	-0x0c(%edi)
+	movl	0x18(%ebp),%edx		# Push application edx
+	movl	%edx,	-0x10(%edi)
+	movl	0x1c(%ebp),%edx		# Push application ebx
+	movl	%edx,	-0x14(%edi)
+	movl	0x20(%ebp),%edx		# Push application esp
+	movl	%edx,	-0x18(%edi)
+	movl	0x24(%ebp),%edx		# Push application ebp
+	movl	%edx,	-0x1c(%edi)
+	movl	0x28(%ebp),%edx		# Push application esi
+	movl	%edx,	-0x20(%edi)
+	movl	0x2c(%ebp),%edx		# Push application edi
+	movl	%edx,	-0x24(%edi)
+	# Push application segments except cs and ss to application stack
+	movl	0x30(%ebp),%edx		# Push application es
+	movl	%edx,	-0x28(%edi)
+	movl	0x3c(%ebp),%edx		# Push application ds
+	movl	%edx,	-0x2c(%edi)
+	movl	0x40(%ebp),%edx		# Push application fs
+	movl	%edx,	-0x30(%edi)
+	movl	0x44(%ebp),%edx		# Push application gs
+	movl	%edx,	-0x34(%edi)
+	# Return to application
+	movl	0x38(%ebp),%edx		# Push application ss to kernel stack
+	orl	0x00000003,%edx
+	pushl	%edx
+	pushl	0x20(%ebp)		# Push application esp to kernel stack
+	movl	0x34(%ebp),%edx		# Push application cs to kernel stack
+	orl	0x00000003,%edx
+	pushl	%edx
+	pushl	0x08(%ebp)		# Push application eip to kernel stack
+	lret
 
 				# // disable all interrupts
 cli:				# void cli(void);
@@ -225,7 +166,7 @@ get_eflags:			# unsigned int get_eflags(void);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	pushf
+	pushfl
 	popl	%eax
 	leave
 	ret
