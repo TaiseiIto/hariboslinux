@@ -28,7 +28,7 @@ typedef struct _CommandLineArgument
 
 char const * const prompt = "> ";
 ChainString *serial_console_input_string;
-Shell *serial_shell;
+Shell *serial_shell = NULL;
 
 char **create_argv(char const *command);
 void command_task_procedure(CommandTaskArgument *arguments);
@@ -235,6 +235,21 @@ Shell *create_shell(Console *console)
 {
 	Shell *shell;
 	shell = malloc(sizeof(*shell));
+	prohibit_switch_task();
+	if(serial_shell)
+	{
+		shell->previous = serial_shell->previous;
+		shell->next = serial_shell;
+		serial_shell->previous->next = shell;
+		serial_shell->previous = shell;
+	}
+	else
+	{
+		shell->previous = shell;
+		shell->next = shell;
+		serial_shell = shell;
+	}
+	allow_switch_task();
 	if(console)
 	{
 		shell->event_queue = console->text_box->sheet->event_queue;
@@ -253,6 +268,10 @@ Shell *create_shell(Console *console)
 void delete_shell(Shell *shell)
 {
 	printf_serial("Delete shell %p\n", shell);
+	prohibit_switch_task();
+	shell->previous->next = shell->next;
+	shell->next->previous = shell->previous;
+	allow_switch_task();
 	free(shell);
 }
 
