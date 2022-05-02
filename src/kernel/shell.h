@@ -8,6 +8,7 @@ struct _Shell;
 
 typedef struct _Shell
 {
+	Queue *event_queue;
 	struct _Console *console;
 	unsigned char type;
 	#define SHELL_TYPE_CONSOLE	0x00

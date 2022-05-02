@@ -235,11 +235,13 @@ Shell *create_shell(Console *console)
 	shell = malloc(sizeof(*shell));
 	if(console)
 	{
+		shell->event_queue = console->text_box->sheet->event_queue;
 		shell->console = console;
 		shell->type = SHELL_TYPE_CONSOLE;
 	}
 	else
 	{
+		shell->event_queue = get_current_task()->event_queue;
 		shell->console = NULL;
 		shell->type = SHELL_TYPE_SERIAL;
 	}
