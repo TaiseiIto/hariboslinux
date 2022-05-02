@@ -5,7 +5,7 @@
 #include "idt.h"
 #include "task.h"
 
-void call_application
+unsigned int call_application
 (
 	unsigned int eip;
 	unsigned int eflags;
@@ -30,7 +30,7 @@ void call_application
 // disable all interrupts
 void cli(void);
 
-void exit_application(unsigned int return_value, unsigned int esp0);
+unsigned int exit_application(unsigned int return_value, unsigned int esp0);
 
 // get nth arg in caller variadic arg function
 // the first arg is 0th

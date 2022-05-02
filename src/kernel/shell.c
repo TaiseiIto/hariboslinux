@@ -186,6 +186,7 @@ void command_task_procedure(CommandTaskArgument *arguments)
 {
 	ComHeader const *com_header = arguments->com_file_binary;
 	void *application_memory = malloc(arguments->com_file_size + com_header->heap_and_stack_size);
+	unsigned int application_return_value;
 	unsigned short executable_segment;
 	unsigned short data_segment;
 	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
@@ -200,7 +201,7 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	printf_serial("common_deletion_prevention_base = %p\n", com_header->common_deletion_prevention_base);
 	printf_serial("heap_and_stack_base = %p\n", com_header->heap_and_stack_base);
 	printf_serial("heap_and_stack_size = %#010.8x\n", com_header->heap_and_stack_size);
-	call_application
+	application_return_value = call_application
 	(
 		com_header->text_base/* eip */,
 		EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG/* eflags */,
@@ -221,6 +222,7 @@ void command_task_procedure(CommandTaskArgument *arguments)
 		application_memory + arguments->com_file_size + com_header->heap_and_stack_size/* application_stack_floor */,
 		&get_current_task()->task_status_segment/* Task status segment */
 	);
+	printf_serial("application_return_value = %d\n", application_return_value);
 	free_segment(data_segment);
 	free_segment(executable_segment);
 	free(application_memory);
