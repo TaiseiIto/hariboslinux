@@ -189,8 +189,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	unsigned short executable_segment;
 	unsigned short data_segment;
 	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
-	data_segment = alloc_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
-	executable_segment = alloc_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA);
+	data_segment = alloc_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
+	executable_segment = alloc_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	printf_serial("application_memory = %p\n", application_memory);
 	printf_serial("text_base = %p\n", com_header->text_base);
 	printf_serial("rodata_base = %p\n", com_header->rodata_base);
@@ -218,7 +218,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 		data_segment/* ds */,
 		data_segment/* fs */,
 		data_segment/* gs */,
-		application_memory + arguments->com_file_size + com_header->heap_and_stack_size/* application_stack_floor */
+		application_memory + arguments->com_file_size + com_header->heap_and_stack_size/* application_stack_floor */,
+		&get_current_task()->task_status_segment/* Task status segment */
 	);
 	free_segment(data_segment);
 	free_segment(executable_segment);
