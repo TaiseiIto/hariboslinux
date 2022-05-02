@@ -30,6 +30,8 @@ void call_application
 // disable all interrupts
 void cli(void);
 
+void exit_application(unsigned int return_value, unsigned int esp0);
+
 // get nth arg in caller variadic arg function
 // the first arg is 0th
 unsigned int get_caller_variadic_arg(unsigned int);

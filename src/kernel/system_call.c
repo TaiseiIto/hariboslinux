@@ -5,7 +5,6 @@
 
 unsigned int system_call(unsigned int eax, unsigned int ebx, unsigned int ecx, unsigned int edx, unsigned int esi, unsigned int edi, unsigned int ebp)
 {
-	UNUSED_ARGUMENT(ebx);
 	UNUSED_ARGUMENT(ecx);
 	UNUSED_ARGUMENT(edx);
 	UNUSED_ARGUMENT(esi);
@@ -15,8 +14,7 @@ unsigned int system_call(unsigned int eax, unsigned int ebx, unsigned int ecx, u
 	switch(eax)
 	{
 	case SYSTEM_CALL_EAX_EXIT:
-		cli();
-		hlt();
+		exit_application(ebx, get_current_task()->task_status_segment.esp0);
 		break;
 	default:
 		break;

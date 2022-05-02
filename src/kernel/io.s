@@ -6,6 +6,7 @@
 
 	.globl	call_application
 	.globl	cli
+	.globl	exit_application
 	.globl	get_caller_variadic_arg
 	.globl	get_eflags
 	.globl	get_variadic_arg
@@ -33,6 +34,7 @@
 
 	.type	call_application,	@function
 	.type	cli,			@function
+	.type	exit_application,	@function
 	.type	get_caller_variadic_arg,@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
@@ -142,6 +144,24 @@ cli:				# void cli(void);
 	leave
 	ret
 
+# void exit_application
+# (
+# 	unsigned int return_value,	# 0x08(%ebp)
+# 	unsigned int esp0		# 0x0c(%ebp)
+# );
+exit_application:
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x0c(%ebp),%esp
+	popl	%gs
+	popl	%fs
+	popl	%ds
+	popl	%es
+	popfl
+	popal
+	leave
+	ret
 				# // get nth arg in caller variadic arg function
 				# // the first arg is 0th
 get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);
