@@ -16,12 +16,12 @@
 _start:
 0:
 	# Initialize segments
-	popl	%gs
-	popl	%fs
+	popl	%edx	# Discard gs
+	popl	%edx	# Discard fs
 	popl	%ds
-	popl	%es
+	popl	%edx	# Discard es
 	# Initialize registers
-	popfl
+	popl	%edx	# Discard eflags
 	popal
 	# Push registers
 	pushal
