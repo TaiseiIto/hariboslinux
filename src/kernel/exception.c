@@ -76,8 +76,8 @@ void fpu_error_exception_handler(void)
 
 void general_protection_fault_exception_handler(void)
 {
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "GENERAL PROTEXTION FAULT EXCEPTION!!!\n");
-	print_serial("GENERAL PROTEXTION FAULT EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "GENERAL PROTECTION FAULT EXCEPTION!!!\n");
+	print_serial("GENERAL PROTECTION FAULT EXCEPTION!!!\n");
 	kernel_panic();
 }
 
