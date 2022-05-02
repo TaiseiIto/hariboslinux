@@ -1,7 +1,9 @@
 #ifndef _SHELL_H_
 #define _SHELL_H_
 
+struct _Queue;
 struct _Shell;
+struct _TaskReturn;
 
 typedef struct _ShellPutCharacterEvent
 {
@@ -9,12 +11,9 @@ typedef struct _ShellPutCharacterEvent
 	char character;
 } ShellPutCharacterEvent;
 
-#include "console.h"
-#include "task.h"
-
 typedef struct _Shell
 {
-	Queue *event_queue;
+	struct _Queue *event_queue;
 	struct _Console *console;
 	unsigned char type;
 	#define SHELL_TYPE_CONSOLE	0x00
@@ -29,8 +28,11 @@ typedef struct _CommandTaskArgument
 	unsigned int argc;
 	char **argv;
 	Shell *shell;
-	TaskReturn *task_return;
+	struct _TaskReturn *task_return;
 } CommandTaskArgument;
+
+#include "console.h"
+#include "task.h"
 
 extern char const * const prompt;
 
