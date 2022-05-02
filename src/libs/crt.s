@@ -36,8 +36,8 @@ _start:
 	movl	%esp,	%ebp
 	call	main
 	# Return to kernel
+	movl	%eax,	%ebx
 	movl	$0x00000001,%eax
-	xorl	%ebx,	%ebx
 	int	$0x80
 	leave
 	ret
