@@ -341,6 +341,17 @@ void *execute_command(Shell *shell, char const *command)
 	return NULL;
 }
 
+Shell *get_current_shell(void)
+{
+	Shell *shell = serial_shell;
+	do
+	{
+		if(get_current_task() == shell->event_queue->task)return shell;
+		shell = shell->next;
+	} while(shell != serial_shell);
+	return NULL;
+}
+
 void init_shells(void)
 {
 	serial_console_input_string = create_chain_string("");

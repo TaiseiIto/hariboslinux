@@ -45,6 +45,7 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument);
 Shell *create_shell(struct _Console *console);
 void delete_shell(Shell *shell);
 void *execute_command(Shell *shell, char const *command);
+Shell *get_current_shell(void);
 void init_shells(void);
 void print_shell(Shell *shell, char const *string);
 void printf_shell(Shell *shell, char const *format, ...);
