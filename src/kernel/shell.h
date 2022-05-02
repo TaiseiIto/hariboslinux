@@ -15,6 +15,8 @@ typedef struct _Shell
 {
 	struct _Queue *event_queue;
 	struct _Console *console;
+	struct _Shell *previous;
+	struct _Shell *next;
 	unsigned char type;
 	#define SHELL_TYPE_CONSOLE	0x00
 	#define SHELL_TYPE_SERIAL	0x01
@@ -31,15 +33,19 @@ typedef struct _CommandTaskArgument
 	struct _TaskReturn *task_return;
 } CommandTaskArgument;
 
+#include "chain_string.h"
 #include "console.h"
 #include "task.h"
 
 extern char const * const prompt;
+extern ChainString *serial_console_input_string;
+extern Shell *serial_shell;
 
 void clean_up_command_task(CommandTaskArgument *command_task_argument);
 Shell *create_shell(struct _Console *console);
 void delete_shell(Shell *shell);
 void *execute_command(Shell *shell, char const *command);
+void init_shells(void);
 void print_shell(Shell *shell, char const *string);
 void printf_shell(Shell *shell, char const *format, ...);
 void put_char_shell(Shell *shell, char character);

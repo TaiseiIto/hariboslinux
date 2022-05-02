@@ -27,6 +27,8 @@ typedef struct _CommandLineArgument
 } CommandLineArgument;
 
 char const * const prompt = "> ";
+ChainString *serial_console_input_string;
+Shell *serial_shell;
 
 char **create_argv(char const *command);
 void command_task_procedure(CommandTaskArgument *arguments);
@@ -318,6 +320,12 @@ void *execute_command(Shell *shell, char const *command)
 		return NULL;
 	}
 	return NULL;
+}
+
+void init_shells(void)
+{
+	serial_console_input_string = create_chain_string("");
+	serial_shell = create_shell(NULL);
 }
 
 void print_shell(Shell *shell, char const *string)

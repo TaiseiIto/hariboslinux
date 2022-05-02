@@ -74,6 +74,7 @@ int main(void)
 	sti_task();
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
 	init_file_system();
+	init_shells();
 	// Init background sheet
 	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;

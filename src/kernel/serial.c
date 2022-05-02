@@ -456,8 +456,6 @@ void put_char_serial(char character)
 // input a character to serial console
 void serial_console_input(char character)
 {
-	static ChainString *serial_console_input_string = NULL;
-	static Shell *serial_shell = NULL;
 	char *command_line;
 	switch(character)
 	{
@@ -468,8 +466,6 @@ void serial_console_input(char character)
 		character = '\b';
 		break;
 	}
-	if(!serial_console_input_string)serial_console_input_string = create_chain_string("");
-	if(!serial_shell)serial_shell = create_shell(NULL);
 	put_char_serial(character);
 	switch(character)
 	{
