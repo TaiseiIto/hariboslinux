@@ -3,6 +3,12 @@
 
 struct _Shell;
 
+typedef struct _ShellPutCharacterEvent
+{
+	struct _Shell *shell;
+	char character;
+} ShellPutCharacterEvent;
+
 #include "console.h"
 #include "task.h"
 

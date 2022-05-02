@@ -157,6 +157,9 @@ int main(void)
 		case EVENT_TYPE_SERIAL_INTERRUPT:
 			serial_console_input(event->event_union.serial_interrupt.data);
 			break;
+		case EVENT_TYPE_SHELL_PUT_CHARACTER:
+			put_char_shell(event->event_union.shell_put_character_event.shell, event->event_union.shell_put_character_event.character);
+			break;
 		case EVENT_TYPE_TASK_DELETION_RESPONSE:
 			background_sheet->event_procedure(background_sheet, event);
 			break;

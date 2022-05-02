@@ -145,6 +145,9 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 		Event const *event = dequeue(event_queue);
 		if(event)switch(event->type)
 		{
+		case EVENT_TYPE_SHELL_PUT_CHARACTER:
+			put_char_shell(event->event_union.shell_put_character_event.shell, event->event_union.shell_put_character_event.character);
+			break;
 		case EVENT_TYPE_TIMER_EVENT:
 			call_timer_procedure(event->event_union.timer_event.timer);
 			break;

@@ -9,6 +9,7 @@ struct _Event;
 #include "rtc.h"
 #include "serial.h"
 #include "sheet.h"
+#include "shell.h"
 #include "task.h"
 #include "timer.h"
 #include "window.h"
@@ -33,6 +34,7 @@ typedef union _EventUnion
 	SheetUnfocusedEvent sheet_unfocused_event;
 	SheetUserDefinedEvent sheet_user_defined_event;
 	SheetVerticalWheelEvent sheet_vertical_wheel_event;
+	ShellPutCharacterEvent shell_put_character_event;
 	TaskDeletionRequestEvent task_deletion_request_event;
 	TaskDeletionResponseEvent task_deletion_response_event;
 	TimerEvent timer_event;
@@ -64,13 +66,14 @@ typedef struct _Event
 	#define EVENT_TYPE_SHEET_UNFOCUSED		0x10
 	#define EVENT_TYPE_SHEET_USER_DEFINED		0x11
 	#define EVENT_TYPE_SHEET_VERTICAL_WHEEL		0x12
-	#define EVENT_TYPE_TASK_DELETION_REQUEST	0x13
-	#define EVENT_TYPE_TASK_DELETION_RESPONSE	0x14
-	#define EVENT_TYPE_TIMER_EVENT			0x15
-	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x16
-	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x17
-	#define EVENT_TYPE_WINDOW_FOCUSED		0x18
-	#define EVENT_TYPE_WINDOW_UNFOCUSED		0x19
+	#define EVENT_TYPE_SHELL_PUT_CHARACTER		0x13
+	#define EVENT_TYPE_TASK_DELETION_REQUEST	0x14
+	#define EVENT_TYPE_TASK_DELETION_RESPONSE	0x15
+	#define EVENT_TYPE_TIMER_EVENT			0x16
+	#define EVENT_TYPE_WINDOW_DELETION_REQUEST	0x17
+	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x18
+	#define EVENT_TYPE_WINDOW_FOCUSED		0x19
+	#define EVENT_TYPE_WINDOW_UNFOCUSED		0x1a
 	EventUnion event_union;
 } Event;
 
