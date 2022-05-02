@@ -122,12 +122,15 @@ call_application:
 	# Push application segments except cs and ss to application stack
 	movl	0x30(%ebp),%edx		# Push application es
 	movl	%edx,	-0x28(%edi)
+	movw	%dx,	%es
 	movl	0x3c(%ebp),%edx		# Push application ds
 	movl	%edx,	-0x2c(%edi)
 	movl	0x40(%ebp),%edx		# Push application fs
 	movl	%edx,	-0x30(%edi)
+	movw	%dx,	%fs
 	movl	0x44(%ebp),%edx		# Push application gs
 	movl	%edx,	-0x34(%edi)
+	movw	%dx,	%gs
 	# Return to application
 	pushl	0x38(%ebp)		# Push application ss to kernel stack
 	pushl	0x20(%ebp)		# Push application esp to kernel stack
