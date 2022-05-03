@@ -1,8 +1,8 @@
-#include "system_call.h"
+#include "stdio.h"
 
-int main(void)
+int main(unsigned int argc, char **argv)
 {
-	system_call_write(1, "Hello, World!\n", 14);
+	for(unsigned int argi = 0; argi < argc; argi++)puts(argv[argi]);
 	return 0;
 }
 

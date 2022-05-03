@@ -24,6 +24,8 @@ SECTIONS
 		crt.o(.text)
 		echo.o(.text)
 		io.o(.text)
+		stdio.o(.text)
+		string.o(.text)
 		system_call.o(.text)
 	}
 	rodata_base = .;
@@ -32,6 +34,8 @@ SECTIONS
 		crt.o(.rodata)
 		echo.o(.rodata)
 		io.o(.rodata)
+		stdio.o(.rodata)
+		string.o(.rodata)
 		system_call.o(.rodata)
 	}
 	data_base = .;
@@ -40,6 +44,8 @@ SECTIONS
 		crt.o(.data)
 		echo.o(.data)
 		io.o(.data)
+		stdio.o(.data)
+		string.o(.data)
 		system_call.o(.data)
 	}
 	bss_base = .;
@@ -48,6 +54,8 @@ SECTIONS
 		crt.o(.bss)
 		echo.o(.bss)
 		io.o(.bss)
+		stdio.o(.bss)
+		string.o(.bss)
 		system_call.o(.bss)
 	}
 	common_base = .;
@@ -56,6 +64,8 @@ SECTIONS
 		crt.o(COMMON)
 		echo.o(COMMON)
 		io.o(COMMON)
+		stdio.o(COMMON)
+		string.o(COMMON)
 		system_call.o(COMMON)
 	}
 	common_deletion_prevention_base = .;
