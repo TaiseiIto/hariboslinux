@@ -350,6 +350,8 @@ Shell *get_current_shell(void)
 	do
 	{
 		printf_serial("get_current_task()->parent = %p\n", get_current_task()->parent);
+		printf_serial("shell = %p\n", shell);
+		printf_serial("shell->event_queue = %p\n", shell->event_queue);
 		printf_serial("shell->event_queue->task = %p\n", shell->event_queue->task);
 		if(get_current_task()->parent == shell->event_queue->task)return shell;
 		shell = shell->next;
