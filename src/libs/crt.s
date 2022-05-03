@@ -34,8 +34,11 @@ _start:
 	# Call main
 	pushl	%ebp
 	movl	%esp,	%ebp
+	pushl	0x3c(%ebp)	# Push argv
+	pushl	0x38(%ebp)	# Push argc
 	call	main
 	# Return to kernel
+	addl	$0x00000008,%esp
 	movl	%eax,	%ebx
 	movl	$0x00000001,%eax
 	int	$0x80
