@@ -5308,6 +5308,7 @@ interrupt_gate0x7f:		# void interrupt_gate0x7f(void);
 
 interrupt_gate0x80:		# void interrupt_gate0x80(void);
 0:
+	subl	$0x00000004,%esp	# Space for return value
 	pushal
 	movw	%ss,	%dx
 	pushl	%edx
@@ -5354,7 +5355,9 @@ interrupt_gate0x80:		# void interrupt_gate0x80(void);
 	movw	%dx,	%gs
 	popl	%edx
 	movw	%dx,	%ss
+	movl	%eax,	0x20(%esp)
 	popal
+	popl	%eax			# Pop return value
 	iret
 
 interrupt_gate0x81:		# void interrupt_gate0x81(void);
