@@ -47,7 +47,6 @@ void close_task(Task *task)
 	Event task_deletion_response_event;
 	Task *next_task;
 	TaskLevel *next_task_level;
-	printf_serial("close task\n");
 	cli_task();
 	prohibit_switch_task();
 	// Enqueue task deletion response event.

@@ -17,6 +17,7 @@ typedef struct _Shell
 	struct _Console *console;
 	struct _Shell *previous;
 	struct _Shell *next;
+	unsigned int previous_application_return_value;
 	unsigned char type;
 	#define SHELL_TYPE_CONSOLE	0x00
 	#define SHELL_TYPE_SERIAL	0x01

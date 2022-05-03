@@ -41,7 +41,7 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 	free(command_task_argument->com_file_name);
 	for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
 	free(command_task_argument->argv);
-	printf_serial("Application return value = %d\n", ((CommandTaskReturn *)command_task_argument->task_return->task_return)->return_value);
+	command_task_argument->shell->previous_application_return_value = ((CommandTaskReturn *)command_task_argument->task_return->task_return)->return_value;
 	free(command_task_argument->task_return->task_return);
 	switch(command_task_argument->shell->type)
 	{
@@ -274,6 +274,7 @@ Shell *create_shell(Console *console)
 		serial_shell = shell;
 	}
 	allow_switch_task();
+	shell->previous_application_return_value = 0;
 	if(console)
 	{
 		shell->event_queue = console->text_box->sheet->event_queue;
