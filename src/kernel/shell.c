@@ -346,7 +346,7 @@ Shell *get_current_shell(void)
 	Shell *shell = serial_shell;
 	do
 	{
-		if(get_current_task() == shell->event_queue->task)return shell;
+		if(get_current_task()->parent == shell->event_queue->task)return shell;
 		shell = shell->next;
 	} while(shell != serial_shell);
 	return NULL;
