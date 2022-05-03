@@ -188,15 +188,47 @@ void command_task_procedure(CommandTaskArgument *arguments)
 {
 	ComHeader const *com_header = arguments->com_file_binary;
 	void *application_memory = malloc(arguments->com_file_size + com_header->heap_and_stack_size);
+	void *application_stack_floor;
+	char *argv_string_writer;
+	char **argv_element_writer;
+	char ***argv_writer;
+	unsigned int *argc_writer;
+	void *writer;
 	unsigned int application_return_value;
 	unsigned short executable_segment;
 	unsigned short data_segment;
-	for(unsigned int argi = 0; argi < arguments->argc; argi++)printf_serial("argv[%d] = %s\n", argi, arguments->argv[argi]);
+	// Check argv.
+	// for(unsigned int argi = 0; argi < arguments->argc; argi++)printf_serial("argv[%d] = %s\n", argi, arguments->argv[argi]);
+	// Register application memory to application task.
 	get_current_task()->additionals = malloc(sizeof(CommandTaskAdditional));
 	((CommandTaskAdditional *)get_current_task()->additionals)->application_memory = application_memory;
+	// Copy executable file to application memory.
 	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
+	// Copy argv to application memory.
+	writer = application_memory + arguments->com_file_size + com_header->heap_and_stack_size;
+	for(unsigned int argi = 0; argi < arguments->argc; argi++)writer -= strlen(arguments->argv[argi]) + 1;
+	argv_string_writer = writer;
+	for(unsigned int argi = 0; argi < arguments->argc; argi++)writer -= sizeof(arguments->argv[argi]);
+	argv_element_writer = writer;
+	writer -= sizeof(arguments->argv);
+	argv_writer = writer;
+	writer -= sizeof(arguments->argc);
+	argc_writer = writer;
+	application_stack_floor = writer;
+	*argc_writer = arguments->argc;
+	*argv_writer = argv_element_writer;
+	for(unsigned int argi = 0; argi < arguments->argc; argi++)
+	{
+		argv_element_writer[argi] = argv_string_writer;
+		strcpy(argv_string_writer, arguments->argv[argi]);
+		argv_string_writer += strlen(argv_string_writer) + 1;
+	}
+	// Check copied argv.
+	for(unsigned int argi = 0; argi < *argc_writer; argi++)printf_serial("argv[%d] = %s\n", argi, (*argv_writer)[argi]);
+	// Alloc application segments.
 	data_segment = alloc_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	executable_segment = alloc_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
+	// Check com header.
 	printf_serial("application_memory = %p\n", application_memory);
 	printf_serial("text_base = %p\n", com_header->text_base);
 	printf_serial("rodata_base = %p\n", com_header->rodata_base);
@@ -206,6 +238,7 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	printf_serial("common_deletion_prevention_base = %p\n", com_header->common_deletion_prevention_base);
 	printf_serial("heap_and_stack_base = %p\n", com_header->heap_and_stack_base);
 	printf_serial("heap_and_stack_size = %#010.8x\n", com_header->heap_and_stack_size);
+	// Call application.
 	application_return_value = call_application
 	(
 		com_header->text_base/* eip */,
@@ -214,8 +247,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 		0/* ecx */,
 		0/* ebx */,
 		0/* edx */,
-		arguments->com_file_size + com_header->heap_and_stack_size - 0x34/* esp */,
-		arguments->com_file_size + com_header->heap_and_stack_size/* ebp */,
+		(unsigned int)application_stack_floor - (unsigned int)application_memory - 0x34/* esp */,
+		(unsigned int)application_stack_floor - (unsigned int)application_memory/* ebp */,
 		0/* esi */,
 		0/* edi */,
 		data_segment/* es */,
@@ -224,10 +257,11 @@ void command_task_procedure(CommandTaskArgument *arguments)
 		data_segment/* ds */,
 		data_segment/* fs */,
 		data_segment/* gs */,
-		application_memory + arguments->com_file_size + com_header->heap_and_stack_size/* application_stack_floor */,
+		application_stack_floor/* application_stack_floor */,
 		&get_current_task()->task_status_segment/* Task status segment */
 	);
 	printf_serial("application_return_value = %d\n", application_return_value);
+	// Clean up.
 	free_segment(data_segment);
 	free_segment(executable_segment);
 	free(application_memory);
