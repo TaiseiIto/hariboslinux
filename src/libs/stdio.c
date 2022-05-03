@@ -1,10 +1,17 @@
-#include "common.h"
 #include "stdio.h"
+#include "string.h"
+#include "system_call.h"
 
-size_t fwrite(void const *buffer, size_t size, size_t n, void *file_descriptor)
+int fputs(char const *string, unsigned int file_descriptor)
 {
-	UNUSED_ARGUMENT(buffer);
-	UNUSED_ARGUMENT(file_descriptor);
-	return size * n;
+	char const * const new_line = "\n";
+	system_call_write(file_descriptor, string, strlen(string));
+	system_call_write(file_descriptor, new_line, strlen(new_line));
+	return 0;
+}
+
+int puts(char const *string)
+{
+	return fputs(string, STDOUT);
 }
 

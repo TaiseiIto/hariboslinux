@@ -3,7 +3,8 @@
 
 #include "stddef.h"
 
-size_t fwrite(void const *buffer, size_t size, size_t n, void *file_descriptor);
+int fputs(char const *string, unsigned int file_descriptor);
+int puts(char const *string);
 
 #endif
 
