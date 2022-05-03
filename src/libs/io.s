@@ -27,12 +27,12 @@ system_call:
 	movl	%esp,	%ebp
 	pushal
 	movl	0x08(%ebp),%eax
-	movl	0x08(%ebp),%ebx
-	movl	0x08(%ebp),%ecx
-	movl	0x08(%ebp),%edx
-	movl	0x08(%ebp),%esi
-	movl	0x08(%ebp),%edi
-	movl	0x08(%ebp),%ebp
+	movl	0x0c(%ebp),%ebx
+	movl	0x10(%ebp),%ecx
+	movl	0x14(%ebp),%edx
+	movl	0x18(%ebp),%esi
+	movl	0x1c(%ebp),%edi
+	movl	0x20(%ebp),%ebp
 	int	$0x80
 	popal
 	leave

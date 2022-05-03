@@ -12,11 +12,16 @@ unsigned int system_call_write(unsigned int file_descriptor, void const *buffer,
 
 unsigned int system_call(unsigned int eax, unsigned int ebx, unsigned int ecx, unsigned int edx, unsigned int esi, unsigned int edi, unsigned int ebp)
 {
-	UNUSED_ARGUMENT(esi);
-	UNUSED_ARGUMENT(edi);
-	UNUSED_ARGUMENT(ebp);
 	#define SYSTEM_CALL_EXIT	0x00000001
 	#define SYSTEM_CALL_WRITE	0x00000004
+	printf_serial("System call arguments\n");
+	printf_serial("eax = %#010.8x\n", eax);
+	printf_serial("ebx = %#010.8x\n", ebx);
+	printf_serial("ecx = %#010.8x\n", ecx);
+	printf_serial("edx = %#010.8x\n", edx);
+	printf_serial("esi = %#010.8x\n", esi);
+	printf_serial("edi = %#010.8x\n", edi);
+	printf_serial("ebp = %#010.8x\n", ebp);
 	switch(eax)
 	{
 	case SYSTEM_CALL_EXIT:
@@ -50,6 +55,7 @@ unsigned int system_call_write(unsigned int file_descriptor, void const *buffer,
 		break;
 	default:
 		ERROR(); // Invalid file descriptor
+		printf_serial("Invalid file descriptor %#010.8x\n", file_descriptor);
 		break;
 	}
 	return counter;
