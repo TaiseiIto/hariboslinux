@@ -197,8 +197,6 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	unsigned int application_return_value;
 	unsigned short executable_segment;
 	unsigned short data_segment;
-	// Check argv.
-	// for(unsigned int argi = 0; argi < arguments->argc; argi++)printf_serial("argv[%d] = %s\n", argi, arguments->argv[argi]);
 	// Register application memory to application task.
 	get_current_task()->additionals = malloc(sizeof(CommandTaskAdditional));
 	((CommandTaskAdditional *)get_current_task()->additionals)->application_memory = application_memory;
@@ -216,15 +214,13 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	argc_writer = writer;
 	application_stack_floor = writer;
 	*argc_writer = arguments->argc;
-	*argv_writer = argv_element_writer;
+	*argv_writer = (char **)((unsigned int)argv_element_writer - (unsigned int)application_memory);
 	for(unsigned int argi = 0; argi < arguments->argc; argi++)
 	{
-		argv_element_writer[argi] = argv_string_writer;
+		argv_element_writer[argi] = (char *)((unsigned int)argv_string_writer - (unsigned int)application_memory);
 		strcpy(argv_string_writer, arguments->argv[argi]);
 		argv_string_writer += strlen(argv_string_writer) + 1;
 	}
-	// Check copied argv.
-	for(unsigned int argi = 0; argi < *argc_writer; argi++)printf_serial("argv[%d] = %s\n", argi, (*argv_writer)[argi]);
 	// Alloc application segments.
 	data_segment = alloc_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	executable_segment = alloc_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
