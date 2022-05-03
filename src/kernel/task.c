@@ -95,7 +95,6 @@ void close_task(Task *task)
 	if(task->event_queue)delete_queue(task->event_queue);
 	free(task->stack);
 	free(task);
-	print_task_structure();
 	if(next_task_found)
 	{
 		next_task->status = TASK_STATUS_RUN;
@@ -210,7 +209,6 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 		new_task->next = new_task;
 	}
 	allow_switch_task();
-	print_task_structure();
 	return new_task;
 }
 
