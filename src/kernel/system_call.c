@@ -1,3 +1,7 @@
+// Bibliography
+// http://faculty.nps.edu/cseagle/assembly/sys_call.html
+// https://rninche01.tistory.com/entry/Linux-system-call-table-%EC%A0%95%EB%A6%ACx86-x64
+
 #include "common.h"
 #include "event.h"
 #include "io.h"
