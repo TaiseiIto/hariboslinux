@@ -41,6 +41,8 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 	free(command_task_argument->com_file_name);
 	for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
 	free(command_task_argument->argv);
+	printf_serial("Application return value = %d\n", ((CommandTaskReturn *)command_task_argument->task_return->task_return)->return_value);
+	free(command_task_argument->task_return->task_return);
 	switch(command_task_argument->shell->type)
 	{
 	case SHELL_TYPE_CONSOLE:
@@ -194,7 +196,6 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	char ***argv_writer;
 	unsigned int *argc_writer;
 	void *writer;
-	unsigned int application_return_value;
 	unsigned short executable_segment;
 	unsigned short data_segment;
 	// Register application memory to application task.
@@ -224,18 +225,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	// Alloc application segments.
 	data_segment = alloc_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	executable_segment = alloc_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
-	// Check com header.
-	printf_serial("application_memory = %p\n", application_memory);
-	printf_serial("text_base = %p\n", com_header->text_base);
-	printf_serial("rodata_base = %p\n", com_header->rodata_base);
-	printf_serial("data_base = %p\n", com_header->data_base);
-	printf_serial("bss_base = %p\n", com_header->bss_base);
-	printf_serial("common_base = %p\n", com_header->common_base);
-	printf_serial("common_deletion_prevention_base = %p\n", com_header->common_deletion_prevention_base);
-	printf_serial("heap_and_stack_base = %p\n", com_header->heap_and_stack_base);
-	printf_serial("heap_and_stack_size = %#010.8x\n", com_header->heap_and_stack_size);
 	// Call application.
-	application_return_value = call_application
+	((CommandTaskReturn *)arguments->task_return->task_return)->return_value = call_application
 	(
 		com_header->text_base/* eip */,
 		EFLAGS_NOTHING | EFLAGS_INTERRUPT_FLAG/* eflags */,
@@ -256,7 +247,6 @@ void command_task_procedure(CommandTaskArgument *arguments)
 		application_stack_floor/* application_stack_floor */,
 		&get_current_task()->task_status_segment/* Task status segment */
 	);
-	printf_serial("application_return_value = %d\n", application_return_value);
 	// Clean up.
 	free_segment(data_segment);
 	free_segment(executable_segment);
@@ -313,7 +303,6 @@ void *execute_command(Shell *shell, char const *command)
 {
 	unsigned int argc;
 	char **argv;
-	printf_shell(shell, "%s shell %p executes command \"%s\"\n", shell->type == SHELL_TYPE_CONSOLE ? "Console" : "Serial" , shell, command);
 	// Create argv.
 	argv = create_argv(command);
 	if(argv)
@@ -323,8 +312,6 @@ void *execute_command(Shell *shell, char const *command)
 		unsigned int com_file_size;
 		// Count argc.
 		for(argc = 0; argv[argc]; argc++);
-		// Print argv.
-		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)printf_shell(shell, "argv[%d] = \"%s\"\n", argv_index, argv[argv_index]);
 		// Load a file specified by argv[0].
 		com_file_name = create_format_char_array("%s.com", argv[0]);
 		com_file_binary = load_file(com_file_name);
@@ -341,6 +328,7 @@ void *execute_command(Shell *shell, char const *command)
 			command_task_argument->shell = shell;
 			command_task_argument->task_return = malloc(sizeof(*command_task_argument->task_return));
 			command_task_argument->task_return->task_type = TASK_TYPE_COMMAND;
+			command_task_argument->task_return->task_return = malloc(sizeof(CommandTaskReturn));
 			start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
 		}
 		else
@@ -380,10 +368,6 @@ Shell *get_current_shell(void)
 	Shell *shell = serial_shell;
 	do
 	{
-		printf_serial("get_current_task()->parent = %p\n", get_current_task()->parent);
-		printf_serial("shell = %p\n", shell);
-		printf_serial("shell->event_queue = %p\n", shell->event_queue);
-		printf_serial("shell->event_queue->task = %p\n", shell->event_queue->task);
 		if(get_current_task()->parent == shell->event_queue->task)return shell;
 		shell = shell->next;
 	} while(shell != serial_shell);

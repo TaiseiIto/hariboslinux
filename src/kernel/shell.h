@@ -38,6 +38,11 @@ typedef struct _CommandTaskArgument
 	struct _TaskReturn *task_return;
 } CommandTaskArgument;
 
+typedef struct _CommandTaskReturn
+{
+	unsigned int return_value;
+} CommandTaskReturn;
+
 #include "chain_string.h"
 #include "console.h"
 #include "task.h"
