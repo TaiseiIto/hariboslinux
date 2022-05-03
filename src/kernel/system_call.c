@@ -47,7 +47,7 @@ unsigned int system_call_write(unsigned int file_descriptor, void const *buffer,
 	{
 	case STDOUT:
 	case STDERR:
-		for(void const *reader = buffer; reader != buffer + count && *(char const *)reader; reader++)
+		for(void const *reader = buffer; reader != buffer + count; reader++)
 		{
 			put_char_shell(shell, *(char const *)reader);
 			counter++;

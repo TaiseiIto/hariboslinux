@@ -352,6 +352,7 @@ Shell *get_current_shell(void)
 		if(get_current_task()->parent == shell->event_queue->task)return shell;
 		shell = shell->next;
 	} while(shell != serial_shell);
+	ERROR(); // The shell is not found.
 	return NULL;
 }
 
