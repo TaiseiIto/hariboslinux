@@ -191,6 +191,7 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	unsigned int application_return_value;
 	unsigned short executable_segment;
 	unsigned short data_segment;
+	for(unsigned int argi = 0; argi < arguments->argc; argi++)printf_serial("argv[%d] = %s\n", argi, arguments->argv[argi]);
 	get_current_task()->additionals = malloc(sizeof(CommandTaskAdditional));
 	((CommandTaskAdditional *)get_current_task()->additionals)->application_memory = application_memory;
 	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
