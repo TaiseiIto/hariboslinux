@@ -247,8 +247,8 @@ Console *make_sheet_console(Sheet *sheet, Color foreground_color, Color backgrou
 	printf_serial("Make sheet %p console %p\n", sheet, new_console);
 	prohibit_switch_task();
 	new_console->prompt_position = NULL;
-	new_console->shell = create_shell(new_console);
 	new_console->text_box = make_sheet_text_box(sheet, foreground_color, background_color);
+	new_console->shell = create_shell(new_console);
 	new_console->default_event_procedure = new_console->text_box->sheet->event_procedure;
 	new_console->text_box->sheet->event_procedure = console_event_procedure;
 	if(root_console)
