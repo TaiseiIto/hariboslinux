@@ -25,6 +25,7 @@ system_call:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
+	subl	$0x00000004,%esp # Space for return value
 	pushal
 	movl	0x08(%ebp),%eax
 	movl	0x0c(%ebp),%ebx
@@ -34,7 +35,9 @@ system_call:
 	movl	0x1c(%ebp),%edi
 	movl	0x20(%ebp),%ebp
 	int	$0x80
+	movl	%eax,	0x20(%esp)
 	popal
+	popl	%eax
 	leave
 	ret
 
