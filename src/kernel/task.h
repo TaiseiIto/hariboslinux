@@ -42,6 +42,7 @@ typedef struct _Task
 	TaskStatusSegment task_status_segment;
 	void *stack;
 	void *arguments;
+	void *additionals;
 	void *returns;
 	struct _Queue *event_queue;
 	struct _Task *parent;

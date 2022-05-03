@@ -27,7 +27,7 @@ unsigned int system_call(unsigned int eax, unsigned int ebx, unsigned int ecx, u
 	case SYSTEM_CALL_EXIT:
 		return system_call_exit(ebx);
 	case SYSTEM_CALL_WRITE:
-		return system_call_write(ebx, (void const *)ecx, (size_t)edx);
+		return system_call_write(ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
 	default:
 		ERROR(); // Invalid eax
 		return -1;

@@ -22,6 +22,11 @@ typedef struct _Shell
 	#define SHELL_TYPE_SERIAL	0x01
 } Shell;
 
+typedef struct _CommandTaskAdditional
+{
+	void *application_memory;
+} CommandTaskAdditional;
+
 typedef struct _CommandTaskArgument
 {
 	char *com_file_name;

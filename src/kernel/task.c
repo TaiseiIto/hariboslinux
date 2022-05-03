@@ -355,6 +355,7 @@ void start_task(Task *task, void *arguments, void *returns, unsigned char occupa
 	switch(task->status)
 	{
 	case TASK_STATUS_SLEEP:
+		task->additionals = NULL;
 		task->arguments = arguments;
 		task->event_queue = NULL;
 		task->elapsed_time = 0;
