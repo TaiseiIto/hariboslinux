@@ -20,6 +20,8 @@ typedef union
 // the first arg is 0th
 unsigned int get_caller_variadic_arg(unsigned int);
 
+void const *get_esp(void);
+
 unsigned int system_call(unsigned int eax, unsigned int ebx, unsigned int ecx, unsigned int edx, unsigned int esi, unsigned int edi, unsigned int ebp);
 
 #endif

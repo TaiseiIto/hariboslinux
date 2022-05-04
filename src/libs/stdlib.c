@@ -1,4 +1,5 @@
 #include "common.h"
+#include "io.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "system_call.h"
@@ -78,6 +79,11 @@ void *malloc(size_t size)
 			else // devide the memory section
 			{
 				MemorySection *remaining_memory_section = (MemorySection *)((void *)memory_section + sizeof(*memory_section) + size);
+				if(get_esp() <= (void *)(remaining_memory_section + 1))
+				{
+					ERROR(); // Collision between stack and heap
+					exit(1);
+				}
 				remaining_memory_section->previous = memory_section;
 				remaining_memory_section->next = memory_section->next;
 				remaining_memory_section->size = memory_section->size - size - sizeof(*remaining_memory_section);

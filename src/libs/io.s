@@ -6,10 +6,12 @@
 # Preserved registers: ebx, esi, edi, ebp, esp
 
 	.globl	get_caller_variadic_arg
+	.globl	get_esp
 	.globl	system_call
 
-	.type	get_caller_variadic_arg,@function
-	.type	system_call,	@function
+	.type	get_caller_variadic_arg,	@function
+	.type	get_esp,			@function
+	.type	system_call,			@function
 
 	.text
 
@@ -25,6 +27,14 @@ get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);
 	movl	0x08(%ebp),%edx
 	movl	0x08(%esi,%edx,0x04),%eax
 	popl	%esi
+	leave
+	ret
+
+get_esp:			# void const *get_esp(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	%esp,	%eax
 	leave
 	ret
 
