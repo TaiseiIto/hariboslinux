@@ -1,8 +1,8 @@
-#include "system_call.h"
+#include "stdio.h"
 
 int main(void)
 {
-	system_call_write(1, "Hello, World!\n", 14);
+	printf("Hello, World!\n");
 	return 0;
 }
 
