@@ -11,12 +11,17 @@ typedef struct _ShellPutCharacterEvent
 	char character;
 } ShellPutCharacterEvent;
 
-typedef struct _StringToStringDictionary
+typedef struct _StringToStringDictionaryElement
 {
 	char *key;
 	char *value;
-	struct _StringToStringDictionary *previous;
-	struct _StringToStringDictionary *next;
+	struct _StringToStringDictionaryElement *previous;
+	struct _StringToStringDictionaryElement *next;
+} StringToStringDictionaryElement;
+
+typedef struct _StringToStringDictionary
+{
+	StringToStringDictionaryElement *elements;
 } StringToStringDictionary;
 
 typedef struct _Shell

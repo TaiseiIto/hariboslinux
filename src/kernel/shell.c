@@ -32,8 +32,9 @@ Shell *serial_shell = NULL;
 
 char **create_argv(char const *command);
 void command_task_procedure(CommandTaskArgument *arguments);
+StringToStringDictionary *create_string_to_string_dictionary(void);
 void delete_string_to_string_dictionary(StringToStringDictionary *dictionary);
-void delete_string_to_string_dictionary_element(StringToStringDictionary *element);
+void delete_string_to_string_dictionary_element(StringToStringDictionaryElement *element);
 
 void clean_up_command_task(CommandTaskArgument *command_task_argument)
 {
@@ -282,7 +283,7 @@ Shell *create_shell(Console *console)
 		serial_shell = shell;
 	}
 	allow_switch_task();
-	shell->variables = NULL;
+	shell->variables = create_string_to_string_dictionary();
 	if(console)
 	{
 		shell->event_queue = console->text_box->sheet->event_queue;
@@ -296,6 +297,13 @@ Shell *create_shell(Console *console)
 		shell->type = SHELL_TYPE_SERIAL;
 	}
 	return shell;
+}
+
+StringToStringDictionary *create_string_to_string_dictionary(void)
+{
+	StringToStringDictionary *dictionary = malloc(sizeof(*dictionary));
+	dictionary->elements = NULL;
+	return dictionary;
 }
 
 void delete_shell(Shell *shell)
@@ -313,14 +321,17 @@ void delete_string_to_string_dictionary(StringToStringDictionary *dictionary)
 {
 	if(dictionary)
 	{
-		while(dictionary != dictionary->next)delete_string_to_string_dictionary_element(dictionary->next);
-		if(dictionary->previous == dictionary && dictionary == dictionary->next)delete_string_to_string_dictionary_element(dictionary);
-		else ERROR(); // The dictionary is broken.
+		if(dictionary->elements)
+		{
+			while(dictionary->elements != dictionary->elements->next)delete_string_to_string_dictionary_element(dictionary->elements->next);
+			delete_string_to_string_dictionary_element(dictionary->elements);
+		}
+		free(dictionary);
 	}
 	else ERROR(); // The dictionary doesn't exist.
 }
 
-void delete_string_to_string_dictionary_element(StringToStringDictionary *element)
+void delete_string_to_string_dictionary_element(StringToStringDictionaryElement *element)
 {
 	if(element)
 	{
