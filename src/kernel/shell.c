@@ -341,6 +341,8 @@ void delete_dictionary_element(Dictionary *dictionary, char const *key)
 	{
 		if(!strcmp(element->key, key))
 		{
+			if(element == dictionary->elements)dictionary->elements = element->next;
+			if(element == dictionary->elements)dictionary->elements = NULL;
 			element->previous->next = element->next;
 			element->next->previous = element->previous;
 			free(element->key);
