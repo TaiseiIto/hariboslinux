@@ -1,5 +1,6 @@
 #include "common.h"
 #include "stdlib.h"
+#include "system_call.h"
 
 typedef struct _ComHeader
 {
@@ -24,6 +25,11 @@ typedef struct _MemorySection
 
 ComHeader *com_header = NULL;
 MemorySection *root_memory_section = NULL;
+
+void exit(int status)
+{
+	system_call_exit(status);
+}
 
 void free(void *address)
 {

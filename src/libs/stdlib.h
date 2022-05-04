@@ -3,6 +3,7 @@
 
 #include "stddef.h"
 
+void exit(int status);
 void free(void *address);
 void *malloc(size_t size);
 
