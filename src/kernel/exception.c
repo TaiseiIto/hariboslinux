@@ -80,7 +80,7 @@ void general_protection_fault_exception_handler(void)
 	Shell *shell = get_current_shell();
 	if(shell)
 	{
-		printf_shell(shell, "GENERAL PROTECTION FAULT EXCEPTION!!!\n");
+		printf_shell(shell, "SEGMENTATION FAULT!!!\n");
 		exit_application(1, get_current_task()->task_status_segment.esp0);
 	}
 	else

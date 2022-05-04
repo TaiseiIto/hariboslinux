@@ -22,31 +22,31 @@ SECTIONS
 	.text :
 	{
 		crt.o(.text)
-		malware.o(.text)
+		deadbeef.o(.text)
 	}
 	rodata_base = .;
 	.rodata :
 	{
 		crt.o(.rodata)
-		malware.o(.rodata)
+		deadbeef.o(.rodata)
 	}
 	data_base = .;
 	.data :
 	{
 		crt.o(.data)
-		malware.o(.data)
+		deadbeef.o(.data)
 	}
 	bss_base = .;
 	.bss :
 	{
 		crt.o(.bss)
-		malware.o(.bss)
+		deadbeef.o(.bss)
 	}
 	common_base = .;
 	COMMON :
 	{
 		crt.o(COMMON)
-		malware.o(COMMON)
+		deadbeef.o(COMMON)
 	}
 	common_deletion_prevention_base = .;
 	.common_deletion_prevention :
