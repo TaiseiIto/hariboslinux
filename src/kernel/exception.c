@@ -4,6 +4,7 @@
 #include "io.h"
 #include "pic.h"
 #include "serial.h"
+#include "shell.h"
 
 //				{red ,green, blue,alpha}
 const Color exception_text_background_color =	{0x00, 0x00, 0x00, 0xff};
@@ -76,9 +77,18 @@ void fpu_error_exception_handler(void)
 
 void general_protection_fault_exception_handler(void)
 {
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "GENERAL PROTECTION FAULT EXCEPTION!!!\n");
-	print_serial("GENERAL PROTECTION FAULT EXCEPTION!!!\n");
-	kernel_panic();
+	Shell *shell = get_current_shell();
+	if(shell)
+	{
+		printf_shell(shell, "GENERAL PROTECTION FAULT EXCEPTION!!!\n");
+		exit_application(1, get_current_task()->task_status_segment.esp0);
+	}
+	else
+	{
+		printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "GENERAL PROTECTION FAULT EXCEPTION!!!\n");
+		print_serial("GENERAL PROTECTION FAULT EXCEPTION!!!\n");
+		kernel_panic();
+	}
 }
 
 void invalid_opcode_exception_handler(void)

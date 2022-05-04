@@ -1267,9 +1267,8 @@ interrupt_gate0x0d:		# void interrupt_gate0x0d(void);
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
-	call	cli_task_interrupt
+	sti
 	call	general_protection_fault_exception_handler
-	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
