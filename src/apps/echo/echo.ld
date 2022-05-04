@@ -22,9 +22,11 @@ SECTIONS
 	.text :
 	{
 		crt.o(.text)
+		chain_string.o(.text)
 		echo.o(.text)
 		io.o(.text)
 		stdio.o(.text)
+		stdlib.o(.text)
 		string.o(.text)
 		system_call.o(.text)
 	}
@@ -32,9 +34,11 @@ SECTIONS
 	.rodata :
 	{
 		crt.o(.rodata)
+		chain_string.o(.rodata)
 		echo.o(.rodata)
 		io.o(.rodata)
 		stdio.o(.rodata)
+		stdlib.o(.rodata)
 		string.o(.rodata)
 		system_call.o(.rodata)
 	}
@@ -42,9 +46,11 @@ SECTIONS
 	.data :
 	{
 		crt.o(.data)
+		chain_string.o(.data)
 		echo.o(.data)
 		io.o(.data)
 		stdio.o(.data)
+		stdlib.o(.data)
 		string.o(.data)
 		system_call.o(.data)
 	}
@@ -52,9 +58,11 @@ SECTIONS
 	.bss :
 	{
 		crt.o(.bss)
+		chain_string.o(.bss)
 		echo.o(.bss)
 		io.o(.bss)
 		stdio.o(.bss)
+		stdlib.o(.bss)
 		string.o(.bss)
 		system_call.o(.bss)
 	}
@@ -62,9 +70,11 @@ SECTIONS
 	COMMON :
 	{
 		crt.o(COMMON)
+		chain_string.o(COMMON)
 		echo.o(COMMON)
 		io.o(COMMON)
 		stdio.o(COMMON)
+		stdlib.o(COMMON)
 		string.o(COMMON)
 		system_call.o(COMMON)
 	}
