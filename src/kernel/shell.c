@@ -37,6 +37,7 @@ void delete_dictionary(Dictionary *dictionary);
 void delete_dictionary_element(Dictionary *dictionary, char const *key);
 char const *look_up_dictionary(Dictionary const *dictionary, char const *key);
 void set_dictionary_element(Dictionary *dictionary, char const *key, char const *value);
+void show_dictionary(Dictionary const *dictionary);
 
 void clean_up_command_task(CommandTaskArgument *command_task_argument)
 {
@@ -515,5 +516,25 @@ void set_dictionary_element(Dictionary *dictionary, char const *key, char const 
 		dictionary->elements->previous = dictionary->elements;
 		dictionary->elements->next = dictionary->elements;
 	}
+	show_dictionary(dictionary);
+}
+
+void show_dictionary(Dictionary const *dictionary)
+{
+	Shell *shell = serial_shell;
+	do
+	{
+		if(shell->variables == dictionary)
+		{
+			DictionaryElement const *element = dictionary->elements;
+			do
+			{
+				printf_shell(shell, "$%s=%s\n", element->key, element->value);
+				element = element->next;
+			} while(element != dictionary->elements);
+		}
+		shell = shell->next;
+	} while(shell != serial_shell);
+	ERROR(); // The shell is not found.
 }
 
