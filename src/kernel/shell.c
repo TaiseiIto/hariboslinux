@@ -32,9 +32,9 @@ Shell *serial_shell = NULL;
 
 char **create_argv(char const *command);
 void command_task_procedure(CommandTaskArgument *arguments);
-StringToStringDictionary *create_string_to_string_dictionary(void);
-void delete_string_to_string_dictionary(StringToStringDictionary *dictionary);
-void delete_string_to_string_dictionary_element(StringToStringDictionaryElement *element);
+Dictionary *create_string_to_string_dictionary(void);
+void delete_dictionary(Dictionary *dictionary);
+void delete_dictionary_element(Dictionary *dictionary, char const *key);
 
 void clean_up_command_task(CommandTaskArgument *command_task_argument)
 {
@@ -299,9 +299,9 @@ Shell *create_shell(Console *console)
 	return shell;
 }
 
-StringToStringDictionary *create_string_to_string_dictionary(void)
+Dictionary *create_string_to_string_dictionary(void)
 {
-	StringToStringDictionary *dictionary = malloc(sizeof(*dictionary));
+	Dictionary *dictionary = malloc(sizeof(*dictionary));
 	dictionary->elements = NULL;
 	return dictionary;
 }
@@ -313,35 +313,40 @@ void delete_shell(Shell *shell)
 	shell->previous->next = shell->next;
 	shell->next->previous = shell->previous;
 	allow_switch_task();
-	if(shell->variables)delete_string_to_string_dictionary(shell->variables);
+	if(shell->variables)delete_dictionary(shell->variables);
 	free(shell);
 }
 
-void delete_string_to_string_dictionary(StringToStringDictionary *dictionary)
+void delete_dictionary(Dictionary *dictionary)
 {
 	if(dictionary)
 	{
 		if(dictionary->elements)
 		{
-			while(dictionary->elements != dictionary->elements->next)delete_string_to_string_dictionary_element(dictionary->elements->next);
-			delete_string_to_string_dictionary_element(dictionary->elements);
+			while(dictionary->elements != dictionary->elements->next)delete_dictionary_element(dictionary, dictionary->elements->next->key);
+			delete_dictionary_element(dictionary, dictionary->elements->key);
 		}
 		free(dictionary);
 	}
 	else ERROR(); // The dictionary doesn't exist.
 }
 
-void delete_string_to_string_dictionary_element(StringToStringDictionaryElement *element)
+void delete_dictionary_element(Dictionary *dictionary, char const *key)
 {
-	if(element)
+	DictionaryElement *element = dictionary->elements;
+	do
 	{
-		element->previous->next = element->next;
-		element->next->previous = element->previous;
-		free(element->key);
-		free(element->value);
-		free(element);
-	}
-	else ERROR(); // The dictionary element doesn't exist.
+		if(!strcmp(element->key, key))
+		{
+			element->previous->next = element->next;
+			element->next->previous = element->previous;
+			free(element->key);
+			free(element->value);
+			free(element);
+			break;
+		}
+		element = element->next;
+	} while(element != dictionary->elements);
 }
 
 void *execute_command(Shell *shell, char const *command)
