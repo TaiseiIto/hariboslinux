@@ -32,7 +32,7 @@ Shell *serial_shell = NULL;
 
 char **create_argv(char const *command);
 void command_task_procedure(CommandTaskArgument *arguments);
-Dictionary *create_string_to_string_dictionary(void);
+Dictionary *create_dictionary(void);
 void delete_dictionary(Dictionary *dictionary);
 void delete_dictionary_element(Dictionary *dictionary, char const *key);
 
@@ -283,7 +283,7 @@ Shell *create_shell(Console *console)
 		serial_shell = shell;
 	}
 	allow_switch_task();
-	shell->variables = create_string_to_string_dictionary();
+	shell->variables = create_dictionary();
 	if(console)
 	{
 		shell->event_queue = console->text_box->sheet->event_queue;
@@ -299,7 +299,7 @@ Shell *create_shell(Console *console)
 	return shell;
 }
 
-Dictionary *create_string_to_string_dictionary(void)
+Dictionary *create_dictionary(void)
 {
 	Dictionary *dictionary = malloc(sizeof(*dictionary));
 	dictionary->elements = NULL;
