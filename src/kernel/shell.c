@@ -35,6 +35,8 @@ void command_task_procedure(CommandTaskArgument *arguments);
 Dictionary *create_dictionary(void);
 void delete_dictionary(Dictionary *dictionary);
 void delete_dictionary_element(Dictionary *dictionary, char const *key);
+char const *look_up_dictionary(Dictionary const *dictionary, char const *key);
+void set_dictionary_element(Dictionary *dictionary, char const *key, char const *value);
 
 void clean_up_command_task(CommandTaskArgument *command_task_argument)
 {
@@ -334,7 +336,7 @@ void delete_dictionary(Dictionary *dictionary)
 void delete_dictionary_element(Dictionary *dictionary, char const *key)
 {
 	DictionaryElement *element = dictionary->elements;
-	do
+	if(element)do
 	{
 		if(!strcmp(element->key, key))
 		{
@@ -431,6 +433,19 @@ void init_shells(void)
 	serial_shell = create_shell(NULL);
 }
 
+char const *look_up_dictionary(Dictionary const *dictionary, char const *key)
+{
+	DictionaryElement const *element = dictionary->elements;
+	do
+	{
+		int comparison = strcmp(element->key, key);
+		if(!comparison)return element->value;
+		else if(0 < comparison)break;
+		element = element->next;
+	} while(element != dictionary->elements);
+	return NULL;
+}
+
 void print_shell(Shell *shell, char const *string)
 {
 	for(; *string; string++)put_char_shell(shell, *string);
@@ -458,6 +473,47 @@ void put_char_shell(Shell *shell, char character)
 	default:
 		ERROR(); // Invalid shell type.
 		break;
+	}
+}
+
+void set_dictionary_element(Dictionary *dictionary, char const *key, char const *value)
+{
+	DictionaryElement *element = dictionary->elements;
+	if(element)
+	{
+		DictionaryElement *new_element;
+		do
+		{
+			int comparison = strcmp(element->key, key);
+			if(!comparison)
+			{
+				free(element->value);
+				element->value = malloc(strlen(value) + 1);
+				strcpy(element->value, value);
+				return;
+			}
+			else if(0 < comparison)break;
+			element = element->next;
+		} while(element != dictionary->elements);
+		new_element = malloc(sizeof(*new_element));
+		new_element->key = malloc(strlen(key) + 1);
+		strcpy(new_element->key, key);
+		new_element->value = malloc(strlen(value) + 1);
+		strcpy(new_element->value, value);
+		new_element->previous = element->previous;
+		new_element->next = element;
+		element->previous->next = new_element;
+		element->previous = new_element;
+	}
+	else
+	{
+		dictionary->elements = malloc(sizeof(*dictionary->elements));
+		dictionary->elements->key = malloc(strlen(key) + 1);
+		strcpy(dictionary->elements->key, key);
+		dictionary->elements->value = malloc(strlen(value) + 1);
+		strcpy(dictionary->elements->value, value);
+		dictionary->elements->previous = dictionary->elements;
+		dictionary->elements->next = dictionary->elements;
 	}
 }
 
