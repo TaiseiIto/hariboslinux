@@ -1,4 +1,5 @@
 #include "common.h"
+#include "stdio.h"
 #include "stdlib.h"
 #include "system_call.h"
 
@@ -54,7 +55,11 @@ void free(void *address)
 			memory_section->next = memory_section->next->next;
 		}
 	}
-	// else // double free error!
+	else
+	{
+		ERROR();// double free error!
+		exit(1);
+	}
 	return;
 }
 
@@ -87,6 +92,8 @@ void *malloc(size_t size)
 		}
 		memory_section = memory_section->next;
 	} while(memory_section != root_memory_section);
+	ERROR(); // There is no enough memory.
+	exit(1);
 	return NULL;
 }
 

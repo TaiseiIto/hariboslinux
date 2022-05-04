@@ -1,6 +1,7 @@
 #include "chain_string.h"
 #include "io.h"
 #include "limits.h"
+#include "stdio.h"
 #include "stdlib.h"
 
 ChainString *create_chain_string(char const *string)
@@ -21,7 +22,7 @@ ChainString *create_chain_substring(ChainCharacter *first_character, ChainCharac
 	chain_string->length = 0;
 	if(!first_character && !last_character)return chain_string;
 	else if(first_character && last_character)for(ChainCharacter *character = first_character; character != last_character->next; character = character->next)insert_char_front(chain_string, NULL, character->character);
-	// else ERROR(); // The arguments first_character and last_character are inconsistent.
+	else ERROR(); // The arguments first_character and last_character are inconsistent.
 	return chain_string;
 }
 
@@ -29,7 +30,7 @@ char *create_char_array_from_chain_string(ChainString const *string)
 {
 	char *char_array;
 	char *writer;
-	// if(!string)ERROR(); // The string doesn't exist.
+	if(!string)ERROR(); // The string doesn't exist.
 	char_array = malloc(string->length + 1);
 	writer = char_array;
 	for(ChainCharacter *position = string->first_character; position; position = position->next)*writer++ = position->character;
@@ -414,15 +415,15 @@ char *create_format_char_array(char const *format, ...)
 
 void delete_chain_string(ChainString *string)
 {
-	// if(!string)ERROR(); // The string doesn't exist.
+	if(!string)ERROR(); // The string doesn't exist.
 	delete_chars(string, string->first_character, string->length);
 	free(string);
 }
 
 void delete_char(ChainString *string, ChainCharacter *position)
 {
-	// if(!string || !position)ERROR(); // The string or the position doesn't exist.
-	// if(!string->length)ERROR(); // There is no char in the string.
+	if(!string || !position)ERROR(); // The string or the position doesn't exist.
+	if(!string->length)ERROR(); // There is no char in the string.
 	if(position == string->first_character)string->first_character = position->next;
 	if(position == string->last_character)string->last_character = position->previous;
 	if(position->next)position->next->previous = position->previous;
@@ -434,11 +435,11 @@ void delete_char(ChainString *string, ChainCharacter *position)
 void delete_chars(ChainString *string, ChainCharacter *position, unsigned int length)
 {
 	ChainCharacter *next_position;
-	// if(!string)ERROR(); // The string doesn't exitst.
+	if(!string)ERROR(); // The string doesn't exitst.
 	for(unsigned int i = 0; i < length; i++)
 	{
 		next_position = position->next;
-		// if(!position)ERROR(); // Deletion length overflows.
+		if(!position)ERROR(); // Deletion length overflows.
 		delete_char(string, position);
 		position = next_position;
 	}
@@ -447,7 +448,7 @@ void delete_chars(ChainString *string, ChainCharacter *position, unsigned int le
 void insert_char_front(ChainString *string, ChainCharacter *position, char wedge)
 {
 	ChainCharacter *new_chain_character;
-	// if(!string)ERROR(); // The string doesn't exist.
+	if(!string)ERROR(); // The string doesn't exist.
 	new_chain_character = malloc(sizeof(*new_chain_character));
 	new_chain_character->character = wedge;
 	if(!string->first_character && !string->last_character)
@@ -475,7 +476,7 @@ void insert_char_front(ChainString *string, ChainCharacter *position, char wedge
 			if(position == string->first_character)string->first_character = new_chain_character;
 		}
 	}
-	// else ERROR(); // The string is broken.
+	else ERROR(); // The string is broken.
 	string->length++;
 }
 
@@ -492,7 +493,7 @@ void insert_chain_string_front(ChainString *string, ChainCharacter *position, Ch
 void insert_char_back(ChainString *string, ChainCharacter *position, char wedge)
 {
 	ChainCharacter *new_chain_character;
-	// if(!string)ERROR(); // The string doesn't exist.
+	if(!string)ERROR(); // The string doesn't exist.
 	new_chain_character = malloc(sizeof(*new_chain_character));
 	new_chain_character->character = wedge;
 	if(!string->first_character && !string->last_character)
@@ -520,7 +521,7 @@ void insert_char_back(ChainString *string, ChainCharacter *position, char wedge)
 			if(position == string->last_character)string->last_character = new_chain_character;
 		}
 	}
-	// else ERROR(); // The string is broken.
+	else ERROR(); // The string is broken.
 	string->length++;
 }
 
