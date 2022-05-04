@@ -11,13 +11,21 @@ typedef struct _ShellPutCharacterEvent
 	char character;
 } ShellPutCharacterEvent;
 
+typedef struct _StringToStringDictionary
+{
+	char *key;
+	char *value;
+	struct _StringToStringDictionary *previous;
+	struct _StringToStringDictionary *next;
+} StringToStringDictionary;
+
 typedef struct _Shell
 {
-	struct _Queue *event_queue;
 	struct _Console *console;
+	struct _Queue *event_queue;
+	StringToStringDictionary *variables;
 	struct _Shell *previous;
 	struct _Shell *next;
-	unsigned int previous_application_return_value;
 	unsigned char type;
 	#define SHELL_TYPE_CONSOLE	0x00
 	#define SHELL_TYPE_SERIAL	0x01

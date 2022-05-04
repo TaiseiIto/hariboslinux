@@ -32,6 +32,8 @@ Shell *serial_shell = NULL;
 
 char **create_argv(char const *command);
 void command_task_procedure(CommandTaskArgument *arguments);
+void delete_string_to_string_dictionary(StringToStringDictionary *dictionary);
+void delete_string_to_string_dictionary_element(StringToStringDictionary *element);
 
 void clean_up_command_task(CommandTaskArgument *command_task_argument)
 {
@@ -41,7 +43,6 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 	free(command_task_argument->com_file_name);
 	for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
 	free(command_task_argument->argv);
-	command_task_argument->shell->previous_application_return_value = ((CommandTaskReturn *)command_task_argument->task_return->task_return)->return_value;
 	free(command_task_argument->task_return->task_return);
 	switch(command_task_argument->shell->type)
 	{
@@ -281,7 +282,7 @@ Shell *create_shell(Console *console)
 		serial_shell = shell;
 	}
 	allow_switch_task();
-	shell->previous_application_return_value = 0;
+	shell->variables = NULL;
 	if(console)
 	{
 		shell->event_queue = console->text_box->sheet->event_queue;
@@ -304,7 +305,32 @@ void delete_shell(Shell *shell)
 	shell->previous->next = shell->next;
 	shell->next->previous = shell->previous;
 	allow_switch_task();
+	if(shell->variables)delete_string_to_string_dictionary(shell->variables);
 	free(shell);
+}
+
+void delete_string_to_string_dictionary(StringToStringDictionary *dictionary)
+{
+	if(dictionary)
+	{
+		while(dictionary != dictionary->next)delete_string_to_string_dictionary_element(dictionary->next);
+		if(dictionary->previous == dictionary && dictionary == dictionary->next)delete_string_to_string_dictionary_element(dictionary);
+		else ERROR(); // The dictionary is broken.
+	}
+	else ERROR(); // The dictionary doesn't exist.
+}
+
+void delete_string_to_string_dictionary_element(StringToStringDictionary *element)
+{
+	if(element)
+	{
+		element->previous->next = element->next;
+		element->next->previous = element->previous;
+		free(element->key);
+		free(element->value);
+		free(element);
+	}
+	else ERROR(); // The dictionary element doesn't exist.
 }
 
 void *execute_command(Shell *shell, char const *command)
