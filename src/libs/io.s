@@ -5,11 +5,28 @@
 # Scratch registers: eax, ecx, edx
 # Preserved registers: ebx, esi, edi, ebp, esp
 
+	.globl	get_caller_variadic_arg
 	.globl	system_call
 
+	.type	get_caller_variadic_arg,@function
 	.type	system_call,	@function
 
 	.text
+
+				# // get nth arg in caller variadic arg function
+				# // the first arg is 0th
+get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	movl	(%ebp),	%esi
+	movl	(%esi),	%esi
+	movl	0x08(%ebp),%edx
+	movl	0x08(%esi,%edx,0x04),%eax
+	popl	%esi
+	leave
+	ret
 
 # unsigned int system_call
 # (

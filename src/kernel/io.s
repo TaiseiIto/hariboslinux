@@ -179,7 +179,7 @@ get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);
 	movl	(%ebp),	%esi
 	movl	(%esi),	%esi
 	movl	0x08(%ebp),%edx
-	movl	%ss:0x08(%esi,%edx,0x04),%eax
+	movl	0x08(%esi,%edx,0x04),%eax
 	popl	%esi
 	leave
 	ret
@@ -203,7 +203,7 @@ get_variadic_arg:		# unsigned int get_variadic_arg(unsigned int n);
 	pushl	%esi
 	movl	(%ebp),	%esi
 	movl	0x08(%ebp),%edx
-	movl	%ss:0x08(%esi,%edx,0x04),%eax
+	movl	0x08(%esi,%edx,0x04),%eax
 	popl	%esi
 	leave
 	ret
