@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-	for(int argi = 0; argi < argc; argi++)printf("argv[%d] = %s\n", argi, argv[argi]);
+	if(2 <= argc)printf("%s\n", argv[1]);
 	return 0;
 }
 
