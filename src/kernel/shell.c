@@ -324,11 +324,7 @@ void delete_dictionary(Dictionary *dictionary)
 {
 	if(dictionary)
 	{
-		if(dictionary->elements)
-		{
-			while(dictionary->elements != dictionary->elements->next)delete_dictionary_element(dictionary, dictionary->elements->next->key);
-			delete_dictionary_element(dictionary, dictionary->elements->key);
-		}
+		while(dictionary->elements)delete_dictionary_element(dictionary, dictionary->elements->key);
 		free(dictionary);
 	}
 	else ERROR(); // The dictionary doesn't exist.
@@ -339,7 +335,8 @@ void delete_dictionary_element(Dictionary *dictionary, char const *key)
 	DictionaryElement *element = dictionary->elements;
 	if(element)do
 	{
-		if(!strcmp(element->key, key))
+		int comparison = strcmp(element->key, key);
+		if(!comparison)
 		{
 			if(element == dictionary->elements)dictionary->elements = element->next;
 			if(element == dictionary->elements)dictionary->elements = NULL;
@@ -350,6 +347,7 @@ void delete_dictionary_element(Dictionary *dictionary, char const *key)
 			free(element);
 			break;
 		}
+		else if(0 < comparison)break;
 		element = element->next;
 	} while(element != dictionary->elements);
 }
