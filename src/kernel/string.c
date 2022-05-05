@@ -73,6 +73,12 @@ void *memset(void *buf, char ch, size_t size)
 	return buf;
 }
 
+char const *strchr(char const *string, char character)
+{
+	for(; *string; string++)if(*string == character)return string;
+	return NULL;
+}
+
 int strcmp(char const *string1, char const *string2)
 {
 	while(*string1 && *string2)

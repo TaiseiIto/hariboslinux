@@ -31,7 +31,7 @@ char const * const prompt = "> ";
 ChainString *serial_console_input_string;
 Shell *serial_shell = NULL;
 
-char **create_argv(char const *command);
+char **create_argv(Shell *shell, char const *command);
 void command_task_procedure(CommandTaskArgument *arguments);
 Dictionary *create_dictionary(void);
 void delete_dictionary(Dictionary *dictionary);
@@ -71,7 +71,7 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 	}
 }
 
-char **create_argv(char const *command)
+char **create_argv(Shell *shell, char const *command)
 {
 	CommandLineArgument *first_argument = malloc(sizeof(*first_argument));
 	CommandLineArgument *last_argument = first_argument;
@@ -142,6 +142,22 @@ char **create_argv(char const *command)
 			}
 		}
 		else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
+		break;
+	case '$': // Try expanding a shell variable.
+		if(command[1] == '{')
+		{
+			char const *open_bracket = command + 1;
+			char const *close_bracket = strchr(open_bracket, '}');
+			if(close_bracket) // Close bracket is found.
+			{
+				char *key = create_format_char_array("%.*s", (unsigned int)close_bracket - (unsigned int)open_bracket - 1, open_bracket + 1); // Create key.
+				char const *value = look_up_dictionary(shell->variables, key); // Look up shell variables.
+				if(value)insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
+				free(key);
+				command = close_bracket;
+			}
+			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command); // Close bracket is not found.
+		}
 		break;
 	default:
 		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
@@ -359,7 +375,7 @@ void *execute_command(Shell *shell, char const *command)
 	unsigned int argc;
 	char **argv;
 	// Create argv.
-	argv = create_argv(command);
+	argv = create_argv(shell, command);
 	if(argv)
 	{
 		char *com_file_name;
