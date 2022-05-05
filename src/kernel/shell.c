@@ -169,24 +169,20 @@ char **create_argv(Shell *shell, char const *command)
 		else
 		{
 			char const *key_begin = command + 1;
-			if(isalpha(*key_begin) || *key_begin == '_')
+			for(char const *key_end = key_begin + 1; *(key_end - 1); key_end++)
 			{
-				for(char const *key_end = key_begin + 1; *(key_end - 1); key_end++)
+				char *key = create_format_char_array("%.*s", (unsigned int)key_end - (unsigned int)key_begin, key_begin);
+				char const *value = look_up_dictionary(shell->variables, key); // Look up shell variables.
+				free(key);
+				if(value)
 				{
-					char *key = create_format_char_array("%.*s", (unsigned int)key_end - (unsigned int)key_begin, key_begin);
-					char const *value = look_up_dictionary(shell->variables, key); // Look up shell variables.
-					free(key);
-					if(value)
-					{
-						flags |= SHELL_VARIABLE_FOUND;
-						insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
-						command = key_end - 1;
-						break;
-					}
+					flags |= SHELL_VARIABLE_FOUND;
+					insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
+					command = key_end - 1;
+					break;
 				}
-				if(!(flags & SHELL_VARIABLE_FOUND))insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command); // The key is not found.
 			}
-			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command); // The key is incorrect.
+			if(!(flags & SHELL_VARIABLE_FOUND))insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command); // The key is not found.
 		}
 		flags &= ~SHELL_VARIABLE_FOUND;
 		break;
