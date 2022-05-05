@@ -1,5 +1,6 @@
 #include "chain_string.h"
 #include "console.h"
+#include "ctype.h"
 #include "disk.h"
 #include "io.h"
 #include "memory.h"
@@ -463,6 +464,10 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 			flags &= ~READ_KEY;
 			break;
 		default:
+			if(flags & READ_KEY)
+			{
+				if(!(isalnum(*command) || *command == '_'))return;
+			}
 			break;
 		}
 		command++;
