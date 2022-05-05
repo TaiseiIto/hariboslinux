@@ -638,7 +638,6 @@ void set_dictionary_element(Dictionary *dictionary, char const *key, char const 
 		dictionary->elements->previous = dictionary->elements;
 		dictionary->elements->next = dictionary->elements;
 	}
-	show_dictionary(dictionary);
 }
 
 void show_dictionary(Dictionary const *dictionary)
