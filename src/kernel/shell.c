@@ -369,8 +369,9 @@ void *execute_command(Shell *shell, char const *command)
 		com_file_name = create_format_char_array("%s.com", argv[0]);
 		com_file_binary = load_file(com_file_name);
 		com_file_size = get_file_information(com_file_name)->size;
-		if(com_file_binary)
+		if(com_file_binary) // The com file is found.
 		{
+			// Execute the com file.
 			CommandTaskArgument *command_task_argument = malloc(sizeof(*command_task_argument));
 			Task *command_task = create_task(get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
 			command_task_argument->com_file_name = com_file_name;
@@ -384,11 +385,11 @@ void *execute_command(Shell *shell, char const *command)
 			command_task_argument->task_return->task_return = malloc(sizeof(CommandTaskReturn));
 			start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
 		}
-		else
+		else // The com file is not found.
 		{
 			ConsoleEvent *console_event;
 			Event new_event;
-			printf_shell(shell, "Executable file \"%s\" is not found.\n", com_file_name);
+			// Clean up com_file_name and argv.
 			free(com_file_name);
 			for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
 			free(argv);
