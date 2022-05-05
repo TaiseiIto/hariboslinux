@@ -35,6 +35,7 @@ void command_task_procedure(CommandTaskArgument *arguments);
 Dictionary *create_dictionary(void);
 void delete_dictionary(Dictionary *dictionary);
 void delete_dictionary_element(Dictionary *dictionary, char const *key);
+void interpret_shell_variable_assignment(Shell *shell, char const *command);
 char const *look_up_dictionary(Dictionary const *dictionary, char const *key);
 void set_dictionary_element(Dictionary *dictionary, char const *key, char const *value);
 void show_dictionary(Dictionary const *dictionary);
@@ -389,6 +390,8 @@ void *execute_command(Shell *shell, char const *command)
 		{
 			ConsoleEvent *console_event;
 			Event new_event;
+			// Try interpreting the command as a shell variable assignment.
+			interpret_shell_variable_assignment(shell, command);
 			// Clean up com_file_name and argv.
 			free(com_file_name);
 			for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
@@ -434,6 +437,45 @@ void init_shells(void)
 {
 	serial_console_input_string = create_chain_string("");
 	serial_shell = create_shell(NULL);
+}
+
+void interpret_shell_variable_assignment(Shell *shell, char const *command)
+{
+	char const *key_begin = command;
+	char const *key_end = NULL;
+	char const *value_begin = NULL;
+	char const *value_end = NULL;
+	unsigned char flags;
+	#define READ_KEY 0x01
+	#define READ_VALUE 0x02
+	flags = READ_KEY;
+	while(*command)
+	{
+		if(!(flags & (READ_KEY | READ_VALUE)))
+		{
+			value_begin = command;
+			flags |= READ_VALUE;
+		}
+		switch(*command)
+		{
+		case '=':
+			key_end = command;
+			flags &= ~READ_KEY;
+			break;
+		default:
+			break;
+		}
+		command++;
+	}
+	if(flags & READ_VALUE)
+	{
+		value_end = command;
+		flags &= ~READ_VALUE;
+	}
+	printf_shell(shell, "key_begin\t= %p\n", key_begin);
+	printf_shell(shell, "key_end\t= %p\n", key_end);
+	printf_shell(shell, "value_begin\t= %p\n", value_begin);
+	printf_shell(shell, "value_end\t= %p\n", value_end);
 }
 
 char const *look_up_dictionary(Dictionary const *dictionary, char const *key)
