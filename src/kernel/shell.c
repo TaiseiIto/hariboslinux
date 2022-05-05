@@ -158,6 +158,23 @@ char **create_argv(Shell *shell, char const *command)
 			}
 			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command); // Close bracket is not found.
 		}
+		else
+		{
+			char const *key_begin = command + 1;
+			if(isalpha(*key_begin) || *key_begin == '_')for(char const *key_end = key_begin + 1; isalnum(*(key_end - 1)) || *(key_end - 1) == '_'; key_end++)
+			{
+				char *key = create_format_char_array("%.*s", (unsigned int)key_end - (unsigned int)key_begin, key_begin);
+				char const *value = look_up_dictionary(shell->variables, key); // Look up shell variables.
+				free(key);
+				if(value)
+				{
+					insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
+					command = key_end - 1;
+					break;
+				}
+			}
+			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command); // The key is incorrect.
+		}
 		break;
 	default:
 		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
@@ -466,7 +483,7 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 	#define READ_KEY 0x01
 	#define READ_VALUE 0x02
 	flags = READ_KEY;
-	if(isdigit(*command))return; // Shell variable name must not start with a number.
+	if(!(isalpha(*command) || *command == '_'))return; // Shell variable name must not start with a number.
 	while(*command)
 	{
 		if(!(flags & (READ_KEY | READ_VALUE)))
