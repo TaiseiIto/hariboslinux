@@ -168,7 +168,7 @@ char **create_argv(Shell *shell, char const *command)
 			char const *key_begin = command + 1;
 			if(isalpha(*key_begin) || *key_begin == '_')
 			{
-				for(char const *key_end = key_begin + 1; isalnum(*(key_end - 1)) || *(key_end - 1) == '_'; key_end++)
+				for(char const *key_end = key_begin + 1; *key_end; key_end++)
 				{
 					char *key = create_format_char_array("%.*s", (unsigned int)key_end - (unsigned int)key_begin, key_begin);
 					char const *value = look_up_dictionary(shell->variables, key); // Look up shell variables.
