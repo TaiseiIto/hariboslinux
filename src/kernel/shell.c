@@ -479,6 +479,34 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 	{
 		char *key = create_format_char_array("%.*s", (unsigned int)key_end - (unsigned int)key_begin, key_begin);
 		char *value = create_format_char_array("%.*s", (unsigned int)value_end - (unsigned int)value_begin, value_begin);
+		if((value[0] == '\"' && value[strlen(value) - 1] == '\"') || (value[0] == '\'' && value[strlen(value) - 1] == '\''))
+		{
+			// Solve escape sequences.
+			char const *value_reader;
+			char *value_writer = value;
+			for(value_reader = value + 1; value_reader[0] && value_reader[1]; value_reader++)switch(*value_reader)
+			{
+			case '\\':
+				value_reader++;
+				switch(*value_reader)
+				{
+				case 'n':
+					*value_writer++ = '\n';
+					break;
+				case 't':
+					*value_writer++ = '\t';
+					break;
+				default:
+					*value_writer++ = *value_reader;
+					break;
+				}
+				break;
+			default:
+				*value_writer++ = *value_reader;
+				break;
+			}
+			*value_writer = '\0';
+		}
 		printf_shell(shell, "key = \"%s\"\n", key);
 		printf_shell(shell, "value = \"%s\"\n", value);
 		free(key);
