@@ -54,7 +54,7 @@ typedef struct _CommandTaskArgument
 
 typedef struct _CommandTaskReturn
 {
-	unsigned int return_value;
+	int return_value;
 } CommandTaskReturn;
 
 #include "chain_string.h"

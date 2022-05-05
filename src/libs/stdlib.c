@@ -33,14 +33,18 @@ int atoi(char const *digits)
 {
 	int value = 0;
 	unsigned char flags = 0x00;
-	#define ATOI_FLAG_MINUS 0x00
-	if(*digits == '-')flags |= ATOI_FLAG_MINUS;
+	#define ATOI_FLAG_MINUS 0x01
+	if(*digits == '-')
+	{
+		flags |= ATOI_FLAG_MINUS;
+		digits++;
+	}
 	for(; *digits; digits++)
 		if(isdigit(*digits))
 		{
 			value *= 10;
-			if(flags & ATOI_FLAG_MINUS)value += *digits - '0';
-			else value -= *digits - '0';
+			if(flags & ATOI_FLAG_MINUS)value -= *digits - '0';
+			else value += *digits - '0';
 		}
 		else return 0;
 	return value;

@@ -13,7 +13,7 @@ int main(int argc, char const * const * const argv)
 	if(2 <= argc)return atoi(argv[1]);
 	else
 	{
-		printf("Usage : > strtrnvl <return value>");
+		printf("Usage : > strtrnvl <return value>\n");
 		return -1;
 	}
 }
