@@ -82,6 +82,7 @@ char **create_argv(Shell *shell, char const *command)
 	unsigned char flags = 0;
 	#define INSIDE_QUOTATION 0x01
 	#define INSIDE_DOUBLE_QUOTATION 0x02
+	#define SHELL_VARIABLE_FOUND 0x04
 	first_argument->chain_string = create_chain_string("");
 	first_argument->previous = NULL;
 	first_argument->next = NULL;
@@ -152,7 +153,11 @@ char **create_argv(Shell *shell, char const *command)
 			{
 				char *key = create_format_char_array("%.*s", (unsigned int)close_bracket - (unsigned int)open_bracket - 1, open_bracket + 1); // Create key.
 				char const *value = look_up_dictionary(shell->variables, key); // Look up shell variables.
-				if(value)insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
+				if(value)
+				{
+					flags |= SHELL_VARIABLE_FOUND;
+					insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
+																			}
 				free(key);
 				command = close_bracket;
 			}
@@ -161,20 +166,26 @@ char **create_argv(Shell *shell, char const *command)
 		else
 		{
 			char const *key_begin = command + 1;
-			if(isalpha(*key_begin) || *key_begin == '_')for(char const *key_end = key_begin + 1; isalnum(*(key_end - 1)) || *(key_end - 1) == '_'; key_end++)
+			if(isalpha(*key_begin) || *key_begin == '_')
 			{
-				char *key = create_format_char_array("%.*s", (unsigned int)key_end - (unsigned int)key_begin, key_begin);
-				char const *value = look_up_dictionary(shell->variables, key); // Look up shell variables.
-				free(key);
-				if(value)
+				for(char const *key_end = key_begin + 1; isalnum(*(key_end - 1)) || *(key_end - 1) == '_'; key_end++)
 				{
-					insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
-					command = key_end - 1;
-					break;
+					char *key = create_format_char_array("%.*s", (unsigned int)key_end - (unsigned int)key_begin, key_begin);
+					char const *value = look_up_dictionary(shell->variables, key); // Look up shell variables.
+					free(key);
+					if(value)
+					{
+						flags |= SHELL_VARIABLE_FOUND;
+						insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
+						command = key_end - 1;
+						break;
+					}
 				}
+				if(!(flags & SHELL_VARIABLE_FOUND))insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command); // The key is not found.
 			}
 			else insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command); // The key is incorrect.
 		}
+		flags &= ~SHELL_VARIABLE_FOUND;
 		break;
 	default:
 		insert_char_back(last_argument->chain_string, last_argument->chain_string->last_character, *command);
