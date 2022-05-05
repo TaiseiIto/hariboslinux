@@ -406,6 +406,7 @@ void *execute_command(Shell *shell, char const *command)
 				enqueue(shell->console->text_box->sheet->event_queue, &new_event);
 				break;
 			case SHELL_TYPE_SERIAL:
+				print_serial(prompt);
 				break;
 			default:
 				ERROR(); // Invalid shell type
