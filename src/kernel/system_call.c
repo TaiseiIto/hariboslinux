@@ -12,10 +12,10 @@
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
 
-unsigned int system_call_exit(unsigned int return_value);
-unsigned int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count);
+int system_call_exit(int return_value);
+int system_call_write(int file_descriptor, void const *buffer, size_t count);
 
-unsigned int system_call(unsigned int eax, unsigned int ebx, unsigned int ecx, unsigned int edx, unsigned int esi, unsigned int edi, unsigned int ebp)
+int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 {
 	UNUSED_ARGUMENT(esi);
 	UNUSED_ARGUMENT(edi);
@@ -34,12 +34,12 @@ unsigned int system_call(unsigned int eax, unsigned int ebx, unsigned int ecx, u
 	}
 }
 
-unsigned int system_call_exit(unsigned int return_value)
+int system_call_exit(int return_value)
 {
 	return exit_application(return_value, get_current_task()->task_status_segment.esp0);
 }
 
-unsigned int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count)
+int system_call_write(int file_descriptor, void const *buffer, size_t count)
 {
 	Shell *shell = get_current_shell();
 	unsigned int counter = 0;

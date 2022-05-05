@@ -81,7 +81,7 @@ void general_protection_fault_exception_handler(void)
 	if(shell)
 	{
 		printf_shell(shell, "SEGMENTATION FAULT!!!\n");
-		exit_application(1, get_current_task()->task_status_segment.esp0);
+		exit_application(-1, get_current_task()->task_status_segment.esp0);
 	}
 	else
 	{
