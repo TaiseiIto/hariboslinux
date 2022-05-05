@@ -160,7 +160,7 @@ char **create_argv(Shell *shell, char const *command)
 				{
 					flags |= SHELL_VARIABLE_FOUND;
 					insert_char_array_back(last_argument->chain_string, last_argument->chain_string->last_character, value); // Value is found
-																			}
+				}
 				free(key);
 				command = close_bracket;
 			}
@@ -559,7 +559,7 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 char const *look_up_dictionary(Dictionary const *dictionary, char const *key)
 {
 	DictionaryElement const *element = dictionary->elements;
-	do
+	if(element)do
 	{
 		int comparison = strcmp(element->key, key);
 		if(!comparison)return element->value;
