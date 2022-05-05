@@ -627,7 +627,7 @@ void show_dictionary(Dictionary const *dictionary)
 				printf_shell(shell, "$%s=%s\n", element->key, element->value);
 				element = element->next;
 			} while(element != dictionary->elements);
-			break;
+			return;
 		}
 		shell = shell->next;
 	} while(shell != serial_shell);
