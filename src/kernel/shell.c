@@ -507,8 +507,7 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 			}
 			*value_writer = '\0';
 		}
-		printf_shell(shell, "key = \"%s\"\n", key);
-		printf_shell(shell, "value = \"%s\"\n", value);
+		set_dictionary_element(shell->variables, key, value);
 		free(key);
 		free(value);
 	}
@@ -612,6 +611,7 @@ void show_dictionary(Dictionary const *dictionary)
 				printf_shell(shell, "$%s=%s\n", element->key, element->value);
 				element = element->next;
 			} while(element != dictionary->elements);
+			break;
 		}
 		shell = shell->next;
 	} while(shell != serial_shell);
