@@ -1,8 +1,20 @@
-#include "stdio.h"
+// Set return value
+// Usage
+// > strtrnvl -1
+// > echo $?
+// -1
+// >
 
-int main(void)
+#include "stdio.h"
+#include "stdlib.h"
+
+int main(int argc, char const * const * const argv)
 {
-	printf("Hello, World!\n");
-	return 0;
+	if(2 <= argc)return atoi(argv[1]);
+	else
+	{
+		printf("Usage : > strtrnvl <return value>");
+		return -1;
+	}
 }
 

@@ -23,6 +23,7 @@ SECTIONS
 	{
 		crt.o(.text)
 		chain_string.o(.text)
+		ctype.o(.text)
 		hello.o(.text)
 		io.o(.text)
 		libgcc.o(.text)
@@ -38,6 +39,7 @@ SECTIONS
 	{
 		crt.o(.rodata)
 		chain_string.o(.rodata)
+		ctype.o(.rodata)
 		hello.o(.rodata)
 		io.o(.rodata)
 		libgcc.o(.rodata)
@@ -53,6 +55,7 @@ SECTIONS
 	{
 		crt.o(.data)
 		chain_string.o(.data)
+		ctype.o(.data)
 		hello.o(.data)
 		io.o(.data)
 		libgcc.o(.data)
@@ -68,6 +71,7 @@ SECTIONS
 	{
 		crt.o(.bss)
 		chain_string.o(.bss)
+		ctype.o(.bss)
 		hello.o(.bss)
 		io.o(.bss)
 		libgcc.o(.bss)
@@ -83,6 +87,7 @@ SECTIONS
 	{
 		crt.o(COMMON)
 		chain_string.o(COMMON)
+		ctype.o(COMMON)
 		hello.o(COMMON)
 		io.o(COMMON)
 		libgcc.o(COMMON)

@@ -3,6 +3,7 @@
 
 #include "stddef.h"
 
+int atoi(char const *digits);
 void exit(int status);
 void free(void *address);
 void *malloc(size_t size);
