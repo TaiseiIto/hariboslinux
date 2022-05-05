@@ -450,6 +450,7 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 	#define READ_KEY 0x01
 	#define READ_VALUE 0x02
 	flags = READ_KEY;
+	if(isdigit(*command))return; // Shell variable name must not start with a number.
 	while(*command)
 	{
 		if(!(flags & (READ_KEY | READ_VALUE)))
@@ -464,10 +465,7 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 			flags &= ~READ_KEY;
 			break;
 		default:
-			if(flags & READ_KEY)
-			{
-				if(!(isalnum(*command) || *command == '_'))return;
-			}
+			if(flags & READ_KEY && !(isalnum(*command) || *command == '_'))return;
 			break;
 		}
 		command++;
@@ -477,10 +475,15 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 		value_end = command;
 		flags &= ~READ_VALUE;
 	}
-	printf_shell(shell, "key_begin\t= %p\n", key_begin);
-	printf_shell(shell, "key_end\t= %p\n", key_end);
-	printf_shell(shell, "value_begin\t= %p\n", value_begin);
-	printf_shell(shell, "value_end\t= %p\n", value_end);
+	if(key_begin && key_end && value_begin && value_end) // Succeed in deviding the command into a key and a value.
+	{
+		char *key = create_format_char_array("%.*s", (unsigned int)key_end - (unsigned int)key_begin, key_begin);
+		char *value = create_format_char_array("%.*s", (unsigned int)value_end - (unsigned int)value_begin, value_begin);
+		printf_shell(shell, "key = \"%s\"\n", key);
+		printf_shell(shell, "value = \"%s\"\n", value);
+		free(key);
+		free(value);
+	}
 }
 
 char const *look_up_dictionary(Dictionary const *dictionary, char const *key)
