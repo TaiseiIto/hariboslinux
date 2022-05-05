@@ -45,6 +45,9 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 {
 	ConsoleEvent *console_event;
 	Event new_event;
+	char *return_value = create_format_char_array("%d", ((CommandTaskReturn *)command_task_argument->task_return->task_return)->return_value);
+	set_dictionary_element(command_task_argument->shell->variables, "?", return_value);
+	free(return_value);
 	free(command_task_argument->com_file_binary);
 	free(command_task_argument->com_file_name);
 	for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
