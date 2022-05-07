@@ -5,6 +5,7 @@
 #include "common.h"
 #include "event.h"
 #include "io.h"
+#include "memory.h"
 #include "shell.h"
 #include "string.h"
 #include "system_call.h"
@@ -13,10 +14,68 @@
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
 
+typedef struct _SystemCallStatus
+{
+	Task *application_task;
+	struct _SystemCallStatus *previous;
+	struct _SystemCallStatus *next;
+} SystemCallStatus;
+
+SystemCallStatus *system_call_statuses = NULL;
+
+void delete_system_call_status(void);
+SystemCallStatus *get_system_call_status(void);
 int system_call_exit(int return_value);
 unsigned int system_call_open(char const *file_name, unsigned int flags);
 #define SYSTEM_CALL_OPEN_FLAG_READ_ONLY 0x01
 int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count);
+
+void delete_system_call_status(void)
+{
+	if(system_call_statuses)
+	{
+		SystemCallStatus *system_call_status = system_call_statuses;
+		do
+		{
+			if(system_call_status->application_task == get_current_task())
+			{
+				if(system_call_statuses == system_call_status)system_call_statuses = system_call_status->next;
+				if(system_call_statuses == system_call_status)system_call_statuses = NULL;
+				system_call_status->previous->next = system_call_status->next;
+				system_call_status->next->previous = system_call_status->previous;
+				free(system_call_status);
+				break;
+			}
+			system_call_status = system_call_status->next;
+		} while(system_call_status != system_call_statuses);
+	}
+}
+
+SystemCallStatus *get_system_call_status(void)
+{
+	SystemCallStatus *system_call_status = system_call_statuses;
+	if(system_call_status)do
+	{
+		if(system_call_status->application_task == get_current_task())return system_call_status;
+		system_call_status = system_call_status->next;
+	} while(system_call_status != system_call_statuses);
+	system_call_status = malloc(sizeof(*system_call_status));
+	system_call_status->application_task = get_current_task();
+	if(system_call_statuses)
+	{
+		system_call_status->previous = system_call_statuses->previous;
+		system_call_status->next = system_call_statuses;
+		system_call_statuses->previous->next = system_call_status;
+		system_call_statuses->previous = system_call_status;
+	}
+	else
+	{
+		system_call_status->previous = system_call_status;
+		system_call_status->next = system_call_status;
+		system_call_statuses = system_call_status;
+	}
+	return system_call_status;
+}
 
 int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 {
@@ -42,12 +101,18 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 
 int system_call_exit(int return_value)
 {
+	// Delete system call status of the application
+	delete_system_call_status();
+	// Exit the application
 	return exit_application(return_value, get_current_task()->task_status_segment.esp0);
 }
 
 unsigned int system_call_open(char const *file_name, unsigned int flags)
 {
-	if(!strcmp(file_name, "") && flags == SYSTEM_CALL_OPEN_FLAG_READ_ONLY)system_call_write(STDOUT, "Open root directory!\n", 21);
+	Shell *shell = get_current_shell();
+	SystemCallStatus *system_call_status = get_system_call_status();
+	printf_shell(shell, "system_call_status = %p\n", system_call_status);
+	if(!strcmp(file_name, "") && flags == SYSTEM_CALL_OPEN_FLAG_READ_ONLY)printf_shell(shell, "Open root directory!\n");
 	return 0;
 }
 
