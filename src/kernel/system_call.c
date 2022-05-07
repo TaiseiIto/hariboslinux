@@ -38,6 +38,7 @@ SystemCallStatus *system_call_statuses = NULL;
 void delete_file_descriptors(void);
 void delete_system_call_status(void);
 SystemCallStatus *get_system_call_status(void);
+int system_call_close(FileDescriptor *file_descriptor);
 int system_call_exit(int return_value);
 FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
 int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count);
@@ -116,17 +117,21 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 	#define SYSTEM_CALL_EXIT	0x00000001
 	#define SYSTEM_CALL_WRITE	0x00000004
 	#define SYSTEM_CALL_OPEN	0x00000005
+	#define SYSTEM_CALL_CLOSE	0x00000006
 	switch(eax)
 	{
+	case SYSTEM_CALL_CLOSE:
+		return_value = system_call_close((FileDescriptor *)ebx);
+		break;
 	case SYSTEM_CALL_EXIT:
 		allow_switch_task();
 		return_value = system_call_exit(ebx);
 		break;
-	case SYSTEM_CALL_WRITE:
-		return_value = system_call_write((unsigned int)ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
-		break;
 	case SYSTEM_CALL_OPEN:
 		return_value = (int)system_call_open((char const *)(ebx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (unsigned int)ecx);
+		break;
+	case SYSTEM_CALL_WRITE:
+		return_value = system_call_write((unsigned int)ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
 		break;
 	default:
 		ERROR(); // Invalid eax
@@ -135,6 +140,25 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 	}
 	allow_switch_task();
 	return return_value;
+}
+
+int system_call_close(FileDescriptor *file_descriptor)
+{
+	FileDescriptor *file_descriptor_finder = file_descriptors;
+	if(file_descriptor_finder)do
+	{
+		if(file_descriptor_finder == file_descriptor)
+		{
+			if(file_descriptors == file_descriptor)file_descriptors = file_descriptor->next;
+			if(file_descriptors == file_descriptor)file_descriptors = NULL;
+			file_descriptor->previous->next = file_descriptor->next;
+			file_descriptor->next->previous = file_descriptor->previous;
+			free(file_descriptor->file_name);
+			free(file_descriptor);
+		}
+	} while(file_descriptors && file_descriptor_finder != file_descriptors);
+	ERROR(); // There is no such a file_descriptor.
+	return -1;
 }
 
 int system_call_exit(int return_value)

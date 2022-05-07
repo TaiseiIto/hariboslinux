@@ -4,6 +4,11 @@
 #include "string.h"
 #include "system_call.h"
 
+int fclose(unsigned int file_descriptor)
+{
+	return system_call_close(file_descriptor);
+}
+
 unsigned int fopen(char const *file_name, char const *mode)
 {
 	unsigned int flags;

@@ -4,6 +4,12 @@
 #define SYSTEM_CALL_EXIT	0x00000001
 #define SYSTEM_CALL_WRITE	0x00000004
 #define SYSTEM_CALL_OPEN	0x00000005
+#define SYSTEM_CALL_CLOSE	0x00000006
+
+int system_call_close(unsigned int file_descriptor)
+{
+	return system_call(SYSTEM_CALL_CLOSE, file_descriptor, 0, 0, 0, 0, 0);
+}
 
 int system_call_exit(int return_value)
 {
