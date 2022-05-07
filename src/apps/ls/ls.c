@@ -2,7 +2,8 @@
 
 int main(void)
 {
-	fopen("", "r");
+	unsigned int file_descriptor = fopen("", "r");
+	printf("file_descriptor = %p\n", file_descriptor);
 	return 0;
 }
 
