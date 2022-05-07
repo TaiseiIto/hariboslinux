@@ -155,6 +155,7 @@ int system_call_close(FileDescriptor *file_descriptor)
 			file_descriptor->next->previous = file_descriptor->previous;
 			free(file_descriptor->file_name);
 			free(file_descriptor);
+			return 0;
 		}
 	} while(file_descriptors && file_descriptor_finder != file_descriptors);
 	ERROR(); // There is no such a file_descriptor.
