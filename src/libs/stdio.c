@@ -4,6 +4,19 @@
 #include "string.h"
 #include "system_call.h"
 
+int fopen(char const *file_name, char const *mode)
+{
+	unsigned int flags;
+	#define SYSTEM_CALL_OPEN_FLAG_READ_ONLY 0x01
+	for(; *mode; mode++)switch(*mode)
+	{
+	case 'r':
+		flags |= SYSTEM_CALL_OPEN_FLAG_READ_ONLY;
+		break;
+	}
+	return system_call_open(file_name, flags);
+}
+
 int fputs(char const *string, unsigned int file_descriptor)
 {
 	char const * const new_line = "\n";

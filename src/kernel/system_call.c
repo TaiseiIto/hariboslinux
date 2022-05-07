@@ -6,6 +6,7 @@
 #include "event.h"
 #include "io.h"
 #include "shell.h"
+#include "string.h"
 #include "system_call.h"
 
 #define STDIN	0x00000000
@@ -13,6 +14,8 @@
 #define STDERR	0x00000002
 
 int system_call_exit(int return_value);
+int system_call_open(char const *file_name, unsigned int flags);
+#define SYSTEM_CALL_OPEN_FLAG_READ_ONLY 0x01
 int system_call_write(int file_descriptor, void const *buffer, size_t count);
 
 int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
@@ -22,12 +25,15 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 	UNUSED_ARGUMENT(ebp);
 	#define SYSTEM_CALL_EXIT	0x00000001
 	#define SYSTEM_CALL_WRITE	0x00000004
+	#define SYSTEM_CALL_OPEN	0x00000005
 	switch(eax)
 	{
 	case SYSTEM_CALL_EXIT:
 		return system_call_exit(ebx);
 	case SYSTEM_CALL_WRITE:
 		return system_call_write(ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
+	case SYSTEM_CALL_OPEN:
+		return system_call_open((char const *)(ebx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (unsigned int)ecx);
 	default:
 		ERROR(); // Invalid eax
 		return -1;
@@ -37,6 +43,12 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 int system_call_exit(int return_value)
 {
 	return exit_application(return_value, get_current_task()->task_status_segment.esp0);
+}
+
+int system_call_open(char const *file_name, unsigned int flags)
+{
+	if(!strcmp(file_name, "") && flags == SYSTEM_CALL_OPEN_FLAG_READ_ONLY)system_call_write(STDOUT, "Open root directory!\n", 21);
+	return 0;
 }
 
 int system_call_write(int file_descriptor, void const *buffer, size_t count)
