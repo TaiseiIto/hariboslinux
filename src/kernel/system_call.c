@@ -35,31 +35,49 @@ typedef struct _SystemCallStatus
 FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
 
+void delete_file_descriptors(void);
 void delete_system_call_status(void);
 SystemCallStatus *get_system_call_status(void);
 int system_call_exit(int return_value);
 FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
 int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count);
 
+void delete_file_descriptors(void)
+{
+	FileDescriptor *file_descriptor = file_descriptors;
+	if(file_descriptor)do
+	{
+		FileDescriptor *next_file_descriptor = file_descriptor->next;
+		if(file_descriptor->file_opener_task == get_current_task())
+		{
+			if(file_descriptors == file_descriptor)file_descriptors = file_descriptor->next;
+			if(file_descriptors == file_descriptor)file_descriptors = NULL;
+			file_descriptor->previous->next = file_descriptor->next;
+			file_descriptor->next->previous = file_descriptor->previous;
+			free(file_descriptor->file_name);
+			free(file_descriptor);
+		}
+		file_descriptor = next_file_descriptor;
+	} while(file_descriptors && file_descriptor != file_descriptors);
+}
+
 void delete_system_call_status(void)
 {
-	if(system_call_statuses)
+	SystemCallStatus *system_call_status = system_call_statuses;
+	if(system_call_status)do
 	{
-		SystemCallStatus *system_call_status = system_call_statuses;
-		do
+		SystemCallStatus *next_system_call_status = system_call_status->next;
+		if(system_call_status->application_task == get_current_task())
 		{
-			if(system_call_status->application_task == get_current_task())
-			{
-				if(system_call_statuses == system_call_status)system_call_statuses = system_call_status->next;
-				if(system_call_statuses == system_call_status)system_call_statuses = NULL;
-				system_call_status->previous->next = system_call_status->next;
-				system_call_status->next->previous = system_call_status->previous;
-				free(system_call_status);
-				break;
-			}
-			system_call_status = system_call_status->next;
-		} while(system_call_status != system_call_statuses);
-	}
+			if(system_call_statuses == system_call_status)system_call_statuses = system_call_status->next;
+			if(system_call_statuses == system_call_status)system_call_statuses = NULL;
+			system_call_status->previous->next = system_call_status->next;
+			system_call_status->next->previous = system_call_status->previous;
+			free(system_call_status);
+			break;
+		}
+		system_call_status = next_system_call_status;
+	} while(system_call_statuses && system_call_status != system_call_statuses);
 }
 
 SystemCallStatus *get_system_call_status(void)
@@ -112,9 +130,11 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 
 int system_call_exit(int return_value)
 {
-	// Delete system call status of the application
+	// Delete file descriptors of the application.
+	delete_file_descriptors();
+	// Delete system call status of the application.
 	delete_system_call_status();
-	// Exit the application
+	// Exit the application.
 	return exit_application(return_value, get_current_task()->task_status_segment.esp0);
 }
 
