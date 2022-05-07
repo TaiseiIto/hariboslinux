@@ -108,6 +108,8 @@ SystemCallStatus *get_system_call_status(void)
 
 int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 {
+	int return_value;
+	prohibit_switch_task();
 	UNUSED_ARGUMENT(esi);
 	UNUSED_ARGUMENT(edi);
 	UNUSED_ARGUMENT(ebp);
@@ -117,15 +119,22 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 	switch(eax)
 	{
 	case SYSTEM_CALL_EXIT:
-		return system_call_exit(ebx);
+		allow_switch_task();
+		return_value = system_call_exit(ebx);
+		break;
 	case SYSTEM_CALL_WRITE:
-		return system_call_write((unsigned int)ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
+		return_value = system_call_write((unsigned int)ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
+		break;
 	case SYSTEM_CALL_OPEN:
-		return (int)system_call_open((char const *)(ebx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (unsigned int)ecx);
+		return_value = (int)system_call_open((char const *)(ebx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (unsigned int)ecx);
+		break;
 	default:
 		ERROR(); // Invalid eax
-		return -1;
+		return_value = -1;
+		break;
 	}
+	allow_switch_task();
+	return return_value;
 }
 
 int system_call_exit(int return_value)
