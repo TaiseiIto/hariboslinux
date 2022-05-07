@@ -163,6 +163,7 @@ int system_call_close(FileDescriptor *file_descriptor)
 			free(file_descriptor);
 			return 0;
 		}
+		file_descriptor_finder = file_descriptor_finder->next;
 	} while(file_descriptors && file_descriptor_finder != file_descriptors);
 	ERROR(); // There is no such a file_descriptor.
 	return -1;
@@ -212,6 +213,7 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 		file_descriptor = malloc(sizeof(*file_descriptor));
 		file_descriptor->previous = file_descriptor;
 		file_descriptor->next = file_descriptor;
+		file_descriptors = file_descriptor;
 	}
 	file_descriptor->file_name = malloc(strlen(file_name) + 1);
 	strcpy(file_descriptor->file_name, file_name);
@@ -220,14 +222,6 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 	file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 	file_descriptor->buffer_end = (void *)((unsigned int)file_descriptor->buffer_begin + get_file_size(file_descriptor->file_name));
 	file_descriptor->flags = flags;
-	printf_shell(get_current_shell(), "file_descriptor->name = \"%s\"\n", file_descriptor->file_name);
-	printf_shell(get_current_shell(), "file_descriptor->file_opener_task = %p\n", file_descriptor->file_opener_task);
-	printf_shell(get_current_shell(), "file_descriptor->buffer_begin = %p\n", file_descriptor->buffer_begin);
-	printf_shell(get_current_shell(), "file_descriptor->buffer_cursor = %p\n", file_descriptor->buffer_cursor);
-	printf_shell(get_current_shell(), "file_descriptor->buffer_end = %p\n", file_descriptor->buffer_end);
-	printf_shell(get_current_shell(), "file_descriptor->flags = %#04.2x\n", file_descriptor->flags);
-	printf_shell(get_current_shell(), "file_descriptor->previous = %p\n", file_descriptor->previous);
-	printf_shell(get_current_shell(), "file_descriptor->next = %p\n", file_descriptor->next);
 	return file_descriptor;
 }
 
