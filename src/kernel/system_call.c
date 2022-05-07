@@ -14,17 +14,16 @@
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
 
-typedef struct _FileStatus
+typedef struct _FileDescriptor
 {
 	char *file_name;
 	Task *file_opener_task;
-	unsigned int file_descriptor;
 	unsigned int flags;
 	#define SYSTEM_CALL_OPEN_FLAG_READ	0x00000001
 	#define SYSTEM_CALL_OPEN_FLAG_WRITE	0x00000002
-	struct _FileStatus *previous;
-	struct _FileStatus *next;
-} FileStatus;
+	struct _FileDescriptor *previous;
+	struct _FileDescriptor *next;
+} FileDescriptor;
 
 typedef struct _SystemCallStatus
 {
@@ -33,13 +32,13 @@ typedef struct _SystemCallStatus
 	struct _SystemCallStatus *next;
 } SystemCallStatus;
 
-FileStatus *file_statuses = NULL;
+FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
 
 void delete_system_call_status(void);
 SystemCallStatus *get_system_call_status(void);
 int system_call_exit(int return_value);
-unsigned int system_call_open(char const *file_name, unsigned int flags);
+FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
 int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count);
 
 void delete_system_call_status(void)
@@ -119,55 +118,51 @@ int system_call_exit(int return_value)
 	return exit_application(return_value, get_current_task()->task_status_segment.esp0);
 }
 
-unsigned int system_call_open(char const *file_name, unsigned int flags)
+FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 {
-	FileStatus *file_status;
-	if(file_statuses)
+	FileDescriptor *file_descriptor;
+	if(file_descriptors)
 	{
-		unsigned int max_file_descriptor = STDERR; // The max file descriptor opened by the caller application.
-		file_status = file_statuses;
+		file_descriptor = file_descriptors;
 		do
 		{
-			if(!strcmp(file_status->file_name, file_name)) // Someone opened the same file.
+			if(!strcmp(file_descriptor->file_name, file_name)) // Someone opened the same file.
 			{
-				if(file_status->file_opener_task == get_current_task()) // The caller application opened the same file.
+				if(file_descriptor->file_opener_task == get_current_task()) // The caller application opened the same file.
 				{
-					// Reuse file_status.
-					file_status->flags |= flags;
-					return file_status->file_descriptor;
+					// Reuse file_descriptor.
+					file_descriptor->flags |= flags;
+					return file_descriptor;
 				}
 				else // Another application opened the same file.
 				{
-					if(file_status->flags & SYSTEM_CALL_OPEN_FLAG_WRITE || flags & SYSTEM_CALL_OPEN_FLAG_WRITE)return 0; // Can't open the file with writing mode.
+					if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_WRITE || flags & SYSTEM_CALL_OPEN_FLAG_WRITE)return 0; // Can't open the file with writing mode.
 				}
 			}
-			if(file_status->file_opener_task == get_current_task() && max_file_descriptor < file_status->file_descriptor)max_file_descriptor = file_status->file_descriptor;
-			file_status = file_status->next;
-		} while(file_status != file_statuses);
-		file_status = malloc(sizeof(*file_status));
-		file_status->file_name = malloc(strlen(file_name) + 1);
-		strcpy(file_status->file_name, file_name);
-		file_status->file_opener_task = get_current_task();
-		file_status->file_descriptor = max_file_descriptor + 1;
-		file_status->flags = flags;
-		file_status->previous = file_statuses->previous;
-		file_status->next = file_statuses;
-		file_statuses->previous->next = file_status;
-		file_statuses->previous = file_status;
+			file_descriptor = file_descriptor->next;
+		} while(file_descriptor != file_descriptors);
+		file_descriptor = malloc(sizeof(*file_descriptor));
+		file_descriptor->file_name = malloc(strlen(file_name) + 1);
+		strcpy(file_descriptor->file_name, file_name);
+		file_descriptor->file_opener_task = get_current_task();
+		file_descriptor->flags = flags;
+		file_descriptor->previous = file_descriptors->previous;
+		file_descriptor->next = file_descriptors;
+		file_descriptors->previous->next = file_descriptor;
+		file_descriptors->previous = file_descriptor;
 	}
 	else
 	{
-		file_status = malloc(sizeof(*file_status));
-		file_status->file_name = malloc(strlen(file_name) + 1);
-		strcpy(file_status->file_name, file_name);
-		file_status->file_opener_task = get_current_task();
-		file_status->file_descriptor = STDERR + 1;
-		file_status->flags = flags;
-		file_status->previous = file_status;
-		file_status->next = file_status;
-		file_statuses = file_status;
+		file_descriptor = malloc(sizeof(*file_descriptor));
+		file_descriptor->file_name = malloc(strlen(file_name) + 1);
+		strcpy(file_descriptor->file_name, file_name);
+		file_descriptor->file_opener_task = get_current_task();
+		file_descriptor->flags = flags;
+		file_descriptor->previous = file_descriptor;
+		file_descriptor->next = file_descriptor;
+		file_descriptors = file_descriptor;
 	}
-	return file_status->file_descriptor;
+	return file_descriptor;
 }
 
 int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count)
