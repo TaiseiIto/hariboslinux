@@ -4,7 +4,7 @@
 #include "string.h"
 #include "system_call.h"
 
-int fopen(char const *file_name, char const *mode)
+unsigned int fopen(char const *file_name, char const *mode)
 {
 	unsigned int flags;
 	#define SYSTEM_CALL_OPEN_FLAG_READ_ONLY 0x01
