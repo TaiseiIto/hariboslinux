@@ -35,7 +35,7 @@ void const *get_cluster(unsigned short cluster_number)
 	return cluster0 + cluster_number * cluster_size;
 }
 
-FileInformation const *get_file_information(char *file_name)
+FileInformation const *get_file_information(char const *file_name)
 {
 	bool found = false;
 	for(unsigned int i = 0; i < boot_sector->number_of_root_directory_entries; i++) // Search file informations.
@@ -52,6 +52,14 @@ FileInformation const *get_file_information(char *file_name)
 		else break;
 	}
 	return NULL; // The file is not found.
+}
+
+unsigned int get_file_size(char const *file_name)
+{
+	FileInformation const *file_information = get_file_information(file_name);
+	if(file_information)return file_information->size; // Return file size.
+	else if(!strcmp(file_name, ""))return boot_sector->number_of_root_directory_entries * sizeof(FileInformation); // Return size of root directory entries.
+	else return 0; // File is not found.
 }
 
 unsigned int get_file_updated_year(FileInformation const *file_information)
@@ -168,6 +176,12 @@ void *load_file(char *file_name)
 			writer += copied_size;
 			unwritten_size -= copied_size;
 		}
+		return loaded_address;
+	}
+	else if(!strcmp(file_name, "")) // Load root directory entries.
+	{
+		FileInformation *loaded_address = malloc(boot_sector->number_of_root_directory_entries * sizeof(FileInformation));
+		memcpy(loaded_address, root_directory_entries, boot_sector->number_of_root_directory_entries * sizeof(FileInformation));
 		return loaded_address;
 	}
 	else return NULL; // The file is not found.

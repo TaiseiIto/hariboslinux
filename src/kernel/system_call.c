@@ -3,6 +3,7 @@
 // https://rninche01.tistory.com/entry/Linux-system-call-table-%EC%A0%95%EB%A6%ACx86-x64
 
 #include "common.h"
+#include "disk.h"
 #include "event.h"
 #include "io.h"
 #include "memory.h"
@@ -18,6 +19,9 @@ typedef struct _FileDescriptor
 {
 	char *file_name;
 	Task *file_opener_task;
+	void *buffer_begin;
+	void *buffer_cursor;
+	void *buffer_end;
 	unsigned int flags;
 	#define SYSTEM_CALL_OPEN_FLAG_READ	0x00000001
 	#define SYSTEM_CALL_OPEN_FLAG_WRITE	0x00000002
@@ -56,6 +60,7 @@ void delete_file_descriptors(void)
 			file_descriptor->previous->next = file_descriptor->next;
 			file_descriptor->next->previous = file_descriptor->previous;
 			free(file_descriptor->file_name);
+			if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
 			free(file_descriptor);
 		}
 		file_descriptor = next_file_descriptor;
@@ -154,6 +159,7 @@ int system_call_close(FileDescriptor *file_descriptor)
 			file_descriptor->previous->next = file_descriptor->next;
 			file_descriptor->next->previous = file_descriptor->previous;
 			free(file_descriptor->file_name);
+			if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
 			free(file_descriptor);
 			return 0;
 		}
@@ -196,10 +202,6 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 			file_descriptor = file_descriptor->next;
 		} while(file_descriptor != file_descriptors);
 		file_descriptor = malloc(sizeof(*file_descriptor));
-		file_descriptor->file_name = malloc(strlen(file_name) + 1);
-		strcpy(file_descriptor->file_name, file_name);
-		file_descriptor->file_opener_task = get_current_task();
-		file_descriptor->flags = flags;
 		file_descriptor->previous = file_descriptors->previous;
 		file_descriptor->next = file_descriptors;
 		file_descriptors->previous->next = file_descriptor;
@@ -208,14 +210,24 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 	else
 	{
 		file_descriptor = malloc(sizeof(*file_descriptor));
-		file_descriptor->file_name = malloc(strlen(file_name) + 1);
-		strcpy(file_descriptor->file_name, file_name);
-		file_descriptor->file_opener_task = get_current_task();
-		file_descriptor->flags = flags;
 		file_descriptor->previous = file_descriptor;
 		file_descriptor->next = file_descriptor;
-		file_descriptors = file_descriptor;
 	}
+	file_descriptor->file_name = malloc(strlen(file_name) + 1);
+	strcpy(file_descriptor->file_name, file_name);
+	file_descriptor->file_opener_task = get_current_task();
+	file_descriptor->buffer_begin = load_file(file_descriptor->file_name);
+	file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
+	file_descriptor->buffer_end = (void *)((unsigned int)file_descriptor->buffer_begin + get_file_size(file_descriptor->file_name));
+	file_descriptor->flags = flags;
+	printf_shell(get_current_shell(), "file_descriptor->name = \"%s\"\n", file_descriptor->file_name);
+	printf_shell(get_current_shell(), "file_descriptor->file_opener_task = %p\n", file_descriptor->file_opener_task);
+	printf_shell(get_current_shell(), "file_descriptor->buffer_begin = %p\n", file_descriptor->buffer_begin);
+	printf_shell(get_current_shell(), "file_descriptor->buffer_cursor = %p\n", file_descriptor->buffer_cursor);
+	printf_shell(get_current_shell(), "file_descriptor->buffer_end = %p\n", file_descriptor->buffer_end);
+	printf_shell(get_current_shell(), "file_descriptor->flags = %#04.2x\n", file_descriptor->flags);
+	printf_shell(get_current_shell(), "file_descriptor->previous = %p\n", file_descriptor->previous);
+	printf_shell(get_current_shell(), "file_descriptor->next = %p\n", file_descriptor->next);
 	return file_descriptor;
 }
 
