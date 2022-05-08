@@ -267,7 +267,14 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 		}
 		break;
 	default:
-		if(!strcmp(file_descriptor->file_name, console_file_name))printf_shell(shell, "CLEAR!!!\n");
+		if(!strcmp(file_descriptor->file_name, console_file_name))
+		{
+			char *command = malloc(count + 1);
+			memcpy(command, buffer, count);
+			command[count] = '\0';
+			if(!strcmp(command, "clear"))printf_shell(shell, "CLEAR!!!\n");
+			free(command);
+		}
 		break;
 	}
 	return counter;

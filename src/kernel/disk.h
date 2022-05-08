@@ -52,8 +52,8 @@ typedef struct _FileIntormation
 extern BootSector const * const boot_sector;
 
 extern char const * const root_directory_name;
-extern char const * const console_file_name;
-extern char const * const free_memory_space_size_file_name; // A virtual file that free memory space size can be read from.
+extern char const * const console_file_name;			// A virtual file controlling a console.
+extern char const * const free_memory_space_size_file_name;	// A virtual file that free memory space size can be read from.
 
 char *create_file_name(FileInformation const *file_information);
 void disk_interrupt_handler(void);
