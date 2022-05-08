@@ -22,6 +22,11 @@ unsigned int fopen(char const *file_name, char const *mode)
 	return system_call_open(file_name, flags);
 }
 
+size_t fread(void *buffer, size_t size, size_t number, unsigned int file_descriptor)
+{
+	return system_call_read(file_descriptor, buffer, number * size);
+}
+
 int fputs(char const *string, unsigned int file_descriptor)
 {
 	char const * const new_line = "\n";

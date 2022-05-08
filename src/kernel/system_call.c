@@ -45,7 +45,8 @@ SystemCallStatus *get_system_call_status(void);
 int system_call_close(FileDescriptor *file_descriptor);
 int system_call_exit(int return_value);
 FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
-int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count);
+size_t system_call_read(FileDescriptor *file_descriptor, void *buffer, size_t count);
+int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_t count);
 
 void delete_file_descriptors(void)
 {
@@ -120,6 +121,7 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 	UNUSED_ARGUMENT(edi);
 	UNUSED_ARGUMENT(ebp);
 	#define SYSTEM_CALL_EXIT	0x00000001
+	#define SYSTEM_CALL_READ	0x00000003
 	#define SYSTEM_CALL_WRITE	0x00000004
 	#define SYSTEM_CALL_OPEN	0x00000005
 	#define SYSTEM_CALL_CLOSE	0x00000006
@@ -135,8 +137,11 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 	case SYSTEM_CALL_OPEN:
 		return_value = (int)system_call_open((char const *)(ebx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (unsigned int)ecx);
 		break;
+	case SYSTEM_CALL_READ:
+		return_value = system_call_read((FileDescriptor *)ebx, (void *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
+		break;
 	case SYSTEM_CALL_WRITE:
-		return_value = system_call_write((unsigned int)ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
+		return_value = system_call_write((FileDescriptor *)ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
 		break;
 	default:
 		ERROR(); // Invalid eax
@@ -225,11 +230,29 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 	return file_descriptor;
 }
 
-int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count)
+size_t system_call_read(FileDescriptor *file_descriptor, void *buffer, size_t count)
+{
+	FileDescriptor *file_descriptor_finder = file_descriptors;
+	if(file_descriptor_finder)do
+	{
+		if(file_descriptor_finder == file_descriptor)
+		{
+			size_t read_size = count < (size_t)file_descriptor->buffer_end - (size_t)file_descriptor->buffer_cursor ? count : (size_t)file_descriptor->buffer_end - (size_t)file_descriptor->buffer_cursor;
+			memcpy(buffer, file_descriptor->buffer_cursor, read_size);
+			file_descriptor->buffer_cursor += read_size;
+			return read_size;
+		}
+		file_descriptor_finder = file_descriptor_finder->next;
+	} while(file_descriptors && file_descriptor_finder != file_descriptors);
+	ERROR(); // There is no such a file_descriptor.
+	return 0;
+}
+
+int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_t count)
 {
 	Shell *shell = get_current_shell();
 	unsigned int counter = 0;
-	switch(file_descriptor)
+	switch((unsigned int)file_descriptor)
 	{
 	case STDOUT:
 	case STDERR:

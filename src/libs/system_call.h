@@ -10,6 +10,7 @@
 int system_call_close(unsigned int file_descriptor);
 int system_call_exit(int return_value);
 unsigned int system_call_open(char const *file_name, unsigned int flags);
+size_t system_call_read(unsigned int file_descriptor, void *buffer, size_t count);
 #define SYSTEM_CALL_OPEN_FLAG_READ_ONLY 0x01
 int system_call_write(unsigned int file_descriptor, void const *buffer, size_t count);
 
