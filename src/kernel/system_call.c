@@ -232,75 +232,81 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 
 size_t system_call_read(FileDescriptor *file_descriptor, void *buffer, size_t count)
 {
-	FileDescriptor *file_descriptor_finder = file_descriptors;
-	if(file_descriptor_finder)do
+	if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_READ)
 	{
-		if(file_descriptor_finder == file_descriptor)
+		FileDescriptor *file_descriptor_finder = file_descriptors;
+		if(file_descriptor_finder)do
 		{
-			size_t read_size = count < (size_t)file_descriptor->buffer_end - (size_t)file_descriptor->buffer_cursor ? count : (size_t)file_descriptor->buffer_end - (size_t)file_descriptor->buffer_cursor;
-			memcpy(buffer, file_descriptor->buffer_cursor, read_size);
-			file_descriptor->buffer_cursor += read_size;
-			return read_size;
-		}
-		file_descriptor_finder = file_descriptor_finder->next;
-	} while(file_descriptors && file_descriptor_finder != file_descriptors);
-	ERROR(); // There is no such a file_descriptor.
+			if(file_descriptor_finder == file_descriptor)
+			{
+				size_t read_size = count < (size_t)file_descriptor->buffer_end - (size_t)file_descriptor->buffer_cursor ? count : (size_t)file_descriptor->buffer_end - (size_t)file_descriptor->buffer_cursor;
+				memcpy(buffer, file_descriptor->buffer_cursor, read_size);
+				file_descriptor->buffer_cursor += read_size;
+				return read_size;
+			}
+			file_descriptor_finder = file_descriptor_finder->next;
+		} while(file_descriptors && file_descriptor_finder != file_descriptors);
+		ERROR(); // There is no such a file_descriptor.
+	}
 	return 0;
 }
 
 int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_t count)
 {
-	Shell *shell = get_current_shell();
 	unsigned int counter = 0;
-	switch((unsigned int)file_descriptor)
+	if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_WRITE)
 	{
-	case STDOUT:
-	case STDERR:
-		for(void const *reader = buffer; reader != buffer + count; reader++)
+		Shell *shell = get_current_shell();
+		switch((unsigned int)file_descriptor)
 		{
-			Event event;
-			event.type = EVENT_TYPE_SHELL_PUT_CHARACTER;
-			event.event_union.shell_put_character_event.character = *(char const *)reader;
-			event.event_union.shell_put_character_event.shell = shell;
-			enqueue(shell->event_queue, &event);
-			counter++;
-		}
-		break;
-	default:
-		if(!strcmp(file_descriptor->file_name, console_file_name)) // Control the console.
-		{
-			Console *console;
-			TextBox *text_box;
-			char *command = malloc(count + 1);
-			memcpy(command, buffer, count);
-			command[count] = '\0';
-			if(!strcmp(command, "clear"))switch(shell->type)
+		case STDOUT:
+		case STDERR:
+			for(void const *reader = buffer; reader != buffer + count; reader++)
 			{
-			case SHELL_TYPE_CONSOLE:
-				console = shell->console;
-				text_box = console->text_box;
-				text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
-				break;
+				Event event;
+				event.type = EVENT_TYPE_SHELL_PUT_CHARACTER;
+				event.event_union.shell_put_character_event.character = *(char const *)reader;
+				event.event_union.shell_put_character_event.shell = shell;
+				enqueue(shell->event_queue, &event);
+				counter++;
 			}
-			free(command);
-		}
-		if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
-		{
-			char *command = malloc(count + 1);
-			memcpy(command, buffer, count);
-			command[count] = '\0';
-			if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
-			if(!strcmp(command, "free"))
+			break;
+		default:
+			if(!strcmp(file_descriptor->file_name, console_file_name)) // Control the console.
 			{
-				unsigned int free_memory_space_size = get_free_memory_space_size();
-				file_descriptor->buffer_begin = malloc(sizeof(free_memory_space_size));
-				*(unsigned int *)file_descriptor->buffer_begin = free_memory_space_size;
-				file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
-				file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(free_memory_space_size));
+				Console *console;
+				TextBox *text_box;
+				char *command = malloc(count + 1);
+				memcpy(command, buffer, count);
+				command[count] = '\0';
+				if(!strcmp(command, "clear"))switch(shell->type)
+				{
+				case SHELL_TYPE_CONSOLE:
+					console = shell->console;
+					text_box = console->text_box;
+					text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
+					break;
+				}
+				free(command);
 			}
-			free(command);
+			if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
+			{
+				char *command = malloc(count + 1);
+				memcpy(command, buffer, count);
+				command[count] = '\0';
+				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
+				if(!strcmp(command, "free"))
+				{
+					unsigned int free_memory_space_size = get_free_memory_space_size();
+					file_descriptor->buffer_begin = malloc(sizeof(free_memory_space_size));
+					*(unsigned int *)file_descriptor->buffer_begin = free_memory_space_size;
+					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
+					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(free_memory_space_size));
+				}
+				free(command);
+			}
+			break;
 		}
-		break;
 	}
 	return counter;
 }
