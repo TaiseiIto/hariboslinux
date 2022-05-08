@@ -8,6 +8,9 @@
 
 BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOADED_DISK_BEGIN;
 
+char const * const root_directory_name = "";
+char const * const free_memory_space_size_file_name = "free.dev"; // A virtual file that free memory space size can be read from.
+
 unsigned int cluster_size;
 unsigned int number_of_clusters;
 void const *cluster0;
@@ -58,8 +61,8 @@ unsigned int get_file_size(char const *file_name)
 {
 	FileInformation const *file_information = get_file_information(file_name);
 	if(file_information)return file_information->size; // Return file size.
-	else if(!strcmp(file_name, ""))return boot_sector->number_of_root_directory_entries * sizeof(FileInformation); // Return size of root directory entries.
-	else if(!strcmp(file_name, "free.dev"))return sizeof(get_free_memory_space_size()); // "free.dev" is a virtual file that free memory space size can be read from.
+	else if(!strcmp(file_name, root_directory_name))return boot_sector->number_of_root_directory_entries * sizeof(FileInformation); // Return size of root directory entries.
+	else if(!strcmp(file_name, free_memory_space_size_file_name))return sizeof(get_free_memory_space_size());
 	else return 0; // File is not found.
 }
 
@@ -179,13 +182,13 @@ void *load_file(char *file_name)
 		}
 		return loaded_address;
 	}
-	else if(!strcmp(file_name, "")) // Load root directory entries.
+	else if(!strcmp(file_name, root_directory_name)) // Load root directory entries.
 	{
 		FileInformation *loaded_address = malloc(boot_sector->number_of_root_directory_entries * sizeof(FileInformation));
 		memcpy(loaded_address, root_directory_entries, boot_sector->number_of_root_directory_entries * sizeof(FileInformation));
 		return loaded_address;
 	}
-	else if(!strcmp(file_name, "free.dev")) // "free.dev" is a virtual file that free memory space size can be read from.
+	else if(!strcmp(file_name, free_memory_space_size_file_name))
 	{
 		unsigned int *loaded_address = malloc(sizeof(*loaded_address));
 		*loaded_address = get_free_memory_space_size();
