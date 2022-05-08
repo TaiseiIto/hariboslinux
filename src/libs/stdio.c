@@ -35,6 +35,11 @@ int fputs(char const *string, unsigned int file_descriptor)
 	return 0;
 }
 
+size_t fwrite(void const *buffer, size_t size, size_t number, unsigned int file_descriptor)
+{
+	return system_call_write(file_descriptor, buffer, number * size);
+}
+
 int printf(const char *format, ...)
 {
 	ChainString *output_chain_string = create_caller_format_chain_string(((unsigned int)&format - (unsigned int)&format) / sizeof(unsigned int));

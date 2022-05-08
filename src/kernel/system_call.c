@@ -267,7 +267,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 		}
 		break;
 	default:
-		ERROR(); // Invalid file descriptor
+		if(!strcmp(file_descriptor->file_name, console_file_name))printf_shell(shell, "CLEAR!!!\n");
 		break;
 	}
 	return counter;

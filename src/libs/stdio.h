@@ -35,6 +35,7 @@ int fclose(unsigned int file_descriptor);
 unsigned int fopen(char const *file_name, char const *mode);
 size_t fread(void *buffer, size_t size, size_t number, unsigned int file_descriptor);
 int fputs(char const *string, unsigned int file_descriptor);
+size_t fwrite(void const *buffer, size_t size, size_t number, unsigned int file_descriptor);
 int printf(const char *format, ...);
 int puts(char const *string);
 
