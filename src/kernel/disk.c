@@ -10,7 +10,7 @@ BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOAD
 
 char const * const root_directory_name = "";
 char const * const console_file_name = "console.dev";
-char const * const free_memory_space_size_file_name = "free.dev"; // A virtual file that free memory space size can be read from.
+char const * const memory_file_name = "memory.dev";
 
 unsigned int cluster_size;
 unsigned int number_of_clusters;
@@ -63,8 +63,6 @@ unsigned int get_file_size(char const *file_name)
 	FileInformation const *file_information = get_file_information(file_name);
 	if(file_information)return file_information->size; // Return file size.
 	else if(!strcmp(file_name, root_directory_name))return boot_sector->number_of_root_directory_entries * sizeof(FileInformation); // Return size of root directory entries.
-	else if(!strcmp(file_name, console_file_name))return 0;
-	else if(!strcmp(file_name, free_memory_space_size_file_name))return sizeof(get_free_memory_space_size());
 	else return 0; // File is not found.
 }
 
@@ -188,13 +186,6 @@ void *load_file(char *file_name)
 	{
 		FileInformation *loaded_address = malloc(boot_sector->number_of_root_directory_entries * sizeof(FileInformation));
 		memcpy(loaded_address, root_directory_entries, boot_sector->number_of_root_directory_entries * sizeof(FileInformation));
-		return loaded_address;
-	}
-	else if(!strcmp(file_name, console_file_name))return NULL;
-	else if(!strcmp(file_name, free_memory_space_size_file_name))
-	{
-		unsigned int *loaded_address = malloc(sizeof(*loaded_address));
-		*loaded_address = get_free_memory_space_size();
 		return loaded_address;
 	}
 	else return NULL; // The file is not found.

@@ -284,6 +284,21 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			free(command);
 		}
+		if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
+		{
+			char *command = malloc(count + 1);
+			memcpy(command, buffer, count);
+			command[count] = '\0';
+			if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
+			if(!strcmp(command, "free"))
+			{
+				unsigned int free_memory_space_size = get_free_memory_space_size();
+				file_descriptor->buffer_begin = malloc(sizeof(free_memory_space_size));
+				*(unsigned int *)file_descriptor->buffer_begin = free_memory_space_size;
+				file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
+				file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(free_memory_space_size));
+			}
+		}
 		break;
 	}
 	return counter;

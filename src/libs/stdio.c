@@ -12,11 +12,15 @@ int fclose(unsigned int file_descriptor)
 unsigned int fopen(char const *file_name, char const *mode)
 {
 	unsigned int flags;
-	#define SYSTEM_CALL_OPEN_FLAG_READ_ONLY 0x01
+	#define SYSTEM_CALL_OPEN_FLAG_READ 0x01
+	#define SYSTEM_CALL_OPEN_FLAG_WRITE 0x02
 	for(; *mode; mode++)switch(*mode)
 	{
 	case 'r':
-		flags |= SYSTEM_CALL_OPEN_FLAG_READ_ONLY;
+		flags |= SYSTEM_CALL_OPEN_FLAG_READ;
+		break;
+	case 'w':
+		flags |= SYSTEM_CALL_OPEN_FLAG_WRITE;
 		break;
 	}
 	return system_call_open(file_name, flags);
