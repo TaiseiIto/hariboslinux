@@ -267,12 +267,21 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 		}
 		break;
 	default:
-		if(!strcmp(file_descriptor->file_name, console_file_name))
+		if(!strcmp(file_descriptor->file_name, console_file_name)) // Control the console.
 		{
+			Console *console;
+			TextBox *text_box;
 			char *command = malloc(count + 1);
 			memcpy(command, buffer, count);
 			command[count] = '\0';
-			if(!strcmp(command, "clear"))printf_shell(shell, "CLEAR!!!\n");
+			if(!strcmp(command, "clear"))switch(shell->type)
+			{
+			case SHELL_TYPE_CONSOLE:
+				console = shell->console;
+				text_box = console->text_box;
+				text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
+				break;
+			}
 			free(command);
 		}
 		break;
