@@ -59,6 +59,7 @@ unsigned int get_file_size(char const *file_name)
 	FileInformation const *file_information = get_file_information(file_name);
 	if(file_information)return file_information->size; // Return file size.
 	else if(!strcmp(file_name, ""))return boot_sector->number_of_root_directory_entries * sizeof(FileInformation); // Return size of root directory entries.
+	else if(!strcmp(file_name, "free.dev"))return sizeof(get_free_memory_space_size()); // "free.dev" is a virtual file that free memory space size can be read from.
 	else return 0; // File is not found.
 }
 
@@ -182,6 +183,12 @@ void *load_file(char *file_name)
 	{
 		FileInformation *loaded_address = malloc(boot_sector->number_of_root_directory_entries * sizeof(FileInformation));
 		memcpy(loaded_address, root_directory_entries, boot_sector->number_of_root_directory_entries * sizeof(FileInformation));
+		return loaded_address;
+	}
+	else if(!strcmp(file_name, "free.dev")) // "free.dev" is a virtual file that free memory space size can be read from.
+	{
+		unsigned int *loaded_address = malloc(sizeof(*loaded_address));
+		*loaded_address = get_free_memory_space_size();
 		return loaded_address;
 	}
 	else return NULL; // The file is not found.
