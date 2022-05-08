@@ -298,6 +298,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 				file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(free_memory_space_size));
 			}
+			free(command);
 		}
 		break;
 	}
