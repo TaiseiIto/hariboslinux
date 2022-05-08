@@ -3,6 +3,8 @@
 
 #include "stddef.h"
 
+#define _countof(array) (sizeof(array) / sizeof(array[0]))
+
 int atoi(char const *digits);
 void exit(int status);
 void free(void *address);
