@@ -11,7 +11,7 @@ int main(int argc, char const * const * const argv)
 		size_t read_size;
 		while((read_size = fread(buffer, sizeof(buffer[0]), _countof(buffer), file_descriptor)))
 		{
-			for(unsigned int i = 0; i < _countof(buffer); i++)printf(" %2.2X", buffer[i]);
+			for(unsigned int i = 0; i < _countof(buffer) && i < read_size; i++)printf(" %2.2X", buffer[i]);
 			printf("\n");
 		}
 		fclose(file_descriptor);
