@@ -22,9 +22,20 @@ typedef struct _WindowCommandCreateArguments
 	unsigned short height;
 } WindowCommandCreateArguments;
 
+typedef struct _WindowCommandFillBox
+{
+	unsigned int window;
+	short x;
+	short y;
+	unsigned short width;
+	unsigned short height;
+	Color color;
+} WindowCommandFillBox;
+
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
+	WindowCommandFillBox fill_box;
 } WindowCommandArguments;
 
 typedef struct _WindowCommand
@@ -32,6 +43,7 @@ typedef struct _WindowCommand
 	WindowCommandArguments arguments;
 	unsigned char type;
 	#define WINDOW_COMMAND_CREATE	0x00
+	#define WINDOW_COMMAND_FILL_BOX	0x01
 } WindowCommand;
 
 void clear_console(void)
@@ -45,9 +57,9 @@ void clear_console(void)
 
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height)
 {
-	WindowCommand command;
 	unsigned int file_descriptor = fopen("window.dev", "wr");
 	unsigned int window;
+	WindowCommand command;
 	command.type = WINDOW_COMMAND_CREATE;
 	command.arguments.create.title = title;
 	command.arguments.create.x = x;
@@ -58,6 +70,21 @@ unsigned int create_window(char const *title, short x, short y, unsigned short w
 	fread(&window, sizeof(window), 1, file_descriptor);
 	fclose(file_descriptor);
 	return window;
+}
+
+void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color)
+{
+	unsigned int file_descriptor = fopen("window.dev", "wr");
+	WindowCommand command;
+	command.type = WINDOW_COMMAND_FILL_BOX;
+	command.arguments.fill_box.window = window;
+	command.arguments.fill_box.x = x;
+	command.arguments.fill_box.y = y;
+	command.arguments.fill_box.width = width;
+	command.arguments.fill_box.height = height;
+	command.arguments.fill_box.color = color;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fclose(file_descriptor);
 }
 
 unsigned int get_free_memory_space_size(void)

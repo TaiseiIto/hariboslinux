@@ -57,9 +57,20 @@ typedef struct _WindowCommandCreateArguments
 	unsigned short height;
 } WindowCommandCreateArguments;
 
+typedef struct _WindowCommandFillBox
+{
+	Window *window;
+	short x;
+	short y;
+	unsigned short width;
+	unsigned short height;
+	Color color;
+} WindowCommandFillBox;
+
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
+	WindowCommandFillBox fill_box;
 } WindowCommandArguments;
 
 typedef struct _WindowCommand
@@ -67,6 +78,7 @@ typedef struct _WindowCommand
 	WindowCommandArguments arguments;
 	unsigned char type;
 	#define WINDOW_COMMAND_CREATE	0x00
+	#define WINDOW_COMMAND_FILL_BOX	0x01
 } WindowCommand;
 
 FileDescriptor *file_descriptors = NULL;
@@ -363,6 +375,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					*(Window **)file_descriptor->buffer_begin = window;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(window));
+					break;
+				case WINDOW_COMMAND_FILL_BOX:
+					fill_box_sheet(command->arguments.fill_box.window->client_sheet, command->arguments.fill_box.x, command->arguments.fill_box.y, command->arguments.fill_box.width, command->arguments.fill_box.height, command->arguments.fill_box.color);
 					break;
 				default:
 					ERROR(); // Invalid console command.
