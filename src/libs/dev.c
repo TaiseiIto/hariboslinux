@@ -42,11 +42,20 @@ typedef struct _WindowCommandPrint
 	char const *string;
 } WindowCommandPrint;
 
+typedef struct _WindowCommandPutDot
+{
+	unsigned int window;
+	unsigned short x;
+	unsigned short y;
+	Color color;
+} WindowCommandPutDot;
+
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
+	WindowCommandPutDot put_dot;
 } WindowCommandArguments;
 
 typedef struct _WindowCommand
@@ -56,6 +65,7 @@ typedef struct _WindowCommand
 	#define WINDOW_COMMAND_CREATE	0x00
 	#define WINDOW_COMMAND_FILL_BOX	0x01
 	#define WINDOW_COMMAND_PRINT	0x02
+	#define WINDOW_COMMAND_PUT_DOT	0x03
 } WindowCommand;
 
 void clear_console(void)
@@ -122,6 +132,19 @@ void print_window(unsigned int window, short x, short y, Color foreground, Color
 	command.arguments.print.foreground = foreground;
 	command.arguments.print.background = background;
 	command.arguments.print.string = string;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fclose(file_descriptor);
+}
+
+void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Color color)
+{
+	unsigned int file_descriptor = fopen("window.dev", "wr");
+	WindowCommand command;
+	command.type = WINDOW_COMMAND_PUT_DOT;
+	command.arguments.put_dot.window = window;
+	command.arguments.put_dot.x = x;
+	command.arguments.put_dot.y = y;
+	command.arguments.put_dot.color = color;
 	fwrite(&command, sizeof(command), 1, file_descriptor);
 	fclose(file_descriptor);
 }

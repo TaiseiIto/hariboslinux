@@ -77,11 +77,20 @@ typedef struct _WindowCommandPrint
 	char const *string;
 } WindowCommandPrint;
 
+typedef struct _WindowCommandPutDot
+{
+	Window *window;
+	unsigned short x;
+	unsigned short y;
+	Color color;
+} WindowCommandPutDot;
+
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
+	WindowCommandPutDot put_dot;
 } WindowCommandArguments;
 
 typedef struct _WindowCommand
@@ -91,6 +100,7 @@ typedef struct _WindowCommand
 	#define WINDOW_COMMAND_CREATE	0x00
 	#define WINDOW_COMMAND_FILL_BOX	0x01
 	#define WINDOW_COMMAND_PRINT	0x02
+	#define WINDOW_COMMAND_PUT_DOT	0x03
 } WindowCommand;
 
 FileDescriptor *file_descriptors = NULL;
@@ -393,6 +403,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				case WINDOW_COMMAND_PRINT:
 					if(sheet_exists(command->arguments.print.window->client_sheet))print_sheet(command->arguments.print.window->client_sheet, command->arguments.print.x, command->arguments.print.y, command->arguments.print.foreground, command->arguments.print.background, command->arguments.print.string + application_memory);
+					break;
+				case WINDOW_COMMAND_PUT_DOT:
+					if(sheet_exists(command->arguments.put_dot.window->client_sheet))put_dot_sheet(command->arguments.put_dot.window->client_sheet, command->arguments.put_dot.x, command->arguments.put_dot.y, command->arguments.put_dot.color);
 					break;
 				default:
 					ERROR(); // Invalid console command.

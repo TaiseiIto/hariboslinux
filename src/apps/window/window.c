@@ -22,6 +22,7 @@ int main(void)
 	window = create_window("window.com", 0x0200, 0x0200, 0x0200, 0x0200);
 	fill_box_window(window, 0x0010, 0x0010, 0x0010, 0x0010, red);
 	print_window(window, 0x00, 0x00, black, transparent, "Hello, World!\n");
+	put_dot_window(window, 0x0030, 0x0030, black);
 	return 0;
 }
 
