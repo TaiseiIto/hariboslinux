@@ -31,7 +31,7 @@ void clear_console(void)
 unsigned int create_window(void)
 {
 	WindowCommand command;
-	unsigned int file_descriptor = fopen("window.dev", "w");
+	unsigned int file_descriptor = fopen("window.dev", "wr");
 	unsigned int window;
 	command.type = WINDOW_COMMAND_CREATE;
 	fwrite(&command, sizeof(command), 1, file_descriptor);
