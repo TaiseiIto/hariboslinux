@@ -48,6 +48,12 @@ typedef struct _MemoryCommand
 	#define MEMORY_COMMAND_FREE	0x00
 } MemoryCommand;
 
+typedef struct _WindowCommand
+{
+	unsigned char type;
+	#define WINDOW_COMMAND_CREATE	0x00
+} WindowCommand;
+
 FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
 
@@ -322,6 +328,20 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					*(unsigned int *)file_descriptor->buffer_begin = free_memory_space_size;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(free_memory_space_size));
+					break;
+				default:
+					ERROR(); // Invalid console command.
+					break;
+				}
+			}
+			if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
+			{
+				WindowCommand const * const command = buffer;
+				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
+				switch(command->type)
+				{
+				case WINDOW_COMMAND_CREATE:
+					printf_shell(shell, "Create window.\n");
 					break;
 				default:
 					ERROR(); // Invalid console command.

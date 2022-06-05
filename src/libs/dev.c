@@ -13,6 +13,12 @@ typedef struct _MemoryCommand
 	#define MEMORY_COMMAND_FREE	0x00
 } MemoryCommand;
 
+typedef struct _WindowCommand
+{
+	unsigned char type;
+	#define WINDOW_COMMAND_CREATE	0x00
+} WindowCommand;
+
 void clear_console(void)
 {
 	ConsoleCommand command;
@@ -20,6 +26,16 @@ void clear_console(void)
 	command.type = CONSOLE_COMMAND_CLEAR;
 	fwrite(&command, sizeof(command), 1, file_descriptor);
 	fclose(file_descriptor);
+}
+
+unsigned int create_window(void)
+{
+	WindowCommand command;
+	unsigned int file_descriptor = fopen("window.dev", "w");
+	command.type = WINDOW_COMMAND_CREATE;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fclose(file_descriptor);
+	return 0;
 }
 
 unsigned int get_free_memory_space_size(void)

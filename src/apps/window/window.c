@@ -1,10 +1,9 @@
+#include "dev.h"
 #include "stdio.h"
 
 int main(void)
 {
-	unsigned int window = fopen("window.dev", "rw");
-	printf("Hello, Window!\n");
-	fclose(window);
+	create_window();
 	return 0;
 }
 
