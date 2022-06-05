@@ -1,6 +1,9 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
+#define EDGE_WIDTH 5
+#define TITLE_SHEET_HEIGHT 0x12
+
 struct _Window;
 
 typedef struct _CloseButtonClickedEvent

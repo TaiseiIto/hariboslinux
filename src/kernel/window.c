@@ -4,9 +4,6 @@
 #include "task.h"
 #include "window.h"
 
-#define EDGE_WIDTH 5
-#define TITLE_SHEET_HEIGHT 0x12
-
 //						//{red ,green, blue,alpha}
 const Color background_color			= {0x80, 0x80, 0x80, 0xff};
 const Color client_background_color		= {0x80, 0x80, 0x80, 0xff};
