@@ -32,10 +32,21 @@ typedef struct _WindowCommandFillBox
 	Color color;
 } WindowCommandFillBox;
 
+typedef struct _WindowCommandPrint
+{
+	unsigned int window;
+	short x;
+	short y;
+	Color foreground;
+	Color background;
+	char const *string;
+} WindowCommandPrint;
+
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
 	WindowCommandFillBox fill_box;
+	WindowCommandPrint print;
 } WindowCommandArguments;
 
 typedef struct _WindowCommand
@@ -44,6 +55,7 @@ typedef struct _WindowCommand
 	unsigned char type;
 	#define WINDOW_COMMAND_CREATE	0x00
 	#define WINDOW_COMMAND_FILL_BOX	0x01
+	#define WINDOW_COMMAND_PRINT	0x02
 } WindowCommand;
 
 void clear_console(void)
@@ -97,5 +109,20 @@ unsigned int get_free_memory_space_size(void)
 	fread(&free_memory_space_size, sizeof(free_memory_space_size), 1, file_descriptor);
 	fclose(file_descriptor);
 	return free_memory_space_size;
+}
+
+void print_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string)
+{
+	unsigned int file_descriptor = fopen("window.dev", "wr");
+	WindowCommand command;
+	command.type = WINDOW_COMMAND_PRINT;
+	command.arguments.print.window = window;
+	command.arguments.print.x = x;
+	command.arguments.print.y = y;
+	command.arguments.print.foreground = foreground;
+	command.arguments.print.background = background;
+	command.arguments.print.string = string;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fclose(file_descriptor);
 }
 

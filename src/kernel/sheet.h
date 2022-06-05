@@ -114,8 +114,8 @@ void init_sheets(Sheet **_background_sheet, void *(*background_sheet_procedure)(
 bool is_descendant_sheet_of(Sheet const *descendant_candidate, Sheet const *ancestor_candidate);
 bool is_focused_sheet(Sheet const *sheet);
 void move_sheet(Sheet *sheet, short x, short y);
-void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *format, ...);
-void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char *string);
+void printf_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char const *format, ...);
+void print_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char const *string);
 void pull_up_sheet(Sheet *sheet);
 void put_char_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color foreground, Color background, char character);
 void put_dot_sheet(Sheet *sheet, unsigned short x, unsigned short y, Color color);

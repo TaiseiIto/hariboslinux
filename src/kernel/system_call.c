@@ -67,10 +67,21 @@ typedef struct _WindowCommandFillBox
 	Color color;
 } WindowCommandFillBox;
 
+typedef struct _WindowCommandPrint
+{
+	Window *window;
+	short x;
+	short y;
+	Color foreground;
+	Color background;
+	char const *string;
+} WindowCommandPrint;
+
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
 	WindowCommandFillBox fill_box;
+	WindowCommandPrint print;
 } WindowCommandArguments;
 
 typedef struct _WindowCommand
@@ -79,6 +90,7 @@ typedef struct _WindowCommand
 	unsigned char type;
 	#define WINDOW_COMMAND_CREATE	0x00
 	#define WINDOW_COMMAND_FILL_BOX	0x01
+	#define WINDOW_COMMAND_PRINT	0x02
 } WindowCommand;
 
 FileDescriptor *file_descriptors = NULL;
@@ -377,7 +389,10 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(window));
 					break;
 				case WINDOW_COMMAND_FILL_BOX:
-					fill_box_sheet(command->arguments.fill_box.window->client_sheet, command->arguments.fill_box.x, command->arguments.fill_box.y, command->arguments.fill_box.width, command->arguments.fill_box.height, command->arguments.fill_box.color);
+					if(sheet_exists(command->arguments.fill_box.window->client_sheet))fill_box_sheet(command->arguments.fill_box.window->client_sheet, command->arguments.fill_box.x, command->arguments.fill_box.y, command->arguments.fill_box.width, command->arguments.fill_box.height, command->arguments.fill_box.color);
+					break;
+				case WINDOW_COMMAND_PRINT:
+					if(sheet_exists(command->arguments.print.window->client_sheet))print_sheet(command->arguments.print.window->client_sheet, command->arguments.print.x, command->arguments.print.y, command->arguments.print.foreground, command->arguments.print.background, command->arguments.print.string + application_memory);
 					break;
 				default:
 					ERROR(); // Invalid console command.
