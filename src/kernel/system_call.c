@@ -36,6 +36,39 @@ typedef struct _SystemCallStatus
 	struct _SystemCallStatus *next;
 } SystemCallStatus;
 
+typedef struct _ConsoleCommand
+{
+	unsigned char type;
+	#define CONSOLE_COMMAND_CLEAR	0x00
+} ConsoleCommand;
+
+typedef struct _MemoryCommand
+{
+	unsigned char type;
+	#define MEMORY_COMMAND_FREE	0x00
+} MemoryCommand;
+
+typedef struct _WindowCommandCreateArguments
+{
+	char const *title;
+	short x;
+	short y;
+	unsigned short width;
+	unsigned short height;
+} WindowCommandCreateArguments;
+
+typedef union _WindowCommandArguments
+{
+	WindowCommandCreateArguments create;
+} WindowCommandArguments;
+
+typedef struct _WindowCommand
+{
+	WindowCommandArguments arguments;
+	unsigned char type;
+	#define WINDOW_COMMAND_CREATE	0x00
+} WindowCommand;
+
 FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
 
@@ -254,6 +287,7 @@ size_t system_call_read(FileDescriptor *file_descriptor, void *buffer, size_t co
 int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_t count)
 {
 	unsigned int counter = 0;
+	unsigned int application_memory = (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory;
 	if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_WRITE)
 	{
 		Shell *shell = get_current_shell();
@@ -276,34 +310,64 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			{
 				Console *console;
 				TextBox *text_box;
-				char *command = malloc(count + 1);
-				memcpy(command, buffer, count);
-				command[count] = '\0';
-				if(!strcmp(command, "clear"))switch(shell->type)
+				ConsoleCommand const * const command = buffer;
+				switch(command->type)
 				{
-				case SHELL_TYPE_CONSOLE:
-					console = shell->console;
-					text_box = console->text_box;
-					text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
+				case CONSOLE_COMMAND_CLEAR:
+					switch(shell->type)
+					{
+					case SHELL_TYPE_CONSOLE:
+						console = shell->console;
+						text_box = console->text_box;
+						text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
+						break;
+					case SHELL_TYPE_SERIAL:
+						break;
+					default:
+						ERROR(); // Invalid shell type.
+					}
+					break;
+				default:
+					ERROR(); // Invalid console command.
 					break;
 				}
-				free(command);
 			}
 			if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
 			{
-				char *command = malloc(count + 1);
-				memcpy(command, buffer, count);
-				command[count] = '\0';
+				MemoryCommand const * const command = buffer;
+				unsigned int free_memory_space_size = get_free_memory_space_size();
 				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
-				if(!strcmp(command, "free"))
+				switch(command->type)
 				{
-					unsigned int free_memory_space_size = get_free_memory_space_size();
+				case MEMORY_COMMAND_FREE:
 					file_descriptor->buffer_begin = malloc(sizeof(free_memory_space_size));
 					*(unsigned int *)file_descriptor->buffer_begin = free_memory_space_size;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(free_memory_space_size));
+					break;
+				default:
+					ERROR(); // Invalid console command.
+					break;
 				}
-				free(command);
+			}
+			if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
+			{
+				Window *window;
+				WindowCommand const * const command = buffer;
+				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
+				switch(command->type)
+				{
+				case WINDOW_COMMAND_CREATE:
+					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width, command->arguments.create.height, main_task.event_queue);
+					file_descriptor->buffer_begin = malloc(sizeof(window));
+					*(Window **)file_descriptor->buffer_begin = window;
+					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
+					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(window));
+					break;
+				default:
+					ERROR(); // Invalid console command.
+					break;
+				}
 			}
 			break;
 		}

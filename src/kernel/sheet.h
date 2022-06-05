@@ -100,6 +100,8 @@ typedef struct _Sheet
 	#define SHEET_FLAG_RECEIVED_DELETION_REQUEST 0x01
 } Sheet;
 
+extern Sheet *background_sheet;
+
 Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event), Queue *event_queue);
 void *default_event_procedure(Sheet *sheet, struct _Event const *event);
 void delete_sheet(Sheet *sheet);

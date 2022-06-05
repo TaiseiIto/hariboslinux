@@ -96,6 +96,8 @@ typedef struct _TaskDeletionResponseEvent
 	unsigned short segment_selector;
 } TaskDeletionResponseEvent;
 
+extern Task main_task;
+
 void allow_switch_task(void);
 void cli_task(void);
 void cli_task_interrupt(void);

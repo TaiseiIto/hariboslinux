@@ -22,7 +22,6 @@ SECTIONS
 	.text :
 	{
 		crt.o(.text)
-		clear.o(.text)
 		chain_string.o(.text)
 		ctype.o(.text)
 		dev.o(.text)
@@ -34,12 +33,12 @@ SECTIONS
 		stdlib.o(.text)
 		string.o(.text)
 		system_call.o(.text)
+		window.o(.text)
 	}
 	rodata_base = .;
 	.rodata :
 	{
 		crt.o(.rodata)
-		clear.o(.rodata)
 		chain_string.o(.rodata)
 		ctype.o(.rodata)
 		dev.o(.rodata)
@@ -51,12 +50,12 @@ SECTIONS
 		stdlib.o(.rodata)
 		string.o(.rodata)
 		system_call.o(.rodata)
+		window.o(.rodata)
 	}
 	data_base = .;
 	.data :
 	{
 		crt.o(.data)
-		clear.o(.data)
 		chain_string.o(.data)
 		ctype.o(.data)
 		dev.o(.data)
@@ -68,12 +67,12 @@ SECTIONS
 		stdlib.o(.data)
 		string.o(.data)
 		system_call.o(.data)
+		window.o(.data)
 	}
 	bss_base = .;
 	.bss :
 	{
 		crt.o(.bss)
-		clear.o(.bss)
 		chain_string.o(.bss)
 		ctype.o(.bss)
 		dev.o(.bss)
@@ -85,12 +84,12 @@ SECTIONS
 		stdlib.o(.bss)
 		string.o(.bss)
 		system_call.o(.bss)
+		window.o(.bss)
 	}
 	common_base = .;
 	COMMON :
 	{
 		crt.o(COMMON)
-		clear.o(COMMON)
 		chain_string.o(COMMON)
 		ctype.o(COMMON)
 		dev.o(COMMON)
@@ -102,6 +101,7 @@ SECTIONS
 		stdlib.o(COMMON)
 		string.o(COMMON)
 		system_call.o(COMMON)
+		window.o(COMMON)
 	}
 	common_deletion_prevention_base = .;
 	.common_deletion_prevention :

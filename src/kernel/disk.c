@@ -11,6 +11,7 @@ BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOAD
 char const * const root_directory_name = "";
 char const * const console_file_name = "console.dev";
 char const * const memory_file_name = "memory.dev";
+char const * const window_file_name = "window.dev";
 
 unsigned int cluster_size;
 unsigned int number_of_clusters;
