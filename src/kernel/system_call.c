@@ -36,6 +36,12 @@ typedef struct _SystemCallStatus
 	struct _SystemCallStatus *next;
 } SystemCallStatus;
 
+typedef struct _ConsoleCommand
+{
+	unsigned char type;
+	#define CONSOLE_COMMAND_CLEAR	0x0
+} ConsoleCommand;
+
 FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
 
@@ -276,18 +282,27 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			{
 				Console *console;
 				TextBox *text_box;
-				char *command = malloc(count + 1);
-				memcpy(command, buffer, count);
-				command[count] = '\0';
-				if(!strcmp(command, "clear"))switch(shell->type)
+				ConsoleCommand const * const command = buffer;
+				switch(command->type)
 				{
-				case SHELL_TYPE_CONSOLE:
-					console = shell->console;
-					text_box = console->text_box;
-					text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
+				case CONSOLE_COMMAND_CLEAR:
+					switch(shell->type)
+					{
+					case SHELL_TYPE_CONSOLE:
+						console = shell->console;
+						text_box = console->text_box;
+						text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
+						break;
+					case SHELL_TYPE_SERIAL:
+						break;
+					default:
+						ERROR(); // Invalid shell type.
+					}
+					break;
+				default:
+					ERROR(); // Invalid console command.
 					break;
 				}
-				free(command);
 			}
 			if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
 			{
