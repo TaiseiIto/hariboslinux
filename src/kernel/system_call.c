@@ -48,8 +48,23 @@ typedef struct _MemoryCommand
 	#define MEMORY_COMMAND_FREE	0x00
 } MemoryCommand;
 
+typedef struct _WindowCommandCreateArguments
+{
+	char *title;
+	short x;
+	short y;
+	unsigned short width;
+	unsigned short height;
+} WindowCommandCreateArguments;
+
+typedef union _WindowCommandArguments
+{
+	WindowCommandCreateArguments create;
+} WindowCommandArguments;
+
 typedef struct _WindowCommand
 {
+	WindowCommandArguments arguments;
 	unsigned char type;
 	#define WINDOW_COMMAND_CREATE	0x00
 } WindowCommand;
@@ -272,6 +287,7 @@ size_t system_call_read(FileDescriptor *file_descriptor, void *buffer, size_t co
 int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_t count)
 {
 	unsigned int counter = 0;
+	unsigned int application_memory = (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory;
 	if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_WRITE)
 	{
 		Shell *shell = get_current_shell();
@@ -342,6 +358,11 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 				case WINDOW_COMMAND_CREATE:
+					printf_shell(shell, "title = %s\n", command->arguments.create.title + application_memory);
+					printf_shell(shell, "x = %#06.4x\n", command->arguments.create.x);
+					printf_shell(shell, "y = %#06.4x\n", command->arguments.create.y);
+					printf_shell(shell, "width = %#06.4x\n", command->arguments.create.width);
+					printf_shell(shell, "height = %#06.4x\n", command->arguments.create.height);
 					window = create_window("App window", background_sheet, 0x0000, 0x0000, 0x0200, 0x0200, main_task.event_queue);
 					file_descriptor->buffer_begin = malloc(sizeof(window));
 					*(Window **)file_descriptor->buffer_begin = window;

@@ -46,6 +46,7 @@ typedef union _EventUnion
 
 typedef struct _Event
 {
+	EventUnion event_union;
 	unsigned char type;
 	#define EVENT_TYPE_CLOSE_BUTTON_CLICKED 	0x00
 	#define EVENT_TYPE_KEYBOARD_EVENT		0x01
@@ -74,7 +75,6 @@ typedef struct _Event
 	#define EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x18
 	#define EVENT_TYPE_WINDOW_FOCUSED		0x19
 	#define EVENT_TYPE_WINDOW_UNFOCUSED		0x1a
-	EventUnion event_union;
 } Event;
 
 #endif

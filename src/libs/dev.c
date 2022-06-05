@@ -13,8 +13,23 @@ typedef struct _MemoryCommand
 	#define MEMORY_COMMAND_FREE	0x00
 } MemoryCommand;
 
+typedef struct _WindowCommandCreateArguments
+{
+	char *title;
+	short x;
+	short y;
+	unsigned short width;
+	unsigned short height;
+} WindowCommandCreateArguments;
+
+typedef union _WindowCommandArguments
+{
+	WindowCommandCreateArguments create;
+} WindowCommandArguments;
+
 typedef struct _WindowCommand
 {
+	WindowCommandArguments arguments;
 	unsigned char type;
 	#define WINDOW_COMMAND_CREATE	0x00
 } WindowCommand;
@@ -34,6 +49,11 @@ unsigned int create_window(void)
 	unsigned int file_descriptor = fopen("window.dev", "wr");
 	unsigned int window;
 	command.type = WINDOW_COMMAND_CREATE;
+	command.arguments.create.title = "test";
+	command.arguments.create.x = 0x0200;
+	command.arguments.create.y = 0x0200;
+	command.arguments.create.width = 0x0200;
+	command.arguments.create.height = 0x0200;
 	fwrite(&command, sizeof(command), 1, file_descriptor);
 	fread(&window, sizeof(window), 1, file_descriptor);
 	fclose(file_descriptor);
