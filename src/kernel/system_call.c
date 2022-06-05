@@ -341,7 +341,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 				case WINDOW_COMMAND_CREATE:
-					printf_shell(shell, "Create window.\n");
+					create_window("App window", NULL, 0x0000, 0x0000, 0x0200, 0x0200, main_task.event_queue);
 					break;
 				default:
 					ERROR(); // Invalid console command.
