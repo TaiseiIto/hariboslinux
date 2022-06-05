@@ -111,7 +111,7 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 	}
 }
 
-Window *create_window(char *title, Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height, Queue *event_queue)
+Window *create_window(char const *title, Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height, Queue *event_queue)
 {
 	Window *new_window;
 	// Create sheets

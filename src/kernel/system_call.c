@@ -50,7 +50,7 @@ typedef struct _MemoryCommand
 
 typedef struct _WindowCommandCreateArguments
 {
-	char *title;
+	char const *title;
 	short x;
 	short y;
 	unsigned short width;
@@ -358,12 +358,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 				case WINDOW_COMMAND_CREATE:
-					printf_shell(shell, "title = %s\n", command->arguments.create.title + application_memory);
-					printf_shell(shell, "x = %#06.4x\n", command->arguments.create.x);
-					printf_shell(shell, "y = %#06.4x\n", command->arguments.create.y);
-					printf_shell(shell, "width = %#06.4x\n", command->arguments.create.width);
-					printf_shell(shell, "height = %#06.4x\n", command->arguments.create.height);
-					window = create_window("App window", background_sheet, 0x0000, 0x0000, 0x0200, 0x0200, main_task.event_queue);
+					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width, command->arguments.create.height, main_task.event_queue);
 					file_descriptor->buffer_begin = malloc(sizeof(window));
 					*(Window **)file_descriptor->buffer_begin = window;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
