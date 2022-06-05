@@ -99,7 +99,7 @@ Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsig
 			background_sheet = new_sheet;
 			mouse_cursor_sheet = new_sheet;
 		}
-		else ERROR();
+		else new_sheet->parent = background_sheet;
 	}
 	allow_switch_task();
 	refresh_input(new_sheet);
