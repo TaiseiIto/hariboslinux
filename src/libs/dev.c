@@ -32,10 +32,12 @@ unsigned int create_window(void)
 {
 	WindowCommand command;
 	unsigned int file_descriptor = fopen("window.dev", "w");
+	unsigned int window;
 	command.type = WINDOW_COMMAND_CREATE;
 	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fread(&window, sizeof(window), 1, file_descriptor);
 	fclose(file_descriptor);
-	return 0;
+	return window;
 }
 
 unsigned int get_free_memory_space_size(void)

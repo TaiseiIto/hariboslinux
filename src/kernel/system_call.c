@@ -336,12 +336,17 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
 			{
+				Window *window;
 				WindowCommand const * const command = buffer;
 				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
 				switch(command->type)
 				{
 				case WINDOW_COMMAND_CREATE:
-					create_window("App window", background_sheet, 0x0000, 0x0000, 0x0200, 0x0200, main_task.event_queue);
+					window = create_window("App window", background_sheet, 0x0000, 0x0000, 0x0200, 0x0200, main_task.event_queue);
+					file_descriptor->buffer_begin = malloc(sizeof(window));
+					*(Window **)file_descriptor->buffer_begin = window;
+					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
+					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(window));
 					break;
 				default:
 					ERROR(); // Invalid console command.

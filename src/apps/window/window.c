@@ -3,7 +3,7 @@
 
 int main(void)
 {
-	create_window();
+	printf("window = %p\n", create_window());
 	return 0;
 }
 
