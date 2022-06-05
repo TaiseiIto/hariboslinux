@@ -68,10 +68,14 @@ typedef struct _WindowCommand
 	#define WINDOW_COMMAND_PUT_DOT	0x03
 } WindowCommand;
 
+char const * const console_file_name = "console.dev";
+char const * const memory_file_name = "memory.dev";
+char const * const window_file_name = "window.dev";
+
 void clear_console(void)
 {
 	ConsoleCommand command;
-	unsigned int file_descriptor = fopen("console.dev", "w");
+	unsigned int file_descriptor = fopen(console_file_name, "w");
 	command.type = CONSOLE_COMMAND_CLEAR;
 	fwrite(&command, sizeof(command), 1, file_descriptor);
 	fclose(file_descriptor);
@@ -79,7 +83,7 @@ void clear_console(void)
 
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height)
 {
-	unsigned int file_descriptor = fopen("window.dev", "wr");
+	unsigned int file_descriptor = fopen(window_file_name, "wr");
 	unsigned int window;
 	WindowCommand command;
 	command.type = WINDOW_COMMAND_CREATE;
@@ -96,7 +100,7 @@ unsigned int create_window(char const *title, short x, short y, unsigned short w
 
 void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color)
 {
-	unsigned int file_descriptor = fopen("window.dev", "wr");
+	unsigned int file_descriptor = fopen(window_file_name, "wr");
 	WindowCommand command;
 	command.type = WINDOW_COMMAND_FILL_BOX;
 	command.arguments.fill_box.window = window;
@@ -112,7 +116,7 @@ void fill_box_window(unsigned int window, short x, short y, unsigned short width
 unsigned int get_free_memory_space_size(void)
 {
 	MemoryCommand command;
-	unsigned int file_descriptor = fopen("memory.dev", "wr");
+	unsigned int file_descriptor = fopen(memory_file_name, "wr");
 	unsigned int free_memory_space_size;
 	command.type = MEMORY_COMMAND_FREE;
 	fwrite(&command, sizeof(command), 1, file_descriptor);
@@ -123,7 +127,7 @@ unsigned int get_free_memory_space_size(void)
 
 void print_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string)
 {
-	unsigned int file_descriptor = fopen("window.dev", "wr");
+	unsigned int file_descriptor = fopen(window_file_name, "wr");
 	WindowCommand command;
 	command.type = WINDOW_COMMAND_PRINT;
 	command.arguments.print.window = window;
@@ -138,7 +142,7 @@ void print_window(unsigned int window, short x, short y, Color foreground, Color
 
 void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Color color)
 {
-	unsigned int file_descriptor = fopen("window.dev", "wr");
+	unsigned int file_descriptor = fopen(window_file_name, "wr");
 	WindowCommand command;
 	command.type = WINDOW_COMMAND_PUT_DOT;
 	command.arguments.put_dot.window = window;
