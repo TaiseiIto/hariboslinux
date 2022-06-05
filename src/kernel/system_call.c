@@ -39,8 +39,14 @@ typedef struct _SystemCallStatus
 typedef struct _ConsoleCommand
 {
 	unsigned char type;
-	#define CONSOLE_COMMAND_CLEAR	0x0
+	#define CONSOLE_COMMAND_CLEAR	0x00
 } ConsoleCommand;
+
+typedef struct _MemoryCommand
+{
+	unsigned char type;
+	#define MEMORY_COMMAND_FREE	0x00
+} MemoryCommand;
 
 FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
@@ -306,19 +312,21 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
 			{
-				char *command = malloc(count + 1);
-				memcpy(command, buffer, count);
-				command[count] = '\0';
+				MemoryCommand const * const command = buffer;
+				unsigned int free_memory_space_size = get_free_memory_space_size();
 				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
-				if(!strcmp(command, "free"))
+				switch(command->type)
 				{
-					unsigned int free_memory_space_size = get_free_memory_space_size();
+				case MEMORY_COMMAND_FREE:
 					file_descriptor->buffer_begin = malloc(sizeof(free_memory_space_size));
 					*(unsigned int *)file_descriptor->buffer_begin = free_memory_space_size;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(free_memory_space_size));
+					break;
+				default:
+					ERROR(); // Invalid console command.
+					break;
 				}
-				free(command);
 			}
 			break;
 		}
