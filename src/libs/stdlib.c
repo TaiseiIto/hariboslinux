@@ -26,8 +26,18 @@ typedef struct _MemorySection
 	#define MEMORY_SECTION_ALLOCATED 0x01
 } MemorySection;
 
+typedef struct _Ring
+{
+	size_t element_size;
+	size_t number_of_elements;
+	void *data;
+} Ring;
+
 ComHeader *com_header = NULL;
 MemorySection *root_memory_section = NULL;
+
+Ring create_ring(size_t element_size, size_t number_of_elements);
+void delete_ring(Ring ring);
 
 int atoi(char const *digits)
 {
@@ -48,6 +58,20 @@ int atoi(char const *digits)
 		}
 		else return 0;
 	return value;
+}
+
+Ring create_ring(size_t element_size, size_t number_of_elements)
+{
+	Ring ring;
+	ring.element_size = element_size;
+	ring.number_of_elements = number_of_elements;
+	ring.data = malloc(number_of_elements * element_size);
+	return ring;
+}
+
+void delete_ring(Ring ring)
+{
+	free(ring.data);
 }
 
 void exit(int status)
