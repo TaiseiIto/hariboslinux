@@ -21,7 +21,34 @@ unsigned char status_register_b;
 
 #define RTC_STATUS_REGISTER_C_TIME_UPDATED		0x10
 
+unsigned int end_of_month(unsigned int year, unsigned int month);
 bool is_leap_year(int year);
+
+unsigned int end_of_month(unsigned int year, unsigned int month)
+{
+	switch(month)
+	{
+	case 2:
+		if(is_leap_year(year)) return 29;
+		else return 28;
+	case 4:
+	case 6:
+	case 9:
+	case 11:
+		return 30;
+	case 1:
+	case 3:
+	case 5:
+	case 7:
+	case 8:
+	case 10:
+	case 12:
+		return 31;
+	default:
+		ERROR(); // Invalid month
+		return 0;
+	}
+}
 
 // https://en.wikipedia.org/wiki/Zeller%27s_congruence
 unsigned char get_day_of_week(unsigned short year, unsigned char month, unsigned char day)
@@ -73,6 +100,8 @@ unsigned int get_unix_time(void)
 {
 	unsigned int unix_day = 0;
 	for(unsigned int year = 1970; year < current_time.year; year++)unix_day += 365 + (unsigned int)is_leap_year(year);
+	for(unsigned int month = 1; month < current_time.month; month++)unix_day += end_of_month(current_time.year, current_time.month);
+	unix_day += current_time.day - 1;
 	return unix_day;
 }
 
