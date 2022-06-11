@@ -3,7 +3,7 @@
 
 int main(void)
 {
-	printf("%d\n", time(NULL));
+	printf("%u\n", time(NULL));
 	return 0;
 }
 
