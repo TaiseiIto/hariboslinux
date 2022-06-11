@@ -104,9 +104,9 @@ unsigned int get_unix_time(void)
 	for(unsigned int year = 1970; year < current_time.year; year++)unix_day += 365 + (unsigned int)is_leap_year(year);
 	for(unsigned int month = 1; month < current_time.month; month++)unix_day += end_of_month(current_time.year, current_time.month);
 	unix_day += current_time.day - 1;
-	unix_hour = 24 + unix_day + current_time.hour;
+	unix_hour = 24 * unix_day + current_time.hour;
 	unix_minute = 60 * unix_hour + current_time.minute;
-	return 60 + unix_minute + current_time.second;
+	return 60 * unix_minute + current_time.second;
 }
 
 void init_rtc(Queue *interrupt_queue)
