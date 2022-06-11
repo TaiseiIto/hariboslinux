@@ -21,6 +21,8 @@ unsigned char status_register_b;
 
 #define RTC_STATUS_REGISTER_C_TIME_UPDATED		0x10
 
+bool is_leap_year(int year);
+
 // https://en.wikipedia.org/wiki/Zeller%27s_congruence
 unsigned char get_day_of_week(unsigned short year, unsigned char month, unsigned char day)
 {
@@ -69,7 +71,9 @@ char const *get_day_of_week_string(unsigned char day_of_week)
 
 unsigned int get_unix_time(void)
 {
-	return current_time.year;
+	unsigned int unix_day = 0;
+	for(unsigned int year = 1970; year < current_time.year; year++)unix_day += 365 + (unsigned int)is_leap_year(year);
+	return unix_day;
 }
 
 void init_rtc(Queue *interrupt_queue)
@@ -80,6 +84,14 @@ void init_rtc(Queue *interrupt_queue)
 	write_cmos_register(CMOS_REGISTER_RTC_STATUS_B | CMOS_DISABLE_NON_MASKABLE_INTERRUPT, status_register_b);
 	// read status register c
 	read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
+}
+
+bool is_leap_year(int year)
+{
+	if(year % 400 == 0)return true;
+	if(year % 100 == 0)return false;
+	if(year % 4 == 0)return true;
+	return false;
 }
 
 void rtc_interrupt_handler(void)
