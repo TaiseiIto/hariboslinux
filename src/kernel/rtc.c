@@ -102,7 +102,7 @@ unsigned int get_unix_time(void)
 	unsigned int unix_hour = 0;
 	unsigned int unix_minute = 0;
 	for(unsigned int year = 1970; year < current_time.year; year++)unix_day += 365 + (unsigned int)is_leap_year(year);
-	for(unsigned int month = 1; month < current_time.month; month++)unix_day += end_of_month(current_time.year, current_time.month);
+	for(unsigned int month = 1; month < current_time.month; month++)unix_day += end_of_month(current_time.year, month);
 	unix_day += current_time.day - 1;
 	unix_hour = 24 * unix_day + current_time.hour - 9;
 	unix_minute = 60 * unix_hour + current_time.minute;
