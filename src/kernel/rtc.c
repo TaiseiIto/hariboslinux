@@ -101,11 +101,10 @@ unsigned int get_unix_time(void)
 	unsigned int unix_day = 0;
 	unsigned int unix_hour = 0;
 	unsigned int unix_minute = 0;
-	printf_serial("%d/%d/%d %d:%d:%d\n", current_time.year, current_time.month, current_time.day, current_time.hour, current_time.minute, current_time.second);
 	for(unsigned int year = 1970; year < current_time.year; year++)unix_day += 365 + (unsigned int)is_leap_year(year);
 	for(unsigned int month = 1; month < current_time.month; month++)unix_day += end_of_month(current_time.year, current_time.month);
 	unix_day += current_time.day - 1;
-	unix_hour = 24 * unix_day + current_time.hour;
+	unix_hour = 24 * unix_day + current_time.hour - 9;
 	unix_minute = 60 * unix_hour + current_time.minute;
 	return 60 * unix_minute + current_time.second;
 }
