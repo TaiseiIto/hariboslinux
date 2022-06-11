@@ -202,6 +202,31 @@ void *ring_element(Ring *ring, int index)
 	return ring->data + index * ring->element_size;
 }
 
+int rand(void)
+{
+	static unsigned int const a = 0x9908b0df;
+	static unsigned int const b = 0x9d2c5680;
+	static unsigned int const c = 0xefc60000;
+	static unsigned int const l = 0x7fffffff;
+	static unsigned int const m = 397;
+	static unsigned int const sr0 = 11;
+	static unsigned int const sl1 = 7;
+	static unsigned int const sl2 = 15;
+	static unsigned int const sr3 = 18;
+	static unsigned int const u = 0x80000000;
+	static int n = 0;
+	unsigned int x;
+	unsigned int y;
+	x = (*mersenne_twister_ring_element(n) & u) | (*mersenne_twister_ring_element(n + 1) & l);
+	*mersenne_twister_ring_element(n + mersenne_twister_N) = *mersenne_twister_ring_element(n + m) ^ (x >> 1) ^ (x & 1 ? a : 0);
+	y = *mersenne_twister_ring_element(n++ + mersenne_twister_N);
+	y ^= y >> sr0;
+	y ^= y << sl1 & b;
+	y ^= y << sl2 & c;
+	y ^= y >> sr3;
+	return (int)y;
+}
+
 void srand(unsigned int seed)
 {
 	if(mersenne_twister_ring)delete_ring(mersenne_twister_ring);

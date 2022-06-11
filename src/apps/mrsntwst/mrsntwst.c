@@ -11,6 +11,11 @@ int main(void)
 		0x456
 	};
 	init_mersenne_twister(key, _countof(key));
+	for(unsigned int i = 0; i < 1000; i++)
+	{
+		printf("%10lu", rand());
+		if(i % 5 == 4)printf("\n");
+	}
 	return 0;
 }
 
