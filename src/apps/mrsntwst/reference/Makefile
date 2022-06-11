@@ -1,5 +1,6 @@
-TARGET = mt19937ar
-SOURCE = $(TARGET:=.c)
+TARGET = mt19937ar.txt
+PROGRAM = $(TARGET:.txt=)
+SOURCE = $(PROGRAM:=.c)
 
 # Compiler
 COMPILER = gcc
@@ -11,7 +12,10 @@ URL = http://math.sci.hiroshima-u.ac.jp/m-mat/MT/MT2002/CODES/$(SOURCE)
 
 all: $(TARGET)
 
-$(TARGET): $(SOURCE)
+$(TARGET): $(PROGRAM)
+	./$(PROGRAM) > $(TARGET)
+
+$(PROGRAM): $(SOURCE)
 	$(COMPILER) $^ $(COMPILER_OUTPUT_OPTION) $@
 
 $(SOURCE):
