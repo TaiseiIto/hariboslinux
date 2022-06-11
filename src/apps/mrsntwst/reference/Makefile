@@ -12,6 +12,12 @@ URL = http://math.sci.hiroshima-u.ac.jp/m-mat/MT/MT2002/CODES/$(SOURCE)
 
 all: $(TARGET)
 
+clean:
+	rm -f $(TARGET) $(PROGRAM) $(SOURCE)
+
+rebuild: clean
+	make
+
 $(TARGET): $(PROGRAM)
 	./$(PROGRAM) > $(TARGET)
 

@@ -148,7 +148,7 @@ void init_mersenne_twister(unsigned int *key, unsigned int length)
 		}
 	}
 	*mersenne_twister_ring_element(0) = 0x80000000;
-	for(unsigned int i = 0; i < mersenne_twister_N; i++)printf("%u\n", *mersenne_twister_ring_element(i));
+	for(unsigned int i = 0; i < mersenne_twister_N; i++)printf("mt[%u] = %u\n", i, *mersenne_twister_ring_element(i));
 }
 
 void *malloc(size_t size)
@@ -197,7 +197,7 @@ unsigned int *mersenne_twister_ring_element(int index)
 
 void *ring_element(Ring *ring, int index)
 {
-	index %= ring->number_of_elements;
+	index %= (int)ring->number_of_elements;
 	if(index < 0)index += ring->number_of_elements;
 	return ring->data + index * ring->element_size;
 }
