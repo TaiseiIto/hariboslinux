@@ -6,6 +6,9 @@
 #include "rtc.h"
 #include "serial.h"
 
+typedef RTCInterrupt Time;
+
+Time current_time;
 Queue *rtc_interrupt_queue;
 
 #define RTC_HOUR_REGISTER_PM_FLAG	0xf0
@@ -66,8 +69,7 @@ char const *get_day_of_week_string(unsigned char day_of_week)
 
 unsigned int get_unix_time(void)
 {
-	// unimplemented
-	return -1;
+	return current_time.year;
 }
 
 void init_rtc(Queue *interrupt_queue)
@@ -125,6 +127,7 @@ void rtc_interrupt_handler(void)
 		century = read_cmos_register(CMOS_REGISTER_RTC_CENTURY);
 		if(!(status_register_b & RTC_STATUS_REGISTER_B_BINARY_MODE))century = 10 * (century >> 4) + (century & 0x0f);
 		event.event_union.rtc_interrupt.year += 100 * century;
+		current_time = event.event_union.rtc_interrupt;
 		enqueue(rtc_interrupt_queue, &event);
 	}
 }
