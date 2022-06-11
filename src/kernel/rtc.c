@@ -11,6 +11,8 @@ typedef RTCInterrupt Time;
 Time current_time;
 Queue *rtc_interrupt_queue;
 
+unsigned int difference_from_UTC = 9; // Japan
+
 #define RTC_HOUR_REGISTER_PM_FLAG	0xf0
 
 unsigned char status_register_b;
@@ -104,7 +106,7 @@ unsigned int get_unix_time(void)
 	for(unsigned int year = 1970; year < current_time.year; year++)unix_day += 365 + (unsigned int)is_leap_year(year);
 	for(unsigned int month = 1; month < current_time.month; month++)unix_day += end_of_month(current_time.year, month);
 	unix_day += current_time.day - 1;
-	unix_hour = 24 * unix_day + current_time.hour - 9;
+	unix_hour = 24 * unix_day + current_time.hour - difference_from_UTC;
 	unix_minute = 60 * unix_hour + current_time.minute;
 	return 60 * unix_minute + current_time.second;
 }
