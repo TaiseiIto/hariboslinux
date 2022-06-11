@@ -64,6 +64,12 @@ char const *get_day_of_week_string(unsigned char day_of_week)
 	}
 }
 
+unsigned int get_unix_time(void)
+{
+	// unimplemented
+	return -1;
+}
+
 void init_rtc(Queue *interrupt_queue)
 {
 	rtc_interrupt_queue = interrupt_queue;

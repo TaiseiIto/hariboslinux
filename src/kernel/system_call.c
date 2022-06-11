@@ -7,6 +7,7 @@
 #include "event.h"
 #include "io.h"
 #include "memory.h"
+#include "rtc.h"
 #include "shell.h"
 #include "string.h"
 #include "system_call.h"
@@ -47,6 +48,12 @@ typedef struct _MemoryCommand
 	unsigned char type;
 	#define MEMORY_COMMAND_FREE	0x00
 } MemoryCommand;
+
+typedef struct _TimerCommand
+{
+	unsigned char type;
+	#define TIMER_COMMAND_GET	0x00
+} TimerCommand;
 
 typedef struct _WindowCommandCreateArguments
 {
@@ -378,6 +385,24 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					*(unsigned int *)file_descriptor->buffer_begin = free_memory_space_size;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(free_memory_space_size));
+					break;
+				default:
+					ERROR(); // Invalid console command.
+					break;
+				}
+			}
+			if(!strcmp(file_descriptor->file_name, timer_file_name)) // Control timer.
+			{
+				TimerCommand const * const command = buffer;
+				unsigned int unix_time = get_unix_time();
+				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
+				switch(command->type)
+				{
+				case TIMER_COMMAND_GET:
+					file_descriptor->buffer_begin = malloc(sizeof(unix_time));
+					*(unsigned int *)file_descriptor->buffer_begin = unix_time;
+					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
+					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(unix_time));
 					break;
 				default:
 					ERROR(); // Invalid console command.

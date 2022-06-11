@@ -54,6 +54,7 @@ extern BootSector const * const boot_sector;
 extern char const * const root_directory_name;
 extern char const * const console_file_name;
 extern char const * const memory_file_name;
+extern char const * const timer_file_name;
 extern char const * const window_file_name;
 
 char *create_file_name(FileInformation const *file_information);

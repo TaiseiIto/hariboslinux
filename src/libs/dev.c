@@ -13,6 +13,12 @@ typedef struct _MemoryCommand
 	#define MEMORY_COMMAND_FREE	0x00
 } MemoryCommand;
 
+typedef struct _TimerCommand
+{
+	unsigned char type;
+	#define TIMER_COMMAND_GET	0x00
+} TimerCommand;
+
 typedef struct _WindowCommandCreateArguments
 {
 	char const *title;
@@ -70,6 +76,7 @@ typedef struct _WindowCommand
 
 char const * const console_file_name = "console.dev";
 char const * const memory_file_name = "memory.dev";
+char const * const timer_file_name = "timer.dev";
 char const * const window_file_name = "window.dev";
 
 void clear_console(void)
@@ -123,6 +130,18 @@ unsigned int get_free_memory_space_size(void)
 	fread(&free_memory_space_size, sizeof(free_memory_space_size), 1, file_descriptor);
 	fclose(file_descriptor);
 	return free_memory_space_size;
+}
+
+unsigned int get_unix_time(void)
+{
+	TimerCommand command;
+	unsigned int file_descriptor = fopen(timer_file_name, "wr");
+	unsigned int unix_time;
+	command.type = TIMER_COMMAND_GET;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fread(&unix_time, sizeof(unix_time), 1, file_descriptor);
+	fclose(file_descriptor);
+	return unix_time;
 }
 
 void print_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string)

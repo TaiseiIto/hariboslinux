@@ -25,6 +25,7 @@ unsigned char get_day_of_week(unsigned short year, unsigned char month, unsigned
 #define RTC_FRIDAY	0x06
 
 char const *get_day_of_week_string(unsigned char day_of_week);
+unsigned int get_unix_time(void);
 void init_rtc(Queue *interrupt_queue);
 void rtc_interrupt_handler(void);
 
