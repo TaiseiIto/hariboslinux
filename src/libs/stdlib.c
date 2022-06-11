@@ -41,6 +41,7 @@ unsigned int mersenne_twister_N = 624;
 Ring *create_ring(size_t number_of_elements, size_t element_size);
 void delete_ring(Ring *ring);
 void *ring_element(Ring *ring, int index);
+unsigned int *mersenne_twister_ring_element(int index);
 
 int atoi(char const *digits)
 {
@@ -115,6 +116,41 @@ void free(void *address)
 	return;
 }
 
+// It's equal to init_by_array in http://math.sci.hiroshima-u.ac.jp/m-mat/MT/MT2002/CODES/mt19937ar.c
+void init_mersenne_twister(unsigned int *key, unsigned int length)
+{
+	unsigned int i, j;
+	srand(19650218);
+	i = 1;
+	j = 0;
+	for(unsigned int k = length < mersenne_twister_N ? mersenne_twister_N : length; k; k--)
+	{
+		*mersenne_twister_ring_element(i) ^= 1664525 * (*mersenne_twister_ring_element(i - 1) ^ *mersenne_twister_ring_element(i - 1) >> 30);
+		*mersenne_twister_ring_element(i) += key[j] + j;
+		i++;
+		if(mersenne_twister_N <= i)
+		{
+			*mersenne_twister_ring_element(0) = *mersenne_twister_ring_element(-1);
+			i = 1;
+		}
+		j++;
+		j %= length;
+	}
+	for(unsigned int k = mersenne_twister_N - 1; k; k--)
+	{
+		*mersenne_twister_ring_element(i) ^= 1566083941 * (*mersenne_twister_ring_element(i - 1) ^ *mersenne_twister_ring_element(i - 1) >> 30);
+		*mersenne_twister_ring_element(i) -= i;
+		i++;
+		if(mersenne_twister_N <= i)
+		{
+			*mersenne_twister_ring_element(0) = *mersenne_twister_ring_element(-1);
+			i = 1;
+		}
+	}
+	*mersenne_twister_ring_element(0) = 0x80000000;
+	for(unsigned int i = 0; i < mersenne_twister_N; i++)printf("%u\n", *mersenne_twister_ring_element(i));
+}
+
 void *malloc(size_t size)
 {
 	MemorySection *memory_section;
@@ -154,6 +190,11 @@ void *malloc(size_t size)
 	return NULL;
 }
 
+unsigned int *mersenne_twister_ring_element(int index)
+{
+	return (unsigned int *)ring_element(mersenne_twister_ring, index);
+}
+
 void *ring_element(Ring *ring, int index)
 {
 	index %= ring->number_of_elements;
@@ -165,7 +206,6 @@ void srand(unsigned int seed)
 {
 	if(mersenne_twister_ring)delete_ring(mersenne_twister_ring);
 	mersenne_twister_ring = create_ring(mersenne_twister_N, sizeof(unsigned int));
-	for(unsigned int i = 0; i < mersenne_twister_N; i++)*(unsigned int *)ring_element(mersenne_twister_ring, i) = i ? 1812433253 * (*(unsigned int *)ring_element(mersenne_twister_ring, i - 1) ^ (*(unsigned int *)ring_element(mersenne_twister_ring, i - 1) >> 30)) + i : seed;
-	for(unsigned int i = 0; i < mersenne_twister_N; i++)printf("%u\n", *(unsigned int *)ring_element(mersenne_twister_ring, i));
+	for(unsigned int i = 0; i < mersenne_twister_N; i++)*mersenne_twister_ring_element(i) = i ? 1812433253 * (*mersenne_twister_ring_element(i - 1) ^ (*mersenne_twister_ring_element(i - 1) >> 30)) + i : seed;
 }
 
