@@ -3,7 +3,7 @@
 
 int main(void)
 {
-	printf("Hello, Mersenne twister!\n");
+	srand(19650218);
 	return 0;
 }
 

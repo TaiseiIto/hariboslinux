@@ -35,9 +35,12 @@ typedef struct _Ring
 
 ComHeader *com_header = NULL;
 MemorySection *root_memory_section = NULL;
+Ring *mersenne_twister_ring = NULL;
+unsigned int mersenne_twister_N = 624;
 
-Ring create_ring(size_t element_size, size_t number_of_elements);
-void delete_ring(Ring ring);
+Ring *create_ring(size_t number_of_elements, size_t element_size);
+void delete_ring(Ring *ring);
+void *ring_element(Ring *ring, int index);
 
 int atoi(char const *digits)
 {
@@ -60,18 +63,20 @@ int atoi(char const *digits)
 	return value;
 }
 
-Ring create_ring(size_t element_size, size_t number_of_elements)
+Ring *create_ring(size_t number_of_elements, size_t element_size)
 {
-	Ring ring;
-	ring.element_size = element_size;
-	ring.number_of_elements = number_of_elements;
-	ring.data = malloc(number_of_elements * element_size);
+	Ring *ring;
+	ring = malloc(sizeof(*ring));
+	ring->element_size = element_size;
+	ring->number_of_elements = number_of_elements;
+	ring->data = malloc(number_of_elements * element_size);
 	return ring;
 }
 
-void delete_ring(Ring ring)
+void delete_ring(Ring *ring)
 {
-	free(ring.data);
+	free(ring->data);
+	free(ring);
 }
 
 void exit(int status)
@@ -147,5 +152,20 @@ void *malloc(size_t size)
 	ERROR(); // There is no enough memory.
 	exit(1);
 	return NULL;
+}
+
+void *ring_element(Ring *ring, int index)
+{
+	index %= ring->number_of_elements;
+	if(index < 0)index += ring->number_of_elements;
+	return ring->data + index * ring->element_size;
+}
+
+void srand(unsigned int seed)
+{
+	if(mersenne_twister_ring)delete_ring(mersenne_twister_ring);
+	mersenne_twister_ring = create_ring(mersenne_twister_N, sizeof(unsigned int));
+	for(unsigned int i = 0; i < mersenne_twister_N; i++)*(unsigned int *)ring_element(mersenne_twister_ring, i) = i ? 1812433253 * (*(unsigned int *)ring_element(mersenne_twister_ring, i - 1) ^ (*(unsigned int *)ring_element(mersenne_twister_ring, i - 1) >> 30)) + i : seed;
+	for(unsigned int i = 0; i < mersenne_twister_N; i++)printf("%u\n", *(unsigned int *)ring_element(mersenne_twister_ring, i));
 }
 
