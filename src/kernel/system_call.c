@@ -6,6 +6,7 @@
 #include "disk.h"
 #include "event.h"
 #include "io.h"
+#include "math.h"
 #include "memory.h"
 #include "rtc.h"
 #include "shell.h"
@@ -438,16 +439,18 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				case WINDOW_COMMAND_DRAW_LINE:
 					if(sheet_exists(command->arguments.draw_line.window->client_sheet))
 					{
-						printf_shell(shell, "Draw line\n");
-						printf_shell(shell, "window = %p\n", command->arguments.draw_line.window);
-						printf_shell(shell, "x1 = %u\n", command->arguments.draw_line.x1);
-						printf_shell(shell, "y1 = %u\n", command->arguments.draw_line.y1);
-						printf_shell(shell, "x2 = %u\n", command->arguments.draw_line.x2);
-						printf_shell(shell, "y2 = %u\n", command->arguments.draw_line.y2);
-						printf_shell(shell, "color.red = %#06.4x\n", command->arguments.draw_line.color.red);
-						printf_shell(shell, "color.green = %#06.4x\n", command->arguments.draw_line.color.green);
-						printf_shell(shell, "color.blue = %#06.4x\n", command->arguments.draw_line.color.blue);
-						printf_shell(shell, "color.alpha = %#06.4x\n", command->arguments.draw_line.color.alpha);
+						short left = command->arguments.draw_line.x1 < command->arguments.draw_line.x2 ? command->arguments.draw_line.x1 : command->arguments.draw_line.x2;
+						short right = command->arguments.draw_line.x1 < command->arguments.draw_line.x2 ? command->arguments.draw_line.x2 : command->arguments.draw_line.x1;
+						short top = command->arguments.draw_line.y1 < command->arguments.draw_line.y2 ? command->arguments.draw_line.y1 : command->arguments.draw_line.y2;
+						short bottom = command->arguments.draw_line.y1 < command->arguments.draw_line.y2 ? command->arguments.draw_line.y2 : command->arguments.draw_line.y1;
+						if(bottom - top < right - left)
+						{
+							printf_shell(shell, "for x\n");
+						}
+						else
+						{
+							printf_shell(shell, "for y\n");
+						}
 					}
 					break;
 				case WINDOW_COMMAND_FILL_BOX:
