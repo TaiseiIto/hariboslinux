@@ -64,6 +64,16 @@ typedef struct _WindowCommandCreateArguments
 	unsigned short height;
 } WindowCommandCreateArguments;
 
+typedef struct _WindowCommandDrawLine
+{
+	Window *window;
+	short x1;
+	short y1;
+	short x2;
+	short y2;
+	Color color;
+} WindowCommandDrawLine;
+
 typedef struct _WindowCommandFillBox
 {
 	Window *window;
@@ -95,6 +105,7 @@ typedef struct _WindowCommandPutDot
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
+	WindowCommandDrawLine draw_line;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
 	WindowCommandPutDot put_dot;
@@ -104,10 +115,11 @@ typedef struct _WindowCommand
 {
 	WindowCommandArguments arguments;
 	unsigned char type;
-	#define WINDOW_COMMAND_CREATE	0x00
-	#define WINDOW_COMMAND_FILL_BOX	0x01
-	#define WINDOW_COMMAND_PRINT	0x02
-	#define WINDOW_COMMAND_PUT_DOT	0x03
+	#define WINDOW_COMMAND_CREATE		0x00
+	#define WINDOW_COMMAND_DRAW_LINE	0x01
+	#define WINDOW_COMMAND_FILL_BOX		0x02
+	#define WINDOW_COMMAND_PRINT		0x03
+	#define WINDOW_COMMAND_PUT_DOT		0x04
 } WindowCommand;
 
 FileDescriptor *file_descriptors = NULL;
@@ -422,6 +434,17 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					*(Window **)file_descriptor->buffer_begin = window;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(window));
+					break;
+				case WINDOW_COMMAND_DRAW_LINE:
+					if(sheet_exists(command->arguments.draw_line.window->client_sheet))
+					{
+						printf_shell(shell, "Draw line\n");
+						printf_shell(shell, "window = %p\n", command->arguments.draw_line.window);
+						printf_shell(shell, "x1 = %u\n", command->arguments.draw_line.x1);
+						printf_shell(shell, "y1 = %u\n", command->arguments.draw_line.y1);
+						printf_shell(shell, "x2 = %u\n", command->arguments.draw_line.x2);
+						printf_shell(shell, "y2 = %u\n", command->arguments.draw_line.y2);
+					}
 					break;
 				case WINDOW_COMMAND_FILL_BOX:
 					if(sheet_exists(command->arguments.fill_box.window->client_sheet))fill_box_sheet(command->arguments.fill_box.window->client_sheet, command->arguments.fill_box.x, command->arguments.fill_box.y, command->arguments.fill_box.width, command->arguments.fill_box.height, command->arguments.fill_box.color);

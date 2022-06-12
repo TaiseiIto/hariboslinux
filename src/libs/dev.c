@@ -28,6 +28,16 @@ typedef struct _WindowCommandCreateArguments
 	unsigned short height;
 } WindowCommandCreateArguments;
 
+typedef struct _WindowCommandDrawLine
+{
+	unsigned int window;
+	short x1;
+	short y1;
+	short x2;
+	short y2;
+	Color color;
+} WindowCommandDrawLine;
+
 typedef struct _WindowCommandFillBox
 {
 	unsigned int window;
@@ -59,6 +69,7 @@ typedef struct _WindowCommandPutDot
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
+	WindowCommandDrawLine draw_line;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
 	WindowCommandPutDot put_dot;
@@ -68,10 +79,11 @@ typedef struct _WindowCommand
 {
 	WindowCommandArguments arguments;
 	unsigned char type;
-	#define WINDOW_COMMAND_CREATE	0x00
-	#define WINDOW_COMMAND_FILL_BOX	0x01
-	#define WINDOW_COMMAND_PRINT	0x02
-	#define WINDOW_COMMAND_PUT_DOT	0x03
+	#define WINDOW_COMMAND_CREATE		0x00
+	#define WINDOW_COMMAND_DRAW_LINE	0x01
+	#define WINDOW_COMMAND_FILL_BOX		0x02
+	#define WINDOW_COMMAND_PRINT		0x03
+	#define WINDOW_COMMAND_PUT_DOT		0x04
 } WindowCommand;
 
 char const * const console_file_name = "console.dev";
