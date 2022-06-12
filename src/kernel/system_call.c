@@ -440,21 +440,21 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					if(sheet_exists(command->arguments.draw_line.window->client_sheet))
 					{
 						short left_x = command->arguments.draw_line.x1 < command->arguments.draw_line.x2 ? command->arguments.draw_line.x1 : command->arguments.draw_line.x2;
-						short left_y = command->arguments.draw_line.x1 < command->arguments.draw_line.x2 ? command->arguments.draw_line.y1 : command->arguments.draw_line.y2;
 						short right_x = command->arguments.draw_line.x1 < command->arguments.draw_line.x2 ? command->arguments.draw_line.x2 : command->arguments.draw_line.x1;
-						short right_y = command->arguments.draw_line.x1 < command->arguments.draw_line.x2 ? command->arguments.draw_line.y2 : command->arguments.draw_line.y1;
 						short top_x = command->arguments.draw_line.y1 < command->arguments.draw_line.y2 ? command->arguments.draw_line.x1 : command->arguments.draw_line.x2;
 						short top_y = command->arguments.draw_line.y1 < command->arguments.draw_line.y2 ? command->arguments.draw_line.y1 : command->arguments.draw_line.y2;
 						short bottom_x = command->arguments.draw_line.y1 < command->arguments.draw_line.y2 ? command->arguments.draw_line.x2 : command->arguments.draw_line.x1;
 						short bottom_y = command->arguments.draw_line.y1 < command->arguments.draw_line.y2 ? command->arguments.draw_line.y2 : command->arguments.draw_line.y1;
-						printf_shell(shell, "left_x = %#06.4x\n", left_x);
-						printf_shell(shell, "left_y = %#06.4x\n", left_y);
-						printf_shell(shell, "right_x = %#06.4x\n", right_x);
-						printf_shell(shell, "right_y = %#06.4x\n", right_y);
-						printf_shell(shell, "top_x = %#06.4x\n", top_x);
-						printf_shell(shell, "top_y = %#06.4x\n", top_y);
-						printf_shell(shell, "bottom_x = %#06.4x\n", bottom_x);
-						printf_shell(shell, "bottom_y = %#06.4x\n", bottom_y);
+						if(right_x - left_x < bottom_y - top_y)for(short y = top_y; y <= bottom_y; y++)
+						{
+							short x = ((bottom_x - top_x) * y + top_x * bottom_y - bottom_x * top_y) / (bottom_y - top_y);
+							put_dot_sheet(command->arguments.draw_line.window->client_sheet, x, y, command->arguments.draw_line.color);
+						}
+						else for(short x = left_x; x <= right_x; x++)
+						{
+							short y = top_x == bottom_x ? top_y : ((top_y - bottom_y) * x + top_x * bottom_y - bottom_x * top_y) / (top_x - bottom_x);
+							put_dot_sheet(command->arguments.draw_line.window->client_sheet, x, y, command->arguments.draw_line.color);
+						}
 					}
 					break;
 				case WINDOW_COMMAND_FILL_BOX:
