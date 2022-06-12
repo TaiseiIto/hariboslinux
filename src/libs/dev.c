@@ -117,9 +117,24 @@ unsigned int create_window(char const *title, short x, short y, unsigned short w
 	return window;
 }
 
+void draw_line_window(unsigned int window, short x1, short y1, short x2, short y2, Color color)
+{
+	unsigned int file_descriptor = fopen(window_file_name, "w");
+	WindowCommand command;
+	command.type = WINDOW_COMMAND_DRAW_LINE;
+	command.arguments.draw_line.window = window;
+	command.arguments.draw_line.x1 = x1;
+	command.arguments.draw_line.y1 = y1;
+	command.arguments.draw_line.x2 = x2;
+	command.arguments.draw_line.y2 = y2;
+	command.arguments.draw_line.color = color;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fclose(file_descriptor);
+}
+
 void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "wr");
+	unsigned int file_descriptor = fopen(window_file_name, "w");
 	WindowCommand command;
 	command.type = WINDOW_COMMAND_FILL_BOX;
 	command.arguments.fill_box.window = window;
@@ -158,7 +173,7 @@ unsigned int get_unix_time(void)
 
 void print_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "wr");
+	unsigned int file_descriptor = fopen(window_file_name, "w");
 	WindowCommand command;
 	command.type = WINDOW_COMMAND_PRINT;
 	command.arguments.print.window = window;
@@ -173,7 +188,7 @@ void print_window(unsigned int window, short x, short y, Color foreground, Color
 
 void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Color color)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "wr");
+	unsigned int file_descriptor = fopen(window_file_name, "w");
 	WindowCommand command;
 	command.type = WINDOW_COMMAND_PUT_DOT;
 	command.arguments.put_dot.window = window;

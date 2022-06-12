@@ -444,6 +444,10 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						printf_shell(shell, "y1 = %u\n", command->arguments.draw_line.y1);
 						printf_shell(shell, "x2 = %u\n", command->arguments.draw_line.x2);
 						printf_shell(shell, "y2 = %u\n", command->arguments.draw_line.y2);
+						printf_shell(shell, "color.red = %#06.4x\n", command->arguments.draw_line.color.red);
+						printf_shell(shell, "color.green = %#06.4x\n", command->arguments.draw_line.color.green);
+						printf_shell(shell, "color.blue = %#06.4x\n", command->arguments.draw_line.color.blue);
+						printf_shell(shell, "color.alpha = %#06.4x\n", command->arguments.draw_line.color.alpha);
 					}
 					break;
 				case WINDOW_COMMAND_FILL_BOX:

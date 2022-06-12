@@ -11,6 +11,7 @@ typedef struct
 
 void clear_console(void);
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height);
+void draw_line_window(unsigned int window, short x1, short y1, short x2, short y2, Color color);
 void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color);
 unsigned int get_free_memory_space_size(void);
 unsigned int get_unix_time(void);
