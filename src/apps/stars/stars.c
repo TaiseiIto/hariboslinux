@@ -16,7 +16,7 @@ int main(void)
 	black.alpha = 0xff;
 	window = create_window("stars", 0x0000, 0x0000, window_width, window_height);
 	fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
-	for(unsigned int star = 0; star < 1000; star++)
+	for(unsigned int star = 0; star < 0x0400; star++)
 	{
 		Color star_color;
 		star_color.red   = (unsigned char)(rand() % 0x00000100);
