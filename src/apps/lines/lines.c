@@ -25,7 +25,7 @@ int main(void)
 		unsigned char flags = 0;
 		#define CHANGE_COLOR_CODE 0x01
 		draw_line_window(window, center_x, center_y, edge_x, edge_y, color);
-		if(edge_y == 0x0000 && edge_x < window_width - 1)edge_x++;
+		if(edge_y == 0 && edge_x < window_width - 1)edge_x++;
 		else if(edge_x == window_width - 1 && edge_y < window_height - 1)edge_y++;
 		else if(edge_y == window_height - 1 && 0 < edge_x)edge_x--;
 		else if(edge_x == 0 && 0 < edge_y)edge_y--;
@@ -82,7 +82,7 @@ int main(void)
 			break;
 		}
 		if(flags & CHANGE_COLOR_CODE)color_code = (color_code + 1) % 8;
-	} while(edge_x && edge_y);
+	} while(edge_x || edge_y);
 	return 0;
 }
 
