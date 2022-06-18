@@ -34,11 +34,6 @@ typedef struct _WindowCommandCreateArguments
 	unsigned short height;
 } WindowCommandCreateArguments;
 
-typedef struct _WindowCommandDequeueEvent
-{
-	unsigned int window;
-} WindowCommandDequeueEvent;
-
 typedef struct _WindowCommandDrawLine
 {
 	unsigned int window;
@@ -80,7 +75,6 @@ typedef struct _WindowCommandPutDot
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
-	WindowCommandDequeueEvent dequeue_event;
 	WindowCommandDrawLine draw_line;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
@@ -136,13 +130,12 @@ unsigned int create_window(char const *title, short x, short y, unsigned short w
 	return window;
 }
 
-ApplicationEvent dequeue_application_event(unsigned int window)
+ApplicationEvent dequeue_application_event(void)
 {
 	ApplicationEvent application_event;
 	WindowCommand command;
 	if(!window_file)window_file = fopen(window_file_name, "wr");
 	command.type = WINDOW_COMMAND_DEQUEUE_EVENT;
-	command.arguments.dequeue_event.window = window;
 	fwrite(&command, sizeof(command), 1, window_file);
 	fread(&application_event, sizeof(application_event), 1, window_file);
 	return application_event;

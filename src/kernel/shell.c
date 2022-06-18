@@ -250,7 +250,7 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	unsigned short executable_segment;
 	unsigned short data_segment;
 	// Create application event queue.
-	get_current_task()->event_queue = create_event_queue(get_current_task());
+	create_event_queue(get_current_task());
 	// Register application memory to application task.
 	get_current_task()->additionals = malloc(sizeof(CommandTaskAdditional));
 	((CommandTaskAdditional *)get_current_task()->additionals)->application_memory = application_memory;

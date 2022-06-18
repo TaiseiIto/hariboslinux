@@ -1,10 +1,22 @@
 #ifndef _DEV_H_
 #define _DEV_H_
 
+typedef struct _ApplicationWindowDeletionResponseEvent
+{
+	unsigned int window;
+} ApplicationWindowDeletionResponseEvent;
+
+typedef union _ApplicationEventUnion
+{
+	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
+} ApplicationEventUnion;
+
 typedef struct _ApplicationEvent
 {
+	ApplicationEventUnion event_union;
 	unsigned char type;
-	#define APPLICATION_EVENT_TYPE_NOTHING	0xff
+	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
+	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x01
 } ApplicationEvent;
 
 typedef struct
@@ -17,7 +29,7 @@ typedef struct
 
 void clear_console(void);
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height);
-ApplicationEvent dequeue_application_event(unsigned int window);
+ApplicationEvent dequeue_application_event(void);
 void draw_line_window(unsigned int window, short x1, short y1, short x2, short y2, Color color);
 void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color);
 unsigned int get_free_memory_space_size(void);

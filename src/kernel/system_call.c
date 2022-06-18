@@ -17,10 +17,22 @@
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
 
+typedef struct _ApplicationWindowDeletionResponseEvent
+{
+	Window *window;
+} ApplicationWindowDeletionResponseEvent;
+
+typedef union _ApplicationEventUnion
+{
+	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
+} ApplicationEventUnion;
+
 typedef struct _ApplicationEvent
 {
+	ApplicationEventUnion event_union;
 	unsigned char type;
-	#define APPLICATION_EVENT_TYPE_NOTHING	0xff
+	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
+	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x01
 } ApplicationEvent;
 
 typedef struct _FileDescriptor
@@ -40,6 +52,7 @@ typedef struct _FileDescriptor
 typedef struct _SystemCallStatus
 {
 	Task *application_task;
+	Queue *application_event_queue;
 	struct _SystemCallStatus *previous;
 	struct _SystemCallStatus *next;
 } SystemCallStatus;
@@ -76,11 +89,6 @@ typedef struct _WindowCommandCreateArguments
 	unsigned short width;
 	unsigned short height;
 } WindowCommandCreateArguments;
-
-typedef struct _WindowCommandDequeueEvent
-{
-	Window *window;
-} WindowCommandDequeueEvent;
 
 typedef struct _WindowCommandDrawLine
 {
@@ -123,7 +131,6 @@ typedef struct _WindowCommandPutDot
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
-	WindowCommandDequeueEvent dequeue_event;
 	WindowCommandDrawLine draw_line;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
@@ -187,6 +194,7 @@ void delete_system_call_status(void)
 			if(system_call_statuses == system_call_status)system_call_statuses = NULL;
 			system_call_status->previous->next = system_call_status->next;
 			system_call_status->next->previous = system_call_status->previous;
+			free(system_call_status->application_event_queue);
 			free(system_call_status);
 			break;
 		}
@@ -204,6 +212,7 @@ SystemCallStatus *get_system_call_status(void)
 	} while(system_call_status != system_call_statuses);
 	system_call_status = malloc(sizeof(*system_call_status));
 	system_call_status->application_task = get_current_task();
+	system_call_status->application_event_queue = create_queue(sizeof(ApplicationEvent), get_current_task());
 	if(system_call_statuses)
 	{
 		system_call_status->previous = system_call_statuses->previous;
@@ -362,6 +371,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 {
 	unsigned int counter = 0;
 	unsigned int application_memory = (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory;
+	SystemCallStatus *system_call_status = get_system_call_status();
 	if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_WRITE)
 	{
 		Shell *shell = get_current_shell();
@@ -427,6 +437,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				{
 					free(file_descriptor->buffer_begin);
 					file_descriptor->buffer_begin = NULL;
+					file_descriptor->buffer_cursor = NULL;
+					file_descriptor->buffer_end = NULL;
 				}
 				switch(command->type)
 				{
@@ -449,6 +461,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				{
 					free(file_descriptor->buffer_begin);
 					file_descriptor->buffer_begin = NULL;
+					file_descriptor->buffer_cursor = NULL;
+					file_descriptor->buffer_end = NULL;
 				}
 				switch(command->type)
 				{
@@ -465,7 +479,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
 			{
-				ApplicationEvent application_event;
+				ApplicationEvent *application_event;
+				ApplicationEvent new_application_event;
 				Event const *event;
 				Window *window;
 				WindowCommand const * const command = buffer;
@@ -473,6 +488,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				{
 					free(file_descriptor->buffer_begin);
 					file_descriptor->buffer_begin = NULL;
+					file_descriptor->buffer_cursor = NULL;
+					file_descriptor->buffer_end = NULL;
 				}
 				switch(command->type)
 				{
@@ -484,11 +501,16 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(window));
 					break;
 				case WINDOW_COMMAND_DEQUEUE_EVENT:
-					application_event.type = APPLICATION_EVENT_TYPE_NOTHING;
-					file_descriptor->buffer_begin = malloc(sizeof(application_event));
-					*(ApplicationEvent *)file_descriptor->buffer_begin = application_event;
+					application_event = dequeue(system_call_status->application_event_queue);
+					if(!application_event)
+					{
+						new_application_event.type = APPLICATION_EVENT_TYPE_NOTHING;
+						application_event = &new_application_event;
+					}
+					file_descriptor->buffer_begin = malloc(sizeof(*application_event));
+					*(ApplicationEvent *)file_descriptor->buffer_begin = *application_event;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
-					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(application_event));
+					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(*application_event));
 					break;
 				case WINDOW_COMMAND_DRAW_LINE:
 					if(sheet_exists(command->arguments.draw_line.window->client_sheet))
@@ -519,29 +541,40 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				case WINDOW_COMMAND_PROCESS_EVENT:
 					event = dequeue(get_current_task()->event_queue);
-					if(event)switch(event->type)
+					if(event)
 					{
-					case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
-					case EVENT_TYPE_SHEET_CLICKED:
-					case EVENT_TYPE_SHEET_CREATED:
-					case EVENT_TYPE_SHEET_DELETION_REQUEST:
-					case EVENT_TYPE_SHEET_DELETION_RESPONSE:
-					case EVENT_TYPE_SHEET_FOCUSED:
-					case EVENT_TYPE_SHEET_KEYBOARD:
-					case EVENT_TYPE_SHEET_MOUSE_DRAG:
-					case EVENT_TYPE_SHEET_MOUSE_MOVE:
-					case EVENT_TYPE_SHEET_UNFOCUSED:
-					case EVENT_TYPE_SHEET_USER_DEFINED:
-					case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
-					case EVENT_TYPE_WINDOW_DELETION_REQUEST:
-					case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
-					case EVENT_TYPE_WINDOW_FOCUSED:
-					case EVENT_TYPE_WINDOW_UNFOCUSED:
-						distribute_event(event);
-						break;
-					default:
-						ERROR();	// Irrelevant event type.
-						break;
+						switch(event->type)
+						{
+						case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+						case EVENT_TYPE_SHEET_CLICKED:
+						case EVENT_TYPE_SHEET_CREATED:
+						case EVENT_TYPE_SHEET_DELETION_REQUEST:
+						case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+						case EVENT_TYPE_SHEET_FOCUSED:
+						case EVENT_TYPE_SHEET_KEYBOARD:
+						case EVENT_TYPE_SHEET_MOUSE_DRAG:
+						case EVENT_TYPE_SHEET_MOUSE_MOVE:
+						case EVENT_TYPE_SHEET_UNFOCUSED:
+						case EVENT_TYPE_SHEET_USER_DEFINED:
+						case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
+						case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+						case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+						case EVENT_TYPE_WINDOW_FOCUSED:
+						case EVENT_TYPE_WINDOW_UNFOCUSED:
+							distribute_event(event);
+							break;
+						default:
+							ERROR();	// Irrelevant event type.
+							break;
+						}
+						switch(event->type)
+						{
+						case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+							new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE;
+							new_application_event.event_union.window_deletion_response_event.window = event->event_union.window_deletion_response_event.window;
+							enqueue(system_call_status->application_event_queue, &new_application_event);
+							break;
+						}
 					}
 					break;
 				case WINDOW_COMMAND_PUT_DOT:
