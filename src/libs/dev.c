@@ -106,49 +106,52 @@ char const * const memory_file_name = "memory.dev";
 char const * const timer_file_name = "timer.dev";
 char const * const window_file_name = "window.dev";
 
+unsigned int console_file = 0;
+unsigned int cpu_file = 0;
+unsigned int memory_file = 0;
+unsigned int timer_file = 0;
+unsigned int window_file = 0;
+
 void clear_console(void)
 {
 	ConsoleCommand command;
-	unsigned int file_descriptor = fopen(console_file_name, "w");
+	if(!console_file)console_file = fopen(console_file_name, "wr");
 	command.type = CONSOLE_COMMAND_CLEAR;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, console_file);
 }
 
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "wr");
 	unsigned int window;
 	WindowCommand command;
+	if(!window_file)window_file = fopen(window_file_name, "wr");
 	command.type = WINDOW_COMMAND_CREATE;
 	command.arguments.create.title = title;
 	command.arguments.create.x = x;
 	command.arguments.create.y = y;
 	command.arguments.create.width = width;
 	command.arguments.create.height = height;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fread(&window, sizeof(window), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, window_file);
+	fread(&window, sizeof(window), 1, window_file);
 	return window;
 }
 
 ApplicationEvent dequeue_application_event(unsigned int window)
 {
 	ApplicationEvent application_event;
-	unsigned int file_descriptor = fopen(window_file_name, "wr");
 	WindowCommand command;
+	if(!window_file)window_file = fopen(window_file_name, "wr");
 	command.type = WINDOW_COMMAND_DEQUEUE_EVENT;
 	command.arguments.dequeue_event.window = window;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fread(&application_event, sizeof(application_event), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, window_file);
+	fread(&application_event, sizeof(application_event), 1, window_file);
 	return application_event;
 }
 
 void draw_line_window(unsigned int window, short x1, short y1, short x2, short y2, Color color)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "w");
 	WindowCommand command;
+	if(!window_file)window_file = fopen(window_file_name, "wr");
 	command.type = WINDOW_COMMAND_DRAW_LINE;
 	command.arguments.draw_line.window = window;
 	command.arguments.draw_line.x1 = x1;
@@ -156,14 +159,13 @@ void draw_line_window(unsigned int window, short x1, short y1, short x2, short y
 	command.arguments.draw_line.x2 = x2;
 	command.arguments.draw_line.y2 = y2;
 	command.arguments.draw_line.color = color;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, window_file);
 }
 
 void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "w");
 	WindowCommand command;
+	if(!window_file)window_file = fopen(window_file_name, "wr");
 	command.type = WINDOW_COMMAND_FILL_BOX;
 	command.arguments.fill_box.window = window;
 	command.arguments.fill_box.x = x;
@@ -171,47 +173,43 @@ void fill_box_window(unsigned int window, short x, short y, unsigned short width
 	command.arguments.fill_box.width = width;
 	command.arguments.fill_box.height = height;
 	command.arguments.fill_box.color = color;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, window_file);
 }
 
 unsigned int get_free_memory_space_size(void)
 {
 	MemoryCommand command;
-	unsigned int file_descriptor = fopen(memory_file_name, "wr");
 	unsigned int free_memory_space_size;
+	if(!memory_file)memory_file = fopen(memory_file_name, "wr");
 	command.type = MEMORY_COMMAND_FREE;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fread(&free_memory_space_size, sizeof(free_memory_space_size), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, memory_file);
+	fread(&free_memory_space_size, sizeof(free_memory_space_size), 1, memory_file);
 	return free_memory_space_size;
 }
 
 unsigned int get_unix_time(void)
 {
 	TimerCommand command;
-	unsigned int file_descriptor = fopen(timer_file_name, "wr");
 	unsigned int unix_time;
+	if(!timer_file)timer_file = fopen(timer_file_name, "wr");
 	command.type = TIMER_COMMAND_GET;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fread(&unix_time, sizeof(unix_time), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, timer_file);
+	fread(&unix_time, sizeof(unix_time), 1, timer_file);
 	return unix_time;
 }
 
 void hlt_application(void)
 {
-	unsigned int file_descriptor = fopen(cpu_file_name, "w");
 	CPUCommand command;
+	if(!cpu_file)cpu_file = fopen(cpu_file_name, "wr");
 	command.type = CPU_COMMAND_HLT;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, cpu_file);
 }
 
 void print_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "w");
 	WindowCommand command;
+	if(!window_file)window_file = fopen(window_file_name, "wr");
 	command.type = WINDOW_COMMAND_PRINT;
 	command.arguments.print.window = window;
 	command.arguments.print.x = x;
@@ -219,29 +217,26 @@ void print_window(unsigned int window, short x, short y, Color foreground, Color
 	command.arguments.print.foreground = foreground;
 	command.arguments.print.background = background;
 	command.arguments.print.string = string;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, window_file);
 }
 
 void process_event(void)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "w");
 	WindowCommand command;
+	if(!window_file)window_file = fopen(window_file_name, "wr");
 	command.type = WINDOW_COMMAND_PROCESS_EVENT;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, window_file);
 }
 
 void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Color color)
 {
-	unsigned int file_descriptor = fopen(window_file_name, "w");
 	WindowCommand command;
+	if(!window_file)window_file = fopen(window_file_name, "wr");
 	command.type = WINDOW_COMMAND_PUT_DOT;
 	command.arguments.put_dot.window = window;
 	command.arguments.put_dot.x = x;
 	command.arguments.put_dot.y = y;
 	command.arguments.put_dot.color = color;
-	fwrite(&command, sizeof(command), 1, file_descriptor);
-	fclose(file_descriptor);
+	fwrite(&command, sizeof(command), 1, window_file);
 }
 
