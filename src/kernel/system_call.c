@@ -539,6 +539,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					case EVENT_TYPE_WINDOW_UNFOCUSED:
 						distribute_event(event);
 						break;
+					default:
+						ERROR();	// Irrelevant event type.
+						break;
 					}
 					break;
 				case WINDOW_COMMAND_PUT_DOT:
