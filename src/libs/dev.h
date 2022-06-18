@@ -1,6 +1,11 @@
 #ifndef _DEV_H_
 #define _DEV_H_
 
+typedef struct _ApplicationWindowCreatedEvent
+{
+	unsigned int window;
+} ApplicationWindowCreatedEvent;
+
 typedef struct _ApplicationWindowDeletionResponseEvent
 {
 	unsigned int window;
@@ -8,6 +13,7 @@ typedef struct _ApplicationWindowDeletionResponseEvent
 
 typedef union _ApplicationEventUnion
 {
+	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
 } ApplicationEventUnion;
 
@@ -16,7 +22,8 @@ typedef struct _ApplicationEvent
 	ApplicationEventUnion event_union;
 	unsigned char type;
 	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
-	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x01
+	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x01
+	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x02
 } ApplicationEvent;
 
 typedef struct

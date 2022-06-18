@@ -24,6 +24,11 @@ typedef struct _ApplicationWindow
 	struct _ApplicationWindow *next;
 } ApplicationWindow;
 
+typedef struct _ApplicationWindowCreatedEvent
+{
+	Window *window;
+} ApplicationWindowCreatedEvent;
+
 typedef struct _ApplicationWindowDeletionResponseEvent
 {
 	Window *window;
@@ -31,6 +36,7 @@ typedef struct _ApplicationWindowDeletionResponseEvent
 
 typedef union _ApplicationEventUnion
 {
+	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
 } ApplicationEventUnion;
 
@@ -39,7 +45,8 @@ typedef struct _ApplicationEvent
 	ApplicationEventUnion event_union;
 	unsigned char type;
 	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
-	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x01
+	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x01
+	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x02
 } ApplicationEvent;
 
 typedef struct _FileDescriptor
@@ -592,7 +599,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 							{
 								if(application_window->window->client_sheet == event->event_union.sheet_created_event.sheet)
 								{
-									printf_shell(shell, "client sheet created!\n");
+									new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_CREATED;
+									new_application_event.event_union.window_created_event.window = application_window->window;
+									enqueue(system_call_status->application_event_queue, &new_application_event);
 								}
 								application_window = application_window->next;
 							} while(application_window != application_windows);

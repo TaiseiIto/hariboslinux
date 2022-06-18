@@ -13,6 +13,9 @@ int main(void)
 		{
 		case APPLICATION_EVENT_TYPE_NOTHING:
 			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_CREATED:
+			printf("A window is created!\n");
+			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
 			break;
