@@ -569,6 +569,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						}
 						switch(event->type)
 						{
+						case EVENT_TYPE_SHEET_CREATED:
+							printf_shell(shell, "sheet created.\n");
+							break;
 						case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 							new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE;
 							new_application_event.event_union.window_deletion_response_event.window = event->event_union.window_deletion_response_event.window;
