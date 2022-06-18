@@ -423,7 +423,11 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			{
 				MemoryCommand const * const command = buffer;
 				unsigned int free_memory_space_size = get_free_memory_space_size();
-				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
+				if(file_descriptor->buffer_begin)
+				{
+					free(file_descriptor->buffer_begin);
+					file_descriptor->buffer_begin = NULL;
+				}
 				switch(command->type)
 				{
 				case MEMORY_COMMAND_FREE:
@@ -441,7 +445,11 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			{
 				TimerCommand const * const command = buffer;
 				unsigned int unix_time = get_unix_time();
-				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
+				if(file_descriptor->buffer_begin)
+				{
+					free(file_descriptor->buffer_begin);
+					file_descriptor->buffer_begin = NULL;
+				}
 				switch(command->type)
 				{
 				case TIMER_COMMAND_GET:
@@ -461,7 +469,11 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				Event const *event;
 				Window *window;
 				WindowCommand const * const command = buffer;
-				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
+				if(file_descriptor->buffer_begin)
+				{
+					free(file_descriptor->buffer_begin);
+					file_descriptor->buffer_begin = NULL;
+				}
 				switch(command->type)
 				{
 				case WINDOW_COMMAND_CREATE:
