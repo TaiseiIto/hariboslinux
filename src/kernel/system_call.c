@@ -194,7 +194,7 @@ void delete_system_call_status(void)
 			if(system_call_statuses == system_call_status)system_call_statuses = NULL;
 			system_call_status->previous->next = system_call_status->next;
 			system_call_status->next->previous = system_call_status->previous;
-			free(system_call_status->application_event_queue);
+			delete_queue(system_call_status->application_event_queue);
 			free(system_call_status);
 			break;
 		}
