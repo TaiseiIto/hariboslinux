@@ -612,7 +612,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 							break;
 						case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 							application_window = application_windows;
-							do
+							if(application_window)do
 							{
 								ApplicationWindow *next_application_window = application_window->next;
 								if(application_window->window == event->event_union.window_deletion_response_event.window)

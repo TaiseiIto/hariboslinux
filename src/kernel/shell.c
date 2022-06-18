@@ -72,6 +72,7 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 		ERROR(); // Invalid shell type
 		break;
 	}
+	command_task_argument->shell->flags &= ~SHELL_FLAG_BUSY;
 }
 
 char **create_argv(Shell *shell, char const *command)
@@ -318,6 +319,7 @@ Shell *create_shell(Console *console)
 {
 	Shell *shell;
 	shell = malloc(sizeof(*shell));
+	shell->flags = 0;
 	prohibit_switch_task();
 	if(serial_shell)
 	{
@@ -403,66 +405,65 @@ void *execute_command(Shell *shell, char const *command)
 {
 	unsigned int argc;
 	char **argv;
+	char *com_file_name;
+	void *com_file_binary;
+	unsigned int com_file_size;
+	if(shell->flags & SHELL_FLAG_BUSY)return NULL;
+	shell->flags |= SHELL_FLAG_BUSY;
 	// Create argv.
 	argv = create_argv(shell, command);
-	if(argv)
+	if(!argv)return NULL;
+	// Count argc.
+	for(argc = 0; argv[argc]; argc++);
+	// Load a file specified by argv[0].
+	com_file_name = create_format_char_array("%s.com", argv[0]);
+	com_file_binary = load_file(com_file_name);
+	com_file_size = get_file_information(com_file_name)->size;
+	if(com_file_binary) // The com file is found.
 	{
-		char *com_file_name;
-		void *com_file_binary;
-		unsigned int com_file_size;
-		// Count argc.
-		for(argc = 0; argv[argc]; argc++);
-		// Load a file specified by argv[0].
-		com_file_name = create_format_char_array("%s.com", argv[0]);
-		com_file_binary = load_file(com_file_name);
-		com_file_size = get_file_information(com_file_name)->size;
-		if(com_file_binary) // The com file is found.
+		// Execute the com file.
+		CommandTaskArgument *command_task_argument = malloc(sizeof(*command_task_argument));
+		Task *command_task = create_task(get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
+		command_task_argument->com_file_name = com_file_name;
+		command_task_argument->com_file_binary = com_file_binary;
+		command_task_argument->com_file_size = com_file_size;
+		command_task_argument->argc = argc;
+		command_task_argument->argv = argv;
+		command_task_argument->shell = shell;
+		command_task_argument->task_return = malloc(sizeof(*command_task_argument->task_return));
+		command_task_argument->task_return->task_type = TASK_TYPE_COMMAND;
+		command_task_argument->task_return->task_return = malloc(sizeof(CommandTaskReturn));
+		start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
+	}
+	else // The com file is not found.
+	{
+		ConsoleEvent *console_event;
+		Event new_event;
+		// Try interpreting the command as a shell variable assignment.
+		interpret_shell_variable_assignment(shell, command);
+		// Clean up com_file_name and argv.
+		free(com_file_name);
+		for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
+		free(argv);
+		switch(shell->type)
 		{
-			// Execute the com file.
-			CommandTaskArgument *command_task_argument = malloc(sizeof(*command_task_argument));
-			Task *command_task = create_task(get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
-			command_task_argument->com_file_name = com_file_name;
-			command_task_argument->com_file_binary = com_file_binary;
-			command_task_argument->com_file_size = com_file_size;
-			command_task_argument->argc = argc;
-			command_task_argument->argv = argv;
-			command_task_argument->shell = shell;
-			command_task_argument->task_return = malloc(sizeof(*command_task_argument->task_return));
-			command_task_argument->task_return->task_type = TASK_TYPE_COMMAND;
-			command_task_argument->task_return->task_return = malloc(sizeof(CommandTaskReturn));
-			start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
+		case SHELL_TYPE_CONSOLE:
+			// Send prompt event.
+			console_event = malloc(sizeof(*console_event));
+			console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
+			new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+			new_event.event_union.sheet_user_defined_event.sheet = shell->console->text_box->sheet;
+			new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+			new_event.event_union.sheet_user_defined_event.any = console_event;
+			enqueue(shell->console->text_box->sheet->event_queue, &new_event);
+			break;
+		case SHELL_TYPE_SERIAL:
+			print_serial(prompt);
+			break;
+		default:
+			ERROR(); // Invalid shell type
+			break;
 		}
-		else // The com file is not found.
-		{
-			ConsoleEvent *console_event;
-			Event new_event;
-			// Try interpreting the command as a shell variable assignment.
-			interpret_shell_variable_assignment(shell, command);
-			// Clean up com_file_name and argv.
-			free(com_file_name);
-			for(unsigned int argv_index = 0; argv_index < argc; argv_index++)free(argv[argv_index]);
-			free(argv);
-			switch(shell->type)
-			{
-			case SHELL_TYPE_CONSOLE:
-				// Send prompt event.
-				console_event = malloc(sizeof(*console_event));
-				console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
-				new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
-				new_event.event_union.sheet_user_defined_event.sheet = shell->console->text_box->sheet;
-				new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
-				new_event.event_union.sheet_user_defined_event.any = console_event;
-				enqueue(shell->console->text_box->sheet->event_queue, &new_event);
-				break;
-			case SHELL_TYPE_SERIAL:
-				print_serial(prompt);
-				break;
-			default:
-				ERROR(); // Invalid shell type
-				break;
-			}
-		}
-		return NULL;
 	}
 	return NULL;
 }

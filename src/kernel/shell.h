@@ -34,6 +34,8 @@ typedef struct _Shell
 	unsigned char type;
 	#define SHELL_TYPE_CONSOLE	0x00
 	#define SHELL_TYPE_SERIAL	0x01
+	unsigned char flags;
+	#define SHELL_FLAG_BUSY	0x01
 } Shell;
 
 typedef struct _CommandTaskAdditional
