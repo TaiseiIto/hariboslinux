@@ -102,6 +102,7 @@ typedef struct _Sheet
 
 extern Sheet *background_sheet;
 
+void change_sheet_event_queue(Sheet *sheet, Queue *new_event_queue);
 Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event), Queue *event_queue);
 void *default_event_procedure(Sheet *sheet, struct _Event const *event);
 void delete_sheet(Sheet *sheet);

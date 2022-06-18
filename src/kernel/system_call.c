@@ -232,6 +232,7 @@ void delete_windows(void)
 			if(application_windows == application_window)application_windows = NULL;
 			application_window->previous->next = application_window->next;
 			application_window->next->previous = application_window->previous;
+			change_window_event_queue(application_window->window, main_task.event_queue);
 			new_event.type = EVENT_TYPE_WINDOW_DELETION_REQUEST;
 			new_event.event_union.window_deletion_request_event.window = application_window->window;
 			enqueue(main_task.event_queue, &new_event);

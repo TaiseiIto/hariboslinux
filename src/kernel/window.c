@@ -27,6 +27,11 @@ Window *get_window_from_sheet(Sheet const *sheet);
 void *root_sheet_event_procedure(Sheet *sheet, Event const *event);
 void *title_sheet_event_procedure(Sheet *sheet, Event const *event);
 
+void change_window_event_queue(Window *window, Queue *new_event_queue)
+{
+	change_sheet_event_queue(window->root_sheet, new_event_queue);
+}
+
 void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 {
 	Window *window;

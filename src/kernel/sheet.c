@@ -46,6 +46,12 @@ Color alpha_blend(Color foreground, Color background)
 	return blended;
 }
 
+void change_sheet_event_queue(Sheet *sheet, Queue *new_event_queue)
+{
+	sheet->event_queue = new_event_queue;
+	for(Sheet *child = sheet->lowest_child; child; child = child->upper)change_sheet_event_queue(child, new_event_queue);
+}
+
 Sheet *create_sheet(Sheet *parent, short x, short y, unsigned short width, unsigned short height, void *(*event_procedure)(struct _Sheet *sheet, struct _Event const *event), Queue *event_queue)
 {
 	Event sheet_created_event;
