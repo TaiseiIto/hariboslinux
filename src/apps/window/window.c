@@ -35,6 +35,7 @@ int main(void)
 		printf("Invalid event.\n");
 		break;
 	}
+	while(true)process_event();
 	return 0;
 }
 

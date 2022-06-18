@@ -139,7 +139,8 @@ typedef struct _WindowCommand
 	#define WINDOW_COMMAND_DRAW_LINE	0x02
 	#define WINDOW_COMMAND_FILL_BOX		0x03
 	#define WINDOW_COMMAND_PRINT		0x04
-	#define WINDOW_COMMAND_PUT_DOT		0x05
+	#define WINDOW_COMMAND_PROCESS_EVENT	0x05
+	#define WINDOW_COMMAND_PUT_DOT		0x06
 } WindowCommand;
 
 FileDescriptor *file_descriptors = NULL;
@@ -457,13 +458,14 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
 			{
 				ApplicationEvent application_event;
+				Event const *event;
 				Window *window;
 				WindowCommand const * const command = buffer;
 				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
 				switch(command->type)
 				{
 				case WINDOW_COMMAND_CREATE:
-					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width + 2 * EDGE_WIDTH, command->arguments.create.height + TITLE_SHEET_HEIGHT + 3 * EDGE_WIDTH, main_task.event_queue);
+					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width + 2 * EDGE_WIDTH, command->arguments.create.height + TITLE_SHEET_HEIGHT + 3 * EDGE_WIDTH, get_current_task()->event_queue);
 					file_descriptor->buffer_begin = malloc(sizeof(window));
 					*(Window **)file_descriptor->buffer_begin = window;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
@@ -502,6 +504,30 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				case WINDOW_COMMAND_PRINT:
 					if(sheet_exists(command->arguments.print.window->client_sheet))print_sheet(command->arguments.print.window->client_sheet, command->arguments.print.x, command->arguments.print.y, command->arguments.print.foreground, command->arguments.print.background, command->arguments.print.string + application_memory);
+					break;
+				case WINDOW_COMMAND_PROCESS_EVENT:
+					event = dequeue(get_current_task()->event_queue);
+					if(event)switch(event->type)
+					{
+					case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
+					case EVENT_TYPE_SHEET_CLICKED:
+					case EVENT_TYPE_SHEET_CREATED:
+					case EVENT_TYPE_SHEET_DELETION_REQUEST:
+					case EVENT_TYPE_SHEET_DELETION_RESPONSE:
+					case EVENT_TYPE_SHEET_FOCUSED:
+					case EVENT_TYPE_SHEET_KEYBOARD:
+					case EVENT_TYPE_SHEET_MOUSE_DRAG:
+					case EVENT_TYPE_SHEET_MOUSE_MOVE:
+					case EVENT_TYPE_SHEET_UNFOCUSED:
+					case EVENT_TYPE_SHEET_USER_DEFINED:
+					case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
+					case EVENT_TYPE_WINDOW_DELETION_REQUEST:
+					case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+					case EVENT_TYPE_WINDOW_FOCUSED:
+					case EVENT_TYPE_WINDOW_UNFOCUSED:
+						distribute_event(event);
+						break;
+					}
 					break;
 				case WINDOW_COMMAND_PUT_DOT:
 					if(sheet_exists(command->arguments.put_dot.window->client_sheet))put_dot_sheet(command->arguments.put_dot.window->client_sheet, command->arguments.put_dot.x, command->arguments.put_dot.y, command->arguments.put_dot.color);

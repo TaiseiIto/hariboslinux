@@ -96,7 +96,8 @@ typedef struct _WindowCommand
 	#define WINDOW_COMMAND_DRAW_LINE	0x02
 	#define WINDOW_COMMAND_FILL_BOX		0x03
 	#define WINDOW_COMMAND_PRINT		0x04
-	#define WINDOW_COMMAND_PUT_DOT		0x05
+	#define WINDOW_COMMAND_PROCESS_EVENT	0x05
+	#define WINDOW_COMMAND_PUT_DOT		0x06
 } WindowCommand;
 
 char const * const console_file_name = "console.dev";
@@ -218,6 +219,15 @@ void print_window(unsigned int window, short x, short y, Color foreground, Color
 	command.arguments.print.foreground = foreground;
 	command.arguments.print.background = background;
 	command.arguments.print.string = string;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fclose(file_descriptor);
+}
+
+void process_event(void)
+{
+	unsigned int file_descriptor = fopen(window_file_name, "w");
+	WindowCommand command;
+	command.type = WINDOW_COMMAND_PROCESS_EVENT;
 	fwrite(&command, sizeof(command), 1, file_descriptor);
 	fclose(file_descriptor);
 }

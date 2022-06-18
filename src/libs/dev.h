@@ -24,6 +24,7 @@ unsigned int get_free_memory_space_size(void);
 unsigned int get_unix_time(void);
 void hlt_application(void);
 void print_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string);
+void process_event(void);
 void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Color color);
 
 #endif
