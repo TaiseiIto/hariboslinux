@@ -17,6 +17,13 @@
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
 
+typedef struct _ApplicationWindow
+{
+	Window *window;
+	struct _ApplicationWindow *previous;
+	struct _ApplicationWindow *next;
+} ApplicationWindow;
+
 typedef struct _ApplicationWindowDeletionResponseEvent
 {
 	Window *window;
@@ -150,6 +157,7 @@ typedef struct _WindowCommand
 	#define WINDOW_COMMAND_PUT_DOT		0x06
 } WindowCommand;
 
+ApplicationWindow *application_windows = NULL;
 FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
 
@@ -474,6 +482,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			{
 				ApplicationEvent *application_event;
 				ApplicationEvent new_application_event;
+				ApplicationWindow *application_window;
 				Event const *event;
 				Window *window;
 				WindowCommand const * const command = buffer;
@@ -488,6 +497,21 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				{
 				case WINDOW_COMMAND_CREATE:
 					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width + 2 * EDGE_WIDTH, command->arguments.create.height + TITLE_SHEET_HEIGHT + 3 * EDGE_WIDTH, get_current_task()->event_queue);
+					application_window = malloc(sizeof(*application_window));
+					application_window->window = window;
+					if(application_windows)
+					{
+						application_window->previous = application_windows->previous;
+						application_window->next = application_windows;
+						application_windows->previous->next = application_window;
+						application_windows->previous = application_window;
+					}
+					else
+					{
+						application_window->previous = application_window;
+						application_window->next = application_window;
+						application_windows = application_window;
+					}
 					file_descriptor->buffer_begin = malloc(sizeof(window));
 					*(Window **)file_descriptor->buffer_begin = window;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
@@ -566,6 +590,20 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 							printf_shell(shell, "sheet created.\n");
 							break;
 						case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+							application_window = application_windows;
+							do
+							{
+								if(application_window->window == event->event_union.window_deletion_response_event.window)
+								{
+									if(application_window == application_windows)application_windows = application_window->next;
+									if(application_window == application_windows)application_windows = NULL;
+									application_window->previous->next = application_window->next;
+									application_window->next->previous = application_window->previous;
+									free(application_window);
+									break;
+								}
+								application_window = application_window->next;
+							} while(application_window != application_windows);
 							new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE;
 							new_application_event.event_union.window_deletion_response_event.window = event->event_union.window_deletion_response_event.window;
 							enqueue(system_call_status->application_event_queue, &new_application_event);
