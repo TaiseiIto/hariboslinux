@@ -20,6 +20,7 @@
 typedef struct _ApplicationWindow
 {
 	Window *window;
+	Task *owner_task;
 	struct _ApplicationWindow *previous;
 	struct _ApplicationWindow *next;
 } ApplicationWindow;
@@ -52,7 +53,7 @@ typedef struct _ApplicationEvent
 typedef struct _FileDescriptor
 {
 	char *file_name;
-	Task *file_opener_task;
+	Task *owner_task;
 	void *buffer_begin;
 	void *buffer_cursor;
 	void *buffer_end;
@@ -170,6 +171,7 @@ SystemCallStatus *system_call_statuses = NULL;
 
 void delete_file_descriptors(void);
 void delete_system_call_status(void);
+void delete_windows(void);
 SystemCallStatus *get_system_call_status(void);
 int system_call_close(FileDescriptor *file_descriptor);
 int system_call_exit(int return_value);
@@ -183,7 +185,7 @@ void delete_file_descriptors(void)
 	if(file_descriptor)do
 	{
 		FileDescriptor *next_file_descriptor = file_descriptor->next;
-		if(file_descriptor->file_opener_task == get_current_task())
+		if(file_descriptor->owner_task == get_current_task())
 		{
 			if(file_descriptors == file_descriptor)file_descriptors = file_descriptor->next;
 			if(file_descriptors == file_descriptor)file_descriptors = NULL;
@@ -215,6 +217,28 @@ void delete_system_call_status(void)
 		}
 		system_call_status = next_system_call_status;
 	} while(system_call_statuses && system_call_status != system_call_statuses);
+}
+
+void delete_windows(void)
+{
+	ApplicationWindow *application_window = application_windows;
+	if(application_window)do
+	{
+		ApplicationWindow *next_application_window = application_window->next;
+		if(application_window->owner_task == get_current_task())
+		{
+			Event new_event;
+			if(application_windows == application_window)application_windows = application_window->next;
+			if(application_windows == application_window)application_windows = NULL;
+			application_window->previous->next = application_window->next;
+			application_window->next->previous = application_window->previous;
+			new_event.type = EVENT_TYPE_WINDOW_DELETION_REQUEST;
+			new_event.event_union.window_deletion_request_event.window = application_window->window;
+			enqueue(main_task.event_queue, &new_event);
+			free(application_window);
+		}
+		application_window = next_application_window;
+	} while(application_window && application_window != application_windows);
 }
 
 SystemCallStatus *get_system_call_status(void)
@@ -313,6 +337,8 @@ int system_call_exit(int return_value)
 	delete_file_descriptors();
 	// Delete system call status of the application.
 	delete_system_call_status();
+	// Delete windows of the application;
+	delete_windows();
 	// Exit the application.
 	return exit_application(return_value, get_current_task()->task_status_segment.esp0);
 }
@@ -326,7 +352,7 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 		file_descriptor = file_descriptors;
 		do
 		{
-			if(!strcmp(file_descriptor->file_name, file_name) && file_descriptor->file_opener_task == task) // The caller application opened the same file.
+			if(!strcmp(file_descriptor->file_name, file_name) && file_descriptor->owner_task == task) // The caller application opened the same file.
 			{
 				// Reuse file_descriptor.
 				file_descriptor->flags |= flags;
@@ -349,7 +375,7 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 	}
 	file_descriptor->file_name = malloc(strlen(file_name) + 1);
 	strcpy(file_descriptor->file_name, file_name);
-	file_descriptor->file_opener_task = task;
+	file_descriptor->owner_task = task;
 	file_descriptor->buffer_begin = load_file(file_descriptor->file_name);
 	file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 	file_descriptor->buffer_end = (void *)((unsigned int)file_descriptor->buffer_begin + get_file_size(file_descriptor->file_name));
@@ -510,6 +536,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width + 2 * EDGE_WIDTH, command->arguments.create.height + TITLE_SHEET_HEIGHT + 3 * EDGE_WIDTH, task->event_queue);
 					application_window = malloc(sizeof(*application_window));
 					application_window->window = window;
+					application_window->owner_task = task;
 					if(application_windows)
 					{
 						application_window->previous = application_windows->previous;
@@ -625,7 +652,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 									break;
 								}
 								application_window = next_application_window;
-							} while(application_window != application_windows);
+							} while(application_window && application_window != application_windows);
 							new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE;
 							new_application_event.event_union.window_deletion_response_event.window = event->event_union.window_deletion_response_event.window;
 							enqueue(system_call_status->application_event_queue, &new_application_event);
