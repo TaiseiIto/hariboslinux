@@ -22,6 +22,7 @@ void draw_line_window(unsigned int window, short x1, short y1, short x2, short y
 void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color);
 unsigned int get_free_memory_space_size(void);
 unsigned int get_unix_time(void);
+void hlt_application(void);
 void print_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string);
 void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Color color);
 

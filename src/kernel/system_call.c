@@ -50,6 +50,12 @@ typedef struct _ConsoleCommand
 	#define CONSOLE_COMMAND_CLEAR	0x00
 } ConsoleCommand;
 
+typedef struct _CPUCommand
+{
+	unsigned char type;
+	#define CPU_COMMAND_HLT	0x0
+} CPUCommand;
+
 typedef struct _MemoryCommand
 {
 	unsigned char type;
@@ -396,6 +402,19 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				default:
 					ERROR(); // Invalid console command.
+					break;
+				}
+			}
+			if(!strcmp(file_descriptor->file_name, cpu_file_name)) // Control the CPU.
+			{
+				CPUCommand const * const command = buffer;
+				switch(command->type)
+				{
+				case CPU_COMMAND_HLT:
+					sleep_task(get_current_task());
+					break;
+				default:
+					ERROR(); // Invalid CPU command.
 					break;
 				}
 			}

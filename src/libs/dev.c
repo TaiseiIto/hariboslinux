@@ -7,6 +7,12 @@ typedef struct _ConsoleCommand
 	#define CONSOLE_COMMAND_CLEAR	0x00
 } ConsoleCommand;
 
+typedef struct _CPUCommand
+{
+	unsigned char type;
+	#define CPU_COMMAND_HLT	0x0
+} CPUCommand;
+
 typedef struct _MemoryCommand
 {
 	unsigned char type;
@@ -94,6 +100,7 @@ typedef struct _WindowCommand
 } WindowCommand;
 
 char const * const console_file_name = "console.dev";
+char const * const cpu_file_name = "cpu.dev";
 char const * const memory_file_name = "memory.dev";
 char const * const timer_file_name = "timer.dev";
 char const * const window_file_name = "window.dev";
@@ -189,6 +196,15 @@ unsigned int get_unix_time(void)
 	fread(&unix_time, sizeof(unix_time), 1, file_descriptor);
 	fclose(file_descriptor);
 	return unix_time;
+}
+
+void hlt_application(void)
+{
+	unsigned int file_descriptor = fopen(cpu_file_name, "w");
+	CPUCommand command;
+	command.type = CPU_COMMAND_HLT;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fclose(file_descriptor);
 }
 
 void print_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string)

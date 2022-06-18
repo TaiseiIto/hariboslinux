@@ -29,6 +29,7 @@ int main(void)
 	{
 	case APPLICATION_EVENT_TYPE_NOTHING:
 		printf("There is no event.\n");
+		hlt_application();
 		break;
 	default:
 		printf("Invalid event.\n");
