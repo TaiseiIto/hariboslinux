@@ -614,6 +614,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 							application_window = application_windows;
 							do
 							{
+								ApplicationWindow *next_application_window = application_window->next;
 								if(application_window->window == event->event_union.window_deletion_response_event.window)
 								{
 									if(application_window == application_windows)application_windows = application_window->next;
@@ -623,7 +624,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 									free(application_window);
 									break;
 								}
-								application_window = application_window->next;
+								application_window = next_application_window;
 							} while(application_window != application_windows);
 							new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE;
 							new_application_event.event_union.window_deletion_response_event.window = event->event_union.window_deletion_response_event.window;
