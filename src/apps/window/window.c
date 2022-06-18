@@ -3,6 +3,7 @@
 
 int main(void)
 {
+	ApplicationEvent application_event;
 	Color black;
 	Color red;
 	Color transparent;
@@ -23,6 +24,16 @@ int main(void)
 	fill_box_window(window, 0x0010, 0x0010, 0x0010, 0x0010, red);
 	print_window(window, 0x00, 0x00, black, transparent, "Hello, World!\n");
 	put_dot_window(window, 0x0030, 0x0030, black);
+	application_event = dequeue_application_event(window);
+	switch(application_event.type)
+	{
+	case APPLICATION_EVENT_TYPE_NOTHING:
+		printf("There is no event.\n");
+		break;
+	default:
+		printf("Invalid event.\n");
+		break;
+	}
 	return 0;
 }
 

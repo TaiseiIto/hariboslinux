@@ -1,6 +1,12 @@
 #ifndef _DEV_H_
 #define _DEV_H_
 
+typedef struct _ApplicationEvent
+{
+	unsigned char type;
+	#define APPLICATION_EVENT_TYPE_NOTHING	0xff
+} ApplicationEvent;
+
 typedef struct
 {
 	unsigned char red;
@@ -11,6 +17,7 @@ typedef struct
 
 void clear_console(void);
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height);
+ApplicationEvent dequeue_application_event(unsigned int window);
 void draw_line_window(unsigned int window, short x1, short y1, short x2, short y2, Color color);
 void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color);
 unsigned int get_free_memory_space_size(void);

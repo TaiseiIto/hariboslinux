@@ -28,6 +28,11 @@ typedef struct _WindowCommandCreateArguments
 	unsigned short height;
 } WindowCommandCreateArguments;
 
+typedef struct _WindowCommandDequeueEvent
+{
+	unsigned int window;
+} WindowCommandDequeueEvent;
+
 typedef struct _WindowCommandDrawLine
 {
 	unsigned int window;
@@ -69,6 +74,7 @@ typedef struct _WindowCommandPutDot
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
+	WindowCommandDequeueEvent dequeue_event;
 	WindowCommandDrawLine draw_line;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
@@ -80,10 +86,11 @@ typedef struct _WindowCommand
 	WindowCommandArguments arguments;
 	unsigned char type;
 	#define WINDOW_COMMAND_CREATE		0x00
-	#define WINDOW_COMMAND_DRAW_LINE	0x01
-	#define WINDOW_COMMAND_FILL_BOX		0x02
-	#define WINDOW_COMMAND_PRINT		0x03
-	#define WINDOW_COMMAND_PUT_DOT		0x04
+	#define WINDOW_COMMAND_DEQUEUE_EVENT	0x01
+	#define WINDOW_COMMAND_DRAW_LINE	0x02
+	#define WINDOW_COMMAND_FILL_BOX		0x03
+	#define WINDOW_COMMAND_PRINT		0x04
+	#define WINDOW_COMMAND_PUT_DOT		0x05
 } WindowCommand;
 
 char const * const console_file_name = "console.dev";
@@ -115,6 +122,19 @@ unsigned int create_window(char const *title, short x, short y, unsigned short w
 	fread(&window, sizeof(window), 1, file_descriptor);
 	fclose(file_descriptor);
 	return window;
+}
+
+ApplicationEvent dequeue_application_event(unsigned int window)
+{
+	ApplicationEvent application_event;
+	unsigned int file_descriptor = fopen(window_file_name, "wr");
+	WindowCommand command;
+	command.type = WINDOW_COMMAND_DEQUEUE_EVENT;
+	command.arguments.dequeue_event.window = window;
+	fwrite(&command, sizeof(command), 1, file_descriptor);
+	fread(&application_event, sizeof(application_event), 1, file_descriptor);
+	fclose(file_descriptor);
+	return application_event;
 }
 
 void draw_line_window(unsigned int window, short x1, short y1, short x2, short y2, Color color)

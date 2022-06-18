@@ -17,6 +17,12 @@
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
 
+typedef struct _ApplicationEvent
+{
+	unsigned char type;
+	#define APPLICATION_EVENT_TYPE_NOTHING	0xff
+} ApplicationEvent;
+
 typedef struct _FileDescriptor
 {
 	char *file_name;
@@ -65,6 +71,11 @@ typedef struct _WindowCommandCreateArguments
 	unsigned short height;
 } WindowCommandCreateArguments;
 
+typedef struct _WindowCommandDequeueEvent
+{
+	Window *window;
+} WindowCommandDequeueEvent;
+
 typedef struct _WindowCommandDrawLine
 {
 	Window *window;
@@ -106,6 +117,7 @@ typedef struct _WindowCommandPutDot
 typedef union _WindowCommandArguments
 {
 	WindowCommandCreateArguments create;
+	WindowCommandDequeueEvent dequeue_event;
 	WindowCommandDrawLine draw_line;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
@@ -117,10 +129,11 @@ typedef struct _WindowCommand
 	WindowCommandArguments arguments;
 	unsigned char type;
 	#define WINDOW_COMMAND_CREATE		0x00
-	#define WINDOW_COMMAND_DRAW_LINE	0x01
-	#define WINDOW_COMMAND_FILL_BOX		0x02
-	#define WINDOW_COMMAND_PRINT		0x03
-	#define WINDOW_COMMAND_PUT_DOT		0x04
+	#define WINDOW_COMMAND_DEQUEUE_EVENT	0x01
+	#define WINDOW_COMMAND_DRAW_LINE	0x02
+	#define WINDOW_COMMAND_FILL_BOX		0x03
+	#define WINDOW_COMMAND_PRINT		0x04
+	#define WINDOW_COMMAND_PUT_DOT		0x05
 } WindowCommand;
 
 FileDescriptor *file_descriptors = NULL;
@@ -424,6 +437,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
 			{
+				ApplicationEvent application_event;
 				Window *window;
 				WindowCommand const * const command = buffer;
 				if(file_descriptor->buffer_begin)free(file_descriptor->buffer_begin);
@@ -435,6 +449,13 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					*(Window **)file_descriptor->buffer_begin = window;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(window));
+					break;
+				case WINDOW_COMMAND_DEQUEUE_EVENT:
+					application_event.type = APPLICATION_EVENT_TYPE_NOTHING;
+					file_descriptor->buffer_begin = malloc(sizeof(application_event));
+					*(ApplicationEvent *)file_descriptor->buffer_begin = application_event;
+					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
+					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(application_event));
 					break;
 				case WINDOW_COMMAND_DRAW_LINE:
 					if(sheet_exists(command->arguments.draw_line.window->client_sheet))
