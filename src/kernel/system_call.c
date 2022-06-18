@@ -220,14 +220,15 @@ void delete_system_call_status(void)
 SystemCallStatus *get_system_call_status(void)
 {
 	SystemCallStatus *system_call_status = system_call_statuses;
+	Task *task = get_current_task();
 	if(system_call_status)do
 	{
-		if(system_call_status->application_task == get_current_task())return system_call_status;
+		if(system_call_status->application_task == task)return system_call_status;
 		system_call_status = system_call_status->next;
 	} while(system_call_status != system_call_statuses);
 	system_call_status = malloc(sizeof(*system_call_status));
-	system_call_status->application_task = get_current_task();
-	system_call_status->application_event_queue = create_queue(sizeof(ApplicationEvent), get_current_task());
+	system_call_status->application_task = task;
+	system_call_status->application_event_queue = create_queue(sizeof(ApplicationEvent), task);
 	if(system_call_statuses)
 	{
 		system_call_status->previous = system_call_statuses->previous;
@@ -247,6 +248,7 @@ SystemCallStatus *get_system_call_status(void)
 int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 {
 	int return_value;
+	Task *task = get_current_task();
 	prohibit_switch_task();
 	UNUSED_ARGUMENT(esi);
 	UNUSED_ARGUMENT(edi);
@@ -266,13 +268,13 @@ int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
 		return_value = system_call_exit(ebx);
 		break;
 	case SYSTEM_CALL_OPEN:
-		return_value = (int)system_call_open((char const *)(ebx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (unsigned int)ecx);
+		return_value = (int)system_call_open((char const *)(ebx + (unsigned int)((CommandTaskAdditional *)task->additionals)->application_memory), (unsigned int)ecx);
 		break;
 	case SYSTEM_CALL_READ:
-		return_value = system_call_read((FileDescriptor *)ebx, (void *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
+		return_value = system_call_read((FileDescriptor *)ebx, (void *)(ecx + (unsigned int)((CommandTaskAdditional *)task->additionals)->application_memory), (size_t)edx);
 		break;
 	case SYSTEM_CALL_WRITE:
-		return_value = system_call_write((FileDescriptor *)ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory), (size_t)edx);
+		return_value = system_call_write((FileDescriptor *)ebx, (void const *)(ecx + (unsigned int)((CommandTaskAdditional *)task->additionals)->application_memory), (size_t)edx);
 		break;
 	default:
 		ERROR(); // Invalid eax
@@ -318,12 +320,13 @@ int system_call_exit(int return_value)
 FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 {
 	FileDescriptor *file_descriptor;
+	Task *task = get_current_task();
 	if(file_descriptors)
 	{
 		file_descriptor = file_descriptors;
 		do
 		{
-			if(!strcmp(file_descriptor->file_name, file_name) && file_descriptor->file_opener_task == get_current_task()) // The caller application opened the same file.
+			if(!strcmp(file_descriptor->file_name, file_name) && file_descriptor->file_opener_task == task) // The caller application opened the same file.
 			{
 				// Reuse file_descriptor.
 				file_descriptor->flags |= flags;
@@ -346,7 +349,7 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 	}
 	file_descriptor->file_name = malloc(strlen(file_name) + 1);
 	strcpy(file_descriptor->file_name, file_name);
-	file_descriptor->file_opener_task = get_current_task();
+	file_descriptor->file_opener_task = task;
 	file_descriptor->buffer_begin = load_file(file_descriptor->file_name);
 	file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 	file_descriptor->buffer_end = (void *)((unsigned int)file_descriptor->buffer_begin + get_file_size(file_descriptor->file_name));
@@ -377,8 +380,9 @@ size_t system_call_read(FileDescriptor *file_descriptor, void *buffer, size_t co
 
 int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_t count)
 {
+	Task *task = get_current_task();
 	unsigned int counter = 0;
-	unsigned int application_memory = (unsigned int)((CommandTaskAdditional *)get_current_task()->additionals)->application_memory;
+	unsigned int application_memory = (unsigned int)((CommandTaskAdditional *)task->additionals)->application_memory;
 	SystemCallStatus *system_call_status = get_system_call_status();
 	if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_WRITE)
 	{
@@ -430,7 +434,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 				case CPU_COMMAND_HLT:
-					sleep_task(get_current_task());
+					sleep_task(task);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.
@@ -503,7 +507,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 				case WINDOW_COMMAND_CREATE:
-					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width + 2 * EDGE_WIDTH, command->arguments.create.height + TITLE_SHEET_HEIGHT + 3 * EDGE_WIDTH, get_current_task()->event_queue);
+					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width + 2 * EDGE_WIDTH, command->arguments.create.height + TITLE_SHEET_HEIGHT + 3 * EDGE_WIDTH, task->event_queue);
 					application_window = malloc(sizeof(*application_window));
 					application_window->window = window;
 					if(application_windows)
@@ -564,7 +568,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					if(sheet_exists(command->arguments.print.window->client_sheet))print_sheet(command->arguments.print.window->client_sheet, command->arguments.print.x, command->arguments.print.y, command->arguments.print.foreground, command->arguments.print.background, command->arguments.print.string + application_memory);
 					break;
 				case WINDOW_COMMAND_PROCESS_EVENT:
-					event = dequeue(get_current_task()->event_queue);
+					event = dequeue(task->event_queue);
 					if(event)
 					{
 						switch(event->type)
