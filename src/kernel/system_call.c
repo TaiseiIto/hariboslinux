@@ -308,18 +308,11 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags)
 		file_descriptor = file_descriptors;
 		do
 		{
-			if(!strcmp(file_descriptor->file_name, file_name)) // Someone opened the same file.
+			if(!strcmp(file_descriptor->file_name, file_name) && file_descriptor->file_opener_task == get_current_task()) // The caller application opened the same file.
 			{
-				if(file_descriptor->file_opener_task == get_current_task()) // The caller application opened the same file.
-				{
-					// Reuse file_descriptor.
-					file_descriptor->flags |= flags;
-					return file_descriptor;
-				}
-				else // Another application opened the same file.
-				{
-					if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_WRITE || flags & SYSTEM_CALL_OPEN_FLAG_WRITE)return 0; // Can't open the file with writing mode.
-				}
+				// Reuse file_descriptor.
+				file_descriptor->flags |= flags;
+				return file_descriptor;
 			}
 			file_descriptor = file_descriptor->next;
 		} while(file_descriptor != file_descriptors);
