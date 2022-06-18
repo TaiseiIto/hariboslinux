@@ -416,7 +416,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				}
 			}
-			if(!strcmp(file_descriptor->file_name, cpu_file_name)) // Control the CPU.
+			else if(!strcmp(file_descriptor->file_name, cpu_file_name)) // Control the CPU.
 			{
 				CPUCommand const * const command = buffer;
 				switch(command->type)
@@ -429,7 +429,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				}
 			}
-			if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
+			else if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
 			{
 				MemoryCommand const * const command = buffer;
 				unsigned int free_memory_space_size = get_free_memory_space_size();
@@ -453,7 +453,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				}
 			}
-			if(!strcmp(file_descriptor->file_name, timer_file_name)) // Control timer.
+			else if(!strcmp(file_descriptor->file_name, timer_file_name)) // Control timer.
 			{
 				TimerCommand const * const command = buffer;
 				unsigned int unix_time = get_unix_time();
@@ -477,7 +477,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				}
 			}
-			if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
+			else if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
 			{
 				ApplicationEvent *application_event;
 				ApplicationEvent new_application_event;
