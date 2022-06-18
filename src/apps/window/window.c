@@ -12,6 +12,7 @@ int main(void)
 		switch(application_event.type)
 		{
 		case APPLICATION_EVENT_TYPE_NOTHING:
+			hlt_application();
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_CREATED:
 			printf("A window is created!\n");

@@ -434,7 +434,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 				case CPU_COMMAND_HLT:
-					sleep_task(task);
+					if(!task->event_queue->read_head)sleep_task(task);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.
