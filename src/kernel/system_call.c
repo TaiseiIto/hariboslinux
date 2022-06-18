@@ -587,7 +587,15 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						switch(event->type)
 						{
 						case EVENT_TYPE_SHEET_CREATED:
-							printf_shell(shell, "sheet created.\n");
+							application_window = application_windows;
+							do
+							{
+								if(application_window->window->client_sheet == event->event_union.sheet_created_event.sheet)
+								{
+									printf_shell(shell, "client sheet created!\n");
+								}
+								application_window = application_window->next;
+							} while(application_window != application_windows);
 							break;
 						case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 							application_window = application_windows;
