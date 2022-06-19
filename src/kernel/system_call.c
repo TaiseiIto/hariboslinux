@@ -25,6 +25,20 @@ typedef struct _ApplicationWindow
 	struct _ApplicationWindow *next;
 } ApplicationWindow;
 
+typedef struct _ApplicationWindowClickedEvent
+{
+	Window *window;
+	unsigned short x, y;
+	unsigned char flags;
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_PUSHED		0x01
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RELEASED		0x02
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_LEFT_BUTTON	0x04
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_MIDDLE_BUTTON	0x08
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RIGHT_BUTTON	0x10
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_4TH_BUTTON	0x20
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_5TH_BUTTON	0x40
+} ApplicationWindowClickedEvent;
+
 typedef struct _ApplicationWindowCreatedEvent
 {
 	Window *window;
@@ -43,6 +57,7 @@ typedef struct _ApplicationWindowKeyboardEvent
 
 typedef union _ApplicationEventUnion
 {
+	ApplicationWindowClickedEvent window_clicked_event;
 	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
 	ApplicationWindowKeyboardEvent window_keyboard_event;
@@ -53,9 +68,10 @@ typedef struct _ApplicationEvent
 	ApplicationEventUnion event_union;
 	unsigned char type;
 	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
-	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x01
-	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x02
-	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x03
+	#define APPLICATION_EVENT_TYPE_WINDOW_CLICKED		0x01
+	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x02
+	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x03
+	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x04
 } ApplicationEvent;
 
 typedef struct _FileDescriptor
@@ -659,6 +675,17 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						}
 						switch(event->type)
 						{
+						case EVENT_TYPE_SHEET_CLICKED:
+							application_window = get_application_window_from_window(get_window_from_sheet(event->event_union.sheet_clicked_event.sheet));
+							if(application_window && application_window->window->client_sheet == event->event_union.sheet_clicked_event.sheet)
+							{
+								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_CLICKED;
+								new_application_event.event_union.window_clicked_event.window = application_window->window;
+								new_application_event.event_union.window_clicked_event.x = event->event_union.sheet_clicked_event.x;
+								new_application_event.event_union.window_clicked_event.y = event->event_union.sheet_clicked_event.y;
+								new_application_event.event_union.window_clicked_event.flags = event->event_union.sheet_clicked_event.flags;
+							}
+							break;
 						case EVENT_TYPE_SHEET_CREATED:
 							application_window = get_application_window_from_window(get_window_from_sheet(event->event_union.sheet_created_event.sheet));
 							if(application_window && application_window->window->client_sheet == event->event_union.sheet_created_event.sheet)

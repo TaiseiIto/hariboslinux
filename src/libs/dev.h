@@ -1,6 +1,20 @@
 #ifndef _DEV_H_
 #define _DEV_H_
 
+typedef struct _ApplicationWindowClickedEvent
+{
+	unsigned int window;
+	unsigned short x, y;
+	unsigned char flags;
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_PUSHED		0x01
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RELEASED		0x02
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_LEFT_BUTTON	0x04
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_MIDDLE_BUTTON	0x08
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RIGHT_BUTTON	0x10
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_4TH_BUTTON	0x20
+	#define APPLICATION_WINDOW_CLICKED_EVENT_FLAG_5TH_BUTTON	0x40
+} ApplicationWindowClickedEvent;
+
 typedef struct _ApplicationWindowCreatedEvent
 {
 	unsigned int window;
@@ -153,6 +167,7 @@ typedef struct _ApplicationWindowKeyboardEvent
 
 typedef union _ApplicationEventUnion
 {
+	ApplicationWindowClickedEvent window_clicked_event;
 	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
 	ApplicationWindowKeyboardEvent window_keyboard_event;
@@ -163,9 +178,10 @@ typedef struct _ApplicationEvent
 	ApplicationEventUnion event_union;
 	unsigned char type;
 	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
-	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x01
-	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x02
-	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x03
+	#define APPLICATION_EVENT_TYPE_WINDOW_CLICKED		0x01
+	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x02
+	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x03
+	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x04
 } ApplicationEvent;
 
 typedef struct

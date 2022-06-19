@@ -14,16 +14,11 @@ int main(void)
 		case APPLICATION_EVENT_TYPE_NOTHING:
 			hlt_application();
 			break;
-		case APPLICATION_EVENT_TYPE_WINDOW_CREATED:
-			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD:
 			if(application_event.event_union.window_keyboard_event.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)printf("%c", application_event.event_union.window_keyboard_event.keyboard_event.character);
-			break;
-		default:
-			ERROR(); // Invalid event type.
 			break;
 		}
 		process_event();
