@@ -75,7 +75,11 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 	command_task_argument->shell->flags &= ~SHELL_FLAG_BUSY;
 	if(command_task_argument->shell->flags & SHELL_FLAG_EXIT_REQUEST && command_task_argument->shell->type == SHELL_TYPE_CONSOLE)
 	{
-		printf_shell(command_task_argument->shell, "Shell exit request!\n");
+		Sheet *console_sheet = command_task_argument->shell->console->text_box->sheet;
+		Window *window = get_window_from_sheet(console_sheet);
+		new_event.type = EVENT_TYPE_WINDOW_DELETION_REQUEST;
+		new_event.event_union.window_deletion_request_event.window = window;
+		enqueue(window->root_sheet->event_queue, &new_event);
 	}
 }
 
