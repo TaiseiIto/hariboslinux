@@ -2,6 +2,7 @@
 #include "gdt.h"
 #include "memory.h"
 #include "serial.h"
+#include "shell.h"
 #include "string.h"
 #include "window.h"
 
@@ -14,7 +15,18 @@ Console *get_console_from_sheet(Sheet const *sheet);
 void *console_window_close_button_sheet_event_procedure(Sheet *sheet, Event const *event)
 {
 	Console *console = get_console_from_sheet(sheet);
-	return console->default_close_button_event_procedure(sheet, event);
+	switch(event->type)
+	{
+	case EVENT_TYPE_SHEET_CLICKED:
+		if(console->shell->flags & SHELL_FLAG_BUSY)
+		{
+			printf_shell(console->shell, "Can't close this console because an application is running on it.\n");
+			return default_event_procedure(sheet, event);
+		}
+		else return console->default_close_button_event_procedure(sheet, event);
+	default:
+		return console->default_close_button_event_procedure(sheet, event);
+	}
 }
 
 void *console_event_procedure(Sheet *sheet, struct _Event const *event)
