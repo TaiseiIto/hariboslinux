@@ -5,6 +5,7 @@ typedef struct _ConsoleCommand
 {
 	unsigned char type;
 	#define CONSOLE_COMMAND_CLEAR	0x00
+	#define CONSOLE_COMMAND_EXIT	0x01
 } ConsoleCommand;
 
 typedef struct _CPUCommand
@@ -153,6 +154,14 @@ void draw_line_window(unsigned int window, short x1, short y1, short x2, short y
 	command.arguments.draw_line.y2 = y2;
 	command.arguments.draw_line.color = color;
 	fwrite(&command, sizeof(command), 1, window_file);
+}
+
+void exit_console(void)
+{
+	ConsoleCommand command;
+	if(!console_file)console_file = fopen(console_file_name, "wr");
+	command.type = CONSOLE_COMMAND_EXIT;
+	fwrite(&command, sizeof(command), 1, console_file);
 }
 
 void fill_box_window(unsigned int window, short x, short y, unsigned short width, unsigned short height, Color color)

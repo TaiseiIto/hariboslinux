@@ -73,6 +73,10 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 		break;
 	}
 	command_task_argument->shell->flags &= ~SHELL_FLAG_BUSY;
+	if(command_task_argument->shell->flags & SHELL_FLAG_EXIT_REQUEST && command_task_argument->shell->type == SHELL_TYPE_CONSOLE)
+	{
+		printf_shell(command_task_argument->shell, "Shell exit request!\n");
+	}
 }
 
 char **create_argv(Shell *shell, char const *command)

@@ -76,6 +76,7 @@ typedef struct _ConsoleCommand
 {
 	unsigned char type;
 	#define CONSOLE_COMMAND_CLEAR	0x00
+	#define CONSOLE_COMMAND_EXIT	0x01
 } ConsoleCommand;
 
 typedef struct _CPUCommand
@@ -443,6 +444,18 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						console = shell->console;
 						text_box = console->text_box;
 						text_box_delete_chars(text_box, text_box->first_position, text_box->string->length);
+						break;
+					case SHELL_TYPE_SERIAL:
+						break;
+					default:
+						ERROR(); // Invalid shell type.
+					}
+					break;
+				case CONSOLE_COMMAND_EXIT:
+					switch(shell->type)
+					{
+					case SHELL_TYPE_CONSOLE:
+						shell->flags |= SHELL_FLAG_EXIT_REQUEST;
 						break;
 					case SHELL_TYPE_SERIAL:
 						break;
