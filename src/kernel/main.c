@@ -118,17 +118,23 @@ int main(void)
 			}
 			if(event->event_union.keyboard_event.character)printf_sheet(background_sheet, 0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
 			keyboard_flags = event->event_union.keyboard_event.flags;
-			if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_ALT_KEY_PUSHED && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED && event->event_union.keyboard_event.keycode == KEY_TAB)
+			if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_ALT_KEY_PUSHED && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED)switch(event->event_union.keyboard_event.keycode)
 			{
-				Sheet *pulled_up_sheet = background_sheet->lowest_child;
-				Window *pulled_up_window = get_window_from_sheet(pulled_up_sheet);
-				Sheet *next_focused_sheet = pulled_up_window ? pulled_up_window->client_sheet : pulled_up_sheet ;
-				if(pulled_up_window)focus_window(pulled_up_window);
-				pull_up_sheet(pulled_up_sheet);
-				focus_sheet(next_focused_sheet);
+			case KEY_TAB: // Switch window by ALT + TAB.
+				{
+					Sheet *pulled_up_sheet = background_sheet->lowest_child;
+					Window *pulled_up_window = get_window_from_sheet(pulled_up_sheet);
+					Sheet *next_focused_sheet = pulled_up_window ? pulled_up_window->client_sheet : pulled_up_sheet ;
+					if(pulled_up_window)focus_window(pulled_up_window);
+					pull_up_sheet(pulled_up_sheet);
+					focus_sheet(next_focused_sheet);
+				}
+				break;
+			case KEY_F4: // Delete window by ALT + F4.
+				printf_serial("Delete window!\n");
 				break;
 			}
-			send_sheets_event(event);
+			else send_sheets_event(event);
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_sheet(background_sheet, 0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
