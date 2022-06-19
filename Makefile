@@ -106,7 +106,7 @@ gitconfig:
 # rebuild the OS
 rebuild: clean
 	make 2>&1 | tee $(MAKE_OUT)
-	! grep -i warning $(MAKE_OUT)
+	! grep -i -e error -e warning $(MAKE_OUT)
 
 # run the OS on QEMU with interactive serial interface
 run:

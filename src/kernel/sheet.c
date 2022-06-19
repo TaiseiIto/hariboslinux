@@ -739,15 +739,13 @@ void send_sheets_event(Event const *event)
 			// Move left button catched window.
 			if(sheet_exists(left_button_catched_sheet))
 			{
-				Sheet *dragged_sheet;
-				for(dragged_sheet = left_button_catched_sheet; dragged_sheet; dragged_sheet = dragged_sheet->parent)if(dragged_sheet->parent == background_sheet)break;
-				if(dragged_sheet)
+				if(left_button_catched_sheet && left_button_catched_sheet->parent == background_sheet)
 				{
 					new_event.type = EVENT_TYPE_SHEET_MOUSE_DRAG;
-					new_event.event_union.sheet_mouse_drag_event.sheet = dragged_sheet;
+					new_event.event_union.sheet_mouse_drag_event.sheet = left_button_catched_sheet;
 					new_event.event_union.sheet_mouse_drag_event.x_movement = event->event_union.mouse_event.x_movement;
 					new_event.event_union.sheet_mouse_drag_event.y_movement = event->event_union.mouse_event.y_movement;
-					enqueue(dragged_sheet->event_queue, &new_event);
+					enqueue(left_button_catched_sheet->event_queue, &new_event);
 				}
 			}
 			else
