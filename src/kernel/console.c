@@ -3,11 +3,19 @@
 #include "memory.h"
 #include "serial.h"
 #include "string.h"
+#include "window.h"
 
 Console *root_console = NULL;
 
+void *console_window_close_button_sheet_event_procedure(Sheet *sheet, Event const *event);
 void delete_console(Console *console);
 Console *get_console_from_sheet(Sheet const *sheet);
+
+void *console_window_close_button_sheet_event_procedure(Sheet *sheet, Event const *event)
+{
+	Console *console = get_console_from_sheet(sheet);
+	return console->default_close_button_event_procedure(sheet, event);
+}
 
 void *console_event_procedure(Sheet *sheet, struct _Event const *event)
 {
@@ -243,12 +251,14 @@ Console *get_console_from_sheet(Sheet const *sheet)
 Console *make_sheet_console(Sheet *sheet, Color foreground_color, Color background_color)
 {
 	Console *new_console = malloc(sizeof(*new_console));
+	Window *window = get_window_from_sheet(sheet);
 	printf_serial("Make sheet %p console %p\n", sheet, new_console);
 	prohibit_switch_task();
 	new_console->prompt_position = NULL;
 	new_console->text_box = make_sheet_text_box(sheet, foreground_color, background_color);
 	new_console->shell = create_shell(new_console);
 	new_console->default_event_procedure = new_console->text_box->sheet->event_procedure;
+	new_console->default_close_button_event_procedure = window->close_button_sheet->event_procedure;
 	new_console->text_box->sheet->event_procedure = console_event_procedure;
 	if(root_console)
 	{

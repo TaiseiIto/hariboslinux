@@ -23,7 +23,6 @@ Window *windows = NULL;
 void *client_sheet_event_procedure(Sheet *sheet, Event const *event);
 void *close_button_sheet_event_procedure(Sheet *sheet, Event const *event);
 void focus_window(Window *window);
-Window *get_window_from_sheet(Sheet const *sheet);
 void *root_sheet_event_procedure(Sheet *sheet, Event const *event);
 void *title_sheet_event_procedure(Sheet *sheet, Event const *event);
 
@@ -188,7 +187,7 @@ void focus_window(Window *window)
 	allow_switch_task();
 }
 
-Window *get_window_from_sheet(Sheet const *sheet)
+Window *get_window_from_sheet(struct _Sheet const *sheet)
 {
 	Window *window;
 	prohibit_switch_task();
