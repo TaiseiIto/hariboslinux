@@ -110,6 +110,7 @@ rebuild: clean
 
 # run the OS on QEMU with interactive serial interface
 run:
+	make rebuild
 	tmux new-session \; source-file tmux/.tmux.run-haribos.conf
 
 # run the OS on QEMU
