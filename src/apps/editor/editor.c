@@ -5,7 +5,7 @@ int main(void)
 {
 	#define WINDOW_EXISTS 0x01
 	unsigned char flags = WINDOW_EXISTS;
-	unsigned int window = create_window("editor.com", 0x0200, 0x0200, 0x0200, 0x0200);
+	unsigned int window = create_window("editor", 0x0200, 0x0200, 0x0200, 0x0200);
 	while(flags & WINDOW_EXISTS)
 	{
 		ApplicationEvent application_event = dequeue_application_event();

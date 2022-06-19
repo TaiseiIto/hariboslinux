@@ -9,7 +9,7 @@ int main(void)
 	short const window_y = 0x0200;
 	short const window_width = 0x0200;
 	short const window_height = 0x0200;
-	unsigned int window = create_window("window.com", window_x, window_y, window_width, window_height);
+	unsigned int window = create_window("draw", window_x, window_y, window_width, window_height);
 	short mouse_x, mouse_y;
 	short next_mouse_x, next_mouse_y;
 	#define WINDOW_EXISTS 0x01

@@ -21,7 +21,7 @@ int main(void)
 	color.green = 0x00;
 	color.blue  = 0x00;
 	color.alpha = 0xff;
-	window = create_window("lines.com", 0x0200, 0x0200, window_width, window_height);
+	window = create_window("lines", 0x0200, 0x0200, window_width, window_height);
 	while(flags & WINDOW_EXISTS)
 	{
 		ApplicationEvent application_event = dequeue_application_event();
