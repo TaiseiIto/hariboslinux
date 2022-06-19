@@ -43,6 +43,8 @@ void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 		// Draw client sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, client_background_color);
 		return default_event_procedure(sheet, event);
+	case EVENT_TYPE_SHEET_MOUSE_DRAG:
+		return NULL;
 	default:
 		return default_event_procedure(sheet, event);
 	}
@@ -104,8 +106,8 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 			}
 		}
 		return default_event_procedure(sheet, event);
-	case EVENT_TYPE_SHEET_MOUSE_MOVE:
-		return default_event_procedure(sheet, event);
+	case EVENT_TYPE_SHEET_MOUSE_DRAG:
+		return NULL;
 	default:
 		return default_event_procedure(sheet, event);
 	}
@@ -268,6 +270,7 @@ void *root_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *even
 
 void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *event)
 {
+	Event new_event;
 	Window *window;
 	window = get_window_from_sheet(sheet);
 	switch(event->type)
@@ -275,6 +278,13 @@ void *title_sheet_event_procedure(struct _Sheet *sheet, struct _Event const *eve
 	case EVENT_TYPE_SHEET_CLICKED:
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)focus_window(window);
 		return default_event_procedure(sheet, event);
+	case EVENT_TYPE_SHEET_MOUSE_DRAG:
+		new_event.type = EVENT_TYPE_SHEET_MOUSE_DRAG;
+		new_event.event_union.sheet_mouse_drag_event.sheet = window->root_sheet;
+		new_event.event_union.sheet_mouse_drag_event.x_movement = event->event_union.sheet_mouse_drag_event.x_movement;
+		new_event.event_union.sheet_mouse_drag_event.y_movement = event->event_union.sheet_mouse_drag_event.y_movement;
+		enqueue(window->root_sheet->event_queue, &new_event);
+		return NULL;
 	case EVENT_TYPE_WINDOW_FOCUSED:
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, title_background_color);
 		print_sheet(sheet, 1, 1, title_foreground_color, title_background_color, window->title);
