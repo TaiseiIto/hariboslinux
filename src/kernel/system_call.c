@@ -646,12 +646,12 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						if(right_x - left_x < bottom_y - top_y)for(short y = top_y; y <= bottom_y; y++)
 						{
 							short x = ((bottom_x - top_x) * y + top_x * bottom_y - bottom_x * top_y) / (bottom_y - top_y);
-							put_dot_sheet(command->arguments.draw_line.window->client_sheet, x, y, command->arguments.draw_line.color);
+							if(0 <= x && x < command->arguments.draw_line.window->client_sheet->width && 0 <= y && y < command->arguments.draw_line.window->client_sheet->height)put_dot_sheet(command->arguments.draw_line.window->client_sheet, x, y, command->arguments.draw_line.color);
 						}
 						else for(short x = left_x; x <= right_x; x++)
 						{
 							short y = top_x == bottom_x ? top_y : ((top_y - bottom_y) * x + top_x * bottom_y - bottom_x * top_y) / (top_x - bottom_x);
-							put_dot_sheet(command->arguments.draw_line.window->client_sheet, x, y, command->arguments.draw_line.color);
+							if(0 <= x && x < command->arguments.draw_line.window->client_sheet->width && 0 <= y && y < command->arguments.draw_line.window->client_sheet->height)put_dot_sheet(command->arguments.draw_line.window->client_sheet, x, y, command->arguments.draw_line.color);
 						}
 					}
 					break;
