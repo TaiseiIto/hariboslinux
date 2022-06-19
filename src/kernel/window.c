@@ -186,6 +186,11 @@ void focus_window(Window *window)
 	allow_switch_task();
 }
 
+Window *get_focused_window(void)
+{
+	return focused_window;
+}
+
 Window *get_window_from_sheet(struct _Sheet const *sheet)
 {
 	Window *window;

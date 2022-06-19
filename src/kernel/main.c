@@ -131,7 +131,13 @@ int main(void)
 				}
 				break;
 			case KEY_F4: // Delete window by ALT + F4.
-				printf_serial("Delete window!\n");
+				{
+					Window *window = get_focused_window();
+					if(window)
+					{
+						printf_serial("Delete Window %p\n", window);
+					}
+				}
 				break;
 			}
 			else send_sheets_event(event);
