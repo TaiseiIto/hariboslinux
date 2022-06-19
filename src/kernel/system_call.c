@@ -684,6 +684,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 								new_application_event.event_union.window_clicked_event.x = event->event_union.sheet_clicked_event.x;
 								new_application_event.event_union.window_clicked_event.y = event->event_union.sheet_clicked_event.y;
 								new_application_event.event_union.window_clicked_event.flags = event->event_union.sheet_clicked_event.flags;
+								enqueue(system_call_status->application_event_queue, &new_application_event);
 							}
 							break;
 						case EVENT_TYPE_SHEET_CREATED:
