@@ -165,12 +165,19 @@ typedef struct _ApplicationWindowKeyboardEvent
 	KeyboardEvent keyboard_event;
 } ApplicationWindowKeyboardEvent;
 
+typedef struct _ApplicationWindowMoveEvent
+{
+	unsigned int window;
+	short x_movement, y_movement;
+} ApplicationWindowMoveEvent;
+
 typedef union _ApplicationEventUnion
 {
 	ApplicationWindowClickedEvent window_clicked_event;
 	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
 	ApplicationWindowKeyboardEvent window_keyboard_event;
+	ApplicationWindowMoveEvent window_move_event;
 } ApplicationEventUnion;
 
 typedef struct _ApplicationEvent
@@ -182,6 +189,7 @@ typedef struct _ApplicationEvent
 	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x02
 	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x03
 	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x04
+	#define APPLICATION_EVENT_TYPE_WINDOW_MOVE		0x05
 } ApplicationEvent;
 
 typedef struct

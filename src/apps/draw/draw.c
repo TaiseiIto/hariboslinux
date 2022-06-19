@@ -20,6 +20,8 @@ int main(void)
 		case APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
 			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_MOVE:
+			printf("mouse move (%#06.4x, %#06.4x)\n", application_event.event_union.window_move_event.x_movement, application_event.event_union.window_move_event.y_movement);
 		}
 		process_event();
 	}

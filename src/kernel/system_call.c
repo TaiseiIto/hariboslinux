@@ -55,12 +55,19 @@ typedef struct _ApplicationWindowKeyboardEvent
 	KeyboardEvent keyboard_event;
 } ApplicationWindowKeyboardEvent;
 
+typedef struct _ApplicationWindowMoveEvent
+{
+	Window *window;
+	short x_movement, y_movement;
+} ApplicationWindowMoveEvent;
+
 typedef union _ApplicationEventUnion
 {
 	ApplicationWindowClickedEvent window_clicked_event;
 	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
 	ApplicationWindowKeyboardEvent window_keyboard_event;
+	ApplicationWindowMoveEvent window_move_event;
 } ApplicationEventUnion;
 
 typedef struct _ApplicationEvent
@@ -72,6 +79,7 @@ typedef struct _ApplicationEvent
 	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x02
 	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x03
 	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x04
+	#define APPLICATION_EVENT_TYPE_WINDOW_MOVE		0x05
 } ApplicationEvent;
 
 typedef struct _FileDescriptor
@@ -703,6 +711,17 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD;
 								new_application_event.event_union.window_keyboard_event.window = application_window->window;
 								new_application_event.event_union.window_keyboard_event.keyboard_event = event->event_union.sheet_keyboard_event.keyboard_event;
+								enqueue(system_call_status->application_event_queue, &new_application_event);
+							}
+							break;
+						case EVENT_TYPE_SHEET_MOUSE_MOVE:
+							application_window = get_application_window_from_window(get_window_from_sheet(event->event_union.sheet_mouse_move_event.sheet));
+							if(application_window && application_window->window->client_sheet == event->event_union.sheet_mouse_move_event.sheet)
+							{
+								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_MOVE;
+								new_application_event.event_union.window_move_event.window = application_window->window;
+								new_application_event.event_union.window_move_event.x_movement = event->event_union.sheet_mouse_move_event.x_movement;
+								new_application_event.event_union.window_move_event.y_movement = event->event_union.sheet_mouse_move_event.y_movement;
 								enqueue(system_call_status->application_event_queue, &new_application_event);
 							}
 							break;
