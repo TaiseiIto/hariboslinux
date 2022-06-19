@@ -132,10 +132,13 @@ int main(void)
 				break;
 			case KEY_F4: // Delete window by ALT + F4.
 				{
+					Event new_event;
 					Window *window = get_focused_window();
 					if(window)
 					{
-						printf_serial("Delete Window %p\n", window);
+						new_event.type = EVENT_TYPE_WINDOW_DELETION_REQUEST;
+						new_event.event_union.window_deletion_request_event.window = window;
+						enqueue(window->root_sheet->event_queue, &new_event);
 					}
 				}
 				break;
