@@ -40,6 +40,8 @@ int main(void)
 		case APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
 			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD:
+			break;
 		default:
 			ERROR(); // Invalid event type.
 			break;
