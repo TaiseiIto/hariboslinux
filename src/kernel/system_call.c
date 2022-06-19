@@ -627,7 +627,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						{
 						case EVENT_TYPE_SHEET_CREATED:
 							application_window = application_windows;
-							do
+							if(application_windows)do
 							{
 								if(application_window->window->client_sheet == event->event_union.sheet_created_event.sheet)
 								{
@@ -653,7 +653,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 									break;
 								}
 								application_window = next_application_window;
-							} while(application_window && application_window != application_windows);
+							} while(application_windows && application_window != application_windows);
 							new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE;
 							new_application_event.event_union.window_deletion_response_event.window = event->event_union.window_deletion_response_event.window;
 							enqueue(system_call_status->application_event_queue, &new_application_event);
