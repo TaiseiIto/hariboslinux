@@ -120,6 +120,7 @@ int main(void)
 			if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_ALT_KEY_PUSHED && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED && event->event_union.keyboard_event.keycode == KEY_TAB)
 			{
 				printf_serial("Switch windows.\n");
+				pull_up_sheet(background_sheet->lowest_child);
 			}
 			keyboard_flags = event->event_union.keyboard_event.flags;
 			send_sheets_event(event);
