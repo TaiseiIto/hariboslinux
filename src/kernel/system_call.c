@@ -174,6 +174,7 @@ void delete_file_descriptors(void);
 void delete_system_call_status(void);
 void delete_windows(void);
 SystemCallStatus *get_system_call_status(void);
+ApplicationWindow *get_application_window_from_window(Window const *window);
 int system_call_close(FileDescriptor *file_descriptor);
 int system_call_exit(int return_value);
 FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
@@ -269,6 +270,18 @@ SystemCallStatus *get_system_call_status(void)
 		system_call_statuses = system_call_status;
 	}
 	return system_call_status;
+}
+
+ApplicationWindow *get_application_window_from_window(Window const *window)
+{
+	ApplicationWindow *application_window = application_windows;
+	if(!application_window)return NULL;
+	do
+	{
+		if(application_window->window == window)return application_window;
+		application_window = application_window->next;
+	} while(application_window != application_windows);
+	return NULL;
 }
 
 int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
@@ -639,17 +652,13 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						switch(event->type)
 						{
 						case EVENT_TYPE_SHEET_CREATED:
-							application_window = application_windows;
-							if(application_windows)do
+							application_window = get_application_window_from_window(get_window_from_sheet(event->event_union.sheet_created_event.sheet));
+							if(application_window && application_window->window->client_sheet == event->event_union.sheet_created_event.sheet)
 							{
-								if(application_window->window->client_sheet == event->event_union.sheet_created_event.sheet)
-								{
-									new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_CREATED;
-									new_application_event.event_union.window_created_event.window = application_window->window;
-									enqueue(system_call_status->application_event_queue, &new_application_event);
-								}
-								application_window = application_window->next;
-							} while(application_window != application_windows);
+								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_CREATED;
+								new_application_event.event_union.window_created_event.window = application_window->window;
+								enqueue(system_call_status->application_event_queue, &new_application_event);
+							}
 							break;
 						case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 							application_window = application_windows;
