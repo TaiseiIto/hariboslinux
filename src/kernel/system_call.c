@@ -35,10 +35,17 @@ typedef struct _ApplicationWindowDeletionResponseEvent
 	Window *window;
 } ApplicationWindowDeletionResponseEvent;
 
+typedef struct _ApplicationWindowKeyboardEvent
+{
+	Window *window;
+	KeyboardEvent keyboard_event;
+} ApplicationWindowKeyboardEvent;
+
 typedef union _ApplicationEventUnion
 {
 	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
+	ApplicationWindowKeyboardEvent window_keyboard_event;
 } ApplicationEventUnion;
 
 typedef struct _ApplicationEvent
@@ -48,6 +55,7 @@ typedef struct _ApplicationEvent
 	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
 	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x01
 	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x02
+	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x03
 } ApplicationEvent;
 
 typedef struct _FileDescriptor
@@ -657,6 +665,16 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 							{
 								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_CREATED;
 								new_application_event.event_union.window_created_event.window = application_window->window;
+								enqueue(system_call_status->application_event_queue, &new_application_event);
+							}
+							break;
+						case EVENT_TYPE_SHEET_KEYBOARD:
+							application_window = get_application_window_from_window(get_window_from_sheet(event->event_union.sheet_keyboard_event.sheet));
+							if(application_window && application_window->window->client_sheet == event->event_union.sheet_keyboard_event.sheet)
+							{
+								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD;
+								new_application_event.event_union.window_keyboard_event.window = application_window->window;
+								new_application_event.event_union.window_keyboard_event.keyboard_event = event->event_union.sheet_keyboard_event.keyboard_event;
 								enqueue(system_call_status->application_event_queue, &new_application_event);
 							}
 							break;

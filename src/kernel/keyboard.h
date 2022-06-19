@@ -38,7 +38,6 @@
 
 typedef struct _KeyboardEvent
 {
-	char character;
 	unsigned short flags;
 	#define KEYBOARD_FLAG_ALT_KEY_PUSHED 0x0001
 	#define KEYBOARD_FLAG_CAPS_LOCK_ON 0x0002
@@ -56,6 +55,7 @@ typedef struct _KeyboardEvent
 	#define KEYBOARD_FLAG_SHIFT_KEY_PUSHED 0x2000
 	#define KEYBOARD_FLAG_SUPER_KEY_PUSHED 0x4000
 	#define KEYBOARD_FLAG_UPPER_CASE 0x8000
+	char character;
 	unsigned char keycode;
 	#define KEY_ESC 0x01
 	#define KEY_1 0x02
