@@ -239,7 +239,7 @@ void delete_windows(void)
 			free(application_window);
 		}
 		application_window = next_application_window;
-	} while(application_window && application_window != application_windows);
+	} while(application_windows && application_window != application_windows);
 }
 
 SystemCallStatus *get_system_call_status(void)
