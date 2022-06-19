@@ -47,6 +47,7 @@ typedef struct _Window
 void change_window_event_queue(Window *window, Queue *new_event_queue);
 Window *create_window(char const *title, struct _Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height, Queue *event_queue);
 void delete_window(Window *window, Queue *window_deletion_response_event_queue);
+void focus_window(Window *window);
 Window *get_window_from_sheet(struct _Sheet const *sheet);
 
 #endif

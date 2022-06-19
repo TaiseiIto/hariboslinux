@@ -22,7 +22,6 @@ Window *windows = NULL;
 
 void *client_sheet_event_procedure(Sheet *sheet, Event const *event);
 void *close_button_sheet_event_procedure(Sheet *sheet, Event const *event);
-void focus_window(Window *window);
 void *root_sheet_event_procedure(Sheet *sheet, Event const *event);
 void *title_sheet_event_procedure(Sheet *sheet, Event const *event);
 

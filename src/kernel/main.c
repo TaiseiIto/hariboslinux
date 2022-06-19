@@ -122,6 +122,7 @@ int main(void)
 				Sheet *pulled_up_sheet = background_sheet->lowest_child;
 				Window *pulled_up_window = get_window_from_sheet(pulled_up_sheet);
 				Sheet *next_focused_sheet = pulled_up_window ? pulled_up_window->client_sheet : pulled_up_sheet ;
+				if(pulled_up_window)focus_window(pulled_up_window);
 				pull_up_sheet(pulled_up_sheet);
 				focus_sheet(next_focused_sheet);
 			}
