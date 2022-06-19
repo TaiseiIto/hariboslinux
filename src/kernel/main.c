@@ -117,6 +117,7 @@ int main(void)
 				else if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_LAYOUT_JAPANESE)print_sheet(background_sheet, 0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "keyboard layout = Japanese");
 			}
 			if(event->event_union.keyboard_event.character)printf_sheet(background_sheet, 0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
+			keyboard_flags = event->event_union.keyboard_event.flags;
 			if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_ALT_KEY_PUSHED && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED && event->event_union.keyboard_event.keycode == KEY_TAB)
 			{
 				Sheet *pulled_up_sheet = background_sheet->lowest_child;
@@ -125,8 +126,8 @@ int main(void)
 				if(pulled_up_window)focus_window(pulled_up_window);
 				pull_up_sheet(pulled_up_sheet);
 				focus_sheet(next_focused_sheet);
+				break;
 			}
-			keyboard_flags = event->event_union.keyboard_event.flags;
 			send_sheets_event(event);
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
