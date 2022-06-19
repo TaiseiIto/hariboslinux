@@ -43,6 +43,8 @@ void *client_sheet_event_procedure(Sheet *sheet, Event const *event)
 		// Draw client sheet
 		fill_box_sheet(sheet, 0, 0, sheet->width, sheet->height, client_background_color);
 		return default_event_procedure(sheet, event);
+	case EVENT_TYPE_SHEET_MOUSE_DRAG:
+		return NULL;
 	default:
 		return default_event_procedure(sheet, event);
 	}
