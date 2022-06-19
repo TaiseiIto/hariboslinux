@@ -661,24 +661,18 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 							}
 							break;
 						case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
-							application_window = application_windows;
-							if(application_window)do
+							application_window = get_application_window_from_window(event->event_union.window_deletion_response_event.window);
+							if(application_window)
 							{
-								ApplicationWindow *next_application_window = application_window->next;
-								if(application_window->window == event->event_union.window_deletion_response_event.window)
-								{
-									if(application_window == application_windows)application_windows = application_window->next;
-									if(application_window == application_windows)application_windows = NULL;
-									application_window->previous->next = application_window->next;
-									application_window->next->previous = application_window->previous;
-									free(application_window);
-									break;
-								}
-								application_window = next_application_window;
-							} while(application_windows && application_window != application_windows);
-							new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE;
-							new_application_event.event_union.window_deletion_response_event.window = event->event_union.window_deletion_response_event.window;
-							enqueue(system_call_status->application_event_queue, &new_application_event);
+								if(application_window == application_windows)application_windows = application_window->next;
+								if(application_window == application_windows)application_windows = NULL;
+								application_window->previous->next = application_window->next;
+								application_window->next->previous = application_window->previous;
+								free(application_window);
+								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE;
+								new_application_event.event_union.window_deletion_response_event.window = event->event_union.window_deletion_response_event.window;
+								enqueue(system_call_status->application_event_queue, &new_application_event);
+							}
 							break;
 						}
 					}
