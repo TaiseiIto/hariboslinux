@@ -117,6 +117,10 @@ int main(void)
 				else if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_LAYOUT_JAPANESE)print_sheet(background_sheet, 0x0000, 0x0001 * CHAR_HEIGHT, foreground_color, background_color, "keyboard layout = Japanese");
 			}
 			if(event->event_union.keyboard_event.character)printf_sheet(background_sheet, 0x0000, 0x0002 * CHAR_HEIGHT, foreground_color, background_color, "keyboard event character = %c", event->event_union.keyboard_event.character);
+			if(event->event_union.keyboard_event.flags & KEYBOARD_FLAG_ALT_KEY_PUSHED && event->event_union.keyboard_event.flags & KEYBOARD_FLAG_KEY_PUSHED && event->event_union.keyboard_event.keycode == KEY_TAB)
+			{
+				printf_serial("Switch windows.\n");
+			}
 			keyboard_flags = event->event_union.keyboard_event.flags;
 			send_sheets_event(event);
 			break;
