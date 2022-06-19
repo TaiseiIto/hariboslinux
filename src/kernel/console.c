@@ -14,7 +14,7 @@ Console *get_console_from_sheet(Sheet const *sheet);
 
 void *console_window_close_button_sheet_event_procedure(Sheet *sheet, Event const *event)
 {
-	Console *console = get_console_from_sheet(sheet);
+	Console *console = get_console_from_sheet(get_window_from_sheet(sheet)->client_sheet);
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CLICKED:
@@ -23,7 +23,11 @@ void *console_window_close_button_sheet_event_procedure(Sheet *sheet, Event cons
 			printf_shell(console->shell, "Can't close this console because an application is running on it.\n");
 			return default_event_procedure(sheet, event);
 		}
-		else return console->default_close_button_event_procedure(sheet, event);
+		else
+		{
+			sheet->event_procedure = console->default_close_button_event_procedure;
+			return sheet->event_procedure(sheet, event);
+		}
 	default:
 		return console->default_close_button_event_procedure(sheet, event);
 	}
@@ -271,6 +275,7 @@ Console *make_sheet_console(Sheet *sheet, Color foreground_color, Color backgrou
 	new_console->shell = create_shell(new_console);
 	new_console->default_event_procedure = new_console->text_box->sheet->event_procedure;
 	new_console->default_close_button_event_procedure = window->close_button_sheet->event_procedure;
+	window->close_button_sheet->event_procedure = console_window_close_button_sheet_event_procedure;
 	new_console->text_box->sheet->event_procedure = console_event_procedure;
 	if(root_console)
 	{
