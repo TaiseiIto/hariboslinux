@@ -147,23 +147,14 @@ int main(void)
 			break;
 		case EVENT_TYPE_KEYBOARD_INTERRUPT:
 			printf_sheet(background_sheet, 0x0000, 0x0003 * CHAR_HEIGHT, foreground_color, background_color, "keyboard interrupt signal = %#04x", event->event_union.keyboard_interrupt.signal);
-			#ifdef LOGGING
-			printf_serial("keyboard interrupt signal = %#04x\n", event->event_union.keyboard_interrupt.signal);
-			#endif
 			decode_keyboard_interrupt(event->event_union.keyboard_interrupt.signal);
 			break;
 		case EVENT_TYPE_MOUSE_EVENT:
 			printf_sheet(background_sheet, 0x0000, 0x0004 * CHAR_HEIGHT, foreground_color, background_color, "mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c", event->event_union.mouse_event.x, event->event_union.mouse_event.y, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
-			#ifdef LOGGING
-			printf_serial("mouse state x=%4d, y=%4d, vertical wheel=%4d, horizontal wheel=%4d, left button=%c, middle button=%c, right button=%c, 4th button=%c, 5th button=%c\n", event->event_union.mouse_event.x, event->event_union.mouse_event.y, event->event_union.mouse_event.vertical_wheel_movement, event->event_union.mouse_event.horizontal_wheel_movement, (event->event_union.mouse_event.flags & MOUSE_LEFT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_MIDDLE_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_RIGHT_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_4TH_BUTTON_PUSHED) ? '1' : '0', (event->event_union.mouse_event.flags & MOUSE_5TH_BUTTON_PUSHED) ? '1' : '0');
-			#endif
 			send_sheets_event(event);
 			break;
 		case EVENT_TYPE_MOUSE_INTERRUPT:
 			printf_sheet(background_sheet, 0x0000, 0x0005 * CHAR_HEIGHT, foreground_color, background_color, "mouse interrupt signal = %#04x", event->event_union.mouse_interrupt.signal);
-			#ifdef LOGGING
-			printf_serial("mouse interrupt signal = %#04x\n", event->event_union.mouse_interrupt.signal);
-			#endif
 			decode_mouse_interrupt(event->event_union.mouse_interrupt.signal);
 			break;
 		case EVENT_TYPE_PIT_INTERRUPT:
@@ -171,14 +162,6 @@ int main(void)
 			break;
 		case EVENT_TYPE_RTC_INTERRUPT:
 			printf_sheet(background_sheet, 0x0000, 0x0000 * CHAR_HEIGHT, foreground_color, background_color, "%04d/%02d/%02d %s %02d:%02d:%02d", event->event_union.rtc_interrupt.year, event->event_union.rtc_interrupt.month, event->event_union.rtc_interrupt.day, get_day_of_week_string(get_day_of_week(event->event_union.rtc_interrupt.year, event->event_union.rtc_interrupt.month, event->event_union.rtc_interrupt.day)), event->event_union.rtc_interrupt.hour, event->event_union.rtc_interrupt.minute, event->event_union.rtc_interrupt.second);
-			#ifdef LOGGING
-			printf_serial("second = %d\n", event->event_union.rtc_interrupt.second);
-			printf_serial("minute = %d\n", event->event_union.rtc_interrupt.minute);
-			printf_serial("hour = %d\n", event->event_union.rtc_interrupt.hour);
-			printf_serial("day = %d\n", event->event_union.rtc_interrupt.day);
-			printf_serial("month = %d\n", event->event_union.rtc_interrupt.month);
-			printf_serial("year = %d\n", event->event_union.rtc_interrupt.year);
-			#endif
 			break;
 		case EVENT_TYPE_SERIAL_INTERRUPT:
 			serial_console_input(event->event_union.serial_interrupt.data);
@@ -194,16 +177,10 @@ int main(void)
 			{
 				timer_counter++;
 				printf_sheet(background_sheet, 0x0000, 0x0006 * CHAR_HEIGHT, foreground_color, background_color, "timer = %lld seconds", timer_counter);
-				#ifdef LOGGING
-				printf_serial("timer counter = %lld seconds\n", timer_counter);
-				#endif
 			}
 			else if(event->event_union.timer_event.timer == checking_free_memory_space_size_timer)
 			{
 				printf_sheet(background_sheet, 0x0000, 0x0007 * CHAR_HEIGHT, foreground_color, background_color, "free memory space size = %#010x bytes", get_free_memory_space_size());
-				#ifdef LOGGING
-				printf_serial("free memory space size = %u bytes\n", get_free_memory_space_size());
-				#endif
 			}
 			else if(event->event_union.timer_event.timer == serial_status_timer)
 			{

@@ -178,9 +178,6 @@ void decode_mouse_interrupt(unsigned char signal)
 		if(signal_index == 4 && mouse_packet.packet & MOUSE_PACKET_ID4_MUST_BE_0)signal_index = 0; // mouse_packet.signals[3] is wrong
 		if(signal_index == 4)
 		{
-			#ifdef LOGGING
-			printf_serial("mouse packet = %#010x\n", mouse_packet.packet);
-			#endif
 			mouse_event.event_union.mouse_event.flags &= ~MOUSE_LEFT_BUTTON_PUSHED_NOW & ~MOUSE_LEFT_BUTTON_RELEASED_NOW & ~MOUSE_MIDDLE_BUTTON_PUSHED_NOW & ~MOUSE_MIDDLE_BUTTON_RELEASED_NOW & ~MOUSE_RIGHT_BUTTON_PUSHED_NOW & ~MOUSE_RIGHT_BUTTON_RELEASED_NOW & ~MOUSE_4TH_BUTTON_PUSHED_NOW & ~MOUSE_4TH_BUTTON_RELEASED_NOW & ~MOUSE_5TH_BUTTON_PUSHED_NOW & ~MOUSE_5TH_BUTTON_RELEASED_NOW;
 			if(mouse_packet.packet & MOUSE_PACKET_LEFT_BUTTON_PUSHED)
 			{

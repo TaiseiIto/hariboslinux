@@ -135,9 +135,6 @@ void rtc_interrupt_handler(void)
 	finish_interruption(IRQ_REAL_TIME_CLOCK);
 	// read status register c
 	status_register_c = read_cmos_register(CMOS_REGISTER_RTC_STATUS_C | CMOS_DISABLE_NON_MASKABLE_INTERRUPT);
-	#ifdef LOGGING
-	printf_serial("RTC interrupt status register c = %#04x\n", status_register_c);
-	#endif
 	if(status_register_c & RTC_STATUS_REGISTER_C_TIME_UPDATED)
 	{
 		Event event;

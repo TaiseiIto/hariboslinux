@@ -121,31 +121,19 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 	switch(event->type)
 	{
 	case EVENT_TYPE_SHEET_CLICKED:
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON)printf_serial("Mouse left button ");
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_MIDDLE_BUTTON)printf_serial("Mouse middle button ");
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RIGHT_BUTTON)printf_serial("Mouse right button ");
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_4TH_BUTTON)printf_serial("Mouse 4th button ");
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_5TH_BUTTON)printf_serial("Mouse 5th button ");
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)printf_serial("pushed ");
-		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_RELEASED)printf_serial("released ");
-		printf_serial("at (%#06x, %#06x)\n", event->event_union.sheet_clicked_event.x, event->event_union.sheet_clicked_event.y);
 		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_PUSHED))
 		{
 			for(Sheet *pulled_up_sheet = sheet; pulled_up_sheet && pulled_up_sheet != background_sheet; pulled_up_sheet = pulled_up_sheet->parent)pull_up_sheet(pulled_up_sheet);
-			printf_serial("Sheet %p is catched by mouse.\n", sheet);
 		}
 		if(event->event_union.sheet_clicked_event.flags == (SHEET_CLICKED_EVENT_FLAG_LEFT_BUTTON | SHEET_CLICKED_EVENT_FLAG_RELEASED))
 		{
-			printf_serial("Sheet %p is released by mouse.\n", sheet);
 		}
 		if(event->event_union.sheet_clicked_event.flags & SHEET_CLICKED_EVENT_FLAG_PUSHED)focus_sheet(sheet);
 		break;
 	case EVENT_TYPE_SHEET_CREATED:
-		printf_serial("Sheet %p is created.\n", sheet);
 		focus_sheet(sheet);
 		break;
 	case EVENT_TYPE_SHEET_DELETION_REQUEST:
-		printf_serial("Sheet %p deletion request.\n", sheet);
 		sheet->flags |= SHEET_FLAG_RECEIVED_DELETION_REQUEST;
 		for(Sheet *child = sheet->uppest_child; child; child = child->lower)
 		{
@@ -173,10 +161,8 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 		}
 		break;
 	case EVENT_TYPE_SHEET_FOCUSED:
-		printf_serial("Sheet %p is focused.\n", sheet);
 		break;
 	case EVENT_TYPE_SHEET_KEYBOARD:
-		printf_serial("Sheet keyboard event @ sheet %p\n", sheet);
 		break;
 	case EVENT_TYPE_SHEET_MOUSE_DRAG:
 		move_sheet(sheet, sheet->x + event->event_union.sheet_mouse_drag_event.x_movement, sheet->y + event->event_union.sheet_mouse_drag_event.y_movement);
@@ -184,12 +170,10 @@ void *default_event_procedure(Sheet *sheet, Event const *event)
 	case EVENT_TYPE_SHEET_MOUSE_MOVE:
 		break;
 	case EVENT_TYPE_SHEET_UNFOCUSED:
-		printf_serial("Sheet %p is unfocused.\n", sheet);
 		break;
 	case EVENT_TYPE_SHEET_USER_DEFINED:
 		break;
 	case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
-		printf_serial("Vertical wheel rotation %d on Sheet %p.\n", event->event_union.sheet_vertical_wheel_event.rotation, sheet);
 		break;
 	default:
 		ERROR(); // Event that procedure is not defined.
@@ -268,7 +252,6 @@ void distribute_event(struct _Event const *event)
 		if(sheet_exists(event->event_union.window_deletion_request_event.window->root_sheet))event->event_union.window_deletion_request_event.window->root_sheet->event_procedure(event->event_union.window_deletion_request_event.window->root_sheet, event);
 		break;
 	case EVENT_TYPE_WINDOW_DELETION_RESPONSE:
-		printf_serial("Window %p deleted @ task segment selector = %#06x.\n", event->event_union.window_deletion_response_event.window, get_current_task()->segment_selector);
 		break;
 	case EVENT_TYPE_WINDOW_FOCUSED:
 		if(sheet_exists(event->event_union.window_focused_event.window->root_sheet))event->event_union.window_focused_event.window->root_sheet->event_procedure(event->event_union.window_focused_event.window->root_sheet, event);
@@ -373,7 +356,6 @@ void init_sheets(Sheet **_background_sheet, void *(*background_sheet_procedure)(
 {
 	*_background_sheet = create_sheet(NULL, 0, 0, get_video_information()->width, get_video_information()->height, background_sheet_procedure, event_queue);
 	focus_sheet(*_background_sheet);
-	printf_serial("background_sheet@init_sheets = %p\n", *_background_sheet);
 	fill_box_sheet(background_sheet, 0, 0, background_sheet->width, background_sheet->height, color_black);
 	*_mouse_cursor_sheet = create_sheet(NULL, get_video_information()->width / 2, get_video_information()->height / 2, 0x08, 0x10, NULL, event_queue);
 	for(unsigned short mouse_cursor_image_y = 0; mouse_cursor_image_y < mouse_cursor_sheet->height; mouse_cursor_image_y++)for(unsigned short mouse_cursor_image_x = 0; mouse_cursor_image_x < mouse_cursor_sheet->width; mouse_cursor_image_x++)put_dot_sheet(mouse_cursor_sheet, mouse_cursor_image_x, mouse_cursor_image_y, mouse_cursor_image[mouse_cursor_image_x + mouse_cursor_image_y * mouse_cursor_sheet->width]);
