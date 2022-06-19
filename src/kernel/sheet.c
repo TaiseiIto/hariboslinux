@@ -17,7 +17,6 @@ Sheet *focused_sheet = NULL;
 Sheet *mouse_cursor_sheet = NULL;
 
 Color alpha_blend(Color foreground, Color background);
-void focus_sheet(Sheet *sheet);
 void print_sheet_tree(void);
 void print_sheet_tree_level(Sheet *sheet, unsigned int level);
 void refresh_input(Sheet *sheet); // refresh sheet->input.

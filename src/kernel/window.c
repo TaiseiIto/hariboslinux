@@ -201,7 +201,6 @@ Window *get_window_from_sheet(struct _Sheet const *sheet)
 		}
 		window = window->next;
 	} while(window != windows);
-	ERROR(); // Can't find the window.
 	allow_switch_task();
 	return NULL;
 }
