@@ -10,10 +10,11 @@ int main(void)
 	short const window_width = 0x0200;
 	short const window_height = 0x0200;
 	unsigned int window = create_window("window.com", window_x, window_y, window_width, window_height);
-	#define WINDOW_EXISTS 0x01
-	unsigned char flags = WINDOW_EXISTS;
 	short mouse_x, mouse_y;
 	short next_mouse_x, next_mouse_y;
+	#define WINDOW_EXISTS 0x01
+	#define DRAGGED 0x02
+	unsigned char flags = WINDOW_EXISTS;
 	black.red = 0x00;
 	black.green = 0x00;
 	black.blue = 0x00;
@@ -31,8 +32,16 @@ int main(void)
 			hlt_application();
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_CLICKED:
-			mouse_x = application_event.event_union.window_clicked_event.x;
-			mouse_y = application_event.event_union.window_clicked_event.y;
+			next_mouse_x = application_event.event_union.window_clicked_event.x;
+			next_mouse_y = application_event.event_union.window_clicked_event.y;
+			if(application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_PUSHED)flags |= DRAGGED;
+			if(flags & DRAGGED && application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RELEASED)
+			{
+				draw_line_window(window, mouse_x, mouse_y, next_mouse_x, next_mouse_y, black);
+				flags &= ~DRAGGED;
+			}
+			mouse_x = next_mouse_x;
+			mouse_y = next_mouse_y;
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_CREATED:
 			fill_box_window(window, 0, 0, window_width, window_height, white);
@@ -46,10 +55,12 @@ int main(void)
 			draw_line_window(window, mouse_x, mouse_y, next_mouse_x, next_mouse_y, black);
 			mouse_x = next_mouse_x;
 			mouse_y = next_mouse_y;
+			flags |= DRAGGED;
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_MOVE:
 			mouse_x += application_event.event_union.window_move_event.x_movement;
 			mouse_y += application_event.event_union.window_move_event.y_movement;
+			flags &= ~DRAGGED;
 			break;
 		}
 		process_event();
