@@ -196,7 +196,7 @@ Window *get_window_from_sheet(struct _Sheet const *sheet)
 	Window *window;
 	prohibit_switch_task();
 	window = windows;
-	do
+	if(windows)do
 	{
 		if(sheet == window->root_sheet || is_descendant_sheet_of(sheet, window->root_sheet))
 		{
