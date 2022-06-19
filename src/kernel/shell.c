@@ -409,7 +409,6 @@ void *execute_command(Shell *shell, char const *command)
 	void *com_file_binary;
 	unsigned int com_file_size;
 	if(shell->flags & SHELL_FLAG_BUSY)return NULL;
-	shell->flags |= SHELL_FLAG_BUSY;
 	// Create argv.
 	argv = create_argv(shell, command);
 	if(!argv)return NULL;
@@ -433,6 +432,7 @@ void *execute_command(Shell *shell, char const *command)
 		command_task_argument->task_return = malloc(sizeof(*command_task_argument->task_return));
 		command_task_argument->task_return->task_type = TASK_TYPE_COMMAND;
 		command_task_argument->task_return->task_return = malloc(sizeof(CommandTaskReturn));
+		shell->flags |= SHELL_FLAG_BUSY;
 		start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
 	}
 	else // The com file is not found.
