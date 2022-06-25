@@ -1,5 +1,7 @@
+#include "chain_string.h"
 #include "dev.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 typedef struct _ConsoleCommand
 {
@@ -246,6 +248,15 @@ void print_window(unsigned int window, short x, short y, Color foreground, Color
 	command.arguments.print.background = background;
 	command.arguments.print.string = string;
 	fwrite(&command, sizeof(command), 1, window_file);
+}
+
+void printf_window(unsigned int window, short x, short y, Color foreground, Color background, char const *format, ...)
+{
+	ChainString *output_chain_string = create_caller_format_chain_string(((unsigned int)&format - (unsigned int)&window) / sizeof(unsigned int));
+	char *output_string = create_char_array_from_chain_string(output_chain_string);
+	print_window(window, x, y, foreground, background, output_string);
+	free(output_string);
+	delete_chain_string(output_chain_string);
 }
 
 void process_event(void)
