@@ -441,7 +441,7 @@ void *execute_command(Shell *shell, char const *command)
 		Event new_event;
 		// Execute the com file.
 		CommandTaskArgument *command_task_argument = malloc(sizeof(*command_task_argument));
-		Task *command_task = create_task(flags & EXECUTE_COMMAND_FLAG_BACKGROUND ? &main_task : get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
+		Task *command_task = create_task(flags & EXECUTE_COMMAND_FLAG_BACKGROUND ? NULL : get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
 		command_task_argument->com_file_name = com_file_name;
 		command_task_argument->com_file_binary = com_file_binary;
 		command_task_argument->com_file_size = com_file_size;
