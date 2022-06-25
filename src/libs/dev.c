@@ -20,20 +20,33 @@ typedef struct _MemoryCommand
 	#define MEMORY_COMMAND_FREE	0x00
 } MemoryCommand;
 
+typedef struct _TimerCommandCreate
+{
+	unsigned long long estimated_count;
+	unsigned long long interval_count;
+} TimerCommandCreate;
+
+typedef union _TimerCommandArguments
+{
+	TimerCommandCreate create;
+} TimerCommandArguments;
+
 typedef struct _TimerCommand
 {
+	TimerCommandArguments arguments;
 	unsigned char type;
-	#define TIMER_COMMAND_GET	0x00
+	#define TIMER_COMMAND_CREATE	0x00
+	#define TIMER_COMMAND_GET	0x01
 } TimerCommand;
 
-typedef struct _WindowCommandCreateArguments
+typedef struct _WindowCommandCreate
 {
 	char const *title;
 	short x;
 	short y;
 	unsigned short width;
 	unsigned short height;
-} WindowCommandCreateArguments;
+} WindowCommandCreate;
 
 typedef struct _WindowCommandDrawLine
 {
@@ -75,7 +88,7 @@ typedef struct _WindowCommandPutDot
 
 typedef union _WindowCommandArguments
 {
-	WindowCommandCreateArguments create;
+	WindowCommandCreate create;
 	WindowCommandDrawLine draw_line;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
@@ -113,6 +126,19 @@ void clear_console(void)
 	if(!console_file)console_file = fopen(console_file_name, "wr");
 	command.type = CONSOLE_COMMAND_CLEAR;
 	fwrite(&command, sizeof(command), 1, console_file);
+}
+
+unsigned int create_timer(unsigned long long estimated_count, unsigned long long interval_count)
+{
+	unsigned int timer;
+	TimerCommand command;
+	if(!timer_file)timer_file = fopen(timer_file_name, "wr");
+	command.type = TIMER_COMMAND_CREATE;
+	command.arguments.create.estimated_count = estimated_count;
+	command.arguments.create.interval_count = interval_count;
+	fwrite(&command, sizeof(command), 1, timer_file);
+	fread(&timer, sizeof(timer), 1, timer_file);
+	return timer;
 }
 
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height)

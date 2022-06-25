@@ -209,6 +209,7 @@ typedef struct
 } Color;
 
 void clear_console(void);
+unsigned int create_timer(unsigned long long estimated_count, unsigned long long interval_count);
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height);
 ApplicationEvent dequeue_application_event(void);
 void draw_line_window(unsigned int window, short x1, short y1, short x2, short y2, Color color);

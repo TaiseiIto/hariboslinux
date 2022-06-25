@@ -17,6 +17,14 @@
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
 
+typedef struct _ApplicationTimer
+{
+	Timer *timer;
+	Task *owner_task;
+	struct _ApplicationTimer *previous;
+	struct _ApplicationTimer *next;
+} ApplicationTimer;
+
 typedef struct _ApplicationWindow
 {
 	Window *window;
@@ -131,20 +139,33 @@ typedef struct _MemoryCommand
 	#define MEMORY_COMMAND_FREE	0x00
 } MemoryCommand;
 
+typedef struct _TimerCommandCreate
+{
+	unsigned long long estimated_count;
+	unsigned long long interval_count;
+} TimerCommandCreate;
+
+typedef union _TimerCommandArguments
+{
+	TimerCommandCreate create;
+} TimerCommandArguments;
+
 typedef struct _TimerCommand
 {
+	TimerCommandArguments arguments;
 	unsigned char type;
-	#define TIMER_COMMAND_GET	0x00
+	#define TIMER_COMMAND_CREATE	0x00
+	#define TIMER_COMMAND_GET	0x01
 } TimerCommand;
 
-typedef struct _WindowCommandCreateArguments
+typedef struct _WindowCommandCreate
 {
 	char const *title;
 	short x;
 	short y;
 	unsigned short width;
 	unsigned short height;
-} WindowCommandCreateArguments;
+} WindowCommandCreate;
 
 typedef struct _WindowCommandDrawLine
 {
@@ -186,7 +207,7 @@ typedef struct _WindowCommandPutDot
 
 typedef union _WindowCommandArguments
 {
-	WindowCommandCreateArguments create;
+	WindowCommandCreate create;
 	WindowCommandDrawLine draw_line;
 	WindowCommandFillBox fill_box;
 	WindowCommandPrint print;
@@ -206,20 +227,30 @@ typedef struct _WindowCommand
 	#define WINDOW_COMMAND_PUT_DOT		0x06
 } WindowCommand;
 
+ApplicationTimer *application_timers = NULL;
 ApplicationWindow *application_windows = NULL;
 FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
 
+void *application_timer_procedure(ApplicationTimer *application_timer);
 void delete_file_descriptors(void);
 void delete_system_call_status(void);
+void delete_timers(void);
 void delete_windows(void);
 SystemCallStatus *get_system_call_status(void);
+ApplicationTimer *get_application_timer_from_timer(Timer const *timer);
 ApplicationWindow *get_application_window_from_window(Window const *window);
 int system_call_close(FileDescriptor *file_descriptor);
 int system_call_exit(int return_value);
 FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
 size_t system_call_read(FileDescriptor *file_descriptor, void *buffer, size_t count);
 int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_t count);
+
+void *application_timer_procedure(ApplicationTimer *application_timer)
+{
+	printf_serial("Application Timer %p\n", application_timer);
+	return NULL;
+}
 
 void delete_file_descriptors(void)
 {
@@ -259,6 +290,25 @@ void delete_system_call_status(void)
 		}
 		system_call_status = next_system_call_status;
 	} while(system_call_statuses && system_call_status != system_call_statuses);
+}
+
+void delete_timers(void)
+{
+	ApplicationTimer *application_timer = application_timers;
+	if(application_timer)do
+	{
+		ApplicationTimer *next_application_timer = application_timer->next;
+		if(application_timer->owner_task == get_current_task())
+		{
+			if(application_timers == application_timer)application_timers = application_timer->next;
+			if(application_timers == application_timer)application_timers = NULL;
+			application_timer->previous->next = application_timer->next;
+			application_timer->next->previous = application_timer->previous;
+			delete_timer(application_timer->timer);
+			free(application_timer);
+		}
+		application_timer = next_application_timer;
+	} while(application_timers && application_timer != application_timers);
 }
 
 void delete_windows(void)
@@ -310,6 +360,18 @@ SystemCallStatus *get_system_call_status(void)
 		system_call_statuses = system_call_status;
 	}
 	return system_call_status;
+}
+
+ApplicationTimer *get_application_timer_from_timer(Timer const *timer)
+{
+	ApplicationTimer *application_timer = application_timers;
+	if(!application_timer)return NULL;
+	do
+	{
+		if(application_timer->timer == timer)return application_timer;
+		application_timer = application_timer->next;
+	} while(application_timer != application_timers);
+	return NULL;
 }
 
 ApplicationWindow *get_application_window_from_window(Window const *window)
@@ -388,11 +450,9 @@ int system_call_close(FileDescriptor *file_descriptor)
 
 int system_call_exit(int return_value)
 {
-	// Delete file descriptors of the application.
 	delete_file_descriptors();
-	// Delete system call status of the application.
 	delete_system_call_status();
-	// Delete windows of the application;
+	delete_timers();
 	delete_windows();
 	// Exit the application.
 	return exit_application(return_value, get_current_task()->task_status_segment.esp0);
@@ -560,6 +620,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			else if(!strcmp(file_descriptor->file_name, timer_file_name)) // Control timer.
 			{
+				ApplicationTimer *application_timer;
 				TimerCommand const * const command = buffer;
 				unsigned int unix_time = get_unix_time();
 				if(file_descriptor->buffer_begin)
@@ -571,6 +632,28 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				}
 				switch(command->type)
 				{
+				case TIMER_COMMAND_CREATE:
+					application_timer = malloc(sizeof(*application_timer));
+					application_timer->timer = create_timer(command->arguments.create.estimated_count, command->arguments.create.interval_count, main_task.event_queue, (void *(*)(void *))application_timer_procedure, (void *)application_timer, NULL);
+					application_timer->owner_task = task;
+					if(application_timers)
+					{
+						application_timer->previous = application_timers->previous;
+						application_timer->next = application_timers;
+						application_timers->previous->next = application_timer;
+						application_timers->previous = application_timer;
+					}
+					else
+					{
+						application_timer->previous = application_timer;
+						application_timer->next = application_timer;
+						application_timers = application_timer;
+					}
+					file_descriptor->buffer_begin = malloc(sizeof(application_timer->timer));
+					*(Timer **)file_descriptor->buffer_begin = application_timer->timer;
+					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
+					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(application_timer->timer));
+					break;
 				case TIMER_COMMAND_GET:
 					file_descriptor->buffer_begin = malloc(sizeof(unix_time));
 					*(unsigned int *)file_descriptor->buffer_begin = unix_time;
