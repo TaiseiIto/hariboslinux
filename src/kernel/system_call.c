@@ -33,6 +33,11 @@ typedef struct _ApplicationWindow
 	struct _ApplicationWindow *next;
 } ApplicationWindow;
 
+typedef struct _ApplicationTimerEvent
+{
+	Timer *timer;
+} ApplicationTimerEvent;
+
 typedef struct _ApplicationWindowClickedEvent
 {
 	Window *window;
@@ -77,6 +82,7 @@ typedef struct _ApplicationWindowMoveEvent
 
 typedef union _ApplicationEventUnion
 {
+	ApplicationTimerEvent timer_event;
 	ApplicationWindowClickedEvent window_clicked_event;
 	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
@@ -90,12 +96,13 @@ typedef struct _ApplicationEvent
 	ApplicationEventUnion event_union;
 	unsigned char type;
 	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
-	#define APPLICATION_EVENT_TYPE_WINDOW_CLICKED		0x01
-	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x02
-	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x03
-	#define APPLICATION_EVENT_TYPE_WINDOW_DRAG		0x04
-	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x05
-	#define APPLICATION_EVENT_TYPE_WINDOW_MOVE		0x06
+	#define APPLICATION_EVENT_TYPE_TIMER			0x01
+	#define APPLICATION_EVENT_TYPE_WINDOW_CLICKED		0x02
+	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x03
+	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x04
+	#define APPLICATION_EVENT_TYPE_WINDOW_DRAG		0x05
+	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x06
+	#define APPLICATION_EVENT_TYPE_WINDOW_MOVE		0x07
 } ApplicationEvent;
 
 typedef struct _FileDescriptor
@@ -232,7 +239,7 @@ ApplicationWindow *application_windows = NULL;
 FileDescriptor *file_descriptors = NULL;
 SystemCallStatus *system_call_statuses = NULL;
 
-void *application_timer_procedure(ApplicationTimer *application_timer);
+void *application_timer_procedure(ApplicationTimer const *application_timer);
 void delete_file_descriptors(void);
 void delete_system_call_status(void);
 void delete_timers(void);
@@ -246,9 +253,12 @@ FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
 size_t system_call_read(FileDescriptor *file_descriptor, void *buffer, size_t count);
 int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_t count);
 
-void *application_timer_procedure(ApplicationTimer *application_timer)
+void *application_timer_procedure(ApplicationTimer const *application_timer)
 {
-	printf_serial("Application Timer %p\n", application_timer);
+	ApplicationEvent timer_event;
+	timer_event.type = APPLICATION_EVENT_TYPE_TIMER;
+	timer_event.event_union.timer_event.timer = application_timer->timer;
+	enqueue(get_system_call_status()->application_event_queue, &timer_event);
 	return NULL;
 }
 

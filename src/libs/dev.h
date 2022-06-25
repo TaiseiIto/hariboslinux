@@ -1,6 +1,11 @@
 #ifndef _DEV_H_
 #define _DEV_H_
 
+typedef struct _ApplicationTimerEvent
+{
+	unsigned int timer;
+} ApplicationTimerEvent;
+
 typedef struct _ApplicationWindowClickedEvent
 {
 	unsigned int window;
@@ -179,6 +184,7 @@ typedef struct _ApplicationWindowMoveEvent
 
 typedef union _ApplicationEventUnion
 {
+	ApplicationTimerEvent timer_event;
 	ApplicationWindowClickedEvent window_clicked_event;
 	ApplicationWindowCreatedEvent window_created_event;
 	ApplicationWindowDeletionResponseEvent window_deletion_response_event;
@@ -192,12 +198,13 @@ typedef struct _ApplicationEvent
 	ApplicationEventUnion event_union;
 	unsigned char type;
 	#define APPLICATION_EVENT_TYPE_NOTHING			0x00
-	#define APPLICATION_EVENT_TYPE_WINDOW_CLICKED		0x01
-	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x02
-	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x03
-	#define APPLICATION_EVENT_TYPE_WINDOW_DRAG		0x04
-	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x05
-	#define APPLICATION_EVENT_TYPE_WINDOW_MOVE		0x06
+	#define APPLICATION_EVENT_TYPE_TIMER			0x01
+	#define APPLICATION_EVENT_TYPE_WINDOW_CLICKED		0x02
+	#define APPLICATION_EVENT_TYPE_WINDOW_CREATED		0x03
+	#define APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE	0x04
+	#define APPLICATION_EVENT_TYPE_WINDOW_DRAG		0x05
+	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x06
+	#define APPLICATION_EVENT_TYPE_WINDOW_MOVE		0x07
 } ApplicationEvent;
 
 typedef struct
