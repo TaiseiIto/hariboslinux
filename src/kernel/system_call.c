@@ -644,7 +644,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				{
 				case TIMER_COMMAND_CREATE:
 					application_timer = malloc(sizeof(*application_timer));
-					application_timer->timer = create_timer(command->arguments.create.estimated_count, command->arguments.create.interval_count, main_task.event_queue, (void *(*)(void *))application_timer_procedure, (void *)application_timer, NULL);
+					application_timer->timer = create_timer(command->arguments.create.estimated_count, command->arguments.create.interval_count, task->event_queue, (void *(*)(void *))application_timer_procedure, (void *)application_timer, NULL);
 					application_timer->owner_task = task;
 					if(application_timers)
 					{
@@ -760,6 +760,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					{
 						switch(event->type)
 						{
+						case EVENT_TYPE_TIMER_EVENT:
+							call_timer_procedure(event->event_union.timer_event.timer);
+							break;
 						case EVENT_TYPE_CLOSE_BUTTON_CLICKED:
 						case EVENT_TYPE_SHEET_CLICKED:
 						case EVENT_TYPE_SHEET_CREATED:
