@@ -542,7 +542,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 		{
 		case STDOUT:
 		case STDERR:
-			for(void const *reader = buffer; reader != buffer + count; reader++)
+			if(shell)for(void const *reader = buffer; reader != buffer + count; reader++)
 			{
 				Event event;
 				event.type = EVENT_TYPE_SHELL_PUT_CHARACTER;
@@ -558,7 +558,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				Console *console;
 				TextBox *text_box;
 				ConsoleCommand const * const command = buffer;
-				switch(command->type)
+				if(shell)switch(command->type)
 				{
 				case CONSOLE_COMMAND_CLEAR:
 					switch(shell->type)

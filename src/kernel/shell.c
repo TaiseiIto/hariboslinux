@@ -428,7 +428,8 @@ void *execute_command(Shell *shell, char const *command)
 	if(!strcmp(argv[argc - 1], "&"))
 	{
 		flags |= EXECUTE_COMMAND_FLAG_BACKGROUND;
-		printf_shell(shell, "Background!\n");
+		free(argv[argc - 1]);
+		argc--;
 	}
 	// Load a file specified by argv[0].
 	com_file_name = create_format_char_array("%s.com", argv[0]);
@@ -436,19 +437,40 @@ void *execute_command(Shell *shell, char const *command)
 	com_file_size = get_file_information(com_file_name)->size;
 	if(com_file_binary) // The com file is found.
 	{
+		ConsoleEvent *console_event;
+		Event new_event;
 		// Execute the com file.
 		CommandTaskArgument *command_task_argument = malloc(sizeof(*command_task_argument));
-		Task *command_task = create_task(get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
+		Task *command_task = create_task(flags & EXECUTE_COMMAND_FLAG_BACKGROUND ? &main_task : get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
 		command_task_argument->com_file_name = com_file_name;
 		command_task_argument->com_file_binary = com_file_binary;
 		command_task_argument->com_file_size = com_file_size;
 		command_task_argument->argc = argc;
 		command_task_argument->argv = argv;
-		command_task_argument->shell = shell;
+		command_task_argument->shell = flags & EXECUTE_COMMAND_FLAG_BACKGROUND ? NULL : shell;
 		command_task_argument->task_return = malloc(sizeof(*command_task_argument->task_return));
 		command_task_argument->task_return->task_type = TASK_TYPE_COMMAND;
 		command_task_argument->task_return->task_return = malloc(sizeof(CommandTaskReturn));
-		shell->flags |= SHELL_FLAG_BUSY;
+		if(flags & EXECUTE_COMMAND_FLAG_BACKGROUND)switch(shell->type)
+		{
+		case SHELL_TYPE_CONSOLE:
+			// Send prompt event.
+			console_event = malloc(sizeof(*console_event));
+			console_event->type = CONSOLE_EVENT_TYPE_PROMPT;
+			new_event.type = EVENT_TYPE_SHEET_USER_DEFINED;
+			new_event.event_union.sheet_user_defined_event.sheet = shell->console->text_box->sheet;
+			new_event.event_union.sheet_user_defined_event.procedure = console_event_procedure;
+			new_event.event_union.sheet_user_defined_event.any = console_event;
+			enqueue(shell->console->text_box->sheet->event_queue, &new_event);
+			break;
+		case SHELL_TYPE_SERIAL:
+			print_serial(prompt);
+			break;
+		default:
+			ERROR(); // Invalid shell type
+			break;
+		}
+		else shell->flags |= SHELL_FLAG_BUSY;
 		start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
 	}
 	else // The com file is not found.
@@ -492,8 +514,7 @@ Shell *get_current_shell(void)
 		if(get_current_task()->parent == shell->event_queue->task)return shell;
 		shell = shell->next;
 	} while(shell != serial_shell);
-	ERROR(); // The shell is not found.
-	return NULL;
+	return NULL; // The shell is not found.
 }
 
 void init_shells(void)
