@@ -326,7 +326,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 		}
 		free(event->event_union.task_deletion_response_event.returns);
 		free(event->event_union.task_deletion_response_event.arguments);
-		free_segment(event->event_union.task_deletion_response_event.segment_selector);
+		free_global_segment(event->event_union.task_deletion_response_event.segment_selector);
 		return NULL;
 	default:
 		return NULL;

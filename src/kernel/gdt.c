@@ -81,7 +81,7 @@ void init_gdt(void)
 
 // return a new segment selector
 // return 0 if failed
-unsigned short alloc_segment(void *base, unsigned int size, unsigned char access_right)
+unsigned short alloc_global_segment(void *base, unsigned int size, unsigned char access_right)
 {
 	unsigned int limit = size - 1;
 	prohibit_switch_task();
@@ -99,6 +99,10 @@ unsigned short alloc_segment(void *base, unsigned int size, unsigned char access
 		}
 		segment_descriptor->limit_low = (unsigned short)(limit & 0x0000ffff);
 		segment_descriptor->limit_high |= (unsigned char)(limit >> 16 & 0x0000000f);
+		if(!(access_right & SEGMENT_DESCRIPTOR_CODE_OR_DATA) && (access_right & 0x0f) == SEGMENT_DESCRIPTOR_LDT) // Init LDT
+		{
+			for(SegmentDescriptor *local_segment_descriptor = (SegmentDescriptor *)base; (unsigned int)local_segment_descriptor < (unsigned int)base + size; local_segment_descriptor++)local_segment_descriptor->access_right &= ~SEGMENT_DESCRIPTOR_PRESENT;
+		}
 		allow_switch_task();
 		return (unsigned short)((unsigned int)segment_descriptor - (unsigned int)GDT_ADDR) + (access_right & SEGMENT_DESCRIPTOR_PRIVILEGE ? 3 : 0);
 	}
@@ -108,8 +112,39 @@ unsigned short alloc_segment(void *base, unsigned int size, unsigned char access
 	return 0x0000;
 }
 
-void free_segment(unsigned short segment_selector)
+// return a new segment selector
+// return 0 if failed
+unsigned short alloc_local_segment(SegmentDescriptor *ldt, void *base, unsigned int size, unsigned char access_right)
+{
+	unsigned int limit = size - 1;
+	for(SegmentDescriptor *segment_descriptor = ldt; segment_descriptor != ldt + 0x2000; segment_descriptor++)if(!(segment_descriptor->access_right & SEGMENT_DESCRIPTOR_PRESENT))
+	{
+		segment_descriptor->base_low = (unsigned short)((unsigned int)base & 0x0000ffff);
+		segment_descriptor->base_mid = (unsigned char)((unsigned int)base >> 16 & 0x000000ff);
+		segment_descriptor->base_high = (unsigned char)((unsigned int)base >> 24 & 0x000000ff);
+		segment_descriptor->access_right = access_right | SEGMENT_DESCRIPTOR_PRESENT;
+		segment_descriptor->limit_high = SEGMENT_DESCRIPTOR_SIZE;
+		if(0x00100000 <= limit)
+		{
+			segment_descriptor->limit_high |= SEGMENT_DESCRIPTOR_GRANULARITY;
+			limit >>= 12;
+		}
+		segment_descriptor->limit_low = (unsigned short)(limit & 0x0000ffff);
+		segment_descriptor->limit_high |= (unsigned char)(limit >> 16 & 0x0000000f);
+		return (unsigned short)((unsigned int)segment_descriptor - (unsigned int)ldt) + 4 /* Local */ + (access_right & SEGMENT_DESCRIPTOR_PRIVILEGE ? 3 : 0);
+	}
+	// unused segment not found
+	ERROR();
+	return 0x0000;
+}
+
+void free_global_segment(unsigned short segment_selector)
 {
 	GDT_ADDR[segment_selector / 8].access_right &= ~SEGMENT_DESCRIPTOR_PRESENT;
+}
+
+void free_local_segment(SegmentDescriptor *ldt, unsigned short segment_selector)
+{
+	ldt[segment_selector / 8].access_right &= ~SEGMENT_DESCRIPTOR_PRESENT;
 }
 

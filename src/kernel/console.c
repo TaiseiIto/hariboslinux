@@ -220,7 +220,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 			}
 			free(event->event_union.task_deletion_response_event.returns);
 			free(event->event_union.task_deletion_response_event.arguments);
-			free_segment(event->event_union.task_deletion_response_event.segment_selector);
+			free_global_segment(event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		default: // invalid event->type
 			ERROR();

@@ -75,7 +75,9 @@ void init_gdt(void);
 
 // return a new segment selector
 // return 0 if failed
-unsigned short alloc_segment(void *base, unsigned int size, unsigned char access_right);
-void free_segment(unsigned short segment_selector);
+unsigned short alloc_global_segment(void *base, unsigned int size, unsigned char access_right);
+unsigned short alloc_local_segment(SegmentDescriptor *ldt, void *base, unsigned int size, unsigned char access_right);
+void free_global_segment(unsigned short segment_selector);
+void free_local_segment(SegmentDescriptor *ldt, unsigned short segment_selector);
 
 #endif

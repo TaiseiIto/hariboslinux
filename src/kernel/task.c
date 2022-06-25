@@ -94,7 +94,7 @@ void close_task(Task *task)
 	else ERROR(); // Task structure is broken!
 	// free the task
 	if(task->event_queue)delete_queue(task->event_queue);
-	free_segment(task->task_status_segment.ldtr);
+	free_global_segment(task->task_status_segment.ldtr);
 	free(task->ldt);
 	free(task->stack);
 	free(task);
@@ -160,9 +160,9 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->task_status_segment.ds = whole_memory_segment_selector;
 	new_task->task_status_segment.fs = whole_memory_segment_selector;
 	new_task->task_status_segment.gs = whole_memory_segment_selector;
-	new_task->task_status_segment.ldtr = alloc_segment(new_task->ldt, LDT_SIZE * sizeof(*new_task->ldt), SEGMENT_DESCRIPTOR_LDT);
+	new_task->task_status_segment.ldtr = alloc_global_segment(new_task->ldt, LDT_SIZE * sizeof(*new_task->ldt), SEGMENT_DESCRIPTOR_LDT);
 	new_task->task_status_segment.io = 0x40000000;
-	new_task->segment_selector = alloc_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_TSS);
+	new_task->segment_selector = alloc_global_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_TSS);
 	new_task->elapsed_time = 0;
 	new_task->flags = 0;
 	new_task->occupancy_time = 0;
@@ -264,7 +264,7 @@ Task *init_task(void)
 	current_task_level->current_task->task_status_segment.gs = whole_memory_segment_selector;
 	current_task_level->current_task->task_status_segment.ldtr = 0x00000000;
 	current_task_level->current_task->task_status_segment.io = 0x40000000;
-	current_task_level->current_task->segment_selector = alloc_segment(&current_task_level->current_task->task_status_segment, sizeof(current_task_level->current_task->task_status_segment), SEGMENT_DESCRIPTOR_TSS);
+	current_task_level->current_task->segment_selector = alloc_global_segment(&current_task_level->current_task->task_status_segment, sizeof(current_task_level->current_task->task_status_segment), SEGMENT_DESCRIPTOR_TSS);
 	current_task_level->current_task->parent = NULL;
 	current_task_level->current_task->previous = current_task_level->current_task;
 	current_task_level->current_task->next = current_task_level->current_task;
