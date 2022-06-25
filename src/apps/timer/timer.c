@@ -4,7 +4,7 @@
 int main(void)
 {
 	Color black;
-	Color transparent;
+	Color gray;
 	#define WINDOW_EXISTS 0x01
 	unsigned char flags = WINDOW_EXISTS;
 	unsigned int window = create_window("timer", 0x0200, 0x0200, 0x0200, 0x0200);
@@ -14,10 +14,10 @@ int main(void)
 	black.green = 0x00;
 	black.blue = 0x00;
 	black.alpha = 0xff;
-	transparent.red = 0x00;
-	transparent.green = 0x00;
-	transparent.blue = 0x00;
-	transparent.alpha = 0x00;
+	gray.red = 0x80;
+	gray.green = 0x80;
+	gray.blue = 0x80;
+	gray.alpha = 0xff;
 	while(flags & WINDOW_EXISTS)
 	{
 		ApplicationEvent application_event = dequeue_application_event();
@@ -29,7 +29,7 @@ int main(void)
 		case APPLICATION_EVENT_TYPE_TIMER:
 			if(application_event.event_union.timer_event.timer == timer)
 			{
-				printf_window(window, 0, 0, black, transparent, "%d", time);
+				printf_window(window, 0, 0, black, gray, "%d", time);
 				time++;
 			}
 			break;
