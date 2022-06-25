@@ -157,7 +157,7 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->task_status_segment.gs = whole_memory_segment_selector;
 	new_task->task_status_segment.ldtr = 0x00000000;
 	new_task->task_status_segment.io = 0x40000000;
-	new_task->segment_selector = alloc_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	new_task->segment_selector = alloc_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_TSS);
 	new_task->elapsed_time = 0;
 	new_task->flags = 0;
 	new_task->occupancy_time = 0;
@@ -259,7 +259,7 @@ Task *init_task(void)
 	current_task_level->current_task->task_status_segment.gs = whole_memory_segment_selector;
 	current_task_level->current_task->task_status_segment.ldtr = 0x00000000;
 	current_task_level->current_task->task_status_segment.io = 0x40000000;
-	current_task_level->current_task->segment_selector = alloc_segment(&current_task_level->current_task->task_status_segment, sizeof(current_task_level->current_task->task_status_segment), SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_ACCESSED);
+	current_task_level->current_task->segment_selector = alloc_segment(&current_task_level->current_task->task_status_segment, sizeof(current_task_level->current_task->task_status_segment), SEGMENT_DESCRIPTOR_TSS);
 	current_task_level->current_task->parent = NULL;
 	current_task_level->current_task->previous = current_task_level->current_task;
 	current_task_level->current_task->next = current_task_level->current_task;

@@ -27,6 +27,8 @@ typedef struct
 		// Writable bit for data selectors.
 		// Whether write access for this segment is allowed.
 		// Read access is always allowed for data segment.
+	#define SEGMENT_DESCRIPTOR_LDT	0x02
+		// Local Descriptor Table
 	#define SEGMENT_DESCRIPTOR_GROW_DOWN 0x04
 		// Direction bit for data selectors.
 		// Tells the direction.
@@ -44,6 +46,8 @@ typedef struct
 		// Executable bit
 		// If 1 code in this segment can be executed, i.e. a code selector.
 		// IF 0 it is a data selector.
+	#define SEGMENT_DESCRIPTOR_TSS	0x09
+		// Task Status Segment.
 	#define SEGMENT_DESCRIPTOR_CODE_OR_DATA 0x10
 		// Descriptor type.
 		// This bit should be set for code or data segments and should be cleared system segments (e.g. a Task State Segment).
