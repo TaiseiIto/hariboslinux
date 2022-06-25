@@ -247,6 +247,7 @@ char **create_argv(Shell *shell, char const *command)
 
 void command_task_procedure(CommandTaskArgument *arguments)
 {
+	Task *task = get_current_task();
 	ComHeader const *com_header = arguments->com_file_binary;
 	MemorySection *application_root_memory_section;
 	void *application_memory = malloc(arguments->com_file_size + com_header->heap_and_stack_size);
@@ -261,8 +262,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	// Create application event queue.
 	create_event_queue(get_current_task());
 	// Register application memory to application task.
-	get_current_task()->additionals = malloc(sizeof(CommandTaskAdditional));
-	((CommandTaskAdditional *)get_current_task()->additionals)->application_memory = application_memory;
+	task->additionals = malloc(sizeof(CommandTaskAdditional));
+	((CommandTaskAdditional *)task->additionals)->application_memory = application_memory;
 	// Copy executable file to application memory.
 	memcpy(application_memory, arguments->com_file_binary, arguments->com_file_size);
 	// Copy argv to application memory.
@@ -291,8 +292,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	application_root_memory_section->size = (size_t)application_stack_floor - (size_t)application_root_memory_section - sizeof(*application_root_memory_section);
 	application_root_memory_section->flags = 0x00;
 	// Alloc application segments.
-	data_segment = alloc_global_segment(application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
-	executable_segment = alloc_global_segment(application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
+	data_segment = alloc_local_segment(task->ldt, application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
+	executable_segment = alloc_local_segment(task->ldt, application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	// Call application.
 	((CommandTaskReturn *)arguments->task_return->task_return)->return_value = call_application
 	(
@@ -313,13 +314,13 @@ void command_task_procedure(CommandTaskArgument *arguments)
 		data_segment/* fs */,
 		data_segment/* gs */,
 		application_stack_floor/* application_stack_floor */,
-		&get_current_task()->task_status_segment/* Task status segment */
+		&task->task_status_segment/* Task status segment */
 	);
 	// Clean up.
-	free_global_segment(data_segment);
-	free_global_segment(executable_segment);
+	free_local_segment(task->ldt, data_segment);
+	free_local_segment(task->ldt, executable_segment);
 	free(application_memory);
-	free(get_current_task()->additionals);
+	free(task->additionals);
 	close_task(get_current_task());
 }
 
