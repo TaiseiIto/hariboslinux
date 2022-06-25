@@ -9,6 +9,8 @@
 #include "task.h"
 #include "timer.h"
 
+#define LDT_SIZE	0x2000
+
 Task main_task;
 TaskLevel main_task_level;
 TaskLevel *current_task_level;
@@ -92,6 +94,8 @@ void close_task(Task *task)
 	else ERROR(); // Task structure is broken!
 	// free the task
 	if(task->event_queue)delete_queue(task->event_queue);
+	free_segment(task->task_status_segment.ldtr);
+	free(task->ldt);
 	free(task->stack);
 	free(task);
 	if(next_task_found)
@@ -130,6 +134,7 @@ void continue_task(Task *task)
 Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_size, int priority)
 {
 	Task *new_task = malloc(sizeof(*new_task));
+	new_task->ldt = malloc(LDT_SIZE * sizeof(*new_task->ldt));
 	new_task->stack = malloc(stack_size);
 	new_task->task_status_segment.link = 0;
 	new_task->task_status_segment.esp0 = 0;
@@ -155,7 +160,7 @@ Task *create_task(Task *parent, void (*procedure)(void *), unsigned int stack_si
 	new_task->task_status_segment.ds = whole_memory_segment_selector;
 	new_task->task_status_segment.fs = whole_memory_segment_selector;
 	new_task->task_status_segment.gs = whole_memory_segment_selector;
-	new_task->task_status_segment.ldtr = 0x00000000;
+	new_task->task_status_segment.ldtr = alloc_segment(new_task->ldt, LDT_SIZE * sizeof(*new_task->ldt), SEGMENT_DESCRIPTOR_LDT);
 	new_task->task_status_segment.io = 0x40000000;
 	new_task->segment_selector = alloc_segment(&new_task->task_status_segment, sizeof(new_task->task_status_segment), SEGMENT_DESCRIPTOR_TSS);
 	new_task->elapsed_time = 0;

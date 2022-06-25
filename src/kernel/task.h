@@ -3,6 +3,7 @@
 
 struct _Task;
 
+#include "gdt.h"
 #include "queue.h"
 
 typedef struct _TaskStatusSegment
@@ -40,6 +41,7 @@ struct _TaskLevel;
 typedef struct _Task
 {
 	TaskStatusSegment task_status_segment;
+	SegmentDescriptor *ldt;
 	void *stack;
 	void *arguments;
 	void *additionals;
