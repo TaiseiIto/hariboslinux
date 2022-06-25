@@ -7,6 +7,12 @@
 MemorySection *root_memory_section;
 void * const heap_base = MEMORY_MAP_KERNEL_HEAP_BEGIN;
 
+void breakpoint(void);
+
+void breakpoint(void)
+{
+}
+
 void free(void *address)
 {
 	MemorySection *memory_section;
@@ -118,6 +124,7 @@ void *malloc(size_t size)
 	MemorySection *memory_section;
 	if(!size)
 	{
+		breakpoint();
 		ERROR();
 		return NULL;
 	}
