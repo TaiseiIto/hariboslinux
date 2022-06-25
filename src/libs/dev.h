@@ -1,6 +1,9 @@
 #ifndef _DEV_H_
 #define _DEV_H_
 
+#define CHAR_WIDTH 0x08
+#define CHAR_HEIGHT 0x10
+
 typedef struct _ApplicationTimerEvent
 {
 	unsigned int timer;

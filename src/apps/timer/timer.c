@@ -7,7 +7,7 @@ int main(void)
 	Color gray;
 	#define WINDOW_EXISTS 0x01
 	unsigned char flags = WINDOW_EXISTS;
-	unsigned int window = create_window("timer", 0x0200, 0x0200, 0x0200, 0x0200);
+	unsigned int window = create_window("timer", 0x0200, 0x0200, 10 * CHAR_WIDTH, 3 * CHAR_HEIGHT);
 	unsigned int time = 0;
 	unsigned int timer;
 	black.red = 0x00;
@@ -29,7 +29,10 @@ int main(void)
 		case APPLICATION_EVENT_TYPE_TIMER:
 			if(application_event.event_union.timer_event.timer == timer)
 			{
-				printf_window(window, 0, 0, black, gray, "%d", time);
+				unsigned int second = time % 60;
+				unsigned int minute = (time / 60) % 60;
+				unsigned int hour = time / 3600;
+				printf_window(window, CHAR_WIDTH, CHAR_HEIGHT, black, gray, "%02d:%02d:%02d", hour, minute, second);
 				time++;
 			}
 			break;
