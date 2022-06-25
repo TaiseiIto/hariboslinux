@@ -1,3 +1,4 @@
+#include "beep.h"
 #include "boot.h"
 #include "chain_string.h"
 #include "console.h"
@@ -104,6 +105,9 @@ int main(void)
 	test_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	// Serial status timer
 	serial_status_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
+	// Test beep
+	set_beep_frequency(440000);
+	beep_on();
 	while(true)
 	{
 		Event const *event;

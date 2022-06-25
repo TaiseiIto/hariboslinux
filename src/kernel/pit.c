@@ -9,16 +9,10 @@
 #include "task.h"
 #include "timer.h"
 
-#define PIT_CHANNEL0			0x0040
-#define PIT_CHANNEL1			0x0041
-#define PIT_CHANNEL2			0x0042
-#define PIT_COMMAND			0x0043
-#define PIT_COMMAND_SET_INTERVAL	0x34
-
 Queue *pit_interrupt_queue;
 
-const unsigned int pit_frequency = 1193182;
-const unsigned int pit_interrupt_frequency = 100;
+const unsigned int pit_frequency = 1193182;		// Hz
+const unsigned int pit_interrupt_frequency = 100;	// Hz
 
 void init_pit(Queue *interrupt_queue)
 {

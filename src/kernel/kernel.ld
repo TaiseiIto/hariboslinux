@@ -9,6 +9,7 @@ SECTIONS
 	.text :
 	{
 		main.o(.text)
+		beep.o(.text)
 		chain_string.o(.text)
 		cmos.o(.text)
 		console.o(.text)
@@ -50,6 +51,7 @@ SECTIONS
 	.rodata :
 	{
 		main.o(.rodata)
+		beep.o(.rodata)
 		chain_string.o(.rodata)
 		cmos.o(.rodata)
 		console.o(.rodata)
@@ -91,6 +93,7 @@ SECTIONS
 	.data :
 	{
 		main.o(.data)
+		beep.o(.data)
 		chain_string.o(.data)
 		cmos.o(.data)
 		console.o(.data)
@@ -132,6 +135,7 @@ SECTIONS
 	.bss :
 	{
 		main.o(.bss)
+		beep.o(.bss)
 		chain_string.o(.bss)
 		cmos.o(.bss)
 		console.o(.bss)
@@ -173,6 +177,7 @@ SECTIONS
 	COMMON :
 	{
 		main.o(COMMON)
+		beep.o(COMMON)
 		chain_string.o(COMMON)
 		cmos.o(COMMON)
 		console.o(COMMON)
