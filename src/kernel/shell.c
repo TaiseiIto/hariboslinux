@@ -416,12 +416,20 @@ void *execute_command(Shell *shell, char const *command)
 	char *com_file_name;
 	void *com_file_binary;
 	unsigned int com_file_size;
+	unsigned char flags = 0;
+	#define EXECUTE_COMMAND_FLAG_BACKGROUND	0x01
 	if(shell->flags & SHELL_FLAG_BUSY)return NULL;
 	// Create argv.
 	argv = create_argv(shell, command);
 	if(!argv)return NULL;
 	// Count argc.
 	for(argc = 0; argv[argc]; argc++);
+	// Background flag
+	if(!strcmp(argv[argc - 1], "&"))
+	{
+		flags |= EXECUTE_COMMAND_FLAG_BACKGROUND;
+		printf_shell(shell, "Background!\n");
+	}
 	// Load a file specified by argv[0].
 	com_file_name = create_format_char_array("%s.com", argv[0]);
 	com_file_binary = load_file(com_file_name);
