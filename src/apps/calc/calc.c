@@ -194,6 +194,12 @@ SymbolType substring2symbol_type(Substring substring)
 
 ChainString *symbol_to_chain_string(Symbol const *symbol)
 {
+	ChainString *output;
+	ChainString *number_chain_string;
+	ChainString *numbers_chain_string;
+	char *number_char_array;
+	char *numbers_char_array;
+	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
 	{
 	case asterisk:
@@ -206,7 +212,16 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	case slash:
 		return create_format_chain_string("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
 	case numbers:
-		return create_format_chain_string("%s\n", symbol_type_name(symbol->type));
+		numbers_chain_string = symbol_to_chain_string(symbol->component.numbers.numbers);
+		number_chain_string = symbol_to_chain_string(symbol->component.numbers.number);
+		numbers_char_array = create_char_array_from_chain_string(numbers_chain_string);
+		number_char_array = create_char_array_from_chain_string(number_chain_string);
+		output = create_format_chain_string("%s\n%s%s", symbol_type_name(symbol->type), numbers_char_array, number_char_array);
+		delete_chain_string(numbers_chain_string);
+		delete_chain_string(number_chain_string);
+		free(numbers_char_array);
+		free(number_char_array);
+		return output;
 	default:
 		ERROR(); // Invalid symbol
 		exit(-1);
