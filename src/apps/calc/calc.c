@@ -2,6 +2,19 @@
 #include "stdlib.h"
 #include "string.h"
 
+typedef enum _NonterminalSymbol
+{
+	asterisk,
+	dot,
+	left_parenthesis,
+	minus,
+	number,
+	plus,
+	right_parenthesis,
+	slash,
+	invalid_symbol
+} NonterminalSymbol;
+
 typedef struct _Substring
 {
 	char const *initial;
@@ -10,9 +23,10 @@ typedef struct _Substring
 
 typedef struct _Token
 {
-	Substring string;
 	struct _Token *previous;
 	struct _Token *next;
+	Substring string;
+	NonterminalSymbol symbol;
 } Token;
 
 typedef struct _Tokens
@@ -25,6 +39,8 @@ char *combine_argv(int argc, char const * const * const argv);
 void delete_tokens(Tokens tokens);
 Tokens lexical_analysis(char const * const input_string);
 void print_tokens(Tokens tokens);
+NonterminalSymbol substring2symbol(Substring substring);
+char const *symbol_name(NonterminalSymbol symbol);
 
 int main(int argc, char const * const * const argv)
 {
@@ -69,10 +85,11 @@ Tokens lexical_analysis(char const * const input_string)
 	for(char const *reader = input_string; *reader; reader++)
 	{
 		Token *token = malloc(sizeof(*token));
-		token->string.initial = reader;
-		token->string.length = 1;
 		token->previous = tokens.last_token;
 		token->next = NULL;
+		token->string.initial = reader;
+		token->string.length = 1;
+		token->symbol = substring2symbol(token->string);
 		if(!tokens.first_token)tokens.first_token = token;
 		if(tokens.last_token)
 		{
@@ -86,6 +103,86 @@ Tokens lexical_analysis(char const * const input_string)
 
 void print_tokens(Tokens tokens)
 {
-	for(Token *token = tokens.first_token; token; token = token->next)printf("Token \"%0.*s\"\n", token->string.length, token->string.initial);
+	for(Token *token = tokens.first_token; token; token = token->next)printf("%s \"%0.*s\"\n", symbol_name(token->symbol), token->string.length, token->string.initial);
+}
+
+NonterminalSymbol substring2symbol(Substring substring)
+{
+	switch(substring.length)
+	{
+	case 1:
+		switch(*substring.initial)
+		{
+		case '(':
+			return left_parenthesis;
+		case ')':
+			return right_parenthesis;
+		case '+':
+			return plus;
+		case '-':
+			return minus;
+		case '*':
+			return asterisk;
+		case '/':
+			return slash;
+		case '.':
+			return dot;
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			return number;
+		default:
+			ERROR(); // Invalid substring initial
+			exit(-1);
+			return invalid_symbol;
+		}
+		break;
+	default:
+		ERROR(); // Invalid substring length
+		exit(-1);
+		return invalid_symbol;
+	}
+}
+
+char const *symbol_name(NonterminalSymbol symbol)
+{
+	static char const * const asterisk_name = "asterisk";
+	static char const * const dot_name = "dot";
+	static char const * const left_parenthesis_name = "left parenthesis";
+	static char const * const minus_name = "minus";
+	static char const * const number_name = "number";
+	static char const * const plus_name = "plus";
+	static char const * const right_parenthesis_name = "right parenthesis";
+	static char const * const slash_name = "slash";
+	switch(symbol)
+	{
+	case asterisk:
+		return asterisk_name;
+	case dot:
+		return dot_name;
+	case left_parenthesis:
+		return left_parenthesis_name;
+	case minus:
+		return minus_name;
+	case number:
+		return number_name;
+	case plus:
+		return plus_name;
+	case right_parenthesis:
+		return right_parenthesis_name;
+	case slash:
+		return slash_name;
+	default:
+		ERROR(); // Invalid symbol
+		exit(-1);
+		return NULL;
+	}
 }
 
