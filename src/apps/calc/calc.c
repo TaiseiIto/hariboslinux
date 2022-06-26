@@ -397,6 +397,8 @@ Symbols syntactic_analysis(Symbols symbols)
 {
 	Symbol *new_symbol;
 	Symbol *next_symbol;
+	unsigned char flags = 0;
+	#define SYNTACTIC_ANALYSIS_FLAG_CHANGED	0x01
 	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = next_symbol)
 	{
 		next_symbol = symbol->next;
@@ -411,6 +413,7 @@ Symbols syntactic_analysis(Symbols symbols)
 		case minus:
 			break;
 		case number:
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = numbers;
 			new_symbol->component.numbers.number = symbol;
@@ -456,6 +459,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			break;
 		}
 	}
+	if(flags & SYNTACTIC_ANALYSIS_FLAG_CHANGED)return syntactic_analysis(symbols);
 	return symbols;
 }
 
