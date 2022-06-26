@@ -212,18 +212,26 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	case slash:
 		return create_format_chain_string("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
 	case numbers:
-		numbers_chain_string = symbol_to_chain_string(symbol->component.numbers.numbers);
+		if(symbol->component.numbers.numbers)
+		{
+			numbers_chain_string = symbol_to_chain_string(symbol->component.numbers.numbers);
+			insert_char_front(numbers_chain_string, numbers_chain_string->first_character, ' ');
+			replace_chain_string(numbers_chain_string, "\n", "\n ");
+			numbers_char_array = create_char_array_from_chain_string(numbers_chain_string);
+		}
+		else numbers_char_array = "";
 		number_chain_string = symbol_to_chain_string(symbol->component.numbers.number);
-		insert_char_front(numbers_chain_string, numbers_chain_string->first_character, ' ');
 		insert_char_front(number_chain_string, number_chain_string->first_character, ' ');
-		replace_chain_string(numbers_chain_string, "\n", "\n ");
 		replace_chain_string(number_chain_string, "\n", "\n ");
-		numbers_char_array = create_char_array_from_chain_string(numbers_chain_string);
 		number_char_array = create_char_array_from_chain_string(number_chain_string);
+
 		output = create_format_chain_string("%s\n%s%s", symbol_type_name(symbol->type), numbers_char_array, number_char_array);
-		delete_chain_string(numbers_chain_string);
+		if(symbol->component.numbers.numbers)
+		{
+			delete_chain_string(numbers_chain_string);
+			free(numbers_char_array);
+		}
 		delete_chain_string(number_chain_string);
-		free(numbers_char_array);
 		free(number_char_array);
 		return output;
 	default:
