@@ -21,33 +21,33 @@ typedef struct _Substring
 	size_t length;
 } Substring;
 
-typedef struct _Token
+typedef struct _Symbol
 {
-	struct _Token *previous;
-	struct _Token *next;
+	struct _Symbol *previous;
+	struct _Symbol *next;
 	Substring string;
 	NonterminalSymbol symbol;
-} Token;
+} Symbol;
 
-typedef struct _Tokens
+typedef struct _Symbols
 {
-	Token *first_token;
-	Token *last_token;
-} Tokens;
+	Symbol *first_symbol;
+	Symbol *last_symbol;
+} Symbols;
 
 char *combine_argv(int argc, char const * const * const argv);
-void delete_tokens(Tokens tokens);
-Tokens lexical_analysis(char const * const input_string);
-void print_tokens(Tokens tokens);
+void delete_symbols(Symbols symbols);
+Symbols lexical_analysis(char const * const input_string);
+void print_symbols(Symbols symbols);
 NonterminalSymbol substring2symbol(Substring substring);
 char const *symbol_name(NonterminalSymbol symbol);
 
 int main(int argc, char const * const * const argv)
 {
 	char *input_string = combine_argv(argc - 1, argv + 1);
-	Tokens tokens = lexical_analysis(input_string);
-	print_tokens(tokens);
-	delete_tokens(tokens);
+	Symbols symbols = lexical_analysis(input_string);
+	print_symbols(symbols);
+	delete_symbols(symbols);
 	return 0;
 }
 
@@ -67,43 +67,43 @@ char *combine_argv(int argc, char const * const * const argv)
 	return combined_string;
 }
 
-void delete_tokens(Tokens tokens)
+void delete_symbols(Symbols symbols)
 {
-	Token *next_token;
-	for(Token *token = tokens.first_token; token; token = next_token)
+	Symbol *next_symbol;
+	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = next_symbol)
 	{
-		next_token = token->next;
-		free(token);
+		next_symbol = symbol->next;
+		free(symbol);
 	}
 }
 
-Tokens lexical_analysis(char const * const input_string)
+Symbols lexical_analysis(char const * const input_string)
 {
-	Tokens tokens;
-	tokens.first_token = NULL;
-	tokens.last_token = NULL;
+	Symbols symbols;
+	symbols.first_symbol = NULL;
+	symbols.last_symbol = NULL;
 	for(char const *reader = input_string; *reader; reader++)
 	{
-		Token *token = malloc(sizeof(*token));
-		token->previous = tokens.last_token;
-		token->next = NULL;
-		token->string.initial = reader;
-		token->string.length = 1;
-		token->symbol = substring2symbol(token->string);
-		if(!tokens.first_token)tokens.first_token = token;
-		if(tokens.last_token)
+		Symbol *symbol = malloc(sizeof(*symbol));
+		symbol->previous = symbols.last_symbol;
+		symbol->next = NULL;
+		symbol->string.initial = reader;
+		symbol->string.length = 1;
+		symbol->symbol = substring2symbol(symbol->string);
+		if(!symbols.first_symbol)symbols.first_symbol = symbol;
+		if(symbols.last_symbol)
 		{
-			tokens.last_token->next = token;
-			tokens.last_token = token;
+			symbols.last_symbol->next = symbol;
+			symbols.last_symbol = symbol;
 		}
-		else tokens.last_token = token;
+		else symbols.last_symbol = symbol;
 	}
-	return tokens;
+	return symbols;
 }
 
-void print_tokens(Tokens tokens)
+void print_symbols(Symbols symbols)
 {
-	for(Token *token = tokens.first_token; token; token = token->next)printf("%s \"%0.*s\"\n", symbol_name(token->symbol), token->string.length, token->string.initial);
+	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = symbol->next)printf("%s \"%0.*s\"\n", symbol_name(symbol->symbol), symbol->string.length, symbol->string.initial);
 }
 
 NonterminalSymbol substring2symbol(Substring substring)
