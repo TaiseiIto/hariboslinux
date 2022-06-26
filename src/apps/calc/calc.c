@@ -86,6 +86,6 @@ Tokens lexical_analysis(char const * const input_string)
 
 void print_tokens(Tokens tokens)
 {
-	for(Token *token = tokens.first_token; token; token = token->next)printf("Token \"%*s\"\n", token->string.length, token->string.initial);
+	for(Token *token = tokens.first_token; token; token = token->next)printf("Token \"%0.*s\"\n", token->string.length, token->string.initial);
 }
 
