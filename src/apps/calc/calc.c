@@ -192,7 +192,7 @@ SymbolType substring2symbol_type(Substring substring)
 	}
 }
 
-char *symbol_to_string(Symbol const *symbol)
+ChainString *symbol_to_chain_string(Symbol const *symbol)
 {
 	switch(symbol->type)
 	{
@@ -204,14 +204,22 @@ char *symbol_to_string(Symbol const *symbol)
 	case plus:
 	case right_parenthesis:
 	case slash:
-		return create_format_char_array("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
+		return create_format_chain_string("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
 	case numbers:
-		return create_format_char_array("%s\n", symbol_type_name(symbol->type));
+		return create_format_chain_string("%s\n", symbol_type_name(symbol->type));
 	default:
 		ERROR(); // Invalid symbol
 		exit(-1);
 		return NULL;
 	}
+}
+
+char *symbol_to_string(Symbol const *symbol)
+{
+	ChainString *chain_string = symbol_to_chain_string(symbol);
+	char *string = create_char_array_from_chain_string(chain_string);
+	delete_chain_string(chain_string);
+	return string;
 }
 
 char const *symbol_type_name(SymbolType symbol_type)
