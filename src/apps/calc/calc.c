@@ -214,6 +214,8 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	case numbers:
 		numbers_chain_string = symbol_to_chain_string(symbol->component.numbers.numbers);
 		number_chain_string = symbol_to_chain_string(symbol->component.numbers.number);
+		insert_char_front(numbers_chain_string, numbers_chain_string->first_character, ' ');
+		insert_char_front(number_chain_string, number_chain_string->first_character, ' ');
 		numbers_char_array = create_char_array_from_chain_string(numbers_chain_string);
 		number_char_array = create_char_array_from_chain_string(number_chain_string);
 		output = create_format_chain_string("%s\n%s%s", symbol_type_name(symbol->type), numbers_char_array, number_char_array);
