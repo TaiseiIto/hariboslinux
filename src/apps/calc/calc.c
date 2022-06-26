@@ -347,16 +347,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			{
 				new_symbol->component.numbers.numbers = symbol->previous;
 				new_symbol->previous = symbol->previous->previous;
+				if(symbols.first_symbol == symbol->previous)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
 			}
 			else
 			{
 				new_symbol->component.numbers.numbers = NULL;
 				new_symbol->previous = symbol->previous;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
 			}
 			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
 			if(new_symbol->next)new_symbol->next->previous = new_symbol;
-			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
-			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			if(new_symbol->component.numbers.number)
+			{
+				new_symbol->component.numbers.number->previous = NULL;
+				new_symbol->component.numbers.number->next = NULL;
+			}
+			if(new_symbol->component.numbers.numbers)
+			{
+				new_symbol->component.numbers.numbers->previous = NULL;
+				new_symbol->component.numbers.numbers->next = NULL;
+			}
 			break;
 		case numbers:
 			break;
