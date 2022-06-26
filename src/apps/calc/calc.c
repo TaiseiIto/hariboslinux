@@ -20,6 +20,8 @@
 #include "stdlib.h"
 #include "string.h"
 
+struct _Symbol;
+
 typedef enum _SymbolType
 {
 	asterisk,
@@ -27,6 +29,7 @@ typedef enum _SymbolType
 	left_parenthesis,
 	minus,
 	number,
+	numbers,
 	plus,
 	right_parenthesis,
 	slash,
@@ -39,12 +42,24 @@ typedef struct _Substring
 	size_t length;
 } Substring;
 
+typedef struct _Numbers
+{
+	struct _Symbol *numbers;
+	struct _Symbol *number;
+} Numbers;
+
+typedef union _Component
+{
+	Numbers numbers;
+} Component;
+
 typedef struct _Symbol
 {
-	struct _Symbol *previous;
-	struct _Symbol *next;
+	Component component;
 	Substring string;
 	SymbolType type;
+	struct _Symbol *previous;
+	struct _Symbol *next;
 } Symbol;
 
 typedef struct _Symbols
@@ -59,11 +74,12 @@ Symbols lexical_analysis(char const * const input_string);
 void print_symbols(Symbols symbols);
 SymbolType substring2symbol_type(Substring substring);
 char const *symbol_type_name(SymbolType symbol);
+Symbols syntactic_analysis(Symbols symbols);
 
 int main(int argc, char const * const * const argv)
 {
 	char *input_string = combine_argv(argc - 1, argv + 1);
-	Symbols symbols = lexical_analysis(input_string);
+	Symbols symbols = syntactic_analysis(lexical_analysis(input_string));
 	print_symbols(symbols);
 	delete_symbols(symbols);
 	return 0;
@@ -121,7 +137,26 @@ Symbols lexical_analysis(char const * const input_string)
 
 void print_symbols(Symbols symbols)
 {
-	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = symbol->next)printf("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
+	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = symbol->next)switch(symbol->type)
+	{
+	case asterisk:
+	case dot:
+	case left_parenthesis:
+	case minus:
+	case number:
+	case plus:
+	case right_parenthesis:
+	case slash:
+		printf("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
+		break;
+	case numbers:
+		printf("%s", symbol_type_name(symbol->type));
+		break;
+	default:
+		ERROR(); // Invalid symbol
+		exit(-1);
+		break;
+	}
 }
 
 SymbolType substring2symbol_type(Substring substring)
@@ -176,6 +211,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const left_parenthesis_name = "left parenthesis";
 	static char const * const minus_name = "minus";
 	static char const * const number_name = "number";
+	static char const * const numbers_name = "numbers";
 	static char const * const plus_name = "plus";
 	static char const * const right_parenthesis_name = "right parenthesis";
 	static char const * const slash_name = "slash";
@@ -191,6 +227,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return minus_name;
 	case number:
 		return number_name;
+	case numbers:
+		return numbers_name;
 	case plus:
 		return plus_name;
 	case right_parenthesis:
@@ -202,5 +240,59 @@ char const *symbol_type_name(SymbolType symbol_type)
 		exit(-1);
 		return NULL;
 	}
+}
+
+Symbols syntactic_analysis(Symbols symbols)
+{
+	Symbol *new_symbol;
+	Symbol *next_symbol;
+	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = next_symbol)
+	{
+		next_symbol = symbol->next;
+		switch(symbol->type)
+		{
+		case asterisk:
+			break;
+		case dot:
+			break;
+		case left_parenthesis:
+			break;
+		case minus:
+			break;
+		case number:
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = numbers;
+			new_symbol->component.numbers.number = symbol;
+			new_symbol->next = symbol->next;
+			if(symbol->previous && symbol->previous->type == numbers)
+			{
+				new_symbol->component.numbers.numbers = symbol->previous;
+				new_symbol->previous = symbol->previous->previous;
+			}
+			else
+			{
+				new_symbol->component.numbers.numbers = NULL;
+				new_symbol->previous = symbol->previous;
+			}
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			break;
+		case numbers:
+			break;
+		case plus:
+			break;
+		case right_parenthesis:
+			break;
+		case slash:
+			break;
+		default:
+			ERROR(); // Invalid symbol
+			exit(-1);
+			break;
+		}
+	}
+	return symbols;
 }
 
