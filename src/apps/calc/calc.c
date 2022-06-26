@@ -70,6 +70,7 @@ typedef struct _Symbols
 } Symbols;
 
 char *combine_argv(int argc, char const * const * const argv);
+void delete_symbol(Symbol *symbol);
 void delete_symbols(Symbols symbols);
 Symbols lexical_analysis(char const * const input_string);
 void print_symbols(Symbols const symbols);
@@ -84,6 +85,7 @@ int main(int argc, char const * const * const argv)
 	Symbols symbols = syntactic_analysis(lexical_analysis(input_string));
 	print_symbols(symbols);
 	delete_symbols(symbols);
+	free(input_string);
 	return 0;
 }
 
@@ -103,13 +105,45 @@ char *combine_argv(int argc, char const * const * const argv)
 	return combined_string;
 }
 
+void delete_symbol(Symbol *symbol)
+{
+	switch(symbol->type)
+	{
+	case asterisk:
+		break;
+	case dot:
+		break;
+	case left_parenthesis:
+		break;
+	case minus:
+		break;
+	case number:
+		break;
+	case numbers:
+		if(symbol->component.numbers.numbers)delete_symbol(symbol->component.numbers.numbers);
+		if(symbol->component.numbers.number)delete_symbol(symbol->component.numbers.number);
+		break;
+	case plus:
+		break;
+	case right_parenthesis:
+		break;
+	case slash:
+		break;
+	default:
+		ERROR(); // Invalid symbol
+		exit(-1);
+		break;
+	}
+	free(symbol);
+}
+
 void delete_symbols(Symbols symbols)
 {
 	Symbol *next_symbol;
 	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = next_symbol)
 	{
 		next_symbol = symbol->next;
-		free(symbol);
+		delete_symbol(symbol);
 	}
 }
 
