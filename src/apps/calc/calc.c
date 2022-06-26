@@ -25,6 +25,7 @@ struct _Symbol;
 
 typedef enum _SymbolType
 {
+	absolute,
 	asterisk,
 	dot,
 	left_parenthesis,
@@ -43,6 +44,13 @@ typedef struct _Substring
 	size_t length;
 } Substring;
 
+typedef struct _Absolute
+{
+	struct _Symbol *integer;
+	struct _Symbol *dot;
+	struct _Symbol *decimal;
+} Absolute;
+
 typedef struct _Numbers
 {
 	struct _Symbol *numbers;
@@ -51,6 +59,7 @@ typedef struct _Numbers
 
 typedef union _Component
 {
+	Absolute absolute;
 	Numbers numbers;
 } Component;
 
@@ -109,6 +118,11 @@ void delete_symbol(Symbol *symbol)
 {
 	switch(symbol->type)
 	{
+	case absolute:
+		if(symbol->component.absolute.integer)delete_symbol(symbol->component.absolute.integer);
+		if(symbol->component.absolute.dot)delete_symbol(symbol->component.absolute.dot);
+		if(symbol->component.absolute.decimal)delete_symbol(symbol->component.absolute.decimal);
+		break;
 	case asterisk:
 		break;
 	case dot:
@@ -229,13 +243,61 @@ SymbolType substring2symbol_type(Substring substring)
 ChainString *symbol_to_chain_string(Symbol const *symbol)
 {
 	ChainString *output;
+	ChainString *decimal_chain_string;
+	ChainString *dot_chain_string;
+	ChainString *integer_chain_string;
 	ChainString *number_chain_string;
 	ChainString *numbers_chain_string;
+	char *decimal_char_array;
+	char *dot_char_array;
+	char *integer_char_array;
 	char *number_char_array;
 	char *numbers_char_array;
 	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
 	{
+	case absolute:
+		if(symbol->component.absolute.integer)
+		{
+			integer_chain_string = symbol_to_chain_string(symbol->component.absolute.integer);
+			insert_char_front(integer_chain_string, integer_chain_string->first_character, ' ');
+			replace_chain_string(integer_chain_string, "\n", "\n ");
+			integer_char_array = create_char_array_from_chain_string(integer_chain_string);
+		}
+		else integer_char_array = "";
+		if(symbol->component.absolute.dot)
+		{
+			dot_chain_string = symbol_to_chain_string(symbol->component.absolute.dot);
+			insert_char_front(dot_chain_string, dot_chain_string->first_character, ' ');
+			replace_chain_string(dot_chain_string, "\n", "\n ");
+			dot_char_array = create_char_array_from_chain_string(dot_chain_string);
+		}
+		else dot_char_array = "";
+		if(symbol->component.absolute.decimal)
+		{
+			decimal_chain_string = symbol_to_chain_string(symbol->component.absolute.decimal);
+			insert_char_front(decimal_chain_string, decimal_chain_string->first_character, ' ');
+			replace_chain_string(decimal_chain_string, "\n", "\n ");
+			decimal_char_array = create_char_array_from_chain_string(decimal_chain_string);
+		}
+		else decimal_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", symbol_type_name(symbol->type), integer_char_array, dot_char_array, decimal_char_array);
+		if(symbol->component.absolute.integer)
+		{
+			delete_chain_string(integer_chain_string);
+			free(integer_char_array);
+		}
+		if(symbol->component.absolute.dot)
+		{
+			delete_chain_string(dot_chain_string);
+			free(dot_char_array);
+		}
+		if(symbol->component.absolute.decimal)
+		{
+			delete_chain_string(decimal_chain_string);
+			free(decimal_char_array);
+		}
+		return output;
 	case asterisk:
 	case dot:
 	case left_parenthesis:
@@ -254,10 +316,14 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			numbers_char_array = create_char_array_from_chain_string(numbers_chain_string);
 		}
 		else numbers_char_array = "";
-		number_chain_string = symbol_to_chain_string(symbol->component.numbers.number);
-		insert_char_front(number_chain_string, number_chain_string->first_character, ' ');
-		replace_chain_string(number_chain_string, "\n", "\n ");
-		number_char_array = create_char_array_from_chain_string(number_chain_string);
+		if(symbol->component.numbers.number)
+		{
+			number_chain_string = symbol_to_chain_string(symbol->component.numbers.number);
+			insert_char_front(number_chain_string, number_chain_string->first_character, ' ');
+			replace_chain_string(number_chain_string, "\n", "\n ");
+			number_char_array = create_char_array_from_chain_string(number_chain_string);
+		}
+		else number_char_array = "";
 
 		output = create_format_chain_string("%s\n%s%s", symbol_type_name(symbol->type), numbers_char_array, number_char_array);
 		if(symbol->component.numbers.numbers)
@@ -265,8 +331,11 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			delete_chain_string(numbers_chain_string);
 			free(numbers_char_array);
 		}
-		delete_chain_string(number_chain_string);
-		free(number_char_array);
+		if(symbol->component.numbers.number)
+		{
+			delete_chain_string(number_chain_string);
+			free(number_char_array);
+		}
 		return output;
 	default:
 		ERROR(); // Invalid symbol
@@ -285,6 +354,7 @@ char *symbol_to_string(Symbol const *symbol)
 
 char const *symbol_type_name(SymbolType symbol_type)
 {
+	static char const * const absolute_name = "absolute";
 	static char const * const asterisk_name = "asterisk";
 	static char const * const dot_name = "dot";
 	static char const * const left_parenthesis_name = "left parenthesis";
@@ -296,6 +366,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const slash_name = "slash";
 	switch(symbol_type)
 	{
+	case absolute:
+		return absolute_name;
 	case asterisk:
 		return asterisk_name;
 	case dot:
