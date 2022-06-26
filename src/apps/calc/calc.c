@@ -2,18 +2,19 @@
 #include "stdlib.h"
 #include "string.h"
 
-typedef enum _NonterminalSymbol
+typedef enum _SymbolType
 {
 	asterisk,
 	dot,
 	left_parenthesis,
 	minus,
 	number,
+	numbers,
 	plus,
 	right_parenthesis,
 	slash,
-	invalid_symbol
-} NonterminalSymbol;
+	invalid_symbol_type
+} SymbolType;
 
 typedef struct _Substring
 {
@@ -26,7 +27,7 @@ typedef struct _Symbol
 	struct _Symbol *previous;
 	struct _Symbol *next;
 	Substring string;
-	NonterminalSymbol symbol;
+	SymbolType type;
 } Symbol;
 
 typedef struct _Symbols
@@ -39,8 +40,8 @@ char *combine_argv(int argc, char const * const * const argv);
 void delete_symbols(Symbols symbols);
 Symbols lexical_analysis(char const * const input_string);
 void print_symbols(Symbols symbols);
-NonterminalSymbol substring2symbol(Substring substring);
-char const *symbol_name(NonterminalSymbol symbol);
+SymbolType substring2symbol_type(Substring substring);
+char const *symbol_type_name(SymbolType symbol);
 
 int main(int argc, char const * const * const argv)
 {
@@ -89,7 +90,7 @@ Symbols lexical_analysis(char const * const input_string)
 		symbol->next = NULL;
 		symbol->string.initial = reader;
 		symbol->string.length = 1;
-		symbol->symbol = substring2symbol(symbol->string);
+		symbol->type = substring2symbol_type(symbol->string);
 		if(!symbols.first_symbol)symbols.first_symbol = symbol;
 		if(symbols.last_symbol)
 		{
@@ -103,10 +104,10 @@ Symbols lexical_analysis(char const * const input_string)
 
 void print_symbols(Symbols symbols)
 {
-	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = symbol->next)printf("%s \"%0.*s\"\n", symbol_name(symbol->symbol), symbol->string.length, symbol->string.initial);
+	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = symbol->next)printf("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
 }
 
-NonterminalSymbol substring2symbol(Substring substring)
+SymbolType substring2symbol_type(Substring substring)
 {
 	switch(substring.length)
 	{
@@ -141,17 +142,17 @@ NonterminalSymbol substring2symbol(Substring substring)
 		default:
 			ERROR(); // Invalid substring initial
 			exit(-1);
-			return invalid_symbol;
+			return invalid_symbol_type;
 		}
 		break;
 	default:
 		ERROR(); // Invalid substring length
 		exit(-1);
-		return invalid_symbol;
+		return invalid_symbol_type;
 	}
 }
 
-char const *symbol_name(NonterminalSymbol symbol)
+char const *symbol_type_name(SymbolType symbol_type)
 {
 	static char const * const asterisk_name = "asterisk";
 	static char const * const dot_name = "dot";
@@ -161,7 +162,7 @@ char const *symbol_name(NonterminalSymbol symbol)
 	static char const * const plus_name = "plus";
 	static char const * const right_parenthesis_name = "right parenthesis";
 	static char const * const slash_name = "slash";
-	switch(symbol)
+	switch(symbol_type)
 	{
 	case asterisk:
 		return asterisk_name;
