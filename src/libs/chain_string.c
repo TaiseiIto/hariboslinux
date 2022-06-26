@@ -1,4 +1,5 @@
 #include "chain_string.h"
+#include "common.h"
 #include "io.h"
 #include "limits.h"
 #include "stdio.h"
@@ -403,6 +404,12 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 		break;
 	}
 	return output_chain_string;
+}
+
+ChainString *create_format_chain_string(char const *format, ...)
+{
+	UNUSED_ARGUMENT(format);
+	return create_caller_format_chain_string(0);
 }
 
 char *create_format_char_array(char const *format, ...)

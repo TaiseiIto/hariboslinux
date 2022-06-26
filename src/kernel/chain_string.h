@@ -19,6 +19,7 @@ ChainString *create_chain_string(char const *string);
 ChainString *create_chain_substring(ChainCharacter *first_character, ChainCharacter *last_character);
 char *create_char_array_from_chain_string(ChainString const *string);
 ChainString *create_caller_format_chain_string(unsigned int format_arg_pos);
+ChainString *create_format_chain_string(char const *format, ...);
 char *create_format_char_array(char const *format, ...);
 void delete_chain_string(ChainString *string);
 void delete_char(ChainString *string, ChainCharacter *position);
