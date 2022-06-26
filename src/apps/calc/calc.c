@@ -1,3 +1,21 @@
+// Backus Naur Form
+//
+// <formula>           ::= <term> | <formula> <plus> <term> | <formula> <minus> <term>
+// <term>              ::= <factor> | <term> <asterisk> <factor> | <term> <slash> <factor>
+// <factor>            ::= <real> | <left_parenthesis> <formula> <right_parenthesis>
+// <real>              ::= <absolute> | <sign> <absolute>
+// <sign>              ::= <plus> | <minus>
+// <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
+// <numbers>           ::= <number> | <numbers> <number>
+// <number>            ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+// <dot>               ::= "."
+// <plus>              ::= "+"
+// <minux>             ::= "-"
+// <asterisk>          ::= "*"
+// <slash>             ::= "/"
+// <left_parenthesis>  ::= "("
+// <right_parenthesis> ::= ")"
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -9,7 +27,6 @@ typedef enum _SymbolType
 	left_parenthesis,
 	minus,
 	number,
-	numbers,
 	plus,
 	right_parenthesis,
 	slash,
