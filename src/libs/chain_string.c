@@ -4,6 +4,7 @@
 #include "limits.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "string.h"
 
 ChainString *create_chain_string(char const *string)
 {
@@ -549,6 +550,45 @@ void insert_chain_string_back(ChainString *string, ChainCharacter *position, Cha
 		insert_char_back(string, position, wedge_character->character);
 		if(position)position = position->next;
 		else position = string->first_character;
+	}
+}
+
+void replace_chain_string(ChainString *string, char const *target, char const *replacement)
+{
+	ChainCharacter *target_candidate = NULL;
+	char const *target_reader = target;
+	if(!string)ERROR(); // The string doesn't exist.
+	for(ChainCharacter *character = string->first_character; character; character = character->next)
+	{
+		if(target_candidate)
+		{
+			if(*target_reader)
+			{
+				if(character->character != *target_reader)
+				{
+					target_reader = target;
+					target_candidate = NULL;
+					if(character->character == *target)
+					{
+						target_candidate = character;
+						target_reader = target;
+					}
+				}
+			}
+			else
+			{
+				insert_char_array_front(string, target_candidate, replacement);
+				character = target_candidate->previous;
+				delete_chars(string, target_candidate, strlen(target));
+				target_candidate = NULL;
+			}
+		}
+		else if(character->character == *target)
+		{
+			target_candidate = character;
+			target_reader = target;
+		}
+		target_reader++;
 	}
 }
 
