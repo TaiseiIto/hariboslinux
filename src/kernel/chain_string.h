@@ -30,6 +30,7 @@ void insert_chain_string_front(ChainString *string, ChainCharacter *position, Ch
 void insert_char_back(ChainString *string, ChainCharacter *position, char wedge);
 void insert_char_array_back(ChainString *string, ChainCharacter *position, char const *wedge);
 void insert_chain_string_back(ChainString *string, ChainCharacter *position, ChainString const *wedge);
+void replace_chain_string(ChainString *string, char const *target, char const *replacement);
 
 #endif
 
