@@ -16,6 +16,7 @@
 // <left_parenthesis>  ::= "("
 // <right_parenthesis> ::= ")"
 
+#include "chain_string.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -71,8 +72,9 @@ typedef struct _Symbols
 char *combine_argv(int argc, char const * const * const argv);
 void delete_symbols(Symbols symbols);
 Symbols lexical_analysis(char const * const input_string);
-void print_symbols(Symbols symbols);
+void print_symbols(Symbols const symbols);
 SymbolType substring2symbol_type(Substring substring);
+char *symbol_to_string(Symbol const *symbol);
 char const *symbol_type_name(SymbolType symbol);
 Symbols syntactic_analysis(Symbols symbols);
 
@@ -135,27 +137,13 @@ Symbols lexical_analysis(char const * const input_string)
 	return symbols;
 }
 
-void print_symbols(Symbols symbols)
+void print_symbols(Symbols const symbols)
 {
-	for(Symbol *symbol = symbols.first_symbol; symbol; symbol = symbol->next)switch(symbol->type)
+	for(Symbol const *symbol = symbols.first_symbol; symbol; symbol = symbol->next)
 	{
-	case asterisk:
-	case dot:
-	case left_parenthesis:
-	case minus:
-	case number:
-	case plus:
-	case right_parenthesis:
-	case slash:
-		printf("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
-		break;
-	case numbers:
-		printf("%s", symbol_type_name(symbol->type));
-		break;
-	default:
-		ERROR(); // Invalid symbol
-		exit(-1);
-		break;
+		char *symbol_string = symbol_to_string(symbol);
+		printf("%s", symbol_string);
+		free(symbol_string);
 	}
 }
 
@@ -201,6 +189,28 @@ SymbolType substring2symbol_type(Substring substring)
 		ERROR(); // Invalid substring length
 		exit(-1);
 		return invalid_symbol_type;
+	}
+}
+
+char *symbol_to_string(Symbol const *symbol)
+{
+	switch(symbol->type)
+	{
+	case asterisk:
+	case dot:
+	case left_parenthesis:
+	case minus:
+	case number:
+	case plus:
+	case right_parenthesis:
+	case slash:
+		return create_format_char_array("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
+	case numbers:
+		return create_format_char_array("%s\n", symbol_type_name(symbol->type));
+	default:
+		ERROR(); // Invalid symbol
+		exit(-1);
+		return NULL;
 	}
 }
 
