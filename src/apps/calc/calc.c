@@ -404,9 +404,35 @@ Symbols syntactic_analysis(Symbols symbols)
 		next_symbol = symbol->next;
 		switch(symbol->type)
 		{
+		case absolute:
+			break;
 		case asterisk:
 			break;
 		case dot:
+			if(symbol->previous && symbol->previous->type == numbers && symbol->next && symbol->next->type == numbers)
+			{
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = absolute;
+				new_symbol->component.absolute.integer = symbol->previous;
+				new_symbol->component.absolute.dot = symbol;
+				new_symbol->component.absolute.decimal = symbol->next;
+				new_symbol->string.initial = NULL;
+				new_symbol->string.length = 0;
+				new_symbol->previous = symbol->previous->previous;
+				new_symbol->next = symbol->next->next;
+				if(symbols.first_symbol == symbol->previous)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				new_symbol->component.absolute.integer->previous = NULL;
+				new_symbol->component.absolute.integer->next = NULL;
+				new_symbol->component.absolute.dot->previous = NULL;
+				new_symbol->component.absolute.dot->next = NULL;
+				new_symbol->component.absolute.decimal->previous = NULL;
+				new_symbol->component.absolute.decimal->next = NULL;
+				next_symbol = new_symbol->next;
+			}
 			break;
 		case left_parenthesis:
 			break;
@@ -417,6 +443,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = numbers;
 			new_symbol->component.numbers.number = symbol;
+			new_symbol->string.initial = NULL;
+			new_symbol->string.length = 0;
 			new_symbol->next = symbol->next;
 			if(symbol->previous && symbol->previous->type == numbers)
 			{
@@ -434,11 +462,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
 			if(new_symbol->next)new_symbol->next->previous = new_symbol;
-			if(new_symbol->component.numbers.number)
-			{
-				new_symbol->component.numbers.number->previous = NULL;
-				new_symbol->component.numbers.number->next = NULL;
-			}
+			new_symbol->component.numbers.number->previous = NULL;
+			new_symbol->component.numbers.number->next = NULL;
 			if(new_symbol->component.numbers.numbers)
 			{
 				new_symbol->component.numbers.numbers->previous = NULL;
