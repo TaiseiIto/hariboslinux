@@ -471,6 +471,24 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			break;
 		case numbers:
+			if(symbol->previous && symbol->previous->type == dot)break;
+			if(symbol->next && symbol->next->type == dot)break;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = absolute;
+			new_symbol->component.absolute.integer = symbol;
+			new_symbol->component.absolute.dot = NULL;
+			new_symbol->component.absolute.decimal = NULL;
+			new_symbol->string.initial = NULL;
+			new_symbol->string.length = 0;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			new_symbol->component.absolute.integer->previous = NULL;
+			new_symbol->component.absolute.integer->next = NULL;
 			break;
 		case plus:
 			break;
