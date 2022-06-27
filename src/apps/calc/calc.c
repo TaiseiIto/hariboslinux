@@ -3,8 +3,7 @@
 // <formula>           ::= <term> | <formula> <plus> <term> | <formula> <minus> <term>
 // <term>              ::= <factor> | <term> <asterisk> <factor> | <term> <slash> <factor>
 // <factor>            ::= <real> | <left_parenthesis> <formula> <right_parenthesis>
-// <real>              ::= <absolute> | <sign> <absolute>
-// <sign>              ::= <plus> | <minus>
+// <real>              ::= <absolute> | <plus> <absolute> | <minus> <absolute>
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <numbers>           ::= <number> | <numbers> <number>
 // <number>            ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
@@ -33,6 +32,7 @@ typedef enum _SymbolType
 	number,
 	numbers,
 	plus,
+	real,
 	right_parenthesis,
 	slash,
 	invalid_symbol_type
@@ -57,10 +57,17 @@ typedef struct _Numbers
 	struct _Symbol *number;
 } Numbers;
 
+typedef struct _Real
+{
+	struct _Symbol *sign;
+	struct _Symbol *absolute;
+} Real;
+
 typedef union _Component
 {
 	Absolute absolute;
 	Numbers numbers;
+	Real real;
 } Component;
 
 typedef struct _Symbol
@@ -138,6 +145,10 @@ void delete_symbol(Symbol *symbol)
 		if(symbol->component.numbers.number)delete_symbol(symbol->component.numbers.number);
 		break;
 	case plus:
+		break;
+	case real:
+		if(symbol->component.real.sign)delete_symbol(symbol->component.real.sign);
+		if(symbol->component.real.absolute)delete_symbol(symbol->component.real.absolute);
 		break;
 	case right_parenthesis:
 		break;
@@ -243,19 +254,32 @@ SymbolType substring2symbol_type(Substring substring)
 ChainString *symbol_to_chain_string(Symbol const *symbol)
 {
 	ChainString *output;
+	ChainString *absolute_chain_string;
 	ChainString *decimal_chain_string;
 	ChainString *dot_chain_string;
 	ChainString *integer_chain_string;
 	ChainString *number_chain_string;
 	ChainString *numbers_chain_string;
+	ChainString *sign_chain_string;
+	char *absolute_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
 	char *integer_char_array;
 	char *number_char_array;
 	char *numbers_char_array;
+	char *sign_char_array;
 	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
 	{
+	case asterisk:
+	case dot:
+	case left_parenthesis:
+	case minus:
+	case number:
+	case plus:
+	case right_parenthesis:
+	case slash:
+		return create_format_chain_string("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
 	case absolute:
 		if(symbol->component.absolute.integer)
 		{
@@ -298,15 +322,6 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(decimal_char_array);
 		}
 		return output;
-	case asterisk:
-	case dot:
-	case left_parenthesis:
-	case minus:
-	case number:
-	case plus:
-	case right_parenthesis:
-	case slash:
-		return create_format_chain_string("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
 	case numbers:
 		if(symbol->component.numbers.numbers)
 		{
@@ -337,6 +352,35 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(number_char_array);
 		}
 		return output;
+	case real:
+		if(symbol->component.real.sign)
+		{
+			sign_chain_string = symbol_to_chain_string(symbol->component.real.sign);
+			insert_char_front(sign_chain_string, sign_chain_string->first_character, ' ');
+			replace_chain_string(sign_chain_string, "\n", "\n ");
+			sign_char_array = create_char_array_from_chain_string(sign_chain_string);
+		}
+		else sign_char_array = "";
+		if(symbol->component.real.absolute)
+		{
+			absolute_chain_string = symbol_to_chain_string(symbol->component.real.absolute);
+			insert_char_front(absolute_chain_string, absolute_chain_string->first_character, ' ');
+			replace_chain_string(absolute_chain_string, "\n", "\n ");
+			absolute_char_array = create_char_array_from_chain_string(absolute_chain_string);
+		}
+		else absolute_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", symbol_type_name(symbol->type), sign_char_array, absolute_char_array);
+		if(symbol->component.real.sign)
+		{
+			delete_chain_string(sign_chain_string);
+			free(sign_char_array);
+		}
+		if(symbol->component.real.absolute)
+		{
+			delete_chain_string(absolute_chain_string);
+			free(absolute_char_array);
+		}
+		return output;
 	default:
 		ERROR(); // Invalid symbol
 		exit(-1);
@@ -362,6 +406,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const number_name = "number";
 	static char const * const numbers_name = "numbers";
 	static char const * const plus_name = "plus";
+	static char const * const real_name = "real";
 	static char const * const right_parenthesis_name = "right parenthesis";
 	static char const * const slash_name = "slash";
 	switch(symbol_type)
@@ -382,6 +427,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return numbers_name;
 	case plus:
 		return plus_name;
+	case real:
+		return real_name;
 	case right_parenthesis:
 		return right_parenthesis_name;
 	case slash:
@@ -411,6 +458,7 @@ Symbols syntactic_analysis(Symbols symbols)
 		case dot:
 			if(symbol->previous && symbol->previous->type == numbers && symbol->next && symbol->next->type == numbers)
 			{
+				// <absolute> ::= <numbers> | <numbers> <dot> <numbers>
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = absolute;
@@ -431,14 +479,38 @@ Symbols syntactic_analysis(Symbols symbols)
 				new_symbol->component.absolute.dot->next = NULL;
 				new_symbol->component.absolute.decimal->previous = NULL;
 				new_symbol->component.absolute.decimal->next = NULL;
-				next_symbol = new_symbol->next;
+				next_symbol = new_symbol;
 			}
 			break;
 		case left_parenthesis:
 			break;
 		case minus:
+		case plus:
+			if((!symbol->previous || symbol->previous->type == left_parenthesis) && symbol->next && symbol->next->type == absolute)
+			{
+				// <real> ::= <absolute> | <plus> <absolute> | <minus> <absolute>
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = real;
+				new_symbol->component.real.sign = symbol;
+				new_symbol->component.real.absolute = symbol->next;
+				new_symbol->string.initial = NULL;
+				new_symbol->string.length = 0;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				new_symbol->component.real.sign->previous = NULL;
+				new_symbol->component.real.sign->next = NULL;
+				new_symbol->component.real.absolute->previous = NULL;
+				new_symbol->component.real.absolute->next = NULL;
+				next_symbol = new_symbol;
+			}
 			break;
 		case number:
+			// <numbers> ::= <number> | <numbers> <number>
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = numbers;
@@ -471,6 +543,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			break;
 		case numbers:
+			// <absolute> ::= <numbers> | <numbers> <dot> <numbers>
 			if(symbol->previous && symbol->previous->type == dot)break;
 			if(symbol->next && symbol->next->type == dot)break;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
@@ -489,8 +562,9 @@ Symbols syntactic_analysis(Symbols symbols)
 			if(new_symbol->next)new_symbol->next->previous = new_symbol;
 			new_symbol->component.absolute.integer->previous = NULL;
 			new_symbol->component.absolute.integer->next = NULL;
+			next_symbol = new_symbol;
 			break;
-		case plus:
+		case real:
 			break;
 		case right_parenthesis:
 			break;
