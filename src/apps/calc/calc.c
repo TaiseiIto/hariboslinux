@@ -458,7 +458,7 @@ Symbols syntactic_analysis(Symbols symbols)
 		case dot:
 			if(symbol->previous && symbol->previous->type == numbers && symbol->next && symbol->next->type == numbers)
 			{
-				// <absolute> ::= <numbers> | <numbers> <dot> <numbers>
+				// <absolute> ::= <numbers> <dot> <numbers>
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = absolute;
@@ -488,7 +488,7 @@ Symbols syntactic_analysis(Symbols symbols)
 		case plus:
 			if((!symbol->previous || symbol->previous->type == left_parenthesis) && symbol->next && symbol->next->type == absolute)
 			{
-				// <real> ::= <absolute> | <plus> <absolute> | <minus> <absolute>
+				// <real> ::= <plus> <absolute> | <minus> <absolute>
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = real;
@@ -543,7 +543,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			break;
 		case numbers:
-			// <absolute> ::= <numbers> | <numbers> <dot> <numbers>
+			// <absolute> ::= <numbers>
 			if(symbol->previous && symbol->previous->type == dot)break;
 			if(symbol->next && symbol->next->type == dot)break;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
