@@ -471,15 +471,36 @@ Symbols syntactic_analysis(Symbols symbols)
 			new_symbol->string.length = symbol->string.length;
 			new_symbol->previous = symbol->previous;
 			new_symbol->next = symbol->next;
-			symbol->previous = NULL;
-			symbol->next = NULL;
 			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
 			if(new_symbol->next)new_symbol->next->previous = new_symbol;
 			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
 			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
 			next_symbol = new_symbol;
 			break;
 		case numbers:
+			if(symbol->next->type == number)
+			{
+				// <numbers> ::= <numbers> <number>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = numbers;
+				new_symbol->component.numbers.numbers = symbol;
+				new_symbol->component.numbers.number = symbol->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+			}
 			break;
 		case plus:
 			break;
