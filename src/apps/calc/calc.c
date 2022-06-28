@@ -31,6 +31,7 @@ typedef enum _SymbolType
 	minus,
 	number,
 	numbers,
+	operand,
 	plus,
 	right_parenthesis,
 	slash,
@@ -56,16 +57,19 @@ typedef struct _Numbers
 	struct _Symbol *number;
 } Numbers;
 
-typedef struct _Real
+typedef struct _Operand
 {
-	struct _Symbol *sign;
 	struct _Symbol *absolute;
-} Real;
+	struct _Symbol *left_parenthesis;
+	struct _Symbol *formula;
+	struct _Symbol *right_parenthesis;
+} Operand;
 
 typedef union _Component
 {
 	Absolute absolute;
 	Numbers numbers;
+	Operand operand;
 } Component;
 
 typedef struct _Symbol
@@ -141,6 +145,12 @@ void delete_symbol(Symbol *symbol)
 	case numbers:
 		if(symbol->component.numbers.numbers)delete_symbol(symbol->component.numbers.numbers);
 		if(symbol->component.numbers.number)delete_symbol(symbol->component.numbers.number);
+		break;
+	case operand:
+		if(symbol->component.operand.absolute)delete_symbol(symbol->component.operand.absolute);
+		if(symbol->component.operand.left_parenthesis)delete_symbol(symbol->component.operand.left_parenthesis);
+		if(symbol->component.operand.formula)delete_symbol(symbol->component.operand.formula);
+		if(symbol->component.operand.right_parenthesis)delete_symbol(symbol->component.operand.right_parenthesis);
 		break;
 	case plus:
 		break;
@@ -248,16 +258,24 @@ SymbolType substring2symbol_type(Substring substring)
 ChainString *symbol_to_chain_string(Symbol const *symbol)
 {
 	ChainString *output;
+	ChainString *absolute_chain_string;
 	ChainString *decimal_chain_string;
 	ChainString *dot_chain_string;
+	ChainString *formula_chain_string;
 	ChainString *integer_chain_string;
+	ChainString *left_parenthesis_chain_string;
 	ChainString *number_chain_string;
 	ChainString *numbers_chain_string;
+	ChainString *right_parenthesis_chain_string;
+	char *absolute_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
+	char *formula_char_array;
 	char *integer_char_array;
+	char *left_parenthesis_char_array;
 	char *number_char_array;
 	char *numbers_char_array;
+	char *right_parenthesis_char_array;
 	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
 	{
@@ -342,6 +360,61 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(number_char_array);
 		}
 		return output;
+	case operand:
+		if(symbol->component.operand.absolute)
+		{
+			absolute_chain_string = symbol_to_chain_string(symbol->component.operand.absolute);
+			insert_char_front(absolute_chain_string, absolute_chain_string->first_character, ' ');
+			replace_chain_string(absolute_chain_string, "\n", "\n ");
+			absolute_char_array = create_char_array_from_chain_string(absolute_chain_string);
+		}
+		else absolute_char_array = "";
+		if(symbol->component.operand.left_parenthesis)
+		{
+			left_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.left_parenthesis);
+			insert_char_front(left_parenthesis_chain_string, left_parenthesis_chain_string->first_character, ' ');
+			replace_chain_string(left_parenthesis_chain_string, "\n", "\n ");
+			left_parenthesis_char_array = create_char_array_from_chain_string(left_parenthesis_chain_string);
+		}
+		else left_parenthesis_char_array = "";
+		if(symbol->component.operand.formula)
+		{
+			formula_chain_string = symbol_to_chain_string(symbol->component.operand.formula);
+			insert_char_front(formula_chain_string, formula_chain_string->first_character, ' ');
+			replace_chain_string(formula_chain_string, "\n", "\n ");
+			formula_char_array = create_char_array_from_chain_string(formula_chain_string);
+		}
+		else formula_char_array = "";
+		if(symbol->component.operand.right_parenthesis)
+		{
+			right_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.right_parenthesis);
+			insert_char_front(right_parenthesis_chain_string, right_parenthesis_chain_string->first_character, ' ');
+			replace_chain_string(right_parenthesis_chain_string, "\n", "\n ");
+			right_parenthesis_char_array = create_char_array_from_chain_string(right_parenthesis_chain_string);
+		}
+		else right_parenthesis_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, absolute_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
+		if(symbol->component.operand.absolute)
+		{
+			delete_chain_string(absolute_chain_string);
+			free(absolute_char_array);
+		}
+		if(symbol->component.operand.left_parenthesis)
+		{
+			delete_chain_string(left_parenthesis_chain_string);
+			free(left_parenthesis_char_array);
+		}
+		if(symbol->component.operand.formula)
+		{
+			delete_chain_string(formula_chain_string);
+			free(formula_char_array);
+		}
+		if(symbol->component.operand.right_parenthesis)
+		{
+			delete_chain_string(right_parenthesis_chain_string);
+			free(right_parenthesis_char_array);
+		}
+		return output;
 	default:
 		ERROR(); // Invalid symbol
 		exit(-1);
@@ -366,6 +439,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const minus_name = "minus";
 	static char const * const number_name = "number";
 	static char const * const numbers_name = "numbers";
+	static char const * const operand_name = "operand";
 	static char const * const plus_name = "plus";
 	static char const * const right_parenthesis_name = "right parenthesis";
 	static char const * const slash_name = "slash";
@@ -385,6 +459,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return number_name;
 	case numbers:
 		return numbers_name;
+	case operand:
+		return operand_name;
 	case plus:
 		return plus_name;
 	case right_parenthesis:
