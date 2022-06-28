@@ -340,7 +340,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		}
 		else number_char_array = "";
 
-		output = create_format_chain_string("%s\n%s%s", symbol_type_name(symbol->type), numbers_char_array, number_char_array);
+		output = create_format_chain_string("%s \"%0.*s\"\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, numbers_char_array, number_char_array);
 		if(symbol->component.numbers.numbers)
 		{
 			delete_chain_string(numbers_chain_string);
