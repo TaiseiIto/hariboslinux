@@ -1,8 +1,9 @@
 // Backus Naur Form
 //
-// <formula>           ::= <term> | <formula> <term>
-// <term>              ::= <factor> | <plus> <factor> | <minus> <factor>
-// <factor>            ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis>
+// <formula>           ::= <term>
+// <term>              ::= <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
+// <factor>            ::= <operand> | <factor> <asterisk> <operand> | <factor> <slash> <operand>
+// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis>
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <numbers>           ::= <number> | <numbers> <number>
 // <number>            ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
