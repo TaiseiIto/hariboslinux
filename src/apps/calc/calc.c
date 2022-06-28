@@ -528,6 +528,31 @@ Symbols syntactic_analysis(Symbols symbols)
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			}
+			else if(symbol->previous && symbol->previous->type == dot)break;
+			else if(symbol->previous && symbol->previous->type == number)break;
+			else if(symbol->next && symbol->next->type == dot)break;
+			else if(symbol->next && symbol->next->type == number)break;
+			else
+			{
+				// <absolute> ::= <numbers>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = absolute;
+				new_symbol->component.absolute.integer = symbol;
+				new_symbol->component.absolute.dot = NULL;
+				new_symbol->component.absolute.decimal = NULL;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			}
 			break;
 		case plus:
 			break;
