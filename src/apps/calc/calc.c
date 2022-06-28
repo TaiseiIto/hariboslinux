@@ -486,6 +486,25 @@ Symbols syntactic_analysis(Symbols symbols)
 		switch(symbol->type)
 		{
 		case absolute:
+			// <operand> ::= <absolute>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = operand;
+			new_symbol->component.operand.absolute = symbol;
+			new_symbol->component.operand.left_parenthesis = NULL;
+			new_symbol->component.operand.formula = NULL;
+			new_symbol->component.operand.right_parenthesis = NULL;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			break;
 		case asterisk:
 			break;
@@ -587,6 +606,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			}
+			break;
+		case operand:
 			break;
 		case plus:
 			break;
