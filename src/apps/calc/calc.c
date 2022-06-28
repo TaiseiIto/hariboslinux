@@ -456,113 +456,32 @@ Symbols syntactic_analysis(Symbols symbols)
 		case asterisk:
 			break;
 		case dot:
-			if(symbol->previous && symbol->previous->type == numbers && symbol->next && symbol->next->type == numbers)
-			{
-				// <absolute> ::= <numbers> <dot> <numbers>
-				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				new_symbol = malloc(sizeof(*new_symbol));
-				new_symbol->type = absolute;
-				new_symbol->component.absolute.integer = symbol->previous;
-				new_symbol->component.absolute.dot = symbol;
-				new_symbol->component.absolute.decimal = symbol->next;
-				new_symbol->string.initial = NULL;
-				new_symbol->string.length = 0;
-				new_symbol->previous = symbol->previous->previous;
-				new_symbol->next = symbol->next->next;
-				if(symbols.first_symbol == symbol->previous)symbols.first_symbol = new_symbol;
-				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
-				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
-				if(new_symbol->next)new_symbol->next->previous = new_symbol;
-				new_symbol->component.absolute.integer->previous = NULL;
-				new_symbol->component.absolute.integer->next = NULL;
-				new_symbol->component.absolute.dot->previous = NULL;
-				new_symbol->component.absolute.dot->next = NULL;
-				new_symbol->component.absolute.decimal->previous = NULL;
-				new_symbol->component.absolute.decimal->next = NULL;
-				next_symbol = new_symbol;
-			}
 			break;
 		case left_parenthesis:
 			break;
 		case minus:
-		case plus:
-			if((!symbol->previous || symbol->previous->type == left_parenthesis) && symbol->next && symbol->next->type == absolute)
-			{
-				// <real> ::= <plus> <absolute> | <minus> <absolute>
-				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				new_symbol = malloc(sizeof(*new_symbol));
-				new_symbol->type = real;
-				new_symbol->component.real.sign = symbol;
-				new_symbol->component.real.absolute = symbol->next;
-				new_symbol->string.initial = NULL;
-				new_symbol->string.length = 0;
-				new_symbol->previous = symbol->previous;
-				new_symbol->next = symbol->next->next;
-				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
-				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
-				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
-				if(new_symbol->next)new_symbol->next->previous = new_symbol;
-				new_symbol->component.real.sign->previous = NULL;
-				new_symbol->component.real.sign->next = NULL;
-				new_symbol->component.real.absolute->previous = NULL;
-				new_symbol->component.real.absolute->next = NULL;
-				next_symbol = new_symbol;
-			}
 			break;
 		case number:
-			// <numbers> ::= <number> | <numbers> <number>
-			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			// <numbers> ::= <number>
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = numbers;
+			new_symbol->component.numbers.numbers = NULL;
 			new_symbol->component.numbers.number = symbol;
-			new_symbol->string.initial = NULL;
-			new_symbol->string.length = 0;
-			new_symbol->next = symbol->next;
-			if(symbol->previous && symbol->previous->type == numbers)
-			{
-				new_symbol->component.numbers.numbers = symbol->previous;
-				new_symbol->previous = symbol->previous->previous;
-				if(symbols.first_symbol == symbol->previous)symbols.first_symbol = new_symbol;
-				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
-			}
-			else
-			{
-				new_symbol->component.numbers.numbers = NULL;
-				new_symbol->previous = symbol->previous;
-				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
-				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
-			}
-			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
-			if(new_symbol->next)new_symbol->next->previous = new_symbol;
-			new_symbol->component.numbers.number->previous = NULL;
-			new_symbol->component.numbers.number->next = NULL;
-			if(new_symbol->component.numbers.numbers)
-			{
-				new_symbol->component.numbers.numbers->previous = NULL;
-				new_symbol->component.numbers.numbers->next = NULL;
-			}
-			break;
-		case numbers:
-			// <absolute> ::= <numbers>
-			if(symbol->previous && symbol->previous->type == dot)break;
-			if(symbol->next && symbol->next->type == dot)break;
-			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-			new_symbol = malloc(sizeof(*new_symbol));
-			new_symbol->type = absolute;
-			new_symbol->component.absolute.integer = symbol;
-			new_symbol->component.absolute.dot = NULL;
-			new_symbol->component.absolute.decimal = NULL;
-			new_symbol->string.initial = NULL;
-			new_symbol->string.length = 0;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
 			new_symbol->previous = symbol->previous;
 			new_symbol->next = symbol->next;
-			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
-			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
 			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
 			if(new_symbol->next)new_symbol->next->previous = new_symbol;
-			new_symbol->component.absolute.integer->previous = NULL;
-			new_symbol->component.absolute.integer->next = NULL;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
 			next_symbol = new_symbol;
+			break;
+		case numbers:
+			break;
+		case plus:
 			break;
 		case real:
 			break;
