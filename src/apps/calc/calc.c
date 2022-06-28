@@ -32,7 +32,6 @@ typedef enum _SymbolType
 	number,
 	numbers,
 	plus,
-	real,
 	right_parenthesis,
 	slash,
 	invalid_symbol_type
@@ -67,7 +66,6 @@ typedef union _Component
 {
 	Absolute absolute;
 	Numbers numbers;
-	Real real;
 } Component;
 
 typedef struct _Symbol
@@ -145,10 +143,6 @@ void delete_symbol(Symbol *symbol)
 		if(symbol->component.numbers.number)delete_symbol(symbol->component.numbers.number);
 		break;
 	case plus:
-		break;
-	case real:
-		if(symbol->component.real.sign)delete_symbol(symbol->component.real.sign);
-		if(symbol->component.real.absolute)delete_symbol(symbol->component.real.absolute);
 		break;
 	case right_parenthesis:
 		break;
@@ -254,20 +248,16 @@ SymbolType substring2symbol_type(Substring substring)
 ChainString *symbol_to_chain_string(Symbol const *symbol)
 {
 	ChainString *output;
-	ChainString *absolute_chain_string;
 	ChainString *decimal_chain_string;
 	ChainString *dot_chain_string;
 	ChainString *integer_chain_string;
 	ChainString *number_chain_string;
 	ChainString *numbers_chain_string;
-	ChainString *sign_chain_string;
-	char *absolute_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
 	char *integer_char_array;
 	char *number_char_array;
 	char *numbers_char_array;
-	char *sign_char_array;
 	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
 	{
@@ -352,35 +342,6 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(number_char_array);
 		}
 		return output;
-	case real:
-		if(symbol->component.real.sign)
-		{
-			sign_chain_string = symbol_to_chain_string(symbol->component.real.sign);
-			insert_char_front(sign_chain_string, sign_chain_string->first_character, ' ');
-			replace_chain_string(sign_chain_string, "\n", "\n ");
-			sign_char_array = create_char_array_from_chain_string(sign_chain_string);
-		}
-		else sign_char_array = "";
-		if(symbol->component.real.absolute)
-		{
-			absolute_chain_string = symbol_to_chain_string(symbol->component.real.absolute);
-			insert_char_front(absolute_chain_string, absolute_chain_string->first_character, ' ');
-			replace_chain_string(absolute_chain_string, "\n", "\n ");
-			absolute_char_array = create_char_array_from_chain_string(absolute_chain_string);
-		}
-		else absolute_char_array = "";
-		output = create_format_chain_string("%s\n%s%s", symbol_type_name(symbol->type), sign_char_array, absolute_char_array);
-		if(symbol->component.real.sign)
-		{
-			delete_chain_string(sign_chain_string);
-			free(sign_char_array);
-		}
-		if(symbol->component.real.absolute)
-		{
-			delete_chain_string(absolute_chain_string);
-			free(absolute_char_array);
-		}
-		return output;
 	default:
 		ERROR(); // Invalid symbol
 		exit(-1);
@@ -406,7 +367,6 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const number_name = "number";
 	static char const * const numbers_name = "numbers";
 	static char const * const plus_name = "plus";
-	static char const * const real_name = "real";
 	static char const * const right_parenthesis_name = "right parenthesis";
 	static char const * const slash_name = "slash";
 	switch(symbol_type)
@@ -427,8 +387,6 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return numbers_name;
 	case plus:
 		return plus_name;
-	case real:
-		return real_name;
 	case right_parenthesis:
 		return right_parenthesis_name;
 	case slash:
@@ -555,8 +513,6 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			break;
 		case plus:
-			break;
-		case real:
 			break;
 		case right_parenthesis:
 			break;
