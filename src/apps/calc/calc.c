@@ -305,7 +305,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			decimal_char_array = create_char_array_from_chain_string(decimal_chain_string);
 		}
 		else decimal_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s", symbol_type_name(symbol->type), integer_char_array, dot_char_array, decimal_char_array);
+		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, integer_char_array, dot_char_array, decimal_char_array);
 		if(symbol->component.absolute.integer)
 		{
 			delete_chain_string(integer_chain_string);
@@ -478,9 +478,10 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->previous = NULL;
 			symbol->next = NULL;
 			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			break;
 		case numbers:
-			if(symbol->next->type == number)
+			if(symbol->next && symbol->next->type == number)
 			{
 				// <numbers> ::= <numbers> <number>
 				new_symbol = malloc(sizeof(*new_symbol));
@@ -500,6 +501,32 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->previous = NULL;
 				symbol->next = NULL;
 				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			}
+			else if(symbol->next && symbol->next->type == dot && symbol->next->next && symbol->next->next->type == numbers)
+			{
+				// <absolute> ::= <numbers> <dot> <numbers>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = absolute;
+				new_symbol->component.absolute.integer = symbol;
+				new_symbol->component.absolute.dot = symbol->next;
+				new_symbol->component.absolute.decimal = symbol->next->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next->next)symbols.last_symbol = new_symbol;
+				symbol->next->next->previous = NULL;
+				symbol->next->next->next = NULL;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			}
 			break;
 		case plus:
