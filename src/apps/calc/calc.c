@@ -576,6 +576,31 @@ Symbols syntactic_analysis(Symbols symbols)
 		case dot:
 			break;
 		case factor:
+			if(symbol->next && symbol->next->type == asterisk && symbol->next->next && symbol->next->next->type == operand)
+			{
+				// <factor> ::= <factor> <asterisk> <operand>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = factor;
+				new_symbol->component.factor.factor = symbol;
+				new_symbol->component.factor.operator = symbol->next;
+				new_symbol->component.factor.operand = symbol->next->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next->next)symbols.last_symbol = new_symbol;
+				symbol->next->next->previous = NULL;
+				symbol->next->next->next = NULL;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			}
 			break;
 		case left_parenthesis:
 			break;
