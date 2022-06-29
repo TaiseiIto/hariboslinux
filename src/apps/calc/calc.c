@@ -631,6 +631,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->next = NULL;
 			next_symbol = new_symbol;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			printf("\n");
+			print_symbols(symbols);
 			break;
 		case asterisk:
 			break;
@@ -662,6 +664,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n");
+				print_symbols(symbols);
 			}
 			else if(symbol->next && symbol->next->type == asterisk)break;
 			else if(symbol->next && symbol->next->type == slash)break;
@@ -683,6 +687,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n");
+				print_symbols(symbols);
 			}
 			break;
 		case left_parenthesis:
@@ -714,6 +720,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n");
+				print_symbols(symbols);
 			}
 			break;
 		case number:
@@ -734,6 +742,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->next = NULL;
 			next_symbol = new_symbol;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			printf("\n");
+			print_symbols(symbols);
 			break;
 		case numbers:
 			if(symbol->next && symbol->next->type == number)
@@ -757,6 +767,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+	printf("\n");
+	print_symbols(symbols);
 			}
 			else if(symbol->next && symbol->next->type == dot && symbol->next->next && symbol->next->next->type == numbers)
 			{
@@ -782,6 +794,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n");
+				print_symbols(symbols);
 			}
 			else if(symbol->previous && symbol->previous->type == dot)break;
 			else if(symbol->previous && symbol->previous->type == number)break;
@@ -807,6 +821,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n");
+				print_symbols(symbols);
 			}
 			break;
 		case operand:
@@ -832,6 +848,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n");
+				print_symbols(symbols);
 			}
 			break;
 		case right_parenthesis:
@@ -865,6 +883,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n");
+				print_symbols(symbols);
 			}
 			break;
 		default:
