@@ -666,6 +666,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			else if(symbol->next && symbol->next->type == asterisk)break;
 			else if(symbol->next && symbol->next->type == slash)break;
+			else if(symbol->previous && symbol->previous->type == plus)break;
+			else if(symbol->previous && symbol->previous->type == minus)break;
 			else
 			{
 				// <term> ::= <factor>
