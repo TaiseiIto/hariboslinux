@@ -1,7 +1,7 @@
 // Backus Naur Form
 //
 // <formula>           ::= <term>
-// <term>              ::= <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
+// <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
 // <factor>            ::= <operand> | <factor> <asterisk> <operand> | <factor> <slash> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis>
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
@@ -36,6 +36,7 @@ typedef enum _SymbolType
 	plus,
 	right_parenthesis,
 	slash,
+	term,
 	invalid_symbol_type
 } SymbolType;
 
@@ -73,12 +74,20 @@ typedef struct _Operand
 	struct _Symbol *right_parenthesis;
 } Operand;
 
+typedef struct _Term
+{
+	struct _Symbol *term;
+	struct _Symbol *operator;
+	struct _Symbol *factor;
+} Term;
+
 typedef union _Component
 {
 	Absolute absolute;
 	Factor factor;
 	Numbers numbers;
 	Operand operand;
+	Term term;
 } Component;
 
 typedef struct _Symbol
@@ -171,6 +180,11 @@ void delete_symbol(Symbol *symbol)
 	case right_parenthesis:
 		break;
 	case slash:
+		break;
+	case term:
+		if(symbol->component.term.term)delete_symbol(symbol->component.term.term);
+		if(symbol->component.term.operator)delete_symbol(symbol->component.term.operator);
+		if(symbol->component.term.factor)delete_symbol(symbol->component.term.factor);
 		break;
 	default:
 		ERROR(); // Invalid symbol
@@ -284,6 +298,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	ChainString *operand_chain_string;
 	ChainString *operator_chain_string;
 	ChainString *right_parenthesis_chain_string;
+	ChainString *term_chain_string;
 	char *absolute_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
@@ -296,6 +311,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	char *operand_char_array;
 	char *operator_char_array;
 	char *right_parenthesis_char_array;
+	char *term_char_array;
 	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
 	{
@@ -477,6 +493,48 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(right_parenthesis_char_array);
 		}
 		return output;
+	case term:
+		if(symbol->component.term.term)
+		{
+			term_chain_string = symbol_to_chain_string(symbol->component.term.term);
+			insert_char_front(term_chain_string, term_chain_string->first_character, ' ');
+			replace_chain_string(term_chain_string, "\n", "\n ");
+			term_char_array = create_char_array_from_chain_string(term_chain_string);
+		}
+		else term_char_array = "";
+		if(symbol->component.term.operator)
+		{
+			operator_chain_string = symbol_to_chain_string(symbol->component.term.operator);
+			insert_char_front(operator_chain_string, operator_chain_string->first_character, ' ');
+			replace_chain_string(operator_chain_string, "\n", "\n ");
+			operator_char_array = create_char_array_from_chain_string(operator_chain_string);
+		}
+		else operator_char_array = "";
+		if(symbol->component.term.factor)
+		{
+			factor_chain_string = symbol_to_chain_string(symbol->component.term.factor);
+			insert_char_front(factor_chain_string, factor_chain_string->first_character, ' ');
+			replace_chain_string(factor_chain_string, "\n", "\n ");
+			factor_char_array = create_char_array_from_chain_string(factor_chain_string);
+		}
+		else factor_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, term_char_array, operator_char_array, factor_char_array);
+		if(symbol->component.term.term)
+		{
+			delete_chain_string(term_chain_string);
+			free(term_char_array);
+		}
+		if(symbol->component.term.operator)
+		{
+			delete_chain_string(operator_chain_string);
+			free(operator_char_array);
+		}
+		if(symbol->component.term.factor)
+		{
+			delete_chain_string(factor_chain_string);
+			free(factor_char_array);
+		}
+		return output;
 	default:
 		ERROR(); // Invalid symbol
 		exit(-1);
@@ -506,6 +564,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const plus_name = "plus";
 	static char const * const right_parenthesis_name = "right parenthesis";
 	static char const * const slash_name = "slash";
+	static char const * const term_name = "term";
 	switch(symbol_type)
 	{
 	case absolute:
@@ -532,6 +591,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return right_parenthesis_name;
 	case slash:
 		return slash_name;
+	case term:
+		return term_name;
 	default:
 		ERROR(); // Invalid symbol
 		exit(-1);
@@ -597,6 +658,25 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next->next->next = NULL;
 				symbol->next->previous = NULL;
 				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			}
+			else
+			{
+				// <term> ::= <factor>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = term;
+				new_symbol->component.term.term = NULL;
+				new_symbol->component.term.operator = NULL;
+				new_symbol->component.term.factor = symbol;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
 				symbol->previous = NULL;
 				symbol->next = NULL;
 				next_symbol = new_symbol;
@@ -730,6 +810,8 @@ Symbols syntactic_analysis(Symbols symbols)
 		case right_parenthesis:
 			break;
 		case slash:
+			break;
+		case term:
 			break;
 		default:
 			ERROR(); // Invalid symbol
