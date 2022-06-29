@@ -663,7 +663,9 @@ Symbols syntactic_analysis(Symbols symbols)
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			}
-			else if(!symbol->next || (symbol->next->type != asterisk && symbol->next->type != slash))
+			else if(symbol->next && symbol->next->type == asterisk)break;
+			else if(symbol->next && symbol->next->type == slash)break;
+			else
 			{
 				// <term> ::= <factor>
 				new_symbol = malloc(sizeof(*new_symbol));
@@ -808,6 +810,8 @@ Symbols syntactic_analysis(Symbols symbols)
 		case plus:
 			if(symbol->next && symbol->next->type == factor)
 			{
+				if(symbol->next->next && symbol->next->next->type == asterisk)break;
+				if(symbol->next->next && symbol->next->next->type == slash)break;
 				// <term> ::= <plus> <factor>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = term;
