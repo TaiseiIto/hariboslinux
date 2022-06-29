@@ -576,9 +576,10 @@ Symbols syntactic_analysis(Symbols symbols)
 		case dot:
 			break;
 		case factor:
-			if(symbol->next && symbol->next->type == asterisk && symbol->next->next && symbol->next->next->type == operand)
+			if(symbol->next && (symbol->next->type == asterisk || symbol->next->type == slash) && symbol->next->next && symbol->next->next->type == operand)
 			{
 				// <factor> ::= <factor> <asterisk> <operand>
+				// <factor> ::= <factor> <slash> <operand>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = factor;
 				new_symbol->component.factor.factor = symbol;
