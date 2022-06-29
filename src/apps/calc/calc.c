@@ -698,6 +698,7 @@ Symbols syntactic_analysis(Symbols symbols)
 		case plus:
 			if(symbol->next && symbol->next->type == factor)
 			{
+				if(symbol->previous && symbol->previous->type != left_parenthesis)break;
 				if(symbol->next->next && symbol->next->next->type == asterisk)break;
 				if(symbol->next->next && symbol->next->next->type == slash)break;
 				// <term> ::= <minus> <factor> | <plus> <factor>
