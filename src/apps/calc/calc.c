@@ -679,6 +679,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				new_symbol->component.term.factor = symbol;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next;
 				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
 				if(new_symbol->next)new_symbol->next->previous = new_symbol;
 				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
