@@ -641,8 +641,7 @@ Symbols syntactic_analysis(Symbols symbols)
 		case factor:
 			if(symbol->next && (symbol->next->type == asterisk || symbol->next->type == slash) && symbol->next->next && symbol->next->next->type == operand)
 			{
-				// <factor> ::= <factor> <asterisk> <operand>
-				// <factor> ::= <factor> <slash> <operand>
+				// <factor> ::= <factor> <asterisk> <operand> | <factor> <slash> <operand>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = factor;
 				new_symbol->component.factor.factor = symbol;
@@ -701,8 +700,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			{
 				if(symbol->next->next && symbol->next->next->type == asterisk)break;
 				if(symbol->next->next && symbol->next->next->type == slash)break;
-				// <term> ::= <minus> <factor>
-				// <term> ::= <plus> <factor>
+				// <term> ::= <minus> <factor> | <plus> <factor>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = term;
 				new_symbol->component.term.term = NULL;
