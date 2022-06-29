@@ -700,24 +700,29 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			break;
 		case operand:
-			// <factor> ::= <operand>
-			new_symbol = malloc(sizeof(*new_symbol));
-			new_symbol->type = factor;
-			new_symbol->component.factor.factor = NULL;
-			new_symbol->component.factor.operator = NULL;
-			new_symbol->component.factor.operand = symbol;
-			new_symbol->string.initial = symbol->string.initial;
-			new_symbol->string.length = symbol->string.length;
-			new_symbol->previous = symbol->previous;
-			new_symbol->next = symbol->next;
-			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
-			if(new_symbol->next)new_symbol->next->previous = new_symbol;
-			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
-			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
-			symbol->previous = NULL;
-			symbol->next = NULL;
-			next_symbol = new_symbol;
-			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			if(symbol->previous && symbol->previous->type == asterisk)break;
+			if(symbol->previous && symbol->previous->type == slash)break;
+			else
+			{
+				// <factor> ::= <operand>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = factor;
+				new_symbol->component.factor.factor = NULL;
+				new_symbol->component.factor.operator = NULL;
+				new_symbol->component.factor.operand = symbol;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			}
 			break;
 		case plus:
 			break;
