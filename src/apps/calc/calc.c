@@ -663,7 +663,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			}
-			else
+			else if(!symbol->next || (symbol->next->type != asterisk && symbol->next->type != slash))
 			{
 				// <term> ::= <factor>
 				new_symbol = malloc(sizeof(*new_symbol));
