@@ -119,7 +119,6 @@ int main(int argc, char const * const * const argv)
 {
 	char *input_string = combine_argv(argc - 1, argv + 1);
 	Symbols symbols = syntactic_analysis(lexical_analysis(input_string));
-	print_symbols(symbols);
 	delete_symbols(symbols);
 	free(input_string);
 	return 0;
