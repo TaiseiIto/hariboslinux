@@ -688,6 +688,33 @@ Symbols syntactic_analysis(Symbols symbols)
 		case left_parenthesis:
 			break;
 		case minus:
+		case plus:
+			if(symbol->next && symbol->next->type == factor)
+			{
+				if(symbol->next->next && symbol->next->next->type == asterisk)break;
+				if(symbol->next->next && symbol->next->next->type == slash)break;
+				// <term> ::= <minus> <factor>
+				// <term> ::= <plus> <factor>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = term;
+				new_symbol->component.term.term = NULL;
+				new_symbol->component.term.operator = symbol;
+				new_symbol->component.term.factor = symbol->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			}
 			break;
 		case number:
 			// <numbers> ::= <number>
@@ -801,33 +828,6 @@ Symbols syntactic_analysis(Symbols symbols)
 				if(new_symbol->next)new_symbol->next->previous = new_symbol;
 				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
 				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
-				symbol->previous = NULL;
-				symbol->next = NULL;
-				next_symbol = new_symbol;
-				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-			}
-			break;
-		case plus:
-			if(symbol->next && symbol->next->type == factor)
-			{
-				if(symbol->next->next && symbol->next->next->type == asterisk)break;
-				if(symbol->next->next && symbol->next->next->type == slash)break;
-				// <term> ::= <plus> <factor>
-				new_symbol = malloc(sizeof(*new_symbol));
-				new_symbol->type = term;
-				new_symbol->component.term.term = NULL;
-				new_symbol->component.term.operator = symbol;
-				new_symbol->component.term.factor = symbol->next;
-				new_symbol->string.initial = symbol->string.initial;
-				new_symbol->string.length = symbol->string.length + symbol->next->string.length;
-				new_symbol->previous = symbol->previous;
-				new_symbol->next = symbol->next->next;
-				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
-				if(new_symbol->next)new_symbol->next->previous = new_symbol;
-				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
-				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
-				symbol->next->previous = NULL;
-				symbol->next->next = NULL;
 				symbol->previous = NULL;
 				symbol->next = NULL;
 				next_symbol = new_symbol;
