@@ -425,7 +425,6 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			number_char_array = create_char_array_from_chain_string(number_chain_string);
 		}
 		else number_char_array = "";
-
 		output = create_format_chain_string("%s \"%0.*s\"\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, numbers_char_array, number_char_array);
 		if(symbol->component.numbers.numbers)
 		{
@@ -631,7 +630,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->next = NULL;
 			next_symbol = new_symbol;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-			printf("\n");
+			printf("\n<operand> ::= <absolute>\n");
 			print_symbols(symbols);
 			break;
 		case asterisk:
@@ -663,7 +662,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				printf("\n");
+				printf("\n<factor> ::= <factor> <asterisk> <operand> | <factor> <slash> <operand>\n");
 				print_symbols(symbols);
 			}
 			else if(symbol->next && symbol->next->type == asterisk)break;
@@ -688,7 +687,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				printf("\n");
+				printf("\n<term> ::= <factor>\n");
 				print_symbols(symbols);
 			}
 			break;
@@ -720,7 +719,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				printf("\n");
+				printf("\n<term> ::= <minus> <factor> | <plus> <factor>\n");
 				print_symbols(symbols);
 			}
 			break;
@@ -742,7 +741,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->next = NULL;
 			next_symbol = new_symbol;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-			printf("\n");
+			printf("\n<numbers> ::= <number>\n");
 			print_symbols(symbols);
 			break;
 		case numbers:
@@ -767,8 +766,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-	printf("\n");
-	print_symbols(symbols);
+				printf("\n<numbers> ::= <numbers> <number>\n");
+				print_symbols(symbols);
 			}
 			else if(symbol->next && symbol->next->type == dot && symbol->next->next && symbol->next->next->type == numbers)
 			{
@@ -794,7 +793,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				printf("\n");
+				printf("\n<absolute> ::= <numbers> <dot> <numbers>\n");
 				print_symbols(symbols);
 			}
 			else if(symbol->previous && symbol->previous->type == dot)break;
@@ -821,7 +820,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				printf("\n");
+				printf("\n<absolute> ::= <numbers>\n");
 				print_symbols(symbols);
 			}
 			break;
@@ -848,7 +847,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				printf("\n");
+				printf("\n<factor> ::= <operand>\n");
 				print_symbols(symbols);
 			}
 			break;
@@ -883,7 +882,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
-				printf("\n");
+				printf("\n<term> ::= <term> <plus> <factor> | <term> <minus> <factor>\n");
 				print_symbols(symbols);
 			}
 			break;
