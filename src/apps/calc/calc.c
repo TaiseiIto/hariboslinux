@@ -27,6 +27,7 @@ typedef enum _SymbolType
 	absolute,
 	asterisk,
 	dot,
+	factor,
 	left_parenthesis,
 	minus,
 	number,
@@ -51,6 +52,13 @@ typedef struct _Absolute
 	struct _Symbol *decimal;
 } Absolute;
 
+typedef struct _Factor
+{
+	struct _Symbol *factor;
+	struct _Symbol *operator;
+	struct _Symbol *operand;
+} Factor;
+
 typedef struct _Numbers
 {
 	struct _Symbol *numbers;
@@ -68,6 +76,7 @@ typedef struct _Operand
 typedef union _Component
 {
 	Absolute absolute;
+	Factor factor;
 	Numbers numbers;
 	Operand operand;
 } Component;
@@ -135,6 +144,11 @@ void delete_symbol(Symbol *symbol)
 	case asterisk:
 		break;
 	case dot:
+		break;
+	case factor:
+		if(symbol->component.factor.factor)delete_symbol(symbol->component.factor.factor);
+		if(symbol->component.factor.operator)delete_symbol(symbol->component.factor.operator);
+		if(symbol->component.factor.operand)delete_symbol(symbol->component.factor.operand);
 		break;
 	case left_parenthesis:
 		break;
@@ -261,20 +275,26 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	ChainString *absolute_chain_string;
 	ChainString *decimal_chain_string;
 	ChainString *dot_chain_string;
+	ChainString *factor_chain_string;
 	ChainString *formula_chain_string;
 	ChainString *integer_chain_string;
 	ChainString *left_parenthesis_chain_string;
 	ChainString *number_chain_string;
 	ChainString *numbers_chain_string;
+	ChainString *operand_chain_string;
+	ChainString *operator_chain_string;
 	ChainString *right_parenthesis_chain_string;
 	char *absolute_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
+	char *factor_char_array;
 	char *formula_char_array;
 	char *integer_char_array;
 	char *left_parenthesis_char_array;
 	char *number_char_array;
 	char *numbers_char_array;
+	char *operand_char_array;
+	char *operator_char_array;
 	char *right_parenthesis_char_array;
 	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
@@ -328,6 +348,48 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		{
 			delete_chain_string(decimal_chain_string);
 			free(decimal_char_array);
+		}
+		return output;
+	case factor:
+		if(symbol->component.factor.factor)
+		{
+			factor_chain_string = symbol_to_chain_string(symbol->component.factor.factor);
+			insert_char_front(factor_chain_string, factor_chain_string->first_character, ' ');
+			replace_chain_string(factor_chain_string, "\n", "\n ");
+			factor_char_array = create_char_array_from_chain_string(factor_chain_string);
+		}
+		else factor_char_array = "";
+		if(symbol->component.factor.operator)
+		{
+			operator_chain_string = symbol_to_chain_string(symbol->component.factor.operator);
+			insert_char_front(operator_chain_string, operator_chain_string->first_character, ' ');
+			replace_chain_string(operator_chain_string, "\n", "\n ");
+			operator_char_array = create_char_array_from_chain_string(operator_chain_string);
+		}
+		else operator_char_array = "";
+		if(symbol->component.factor.operand)
+		{
+			operand_chain_string = symbol_to_chain_string(symbol->component.factor.operand);
+			insert_char_front(operand_chain_string, operand_chain_string->first_character, ' ');
+			replace_chain_string(operand_chain_string, "\n", "\n ");
+			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
+		}
+		else operand_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, factor_char_array, operator_char_array, operand_char_array);
+		if(symbol->component.factor.factor)
+		{
+			delete_chain_string(factor_chain_string);
+			free(factor_char_array);
+		}
+		if(symbol->component.factor.operator)
+		{
+			delete_chain_string(operator_chain_string);
+			free(operator_char_array);
+		}
+		if(symbol->component.factor.operand)
+		{
+			delete_chain_string(operand_chain_string);
+			free(operand_char_array);
 		}
 		return output;
 	case numbers:
@@ -435,6 +497,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const absolute_name = "absolute";
 	static char const * const asterisk_name = "asterisk";
 	static char const * const dot_name = "dot";
+	static char const * const factor_name = "factor";
 	static char const * const left_parenthesis_name = "left parenthesis";
 	static char const * const minus_name = "minus";
 	static char const * const number_name = "number";
@@ -451,6 +514,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return asterisk_name;
 	case dot:
 		return dot_name;
+	case factor:
+		return factor_name;
 	case left_parenthesis:
 		return left_parenthesis_name;
 	case minus:
@@ -509,6 +574,8 @@ Symbols syntactic_analysis(Symbols symbols)
 		case asterisk:
 			break;
 		case dot:
+			break;
+		case factor:
 			break;
 		case left_parenthesis:
 			break;
@@ -608,6 +675,24 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			break;
 		case operand:
+			// <factor> ::= <operand>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = factor;
+			new_symbol->component.factor.factor = NULL;
+			new_symbol->component.factor.operator = NULL;
+			new_symbol->component.factor.operand = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			break;
 		case plus:
 			break;
