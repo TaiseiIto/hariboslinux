@@ -28,6 +28,7 @@ typedef enum _SymbolType
 	asterisk,
 	dot,
 	factor,
+	formula,
 	left_parenthesis,
 	minus,
 	number,
@@ -60,6 +61,11 @@ typedef struct _Factor
 	struct _Symbol *operand;
 } Factor;
 
+typedef struct _Formula
+{
+	struct _Symbol *term;
+} Formula;
+
 typedef struct _Numbers
 {
 	struct _Symbol *numbers;
@@ -85,6 +91,7 @@ typedef union _Component
 {
 	Absolute absolute;
 	Factor factor;
+	Formula formula;
 	Numbers numbers;
 	Operand operand;
 	Term term;
@@ -157,6 +164,9 @@ void delete_symbol(Symbol *symbol)
 		if(symbol->component.factor.factor)delete_symbol(symbol->component.factor.factor);
 		if(symbol->component.factor.operator)delete_symbol(symbol->component.factor.operator);
 		if(symbol->component.factor.operand)delete_symbol(symbol->component.factor.operand);
+		break;
+	case formula:
+		if(symbol->component.formula.term)delete_symbol(symbol->component.formula.term);
 		break;
 	case left_parenthesis:
 		break;
@@ -407,6 +417,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(operand_char_array);
 		}
 		return output;
+	case formula:
+		if(symbol->component.formula.term)
+		{
+			term_chain_string = symbol_to_chain_string(symbol->component.formula.term);
+			insert_char_front(term_chain_string, term_chain_string->first_character, ' ');
+			replace_chain_string(term_chain_string, "\n", "\n ");
+			term_char_array = create_char_array_from_chain_string(term_chain_string);
+		}
+		else term_char_array = "";
+		output = create_format_chain_string("$s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, term_char_array);
+		if(symbol->component.formula.term)
+		{
+			delete_chain_string(term_chain_string);
+			free(term_char_array);
+		}
+		return output;
 	case numbers:
 		if(symbol->component.numbers.numbers)
 		{
@@ -554,6 +580,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const asterisk_name = "asterisk";
 	static char const * const dot_name = "dot";
 	static char const * const factor_name = "factor";
+	static char const * const formula_name = "formula";
 	static char const * const left_parenthesis_name = "left parenthesis";
 	static char const * const minus_name = "minus";
 	static char const * const number_name = "number";
@@ -573,6 +600,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return dot_name;
 	case factor:
 		return factor_name;
+	case formula:
+		return formula_name;
 	case left_parenthesis:
 		return left_parenthesis_name;
 	case minus:
@@ -691,6 +720,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				printf("\n<term> ::= <factor>\n");
 				print_symbols(symbols);
 			}
+			break;
+		case formula:
 			break;
 		case left_parenthesis:
 			break;
@@ -885,6 +916,29 @@ Symbols syntactic_analysis(Symbols symbols)
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 				printf("\n<term> ::= <term> <plus> <factor> | <term> <minus> <factor>\n");
+				print_symbols(symbols);
+			}
+			else if(symbol->next && symbol->type == plus)break;
+			else if(symbol->next && symbol->type == minus)break;
+			else
+			{
+				// <formula> ::= <term>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = formula;
+				new_symbol->component.formula.term = symbol;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n<formula> ::= <term>\n");
 				print_symbols(symbols);
 			}
 			break;
