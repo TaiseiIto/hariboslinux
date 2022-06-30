@@ -426,7 +426,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			term_char_array = create_char_array_from_chain_string(term_chain_string);
 		}
 		else term_char_array = "";
-		output = create_format_chain_string("$s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, term_char_array);
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, term_char_array);
 		if(symbol->component.formula.term)
 		{
 			delete_chain_string(term_chain_string);
@@ -918,8 +918,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				printf("\n<term> ::= <term> <plus> <factor> | <term> <minus> <factor>\n");
 				print_symbols(symbols);
 			}
-			else if(symbol->next && symbol->type == plus)break;
-			else if(symbol->next && symbol->type == minus)break;
+			else if(symbol->next && symbol->next->type == plus)break;
+			else if(symbol->next && symbol->next->type == minus)break;
 			else
 			{
 				// <formula> ::= <term>
