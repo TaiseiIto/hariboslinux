@@ -724,6 +724,33 @@ Symbols syntactic_analysis(Symbols symbols)
 		case formula:
 			break;
 		case left_parenthesis:
+			if(symbol->next && symbol->next->type == factor && symbol->next->next && symbol->next->next->type == right_parenthesis)
+			{
+				// <operand> ::= <left_parenthesis> <formula> <right_parenthesis>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = operand;
+				new_symbol->component.operand.left_parenthesis = symbol;
+				new_symbol->component.operand.formula = symbol->next;
+				new_symbol->component.operand.right_parenthesis = symbol->next->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next->next)symbols.last_symbol = new_symbol;
+				symbol->next->next->previous = NULL;
+				symbol->next->next->next = NULL;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				printf("\n<operand> ::= <left_parenthesis> <formula> <right_parenthesis>\n");
+				print_symbols(symbols);
+			}
 			break;
 		case minus:
 		case plus:
