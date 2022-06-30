@@ -724,7 +724,7 @@ Symbols syntactic_analysis(Symbols symbols)
 		case formula:
 			break;
 		case left_parenthesis:
-			if(symbol->next && symbol->next->type == factor && symbol->next->next && symbol->next->next->type == right_parenthesis)
+			if(symbol->next && symbol->next->type == formula && symbol->next->next && symbol->next->next->type == right_parenthesis)
 			{
 				// <operand> ::= <left_parenthesis> <formula> <right_parenthesis>
 				new_symbol = malloc(sizeof(*new_symbol));
