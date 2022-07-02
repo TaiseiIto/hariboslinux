@@ -100,7 +100,7 @@ debug: $(IMAGE_FILE) stop
 # usage : $ make gitconfig KEY=<GitHub private key path> GPG=<.gnupg path>
 gitconfig:
 	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER_NAME):/root/hariboslinux/ssh/github && \
-	$(DOCKER) cp -r $(GPG) $(DOCKER_CONTAINER_NAME):/root/.gnupg && \
+	$(DOCKER) cp $(GPG) $(DOCKER_CONTAINER_NAME):/root/.gnupg && \
 	make docker-start && \
 	$(DOCKER) exec -it $(DOCKER_CONTAINER_NAME) /root/hariboslinux/git/gitconfig.sh
 
