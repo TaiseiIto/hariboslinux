@@ -19,5 +19,6 @@ git remote set-url origin git@github.com:TaiseiIto/hariboslinux.git
 cat gitconfig >> /root/.gitconfig
 cat ../ssh/config >> /root/.ssh/config
 chmod 600 ../ssh/github
+chmod -R 600 /root/.gnupg
 cd $currentdir
 
