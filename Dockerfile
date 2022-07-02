@@ -7,6 +7,8 @@ RUN apk add --no-cache alpine-sdk
 RUN git config --global pull.rebase false
 # debugger
 RUN apk add --no-cache gdb
+# gpg
+RUN apk add --no-cache gnupg
 # ssh
 RUN apk add --no-cache openssh
 RUN mkdir /root/.ssh
