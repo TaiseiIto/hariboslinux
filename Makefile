@@ -97,9 +97,10 @@ debug: $(IMAGE_FILE) stop
 	make -C gdb
 
 # Only the developer can execute it.
-# usage : $ make gitconfig KEY=<GitHub private key path>
+# usage : $ make gitconfig KEY=<GitHub private key path> GPG=<.gnupg path>
 gitconfig:
 	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER_NAME):/root/hariboslinux/ssh/github && \
+	$(DOCKER) cp -r $(GPG) $(DOCKER_CONTAINER_NAME):/root/.gnupg && \
 	make docker-start && \
 	$(DOCKER) exec -it $(DOCKER_CONTAINER_NAME) /root/hariboslinux/git/gitconfig.sh
 
