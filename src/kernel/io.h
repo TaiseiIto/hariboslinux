@@ -32,6 +32,9 @@ void cli(void);
 
 unsigned int exit_application(unsigned int return_value, unsigned int esp0);
 
+// initialize FPU
+void finit(void);
+
 // get nth arg in caller variadic arg function
 // the first arg is 0th
 unsigned int get_caller_variadic_arg(unsigned int);

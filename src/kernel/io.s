@@ -7,6 +7,7 @@
 	.globl	call_application
 	.globl	cli
 	.globl	exit_application
+	.globl	finit
 	.globl	get_caller_variadic_arg
 	.globl	get_eflags
 	.globl	get_variadic_arg
@@ -35,6 +36,7 @@
 	.type	call_application,	@function
 	.type	cli,			@function
 	.type	exit_application,	@function
+	.type	finit,			@function
 	.type	get_caller_variadic_arg,@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
@@ -169,6 +171,16 @@ exit_application:
 	popl	%eax			# Pop application return value
 	leave
 	ret
+
+	# // initialize FPU
+finit:	# void finit(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	finit
+	leave
+	ret
+
 				# // get nth arg in caller variadic arg function
 				# // the first arg is 0th
 get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);
