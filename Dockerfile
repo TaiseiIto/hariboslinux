@@ -31,6 +31,10 @@ RUN git clone https://github.com/TaiseiIto/hariboslinux.git
 WORKDIR hariboslinux
 RUN make
 
+# ash setting
+ENV ENV="/root/.profile"
+RUN cp ash/.profile "$ENV"
+
 # gdb setting
 RUN echo add-auto-load-safe-path `pwd`/gdb/.gdbinit > /root/.gdbinit
 
