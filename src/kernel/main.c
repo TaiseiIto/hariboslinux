@@ -5,6 +5,7 @@
 #include "disk.h"
 #include "event.h"
 #include "font.h"
+#include "fpu.h"
 #include "gdt.h"
 #include "graphic.h"
 #include "io.h"
@@ -71,6 +72,8 @@ int main(void)
 	print_serial("finish init_mouse()\n\n");
 	init_screen();
 	print_serial("finish init_screen()\n\n");
+	init_fpu();
+	print_serial("finish init_fpu()\n\n");
 	init_serial_interrupt(main_task);
 	sti_task();
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
