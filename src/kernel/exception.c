@@ -1,5 +1,6 @@
 #include "exception.h"
 #include "font.h"
+#include "fpu.h"
 #include "graphic.h"
 #include "io.h"
 #include "pic.h"
@@ -49,9 +50,8 @@ void debug_exception_handler(void)
 
 void device_not_available_exception_handler(void)
 {
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "DEVICE NOT AVAILABLE EXCEPTION!!!\n");
-	print_serial("DEVICE NOT AVAILABLE EXCEPTION!!!\n");
-	kernel_panic();
+	clts();
+	take_fpu();
 }
 
 void devide_by_zero_exception_handler(void)

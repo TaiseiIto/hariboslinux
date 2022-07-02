@@ -2,6 +2,7 @@
 #include "console.h"
 #include "ctype.h"
 #include "disk.h"
+#include "fpu.h"
 #include "io.h"
 #include "memory.h"
 #include "shell.h"
@@ -295,7 +296,7 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	data_segment = alloc_local_segment(task->ldt, application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	executable_segment = alloc_local_segment(task->ldt, application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	// Initialize FPU.
-	finit();
+	init_fpu();
 	// Call application.
 	((CommandTaskReturn *)arguments->task_return->task_return)->return_value = call_application
 	(
@@ -318,6 +319,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 		application_stack_floor/* application_stack_floor */,
 		&task->task_status_segment/* Task status segment */
 	);
+	// Release FPU.
+	release_fpu();
 	// Clean up.
 	free_local_segment(task->ldt, data_segment);
 	free_local_segment(task->ldt, executable_segment);
