@@ -678,6 +678,8 @@ void semantic_analysis(Symbol* symbol)
 	case numbers:
 		if(symbol->component.numbers.numbers)semantic_analysis(symbol->component.numbers.numbers);
 		if(symbol->component.numbers.number)semantic_analysis(symbol->component.numbers.number);
+		symbol->value = symbol->component.numbers.numbers ? 10.0 * symbol->component.numbers.numbers->value : 0.0;
+		symbol->value += symbol->component.numbers.number->value;
 		break;
 	case operand:
 		if(symbol->component.operand.absolute)semantic_analysis(symbol->component.operand.absolute);
