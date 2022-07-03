@@ -1,4 +1,10 @@
+#include "fpu.h"
 #include "math.h"
+
+double floor(double x)
+{
+	return fpu_floor(x);
+}
 
 long long int llabs(long long int a)
 {
