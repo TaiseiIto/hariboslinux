@@ -244,6 +244,31 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 					output_length++;
 				}
 				break;
+			case 'f':
+				if(arg_size < 8)arg.double_floating_point = (double)arg.floating_point[0];
+				if(0.0 <= arg.double_floating_point)
+				{
+					if(flags & FORMAT_FLAG_EXPLICIT_PLUS)
+					{
+						insert_char_back(output_chain_string, output_chain_string->last_character, '+');
+						output_length++;
+						sign_character = output_chain_string->last_character;
+					}
+					else if(flags & FORMAT_FLAG_BLANK_SIGN)
+					{
+						insert_char_back(output_chain_string, output_chain_string->last_character, ' ');
+						output_length++;
+						sign_character = output_chain_string->last_character;
+					}
+				}
+				else
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, '-');
+					output_length++;
+					sign_character = output_chain_string->last_character;
+					arg.double_floating_point *= -1.0;
+				}
+				break;
 			case 'n':
 				*arg.unsigned_int_pointer = output_chain_string->length;
 				break;

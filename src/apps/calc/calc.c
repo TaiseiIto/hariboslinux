@@ -347,7 +347,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	case plus:
 	case right_parenthesis:
 	case slash:
-		return create_format_chain_string("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
+		return create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value);
 	case absolute:
 		if(symbol->component.absolute.integer)
 		{
@@ -373,7 +373,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			decimal_char_array = create_char_array_from_chain_string(decimal_chain_string);
 		}
 		else decimal_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, integer_char_array, dot_char_array, decimal_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, integer_char_array, dot_char_array, decimal_char_array);
 		if(symbol->component.absolute.integer)
 		{
 			delete_chain_string(integer_chain_string);
@@ -415,7 +415,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
 		}
 		else operand_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, factor_char_array, operator_char_array, operand_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, factor_char_array, operator_char_array, operand_char_array);
 		if(symbol->component.factor.factor)
 		{
 			delete_chain_string(factor_chain_string);
@@ -441,7 +441,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			term_char_array = create_char_array_from_chain_string(term_chain_string);
 		}
 		else term_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, term_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array);
 		if(symbol->component.formula.term)
 		{
 			delete_chain_string(term_chain_string);
@@ -465,7 +465,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			number_char_array = create_char_array_from_chain_string(number_chain_string);
 		}
 		else number_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, numbers_char_array, number_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, numbers_char_array, number_char_array);
 		if(symbol->component.numbers.numbers)
 		{
 			delete_chain_string(numbers_chain_string);
@@ -510,7 +510,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			right_parenthesis_char_array = create_char_array_from_chain_string(right_parenthesis_chain_string);
 		}
 		else right_parenthesis_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, absolute_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, absolute_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
 		if(symbol->component.operand.absolute)
 		{
 			delete_chain_string(absolute_chain_string);
@@ -557,7 +557,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			factor_char_array = create_char_array_from_chain_string(factor_chain_string);
 		}
 		else factor_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, term_char_array, operator_char_array, factor_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array, operator_char_array, factor_char_array);
 		if(symbol->component.term.term)
 		{
 			delete_chain_string(term_chain_string);
@@ -655,22 +655,29 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.absolute.integer)semantic_analysis(symbol->component.absolute.integer);
 		if(symbol->component.absolute.dot)semantic_analysis(symbol->component.absolute.dot);
 		if(symbol->component.absolute.decimal)semantic_analysis(symbol->component.absolute.decimal);
+		symbol->value = 0.0;
 		break;
 	case asterisk:
+		symbol->value = 0.0;
 		break;
 	case dot:
+		symbol->value = 0.0;
 		break;
 	case factor:
 		if(symbol->component.factor.factor)semantic_analysis(symbol->component.factor.factor);
 		if(symbol->component.factor.operator)semantic_analysis(symbol->component.factor.operator);
 		if(symbol->component.factor.operand)semantic_analysis(symbol->component.factor.operand);
+		symbol->value = 0.0;
 		break;
 	case formula:
 		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
+		symbol->value = 0.0;
 		break;
 	case left_parenthesis:
+		symbol->value = 0.0;
 		break;
 	case minus:
+		symbol->value = 0.0;
 		break;
 	case number:
 		symbol->value = (double)((int)(*symbol->string.initial - '0'));
@@ -686,19 +693,25 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.operand.left_parenthesis)semantic_analysis(symbol->component.operand.left_parenthesis);
 		if(symbol->component.operand.formula)semantic_analysis(symbol->component.operand.formula);
 		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
+		symbol->value = 0.0;
 		break;
 	case plus:
+		symbol->value = 0.0;
 		break;
 	case right_parenthesis:
+		symbol->value = 0.0;
 		break;
 	case slash:
+		symbol->value = 0.0;
 		break;
 	case term:
 		if(symbol->component.term.term)semantic_analysis(symbol->component.term.term);
 		if(symbol->component.term.operator)semantic_analysis(symbol->component.term.operator);
 		if(symbol->component.term.factor)semantic_analysis(symbol->component.term.factor);
+		symbol->value = 0.0;
 		break;
 	case invalid_symbol_type:
+		symbol->value = 0.0;
 		break;
 	default:
 		ERROR(); // Invalid symbol
