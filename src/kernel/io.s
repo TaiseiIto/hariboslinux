@@ -8,9 +8,9 @@
 	.globl	cli
 	.globl	clts
 	.globl	exit_application
-	.globl	finit
+	.globl	fninit
 	.globl	frstor
-	.globl	fsave
+	.globl	fnsave
 	.globl	get_caller_variadic_arg
 	.globl	get_eflags
 	.globl	get_variadic_arg
@@ -40,9 +40,9 @@
 	.type	cli,			@function
 	.type	clts,			@function
 	.type	exit_application,	@function
-	.type	finit,			@function
+	.type	fninit,			@function
 	.type	frstor,			@function
-	.type	fsave,			@function
+	.type	fnsave,			@function
 	.type	get_caller_variadic_arg,@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
@@ -188,11 +188,11 @@ exit_application:
 	ret
 
 				# // initialize FPU
-finit:				# void finit(void);
+fninit:				# void fninit(void);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	finit
+	fninit
 	leave
 	ret
 
@@ -201,16 +201,18 @@ frstor:				# void frstor(FPURegisters const *fpu_registers);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	frstor	0x08(%ebp)
+	movl	0x08(%ebp),%edx
+	frstor	(%edx)
 	leave
 	ret
 
 				# // store FPU registers
-fsave:				# void fsave(FPURegisters *fpu_registers);
+fnsave:				# void fnsave(FPURegisters *fpu_registers);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	fsave	0x08(%ebp)
+	movl	0x08(%ebp),%edx
+	fnsave	(%edx)
 	leave
 	ret
 
