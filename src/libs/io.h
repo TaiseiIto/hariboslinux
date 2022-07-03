@@ -18,6 +18,13 @@ typedef union
 	unsigned int *unsigned_int_pointer;
 } VariadicArg;
 
+// FPU instructions
+void fldcw(unsigned short *control);
+void fldl(double *x);
+void fnstcw(unsigned short *control);
+void frndint(void);
+void fstpl(double *x);
+
 // get nth arg in caller variadic arg function
 // the first arg is 0th
 unsigned int get_caller_variadic_arg(unsigned int);

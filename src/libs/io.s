@@ -5,15 +5,69 @@
 # Scratch registers: eax, ecx, edx
 # Preserved registers: ebx, esi, edi, ebp, esp
 
+	.globl	fldcw
+	.globl	fldl
+	.globl	fnstcw
+	.globl	frndint
+	.globl	fstpl
 	.globl	get_caller_variadic_arg
 	.globl	get_esp
 	.globl	system_call
 
+	.type	fldcw,				@function
+	.type	fldl,				@function
+	.type	fnstcw,				@function
+	.type	frndint,			@function
+	.type	fstpl,				@function
 	.type	get_caller_variadic_arg,	@function
 	.type	get_esp,			@function
 	.type	system_call,			@function
 
 	.text
+
+fldcw:				# void fldcw(unsigned short *control);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fldcw	(%edx)
+	leave
+	ret
+
+fldl:				# void fldl(double *x);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fldl	(%edx)
+	leave
+	ret
+
+fnstcw:				# void fnstcw(unsigned short *control);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fnstcw	(%edx)
+	leave
+	ret
+
+frndint:			# void frndint(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	frndint
+	leave
+	ret
+
+fstpl:				# void fstpl(double *x);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fstpl	(%edx)
+	leave
+	ret
 
 				# // get nth arg in caller variadic arg function
 				# // the first arg is 0th
