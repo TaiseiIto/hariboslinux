@@ -1,4 +1,15 @@
+#include "fpu.h"
 #include "math.h"
+
+double floor(double x)
+{
+	return fpu_floor(x);
+}
+
+double fmod(double x, double y)
+{
+	return x - floor(x / y) * y;
+}
 
 long long int llabs(long long int a)
 {

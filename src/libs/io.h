@@ -11,10 +11,19 @@ typedef union
 	unsigned short unsigned_shorts[4];
 	char chars[8];
 	unsigned char unsigned_chars[8];
+	float floating_point[2];
+	double double_floating_point;
 	void *general_pointer;
 	char *string;
 	unsigned int *unsigned_int_pointer;
 } VariadicArg;
+
+// FPU instructions
+void fldcw(unsigned short *control);
+void fldl(double *x);
+void fnstcw(unsigned short *control);
+void frndint(void);
+void fstpl(double *x);
 
 // get nth arg in caller variadic arg function
 // the first arg is 0th

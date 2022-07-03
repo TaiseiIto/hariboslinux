@@ -6,7 +6,11 @@
 
 	.globl	call_application
 	.globl	cli
+	.globl	clts
 	.globl	exit_application
+	.globl	fninit
+	.globl	fnsave
+	.globl	frstor
 	.globl	get_caller_variadic_arg
 	.globl	get_eflags
 	.globl	get_variadic_arg
@@ -34,7 +38,11 @@
 
 	.type	call_application,	@function
 	.type	cli,			@function
+	.type	clts,			@function
 	.type	exit_application,	@function
+	.type	fninit,			@function
+	.type	fnsave,			@function
+	.type	frstor,			@function
 	.type	get_caller_variadic_arg,@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
@@ -148,6 +156,15 @@ cli:				# void cli(void);
 	leave
 	ret
 
+				# // clear task switched flag
+clts:				# void clts(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	clts
+	leave
+	ret
+
 # unsigned int exit_application
 # (
 # 	unsigned int return_value,	# 0x08(%ebp)
@@ -169,6 +186,36 @@ exit_application:
 	popl	%eax			# Pop application return value
 	leave
 	ret
+
+				# // initialize FPU
+fninit:				# void fninit(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fninit
+	leave
+	ret
+
+				# // store FPU registers
+fnsave:				# void fnsave(FPURegisters *fpu_registers);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fnsave	(%edx)
+	leave
+	ret
+
+				# // load FPU registers
+frstor:				# void frstor(FPURegisters const *fpu_registers);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	frstor	(%edx)
+	leave
+	ret
+
 				# // get nth arg in caller variadic arg function
 				# // the first arg is 0th
 get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);

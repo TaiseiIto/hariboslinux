@@ -70,6 +70,7 @@ typedef struct _Numbers
 {
 	struct _Symbol *numbers;
 	struct _Symbol *number;
+	unsigned int level;
 } Numbers;
 
 typedef struct _Operand
@@ -102,6 +103,7 @@ typedef struct _Symbol
 	Component component;
 	Substring string;
 	SymbolType type;
+	double value;
 	struct _Symbol *previous;
 	struct _Symbol *next;
 } Symbol;
@@ -120,12 +122,27 @@ void print_symbols(Symbols const symbols);
 SymbolType substring2symbol_type(Substring substring);
 char *symbol_to_string(Symbol const *symbol);
 char const *symbol_type_name(SymbolType symbol);
+void semantic_analysis(Symbol* symbol);
 Symbols syntactic_analysis(Symbols symbols);
 
 int main(int argc, char const * const * const argv)
 {
 	char *input_string = combine_argv(argc - 1, argv + 1);
-	Symbols symbols = syntactic_analysis(lexical_analysis(input_string));
+	Symbols symbols = lexical_analysis(input_string);
+	symbols = syntactic_analysis(symbols);
+	if(!symbols.first_symbol)
+	{
+		ERROR(); // no symbol error
+		exit(-1);
+	}
+	if(symbols.first_symbol != symbols.last_symbol)
+	{
+		ERROR(); // syntactic analysis error
+		print_symbols(symbols);
+		exit(-1);
+	}
+	semantic_analysis(symbols.first_symbol);
+	printf("%.6llf\n", symbols.first_symbol->value);
 	delete_symbols(symbols);
 	free(input_string);
 	return 0;
@@ -358,7 +375,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			decimal_char_array = create_char_array_from_chain_string(decimal_chain_string);
 		}
 		else decimal_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, integer_char_array, dot_char_array, decimal_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, integer_char_array, dot_char_array, decimal_char_array);
 		if(symbol->component.absolute.integer)
 		{
 			delete_chain_string(integer_chain_string);
@@ -400,7 +417,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
 		}
 		else operand_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, factor_char_array, operator_char_array, operand_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, factor_char_array, operator_char_array, operand_char_array);
 		if(symbol->component.factor.factor)
 		{
 			delete_chain_string(factor_chain_string);
@@ -426,7 +443,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			term_char_array = create_char_array_from_chain_string(term_chain_string);
 		}
 		else term_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, term_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array);
 		if(symbol->component.formula.term)
 		{
 			delete_chain_string(term_chain_string);
@@ -450,7 +467,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			number_char_array = create_char_array_from_chain_string(number_chain_string);
 		}
 		else number_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, numbers_char_array, number_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, numbers_char_array, number_char_array);
 		if(symbol->component.numbers.numbers)
 		{
 			delete_chain_string(numbers_chain_string);
@@ -495,7 +512,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			right_parenthesis_char_array = create_char_array_from_chain_string(right_parenthesis_chain_string);
 		}
 		else right_parenthesis_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, absolute_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, absolute_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
 		if(symbol->component.operand.absolute)
 		{
 			delete_chain_string(absolute_chain_string);
@@ -542,7 +559,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			factor_char_array = create_char_array_from_chain_string(factor_chain_string);
 		}
 		else factor_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\"\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, term_char_array, operator_char_array, factor_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array, operator_char_array, factor_char_array);
 		if(symbol->component.term.term)
 		{
 			delete_chain_string(term_chain_string);
@@ -627,6 +644,133 @@ char const *symbol_type_name(SymbolType symbol_type)
 	}
 }
 
+void semantic_analysis(Symbol* symbol)
+{
+	if(!symbol)
+	{
+		ERROR(); // no symbol error
+		exit(-1);
+	}
+	switch(symbol->type)
+	{
+	case absolute:
+		if(symbol->component.absolute.integer)semantic_analysis(symbol->component.absolute.integer);
+		if(symbol->component.absolute.dot)semantic_analysis(symbol->component.absolute.dot);
+		if(symbol->component.absolute.decimal)semantic_analysis(symbol->component.absolute.decimal);
+		symbol->value = 0.0;
+		if(symbol->component.absolute.decimal)
+		{
+			double divisor = 1.0;
+			unsigned int divisor_level;
+			for(divisor_level = 0; divisor_level <= symbol->component.absolute.decimal->component.numbers.level; divisor_level++)divisor *= 10.0;
+			symbol->value = symbol->component.absolute.decimal->value / divisor;
+		}
+		if(symbol->component.absolute.integer)symbol->value += symbol->component.absolute.integer->value;
+		break;
+	case asterisk:
+		symbol->value = 0.0;
+		break;
+	case dot:
+		symbol->value = 0.0;
+		break;
+	case factor:
+		if(symbol->component.factor.factor)semantic_analysis(symbol->component.factor.factor);
+		if(symbol->component.factor.operator)semantic_analysis(symbol->component.factor.operator);
+		if(symbol->component.factor.operand)semantic_analysis(symbol->component.factor.operand);
+		
+		if(symbol->component.factor.operator && symbol->component.factor.factor)switch(symbol->component.factor.operator->type)
+		{
+		case asterisk:
+			symbol->value = symbol->component.factor.factor->value * symbol->component.factor.operand->value;
+			break;
+		case slash:
+			symbol->value = symbol->component.factor.factor->value / symbol->component.factor.operand->value;
+			break;
+		default:
+			ERROR(); // Invalid symbol
+			exit(-1);
+			break;
+		}
+		else symbol->value = symbol->component.factor.operand->value;
+		break;
+	case formula:
+		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
+		symbol->value = symbol->component.formula.term->value;
+		break;
+	case left_parenthesis:
+		symbol->value = 0.0;
+		break;
+	case minus:
+		symbol->value = 0.0;
+		break;
+	case number:
+		symbol->value = (double)((int)(*symbol->string.initial - '0'));
+		break;
+	case numbers:
+		if(symbol->component.numbers.numbers)semantic_analysis(symbol->component.numbers.numbers);
+		if(symbol->component.numbers.number)semantic_analysis(symbol->component.numbers.number);
+		symbol->value = symbol->component.numbers.numbers ? 10.0 * symbol->component.numbers.numbers->value : 0.0;
+		symbol->value += symbol->component.numbers.number->value;
+		break;
+	case operand:
+		if(symbol->component.operand.absolute)semantic_analysis(symbol->component.operand.absolute);
+		if(symbol->component.operand.left_parenthesis)semantic_analysis(symbol->component.operand.left_parenthesis);
+		if(symbol->component.operand.formula)semantic_analysis(symbol->component.operand.formula);
+		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
+		if(symbol->component.operand.absolute)symbol->value = symbol->component.operand.absolute->value;
+		else if(symbol->component.operand.formula)symbol->value = symbol->component.operand.formula->value;
+		break;
+	case plus:
+		symbol->value = 0.0;
+		break;
+	case right_parenthesis:
+		symbol->value = 0.0;
+		break;
+	case slash:
+		symbol->value = 0.0;
+		break;
+	case term:
+		if(symbol->component.term.term)semantic_analysis(symbol->component.term.term);
+		if(symbol->component.term.operator)semantic_analysis(symbol->component.term.operator);
+		if(symbol->component.term.factor)semantic_analysis(symbol->component.term.factor);
+		if(symbol->component.term.term && symbol->component.term.operator)switch(symbol->component.term.operator->type)
+		{
+		case plus:
+			symbol->value = symbol->component.term.term->value + symbol->component.term.factor->value;
+			break;
+		case minus:
+			symbol->value = symbol->component.term.term->value - symbol->component.term.factor->value;
+			break;
+		default:
+			ERROR(); // Invalid symbol
+			exit(-1);
+			break;
+		}
+		else if(symbol->component.term.operator)switch(symbol->component.term.operator->type)
+		{
+		case plus:
+			symbol->value = symbol->component.term.factor->value;
+			break;
+		case minus:
+			symbol->value = 0.0 - symbol->component.term.factor->value;
+			break;
+		default:
+			ERROR(); // Invalid symbol
+			exit(-1);
+			break;
+		}
+		else symbol->value = symbol->component.term.factor->value;
+		break;
+	case invalid_symbol_type:
+		symbol->value = 0.0;
+		break;
+	default:
+		ERROR(); // Invalid symbol
+		exit(-1);
+		break;
+	}
+}
+
 Symbols syntactic_analysis(Symbols symbols)
 {
 	Symbol *new_symbol;
@@ -658,8 +802,10 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->next = NULL;
 			next_symbol = new_symbol;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
 			printf("\n<operand> ::= <absolute>\n");
 			print_symbols(symbols);
+			#endif
 			break;
 		case asterisk:
 			break;
@@ -690,8 +836,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<factor> ::= <factor> <asterisk> <operand> | <factor> <slash> <operand>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			else if(symbol->next && symbol->next->type == asterisk)break;
 			else if(symbol->next && symbol->next->type == slash)break;
@@ -717,8 +865,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<term> ::= <factor>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case formula:
@@ -748,8 +898,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<operand> ::= <left_parenthesis> <formula> <right_parenthesis>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case minus:
@@ -779,8 +931,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<term> ::= <minus> <factor> | <plus> <factor>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case number:
@@ -789,6 +943,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			new_symbol->type = numbers;
 			new_symbol->component.numbers.numbers = NULL;
 			new_symbol->component.numbers.number = symbol;
+			new_symbol->component.numbers.level = 0;
 			new_symbol->string.initial = symbol->string.initial;
 			new_symbol->string.length = symbol->string.length;
 			new_symbol->previous = symbol->previous;
@@ -801,8 +956,10 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->next = NULL;
 			next_symbol = new_symbol;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
 			printf("\n<numbers> ::= <number>\n");
 			print_symbols(symbols);
+			#endif
 			break;
 		case numbers:
 			if(symbol->next && symbol->next->type == number)
@@ -812,6 +969,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				new_symbol->type = numbers;
 				new_symbol->component.numbers.numbers = symbol;
 				new_symbol->component.numbers.number = symbol->next;
+				new_symbol->component.numbers.level = symbol->component.numbers.level + 1;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length + symbol->next->string.length;
 				new_symbol->previous = symbol->previous;
@@ -826,8 +984,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<numbers> ::= <numbers> <number>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			else if(symbol->next && symbol->next->type == dot && symbol->next->next && symbol->next->next->type == numbers)
 			{
@@ -853,8 +1013,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<absolute> ::= <numbers> <dot> <numbers>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			else if(symbol->previous && symbol->previous->type == dot)break;
 			else if(symbol->previous && symbol->previous->type == number)break;
@@ -880,8 +1042,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<absolute> ::= <numbers>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case operand:
@@ -907,8 +1071,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<factor> ::= <operand>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case right_parenthesis:
@@ -942,8 +1108,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<term> ::= <term> <plus> <factor> | <term> <minus> <factor>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			else if(symbol->next && symbol->next->type == plus)break;
 			else if(symbol->next && symbol->next->type == minus)break;
@@ -965,8 +1133,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<formula> ::= <term>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		default:

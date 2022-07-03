@@ -5,6 +5,7 @@
 #include "common.h"
 #include "disk.h"
 #include "event.h"
+#include "fpu.h"
 #include "io.h"
 #include "math.h"
 #include "memory.h"
@@ -460,6 +461,7 @@ int system_call_close(FileDescriptor *file_descriptor)
 
 int system_call_exit(int return_value)
 {
+	release_fpu();
 	delete_file_descriptors();
 	delete_system_call_status();
 	delete_timers();

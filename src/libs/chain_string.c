@@ -2,6 +2,7 @@
 #include "common.h"
 #include "io.h"
 #include "limits.h"
+#include "math.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -195,6 +196,9 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			if(arg_size == 8)arg.unsigned_ints[1] = get_caller_variadic_arg(arg_pos++);
 			switch(*++format)
 			{
+				double integer_part;
+				double fractional_part;
+				unsigned int integer_length;
 			case 'c':
 			case 'C':
 				insert_char_back(output_chain_string, output_chain_string->last_character, arg.chars[0]);
@@ -242,6 +246,46 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				{
 					insert_char_back(output_chain_string, previous_character, flags & FORMAT_FLAG_ZERO_FILLED ? '0' : ' ');
 					output_length++;
+				}
+				break;
+			case 'f':
+				if(arg_size < 8)arg.double_floating_point = (double)arg.floating_point[0];
+				if(0.0 <= arg.double_floating_point)
+				{
+					if(flags & FORMAT_FLAG_EXPLICIT_PLUS)
+					{
+						insert_char_back(output_chain_string, output_chain_string->last_character, '+');
+						output_length++;
+						sign_character = output_chain_string->last_character;
+					}
+					else if(flags & FORMAT_FLAG_BLANK_SIGN)
+					{
+						insert_char_back(output_chain_string, output_chain_string->last_character, ' ');
+						output_length++;
+						sign_character = output_chain_string->last_character;
+					}
+				}
+				else
+				{
+					insert_char_back(output_chain_string, output_chain_string->last_character, '-');
+					output_length++;
+					sign_character = output_chain_string->last_character;
+					arg.double_floating_point *= -1.0;
+				}
+				integer_part = floor(arg.double_floating_point);
+				fractional_part = arg.double_floating_point - integer_part;
+				integer_length = 0;
+				for(; 1.0 <= integer_part || !integer_length; integer_part = floor(integer_part / 10.0))
+				{
+					insert_char_back(output_chain_string, sign_character, (char)fmod(integer_part, 10.0) + '0');
+					output_length++;
+					integer_length++;
+				}
+				insert_char_back(output_chain_string, output_chain_string->last_character, '.');
+				for(; precision; precision--)
+				{
+					fractional_part = fmod(10.0 * fractional_part, 10.0);
+					insert_char_back(output_chain_string, output_chain_string->last_character, (char)floor(fmod(fractional_part, 10.0)) + '0');
 				}
 				break;
 			case 'n':

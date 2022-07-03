@@ -2,6 +2,7 @@
 COMPILER = gcc
 COMPILER_CODE32_OPTION = -m32
 COMPILER_DONT_LINK_OPTION = -c
+COMPILER_DONT_USE_SSE_INSTRUCTION = -mno-sse -mno-sse2
 COMPILER_DONT_USE_STDLIB_OPTION = -nostdlib
 COMPILER_FNO_BUILTIN_OPTION = -fno-builtin
 COMPILER_FNO_PIE_OPTION = -fno-pie
@@ -16,7 +17,7 @@ LINKER_MAP_OPTION = -Map kernel.map
 LINKER_OUTPUT_OPTION = -o
 LINKER_SCRIPT_OPTION = -T
 
-OBJECTS = beep.o chain_string.o cmos.o console.o ctype.o disk.o exception.o font.o fontdata.o gdt.o graphic.o idt.o interrupt_handlers.o keyboard.o libgcc.o main.o math.o memory.o mouse.o mouse_cursor.o parallel.o peripheral.o pic.o pit.o queue.o rtc.o serial.o sheet.o shell.o stack.o stdio.o string.o system_call.o task.o text_box.o timer.o window.o
+OBJECTS = beep.o chain_string.o cmos.o console.o ctype.o disk.o exception.o font.o fontdata.o fpu.o gdt.o graphic.o idt.o interrupt_handlers.o keyboard.o libgcc.o main.o math.o memory.o mouse.o mouse_cursor.o parallel.o peripheral.o pic.o pit.o queue.o rtc.o serial.o sheet.o shell.o stack.o stdio.o string.o system_call.o task.o text_box.o timer.o window.o
 
 all: kernel.bin
 
@@ -48,7 +49,7 @@ $(OBJECTS:.o=.s): $(@:.s=.c)
 	$(COMPILER) $^ $(COMPILER_CODE32_OPTION) $(COMPILER_DONT_LINK_OPTION) $(COMPILER_DONT_USE_STDLIB_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
 
 %.s: %.c
-	$(COMPILER) $< $(COMPILER_CODE32_OPTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_BUILTIN_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
+	$(COMPILER) $< $(COMPILER_CODE32_OPTION) $(COMPILER_DONT_USE_SSE_INSTRUCTION) $(COMPILER_OUTPUT_ASSEMBLY_OPTION) $(COMPILER_FNO_BUILTIN_OPTION) $(COMPILER_FNO_PIE_OPTION) $(COMPILER_OUTPUT_OPTION) $@ $(COMPILER_WARNING_OPTION)
 
 # dont remove intermediate files
 .PRECIOUS: %.bin %.o %.s

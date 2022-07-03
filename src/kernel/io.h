@@ -30,7 +30,19 @@ unsigned int call_application
 // disable all interrupts
 void cli(void);
 
+// clear task switched flag
+void clts(void);
+
 unsigned int exit_application(unsigned int return_value, unsigned int esp0);
+
+// initialize FPU
+void fninit(void);
+
+// store FPU registers
+void fnsave(FPURegisters *fpu_registers);
+
+// load FPU registers
+void frstor(FPURegisters const *fpu_registers);
 
 // get nth arg in caller variadic arg function
 // the first arg is 0th
