@@ -695,7 +695,7 @@ void semantic_analysis(Symbol* symbol)
 		break;
 	case formula:
 		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
-		symbol->value = 0.0;
+		symbol->value = symbol->component.formula.term->value;
 		break;
 	case left_parenthesis:
 		symbol->value = 0.0;
