@@ -733,7 +733,33 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.term.term)semantic_analysis(symbol->component.term.term);
 		if(symbol->component.term.operator)semantic_analysis(symbol->component.term.operator);
 		if(symbol->component.term.factor)semantic_analysis(symbol->component.term.factor);
-		symbol->value = 0.0;
+		if(symbol->component.term.term && symbol->component.term.operator)switch(symbol->component.term.operator->type)
+		{
+		case plus:
+			symbol->value = symbol->component.term.term->value + symbol->component.term.factor->value;
+			break;
+		case minus:
+			symbol->value = symbol->component.term.term->value - symbol->component.term.factor->value;
+			break;
+		default:
+			ERROR(); // Invalid symbol
+			exit(-1);
+			break;
+		}
+		else if(symbol->component.term.operator)switch(symbol->component.term.operator->type)
+		{
+		case plus:
+			symbol->value = symbol->component.term.factor->value;
+			break;
+		case minus:
+			symbol->value = 0.0 - symbol->component.term.factor->value;
+			break;
+		default:
+			ERROR(); // Invalid symbol
+			exit(-1);
+			break;
+		}
+		else symbol->value = symbol->component.term.factor->value;
 		break;
 	case invalid_symbol_type:
 		symbol->value = 0.0;
