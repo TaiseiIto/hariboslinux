@@ -102,6 +102,7 @@ typedef struct _Symbol
 	Component component;
 	Substring string;
 	SymbolType type;
+	double value;
 	struct _Symbol *previous;
 	struct _Symbol *next;
 } Symbol;
@@ -120,6 +121,7 @@ void print_symbols(Symbols const symbols);
 SymbolType substring2symbol_type(Substring substring);
 char *symbol_to_string(Symbol const *symbol);
 char const *symbol_type_name(SymbolType symbol);
+void semantic_analysis(Symbol* symbol);
 Symbols syntactic_analysis(Symbols symbols);
 
 int main(int argc, char const * const * const argv)
@@ -127,13 +129,18 @@ int main(int argc, char const * const * const argv)
 	char *input_string = combine_argv(argc - 1, argv + 1);
 	Symbols symbols = lexical_analysis(input_string);
 	symbols = syntactic_analysis(symbols);
+	if(!symbols.first_symbol)
+	{
+		ERROR(); // no symbol error
+		exit(-1);
+	}
 	if(symbols.first_symbol != symbols.last_symbol)
 	{
-		// syntactic analysis error
-		ERROR();
+		ERROR(); // syntactic analysis error
 		print_symbols(symbols);
 		exit(-1);
 	}
+	semantic_analysis(symbols.first_symbol);
 	delete_symbols(symbols);
 	free(input_string);
 	return 0;
@@ -632,6 +639,69 @@ char const *symbol_type_name(SymbolType symbol_type)
 		ERROR(); // Invalid symbol
 		exit(-1);
 		return NULL;
+	}
+}
+
+void semantic_analysis(Symbol* symbol)
+{
+	if(!symbol)
+	{
+		ERROR(); // no symbol error
+		exit(-1);
+	}
+	switch(symbol->type)
+	{
+	case absolute:
+		if(symbol->component.absolute.integer)semantic_analysis(symbol->component.absolute.integer);
+		if(symbol->component.absolute.dot)semantic_analysis(symbol->component.absolute.dot);
+		if(symbol->component.absolute.decimal)semantic_analysis(symbol->component.absolute.decimal);
+		break;
+	case asterisk:
+		break;
+	case dot:
+		break;
+	case factor:
+		if(symbol->component.factor.factor)semantic_analysis(symbol->component.factor.factor);
+		if(symbol->component.factor.operator)semantic_analysis(symbol->component.factor.operator);
+		if(symbol->component.factor.operand)semantic_analysis(symbol->component.factor.operand);
+		break;
+	case formula:
+		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
+		break;
+	case left_parenthesis:
+		break;
+	case minus:
+		break;
+	case number:
+		symbol->value = (double)((int)(*symbol->string.initial - '0'));
+		break;
+	case numbers:
+		if(symbol->component.numbers.numbers)semantic_analysis(symbol->component.numbers.numbers);
+		if(symbol->component.numbers.number)semantic_analysis(symbol->component.numbers.number);
+		break;
+	case operand:
+		if(symbol->component.operand.absolute)semantic_analysis(symbol->component.operand.absolute);
+		if(symbol->component.operand.left_parenthesis)semantic_analysis(symbol->component.operand.left_parenthesis);
+		if(symbol->component.operand.formula)semantic_analysis(symbol->component.operand.formula);
+		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
+		break;
+	case plus:
+		break;
+	case right_parenthesis:
+		break;
+	case slash:
+		break;
+	case term:
+		if(symbol->component.term.term)semantic_analysis(symbol->component.term.term);
+		if(symbol->component.term.operator)semantic_analysis(symbol->component.term.operator);
+		if(symbol->component.term.factor)semantic_analysis(symbol->component.term.factor);
+		break;
+	case invalid_symbol_type:
+		break;
+	default:
+		ERROR(); // Invalid symbol
+		exit(-1);
+		break;
 	}
 }
 
