@@ -349,7 +349,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	case plus:
 	case right_parenthesis:
 	case slash:
-		return create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value);
+		return create_format_chain_string("%s \"%0.*s\"\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial);
 	case absolute:
 		if(symbol->component.absolute.integer)
 		{
@@ -375,7 +375,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			decimal_char_array = create_char_array_from_chain_string(decimal_chain_string);
 		}
 		else decimal_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, integer_char_array, dot_char_array, decimal_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %8.3llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, integer_char_array, dot_char_array, decimal_char_array);
 		if(symbol->component.absolute.integer)
 		{
 			delete_chain_string(integer_chain_string);
@@ -417,7 +417,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
 		}
 		else operand_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, factor_char_array, operator_char_array, operand_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %8.3llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, factor_char_array, operator_char_array, operand_char_array);
 		if(symbol->component.factor.factor)
 		{
 			delete_chain_string(factor_chain_string);
@@ -443,7 +443,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			term_char_array = create_char_array_from_chain_string(term_chain_string);
 		}
 		else term_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %8.3llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array);
 		if(symbol->component.formula.term)
 		{
 			delete_chain_string(term_chain_string);
@@ -467,7 +467,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			number_char_array = create_char_array_from_chain_string(number_chain_string);
 		}
 		else number_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" (level = %d, value = %8.3llf)\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->component.numbers.level, symbol->value, numbers_char_array, number_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %8.3llf\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, numbers_char_array, number_char_array);
 		if(symbol->component.numbers.numbers)
 		{
 			delete_chain_string(numbers_chain_string);
@@ -512,7 +512,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			right_parenthesis_char_array = create_char_array_from_chain_string(right_parenthesis_chain_string);
 		}
 		else right_parenthesis_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, absolute_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %8.3llf\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, absolute_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
 		if(symbol->component.operand.absolute)
 		{
 			delete_chain_string(absolute_chain_string);
@@ -559,7 +559,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			factor_char_array = create_char_array_from_chain_string(factor_chain_string);
 		}
 		else factor_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array, operator_char_array, factor_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %8.3llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array, operator_char_array, factor_char_array);
 		if(symbol->component.term.term)
 		{
 			delete_chain_string(term_chain_string);
