@@ -127,7 +127,13 @@ int main(int argc, char const * const * const argv)
 	char *input_string = combine_argv(argc - 1, argv + 1);
 	Symbols symbols = lexical_analysis(input_string);
 	symbols = syntactic_analysis(symbols);
-	print_symbols(symbols);
+	if(symbols.first_symbol != symbols.last_symbol)
+	{
+		// syntactic analysis error
+		ERROR();
+		print_symbols(symbols);
+		exit(-1);
+	}
 	delete_symbols(symbols);
 	free(input_string);
 	return 0;
