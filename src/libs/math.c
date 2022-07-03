@@ -6,6 +6,11 @@ double floor(double x)
 	return fpu_floor(x);
 }
 
+double fmod(double x, double y)
+{
+	return x - floor(x / y) * y;
+}
+
 long long int llabs(long long int a)
 {
 	if(0 <= a)return a;
