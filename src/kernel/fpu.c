@@ -31,11 +31,6 @@ void take_fpu(void)
 	{
 		if(fpu_user_task)fsave(&fpu_user_task->fpu_registers);
 		if(current_task->flags & FPU_INITIALIZED)frstor(&current_task->fpu_registers);
-		else
-		{
-			finit();
-			current_task->flags |= FPU_INITIALIZED;
-		}
 		fpu_user_task = current_task;
 	}
 }
