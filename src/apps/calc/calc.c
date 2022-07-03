@@ -658,6 +658,14 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.absolute.dot)semantic_analysis(symbol->component.absolute.dot);
 		if(symbol->component.absolute.decimal)semantic_analysis(symbol->component.absolute.decimal);
 		symbol->value = 0.0;
+		if(symbol->component.absolute.decimal)
+		{
+			double divisor = 1.0;
+			unsigned int divisor_level;
+			for(divisor_level = 0; divisor_level <= symbol->component.absolute.decimal->component.numbers.level; divisor_level++)divisor *= 10.0;
+			symbol->value = symbol->component.absolute.decimal->value / divisor;
+		}
+		if(symbol->component.absolute.integer)symbol->value += symbol->component.absolute.integer->value;
 		break;
 	case asterisk:
 		symbol->value = 0.0;
