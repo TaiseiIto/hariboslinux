@@ -125,7 +125,9 @@ Symbols syntactic_analysis(Symbols symbols);
 int main(int argc, char const * const * const argv)
 {
 	char *input_string = combine_argv(argc - 1, argv + 1);
-	Symbols symbols = syntactic_analysis(lexical_analysis(input_string));
+	Symbols symbols = lexical_analysis(input_string);
+	symbols = syntactic_analysis(symbols);
+	print_symbols(symbols);
 	delete_symbols(symbols);
 	free(input_string);
 	return 0;
@@ -658,8 +660,10 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->next = NULL;
 			next_symbol = new_symbol;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
 			printf("\n<operand> ::= <absolute>\n");
 			print_symbols(symbols);
+			#endif
 			break;
 		case asterisk:
 			break;
@@ -690,8 +694,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<factor> ::= <factor> <asterisk> <operand> | <factor> <slash> <operand>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			else if(symbol->next && symbol->next->type == asterisk)break;
 			else if(symbol->next && symbol->next->type == slash)break;
@@ -717,8 +723,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<term> ::= <factor>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case formula:
@@ -748,8 +756,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<operand> ::= <left_parenthesis> <formula> <right_parenthesis>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case minus:
@@ -779,8 +789,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<term> ::= <minus> <factor> | <plus> <factor>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case number:
@@ -801,8 +813,10 @@ Symbols syntactic_analysis(Symbols symbols)
 			symbol->next = NULL;
 			next_symbol = new_symbol;
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
 			printf("\n<numbers> ::= <number>\n");
 			print_symbols(symbols);
+			#endif
 			break;
 		case numbers:
 			if(symbol->next && symbol->next->type == number)
@@ -826,8 +840,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<numbers> ::= <numbers> <number>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			else if(symbol->next && symbol->next->type == dot && symbol->next->next && symbol->next->next->type == numbers)
 			{
@@ -853,8 +869,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<absolute> ::= <numbers> <dot> <numbers>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			else if(symbol->previous && symbol->previous->type == dot)break;
 			else if(symbol->previous && symbol->previous->type == number)break;
@@ -880,8 +898,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<absolute> ::= <numbers>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case operand:
@@ -907,8 +927,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<factor> ::= <operand>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		case right_parenthesis:
@@ -942,8 +964,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<term> ::= <term> <plus> <factor> | <term> <minus> <factor>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			else if(symbol->next && symbol->next->type == plus)break;
 			else if(symbol->next && symbol->next->type == minus)break;
@@ -965,8 +989,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				symbol->next = NULL;
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
 				printf("\n<formula> ::= <term>\n");
 				print_symbols(symbols);
+				#endif
 			}
 			break;
 		default:
