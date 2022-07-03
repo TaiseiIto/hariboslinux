@@ -677,7 +677,21 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.factor.factor)semantic_analysis(symbol->component.factor.factor);
 		if(symbol->component.factor.operator)semantic_analysis(symbol->component.factor.operator);
 		if(symbol->component.factor.operand)semantic_analysis(symbol->component.factor.operand);
-		symbol->value = 0.0;
+		
+		if(symbol->component.factor.operator && symbol->component.factor.factor)switch(symbol->component.factor.operator->type)
+		{
+		case asterisk:
+			symbol->value = symbol->component.factor.factor->value * symbol->component.factor.operand->value;
+			break;
+		case slash:
+			symbol->value = symbol->component.factor.factor->value / symbol->component.factor.operand->value;
+			break;
+		default:
+			ERROR(); // Invalid symbol
+			exit(-1);
+			break;
+		}
+		else symbol->value = symbol->component.factor.operand->value;
 		break;
 	case formula:
 		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
