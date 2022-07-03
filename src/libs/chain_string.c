@@ -248,6 +248,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				}
 				break;
 			case 'f':
+				printf("begin print double\n");
 				if(arg_size < 8)arg.double_floating_point = (double)arg.floating_point[0];
 				if(0.0 <= arg.double_floating_point)
 				{
@@ -284,6 +285,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 					fractional_part = fmod(10.0 * fractional_part, 10.0);
 					insert_char_back(output_chain_string, output_chain_string->last_character, (char)floor(fmod(fractional_part, 10.0)) + '0');
 				}
+				printf("end print double\n");
 				break;
 			case 'n':
 				*arg.unsigned_int_pointer = output_chain_string->length;

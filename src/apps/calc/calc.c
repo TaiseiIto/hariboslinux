@@ -140,8 +140,12 @@ int main(int argc, char const * const * const argv)
 		print_symbols(symbols);
 		exit(-1);
 	}
+	printf("before semantic analysis\n");
 	semantic_analysis(symbols.first_symbol);
+	printf("after semantic analysis\n");
+	printf("before print symbols\n");
 	print_symbols(symbols);
+	printf("after print symbols\n");
 	delete_symbols(symbols);
 	free(input_string);
 	return 0;
@@ -338,6 +342,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	char *right_parenthesis_char_array;
 	char *term_char_array;
 	if(!symbol)return create_chain_string("");
+	printf("symbol_to_chain_string %s\n", symbol_type_name(symbol->type));
 	switch(symbol->type)
 	{
 	case asterisk:
@@ -348,6 +353,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	case plus:
 	case right_parenthesis:
 	case slash:
+		printf("before create_format_chain_string\n");
 		return create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value);
 	case absolute:
 		if(symbol->component.absolute.integer)
@@ -584,8 +590,12 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 
 char *symbol_to_string(Symbol const *symbol)
 {
+	printf("before symbol_to_chain_string\n");
 	ChainString *chain_string = symbol_to_chain_string(symbol);
+	printf("after symbol_to_chain_string\n");
+	printf("before create_char_array_from_chain_string\n");
 	char *string = create_char_array_from_chain_string(chain_string);
+	printf("after create_char_array_from_chain_string\n");
 	delete_chain_string(chain_string);
 	return string;
 }
