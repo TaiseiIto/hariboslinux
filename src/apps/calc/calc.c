@@ -141,6 +141,7 @@ int main(int argc, char const * const * const argv)
 		exit(-1);
 	}
 	semantic_analysis(symbols.first_symbol);
+	print_symbols(symbols);
 	delete_symbols(symbols);
 	free(input_string);
 	return 0;
