@@ -38,11 +38,11 @@ unsigned int exit_application(unsigned int return_value, unsigned int esp0);
 // initialize FPU
 void fninit(void);
 
-// load FPU registers
-void frstor(FPURegisters const *fpu_registers);
-
 // store FPU registers
 void fnsave(FPURegisters *fpu_registers);
+
+// load FPU registers
+void frstor(FPURegisters const *fpu_registers);
 
 // get nth arg in caller variadic arg function
 // the first arg is 0th
