@@ -198,6 +198,7 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 			{
 				double integer_part;
 				double fractional_part;
+				unsigned int integer_length;
 			case 'c':
 			case 'C':
 				insert_char_back(output_chain_string, output_chain_string->last_character, arg.chars[0]);
@@ -273,10 +274,12 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 				}
 				integer_part = floor(arg.double_floating_point);
 				fractional_part = arg.double_floating_point - integer_part;
-				for(; 1.0 <= integer_part; integer_part = floor(integer_part / 10.0))
+				integer_length = 0;
+				for(; 1.0 <= integer_part || !integer_length; integer_part = floor(integer_part / 10.0))
 				{
 					insert_char_back(output_chain_string, sign_character, (char)fmod(integer_part, 10.0) + '0');
 					output_length++;
+					integer_length++;
 				}
 				insert_char_back(output_chain_string, output_chain_string->last_character, '.');
 				for(; precision; precision--)
