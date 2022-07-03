@@ -70,6 +70,7 @@ typedef struct _Numbers
 {
 	struct _Symbol *numbers;
 	struct _Symbol *number;
+	unsigned int level;
 } Numbers;
 
 typedef struct _Operand
@@ -466,7 +467,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			number_char_array = create_char_array_from_chain_string(number_chain_string);
 		}
 		else number_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" (%8.3llf)\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, numbers_char_array, number_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" (level = %d, value = %8.3llf)\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->component.numbers.level, symbol->value, numbers_char_array, number_char_array);
 		if(symbol->component.numbers.numbers)
 		{
 			delete_chain_string(numbers_chain_string);
@@ -893,6 +894,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			new_symbol->type = numbers;
 			new_symbol->component.numbers.numbers = NULL;
 			new_symbol->component.numbers.number = symbol;
+			new_symbol->component.numbers.level = 0;
 			new_symbol->string.initial = symbol->string.initial;
 			new_symbol->string.length = symbol->string.length;
 			new_symbol->previous = symbol->previous;
@@ -918,6 +920,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				new_symbol->type = numbers;
 				new_symbol->component.numbers.numbers = symbol;
 				new_symbol->component.numbers.number = symbol->next;
+				new_symbol->component.numbers.level = symbol->component.numbers.level + 1;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length + symbol->next->string.length;
 				new_symbol->previous = symbol->previous;
