@@ -1,5 +1,6 @@
 #include "fpu.h"
 #include "math.h"
+#include "stdio.h"
 
 double floor(double x)
 {
@@ -8,7 +9,10 @@ double floor(double x)
 
 double fmod(double x, double y)
 {
-	return x - floor(x / y) * y;
+	printf("begin fmod\n");
+	double result = x - floor(x / y) * y;
+	printf("end fmod\n");
+	return result;
 }
 
 long long int llabs(long long int a)

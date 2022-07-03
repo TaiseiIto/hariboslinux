@@ -272,13 +272,18 @@ ChainString *create_caller_format_chain_string(unsigned int format_arg_pos)
 					sign_character = output_chain_string->last_character;
 					arg.double_floating_point *= -1.0;
 				}
+				printf("print sign\n");
 				integer_part = floor(arg.double_floating_point);
+				printf("get integer_part\n");
 				fractional_part = arg.double_floating_point - integer_part;
+				printf("get fractional_part\n");
 				for(; 1.0 <= integer_part; integer_part = floor(integer_part / 10.0))
 				{
+					printf("print a digit\n");
 					insert_char_back(output_chain_string, sign_character, (char)fmod(integer_part, 10.0) + '0');
 					output_length++;
 				}
+				printf("print integer\n");
 				insert_char_back(output_chain_string, output_chain_string->last_character, '.');
 				for(; precision; precision--)
 				{
