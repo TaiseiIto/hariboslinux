@@ -703,7 +703,8 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.operand.left_parenthesis)semantic_analysis(symbol->component.operand.left_parenthesis);
 		if(symbol->component.operand.formula)semantic_analysis(symbol->component.operand.formula);
 		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
-		symbol->value = 0.0;
+		if(symbol->component.operand.absolute)symbol->value = symbol->component.operand.absolute->value;
+		else if(symbol->component.operand.formula)symbol->value = symbol->component.operand.formula->value;
 		break;
 	case plus:
 		symbol->value = 0.0;
