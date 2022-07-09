@@ -191,7 +191,6 @@ void delete_symbol(Symbol *symbol)
 {
 	#ifdef DEBUG
 	char *symbol_string = symbol_to_string(symbol);
-	printf("DELETE\n%s\n", symbol_string);
 	free(symbol_string);
 	#endif
 	switch(symbol->type)
@@ -548,10 +547,8 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		}
 		return output;
 	case operand:
-		printf("begin assemble operand chain string\n");
 		if(symbol->component.operand.absolute)
 		{
-			printf("symbol->component.operand.absolute\n");
 			absolute_chain_string = symbol_to_chain_string(symbol->component.operand.absolute);
 			insert_char_front(absolute_chain_string, absolute_chain_string->first_character, ' ');
 			replace_chain_string(absolute_chain_string, "\n", "\n ");
@@ -560,7 +557,6 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		else absolute_char_array = "";
 		if(symbol->component.operand.formula)
 		{
-			printf("symbol->component.operand.formula\n");
 			formula_chain_string = symbol_to_chain_string(symbol->component.operand.formula);
 			insert_char_front(formula_chain_string, formula_chain_string->first_character, ' ');
 			replace_chain_string(formula_chain_string, "\n", "\n ");
@@ -569,7 +565,6 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		else formula_char_array = "";
 		if(symbol->component.operand.left_parenthesis)
 		{
-			printf("symbol->component.operand.left_parenthesis\n");
 			left_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.left_parenthesis);
 			insert_char_front(left_parenthesis_chain_string, left_parenthesis_chain_string->first_character, ' ');
 			replace_chain_string(left_parenthesis_chain_string, "\n", "\n ");
@@ -578,64 +573,48 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		else left_parenthesis_char_array = "";
 		if(symbol->component.operand.pi)
 		{
-			printf("symbol->component.operand.pi->type = %s\n", symbol_type_name(symbol->component.operand.pi->type));
-			printf("symbol->component.operand.pi = %p\n", symbol->component.operand.pi);
 			pi_chain_string = symbol_to_chain_string(symbol->component.operand.pi);
-			printf("insert_char_front(pi_chain_string, pi_chain_string->first_character, ' ');\n");
 			insert_char_front(pi_chain_string, pi_chain_string->first_character, ' ');
-			printf("replace_chain_string(pi_chain_string, \"\n\", \"\n \");\n");
 			replace_chain_string(pi_chain_string, "\n", "\n ");
-			printf("pi_char_array = create_char_array_from_chain_string(pi_chain_string);\n");
 			pi_char_array = create_char_array_from_chain_string(pi_chain_string);
-			printf("end if\n");
 		}
 		else pi_char_array = "";
 		if(symbol->component.operand.right_parenthesis)
 		{
-			printf("symbol->component.operand.right_parenthesis\n");
 			right_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.right_parenthesis);
 			insert_char_front(right_parenthesis_chain_string, right_parenthesis_chain_string->first_character, ' ');
 			replace_chain_string(right_parenthesis_chain_string, "\n", "\n ");
 			right_parenthesis_char_array = create_char_array_from_chain_string(right_parenthesis_chain_string);
 		}
 		else right_parenthesis_char_array = "";
-		printf("begin create output\n");
 		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, absolute_char_array, pi_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
-		printf("end create output\n");
 		if(symbol->component.operand.absolute)
 		{
-			printf("delete symbol->component.operand.absolute\n");
 			delete_chain_string(absolute_chain_string);
 			free(absolute_char_array);
 		}
 		if(symbol->component.operand.formula)
 		{
-			printf("delete symbol->component.operand.formula\n");
 			delete_chain_string(formula_chain_string);
 			free(formula_char_array);
 		}
 		if(symbol->component.operand.left_parenthesis)
 		{
-			printf("delete symbol->component.operand.left_parenthesis\n");
 			delete_chain_string(left_parenthesis_chain_string);
 			free(left_parenthesis_char_array);
 		}
 		if(symbol->component.operand.pi)
 		{
-			printf("delete symbol->component.operand.pi\n");
 			delete_chain_string(pi_chain_string);
 			free(pi_char_array);
 		}
 		if(symbol->component.operand.right_parenthesis)
 		{
-			printf("delete symbol->component.operand.right_parenthesis\n");
 			delete_chain_string(right_parenthesis_chain_string);
 			free(right_parenthesis_char_array);
 		}
-		printf("end assemble operand chain string\n");
 		return output;
 	case pi:
-		printf("begin assemble PI chain string\n");
 		if(symbol->component.pi.alphabets)
 		{
 			alphabets_chain_string = symbol_to_chain_string(symbol->component.pi.alphabets);
