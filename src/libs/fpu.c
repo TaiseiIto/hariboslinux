@@ -11,6 +11,14 @@ double fpu_atan(double x)
 	return result;
 }
 
+double fpu_acos(double x)
+{
+	if(x == 0.0)return fpu_pi() / 2.0;
+	else if(0.0 < x && x <= 1.0)return fpu_atan(fpu_sqrt((1.0 - x * x) / (x * x)));
+	else if(-1.0 <= x && x < 0.0)return fpu_pi() - fpu_atan(fpu_sqrt((1.0 - x * x) / (x * x)));
+	else return 0.0 / 0.0; // Return NaN
+}
+
 double fpu_cos(double x)
 {
 	double result;
@@ -106,11 +114,7 @@ double fpu_power(double base, double exponent)
 			return fpu_power(base, exponent_integer) * fpu_power(base, exponent_decimal);
 		}
 	}
-	else // base < 0.0
-	{
-		// Return NaN
-		return 0.0 / 0.0;
-	}
+	else return 0.0 / 0.0; // if base < 0.0 then return NaN
 }
 
 double fpu_sin(double x)

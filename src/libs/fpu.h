@@ -78,6 +78,7 @@ typedef struct _FPURegisters
 } FPURegisters;
 
 double fpu_atan(double x);
+double fpu_acos(double x);
 double fpu_cos(double x);
 double fpu_e(void);
 double fpu_floor(double x);
