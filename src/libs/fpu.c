@@ -37,6 +37,12 @@ double fpu_cos(double x)
 	return result;
 }
 
+double fpu_cosh(double x)
+{
+	double e = fpu_e();
+	return (fpu_pow(e, x) + fpu_pow(e, -x)) / 2.0;
+}
+
 double fpu_e(void)
 {
 	return fpu_pow(2.0, fpu_log2e());
@@ -135,6 +141,12 @@ double fpu_sin(double x)
 	return result;
 }
 
+double fpu_sinh(double x)
+{
+	double e = fpu_e();
+	return (fpu_pow(e, x) - fpu_pow(e, -x)) / 2.0;
+}
+
 double fpu_sqrt(double x)
 {
 	double result;
@@ -152,6 +164,12 @@ double fpu_tan(double x)
 	fincstp();
 	fstpl(&result);
 	return result;
+}
+
+double fpu_tanh(double x)
+{
+	double e = fpu_e();
+	return (fpu_pow(e, x) - fpu_pow(e, -x)) / (fpu_pow(e, x) + fpu_pow(e, -x));
 }
 
 double fpu_trunc(double x)
