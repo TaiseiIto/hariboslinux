@@ -7,6 +7,8 @@
 
 	.globl	f2xm1
 	.globl	fcos
+	.globl	fincstp
+	.globl	fld1
 	.globl	fldcw
 	.globl	fldl
 	.globl	fldl2e
@@ -25,6 +27,8 @@
 
 	.type	f2xm1,				@function
 	.type	fcos,				@function
+	.type	fincstp,			@function
+	.type	fld1,				@function
 	.type	fldcw,				@function
 	.type	fldl,				@function
 	.type	fldl2e,				@function
@@ -56,6 +60,22 @@ fcos:				# void fcos(void);
 	pushl	%ebp
 	movl	%esp,	%ebp
 	fcos
+	leave
+	ret
+
+fincstp:			# void fincstp(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fincstp
+	leave
+	ret
+
+fld1:				# void fld1(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fld1
 	leave
 	ret
 

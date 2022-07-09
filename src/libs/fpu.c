@@ -1,6 +1,23 @@
 #include "fpu.h"
 #include "io.h"
 
+double fpu_atan(double x)
+{
+	fldl(&x);
+	fld1();
+	fpatan();
+	fstpl(&x);
+	return x;
+}
+
+double fpu_cos(double x)
+{
+	fldl(&x);
+	fcos();
+	fstpl(&x);
+	return x;
+}
+
 double fpu_floor(double x)
 {
 	unsigned short original_control;
@@ -21,5 +38,30 @@ double fpu_get_pi(void)
 	fldpi();
 	fstpl(&pi);
 	return pi;
+}
+
+double fpu_sin(double x)
+{
+	fldl(&x);
+	fsin();
+	fstpl(&x);
+	return x;
+}
+
+double fpu_sqrt(double x)
+{
+	fldl(&x);
+	fsqrt();
+	fstpl(&x);
+	return x;
+}
+
+double fpu_tan(double x)
+{
+	fldl(&x);
+	fptan();
+	fincstp();
+	fstpl(&x);
+	return x;
 }
 

@@ -21,6 +21,8 @@ typedef union
 // FPU instructions
 void f2xm1(void);
 void fcos(void);
+void fincstp(void);
+void fld1(void);
 void fldcw(unsigned short *control);
 void fldl(double *x);
 void fldl2e(void);
