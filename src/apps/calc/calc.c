@@ -28,6 +28,7 @@ typedef enum _SymbolType
 {
 	absolute,
 	alphabet,
+	alphabets,
 	asterisk,
 	dot,
 	factor,
@@ -56,6 +57,12 @@ typedef struct _Absolute
 	struct _Symbol *dot;
 	struct _Symbol *decimal;
 } Absolute;
+
+typedef struct _Alphabets
+{
+	struct _Symbol *alphabets;
+	struct _Symbol *alphabet;
+} Alphabets;
 
 typedef struct _Factor
 {
@@ -94,6 +101,7 @@ typedef struct _Term
 typedef union _Component
 {
 	Absolute absolute;
+	Alphabets alphabets;
 	Factor factor;
 	Formula formula;
 	Numbers numbers;
@@ -177,6 +185,10 @@ void delete_symbol(Symbol *symbol)
 		if(symbol->component.absolute.decimal)delete_symbol(symbol->component.absolute.decimal);
 		break;
 	case alphabet:
+		break;
+	case alphabets:
+		if(symbol->component.alphabets.alphabets)delete_symbol(symbol->component.alphabets.alphabets);
+		if(symbol->component.alphabets.alphabet)delete_symbol(symbol->component.alphabets.alphabet);
 		break;
 	case asterisk:
 		break;
@@ -312,6 +324,8 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 {
 	ChainString *output;
 	ChainString *absolute_chain_string;
+	ChainString *alphabet_chain_string;
+	ChainString *alphabets_chain_string;
 	ChainString *decimal_chain_string;
 	ChainString *dot_chain_string;
 	ChainString *factor_chain_string;
@@ -325,6 +339,8 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	ChainString *right_parenthesis_chain_string;
 	ChainString *term_chain_string;
 	char *absolute_char_array;
+	char *alphabet_char_array;
+	char *alphabets_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
 	char *factor_char_array;
@@ -390,6 +406,35 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		{
 			delete_chain_string(decimal_chain_string);
 			free(decimal_char_array);
+		}
+		return output;
+	case alphabets:
+		if(symbol->component.alphabets.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.alphabets.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		if(symbol->component.alphabets.alphabet)
+		{
+			alphabet_chain_string = symbol_to_chain_string(symbol->component.alphabets.alphabet);
+			insert_char_front(alphabet_chain_string, alphabet_chain_string->first_character, ' ');
+			replace_chain_string(alphabet_chain_string, "\n", "\n ");
+			alphabet_char_array = create_char_array_from_chain_string(alphabet_chain_string);
+		}
+		else alphabet_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, alphabets_char_array, alphabet_char_array);
+		if(symbol->component.alphabets.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		if(symbol->component.alphabets.alphabet)
+		{
+			delete_chain_string(alphabet_chain_string);
+			free(alphabet_char_array);
 		}
 		return output;
 	case factor:
@@ -595,6 +640,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 {
 	static char const * const absolute_name = "absolute";
 	static char const * const alphabet_name = "alphabet";
+	static char const * const alphabets_name = "alphabets";
 	static char const * const asterisk_name = "asterisk";
 	static char const * const dot_name = "dot";
 	static char const * const factor_name = "factor";
@@ -614,6 +660,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return absolute_name;
 	case alphabet:
 		return alphabet_name;
+	case alphabets:
+		return alphabets_name;
 	case asterisk:
 		return asterisk_name;
 	case dot:
@@ -671,6 +719,9 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.absolute.integer)symbol->value += symbol->component.absolute.integer->value;
 		break;
 	case alphabet:
+		symbol->value = 0.0;
+		break;
+	case alphabets:
 		symbol->value = 0.0;
 		break;
 	case asterisk:
@@ -812,6 +863,57 @@ Symbols syntactic_analysis(Symbols symbols)
 			printf("\n<operand> ::= <absolute>\n");
 			print_symbols(symbols);
 			#endif
+			break;
+		case alphabet:
+			// <alphabets> ::= <alphabet>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = alphabets;
+			new_symbol->component.alphabets.alphabets = NULL;
+			new_symbol->component.alphabets.alphabet = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<alphabets> ::= <alphabet>\n");
+			print_symbols(symbols);
+			#endif
+			break;
+		case alphabets:
+			if(symbol->next && symbol->next->type == alphabet)
+			{
+				// <alphabets> ::= <alphabets> <alphabet>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = alphabets;
+				new_symbol->component.alphabets.alphabets = symbol;
+				new_symbol->component.alphabets.alphabet = symbol->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
+				printf("\n<alphabets> ::= <alphabets> <alphabet>\n");
+				print_symbols(symbols);
+				#endif
+			}
 			break;
 		case asterisk:
 			break;
