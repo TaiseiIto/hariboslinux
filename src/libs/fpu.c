@@ -88,14 +88,8 @@ double fpu_power(double base, double exponent)
 		}
 		else if(exponent == fpu_trunc(exponent))
 		{
-			if(exponent == 1.0)
-			{
-				return base;
-			}
-			else if(exponent == -1.0)
-			{
-				return 1.0 / base;
-			}
+			if(exponent == 1.0)return base;
+			else if(exponent == -1.0)return 1.0 / base;
 			else
 			{
 				int exponent_integer = (int)exponent;
