@@ -77,12 +77,40 @@ double fpu_power(double base, double exponent)
 	if(base == 0.0)return 0.0;
 	else if(0.0 < base)
 	{
-		fldl(&exponent);
-		fldl(&base);
-		fyl2x();
-		f2xm1();
-		fstpl(&result);
-		return result + 1.0;
+		if(-1.0 < exponent && exponent < 1.0)
+		{
+			fldl(&exponent);
+			fldl(&base);
+			fyl2x();
+			f2xm1();
+			fstpl(&result);
+			return result + 1.0;
+		}
+		else if(exponent == fpu_trunc(exponent))
+		{
+			if(exponent == 1.0)
+			{
+				return base;
+			}
+			else if(exponent == -1.0)
+			{
+				return 1.0 / base;
+			}
+			else
+			{
+				int exponent_integer = (int)exponent;
+				int exponent_half = exponent_integer / 2;
+				int exponent_remainder = exponent_integer % 2;
+				double power_half = fpu_power(base, exponent_half);
+				return power_half * power_half * fpu_power(base, exponent_remainder);
+			}
+		}
+		else
+		{
+			double exponent_integer = fpu_trunc(exponent);
+			double exponent_decimal = exponent - exponent_integer;
+			return fpu_power(base, exponent_integer) * fpu_power(base, exponent_decimal);
+		}
 	}
 	else // base < 0.0
 	{
@@ -116,6 +144,21 @@ double fpu_tan(double x)
 	fptan();
 	fincstp();
 	fstpl(&result);
+	return result;
+}
+
+double fpu_trunc(double x)
+{
+	double result;
+	unsigned short original_control;
+	unsigned short changed_control;
+	fnstcw(&original_control);
+	changed_control = (original_control & ~(FPU_CONTROL_ROUND_TOWARD_NEAREST | FPU_CONTROL_ROUND_DOWN | FPU_CONTROL_ROUND_UP | FPU_CONTROL_ROUND_TOWARD_ZERO)) | FPU_CONTROL_ROUND_TOWARD_ZERO;
+	fldcw(&changed_control);
+	fldl(&x);
+	frndint();
+	fstpl(&result);
+	fldcw(&original_control);
 	return result;
 }
 

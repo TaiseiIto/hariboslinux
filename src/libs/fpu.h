@@ -89,6 +89,7 @@ double fpu_power(double base, double exponent);
 double fpu_sin(double x);
 double fpu_sqrt(double x);
 double fpu_tan(double x);
+double fpu_trunc(double x);
 
 #endif
 
