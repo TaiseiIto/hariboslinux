@@ -1296,6 +1296,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			break;
 		case pi:
 			// <operand> ::= <pi>
+			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
 			new_symbol->component.operand.absolute = NULL;
 			new_symbol->component.operand.formula = NULL;
