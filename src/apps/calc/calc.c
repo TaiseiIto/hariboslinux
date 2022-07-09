@@ -5,15 +5,17 @@
 // <factor>            ::= <operand> | <factor> <asterisk> <operand> | <factor> <slash> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis>
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
+// <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
 // <numbers>           ::= <number> | <numbers> <number>
-// <number>            ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-// <dot>               ::= "."
-// <plus>              ::= "+"
-// <minux>             ::= "-"
-// <asterisk>          ::= "*"
-// <slash>             ::= "/"
-// <left_parenthesis>  ::= "("
-// <right_parenthesis> ::= ")"
+// <alphabet>          ::= 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z'
+// <number>            ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+// <dot>               ::= '.'
+// <plus>              ::= '+'
+// <minux>             ::= '-'
+// <asterisk>          ::= '*'
+// <slash>             ::= '/'
+// <left_parenthesis>  ::= '('
+// <right_parenthesis> ::= ')'
 
 #include "chain_string.h"
 #include "stdio.h"
@@ -25,6 +27,7 @@ struct _Symbol;
 typedef enum _SymbolType
 {
 	absolute,
+	alphabet,
 	asterisk,
 	dot,
 	factor,
@@ -173,6 +176,8 @@ void delete_symbol(Symbol *symbol)
 		if(symbol->component.absolute.dot)delete_symbol(symbol->component.absolute.dot);
 		if(symbol->component.absolute.decimal)delete_symbol(symbol->component.absolute.decimal);
 		break;
+	case alphabet:
+		break;
 	case asterisk:
 		break;
 	case dot:
@@ -285,21 +290,15 @@ SymbolType substring2symbol_type(Substring substring)
 			return slash;
 		case '.':
 			return dot;
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-			return number;
 		default:
-			ERROR(); // Invalid substring initial
-			exit(-1);
-			return invalid_symbol_type;
+			if('0' <= *substring.initial && *substring.initial <= '9')return number;
+			else if(('a' <= *substring.initial && *substring.initial <= 'z') || ('A' <= *substring.initial && *substring.initial <= 'Z'))return alphabet;
+			else
+			{
+				ERROR(); // Invalid substring initial
+				exit(-1);
+				return invalid_symbol_type;
+			}
 		}
 		break;
 	default:
@@ -341,6 +340,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
 	{
+	case alphabet:
 	case asterisk:
 	case dot:
 	case left_parenthesis:
@@ -594,6 +594,7 @@ char *symbol_to_string(Symbol const *symbol)
 char const *symbol_type_name(SymbolType symbol_type)
 {
 	static char const * const absolute_name = "absolute";
+	static char const * const alphabet_name = "alphabet";
 	static char const * const asterisk_name = "asterisk";
 	static char const * const dot_name = "dot";
 	static char const * const factor_name = "factor";
@@ -611,6 +612,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 	{
 	case absolute:
 		return absolute_name;
+	case alphabet:
+		return alphabet_name;
 	case asterisk:
 		return asterisk_name;
 	case dot:
@@ -666,6 +669,9 @@ void semantic_analysis(Symbol* symbol)
 			symbol->value = symbol->component.absolute.decimal->value / divisor;
 		}
 		if(symbol->component.absolute.integer)symbol->value += symbol->component.absolute.integer->value;
+		break;
+	case alphabet:
+		symbol->value = 0.0;
 		break;
 	case asterisk:
 		symbol->value = 0.0;
