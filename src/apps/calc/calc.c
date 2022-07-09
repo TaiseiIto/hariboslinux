@@ -3,7 +3,8 @@
 // <formula>           ::= <term>
 // <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
 // <factor>            ::= <operand> | <factor> <asterisk> <operand> | <factor> <slash> <operand>
-// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis>
+// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <pi>
+// <pi>                ::= <alphabets "pi">
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
 // <numbers>           ::= <number> | <numbers> <number>
@@ -18,6 +19,7 @@
 // <right_parenthesis> ::= ')'
 
 #include "chain_string.h"
+#include "math.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -38,6 +40,7 @@ typedef enum _SymbolType
 	number,
 	numbers,
 	operand,
+	pi,
 	plus,
 	right_parenthesis,
 	slash,
@@ -86,10 +89,16 @@ typedef struct _Numbers
 typedef struct _Operand
 {
 	struct _Symbol *absolute;
-	struct _Symbol *left_parenthesis;
 	struct _Symbol *formula;
+	struct _Symbol *left_parenthesis;
+	struct _Symbol *pi;
 	struct _Symbol *right_parenthesis;
 } Operand;
+
+typedef struct _Pi
+{
+	struct _Symbol *alphabets;
+} Pi;
 
 typedef struct _Term
 {
@@ -106,6 +115,7 @@ typedef union _Component
 	Formula formula;
 	Numbers numbers;
 	Operand operand;
+	Pi pi;
 	Term term;
 } Component;
 
@@ -214,9 +224,13 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case operand:
 		if(symbol->component.operand.absolute)delete_symbol(symbol->component.operand.absolute);
-		if(symbol->component.operand.left_parenthesis)delete_symbol(symbol->component.operand.left_parenthesis);
 		if(symbol->component.operand.formula)delete_symbol(symbol->component.operand.formula);
+		if(symbol->component.operand.left_parenthesis)delete_symbol(symbol->component.operand.left_parenthesis);
+		if(symbol->component.operand.pi)delete_symbol(symbol->component.operand.pi);
 		if(symbol->component.operand.right_parenthesis)delete_symbol(symbol->component.operand.right_parenthesis);
+		break;
+	case pi:
+		if(symbol->component.pi.alphabets)delete_symbol(symbol->component.pi.alphabets);
 		break;
 	case plus:
 		break;
@@ -336,6 +350,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	ChainString *numbers_chain_string;
 	ChainString *operand_chain_string;
 	ChainString *operator_chain_string;
+	ChainString *pi_chain_string;
 	ChainString *right_parenthesis_chain_string;
 	ChainString *term_chain_string;
 	char *absolute_char_array;
@@ -351,6 +366,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	char *numbers_char_array;
 	char *operand_char_array;
 	char *operator_char_array;
+	char *pi_char_array;
 	char *right_parenthesis_char_array;
 	char *term_char_array;
 	if(!symbol)return create_chain_string("");
@@ -533,14 +549,6 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			absolute_char_array = create_char_array_from_chain_string(absolute_chain_string);
 		}
 		else absolute_char_array = "";
-		if(symbol->component.operand.left_parenthesis)
-		{
-			left_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.left_parenthesis);
-			insert_char_front(left_parenthesis_chain_string, left_parenthesis_chain_string->first_character, ' ');
-			replace_chain_string(left_parenthesis_chain_string, "\n", "\n ");
-			left_parenthesis_char_array = create_char_array_from_chain_string(left_parenthesis_chain_string);
-		}
-		else left_parenthesis_char_array = "";
 		if(symbol->component.operand.formula)
 		{
 			formula_chain_string = symbol_to_chain_string(symbol->component.operand.formula);
@@ -549,6 +557,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			formula_char_array = create_char_array_from_chain_string(formula_chain_string);
 		}
 		else formula_char_array = "";
+		if(symbol->component.operand.left_parenthesis)
+		{
+			left_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.left_parenthesis);
+			insert_char_front(left_parenthesis_chain_string, left_parenthesis_chain_string->first_character, ' ');
+			replace_chain_string(left_parenthesis_chain_string, "\n", "\n ");
+			left_parenthesis_char_array = create_char_array_from_chain_string(left_parenthesis_chain_string);
+		}
+		else left_parenthesis_char_array = "";
+		if(symbol->component.operand.pi)
+		{
+			pi_chain_string = symbol_to_chain_string(symbol->component.operand.pi);
+			insert_char_front(pi_chain_string, pi_chain_string->first_character, ' ');
+			replace_chain_string(pi_chain_string, "\n", "\n ");
+			pi_char_array = create_char_array_from_chain_string(pi_chain_string);
+		}
+		else pi_char_array = "";
 		if(symbol->component.operand.right_parenthesis)
 		{
 			right_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.right_parenthesis);
@@ -557,26 +581,47 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			right_parenthesis_char_array = create_char_array_from_chain_string(right_parenthesis_chain_string);
 		}
 		else right_parenthesis_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, absolute_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, absolute_char_array, pi_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
 		if(symbol->component.operand.absolute)
 		{
 			delete_chain_string(absolute_chain_string);
 			free(absolute_char_array);
-		}
-		if(symbol->component.operand.left_parenthesis)
-		{
-			delete_chain_string(left_parenthesis_chain_string);
-			free(left_parenthesis_char_array);
 		}
 		if(symbol->component.operand.formula)
 		{
 			delete_chain_string(formula_chain_string);
 			free(formula_char_array);
 		}
+		if(symbol->component.operand.left_parenthesis)
+		{
+			delete_chain_string(left_parenthesis_chain_string);
+			free(left_parenthesis_char_array);
+		}
+		if(symbol->component.operand.pi)
+		{
+			delete_chain_string(pi_chain_string);
+			free(pi_char_array);
+		}
 		if(symbol->component.operand.right_parenthesis)
 		{
 			delete_chain_string(right_parenthesis_chain_string);
 			free(right_parenthesis_char_array);
+		}
+		return output;
+	case pi:
+		if(symbol->component.pi.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.pi.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, alphabets_char_array);
+		if(symbol->component.pi.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
 		}
 		return output;
 	case term:
@@ -650,6 +695,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const number_name = "number";
 	static char const * const numbers_name = "numbers";
 	static char const * const operand_name = "operand";
+	static char const * const pi_name = "pi";
 	static char const * const plus_name = "plus";
 	static char const * const right_parenthesis_name = "right parenthesis";
 	static char const * const slash_name = "slash";
@@ -680,6 +726,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return numbers_name;
 	case operand:
 		return operand_name;
+	case pi:
+		return pi_name;
 	case plus:
 		return plus_name;
 	case right_parenthesis:
@@ -776,6 +824,9 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
 		if(symbol->component.operand.absolute)symbol->value = symbol->component.operand.absolute->value;
 		else if(symbol->component.operand.formula)symbol->value = symbol->component.operand.formula->value;
+		break;
+	case pi:
+		symbol->value = M_PI;
 		break;
 	case plus:
 		symbol->value = 0.0;
@@ -913,6 +964,34 @@ Symbols syntactic_analysis(Symbols symbols)
 				printf("\n<alphabets> ::= <alphabets> <alphabet>\n");
 				print_symbols(symbols);
 				#endif
+			}
+			else
+			{
+				char *word = create_format_char_array("%0.*s", symbol->string.length, symbol->string.initial);
+				if(!strcmp(word, "pi"))
+				{
+					// <pi> ::= <alphabets "pi">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = pi;
+					new_symbol->component.pi.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<pi> ::= <alphabets \"pi\">\n");
+					print_symbols(symbols);
+					#endif
+				}
+				free(word);
 			}
 			break;
 		case asterisk:
@@ -1184,6 +1263,31 @@ Symbols syntactic_analysis(Symbols symbols)
 				print_symbols(symbols);
 				#endif
 			}
+			break;
+		case pi:
+			// <operand> ::= <pi>
+			new_symbol->type = operand;
+			new_symbol->component.operand.absolute = NULL;
+			new_symbol->component.operand.formula = NULL;
+			new_symbol->component.operand.left_parenthesis = NULL;
+			new_symbol->component.operand.pi = symbol;
+			new_symbol->component.operand.right_parenthesis = NULL;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<operand> ::= <pi>\n");
+			print_symbols(symbols);
+			#endif
 			break;
 		case right_parenthesis:
 			break;

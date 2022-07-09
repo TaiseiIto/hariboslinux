@@ -7,6 +7,7 @@
 
 	.globl	fldcw
 	.globl	fldl
+	.globl	fldpi
 	.globl	fnstcw
 	.globl	frndint
 	.globl	fstpl
@@ -16,6 +17,7 @@
 
 	.type	fldcw,				@function
 	.type	fldl,				@function
+	.type	fldpi,				@function
 	.type	fnstcw,				@function
 	.type	frndint,			@function
 	.type	fstpl,				@function
@@ -40,6 +42,13 @@ fldl:				# void fldl(double *x);
 	movl	%esp,	%ebp
 	movl	0x08(%ebp),%edx
 	fldl	(%edx)
+	leave
+	ret
+
+fldpi:				# void fldpi(void);
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fldpi
 	leave
 	ret
 

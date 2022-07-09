@@ -78,6 +78,7 @@ typedef struct _FPURegisters
 } FPURegisters;
 
 double fpu_floor(double x);
+double fpu_get_pi(void);
 
 #endif
 

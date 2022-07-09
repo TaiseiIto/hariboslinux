@@ -15,3 +15,11 @@ double fpu_floor(double x)
 	return x;
 }
 
+double fpu_get_pi(void)
+{
+	double pi;
+	fldpi();
+	fstpl(&pi);
+	return pi;
+}
+
