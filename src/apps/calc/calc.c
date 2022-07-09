@@ -24,6 +24,8 @@
 #include "stdlib.h"
 #include "string.h"
 
+#define DEBUG
+
 struct _Symbol;
 
 typedef enum _SymbolType
@@ -187,6 +189,11 @@ char *combine_argv(int argc, char const * const * const argv)
 
 void delete_symbol(Symbol *symbol)
 {
+	#ifdef DEBUG
+	char *symbol_string = symbol_to_string(symbol);
+	printf("DELETE\n%s\n", symbol_string);
+	free(symbol_string);
+	#endif
 	switch(symbol->type)
 	{
 	case absolute:
