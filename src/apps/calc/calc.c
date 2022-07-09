@@ -825,11 +825,13 @@ void semantic_analysis(Symbol* symbol)
 		break;
 	case operand:
 		if(symbol->component.operand.absolute)semantic_analysis(symbol->component.operand.absolute);
-		if(symbol->component.operand.left_parenthesis)semantic_analysis(symbol->component.operand.left_parenthesis);
 		if(symbol->component.operand.formula)semantic_analysis(symbol->component.operand.formula);
+		if(symbol->component.operand.left_parenthesis)semantic_analysis(symbol->component.operand.left_parenthesis);
+		if(symbol->component.operand.pi)semantic_analysis(symbol->component.operand.pi);
 		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
 		if(symbol->component.operand.absolute)symbol->value = symbol->component.operand.absolute->value;
 		else if(symbol->component.operand.formula)symbol->value = symbol->component.operand.formula->value;
+		else if(symbol->component.operand.pi)symbol->value = symbol->component.operand.pi->value;
 		break;
 	case pi:
 		symbol->value = M_PI;
