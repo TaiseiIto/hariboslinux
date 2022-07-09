@@ -79,10 +79,12 @@ typedef struct _FPURegisters
 
 double fpu_atan(double x);
 double fpu_cos(double x);
+double fpu_e(void);
 double fpu_floor(double x);
-double fpu_get_pi(void);
 double fpu_log(double base, double power);
 double fpu_log2(double power);
+double fpu_log2e(void);
+double fpu_pi(void);
 double fpu_power(double base, double exponent);
 double fpu_sin(double x);
 double fpu_sqrt(double x);

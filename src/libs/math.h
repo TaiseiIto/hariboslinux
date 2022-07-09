@@ -3,7 +3,8 @@
 
 #include "fpu.h"
 
-#define M_PI (fpu_get_pi())
+#define M_E (fpu_e())
+#define M_PI (fpu_pi())
 
 double floor(double x);
 double fmod(double x, double y);

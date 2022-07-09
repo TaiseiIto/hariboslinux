@@ -20,6 +20,11 @@ double fpu_cos(double x)
 	return result;
 }
 
+double fpu_e(void)
+{
+	return fpu_power(2.0, fpu_log2e());
+}
+
 double fpu_floor(double x)
 {
 	double result;
@@ -35,14 +40,6 @@ double fpu_floor(double x)
 	return result;
 }
 
-double fpu_get_pi(void)
-{
-	double pi;
-	fldpi();
-	fstpl(&pi);
-	return pi;
-}
-
 double fpu_log(double base, double power)
 {
 	return fpu_log2(power) / fpu_log2(base);
@@ -56,6 +53,22 @@ double fpu_log2(double power)
 	fyl2x();
 	fstpl(&result);
 	return result;
+}
+
+double fpu_log2e(void)
+{
+	double result;
+	fldl2e();
+	fstpl(&result);
+	return result;
+}
+
+double fpu_pi(void)
+{
+	double pi;
+	fldpi();
+	fstpl(&pi);
+	return pi;
 }
 
 double fpu_power(double base, double exponent)
