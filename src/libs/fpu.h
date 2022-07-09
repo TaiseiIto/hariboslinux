@@ -81,6 +81,7 @@ double fpu_atan(double x);
 double fpu_cos(double x);
 double fpu_floor(double x);
 double fpu_get_pi(void);
+double fpu_power(double base, double exponent);
 double fpu_sin(double x);
 double fpu_sqrt(double x);
 double fpu_tan(double x);

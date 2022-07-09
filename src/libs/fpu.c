@@ -3,23 +3,26 @@
 
 double fpu_atan(double x)
 {
+	double result;
 	fldl(&x);
 	fld1();
 	fpatan();
-	fstpl(&x);
-	return x;
+	fstpl(&result);
+	return result;
 }
 
 double fpu_cos(double x)
 {
+	double result;
 	fldl(&x);
 	fcos();
-	fstpl(&x);
-	return x;
+	fstpl(&result);
+	return result;
 }
 
 double fpu_floor(double x)
 {
+	double result;
 	unsigned short original_control;
 	unsigned short changed_control;
 	fnstcw(&original_control);
@@ -27,9 +30,9 @@ double fpu_floor(double x)
 	fldcw(&changed_control);
 	fldl(&x);
 	frndint();
-	fstpl(&x);
+	fstpl(&result);
 	fldcw(&original_control);
-	return x;
+	return result;
 }
 
 double fpu_get_pi(void)
@@ -40,28 +43,51 @@ double fpu_get_pi(void)
 	return pi;
 }
 
+double fpu_power(double base, double exponent)
+{
+	double result;
+	if(base == 0.0)return 0.0;
+	else if(0.0 < base)
+	{
+		fldl(&exponent);
+		fldl(&base);
+		fyl2x();
+		f2xm1();
+		fstpl(&result);
+		return result + 1.0;
+	}
+	else // base < 0.0
+	{
+		// Return NaN
+		return 0.0 / 0.0;
+	}
+}
+
 double fpu_sin(double x)
 {
+	double result;
 	fldl(&x);
 	fsin();
-	fstpl(&x);
-	return x;
+	fstpl(&result);
+	return result;
 }
 
 double fpu_sqrt(double x)
 {
+	double result;
 	fldl(&x);
 	fsqrt();
-	fstpl(&x);
-	return x;
+	fstpl(&result);
+	return result;
 }
 
 double fpu_tan(double x)
 {
+	double result;
 	fldl(&x);
 	fptan();
 	fincstp();
-	fstpl(&x);
-	return x;
+	fstpl(&result);
+	return result;
 }
 
