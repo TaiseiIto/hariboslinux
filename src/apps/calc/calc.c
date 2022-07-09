@@ -578,7 +578,8 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		else left_parenthesis_char_array = "";
 		if(symbol->component.operand.pi)
 		{
-			printf("pi_chain_string = symbol_to_chain_string(symbol->component.operand.pi);\n");
+			printf("symbol->component.operand.pi->type = %s\n", symbol_type_name(symbol->component.operand.pi->type));
+			printf("symbol->component.operand.pi = %p\n", symbol->component.operand.pi);
 			pi_chain_string = symbol_to_chain_string(symbol->component.operand.pi);
 			printf("insert_char_front(pi_chain_string, pi_chain_string->first_character, ' ');\n");
 			insert_char_front(pi_chain_string, pi_chain_string->first_character, ' ');
