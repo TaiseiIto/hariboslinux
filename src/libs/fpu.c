@@ -43,6 +43,21 @@ double fpu_get_pi(void)
 	return pi;
 }
 
+double fpu_log(double base, double power)
+{
+	return fpu_log2(power) / fpu_log2(base);
+}
+
+double fpu_log2(double power)
+{
+	double result;
+	fld1();
+	fldl(&power);
+	fyl2x();
+	fstpl(&result);
+	return result;
+}
+
 double fpu_power(double base, double exponent)
 {
 	double result;
