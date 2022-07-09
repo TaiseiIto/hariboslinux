@@ -44,6 +44,9 @@ RUN wget https://raw.githubusercontent.com/qemu/qemu/master/gdb-xml/i386-32bit.x
 # tmux setting
 RUN cp tmux/.tmux.conf ..
 
+# vim setting
+RUN cp vim/.vimrc ..
+
 # VNC port
 EXPOSE 5900
 
