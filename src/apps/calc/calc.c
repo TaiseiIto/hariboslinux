@@ -4,6 +4,7 @@
 // <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
 // <factor>            ::= <operand> | <factor> <asterisk> <operand> | <factor> <slash> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <pi>
+// <e>                 ::= <alphabets "e">
 // <pi>                ::= <alphabets "pi">
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
@@ -35,6 +36,7 @@ typedef enum _SymbolType
 	alphabets,
 	asterisk,
 	dot,
+	e,
 	factor,
 	formula,
 	left_parenthesis,
@@ -68,6 +70,11 @@ typedef struct _Alphabets
 	struct _Symbol *alphabets;
 	struct _Symbol *alphabet;
 } Alphabets;
+
+typedef struct _E
+{
+	struct _Symbol *alphabets;
+} E;
 
 typedef struct _Factor
 {
@@ -111,6 +118,7 @@ typedef union _Component
 {
 	Absolute absolute;
 	Alphabets alphabets;
+	E e;
 	Factor factor;
 	Formula formula;
 	Numbers numbers;
@@ -163,6 +171,9 @@ int main(int argc, char const * const * const argv)
 		exit(-1);
 	}
 	semantic_analysis(symbols.first_symbol);
+	#ifdef DEBUG
+	print_symbols(symbols);
+	#endif
 	printf("%.6llf\n", symbols.first_symbol->value);
 	delete_symbols(symbols);
 	free(input_string);
@@ -207,6 +218,9 @@ void delete_symbol(Symbol *symbol)
 	case asterisk:
 		break;
 	case dot:
+		break;
+	case e:
+		if(symbol->component.e.alphabets)delete_symbol(symbol->component.e.alphabets);
 		break;
 	case factor:
 		if(symbol->component.factor.factor)delete_symbol(symbol->component.factor.factor);
@@ -451,6 +465,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabet_char_array);
 		}
 		return output;
+	case e:
+		if(symbol->component.e.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.e.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, alphabets_char_array);
+		if(symbol->component.e.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case factor:
 		if(symbol->component.factor.factor)
 		{
@@ -660,6 +690,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const alphabets_name = "alphabets";
 	static char const * const asterisk_name = "asterisk";
 	static char const * const dot_name = "dot";
+	static char const * const e_name = "e";
 	static char const * const factor_name = "factor";
 	static char const * const formula_name = "formula";
 	static char const * const left_parenthesis_name = "left parenthesis";
@@ -684,6 +715,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return asterisk_name;
 	case dot:
 		return dot_name;
+	case e:
+		return e_name;
 	case factor:
 		return factor_name;
 	case formula:
@@ -749,6 +782,9 @@ void semantic_analysis(Symbol* symbol)
 		break;
 	case dot:
 		symbol->value = 0.0;
+		break;
+	case e:
+		symbol->value = M_E;
 		break;
 	case factor:
 		if(symbol->component.factor.factor)semantic_analysis(symbol->component.factor.factor);
@@ -937,7 +973,30 @@ Symbols syntactic_analysis(Symbols symbols)
 			else
 			{
 				char *word = create_format_char_array("%0.*s", symbol->string.length, symbol->string.initial);
-				if(!strcmp(word, "pi"))
+				if(!strcmp(word, "e"))
+				{
+					// <e> ::= <alphabets "e">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = e;
+					new_symbol->component.e.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<e> ::= <alphabets \"e\">\n");
+					print_symbols(symbols);
+					#endif
+				}
+				else if(!strcmp(word, "pi"))
 				{
 					// <pi> ::= <alphabets "pi">
 					new_symbol = malloc(sizeof(*new_symbol));
