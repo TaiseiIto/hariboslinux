@@ -1,16 +1,6 @@
 #include "fpu.h"
 #include "io.h"
 
-double fpu_atan(double x)
-{
-	double result;
-	fldl(&x);
-	fld1();
-	fpatan();
-	fstpl(&result);
-	return result;
-}
-
 double fpu_acos(double x)
 {
 	if(x == 0.0)return fpu_pi() / 2.0;
@@ -26,6 +16,21 @@ double fpu_asin(double x)
 	else if(0.0 <= x && x < 1.0)return fpu_atan(fpu_sqrt(x * x / (1.0 - x * x)));
 	else if(1.0 < x && x < 0.0)return -fpu_atan(fpu_sqrt(x * x / (1.0 - x * x)));
 	else return 0.0 / 0.0; // Return NaN
+}
+
+double fpu_atan(double x)
+{
+	return fpu_atan2(x, 1.0);
+}
+
+double fpu_atan2(double y, double x)
+{
+	double result;
+	fldl(&y);
+	fldl(&x);
+	fpatan();
+	fstpl(&result);
+	return result;
 }
 
 double fpu_cos(double x)

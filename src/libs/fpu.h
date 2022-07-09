@@ -77,9 +77,10 @@ typedef struct _FPURegisters
 	unsigned char data_registers[8][10];
 } FPURegisters;
 
-double fpu_atan(double x);
 double fpu_acos(double x);
 double fpu_asin(double x);
+double fpu_atan(double x);
+double fpu_atan2(double y, double x);
 double fpu_cos(double x);
 double fpu_cosh(double x);
 double fpu_e(void);

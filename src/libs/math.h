@@ -17,10 +17,26 @@
 #define M_SQRT2 (fpu_sqrt(2.0))
 #define M_SQRT1_2 (fpu_sqrt(1.0 / 2.0))
 
+double acos(double x);
+double asin(double x);
+double atan(double x);
+double atan2(double y, double x);
+double cos(double x);
+double cosh(double x);
+double exp(double x);
+double fabs(double x);
 double floor(double x);
 double fmod(double x, double y);
 long long int llabs(long long int a);
 long long int llsign(long long int a);
+double log(double x);
+double log10(double x);
+double pow(double x, double y);
+double sin(double x);
+double sinh(double x);
+double sqrt(double x);
+double tan(double x);
+double tanh(double x);
 
 #endif
 
