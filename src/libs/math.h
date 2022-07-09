@@ -4,6 +4,7 @@
 #include "fpu.h"
 
 #define M_E (fpu_e())
+#define M_LOG2E (fpu_log2e())
 #define M_PI (fpu_pi())
 
 double floor(double x);

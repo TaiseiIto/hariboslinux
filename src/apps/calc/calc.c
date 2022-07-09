@@ -172,7 +172,9 @@ int main(int argc, char const * const * const argv)
 	}
 	semantic_analysis(symbols.first_symbol);
 	#ifdef DEBUG
+	printf("\n");
 	print_symbols(symbols);
+	printf("\n");
 	#endif
 	printf("%.6llf\n", symbols.first_symbol->value);
 	delete_symbols(symbols);
