@@ -3,7 +3,7 @@
 // <formula>           ::= <term>
 // <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
 // <factor>            ::= <operand> | <factor> <asterisk> <operand> | <factor> <slash> <operand>
-// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <pi>
+// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi>
 // <e>                 ::= <alphabets "e">
 // <pi>                ::= <alphabets "pi">
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
@@ -1025,6 +1025,30 @@ Symbols syntactic_analysis(Symbols symbols)
 		case asterisk:
 			break;
 		case dot:
+			break;
+		case e:
+			// <operand> ::= <e>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = operand;
+			new_symbol->component.operand.value = symbol;
+			new_symbol->component.operand.left_parenthesis = NULL;
+			new_symbol->component.operand.right_parenthesis = NULL;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<operand> ::= <e>\n");
+			print_symbols(symbols);
+			#endif
 			break;
 		case factor:
 			if(symbol->next && (symbol->next->type == asterisk || symbol->next->type == slash) && symbol->next->next && symbol->next->next->type == operand)
