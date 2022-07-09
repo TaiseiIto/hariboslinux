@@ -87,7 +87,7 @@ double fpu_log(double base, double power);
 double fpu_log2(double power);
 double fpu_log2e(void);
 double fpu_pi(void);
-double fpu_power(double base, double exponent);
+double fpu_pow(double base, double exponent);
 double fpu_sin(double x);
 double fpu_sqrt(double x);
 double fpu_tan(double x);

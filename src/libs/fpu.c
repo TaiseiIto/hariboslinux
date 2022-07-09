@@ -39,7 +39,7 @@ double fpu_cos(double x)
 
 double fpu_e(void)
 {
-	return fpu_power(2.0, fpu_log2e());
+	return fpu_pow(2.0, fpu_log2e());
 }
 
 double fpu_floor(double x)
@@ -88,7 +88,7 @@ double fpu_pi(void)
 	return pi;
 }
 
-double fpu_power(double base, double exponent)
+double fpu_pow(double base, double exponent)
 {
 	double result;
 	if(base == 0.0)return 0.0;
@@ -112,15 +112,15 @@ double fpu_power(double base, double exponent)
 				int exponent_integer = (int)exponent;
 				int exponent_half = exponent_integer / 2;
 				int exponent_remainder = exponent_integer % 2;
-				double power_half = fpu_power(base, exponent_half);
-				return power_half * power_half * fpu_power(base, exponent_remainder);
+				double power_half = fpu_pow(base, exponent_half);
+				return power_half * power_half * fpu_pow(base, exponent_remainder);
 			}
 		}
 		else
 		{
 			double exponent_integer = fpu_trunc(exponent);
 			double exponent_decimal = exponent - exponent_integer;
-			return fpu_power(base, exponent_integer) * fpu_power(base, exponent_decimal);
+			return fpu_pow(base, exponent_integer) * fpu_pow(base, exponent_decimal);
 		}
 	}
 	else return 0.0 / 0.0; // if base < 0.0 then return NaN
