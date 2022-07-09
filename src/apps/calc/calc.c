@@ -895,8 +895,9 @@ Symbols syntactic_analysis(Symbols symbols)
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
 			new_symbol->component.operand.absolute = symbol;
-			new_symbol->component.operand.left_parenthesis = NULL;
 			new_symbol->component.operand.formula = NULL;
+			new_symbol->component.operand.left_parenthesis = NULL;
+			new_symbol->component.operand.pi = NULL;
 			new_symbol->component.operand.right_parenthesis = NULL;
 			new_symbol->string.initial = symbol->string.initial;
 			new_symbol->string.length = symbol->string.length;
@@ -1066,8 +1067,10 @@ Symbols syntactic_analysis(Symbols symbols)
 				// <operand> ::= <left_parenthesis> <formula> <right_parenthesis>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = operand;
-				new_symbol->component.operand.left_parenthesis = symbol;
+				new_symbol->component.operand.absolute = NULL;
 				new_symbol->component.operand.formula = symbol->next;
+				new_symbol->component.operand.left_parenthesis = symbol;
+				new_symbol->component.operand.pi = NULL;
 				new_symbol->component.operand.right_parenthesis = symbol->next->next;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
