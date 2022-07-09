@@ -5,27 +5,59 @@
 # Scratch registers: eax, ecx, edx
 # Preserved registers: ebx, esi, edi, ebp, esp
 
+	.globl	f2xm1
+	.globl	fcos
 	.globl	fldcw
 	.globl	fldl
+	.globl	fldl2e
 	.globl	fldpi
 	.globl	fnstcw
+	.globl	fpatan
+	.globl	fptan
 	.globl	frndint
+	.globl	fsin
+	.globl	fsqrt
 	.globl	fstpl
+	.globl	fyl2x
 	.globl	get_caller_variadic_arg
 	.globl	get_esp
 	.globl	system_call
 
+	.type	f2xm1,				@function
+	.type	fcos,				@function
 	.type	fldcw,				@function
 	.type	fldl,				@function
+	.type	fldl2e,				@function
 	.type	fldpi,				@function
 	.type	fnstcw,				@function
+	.type	fpatan,				@function
+	.type	fptan,				@function
 	.type	frndint,			@function
+	.type	fsin,				@function
+	.type	fsqrt,				@function
 	.type	fstpl,				@function
+	.type	fyl2x,				@function
 	.type	get_caller_variadic_arg,	@function
 	.type	get_esp,			@function
 	.type	system_call,			@function
 
 	.text
+
+f2xm1:				# void f2xm1(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	f2xm1
+	leave
+	ret
+
+fcos:				# void fcos(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fcos
+	leave
+	ret
 
 fldcw:				# void fldcw(unsigned short *control);
 0:
@@ -45,7 +77,16 @@ fldl:				# void fldl(double *x);
 	leave
 	ret
 
+fldl2e:				# void fldl2e(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fldl2e
+	leave
+	ret
+
 fldpi:				# void fldpi(void);
+0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	fldpi
@@ -61,11 +102,43 @@ fnstcw:				# void fnstcw(unsigned short *control);
 	leave
 	ret
 
+fpatan:				# void fpatan(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fpatan
+	leave
+	ret
+
+fptan:				# void fptan(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fptan
+	leave
+	ret
+
 frndint:			# void frndint(void);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	frndint
+	leave
+	ret
+
+fsin:				# void fsin(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fsin
+	leave
+	ret
+
+fsqrt:				# void fsqrt(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fsqrt
 	leave
 	ret
 
@@ -75,6 +148,14 @@ fstpl:				# void fstpl(double *x);
 	movl	%esp,	%ebp
 	movl	0x08(%ebp),%edx
 	fstpl	(%edx)
+	leave
+	ret
+
+fyl2x:				# void fyl2x(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fyl2x
 	leave
 	ret
 
