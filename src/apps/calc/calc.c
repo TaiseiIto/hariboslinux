@@ -90,11 +90,9 @@ typedef struct _Numbers
 
 typedef struct _Operand
 {
-	struct _Symbol *absolute;
-	struct _Symbol *formula;
 	struct _Symbol *left_parenthesis;
-	struct _Symbol *pi;
 	struct _Symbol *right_parenthesis;
+	struct _Symbol *value;
 } Operand;
 
 typedef struct _Pi
@@ -229,11 +227,9 @@ void delete_symbol(Symbol *symbol)
 		if(symbol->component.numbers.number)delete_symbol(symbol->component.numbers.number);
 		break;
 	case operand:
-		if(symbol->component.operand.absolute)delete_symbol(symbol->component.operand.absolute);
-		if(symbol->component.operand.formula)delete_symbol(symbol->component.operand.formula);
 		if(symbol->component.operand.left_parenthesis)delete_symbol(symbol->component.operand.left_parenthesis);
-		if(symbol->component.operand.pi)delete_symbol(symbol->component.operand.pi);
 		if(symbol->component.operand.right_parenthesis)delete_symbol(symbol->component.operand.right_parenthesis);
+		if(symbol->component.operand.value)delete_symbol(symbol->component.operand.value);
 		break;
 	case pi:
 		if(symbol->component.pi.alphabets)delete_symbol(symbol->component.pi.alphabets);
@@ -343,38 +339,34 @@ SymbolType substring2symbol_type(Substring substring)
 ChainString *symbol_to_chain_string(Symbol const *symbol)
 {
 	ChainString *output;
-	ChainString *absolute_chain_string;
 	ChainString *alphabet_chain_string;
 	ChainString *alphabets_chain_string;
 	ChainString *decimal_chain_string;
 	ChainString *dot_chain_string;
 	ChainString *factor_chain_string;
-	ChainString *formula_chain_string;
 	ChainString *integer_chain_string;
 	ChainString *left_parenthesis_chain_string;
 	ChainString *number_chain_string;
 	ChainString *numbers_chain_string;
 	ChainString *operand_chain_string;
 	ChainString *operator_chain_string;
-	ChainString *pi_chain_string;
 	ChainString *right_parenthesis_chain_string;
 	ChainString *term_chain_string;
-	char *absolute_char_array;
+	ChainString *value_chain_string;
 	char *alphabet_char_array;
 	char *alphabets_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
 	char *factor_char_array;
-	char *formula_char_array;
 	char *integer_char_array;
 	char *left_parenthesis_char_array;
 	char *number_char_array;
 	char *numbers_char_array;
 	char *operand_char_array;
 	char *operator_char_array;
-	char *pi_char_array;
 	char *right_parenthesis_char_array;
 	char *term_char_array;
+	char *value_char_array;
 	if(!symbol)return create_chain_string("");
 	switch(symbol->type)
 	{
@@ -547,22 +539,6 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		}
 		return output;
 	case operand:
-		if(symbol->component.operand.absolute)
-		{
-			absolute_chain_string = symbol_to_chain_string(symbol->component.operand.absolute);
-			insert_char_front(absolute_chain_string, absolute_chain_string->first_character, ' ');
-			replace_chain_string(absolute_chain_string, "\n", "\n ");
-			absolute_char_array = create_char_array_from_chain_string(absolute_chain_string);
-		}
-		else absolute_char_array = "";
-		if(symbol->component.operand.formula)
-		{
-			formula_chain_string = symbol_to_chain_string(symbol->component.operand.formula);
-			insert_char_front(formula_chain_string, formula_chain_string->first_character, ' ');
-			replace_chain_string(formula_chain_string, "\n", "\n ");
-			formula_char_array = create_char_array_from_chain_string(formula_chain_string);
-		}
-		else formula_char_array = "";
 		if(symbol->component.operand.left_parenthesis)
 		{
 			left_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.left_parenthesis);
@@ -571,14 +547,6 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			left_parenthesis_char_array = create_char_array_from_chain_string(left_parenthesis_chain_string);
 		}
 		else left_parenthesis_char_array = "";
-		if(symbol->component.operand.pi)
-		{
-			pi_chain_string = symbol_to_chain_string(symbol->component.operand.pi);
-			insert_char_front(pi_chain_string, pi_chain_string->first_character, ' ');
-			replace_chain_string(pi_chain_string, "\n", "\n ");
-			pi_char_array = create_char_array_from_chain_string(pi_chain_string);
-		}
-		else pi_char_array = "";
 		if(symbol->component.operand.right_parenthesis)
 		{
 			right_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.right_parenthesis);
@@ -587,31 +555,29 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			right_parenthesis_char_array = create_char_array_from_chain_string(right_parenthesis_chain_string);
 		}
 		else right_parenthesis_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, absolute_char_array, pi_char_array, left_parenthesis_char_array, formula_char_array, right_parenthesis_char_array);
-		if(symbol->component.operand.absolute)
+		if(symbol->component.operand.value)
 		{
-			delete_chain_string(absolute_chain_string);
-			free(absolute_char_array);
+			value_chain_string = symbol_to_chain_string(symbol->component.operand.value);
+			insert_char_front(value_chain_string, value_chain_string->first_character, ' ');
+			replace_chain_string(value_chain_string, "\n", "\n ");
+			value_char_array = create_char_array_from_chain_string(value_chain_string);
 		}
-		if(symbol->component.operand.formula)
-		{
-			delete_chain_string(formula_chain_string);
-			free(formula_char_array);
-		}
+		else value_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, left_parenthesis_char_array, value_char_array, right_parenthesis_char_array);
 		if(symbol->component.operand.left_parenthesis)
 		{
 			delete_chain_string(left_parenthesis_chain_string);
 			free(left_parenthesis_char_array);
 		}
-		if(symbol->component.operand.pi)
-		{
-			delete_chain_string(pi_chain_string);
-			free(pi_char_array);
-		}
 		if(symbol->component.operand.right_parenthesis)
 		{
 			delete_chain_string(right_parenthesis_chain_string);
 			free(right_parenthesis_char_array);
+		}
+		if(symbol->component.operand.value)
+		{
+			delete_chain_string(value_chain_string);
+			free(value_char_array);
 		}
 		return output;
 	case pi:
@@ -824,14 +790,10 @@ void semantic_analysis(Symbol* symbol)
 		symbol->value += symbol->component.numbers.number->value;
 		break;
 	case operand:
-		if(symbol->component.operand.absolute)semantic_analysis(symbol->component.operand.absolute);
-		if(symbol->component.operand.formula)semantic_analysis(symbol->component.operand.formula);
+		if(symbol->component.operand.value)semantic_analysis(symbol->component.operand.value);
 		if(symbol->component.operand.left_parenthesis)semantic_analysis(symbol->component.operand.left_parenthesis);
-		if(symbol->component.operand.pi)semantic_analysis(symbol->component.operand.pi);
 		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
-		if(symbol->component.operand.absolute)symbol->value = symbol->component.operand.absolute->value;
-		else if(symbol->component.operand.formula)symbol->value = symbol->component.operand.formula->value;
-		else if(symbol->component.operand.pi)symbol->value = symbol->component.operand.pi->value;
+		if(symbol->component.operand.value)symbol->value = symbol->component.operand.value->value;
 		break;
 	case pi:
 		symbol->value = M_PI;
@@ -902,10 +864,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			// <operand> ::= <absolute>
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
-			new_symbol->component.operand.absolute = symbol;
-			new_symbol->component.operand.formula = NULL;
+			new_symbol->component.operand.value = symbol;
 			new_symbol->component.operand.left_parenthesis = NULL;
-			new_symbol->component.operand.pi = NULL;
 			new_symbol->component.operand.right_parenthesis = NULL;
 			new_symbol->string.initial = symbol->string.initial;
 			new_symbol->string.length = symbol->string.length;
@@ -1075,10 +1035,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				// <operand> ::= <left_parenthesis> <formula> <right_parenthesis>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = operand;
-				new_symbol->component.operand.absolute = NULL;
-				new_symbol->component.operand.formula = symbol->next;
+				new_symbol->component.operand.value = symbol->next;
 				new_symbol->component.operand.left_parenthesis = symbol;
-				new_symbol->component.operand.pi = NULL;
 				new_symbol->component.operand.right_parenthesis = symbol->next->next;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
@@ -1279,10 +1237,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			// <operand> ::= <pi>
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
-			new_symbol->component.operand.absolute = NULL;
-			new_symbol->component.operand.formula = NULL;
+			new_symbol->component.operand.value = symbol;
 			new_symbol->component.operand.left_parenthesis = NULL;
-			new_symbol->component.operand.pi = symbol;
 			new_symbol->component.operand.right_parenthesis = NULL;
 			new_symbol->string.initial = symbol->string.initial;
 			new_symbol->string.length = symbol->string.length;
