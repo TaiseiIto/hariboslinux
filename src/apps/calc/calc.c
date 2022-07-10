@@ -994,7 +994,7 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
 		if(symbol->component.operand.value)
 		{
-			if(symbol->component.operand.function)switch(symbol->component.operand.function->type)
+			if(symbol->component.operand.function && symbol->component.operand.function->type == function && symbol->component.operand.function->component.function.function)switch(symbol->component.operand.function->component.function.function->type)
 			{
 			case function_sin:
 				symbol->value = sin(symbol->component.operand.value->value);
