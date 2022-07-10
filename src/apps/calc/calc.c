@@ -1438,8 +1438,6 @@ Symbols syntactic_analysis(Symbols symbols)
 			#endif
 			break;
 		case power:
-			if(symbol->previous && symbol->previous->type == asterisk)break;
-			if(symbol->previous && symbol->previous->type == slash)break;
 			if(symbol->next && symbol->next->type == circumflex && symbol->next->next && symbol->next->next->type == operand)
 			{
 				// <power> ::= <power> <circumflex> <operand>
