@@ -212,7 +212,7 @@ double fpu_tan(double x)
 	double result;
 	fldl(&x);
 	fptan();
-	fincstp();
+	fstpl(&result);
 	fstpl(&result);
 	return result;
 }
