@@ -23,7 +23,7 @@ double atan2(double y, double x)
 
 double cos(double x)
 {
-	return fpu_cos(x);
+	return fpu_cos(fmod(x, 2.0 * M_PI));
 }
 
 double cosh(double x)
@@ -81,7 +81,7 @@ double pow(double x, double y)
 
 double sin(double x)
 {
-	return fpu_sin(x);
+	return fpu_sin(fmod(x, 2.0 * M_PI));
 }
 
 double sinh(double x)
@@ -96,7 +96,7 @@ double sqrt(double x)
 
 double tan(double x)
 {
-	return fpu_tan(x);
+	return fpu_tan(fmod(x, 2.0 * M_PI));
 }
 
 double tanh(double x)
