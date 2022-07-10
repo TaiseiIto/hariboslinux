@@ -1150,6 +1150,7 @@ Symbols syntactic_analysis(Symbols symbols)
 		case factor:
 			if(symbol->next && (symbol->next->type == asterisk || symbol->next->type == slash) && symbol->next->next && symbol->next->next->type == power)
 			{
+				if(symbol->next->next->next && symbol->next->next->next->type == circumflex)break;
 				// <factor> ::= <factor> <asterisk> <power> | <factor> <slash> <power>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = factor;
