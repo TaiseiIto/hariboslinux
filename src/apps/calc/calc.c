@@ -1418,12 +1418,12 @@ void semantic_analysis(Symbol* symbol)
 		else symbol->value = symbol->component.factor.power->value;
 		break;
 	case formula:
-		if(symbol->component.formula.term)
-		{
-			semantic_analysis(symbol->component.formula.term);
-			symbol->value = symbol->component.formula.term->value;
-		}
-		else symbol->value = 0.0;
+		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
+		if(symbol->component.formula.comma)semantic_analysis(symbol->component.formula.comma);
+		if(symbol->component.formula.left_formula)semantic_analysis(symbol->component.formula.left_formula);
+		if(symbol->component.formula.right_formula)semantic_analysis(symbol->component.formula.right_formula);
+		if(symbol->component.formula.term)symbol->value = symbol->component.formula.term->value;
+		else symbol->value = 0.0 / 0.0;
 		break;
 	case function:
 		symbol->value = 0.0;
@@ -1477,7 +1477,13 @@ void semantic_analysis(Symbol* symbol)
 				symbol->value = cosh(symbol->component.operand.value->value);
 				break;
 			case function_log:
-				symbol->value = log2(symbol->component.operand.value->value);
+				if(symbol->component.operand.value->type == formula && symbol->component.operand.value->component.formula.left_formula && symbol->component.operand.value->component.formula.right_formula)symbol->value = log2(symbol->component.operand.value->component.formula.right_formula->value) / log2(symbol->component.operand.value->component.formula.left_formula->value);
+				else
+				{
+					ERROR(); // left_formula or right_formula is not found.
+					exit(-1);
+					break;
+				}
 				break;
 			case function_sin:
 				symbol->value = sin(symbol->component.operand.value->value);
