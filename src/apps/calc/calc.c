@@ -115,6 +115,7 @@ typedef struct _Numbers
 
 typedef struct _Operand
 {
+	struct _Symbol *function;
 	struct _Symbol *left_parenthesis;
 	struct _Symbol *right_parenthesis;
 	struct _Symbol *value;
@@ -279,6 +280,7 @@ void delete_symbol(Symbol *symbol)
 		if(symbol->component.numbers.number)delete_symbol(symbol->component.numbers.number);
 		break;
 	case operand:
+		if(symbol->component.operand.function)delete_symbol(symbol->component.operand.function);
 		if(symbol->component.operand.left_parenthesis)delete_symbol(symbol->component.operand.left_parenthesis);
 		if(symbol->component.operand.right_parenthesis)delete_symbol(symbol->component.operand.right_parenthesis);
 		if(symbol->component.operand.value)delete_symbol(symbol->component.operand.value);
@@ -653,6 +655,14 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		}
 		return output;
 	case operand:
+		if(symbol->component.operand.function)
+		{
+			function_chain_string = symbol_to_chain_string(symbol->component.operand.function);
+			insert_char_front(function_chain_string, function_chain_string->first_character, ' ');
+			replace_chain_string(function_chain_string, "\n", "\n ");
+			function_char_array = create_char_array_from_chain_string(function_chain_string);
+		}
+		else function_char_array = "";
 		if(symbol->component.operand.left_parenthesis)
 		{
 			left_parenthesis_chain_string = symbol_to_chain_string(symbol->component.operand.left_parenthesis);
@@ -677,7 +687,12 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			value_char_array = create_char_array_from_chain_string(value_chain_string);
 		}
 		else value_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, left_parenthesis_char_array, value_char_array, right_parenthesis_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, function_char_array, left_parenthesis_char_array, value_char_array, right_parenthesis_char_array);
+		if(symbol->component.operand.function)
+		{
+			delete_chain_string(function_chain_string);
+			free(function_char_array);
+		}
 		if(symbol->component.operand.left_parenthesis)
 		{
 			delete_chain_string(left_parenthesis_chain_string);
@@ -973,10 +988,30 @@ void semantic_analysis(Symbol* symbol)
 		symbol->value += symbol->component.numbers.number->value;
 		break;
 	case operand:
+		if(symbol->component.operand.function)semantic_analysis(symbol->component.operand.function);
 		if(symbol->component.operand.value)semantic_analysis(symbol->component.operand.value);
 		if(symbol->component.operand.left_parenthesis)semantic_analysis(symbol->component.operand.left_parenthesis);
 		if(symbol->component.operand.right_parenthesis)semantic_analysis(symbol->component.operand.right_parenthesis);
-		if(symbol->component.operand.value)symbol->value = symbol->component.operand.value->value;
+		if(symbol->component.operand.value)
+		{
+			if(symbol->component.operand.function)switch(symbol->component.operand.function->type)
+			{
+			case function_sin:
+				symbol->value = sin(symbol->component.operand.value->value);
+				break;
+			default:
+				ERROR(); // Invalid function type.
+				exit(-1);
+				break;
+			}
+			else symbol->value = symbol->component.operand.value->value;
+		}
+		else
+		{
+			ERROR(); // value is not found.
+			exit(-1);
+			break;
+		}
 		break;
 	case pi:
 		symbol->value = M_PI;
@@ -1063,6 +1098,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			// <operand> ::= <absolute>
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
+			new_symbol->component.operand.function = NULL;
 			new_symbol->component.operand.value = symbol;
 			new_symbol->component.operand.left_parenthesis = NULL;
 			new_symbol->component.operand.right_parenthesis = NULL;
@@ -1218,6 +1254,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			// <operand> ::= <e>
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
+			new_symbol->component.operand.function = NULL;
 			new_symbol->component.operand.value = symbol;
 			new_symbol->component.operand.left_parenthesis = NULL;
 			new_symbol->component.operand.right_parenthesis = NULL;
@@ -1301,6 +1338,40 @@ Symbols syntactic_analysis(Symbols symbols)
 			break;
 		case formula:
 			break;
+		case function:
+			if(symbol->next && symbol->next->type == left_parenthesis && symbol->next->next && symbol->next->next->type == formula && symbol->next->next->next && symbol->next->next->next->type == right_parenthesis)
+			{
+				// <operand> ::= <function> <left_parenthesis> <formula> <right_parenthesis>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = operand;
+				new_symbol->component.operand.function = symbol;
+				new_symbol->component.operand.left_parenthesis = symbol->next;
+				new_symbol->component.operand.value = symbol->next->next;
+				new_symbol->component.operand.right_parenthesis = symbol->next->next->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length + symbol->next->next->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next->next->next)symbols.last_symbol = new_symbol;
+				symbol->next->next->next->previous = NULL;
+				symbol->next->next->next->next = NULL;
+				symbol->next->next->previous = NULL;
+				symbol->next->next->next = NULL;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
+				printf("\n<operand> ::= <function> <left_parenthesis> <formula> <right_parenthesis>\n");
+				print_symbols(symbols);
+				#endif
+			}
+			break;
 		case function_sin:
 			// <function> ::= <function_sin>
 			new_symbol = malloc(sizeof(*new_symbol));
@@ -1329,6 +1400,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				// <operand> ::= <left_parenthesis> <formula> <right_parenthesis>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = operand;
+				new_symbol->component.operand.function = NULL;
 				new_symbol->component.operand.value = symbol->next;
 				new_symbol->component.operand.left_parenthesis = symbol;
 				new_symbol->component.operand.right_parenthesis = symbol->next->next;
@@ -1530,6 +1602,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			// <operand> ::= <pi>
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
+			new_symbol->component.operand.function = NULL;
 			new_symbol->component.operand.value = symbol;
 			new_symbol->component.operand.left_parenthesis = NULL;
 			new_symbol->component.operand.right_parenthesis = NULL;
