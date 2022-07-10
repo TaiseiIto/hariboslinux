@@ -1903,6 +1903,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			print_symbols(symbols);
 			#endif
 			break;
+		case function_cosh:
+			// <function> ::= <function_cosh>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_cosh>\n");
+			print_symbols(symbols);
+			#endif
+			break;
 		case function_sin:
 			// <function> ::= <function_sin>
 			new_symbol = malloc(sizeof(*new_symbol));
@@ -1925,6 +1947,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			print_symbols(symbols);
 			#endif
 			break;
+		case function_sinh:
+			// <function> ::= <function_sinh>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_sinh>\n");
+			print_symbols(symbols);
+			#endif
+			break;
 		case function_tan:
 			// <function> ::= <function_tan>
 			new_symbol = malloc(sizeof(*new_symbol));
@@ -1944,6 +1988,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			#ifdef DEBUG
 			printf("\n<function> ::= <function_tan>\n");
+			print_symbols(symbols);
+			#endif
+			break;
+		case function_tanh:
+			// <function> ::= <function_tanh>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_tanh>\n");
 			print_symbols(symbols);
 			#endif
 			break;
