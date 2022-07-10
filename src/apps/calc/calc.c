@@ -4,9 +4,11 @@
 // <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
 // <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
 // <power>             ::= <operand> | <power> <circumflex> <operand>
-// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi>
+// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi> | <function> <left_parenthesis> <formula> <right_parenthesis>
+// <function>          ::= <function_sin>
 // <e>                 ::= <alphabets "e">
 // <pi>                ::= <alphabets "pi">
+// <function_sin>      ::= <alphabets "sin">
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
 // <numbers>           ::= <number> | <numbers> <number>
@@ -42,6 +44,7 @@ typedef enum _SymbolType
 	e,
 	factor,
 	formula,
+	function_sin,
 	left_parenthesis,
 	minus,
 	number,
@@ -92,6 +95,11 @@ typedef struct _Formula
 	struct _Symbol *term;
 } Formula;
 
+typedef struct _FunctionSin
+{
+	struct _Symbol *alphabets;
+} FunctionSin;
+
 typedef struct _Numbers
 {
 	struct _Symbol *numbers;
@@ -132,6 +140,7 @@ typedef union _Component
 	E e;
 	Factor factor;
 	Formula formula;
+	FunctionSin function_sin;
 	Numbers numbers;
 	Operand operand;
 	Pi pi;
@@ -245,6 +254,9 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case formula:
 		if(symbol->component.formula.term)delete_symbol(symbol->component.formula.term);
+		break;
+	case function_sin:
+		if(symbol->component.function_sin.alphabets)delete_symbol(symbol->component.function_sin.alphabets);
 		break;
 	case left_parenthesis:
 		break;
@@ -567,6 +579,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(term_char_array);
 		}
 		return output;
+	case function_sin:
+		if(symbol->component.function_sin.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_sin.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, alphabets_char_array);
+		if(symbol->component.function_sin.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case numbers:
 		if(symbol->component.numbers.numbers)
 		{
@@ -764,6 +792,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const e_name = "e";
 	static char const * const factor_name = "factor";
 	static char const * const formula_name = "formula";
+	static char const * const function_sin_name = "function_sin";
 	static char const * const left_parenthesis_name = "left parenthesis";
 	static char const * const minus_name = "minus";
 	static char const * const number_name = "number";
@@ -795,6 +824,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return factor_name;
 	case formula:
 		return formula_name;
+	case function_sin:
+		return function_sin_name;
 	case left_parenthesis:
 		return left_parenthesis_name;
 	case minus:
@@ -888,6 +919,9 @@ void semantic_analysis(Symbol* symbol)
 	case formula:
 		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
 		symbol->value = symbol->component.formula.term->value;
+		break;
+	case function_sin:
+		symbol->value = 0.0;
 		break;
 	case left_parenthesis:
 		symbol->value = 0.0;
@@ -1111,6 +1145,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 					#ifdef DEBUG
 					printf("\n<pi> ::= <alphabets \"pi\">\n");
+					print_symbols(symbols);
+					#endif
+				}
+				else if(!strcmp(word, "sin"))
+				{
+					// <function_sin> ::= <alphabets "sin">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_sin;
+					new_symbol->component.function_sin.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_sin> ::= <alphabets \"function_sin\">\n");
 					print_symbols(symbols);
 					#endif
 				}
