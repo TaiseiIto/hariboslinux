@@ -9,8 +9,11 @@
 // <pi>                ::= <alphabets "pi">
 // <e>                 ::= <alphabets "e">
 // <function_acos>     ::= <alphabets "acos">
+// <function_acosh>     ::= <alphabets "acosh">
 // <function_asin>     ::= <alphabets "asin">
+// <function_asinh>     ::= <alphabets "asinh">
 // <function_atan>     ::= <alphabets "atan">
+// <function_atanh>     ::= <alphabets "atanh">
 // <function_cos>      ::= <alphabets "cos">
 // <function_cosh>      ::= <alphabets "cosh">
 // <function_sin>      ::= <alphabets "sin">
@@ -54,8 +57,11 @@ typedef enum _SymbolType
 	formula,
 	function,
 	function_acos,
+	function_acosh,
 	function_asin,
+	function_asinh,
 	function_atan,
+	function_atanh,
 	function_cos,
 	function_cosh,
 	function_sin,
@@ -122,15 +128,30 @@ typedef struct _FunctionAcos
 	struct _Symbol *alphabets;
 } FunctionAcos;
 
+typedef struct _FunctionAcosh
+{
+	struct _Symbol *alphabets;
+} FunctionAcosh;
+
 typedef struct _FunctionAsin
 {
 	struct _Symbol *alphabets;
 } FunctionAsin;
 
+typedef struct _FunctionAsinh
+{
+	struct _Symbol *alphabets;
+} FunctionAsinh;
+
 typedef struct _FunctionAtan
 {
 	struct _Symbol *alphabets;
 } FunctionAtan;
+
+typedef struct _FunctionAtanh
+{
+	struct _Symbol *alphabets;
+} FunctionAtanh;
 
 typedef struct _FunctionCos
 {
@@ -205,14 +226,17 @@ typedef union _Component
 	Formula formula;
 	Function function;
 	FunctionAcos function_acos;
+	FunctionAcosh function_acosh;
 	FunctionAsin function_asin;
+	FunctionAsinh function_asinh;
 	FunctionAtan function_atan;
+	FunctionAtanh function_atanh;
 	FunctionCos function_cos;
-	FunctionCos function_cosh;
+	FunctionCosh function_cosh;
 	FunctionSin function_sin;
-	FunctionSin function_sinh;
+	FunctionSinh function_sinh;
 	FunctionTan function_tan;
-	FunctionTan function_tanh;
+	FunctionTanh function_tanh;
 	Numbers numbers;
 	Operand operand;
 	Pi pi;
@@ -334,11 +358,20 @@ void delete_symbol(Symbol *symbol)
 	case function_acos:
 		if(symbol->component.function_acos.alphabets)delete_symbol(symbol->component.function_acos.alphabets);
 		break;
+	case function_acosh:
+		if(symbol->component.function_acosh.alphabets)delete_symbol(symbol->component.function_acosh.alphabets);
+		break;
 	case function_asin:
 		if(symbol->component.function_asin.alphabets)delete_symbol(symbol->component.function_asin.alphabets);
 		break;
+	case function_asinh:
+		if(symbol->component.function_asinh.alphabets)delete_symbol(symbol->component.function_asinh.alphabets);
+		break;
 	case function_atan:
 		if(symbol->component.function_atan.alphabets)delete_symbol(symbol->component.function_atan.alphabets);
+		break;
+	case function_atanh:
+		if(symbol->component.function_atanh.alphabets)delete_symbol(symbol->component.function_atanh.alphabets);
 		break;
 	case function_cos:
 		if(symbol->component.function_cos.alphabets)delete_symbol(symbol->component.function_cos.alphabets);
@@ -714,6 +747,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabets_char_array);
 		}
 		return output;
+	case function_acosh:
+		if(symbol->component.function_acosh.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_acosh.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_acosh.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case function_asin:
 		if(symbol->component.function_asin.alphabets)
 		{
@@ -730,6 +779,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabets_char_array);
 		}
 		return output;
+	case function_asinh:
+		if(symbol->component.function_asinh.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_asinh.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_asinh.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case function_atan:
 		if(symbol->component.function_atan.alphabets)
 		{
@@ -741,6 +806,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		else alphabets_char_array = "";
 		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
 		if(symbol->component.function_atan.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
+	case function_atanh:
+		if(symbol->component.function_atanh.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_atanh.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_atanh.alphabets)
 		{
 			delete_chain_string(alphabets_chain_string);
 			free(alphabets_char_array);
@@ -1054,8 +1135,11 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const formula_name = "formula";
 	static char const * const function_name = "function";
 	static char const * const function_acos_name = "function_acos";
+	static char const * const function_acosh_name = "function_acosh";
 	static char const * const function_asin_name = "function_asin";
+	static char const * const function_asinh_name = "function_asinh";
 	static char const * const function_atan_name = "function_atan";
+	static char const * const function_atanh_name = "function_atanh";
 	static char const * const function_cos_name = "function_cos";
 	static char const * const function_cosh_name = "function_cosh";
 	static char const * const function_sin_name = "function_sin";
@@ -1097,10 +1181,16 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return function_name;
 	case function_acos:
 		return function_acos_name;
+	case function_acosh:
+		return function_acosh_name;
 	case function_asin:
 		return function_asin_name;
+	case function_asinh:
+		return function_asinh_name;
 	case function_atan:
 		return function_atan_name;
+	case function_atanh:
+		return function_atanh_name;
 	case function_cos:
 		return function_cos_name;
 	case function_cosh:
@@ -1240,11 +1330,20 @@ void semantic_analysis(Symbol* symbol)
 			case function_acos:
 				symbol->value = acos(symbol->component.operand.value->value);
 				break;
+			case function_acosh:
+				symbol->value = acosh(symbol->component.operand.value->value);
+				break;
 			case function_asin:
 				symbol->value = asin(symbol->component.operand.value->value);
 				break;
+			case function_asinh:
+				symbol->value = asinh(symbol->component.operand.value->value);
+				break;
 			case function_atan:
 				symbol->value = atan(symbol->component.operand.value->value);
+				break;
+			case function_atanh:
+				symbol->value = atanh(symbol->component.operand.value->value);
 				break;
 			case function_cos:
 				symbol->value = cos(symbol->component.operand.value->value);
@@ -1460,6 +1559,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					print_symbols(symbols);
 					#endif
 				}
+				else if(!strcmp(word, "acosh"))
+				{
+					// <function_acosh> ::= <alphabets "acosh">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_acosh;
+					new_symbol->component.function_acosh.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_acosh> ::= <alphabets \"acosh\">\n");
+					print_symbols(symbols);
+					#endif
+				}
 				else if(!strcmp(word, "asin"))
 				{
 					// <function_asin> ::= <alphabets "asin">
@@ -1483,6 +1605,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					print_symbols(symbols);
 					#endif
 				}
+				else if(!strcmp(word, "asinh"))
+				{
+					// <function_asinh> ::= <alphabets "asinh">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_asinh;
+					new_symbol->component.function_asinh.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_asinh> ::= <alphabets \"asinh\">\n");
+					print_symbols(symbols);
+					#endif
+				}
 				else if(!strcmp(word, "atan"))
 				{
 					// <function_atan> ::= <alphabets "atan">
@@ -1503,6 +1648,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 					#ifdef DEBUG
 					printf("\n<function_atan> ::= <alphabets \"atan\">\n");
+					print_symbols(symbols);
+					#endif
+				}
+				else if(!strcmp(word, "atanh"))
+				{
+					// <function_atanh> ::= <alphabets "atanh">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_atanh;
+					new_symbol->component.function_atanh.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_atanh> ::= <alphabets \"atanh\">\n");
 					print_symbols(symbols);
 					#endif
 				}
@@ -1843,6 +2011,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			print_symbols(symbols);
 			#endif
 			break;
+		case function_acosh:
+			// <function> ::= <function_acosh>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_acosh>\n");
+			print_symbols(symbols);
+			#endif
+			break;
 		case function_asin:
 			// <function> ::= <function_asin>
 			new_symbol = malloc(sizeof(*new_symbol));
@@ -1865,6 +2055,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			print_symbols(symbols);
 			#endif
 			break;
+		case function_asinh:
+			// <function> ::= <function_asinh>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_asinh>\n");
+			print_symbols(symbols);
+			#endif
+			break;
 		case function_atan:
 			// <function> ::= <function_atan>
 			new_symbol = malloc(sizeof(*new_symbol));
@@ -1884,6 +2096,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			#ifdef DEBUG
 			printf("\n<function> ::= <function_atan>\n");
+			print_symbols(symbols);
+			#endif
+			break;
+		case function_atanh:
+			// <function> ::= <function_atanh>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_atanh>\n");
 			print_symbols(symbols);
 			#endif
 			break;

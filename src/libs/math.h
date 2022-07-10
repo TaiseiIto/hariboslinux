@@ -18,8 +18,11 @@
 #define M_SQRT1_2 (fpu_sqrt(1.0 / 2.0))
 
 double acos(double x);
+double acosh(double x);
 double asin(double x);
+double asinh(double x);
 double atan(double x);
+double atanh(double x);
 double atan2(double y, double x);
 double cos(double x);
 double cosh(double x);

@@ -6,14 +6,29 @@ double acos(double x)
 	return fpu_acos(x);
 }
 
+double acosh(double x)
+{
+	return fpu_acosh(x);
+}
+
 double asin(double x)
 {
 	return fpu_asin(x);
 }
 
+double asinh(double x)
+{
+	return fpu_asinh(x);
+}
+
 double atan(double x)
 {
 	return fpu_atan(x);
+}
+
+double atanh(double x)
+{
+	return fpu_atanh(x);
 }
 
 double atan2(double y, double x)
