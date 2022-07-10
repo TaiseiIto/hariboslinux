@@ -19,11 +19,22 @@ typedef union
 } VariadicArg;
 
 // FPU instructions
+void f2xm1(void);
+void fcos(void);
+void fincstp(void);
+void fld1(void);
 void fldcw(unsigned short *control);
 void fldl(double *x);
+void fldl2e(void);
+void fldpi(void);
 void fnstcw(unsigned short *control);
+void fpatan(void);
+void fptan(void);
 void frndint(void);
+void fsin(void);
+void fsqrt(void);
 void fstpl(double *x);
+void fyl2x(void);
 
 // get nth arg in caller variadic arg function
 // the first arg is 0th

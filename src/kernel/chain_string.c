@@ -568,13 +568,11 @@ void replace_chain_string(ChainString *string, char const *target, char const *r
 				if(character->character != *target_reader)
 				{
 					target_reader = target;
+					character = target_candidate;
 					target_candidate = NULL;
-					if(character->character == *target)
-					{
-						target_candidate = character;
-						target_reader = target;
-					}
+					target_reader = NULL;
 				}
+				else target_reader++;
 			}
 			else
 			{
@@ -582,14 +580,15 @@ void replace_chain_string(ChainString *string, char const *target, char const *r
 				character = target_candidate->previous;
 				delete_chars(string, target_candidate, strlen(target));
 				target_candidate = NULL;
+				target_reader = NULL;
 			}
 		}
 		else if(character->character == *target)
 		{
 			target_candidate = character;
 			target_reader = target;
+			target_reader++;
 		}
-		target_reader++;
 	}
 }
 
