@@ -771,6 +771,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const operand_name = "operand";
 	static char const * const pi_name = "pi";
 	static char const * const plus_name = "plus";
+	static char const * const power_name = "power";
 	static char const * const right_parenthesis_name = "right parenthesis";
 	static char const * const slash_name = "slash";
 	static char const * const term_name = "term";
@@ -808,6 +809,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return pi_name;
 	case plus:
 		return plus_name;
+	case power:
+		return power_name;
 	case right_parenthesis:
 		return right_parenthesis_name;
 	case slash:
