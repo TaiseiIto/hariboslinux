@@ -1252,8 +1252,14 @@ void semantic_analysis(Symbol* symbol)
 			case function_cosh:
 				symbol->value = cosh(symbol->component.operand.value->value);
 				break;
+			case function_sin:
+				symbol->value = sin(symbol->component.operand.value->value);
+				break;
 			case function_sinh:
 				symbol->value = sinh(symbol->component.operand.value->value);
+				break;
+			case function_tan:
+				symbol->value = tan(symbol->component.operand.value->value);
 				break;
 			case function_tanh:
 				symbol->value = tanh(symbol->component.operand.value->value);
