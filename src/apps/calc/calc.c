@@ -5,21 +5,22 @@
 // <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
 // <power>             ::= <operand> | <power> <circumflex> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi> | <function> <left_parenthesis> <formula> <right_parenthesis>
-// <function>          ::= <function_acos> | <function_asin> | <function_atan> | <function_cos> | <function_cosh> | <function_sin> | <function_sinh> | <function_tan> | <function_tanh>
+// <function>          ::= <function_acos> | <function_asin> | <function_atan> | <function_cos> | <function_cosh> | <function_sin> | <function_sinh> | <function_sqrt> | <function_tan> | <function_tanh>
 // <pi>                ::= <alphabets "pi">
 // <e>                 ::= <alphabets "e">
 // <function_acos>     ::= <alphabets "acos">
-// <function_acosh>     ::= <alphabets "acosh">
+// <function_acosh>    ::= <alphabets "acosh">
 // <function_asin>     ::= <alphabets "asin">
-// <function_asinh>     ::= <alphabets "asinh">
+// <function_asinh>    ::= <alphabets "asinh">
 // <function_atan>     ::= <alphabets "atan">
-// <function_atanh>     ::= <alphabets "atanh">
+// <function_atanh>    ::= <alphabets "atanh">
 // <function_cos>      ::= <alphabets "cos">
-// <function_cosh>      ::= <alphabets "cosh">
+// <function_cosh>     ::= <alphabets "cosh">
 // <function_sin>      ::= <alphabets "sin">
-// <function_sinh>      ::= <alphabets "sinh">
+// <function_sinh>     ::= <alphabets "sinh">
+// <function_sqrt>     ::= <alphabets "sqrt">
 // <function_tan>      ::= <alphabets "tan">
-// <function_tanh>      ::= <alphabets "tanh">
+// <function_tanh>     ::= <alphabets "tanh">
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
 // <numbers>           ::= <number> | <numbers> <number>
@@ -66,6 +67,7 @@ typedef enum _SymbolType
 	function_cosh,
 	function_sin,
 	function_sinh,
+	function_sqrt,
 	function_tan,
 	function_tanh,
 	left_parenthesis,
@@ -173,6 +175,11 @@ typedef struct _FunctionSinh
 	struct _Symbol *alphabets;
 } FunctionSinh;
 
+typedef struct _FunctionSqrt
+{
+	struct _Symbol *alphabets;
+} FunctionSqrt;
+
 typedef struct _FunctionTan
 {
 	struct _Symbol *alphabets;
@@ -235,6 +242,7 @@ typedef union _Component
 	FunctionCosh function_cosh;
 	FunctionSin function_sin;
 	FunctionSinh function_sinh;
+	FunctionSqrt function_sqrt;
 	FunctionTan function_tan;
 	FunctionTanh function_tanh;
 	Numbers numbers;
@@ -384,6 +392,9 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case function_sinh:
 		if(symbol->component.function_sinh.alphabets)delete_symbol(symbol->component.function_sinh.alphabets);
+		break;
+	case function_sqrt:
+		if(symbol->component.function_sqrt.alphabets)delete_symbol(symbol->component.function_sqrt.alphabets);
 		break;
 	case function_tan:
 		if(symbol->component.function_tan.alphabets)delete_symbol(symbol->component.function_tan.alphabets);
@@ -891,6 +902,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabets_char_array);
 		}
 		return output;
+	case function_sqrt:
+		if(symbol->component.function_sqrt.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_sqrt.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_sqrt.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case function_tan:
 		if(symbol->component.function_tan.alphabets)
 		{
@@ -1144,6 +1171,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const function_cosh_name = "function_cosh";
 	static char const * const function_sin_name = "function_sin";
 	static char const * const function_sinh_name = "function_sinh";
+	static char const * const function_sqrt_name = "function_sqrt";
 	static char const * const function_tan_name = "function_tan";
 	static char const * const function_tanh_name = "function_tanh";
 	static char const * const left_parenthesis_name = "left parenthesis";
@@ -1199,6 +1227,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return function_sin_name;
 	case function_sinh:
 		return function_sinh_name;
+	case function_sqrt:
+		return function_sqrt_name;
 	case function_tan:
 		return function_tan_name;
 	case function_tanh:
@@ -1356,6 +1386,9 @@ void semantic_analysis(Symbol* symbol)
 				break;
 			case function_sinh:
 				symbol->value = sinh(symbol->component.operand.value->value);
+				break;
+			case function_sqrt:
+				symbol->value = sqrt(symbol->component.operand.value->value);
 				break;
 			case function_tan:
 				symbol->value = tan(symbol->component.operand.value->value);
@@ -1812,6 +1845,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					print_symbols(symbols);
 					#endif
 				}
+				else if(!strcmp(word, "sqrt"))
+				{
+					// <function_sqrt> ::= <alphabets "sqrt">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_sqrt;
+					new_symbol->component.function_sqrt.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_sqrt> ::= <alphabets \"sqrt\">\n");
+					print_symbols(symbols);
+					#endif
+				}
 				else if(!strcmp(word, "tan"))
 				{
 					// <function_tan> ::= <alphabets "tan">
@@ -2206,6 +2262,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			#ifdef DEBUG
 			printf("\n<function> ::= <function_sinh>\n");
+			print_symbols(symbols);
+			#endif
+			break;
+		case function_sqrt:
+			// <function> ::= <function_sqrt>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_sqrt>\n");
 			print_symbols(symbols);
 			#endif
 			break;
