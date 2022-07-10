@@ -1379,8 +1379,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			break;
 		case operand:
-			if(symbol->previous && symbol->previous->type == asterisk)break;
-			if(symbol->previous && symbol->previous->type == slash)break;
+			if(symbol->previous && symbol->previous->type == circumflex)break;
 			else
 			{
 				// <power> ::= <operand>
@@ -1432,6 +1431,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			#endif
 			break;
 		case power:
+			if(symbol->previous && symbol->previous->type == asterisk)break;
+			if(symbol->previous && symbol->previous->type == slash)break;
 			if(symbol->next && symbol->next->type == circumflex && symbol->next->next && symbol->next->next->type == operand)
 			{
 				// <power> ::= <power> <circumflex> <operand>
@@ -1461,7 +1462,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				print_symbols(symbols);
 				#endif
 			}
-			else if(!symbol->next || symbol->next->type != circumflex)
+			else if(symbol->next && symbol->next->type == circumflex)break;
+			else
 			{
 				// <factor> ::= <power>
 				new_symbol = malloc(sizeof(*new_symbol));
