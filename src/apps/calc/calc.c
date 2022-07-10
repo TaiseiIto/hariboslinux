@@ -1113,6 +1113,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			break;
 		case asterisk:
 			break;
+		case circumflex:
+			break;
 		case dot:
 			break;
 		case e:
@@ -1459,7 +1461,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				print_symbols(symbols);
 				#endif
 			}
-			else
+			else if(!symbol->next || symbol->next->type != circumflex)
 			{
 				// <factor> ::= <power>
 				new_symbol = malloc(sizeof(*new_symbol));
