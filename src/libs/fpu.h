@@ -79,8 +79,11 @@ typedef struct _FPURegisters
 
 double fpu_2_to_the(double x);
 double fpu_acos(double x);
+double fpu_acosh(double x);
 double fpu_asin(double x);
+double fpu_asinh(double x);
 double fpu_atan(double x);
+double fpu_atanh(double x);
 double fpu_atan2(double y, double x);
 double fpu_cos(double x);
 double fpu_cosh(double x);

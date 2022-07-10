@@ -40,6 +40,12 @@ double fpu_acos(double x)
 	else return 0.0 / 0.0; // Return NaN
 }
 
+double fpu_acosh(double x)
+{
+	if(x < 1.0)return 0.0 / 0.0; // Return NaN
+	return fpu_log(fpu_e(), x + fpu_sqrt(x * x - 1.0));
+}
+
 double fpu_asin(double x)
 {
 	if(x == 1.0)return fpu_pi() / 2.0;
@@ -49,9 +55,20 @@ double fpu_asin(double x)
 	else return 0.0 / 0.0; // Return NaN
 }
 
+double fpu_asinh(double x)
+{
+	return fpu_log(fpu_e(), x + fpu_sqrt(x * x + 1.0));
+}
+
 double fpu_atan(double x)
 {
 	return fpu_atan2(x, 1.0);
+}
+
+double fpu_atanh(double x)
+{
+	if(x < -1.0 || 1.0 < x)return 0.0 / 0.0; // Return NaN
+	return 0.5 * fpu_log(fpu_e(), (1.0 + x) / (1.0 - x));
 }
 
 double fpu_atan2(double y, double x)
