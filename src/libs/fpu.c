@@ -1,6 +1,37 @@
 #include "fpu.h"
 #include "io.h"
 
+double fpu_2_to_the(double exponent)
+{
+	double result;
+	if(-1.0 < exponent && exponent < 1.0)
+	{
+		fldl(&exponent);
+		f2xm1();
+		fstpl(&result);
+		return result + 1.0;
+	}
+	else if(exponent == fpu_trunc(exponent))
+	{
+		if(exponent == 1.0)return 2.0;
+		else if(exponent == -1.0)return 0.5;
+		else
+		{
+			int exponent_integer = (int)exponent;
+			int exponent_half = exponent_integer / 2;
+			int exponent_remainder = exponent_integer % 2;
+			double power_half = fpu_2_to_the(exponent_half);
+			return power_half * power_half * fpu_2_to_the(exponent_remainder);
+		}
+	}
+	else
+	{
+		double exponent_integer = fpu_trunc(exponent);
+		double exponent_decimal = exponent - exponent_integer;
+		return fpu_2_to_the(exponent_integer) * fpu_2_to_the(exponent_decimal);
+	}
+}
+
 double fpu_acos(double x)
 {
 	if(x == 0.0)return fpu_pi() / 2.0;
@@ -101,7 +132,6 @@ double fpu_pi(void)
 
 double fpu_pow(double base, double exponent)
 {
-	double result;
 	if(base == 0.0)return 0.0;
 	else if(0.0 < base)
 	{
@@ -110,9 +140,8 @@ double fpu_pow(double base, double exponent)
 			fldl(&exponent);
 			fldl(&base);
 			fyl2x();
-			f2xm1();
-			fstpl(&result);
-			return result + 1.0;
+			fstpl(&exponent);
+			return fpu_2_to_the(exponent);
 		}
 		else if(exponent == fpu_trunc(exponent))
 		{

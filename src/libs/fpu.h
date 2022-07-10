@@ -77,6 +77,7 @@ typedef struct _FPURegisters
 	unsigned char data_registers[8][10];
 } FPURegisters;
 
+double fpu_2_to_the(double x);
 double fpu_acos(double x);
 double fpu_asin(double x);
 double fpu_atan(double x);
