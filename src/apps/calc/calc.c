@@ -1,6 +1,6 @@
 // Backus Naur Form
 //
-// <formula>           ::= <term>
+// <formula>           ::= <term> | <formula> <comma> <formula>
 // <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
 // <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
 // <power>             ::= <operand> | <power> <circumflex> <operand>
@@ -122,6 +122,9 @@ typedef struct _Factor
 typedef struct _Formula
 {
 	struct _Symbol *term;
+	struct _Symbol *comma;
+	struct _Symbol *left_formula;
+	struct _Symbol *right_formula;
 } Formula;
 
 typedef struct _Function
@@ -371,6 +374,9 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case formula:
 		if(symbol->component.formula.term)delete_symbol(symbol->component.formula.term);
+		if(symbol->component.formula.comma)delete_symbol(symbol->component.formula.comma);
+		if(symbol->component.formula.left_formula)delete_symbol(symbol->component.formula.left_formula);
+		if(symbol->component.formula.right_formula)delete_symbol(symbol->component.formula.right_formula);
 		break;
 	case function:
 		if(symbol->component.function.function)delete_symbol(symbol->component.function.function);
@@ -553,34 +559,40 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	ChainString *alphabet_chain_string;
 	ChainString *alphabets_chain_string;
 	ChainString *circumflex_chain_string;
+	ChainString *comma_chain_string;
 	ChainString *decimal_chain_string;
 	ChainString *dot_chain_string;
 	ChainString *factor_chain_string;
 	ChainString *function_chain_string;
 	ChainString *integer_chain_string;
+	ChainString *left_formula_chain_string;
 	ChainString *left_parenthesis_chain_string;
 	ChainString *number_chain_string;
 	ChainString *numbers_chain_string;
 	ChainString *operand_chain_string;
 	ChainString *operator_chain_string;
 	ChainString *power_chain_string;
+	ChainString *right_formula_chain_string;
 	ChainString *right_parenthesis_chain_string;
 	ChainString *term_chain_string;
 	ChainString *value_chain_string;
 	char *alphabet_char_array;
 	char *alphabets_char_array;
 	char *circumflex_char_array;
+	char *comma_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
 	char *factor_char_array;
 	char *function_char_array;
 	char *integer_char_array;
+	char *left_formula_char_array;
 	char *left_parenthesis_char_array;
 	char *number_char_array;
 	char *numbers_char_array;
 	char *operand_char_array;
 	char *operator_char_array;
 	char *power_char_array;
+	char *right_formula_char_array;
 	char *right_parenthesis_char_array;
 	char *term_char_array;
 	char *value_char_array;
@@ -737,11 +749,50 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			term_char_array = create_char_array_from_chain_string(term_chain_string);
 		}
 		else term_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array);
+		if(symbol->component.formula.comma)
+		{
+			comma_chain_string = symbol_to_chain_string(symbol->component.formula.comma);
+			insert_char_front(comma_chain_string, comma_chain_string->first_character, ' ');
+			replace_chain_string(comma_chain_string, "\n", "\n ");
+			comma_char_array = create_char_array_from_chain_string(comma_chain_string);
+		}
+		else comma_char_array = "";
+		if(symbol->component.formula.left_formula)
+		{
+			left_formula_chain_string = symbol_to_chain_string(symbol->component.formula.left_formula);
+			insert_char_front(left_formula_chain_string, left_formula_chain_string->first_character, ' ');
+			replace_chain_string(left_formula_chain_string, "\n", "\n ");
+			left_formula_char_array = create_char_array_from_chain_string(left_formula_chain_string);
+		}
+		else left_formula_char_array = "";
+		if(symbol->component.formula.right_formula)
+		{
+			right_formula_chain_string = symbol_to_chain_string(symbol->component.formula.right_formula);
+			insert_char_front(right_formula_chain_string, right_formula_chain_string->first_character, ' ');
+			replace_chain_string(right_formula_chain_string, "\n", "\n ");
+			right_formula_char_array = create_char_array_from_chain_string(right_formula_chain_string);
+		}
+		else right_formula_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array, left_formula_char_array, comma_char_array, right_formula_char_array);
 		if(symbol->component.formula.term)
 		{
 			delete_chain_string(term_chain_string);
 			free(term_char_array);
+		}
+		if(symbol->component.formula.comma)
+		{
+			delete_chain_string(comma_chain_string);
+			free(comma_char_array);
+		}
+		if(symbol->component.formula.left_formula)
+		{
+			delete_chain_string(left_formula_chain_string);
+			free(left_formula_char_array);
+		}
+		if(symbol->component.formula.right_formula)
+		{
+			delete_chain_string(right_formula_chain_string);
+			free(right_formula_char_array);
 		}
 		return output;
 	case function:
@@ -1367,8 +1418,12 @@ void semantic_analysis(Symbol* symbol)
 		else symbol->value = symbol->component.factor.power->value;
 		break;
 	case formula:
-		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
-		symbol->value = symbol->component.formula.term->value;
+		if(symbol->component.formula.term)
+		{
+			semantic_analysis(symbol->component.formula.term);
+			symbol->value = symbol->component.formula.term->value;
+		}
+		else symbol->value = 0.0;
 		break;
 	case function:
 		symbol->value = 0.0;
@@ -2753,6 +2808,9 @@ Symbols syntactic_analysis(Symbols symbols)
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = formula;
 				new_symbol->component.formula.term = symbol;
+				new_symbol->component.formula.comma = NULL;
+				new_symbol->component.formula.left_formula = NULL;
+				new_symbol->component.formula.right_formula = NULL;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length;
 				new_symbol->previous = symbol->previous;
