@@ -5,15 +5,18 @@
 // <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
 // <power>             ::= <operand> | <power> <circumflex> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi> | <function> <left_parenthesis> <formula> <right_parenthesis>
-// <function>          ::= <function_acos> | <function_asin> | <function_atan> | <function_cos> | <function_sin> | <function_tan>
+// <function>          ::= <function_acos> | <function_asin> | <function_atan> | <function_cos> | <function_cosh> | <function_sin> | <function_sinh> | <function_tan> | <function_tanh>
 // <pi>                ::= <alphabets "pi">
 // <e>                 ::= <alphabets "e">
 // <function_acos>     ::= <alphabets "acos">
 // <function_asin>     ::= <alphabets "asin">
 // <function_atan>     ::= <alphabets "atan">
 // <function_cos>      ::= <alphabets "cos">
+// <function_cosh>      ::= <alphabets "cosh">
 // <function_sin>      ::= <alphabets "sin">
+// <function_sinh>      ::= <alphabets "sinh">
 // <function_tan>      ::= <alphabets "tan">
+// <function_tanh>      ::= <alphabets "tanh">
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
 // <numbers>           ::= <number> | <numbers> <number>
@@ -54,8 +57,11 @@ typedef enum _SymbolType
 	function_asin,
 	function_atan,
 	function_cos,
+	function_cosh,
 	function_sin,
+	function_sinh,
 	function_tan,
+	function_tanh,
 	left_parenthesis,
 	minus,
 	number,
@@ -131,15 +137,30 @@ typedef struct _FunctionCos
 	struct _Symbol *alphabets;
 } FunctionCos;
 
+typedef struct _FunctionCosh
+{
+	struct _Symbol *alphabets;
+} FunctionCosh;
+
 typedef struct _FunctionSin
 {
 	struct _Symbol *alphabets;
 } FunctionSin;
 
+typedef struct _FunctionSinh
+{
+	struct _Symbol *alphabets;
+} FunctionSinh;
+
 typedef struct _FunctionTan
 {
 	struct _Symbol *alphabets;
 } FunctionTan;
+
+typedef struct _FunctionTanh
+{
+	struct _Symbol *alphabets;
+} FunctionTanh;
 
 typedef struct _Numbers
 {
@@ -187,8 +208,11 @@ typedef union _Component
 	FunctionAsin function_asin;
 	FunctionAtan function_atan;
 	FunctionCos function_cos;
+	FunctionCos function_cosh;
 	FunctionSin function_sin;
+	FunctionSin function_sinh;
 	FunctionTan function_tan;
+	FunctionTan function_tanh;
 	Numbers numbers;
 	Operand operand;
 	Pi pi;
@@ -319,11 +343,20 @@ void delete_symbol(Symbol *symbol)
 	case function_cos:
 		if(symbol->component.function_cos.alphabets)delete_symbol(symbol->component.function_cos.alphabets);
 		break;
+	case function_cosh:
+		if(symbol->component.function_cosh.alphabets)delete_symbol(symbol->component.function_cosh.alphabets);
+		break;
 	case function_sin:
 		if(symbol->component.function_sin.alphabets)delete_symbol(symbol->component.function_sin.alphabets);
 		break;
+	case function_sinh:
+		if(symbol->component.function_sinh.alphabets)delete_symbol(symbol->component.function_sinh.alphabets);
+		break;
 	case function_tan:
 		if(symbol->component.function_tan.alphabets)delete_symbol(symbol->component.function_tan.alphabets);
+		break;
+	case function_tanh:
+		if(symbol->component.function_tanh.alphabets)delete_symbol(symbol->component.function_tanh.alphabets);
 		break;
 	case left_parenthesis:
 		break;
@@ -729,6 +762,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabets_char_array);
 		}
 		return output;
+	case function_cosh:
+		if(symbol->component.function_cosh.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_cosh.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_cosh.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case function_sin:
 		if(symbol->component.function_sin.alphabets)
 		{
@@ -745,6 +794,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabets_char_array);
 		}
 		return output;
+	case function_sinh:
+		if(symbol->component.function_sinh.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_sinh.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_sinh.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case function_tan:
 		if(symbol->component.function_tan.alphabets)
 		{
@@ -756,6 +821,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		else alphabets_char_array = "";
 		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
 		if(symbol->component.function_tan.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
+	case function_tanh:
+		if(symbol->component.function_tanh.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_tanh.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_tanh.alphabets)
 		{
 			delete_chain_string(alphabets_chain_string);
 			free(alphabets_char_array);
@@ -976,8 +1057,11 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const function_asin_name = "function_asin";
 	static char const * const function_atan_name = "function_atan";
 	static char const * const function_cos_name = "function_cos";
+	static char const * const function_cosh_name = "function_cosh";
 	static char const * const function_sin_name = "function_sin";
+	static char const * const function_sinh_name = "function_sinh";
 	static char const * const function_tan_name = "function_tan";
+	static char const * const function_tanh_name = "function_tanh";
 	static char const * const left_parenthesis_name = "left parenthesis";
 	static char const * const minus_name = "minus";
 	static char const * const number_name = "number";
@@ -1019,10 +1103,16 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return function_atan_name;
 	case function_cos:
 		return function_cos_name;
+	case function_cosh:
+		return function_cosh_name;
 	case function_sin:
 		return function_sin_name;
+	case function_sinh:
+		return function_sinh_name;
 	case function_tan:
 		return function_tan_name;
+	case function_tanh:
+		return function_tanh_name;
 	case left_parenthesis:
 		return left_parenthesis_name;
 	case minus:
@@ -1159,11 +1249,14 @@ void semantic_analysis(Symbol* symbol)
 			case function_cos:
 				symbol->value = cos(symbol->component.operand.value->value);
 				break;
-			case function_sin:
-				symbol->value = sin(symbol->component.operand.value->value);
+			case function_cosh:
+				symbol->value = cosh(symbol->component.operand.value->value);
 				break;
-			case function_tan:
-				symbol->value = tan(symbol->component.operand.value->value);
+			case function_sinh:
+				symbol->value = sinh(symbol->component.operand.value->value);
+				break;
+			case function_tanh:
+				symbol->value = tanh(symbol->component.operand.value->value);
 				break;
 			default:
 				ERROR(); // Invalid function type.
@@ -1407,7 +1500,7 @@ Symbols syntactic_analysis(Symbols symbols)
 					print_symbols(symbols);
 					#endif
 				}
-				if(!strcmp(word, "cos"))
+				else if(!strcmp(word, "cos"))
 				{
 					// <function_cos> ::= <alphabets "cos">
 					new_symbol = malloc(sizeof(*new_symbol));
@@ -1427,6 +1520,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 					#ifdef DEBUG
 					printf("\n<function_cos> ::= <alphabets \"cos\">\n");
+					print_symbols(symbols);
+					#endif
+				}
+				else if(!strcmp(word, "cosh"))
+				{
+					// <function_cosh> ::= <alphabets "cosh">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_cosh;
+					new_symbol->component.function_cosh.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_cosh> ::= <alphabets \"cosh\">\n");
 					print_symbols(symbols);
 					#endif
 				}
@@ -1499,6 +1615,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					print_symbols(symbols);
 					#endif
 				}
+				else if(!strcmp(word, "sinh"))
+				{
+					// <function_sinh> ::= <alphabets "sinh">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_sinh;
+					new_symbol->component.function_sinh.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_sinh> ::= <alphabets \"sinh\">\n");
+					print_symbols(symbols);
+					#endif
+				}
 				else if(!strcmp(word, "tan"))
 				{
 					// <function_tan> ::= <alphabets "tan">
@@ -1519,6 +1658,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 					#ifdef DEBUG
 					printf("\n<function_tan> ::= <alphabets \"tan\">\n");
+					print_symbols(symbols);
+					#endif
+				}
+				else if(!strcmp(word, "tanh"))
+				{
+					// <function_tanh> ::= <alphabets "tanh">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_tanh;
+					new_symbol->component.function_tanh.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_tanh> ::= <alphabets \"tanh\">\n");
 					print_symbols(symbols);
 					#endif
 				}
