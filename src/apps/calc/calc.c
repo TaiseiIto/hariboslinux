@@ -2,7 +2,8 @@
 //
 // <formula>           ::= <term>
 // <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
-// <factor>            ::= <operand> | <factor> <asterisk> <operand> | <factor> <slash> <operand>
+// <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
+// <power>             ::= <operand> | <power> <circumflex> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi>
 // <e>                 ::= <alphabets "e">
 // <pi>                ::= <alphabets "pi">
@@ -16,6 +17,7 @@
 // <minux>             ::= '-'
 // <asterisk>          ::= '*'
 // <slash>             ::= '/'
+// <circumflex>        ::= '^'
 // <left_parenthesis>  ::= '('
 // <right_parenthesis> ::= ')'
 
@@ -35,6 +37,7 @@ typedef enum _SymbolType
 	alphabet,
 	alphabets,
 	asterisk,
+	circumflex,
 	dot,
 	e,
 	factor,
@@ -46,6 +49,7 @@ typedef enum _SymbolType
 	operand,
 	pi,
 	plus,
+	power,
 	right_parenthesis,
 	slash,
 	term,
@@ -80,7 +84,7 @@ typedef struct _Factor
 {
 	struct _Symbol *factor;
 	struct _Symbol *operator;
-	struct _Symbol *operand;
+	struct _Symbol *power;
 } Factor;
 
 typedef struct _Formula
@@ -107,6 +111,13 @@ typedef struct _Pi
 	struct _Symbol *alphabets;
 } Pi;
 
+typedef struct _Power
+{
+	struct _Symbol *power;
+	struct _Symbol *circumflex;
+	struct _Symbol *operand;
+} Power;
+
 typedef struct _Term
 {
 	struct _Symbol *term;
@@ -124,6 +135,7 @@ typedef union _Component
 	Numbers numbers;
 	Operand operand;
 	Pi pi;
+	Power power;
 	Term term;
 } Component;
 
@@ -219,6 +231,8 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case asterisk:
 		break;
+	case circumflex:
+		break;
 	case dot:
 		break;
 	case e:
@@ -227,7 +241,7 @@ void delete_symbol(Symbol *symbol)
 	case factor:
 		if(symbol->component.factor.factor)delete_symbol(symbol->component.factor.factor);
 		if(symbol->component.factor.operator)delete_symbol(symbol->component.factor.operator);
-		if(symbol->component.factor.operand)delete_symbol(symbol->component.factor.operand);
+		if(symbol->component.factor.power)delete_symbol(symbol->component.factor.power);
 		break;
 	case formula:
 		if(symbol->component.formula.term)delete_symbol(symbol->component.formula.term);
@@ -251,6 +265,11 @@ void delete_symbol(Symbol *symbol)
 		if(symbol->component.pi.alphabets)delete_symbol(symbol->component.pi.alphabets);
 		break;
 	case plus:
+		break;
+	case power:
+		if(symbol->component.power.power)delete_symbol(symbol->component.power.power);
+		if(symbol->component.power.circumflex)delete_symbol(symbol->component.power.circumflex);
+		if(symbol->component.power.operand)delete_symbol(symbol->component.power.operand);
 		break;
 	case right_parenthesis:
 		break;
@@ -332,6 +351,8 @@ SymbolType substring2symbol_type(Substring substring)
 			return asterisk;
 		case '/':
 			return slash;
+		case '^':
+			return circumflex;
 		case '.':
 			return dot;
 		default:
@@ -357,6 +378,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	ChainString *output;
 	ChainString *alphabet_chain_string;
 	ChainString *alphabets_chain_string;
+	ChainString *circumflex_chain_string;
 	ChainString *decimal_chain_string;
 	ChainString *dot_chain_string;
 	ChainString *factor_chain_string;
@@ -366,11 +388,13 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	ChainString *numbers_chain_string;
 	ChainString *operand_chain_string;
 	ChainString *operator_chain_string;
+	ChainString *power_chain_string;
 	ChainString *right_parenthesis_chain_string;
 	ChainString *term_chain_string;
 	ChainString *value_chain_string;
 	char *alphabet_char_array;
 	char *alphabets_char_array;
+	char *circumflex_char_array;
 	char *decimal_char_array;
 	char *dot_char_array;
 	char *factor_char_array;
@@ -380,6 +404,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	char *numbers_char_array;
 	char *operand_char_array;
 	char *operator_char_array;
+	char *power_char_array;
 	char *right_parenthesis_char_array;
 	char *term_char_array;
 	char *value_char_array;
@@ -388,6 +413,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	{
 	case alphabet:
 	case asterisk:
+	case circumflex:
 	case dot:
 	case left_parenthesis:
 	case minus:
@@ -500,15 +526,15 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			operator_char_array = create_char_array_from_chain_string(operator_chain_string);
 		}
 		else operator_char_array = "";
-		if(symbol->component.factor.operand)
+		if(symbol->component.factor.power)
 		{
-			operand_chain_string = symbol_to_chain_string(symbol->component.factor.operand);
-			insert_char_front(operand_chain_string, operand_chain_string->first_character, ' ');
-			replace_chain_string(operand_chain_string, "\n", "\n ");
-			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
+			power_chain_string = symbol_to_chain_string(symbol->component.factor.power);
+			insert_char_front(power_chain_string, power_chain_string->first_character, ' ');
+			replace_chain_string(power_chain_string, "\n", "\n ");
+			power_char_array = create_char_array_from_chain_string(power_chain_string);
 		}
-		else operand_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, factor_char_array, operator_char_array, operand_char_array);
+		else power_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, factor_char_array, operator_char_array, power_char_array);
 		if(symbol->component.factor.factor)
 		{
 			delete_chain_string(factor_chain_string);
@@ -519,10 +545,10 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			delete_chain_string(operator_chain_string);
 			free(operator_char_array);
 		}
-		if(symbol->component.factor.operand)
+		if(symbol->component.factor.power)
 		{
-			delete_chain_string(operand_chain_string);
-			free(operand_char_array);
+			delete_chain_string(power_chain_string);
+			free(power_char_array);
 		}
 		return output;
 	case formula:
@@ -628,6 +654,48 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabets_char_array);
 		}
 		return output;
+	case power:
+		if(symbol->component.power.power)
+		{
+			power_chain_string = symbol_to_chain_string(symbol->component.power.power);
+			insert_char_front(power_chain_string, power_chain_string->first_character, ' ');
+			replace_chain_string(power_chain_string, "\n", "\n ");
+			power_char_array = create_char_array_from_chain_string(power_chain_string);
+		}
+		else power_char_array = "";
+		if(symbol->component.power.circumflex)
+		{
+			circumflex_chain_string = symbol_to_chain_string(symbol->component.power.circumflex);
+			insert_char_front(circumflex_chain_string, circumflex_chain_string->first_character, ' ');
+			replace_chain_string(circumflex_chain_string, "\n", "\n ");
+			circumflex_char_array = create_char_array_from_chain_string(circumflex_chain_string);
+		}
+		else circumflex_char_array = "";
+		if(symbol->component.power.operand)
+		{
+			operand_chain_string = symbol_to_chain_string(symbol->component.power.operand);
+			insert_char_front(operand_chain_string, operand_chain_string->first_character, ' ');
+			replace_chain_string(operand_chain_string, "\n", "\n ");
+			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
+		}
+		else operand_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, power_char_array, circumflex_char_array, operand_char_array);
+		if(symbol->component.power.power)
+		{
+			delete_chain_string(power_chain_string);
+			free(power_char_array);
+		}
+		if(symbol->component.power.circumflex)
+		{
+			delete_chain_string(circumflex_chain_string);
+			free(circumflex_char_array);
+		}
+		if(symbol->component.power.operand)
+		{
+			delete_chain_string(operand_chain_string);
+			free(operand_char_array);
+		}
+		return output;
 	case term:
 		if(symbol->component.term.term)
 		{
@@ -691,6 +759,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const alphabet_name = "alphabet";
 	static char const * const alphabets_name = "alphabets";
 	static char const * const asterisk_name = "asterisk";
+	static char const * const circumflex_name = "circumflex";
 	static char const * const dot_name = "dot";
 	static char const * const e_name = "e";
 	static char const * const factor_name = "factor";
@@ -715,6 +784,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return alphabets_name;
 	case asterisk:
 		return asterisk_name;
+	case circumflex:
+		return circumflex_name;
 	case dot:
 		return dot_name;
 	case e:
@@ -791,22 +862,22 @@ void semantic_analysis(Symbol* symbol)
 	case factor:
 		if(symbol->component.factor.factor)semantic_analysis(symbol->component.factor.factor);
 		if(symbol->component.factor.operator)semantic_analysis(symbol->component.factor.operator);
-		if(symbol->component.factor.operand)semantic_analysis(symbol->component.factor.operand);
+		if(symbol->component.factor.power)semantic_analysis(symbol->component.factor.power);
 		
 		if(symbol->component.factor.operator && symbol->component.factor.factor)switch(symbol->component.factor.operator->type)
 		{
 		case asterisk:
-			symbol->value = symbol->component.factor.factor->value * symbol->component.factor.operand->value;
+			symbol->value = symbol->component.factor.factor->value * symbol->component.factor.power->value;
 			break;
 		case slash:
-			symbol->value = symbol->component.factor.factor->value / symbol->component.factor.operand->value;
+			symbol->value = symbol->component.factor.factor->value / symbol->component.factor.power->value;
 			break;
 		default:
 			ERROR(); // Invalid symbol
 			exit(-1);
 			break;
 		}
-		else symbol->value = symbol->component.factor.operand->value;
+		else symbol->value = symbol->component.factor.power->value;
 		break;
 	case formula:
 		if(symbol->component.formula.term)semantic_analysis(symbol->component.formula.term);
@@ -838,6 +909,19 @@ void semantic_analysis(Symbol* symbol)
 		break;
 	case plus:
 		symbol->value = 0.0;
+		break;
+	case power:
+		if(symbol->component.power.operand)
+		{
+			if(symbol->component.power.power && symbol->component.power.circumflex)symbol->value = pow(symbol->component.power.power->value, symbol->component.power.operand->value);
+			else symbol->value = symbol->component.power.operand->value;
+		}
+		else
+		{
+			ERROR(); // Operand is not found.
+			exit(-1);
+			break;
+		}
 		break;
 	case right_parenthesis:
 		symbol->value = 0.0;
@@ -1053,14 +1137,14 @@ Symbols syntactic_analysis(Symbols symbols)
 			#endif
 			break;
 		case factor:
-			if(symbol->next && (symbol->next->type == asterisk || symbol->next->type == slash) && symbol->next->next && symbol->next->next->type == operand)
+			if(symbol->next && (symbol->next->type == asterisk || symbol->next->type == slash) && symbol->next->next && symbol->next->next->type == power)
 			{
-				// <factor> ::= <factor> <asterisk> <operand> | <factor> <slash> <operand>
+				// <factor> ::= <factor> <asterisk> <power> | <factor> <slash> <power>
 				new_symbol = malloc(sizeof(*new_symbol));
 				new_symbol->type = factor;
 				new_symbol->component.factor.factor = symbol;
 				new_symbol->component.factor.operator = symbol->next;
-				new_symbol->component.factor.operand = symbol->next->next;
+				new_symbol->component.factor.power = symbol->next->next;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
 				new_symbol->previous = symbol->previous;
@@ -1078,7 +1162,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 				#ifdef DEBUG
-				printf("\n<factor> ::= <factor> <asterisk> <operand> | <factor> <slash> <operand>\n");
+				printf("\n<factor> ::= <factor> <asterisk> <power> | <factor> <slash> <power>\n");
 				print_symbols(symbols);
 				#endif
 			}
@@ -1294,12 +1378,12 @@ Symbols syntactic_analysis(Symbols symbols)
 			if(symbol->previous && symbol->previous->type == slash)break;
 			else
 			{
-				// <factor> ::= <operand>
+				// <power> ::= <operand>
 				new_symbol = malloc(sizeof(*new_symbol));
-				new_symbol->type = factor;
-				new_symbol->component.factor.factor = NULL;
-				new_symbol->component.factor.operator = NULL;
-				new_symbol->component.factor.operand = symbol;
+				new_symbol->type = power;
+				new_symbol->component.power.power = NULL;
+				new_symbol->component.power.circumflex = NULL;
+				new_symbol->component.power.operand = symbol;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length;
 				new_symbol->previous = symbol->previous;
@@ -1313,7 +1397,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				next_symbol = new_symbol;
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 				#ifdef DEBUG
-				printf("\n<factor> ::= <operand>\n");
+				printf("\n<power> ::= <operand>\n");
 				print_symbols(symbols);
 				#endif
 			}
@@ -1341,6 +1425,62 @@ Symbols syntactic_analysis(Symbols symbols)
 			printf("\n<operand> ::= <pi>\n");
 			print_symbols(symbols);
 			#endif
+			break;
+		case power:
+			if(symbol->next && symbol->next->type == circumflex && symbol->next->next && symbol->next->next->type == operand)
+			{
+				// <power> ::= <power> <circumflex> <operand>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = power;
+				new_symbol->component.power.power = symbol;
+				new_symbol->component.power.circumflex = symbol->next;
+				new_symbol->component.power.operand = symbol->next->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next->next)symbols.last_symbol = new_symbol;
+				symbol->next->next->previous = NULL;
+				symbol->next->next->next = NULL;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
+				printf("\n<power> ::= <power> <circumflex> <operand>\n");
+				print_symbols(symbols);
+				#endif
+			}
+			else
+			{
+				// <factor> ::= <power>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = factor;
+				new_symbol->component.factor.factor = NULL;
+				new_symbol->component.factor.operator = NULL;
+				new_symbol->component.factor.power = symbol;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
+				printf("\n<factor> ::= <power>\n");
+				print_symbols(symbols);
+				#endif
+			}
 			break;
 		case right_parenthesis:
 			break;
