@@ -2133,6 +2133,36 @@ Symbols syntactic_analysis(Symbols symbols)
 			}
 			break;
 		case formula:
+			if(symbol->next && symbol->next->type == comma && symbol->next->next && symbol->next->next->type == formula)
+			{
+				// <formula> ::= <formula> <comma> <formula>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = formula;
+				new_symbol->component.formula.term = NULL;
+				new_symbol->component.formula.left_formula = symbol;
+				new_symbol->component.formula.comma = symbol->next;
+				new_symbol->component.formula.right_formula = symbol->next->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next->next)symbols.last_symbol = new_symbol;
+				symbol->next->next->previous = NULL;
+				symbol->next->next->next = NULL;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
+				printf("\n<formula> ::= <formula> <comma> <formula>\n");
+				print_symbols(symbols);
+				#endif
+			}
 			break;
 		case function:
 			if(symbol->next && symbol->next->type == left_parenthesis && symbol->next->next && symbol->next->next->type == formula && symbol->next->next->next && symbol->next->next->next->type == right_parenthesis)
