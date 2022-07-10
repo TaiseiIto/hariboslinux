@@ -25,6 +25,7 @@
 // <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
 // <numbers>           ::= <number> | <numbers> <number>
 // <alphabet>          ::= 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z'
+// <comma>             ::= ','
 // <number>            ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 // <dot>               ::= '.'
 // <plus>              ::= '+'
@@ -52,6 +53,7 @@ typedef enum _SymbolType
 	alphabets,
 	asterisk,
 	circumflex,
+	comma,
 	dot,
 	e,
 	factor,
@@ -347,6 +349,8 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case circumflex:
 		break;
+	case comma:
+		break;
 	case dot:
 		break;
 	case e:
@@ -512,6 +516,8 @@ SymbolType substring2symbol_type(Substring substring)
 			return circumflex;
 		case '.':
 			return dot;
+		case ',':
+			return comma;
 		default:
 			if('0' <= *substring.initial && *substring.initial <= '9')return number;
 			else if(('a' <= *substring.initial && *substring.initial <= 'z') || ('A' <= *substring.initial && *substring.initial <= 'Z'))return alphabet;
@@ -573,6 +579,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	case alphabet:
 	case asterisk:
 	case circumflex:
+	case comma:
 	case dot:
 	case left_parenthesis:
 	case minus:
@@ -1156,6 +1163,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const alphabets_name = "alphabets";
 	static char const * const asterisk_name = "asterisk";
 	static char const * const circumflex_name = "circumflex";
+	static char const * const comma_name = "comma";
 	static char const * const dot_name = "dot";
 	static char const * const e_name = "e";
 	static char const * const factor_name = "factor";
@@ -1197,6 +1205,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return asterisk_name;
 	case circumflex:
 		return circumflex_name;
+	case comma:
+		return comma_name;
 	case dot:
 		return dot_name;
 	case e:
@@ -1295,6 +1305,9 @@ void semantic_analysis(Symbol* symbol)
 		symbol->value = 0.0;
 		break;
 	case circumflex:
+		symbol->value = 0.0;
+		break;
+	case comma:
 		symbol->value = 0.0;
 		break;
 	case dot:
@@ -1920,6 +1933,8 @@ Symbols syntactic_analysis(Symbols symbols)
 		case asterisk:
 			break;
 		case circumflex:
+			break;
+		case comma:
 			break;
 		case dot:
 			break;
