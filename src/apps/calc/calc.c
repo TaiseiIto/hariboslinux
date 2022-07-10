@@ -856,6 +856,9 @@ void semantic_analysis(Symbol* symbol)
 	case asterisk:
 		symbol->value = 0.0;
 		break;
+	case circumflex:
+		symbol->value = 0.0;
+		break;
 	case dot:
 		symbol->value = 0.0;
 		break;
@@ -914,6 +917,9 @@ void semantic_analysis(Symbol* symbol)
 		symbol->value = 0.0;
 		break;
 	case power:
+		if(symbol->component.power.power)semantic_analysis(symbol->component.power.power);
+		if(symbol->component.power.circumflex)semantic_analysis(symbol->component.power.circumflex);
+		if(symbol->component.power.operand)semantic_analysis(symbol->component.power.operand);
 		if(symbol->component.power.operand)
 		{
 			if(symbol->component.power.power && symbol->component.power.circumflex)symbol->value = pow(symbol->component.power.power->value, symbol->component.power.operand->value);
