@@ -5,10 +5,12 @@
 // <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
 // <power>             ::= <operand> | <power> <circumflex> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi> | <function> <left_parenthesis> <formula> <right_parenthesis>
+// <function>          ::= <function_cos>
 // <function>          ::= <function_sin>
 // <e>                 ::= <alphabets "e">
-// <pi>                ::= <alphabets "pi">
+// <function_cos>      ::= <alphabets "cos">
 // <function_sin>      ::= <alphabets "sin">
+// <pi>                ::= <alphabets "pi">
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
 // <numbers>           ::= <number> | <numbers> <number>
@@ -45,6 +47,7 @@ typedef enum _SymbolType
 	factor,
 	formula,
 	function,
+	function_cos,
 	function_sin,
 	left_parenthesis,
 	minus,
@@ -101,6 +104,11 @@ typedef struct _Function
 	struct _Symbol *function;
 } Function;
 
+typedef struct _FunctionCos
+{
+	struct _Symbol *alphabets;
+} FunctionCos;
+
 typedef struct _FunctionSin
 {
 	struct _Symbol *alphabets;
@@ -148,6 +156,7 @@ typedef union _Component
 	Factor factor;
 	Formula formula;
 	Function function;
+	FunctionCos function_cos;
 	FunctionSin function_sin;
 	Numbers numbers;
 	Operand operand;
@@ -266,6 +275,9 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case function:
 		if(symbol->component.function.function)delete_symbol(symbol->component.function.function);
+		break;
+	case function_cos:
+		if(symbol->component.function_cos.alphabets)delete_symbol(symbol->component.function_cos.alphabets);
 		break;
 	case function_sin:
 		if(symbol->component.function_sin.alphabets)delete_symbol(symbol->component.function_sin.alphabets);
@@ -610,6 +622,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(function_char_array);
 		}
 		return output;
+	case function_cos:
+		if(symbol->component.function_cos.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_cos.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_cos.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case function_sin:
 		if(symbol->component.function_sin.alphabets)
 		{
@@ -837,6 +865,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const factor_name = "factor";
 	static char const * const formula_name = "formula";
 	static char const * const function_name = "function";
+	static char const * const function_cos_name = "function_cos";
 	static char const * const function_sin_name = "function_sin";
 	static char const * const left_parenthesis_name = "left parenthesis";
 	static char const * const minus_name = "minus";
@@ -871,6 +900,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return formula_name;
 	case function:
 		return function_name;
+	case function_cos:
+		return function_cos_name;
 	case function_sin:
 		return function_sin_name;
 	case left_parenthesis:
@@ -997,6 +1028,9 @@ void semantic_analysis(Symbol* symbol)
 		{
 			if(symbol->component.operand.function && symbol->component.operand.function->type == function && symbol->component.operand.function->component.function.function)switch(symbol->component.operand.function->component.function.function->type)
 			{
+			case function_cos:
+				symbol->value = cos(symbol->component.operand.value->value);
+				break;
 			case function_sin:
 				symbol->value = sin(symbol->component.operand.value->value);
 				break;
@@ -1173,7 +1207,30 @@ Symbols syntactic_analysis(Symbols symbols)
 			else
 			{
 				char *word = create_format_char_array("%0.*s", symbol->string.length, symbol->string.initial);
-				if(!strcmp(word, "e"))
+				if(!strcmp(word, "cos"))
+				{
+					// <function_cos> ::= <alphabets "cos">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_cos;
+					new_symbol->component.function_cos.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_cos> ::= <alphabets \"cos\">\n");
+					print_symbols(symbols);
+					#endif
+				}
+				else if(!strcmp(word, "e"))
 				{
 					// <e> ::= <alphabets "e">
 					new_symbol = malloc(sizeof(*new_symbol));
@@ -1238,7 +1295,7 @@ Symbols syntactic_analysis(Symbols symbols)
 					next_symbol = new_symbol;
 					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 					#ifdef DEBUG
-					printf("\n<function_sin> ::= <alphabets \"function_sin\">\n");
+					printf("\n<function_sin> ::= <alphabets \"sin\">\n");
 					print_symbols(symbols);
 					#endif
 				}
@@ -1372,6 +1429,28 @@ Symbols syntactic_analysis(Symbols symbols)
 				print_symbols(symbols);
 				#endif
 			}
+			break;
+		case function_cos:
+			// <function> ::= <function_cos>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_cos>\n");
+			print_symbols(symbols);
+			#endif
 			break;
 		case function_sin:
 			// <function> ::= <function_sin>
