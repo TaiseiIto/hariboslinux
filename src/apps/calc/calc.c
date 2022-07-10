@@ -1468,6 +1468,8 @@ Symbols syntactic_analysis(Symbols symbols)
 				#endif
 			}
 			else if(symbol->next && symbol->next->type == circumflex)break;
+			else if(symbol->previous && symbol->previous->type == asterisk)break;
+			else if(symbol->previous && symbol->previous->type == slash)break;
 			else
 			{
 				// <factor> ::= <power>
