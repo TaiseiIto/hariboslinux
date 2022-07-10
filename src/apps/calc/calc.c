@@ -181,6 +181,7 @@ SymbolType substring2symbol_type(Substring substring);
 char *symbol_to_string(Symbol const *symbol);
 char const *symbol_type_name(SymbolType symbol);
 void semantic_analysis(Symbol* symbol);
+ChainString *symbol_to_chain_string(Symbol const *symbol);
 Symbols syntactic_analysis(Symbols symbols);
 
 int main(int argc, char const * const * const argv)
@@ -507,7 +508,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			alphabet_char_array = create_char_array_from_chain_string(alphabet_chain_string);
 		}
 		else alphabet_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, alphabets_char_array, alphabet_char_array);
+		output = create_format_chain_string("%s \"%0.*s\"\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array, alphabet_char_array);
 		if(symbol->component.alphabets.alphabets)
 		{
 			delete_chain_string(alphabets_chain_string);
@@ -618,7 +619,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
 		}
 		else alphabets_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, alphabets_char_array);
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
 		if(symbol->component.function_sin.alphabets)
 		{
 			delete_chain_string(alphabets_chain_string);
