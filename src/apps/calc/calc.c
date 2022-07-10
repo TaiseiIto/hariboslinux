@@ -5,12 +5,12 @@
 // <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
 // <power>             ::= <operand> | <power> <circumflex> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi> | <function> <left_parenthesis> <formula> <right_parenthesis>
-// <function>          ::= <function_cos>
-// <function>          ::= <function_sin>
+// <function>          ::= <function_cos> | <function_sin> | <function_tan>
+// <pi>                ::= <alphabets "pi">
 // <e>                 ::= <alphabets "e">
 // <function_cos>      ::= <alphabets "cos">
 // <function_sin>      ::= <alphabets "sin">
-// <pi>                ::= <alphabets "pi">
+// <function_tan>      ::= <alphabets "tan">
 // <absolute>          ::= <numbers> | <numbers> <dot> <numbers>
 // <alphabets>         ::= <alphabet> | <alphabets> <alphabet>
 // <numbers>           ::= <number> | <numbers> <number>
@@ -49,6 +49,7 @@ typedef enum _SymbolType
 	function,
 	function_cos,
 	function_sin,
+	function_tan,
 	left_parenthesis,
 	minus,
 	number,
@@ -114,6 +115,11 @@ typedef struct _FunctionSin
 	struct _Symbol *alphabets;
 } FunctionSin;
 
+typedef struct _FunctionTan
+{
+	struct _Symbol *alphabets;
+} FunctionTan;
+
 typedef struct _Numbers
 {
 	struct _Symbol *numbers;
@@ -158,6 +164,7 @@ typedef union _Component
 	Function function;
 	FunctionCos function_cos;
 	FunctionSin function_sin;
+	FunctionTan function_tan;
 	Numbers numbers;
 	Operand operand;
 	Pi pi;
@@ -281,6 +288,9 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case function_sin:
 		if(symbol->component.function_sin.alphabets)delete_symbol(symbol->component.function_sin.alphabets);
+		break;
+	case function_tan:
+		if(symbol->component.function_tan.alphabets)delete_symbol(symbol->component.function_tan.alphabets);
 		break;
 	case left_parenthesis:
 		break;
@@ -654,6 +664,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabets_char_array);
 		}
 		return output;
+	case function_tan:
+		if(symbol->component.function_tan.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.function_tan.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\"\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, alphabets_char_array);
+		if(symbol->component.function_tan.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case numbers:
 		if(symbol->component.numbers.numbers)
 		{
@@ -867,6 +893,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const function_name = "function";
 	static char const * const function_cos_name = "function_cos";
 	static char const * const function_sin_name = "function_sin";
+	static char const * const function_tan_name = "function_tan";
 	static char const * const left_parenthesis_name = "left parenthesis";
 	static char const * const minus_name = "minus";
 	static char const * const number_name = "number";
@@ -904,6 +931,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return function_cos_name;
 	case function_sin:
 		return function_sin_name;
+	case function_tan:
+		return function_tan_name;
 	case left_parenthesis:
 		return left_parenthesis_name;
 	case minus:
@@ -1033,6 +1062,9 @@ void semantic_analysis(Symbol* symbol)
 				break;
 			case function_sin:
 				symbol->value = sin(symbol->component.operand.value->value);
+				break;
+			case function_tan:
+				symbol->value = tan(symbol->component.operand.value->value);
 				break;
 			default:
 				ERROR(); // Invalid function type.
@@ -1299,6 +1331,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					print_symbols(symbols);
 					#endif
 				}
+				else if(!strcmp(word, "tan"))
+				{
+					// <function_tan> ::= <alphabets "tan">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = function_tan;
+					new_symbol->component.function_tan.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<function_tan> ::= <alphabets \"tan\">\n");
+					print_symbols(symbols);
+					#endif
+				}
 				free(word);
 			}
 			break;
@@ -1471,6 +1526,28 @@ Symbols syntactic_analysis(Symbols symbols)
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			#ifdef DEBUG
 			printf("\n<function> ::= <function_sin>\n");
+			print_symbols(symbols);
+			#endif
+			break;
+		case function_tan:
+			// <function> ::= <function_tan>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = function;
+			new_symbol->component.function.function = symbol;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<function> ::= <function_tan>\n");
 			print_symbols(symbols);
 			#endif
 			break;
