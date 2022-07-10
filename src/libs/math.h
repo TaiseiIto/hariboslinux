@@ -33,6 +33,7 @@ double fmod(double x, double y);
 long long int llabs(long long int a);
 long long int llsign(long long int a);
 double log(double x);
+double log2(double x);
 double log10(double x);
 double pow(double x, double y);
 double sin(double x);

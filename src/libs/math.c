@@ -84,6 +84,11 @@ double log(double x)
 	return fpu_log(M_E, x);
 }
 
+double log2(double x)
+{
+	return fpu_log2(x);
+}
+
 double log10(double x)
 {
 	return fpu_log(10.0, x);
