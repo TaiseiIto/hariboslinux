@@ -1,5 +1,6 @@
 #include "fpu.h"
 #include "io.h"
+#include "stdio.h"
 
 double fpu_acos(double x)
 {
@@ -102,7 +103,13 @@ double fpu_pi(void)
 double fpu_pow(double base, double exponent)
 {
 	double result;
-	if(base == 0.0)return 0.0;
+	if(base == 0.0)
+	{
+		result = 0.0;
+		printf("base == 0.0\n");
+		printf("%.6llf^%.6llf=%.6llf\n", base, exponent, result);
+		return result;
+	}
 	else if(0.0 < base)
 	{
 		if(-1.0 < exponent && exponent < 1.0)
@@ -112,29 +119,56 @@ double fpu_pow(double base, double exponent)
 			fyl2x();
 			f2xm1();
 			fstpl(&result);
-			return result + 1.0;
+			result += 1.0;
+			printf("-1.0 < exponent && exponent < 1.0\n");
+			printf("%.6llf^%.6llf=%.6llf\n", base, exponent, result);
+			return result;
 		}
 		else if(exponent == fpu_trunc(exponent))
 		{
-			if(exponent == 1.0)return base;
-			else if(exponent == -1.0)return 1.0 / base;
+			if(exponent == 1.0)
+			{
+				result = base;
+				printf("exponent == 1.0\n");
+				printf("%.6llf^%.6llf=%.6llf\n", base, exponent, result);
+				return base;
+			}
+			else if(exponent == -1.0)
+			{
+				result = 1.0 / base;
+				printf("exponent == -1.0\n");
+				printf("%.6llf^%.6llf=%.6llf\n", base, exponent, result);
+				return result;
+			}
 			else
 			{
 				int exponent_integer = (int)exponent;
 				int exponent_half = exponent_integer / 2;
 				int exponent_remainder = exponent_integer % 2;
 				double power_half = fpu_pow(base, exponent_half);
-				return power_half * power_half * fpu_pow(base, exponent_remainder);
+				result = power_half * power_half * fpu_pow(base, exponent_remainder);
+				printf("exponent == fpu_trunc(exponent)\n");
+				printf("%.6llf^%.6llf=%.6llf\n", base, exponent, result);
+				return result;
 			}
 		}
 		else
 		{
 			double exponent_integer = fpu_trunc(exponent);
 			double exponent_decimal = exponent - exponent_integer;
-			return fpu_pow(base, exponent_integer) * fpu_pow(base, exponent_decimal);
+			result = fpu_pow(base, exponent_integer) * fpu_pow(base, exponent_decimal);
+			printf("0.0 < base\n");
+			printf("%.6llf^%.6llf=%.6llf\n", base, exponent, result);
+			return result;
 		}
 	}
-	else return 0.0 / 0.0; // if base < 0.0 then return NaN
+	else // if base < 0.0 then return NaN
+	{
+		result = 0.0 / 0.0;
+		printf("base < 0.0\n");
+		printf("%.6llf^%.6llf=%.6llf\n", base, exponent, result);
+		return result;
+	}
 }
 
 double fpu_sin(double x)
