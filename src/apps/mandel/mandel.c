@@ -39,10 +39,10 @@ int main(void)
 	current_color.alpha = 0xff;
 	for(unsigned int y = 0; y < window_height; y++)for(unsigned int x = 0; x < window_width; x++)
 	{
-		c[window_height][window_width].real = (double)x * (max_real - min_real) / (double)window_width + min_real;
-		c[window_height][window_width].imag = (double)y * (max_imag - min_imag) / (double)window_height + min_imag;
-		z[window_height][window_width].real = 0.0;
-		z[window_height][window_width].imag = 0.0;
+		c[y][x].real = (double)x * (max_real - min_real) / (double)window_width + min_real;
+		c[y][x].imag = (double)y * (max_imag - min_imag) / (double)window_height + min_imag;
+		z[y][x].real = 0.0;
+		z[y][x].imag = 0.0;
 	}
 	while(flags & WINDOW_EXISTS)
 	{
