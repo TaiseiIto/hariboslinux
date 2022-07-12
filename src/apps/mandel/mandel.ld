@@ -15,7 +15,7 @@ SECTIONS
 		LONG(common_base);
 		LONG(common_deletion_prevention_base);
 		LONG(heap_and_stack_base);
-		_heap_and_stack_size = 0x00100000;
+		_heap_and_stack_size = 0x00200000;
 		LONG(_heap_and_stack_size);
 	}
 	text_base = .;
