@@ -96,7 +96,10 @@ Complex cmul(Complex c1, Complex c2)
 
 Color next_color(Color color)
 {
-	if(color.red == 0x00)
+	if(color.red == 0x00 && color.green == 0x00)color.red = 0x10;
+	else if(color.green == 0x00 && color.blue == 0x00)color.green = 0x10;
+	else if(color.blue == 0x00 && color.red == 0x00)color.red = 0x10;
+	else if(color.red == 0x00)
 	{
 		if(color.green == 0xff)
 		{
