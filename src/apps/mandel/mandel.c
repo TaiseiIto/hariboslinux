@@ -27,16 +27,19 @@ int main(void)
 	Complex c[window_height][window_width];
 	Complex z[window_height][window_width];
 	unsigned int window = create_window("mandelbrot", 0x0000, 0x0000, window_width, window_height);
+	double zoom_ratio = 2.0;
 	Color black;
+	Color blue;
 	Color current_color;
 	black.red = 0x00;
 	black.green = 0x00;
 	black.blue = 0x00;
 	black.alpha = 0xff;
-	current_color.red = 0x00;
-	current_color.green = 0x00;
-	current_color.blue = 0xff;
-	current_color.alpha = 0xff;
+	blue.red = 0x00;
+	blue.green = 0x00;
+	blue.blue = 0xff;
+	blue.alpha = 0xff;
+	current_color = blue;
 	for(unsigned int y = 0; y < window_height; y++)for(unsigned int x = 0; x < window_width; x++)
 	{
 		c[y][x].real = (double)x * (max_real - min_real) / (double)window_width + min_real;
@@ -49,6 +52,7 @@ int main(void)
 		ApplicationEvent application_event = dequeue_application_event();
 		switch(application_event.type)
 		{
+			Complex cursor_position;
 		case APPLICATION_EVENT_TYPE_NOTHING:
 			if(flags & WINDOW_CREATED)
 			{
@@ -68,7 +72,29 @@ int main(void)
 			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL:
-			printf("rotation %d at (%d, %d)\n", application_event.event_union.window_vertical_wheel_event.rotation, application_event.event_union.window_vertical_wheel_event.x, application_event.event_union.window_vertical_wheel_event.y);
+			cursor_position = c[application_event.event_union.window_vertical_wheel_event.y][application_event.event_union.window_vertical_wheel_event.x];
+			if(0 < application_event.event_union.window_vertical_wheel_event.rotation) // zoom out
+			{
+				for(unsigned int y = 0; y < window_height; y++)for(unsigned int x = 0; x < window_width; x++)
+				{
+					c[y][x].real = zoom_ratio * c[y][x].real + (1.0 - zoom_ratio) * cursor_position.real;
+					c[y][x].imag = zoom_ratio * c[y][x].imag + (1.0 - zoom_ratio) * cursor_position.imag;
+					z[y][x].real = 0.0;
+					z[y][x].imag = 0.0;
+				}
+			}
+			else if(application_event.event_union.window_vertical_wheel_event.rotation < 0) // zoom in
+			{
+				for(unsigned int y = 0; y < window_height; y++)for(unsigned int x = 0; x < window_width; x++)
+				{
+					c[y][x].real = c[y][x].real / zoom_ratio + (zoom_ratio - 1.0) * cursor_position.real / zoom_ratio;
+					c[y][x].imag = c[y][x].imag / zoom_ratio + (zoom_ratio - 1.0) * cursor_position.imag / zoom_ratio;
+					z[y][x].real = 0.0;
+					z[y][x].imag = 0.0;
+				}
+			}
+			fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
+			current_color = blue;
 			break;
 		}
 		process_event();
