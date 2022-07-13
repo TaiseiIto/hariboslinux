@@ -188,6 +188,7 @@ typedef struct _ApplicationWindowMoveEvent
 typedef struct _ApplicationWindowVerticalWheelEvelt
 {
 	unsigned int window;
+	short x, y;
 	char rotation;
 } ApplicationWindowVerticalWheelEvent;
 

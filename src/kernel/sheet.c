@@ -761,6 +761,8 @@ void send_sheets_event(Event const *event)
 			new_event.type = EVENT_TYPE_SHEET_VERTICAL_WHEEL;
 			new_event.event_union.sheet_vertical_wheel_event.sheet = sheet_under_cursor;
 			new_event.event_union.sheet_vertical_wheel_event.rotation = event->event_union.mouse_event.vertical_wheel_movement;
+			new_event.event_union.sheet_vertical_wheel_event.x = event->event_union.mouse_event.x - get_sheet_x_on_screen(sheet_under_cursor);
+			new_event.event_union.sheet_vertical_wheel_event.y = event->event_union.mouse_event.y - get_sheet_y_on_screen(sheet_under_cursor);
 			enqueue(new_event.event_union.sheet_vertical_wheel_event.sheet->event_queue, &new_event);
 		}
 		break;

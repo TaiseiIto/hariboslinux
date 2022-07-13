@@ -75,6 +75,7 @@ typedef struct _SheetUserDefinedEvent
 typedef struct _SheetVerticalWheelEvent
 {
 	struct _Sheet *sheet;
+	short x, y;
 	char rotation;
 } SheetVerticalWheelEvent;
 

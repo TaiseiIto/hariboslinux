@@ -84,6 +84,7 @@ typedef struct _ApplicationWindowMoveEvent
 typedef struct _ApplicationWindowVerticalWheelEvelt
 {
 	Window *window;
+	short x, y;
 	char rotation;
 } ApplicationWindowVerticalWheelEvent;
 
@@ -857,6 +858,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL;
 								new_application_event.event_union.window_vertical_wheel_event.window = application_window->window;
 								new_application_event.event_union.window_vertical_wheel_event.rotation = event->event_union.sheet_vertical_wheel_event.rotation;
+								new_application_event.event_union.window_vertical_wheel_event.x = event->event_union.sheet_vertical_wheel_event.x;
+								new_application_event.event_union.window_vertical_wheel_event.y = event->event_union.sheet_vertical_wheel_event.y;
 								enqueue(system_call_status->application_event_queue, &new_application_event);
 							}
 							break;

@@ -68,7 +68,7 @@ int main(void)
 			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL:
-			printf("rotation = %d\n", application_event.event_union.window_vertical_wheel_event.rotation);
+			printf("rotation %d at (%d, %d)\n", application_event.event_union.window_vertical_wheel_event.rotation, application_event.event_union.window_vertical_wheel_event.x, application_event.event_union.window_vertical_wheel_event.y);
 			break;
 		}
 		process_event();
