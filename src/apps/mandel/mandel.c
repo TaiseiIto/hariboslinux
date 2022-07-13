@@ -104,7 +104,7 @@ Color next_color(Color color)
 	else if(color.blue == 0x00 && color.red == 0x00)color.red = 0x10;
 	else if(color.red == 0x00)
 	{
-		if(color.green == 0xff)
+		if(color.green == 0xff && color.blue != 0xff)
 		{
 			color.blue += 0x10;
 			if(color.blue < 0x10)color.blue = 0xff;
@@ -117,7 +117,7 @@ Color next_color(Color color)
 	}
 	else if(color.green == 0x00)
 	{
-		if(color.blue == 0xff)
+		if(color.blue == 0xff && color.red != 0xff)
 		{
 			color.red += 0x10;
 			if(color.red < 0x10)color.red = 0xff;
@@ -130,7 +130,7 @@ Color next_color(Color color)
 	}
 	else if(color.blue == 0x00)
 	{
-		if(color.red == 0xff)
+		if(color.red == 0xff && color.green != 0xff)
 		{
 			color.green += 0x10;
 			if(color.green < 0x10)color.green = 0xff;
