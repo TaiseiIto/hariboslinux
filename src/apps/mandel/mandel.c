@@ -18,15 +18,15 @@ int main(void)
 	#define WINDOW_CREATED 0x01
 	#define WINDOW_EXISTS 0x02
 	unsigned char flags = WINDOW_EXISTS;
-	unsigned int const window_width = 0x0200;
-	unsigned int const window_height = 0x0200;
+	unsigned int const window_width = 0x0400;
+	unsigned int const window_height = 0x0400;
 	double min_real = -2.0;
 	double max_real = 2.0;
 	double min_imag = -2.0;
 	double max_imag = 2.0;
 	Complex c[window_height][window_width];
 	Complex z[window_height][window_width];
-	unsigned int window = create_window("mandelbrot", 0x0200, 0x0200, window_width, window_height);
+	unsigned int window = create_window("mandelbrot", 0x0000, 0x0000, window_width, window_height);
 	Color black;
 	Color current_color;
 	black.red = 0x00;
