@@ -43,7 +43,7 @@ int main(void)
 	for(unsigned int y = 0; y < window_height; y++)for(unsigned int x = 0; x < window_width; x++)
 	{
 		c[y][x].real = (double)x * (max_real - min_real) / (double)window_width + min_real;
-		c[y][x].imag = (double)y * (max_imag - min_imag) / (double)window_height + min_imag;
+		c[y][x].imag = (double)(window_height - 1 - y) * (max_imag - min_imag) / (double)window_height + min_imag;
 		z[y][x].real = 0.0;
 		z[y][x].imag = 0.0;
 	}
@@ -95,6 +95,8 @@ int main(void)
 			}
 			fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 			current_color = blue;
+			printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
+			printf("%.10llf per pixel\n", c[0][1].real - c[0][0].real);
 			break;
 		}
 		process_event();
