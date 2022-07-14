@@ -47,6 +47,8 @@ int main(void)
 		z[y][x].real = 0.0;
 		z[y][x].imag = 0.0;
 	}
+	printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
+	printf("%.10llf per pixel\n", pixel_distance);
 	while(flags & WINDOW_EXISTS)
 	{
 		ApplicationEvent application_event = dequeue_application_event();
@@ -85,7 +87,7 @@ int main(void)
 			fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 			current_color = blue;
 			printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
-			printf("%.10llf per pixel\n", c[0][1].real - c[0][0].real);
+			printf("%.10llf per pixel\n", pixel_distance);
 			break;
 		}
 		process_event();
