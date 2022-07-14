@@ -127,48 +127,13 @@ Complex cmul(Complex c1, Complex c2)
 
 Color next_color(Color color)
 {
-	if(color.red == 0x00 && color.green == 0x00)color.red = 0x10;
-	else if(color.green == 0x00 && color.blue == 0x00)color.green = 0x10;
-	else if(color.blue == 0x00 && color.red == 0x00)color.red = 0x10;
-	else if(color.red == 0x00)
-	{
-		if(color.green == 0xff && color.blue != 0xff)
-		{
-			color.blue += 0x10;
-			if(color.blue < 0x10)color.blue = 0xff;
-		}
-		else if(color.blue == 0xff)
-		{
-			if(color.green < 0x10)color.green = 0x00;
-			color.green -= 0x10;
-		}
-	}
-	else if(color.green == 0x00)
-	{
-		if(color.blue == 0xff && color.red != 0xff)
-		{
-			color.red += 0x10;
-			if(color.red < 0x10)color.red = 0xff;
-		}
-		else if(color.red == 0xff)
-		{
-			if(color.blue < 0x10)color.blue = 0x00;
-			color.blue -= 0x10;
-		}
-	}
-	else if(color.blue == 0x00)
-	{
-		if(color.red == 0xff && color.green != 0xff)
-		{
-			color.green += 0x10;
-			if(color.green < 0x10)color.green = 0xff;
-		}
-		else if(color.green == 0xff)
-		{
-			if(color.red < 0x10)color.red = 0x00;
-			color.red -= 0x10;
-		}
-	}
+	static const unsigned char color_step = 0x10;
+	if(color.red == 0xff && color.green < 0xff && color.blue == 0x00)color.green = color_step < 0xff - color.green ? color.green + color_step : 0xff;
+	else if(0x00 < color.red && color.green == 0xff && color.blue == 0x00)color.red = color_step < color.red ? color.red - color_step : 0x00;
+	else if(color.red == 0x00 && color.green == 0xff && color.blue < 0xff)color.blue = color_step < 0xff - color.blue ? color.blue + color_step : 0xff;
+	else if(color.red == 0x00 && 0x00 < color.green && color.blue == 0xff)color.green = color_step < color.green ? color.green - color_step : 0x00;
+	else if(color.red < 0xff && color.green == 0x00 && color.blue == 0xff)color.red = color_step < 0xff - color.red ? color.red + color_step : 0xff;
+	else if(color.red == 0xff && color.green == 0x00 && 0x00 < color.blue)color.blue = color_step < color.blue ? color.blue - color_step : 0x00;
 	return color;
 }
 
