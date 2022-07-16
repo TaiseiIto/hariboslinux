@@ -5,7 +5,9 @@ int main(void)
 {
 	#define WINDOW_EXISTS 0x01
 	unsigned char flags = WINDOW_EXISTS;
+	printf("Hello, World!\n");
 	unsigned int window = create_window("window", 0x0200, 0x0200, 0x0200, 0x0200);
+	printf("Hello, Window!\n");
 	while(flags & WINDOW_EXISTS)
 	{
 		ApplicationEvent application_event = dequeue_application_event();
