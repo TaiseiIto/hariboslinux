@@ -95,7 +95,6 @@ call_application:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	subl	0x00000004,%esp	# Space for return value of application main function
 	# Push kernel registers to kernel stack
 	pushal
 	pushfl
@@ -176,14 +175,13 @@ exit_application:
 	movl	%esp,	%ebp
 	movl	0x08(%ebp),%eax		# Get application return value
 	movl	0x0c(%ebp),%esp		# Switch from application stack to kernel stack
-	movl	%eax,	0x34(%esp)	# Store application return value to kernel stack
+	movl	%eax,	0x30(%esp)	# Store application return value to kernel stack
 	popl	%gs			# Restore kernel registers
 	popl	%fs
 	popl	%ds
 	popl	%es
 	popfl
 	popal
-	popl	%eax			# Pop application return value
 	leave
 	ret
 
