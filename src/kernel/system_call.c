@@ -546,9 +546,12 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 	unsigned int counter = 0;
 	unsigned int application_memory = (unsigned int)((CommandTaskAdditional *)task->additionals)->application_memory;
 	SystemCallStatus *system_call_status = get_system_call_status();
+	printf_serial("begin system_call_write\n");
 	if(file_descriptor->flags & SYSTEM_CALL_OPEN_FLAG_WRITE)
 	{
+		printf_serial("begin get_current_shell\n");
 		Shell *shell = get_current_shell();
+		printf_serial("end get_current_shell\n");
 		switch((unsigned int)file_descriptor)
 		{
 		case STDOUT:
@@ -688,6 +691,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			else if(!strcmp(file_descriptor->file_name, window_file_name)) // Control windows.
 			{
+				printf_serial("!strcmp(file_descriptor->file_name, window_file_name)\n");
 				ApplicationEvent *application_event;
 				ApplicationEvent new_application_event;
 				ApplicationWindow *application_window;
@@ -891,6 +895,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			break;
 		}
 	}
+	printf_serial("end system_call_write\n");
 	return counter;
 }
 

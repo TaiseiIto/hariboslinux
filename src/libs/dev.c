@@ -147,15 +147,21 @@ unsigned int create_window(char const *title, short x, short y, unsigned short w
 {
 	unsigned int window;
 	WindowCommand command;
+	printf("begin fopen\n");
 	if(!window_file)window_file = fopen(window_file_name, "wr");
+	printf("end fopen\n");
 	command.type = WINDOW_COMMAND_CREATE;
 	command.arguments.create.title = title;
 	command.arguments.create.x = x;
 	command.arguments.create.y = y;
 	command.arguments.create.width = width;
 	command.arguments.create.height = height;
+	printf("begin fwrite\n");
 	fwrite(&command, sizeof(command), 1, window_file);
+	printf("end fwrite\n");
+	printf("begin fread\n");
 	fread(&window, sizeof(window), 1, window_file);
+	printf("end fread\n");
 	return window;
 }
 
