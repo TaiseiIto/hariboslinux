@@ -297,6 +297,9 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	executable_segment = alloc_local_segment(task->ldt, application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	// Initialize FPU.
 	init_fpu();
+	// Debug log
+	printf_shell(get_current_shell(), "application_memory = %p\n", application_memory);
+	printf_shell(get_current_shell(), "ebp = %#010.8x\n", (unsigned int)application_stack_floor - (unsigned int)application_memory);
 	// Call application.
 	((CommandTaskReturn *)arguments->task_return->task_return)->return_value = call_application
 	(
