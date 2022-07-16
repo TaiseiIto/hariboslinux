@@ -75,12 +75,13 @@ void fpu_error_exception_handler(void)
 	kernel_panic();
 }
 
-void general_protection_fault_exception_handler(void)
+void general_protection_fault_exception_handler(unsigned int error_code)
 {
 	Shell *shell = get_current_shell();
 	if(shell)
 	{
 		printf_shell(shell, "GENERAL PROTECTION FAULT!!!\n");
+		printf_shell(shell, "error code = %#010.8x\n", error_code);
 		exit_application(-1, get_current_task()->task_status_segment.esp0);
 	}
 	else

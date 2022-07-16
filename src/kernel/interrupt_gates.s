@@ -1268,7 +1268,9 @@ interrupt_gate0x0d:		# void interrupt_gate0x0d(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	sti
+	pushl	0x28(%esp)
 	call	general_protection_fault_exception_handler
+	addl	$0x04,%esp
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx

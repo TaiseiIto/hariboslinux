@@ -10,7 +10,7 @@ void device_not_available_exception_handler(void);
 void devide_by_zero_exception_handler(void);
 void double_fault_exception_handler(void);
 void fpu_error_exception_handler(void);
-void general_protection_fault_exception_handler(void);
+void general_protection_fault_exception_handler(unsigned int error_code);
 void invalid_opcode_exception_handler(void);
 void invalid_TSS_exception_handler(void);
 void machine_check_exception_handler(void);
