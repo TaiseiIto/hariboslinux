@@ -115,11 +115,13 @@ void *close_button_sheet_event_procedure(struct _Sheet *sheet, struct _Event con
 
 Window *create_window(char const *title, Sheet *background_sheet, short x, short y, unsigned short width, unsigned short height, Queue *event_queue)
 {
+	printf_serial("begin create_window\n");
 	Window *new_window;
 	// Create sheets
 	new_window = malloc(sizeof(*new_window));
 	new_window->title = malloc(strlen(title) + 1);
 	strcpy(new_window->title, title);
+	printf_serial("prohibit_switch_task\n");
 	prohibit_switch_task();
 	if(windows)
 	{
@@ -140,6 +142,8 @@ Window *create_window(char const *title, Sheet *background_sheet, short x, short
 	new_window->client_sheet = create_sheet(new_window->root_sheet, EDGE_WIDTH, new_window->title_sheet->y + new_window->title_sheet->height + EDGE_WIDTH, new_window->root_sheet->width - 2 * EDGE_WIDTH, new_window->root_sheet->height - new_window->title_sheet->y - new_window->title_sheet->height - 2 * EDGE_WIDTH, client_sheet_event_procedure, event_queue);
 	focus_window(new_window);
 	allow_switch_task();
+	printf_serial("allow_switch_task\n");
+	printf_serial("end create_window\n");
 	return new_window;
 }
 

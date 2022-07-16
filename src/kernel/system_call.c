@@ -708,7 +708,10 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 				case WINDOW_COMMAND_CREATE:
+					printf_serial("begin WINDOW_COMMAND_CREATE\n");
+					printf_serial("begin create_window\n");
 					window = create_window(command->arguments.create.title + application_memory, background_sheet, command->arguments.create.x, command->arguments.create.y, command->arguments.create.width + 2 * EDGE_WIDTH, command->arguments.create.height + TITLE_SHEET_HEIGHT + 3 * EDGE_WIDTH, task->event_queue);
+					printf_serial("end create_window\n");
 					application_window = malloc(sizeof(*application_window));
 					application_window->window = window;
 					application_window->owner_task = task;
@@ -725,10 +728,12 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						application_window->next = application_window;
 						application_windows = application_window;
 					}
+					printf_serial("create file descriptor buffer\n");
 					file_descriptor->buffer_begin = malloc(sizeof(window));
 					*(Window **)file_descriptor->buffer_begin = window;
 					file_descriptor->buffer_cursor = file_descriptor->buffer_begin;
 					file_descriptor->buffer_end = (void *)((size_t)file_descriptor->buffer_begin + sizeof(window));
+					printf_serial("end WINDOW_COMMAND_CREATE\n");
 					break;
 				case WINDOW_COMMAND_DEQUEUE_EVENT:
 					application_event = dequeue(system_call_status->application_event_queue);
