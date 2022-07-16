@@ -81,6 +81,13 @@ typedef struct _ApplicationWindowMoveEvent
 	short x_movement, y_movement;
 } ApplicationWindowMoveEvent;
 
+typedef struct _ApplicationWindowVerticalWheelEvelt
+{
+	Window *window;
+	short x, y;
+	char rotation;
+} ApplicationWindowVerticalWheelEvent;
+
 typedef union _ApplicationEventUnion
 {
 	ApplicationTimerEvent timer_event;
@@ -90,6 +97,7 @@ typedef union _ApplicationEventUnion
 	ApplicationWindowDragEvent window_drag_event;
 	ApplicationWindowKeyboardEvent window_keyboard_event;
 	ApplicationWindowMoveEvent window_move_event;
+	ApplicationWindowVerticalWheelEvent window_vertical_wheel_event;
 } ApplicationEventUnion;
 
 typedef struct _ApplicationEvent
@@ -104,6 +112,7 @@ typedef struct _ApplicationEvent
 	#define APPLICATION_EVENT_TYPE_WINDOW_DRAG		0x05
 	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x06
 	#define APPLICATION_EVENT_TYPE_WINDOW_MOVE		0x07
+	#define APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL	0x08
 } ApplicationEvent;
 
 typedef struct _FileDescriptor
@@ -839,6 +848,18 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 								new_application_event.event_union.window_move_event.window = application_window->window;
 								new_application_event.event_union.window_move_event.x_movement = event->event_union.sheet_mouse_move_event.x_movement;
 								new_application_event.event_union.window_move_event.y_movement = event->event_union.sheet_mouse_move_event.y_movement;
+								enqueue(system_call_status->application_event_queue, &new_application_event);
+							}
+							break;
+						case EVENT_TYPE_SHEET_VERTICAL_WHEEL:
+							application_window = get_application_window_from_window(get_window_from_sheet(event->event_union.sheet_vertical_wheel_event.sheet));
+							if(application_window && application_window->window->client_sheet == event->event_union.sheet_vertical_wheel_event.sheet)
+							{
+								new_application_event.type = APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL;
+								new_application_event.event_union.window_vertical_wheel_event.window = application_window->window;
+								new_application_event.event_union.window_vertical_wheel_event.rotation = event->event_union.sheet_vertical_wheel_event.rotation;
+								new_application_event.event_union.window_vertical_wheel_event.x = event->event_union.sheet_vertical_wheel_event.x;
+								new_application_event.event_union.window_vertical_wheel_event.y = event->event_union.sheet_vertical_wheel_event.y;
 								enqueue(system_call_status->application_event_queue, &new_application_event);
 							}
 							break;

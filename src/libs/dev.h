@@ -185,6 +185,13 @@ typedef struct _ApplicationWindowMoveEvent
 	short x_movement, y_movement;
 } ApplicationWindowMoveEvent;
 
+typedef struct _ApplicationWindowVerticalWheelEvelt
+{
+	unsigned int window;
+	short x, y;
+	char rotation;
+} ApplicationWindowVerticalWheelEvent;
+
 typedef union _ApplicationEventUnion
 {
 	ApplicationTimerEvent timer_event;
@@ -194,6 +201,7 @@ typedef union _ApplicationEventUnion
 	ApplicationWindowDragEvent window_drag_event;
 	ApplicationWindowKeyboardEvent window_keyboard_event;
 	ApplicationWindowMoveEvent window_move_event;
+	ApplicationWindowVerticalWheelEvent window_vertical_wheel_event;
 } ApplicationEventUnion;
 
 typedef struct _ApplicationEvent
@@ -208,6 +216,7 @@ typedef struct _ApplicationEvent
 	#define APPLICATION_EVENT_TYPE_WINDOW_DRAG		0x05
 	#define APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD		0x06
 	#define APPLICATION_EVENT_TYPE_WINDOW_MOVE		0x07
+	#define APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL	0x08
 } ApplicationEvent;
 
 typedef struct
