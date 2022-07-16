@@ -1,4 +1,5 @@
 #include "dev.h"
+#include "io.h"
 #include "math.h"
 #include "stdio.h"
 
@@ -61,6 +62,7 @@ int main(void)
 		z[y][x].real = 0.0;
 		z[y][x].imag = 0.0;
 	}
+	printf("esp = %p\n", get_esp());
 	printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
 	printf("%.10llf per pixel\n", pixel_distance);
 	while(flags & WINDOW_EXISTS)
