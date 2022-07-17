@@ -15,9 +15,10 @@ Color next_color(Color color);
 
 int main(void)
 {
-	#define DRAGGED 0x01
-	#define WINDOW_CREATED 0x02
-	#define WINDOW_EXISTS 0x04
+	#define CTRL_PUSHED	0x01
+	#define DRAGGED		0x02
+	#define WINDOW_CREATED	0x04
+	#define WINDOW_EXISTS	0x08
 	unsigned char flags = WINDOW_EXISTS;
 	unsigned short const window_width = 0x0400;
 	unsigned short const window_height = 0x0400;
@@ -27,6 +28,7 @@ int main(void)
 	double min_imag = -2.0;
 	Complex c[window_height][window_width];
 	Complex z[window_height][window_width];
+	Complex cursor_position;
 	double zoom_ratio = 2.0;
 	double pixel_distance = (max_real - min_real) / (double)window_width;
 	short drag_x;
@@ -57,7 +59,6 @@ int main(void)
 		ApplicationEvent application_event = dequeue_application_event();
 		switch(application_event.type)
 		{
-			Complex cursor_position;
 		case APPLICATION_EVENT_TYPE_NOTHING:
 			if(flags & WINDOW_CREATED)
 			{
@@ -70,18 +71,67 @@ int main(void)
 			}
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_CLICKED:
-			if(application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_PUSHED)
+			if(application_event.event_union.window_clicked_event.window == window)
 			{
-				drag_x = 0;
-				drag_y = 0;
-				flags |= DRAGGED;
+				if(application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_PUSHED)
+				{
+					drag_x = 0;
+					drag_y = 0;
+					flags |= DRAGGED;
+				}
+				if(flags & DRAGGED && application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RELEASED)
+				{
+					for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
+					{
+						c[y][x].real -= pixel_distance * (double)drag_x;
+						c[y][x].imag -= pixel_distance * (double)drag_y;
+						z[y][x].real = 0.0;
+						z[y][x].imag = 0.0;
+					}
+					fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
+					current_color = blue;
+					printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
+					printf("%.10llf per pixel\n", pixel_distance);
+					flags &= ~DRAGGED;
+				}
 			}
-			if(flags & DRAGGED && application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RELEASED)
+			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_CREATED:
+			if(application_event.event_union.window_created_event.window == window)
 			{
+				fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
+				flags |= WINDOW_CREATED;
+			}
+			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE:
+			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
+			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_DRAG:
+			if(application_event.event_union.window_drag_event.window == window)
+			{
+				drag_x += application_event.event_union.window_drag_event.x_movement;
+				drag_y += application_event.event_union.window_drag_event.y_movement;
+			}
+			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD:
+			if(application_event.event_union.window_keyboard_event.window == window)
+			{
+				if(application_event.event_union.window_keyboard_event.keyboard_event.keycode == KEY_CONTROL)
+				{
+					printf("CONTROL!\n");
+				}
+			}
+			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL:
+			if(application_event.event_union.window_vertical_wheel_event.window == window)
+			{
+				cursor_position = c[application_event.event_union.window_vertical_wheel_event.y][application_event.event_union.window_vertical_wheel_event.x];
+				if(0 < application_event.event_union.window_vertical_wheel_event.rotation)pixel_distance *= zoom_ratio; // zoom out
+				else if(application_event.event_union.window_vertical_wheel_event.rotation < 0)pixel_distance /= zoom_ratio; // zoom in
 				for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
 				{
-					c[y][x].real -= pixel_distance * (double)drag_x;
-					c[y][x].imag -= pixel_distance * (double)drag_y;
+					c[y][x].real = cursor_position.real + pixel_distance * (double)((short)x - application_event.event_union.window_vertical_wheel_event.x);
+					c[y][x].imag = cursor_position.imag + pixel_distance * (double)((short)y - application_event.event_union.window_vertical_wheel_event.y);
 					z[y][x].real = 0.0;
 					z[y][x].imag = 0.0;
 				}
@@ -89,35 +139,7 @@ int main(void)
 				current_color = blue;
 				printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
 				printf("%.10llf per pixel\n", pixel_distance);
-				flags &= ~DRAGGED;
 			}
-			break;
-		case APPLICATION_EVENT_TYPE_WINDOW_CREATED:
-			fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
-			flags |= WINDOW_CREATED;
-			break;
-		case APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE:
-			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
-			break;
-		case APPLICATION_EVENT_TYPE_WINDOW_DRAG:
-			drag_x += application_event.event_union.window_drag_event.x_movement;
-			drag_y += application_event.event_union.window_drag_event.y_movement;
-			break;
-		case APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL:
-			cursor_position = c[application_event.event_union.window_vertical_wheel_event.y][application_event.event_union.window_vertical_wheel_event.x];
-			if(0 < application_event.event_union.window_vertical_wheel_event.rotation)pixel_distance *= zoom_ratio; // zoom out
-			else if(application_event.event_union.window_vertical_wheel_event.rotation < 0)pixel_distance /= zoom_ratio; // zoom in
-			for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
-			{
-				c[y][x].real = cursor_position.real + pixel_distance * (double)((short)x - application_event.event_union.window_vertical_wheel_event.x);
-				c[y][x].imag = cursor_position.imag + pixel_distance * (double)((short)y - application_event.event_union.window_vertical_wheel_event.y);
-				z[y][x].real = 0.0;
-				z[y][x].imag = 0.0;
-			}
-			fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
-			current_color = blue;
-			printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
-			printf("%.10llf per pixel\n", pixel_distance);
 			break;
 		}
 		process_event();
