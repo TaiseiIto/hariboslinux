@@ -15,19 +15,22 @@ Color next_color(Color color);
 
 int main(void)
 {
-	#define WINDOW_CREATED 0x01
-	#define WINDOW_EXISTS 0x02
+	#define DRAGGED 0x01
+	#define WINDOW_CREATED 0x02
+	#define WINDOW_EXISTS 0x04
 	unsigned char flags = WINDOW_EXISTS;
 	unsigned short const window_width = 0x0400;
 	unsigned short const window_height = 0x0400;
+	unsigned int window = create_window("mandelbrot", 0x0000, 0x0000, window_width, window_height);
 	double min_real = -2.0;
 	double max_real = 2.0;
 	double min_imag = -2.0;
 	Complex c[window_height][window_width];
 	Complex z[window_height][window_width];
-	unsigned int window = create_window("mandelbrot", 0x0000, 0x0000, window_width, window_height);
 	double zoom_ratio = 2.0;
 	double pixel_distance = (max_real - min_real) / (double)window_width;
+	short drag_x;
+	short drag_y;
 	Color black;
 	Color blue;
 	Color current_color;
@@ -66,12 +69,30 @@ int main(void)
 				current_color = next_color(current_color);
 			}
 			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_CLICKED:
+			if(application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_PUSHED)
+			{
+				drag_x = 0;
+				drag_y = 0;
+				flags |= DRAGGED;
+			}
+			if(flags & DRAGGED && application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RELEASED)
+			{
+				printf("drag_x = %d\n", drag_x);
+				printf("drag_y = %d\n", drag_y);
+				flags &= ~DRAGGED;
+			}
+			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_CREATED:
 			fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 			flags |= WINDOW_CREATED;
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_DELETION_RESPONSE:
 			if(application_event.event_union.window_deletion_response_event.window == window)flags &= ~WINDOW_EXISTS;
+			break;
+		case APPLICATION_EVENT_TYPE_WINDOW_DRAG:
+			drag_x += application_event.event_union.window_drag_event.x_movement;
+			drag_y += application_event.event_union.window_drag_event.y_movement;
 			break;
 		case APPLICATION_EVENT_TYPE_WINDOW_VERTICAL_WHEEL:
 			cursor_position = c[application_event.event_union.window_vertical_wheel_event.y][application_event.event_union.window_vertical_wheel_event.x];
