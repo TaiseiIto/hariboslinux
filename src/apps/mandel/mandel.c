@@ -81,17 +81,20 @@ int main(void)
 				}
 				if(flags & DRAGGED && application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RELEASED)
 				{
-					for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
+					if(drag_x || drag_y)
 					{
-						c[y][x].real -= pixel_distance * (double)drag_x;
-						c[y][x].imag -= pixel_distance * (double)drag_y;
-						z[y][x].real = 0.0;
-						z[y][x].imag = 0.0;
+						for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
+						{
+							c[y][x].real -= pixel_distance * (double)drag_x;
+							c[y][x].imag -= pixel_distance * (double)drag_y;
+							z[y][x].real = 0.0;
+							z[y][x].imag = 0.0;
+						}
+						fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
+						current_color = blue;
+						printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
+						printf("%.10llf per pixel\n", pixel_distance);
 					}
-					fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
-					current_color = blue;
-					printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
-					printf("%.10llf per pixel\n", pixel_distance);
 					flags &= ~DRAGGED;
 				}
 			}
@@ -116,9 +119,14 @@ int main(void)
 		case APPLICATION_EVENT_TYPE_WINDOW_KEYBOARD:
 			if(application_event.event_union.window_keyboard_event.window == window)
 			{
-				if(application_event.event_union.window_keyboard_event.keyboard_event.keycode == KEY_CONTROL)
+				switch(application_event.event_union.window_keyboard_event.keyboard_event.keycode)
 				{
-					printf("CONTROL!\n");
+				case KEY_CONTROL:
+					printf("CTRL pushed\n");
+					break;
+				case KEY_CONTROL | KEY_RELEASED:
+					printf("CTRL released\n");
+					break;
 				}
 			}
 			break;
