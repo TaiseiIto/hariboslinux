@@ -77,20 +77,21 @@ int main(void)
 				{
 					if(application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_PUSHED)
 					{
+						cursor_position = c[application_event.event_union.window_clicked_event.y][application_event.event_union.window_clicked_event.x];
 						if(application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_LEFT_BUTTON)pixel_distance /= zoom_ratio; // zoom in
 						if(application_event.event_union.window_clicked_event.flags & APPLICATION_WINDOW_CLICKED_EVENT_FLAG_RIGHT_BUTTON)pixel_distance *= zoom_ratio; // zoom out
+						for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
+						{
+							c[y][x].real = cursor_position.real + pixel_distance * (double)((short)x - application_event.event_union.window_vertical_wheel_event.x);
+							c[y][x].imag = cursor_position.imag + pixel_distance * (double)((short)y - application_event.event_union.window_vertical_wheel_event.y);
+							z[y][x].real = 0.0;
+							z[y][x].imag = 0.0;
+						}
+						fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
+						current_color = blue;
+						printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
+						printf("%.10llf per pixel\n", pixel_distance);
 					}
-					for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
-					{
-						c[y][x].real = cursor_position.real + pixel_distance * (double)((short)x - application_event.event_union.window_vertical_wheel_event.x);
-						c[y][x].imag = cursor_position.imag + pixel_distance * (double)((short)y - application_event.event_union.window_vertical_wheel_event.y);
-						z[y][x].real = 0.0;
-						z[y][x].imag = 0.0;
-					}
-					fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
-					current_color = blue;
-					printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
-					printf("%.10llf per pixel\n", pixel_distance);
 				}
 				else
 				{
