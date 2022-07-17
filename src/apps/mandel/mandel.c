@@ -8,7 +8,7 @@ typedef struct
 	double imag;
 } Complex;
 
-double cabs(Complex c);
+double csqabs(Complex c);
 Complex cadd(Complex c1, Complex c2);
 Complex cmul(Complex c1, Complex c2);
 Color next_color(Color color);
@@ -58,10 +58,10 @@ int main(void)
 		case APPLICATION_EVENT_TYPE_NOTHING:
 			if(flags & WINDOW_CREATED)
 			{
-				for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)if(cabs(z[y][x]) <= 2.0)
+				for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)if(csqabs(z[y][x]) <= 4.0)
 				{
 					z[y][x] = cadd(cmul(z[y][x], z[y][x]), c[y][x]);
-					if(2.0 < cabs(z[y][x]))put_dot_window(window, x, y, current_color);
+					if(4.0 < csqabs(z[y][x]))put_dot_window(window, x, y, current_color);
 				}
 				current_color = next_color(current_color);
 			}
@@ -95,9 +95,9 @@ int main(void)
 	return 0;
 }
 
-double cabs(Complex c)
+double csqabs(Complex c)
 {
-	return sqrt(c.real * c.real + c.imag * c.imag);
+	return c.real * c.real + c.imag * c.imag;
 }
 
 Complex cadd(Complex c1, Complex c2)
