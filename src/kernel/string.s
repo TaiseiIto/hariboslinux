@@ -32,7 +32,6 @@ memcpy:
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
-	pushfl
 2:	# Load the arguments.
 	movl	0x08(%ebp),%edi		# EDI = destination;
 	movl	0x0c(%ebp),%esi 	# ESI = source;
@@ -85,7 +84,7 @@ memcpy:
 					# ESI += DF ? -1 : 1;
 					# EDI += DF ? -1 : 1;
 7:	# Restore the preserved registers.
-	popfl
+	cld
 	popl	%edi
 	popl	%esi
 	popl	%ebx
