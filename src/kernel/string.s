@@ -90,6 +90,7 @@ memcpy:
 	popl	%esi
 	popl	%ebx
 8:	# End of the function.
+	movl	0x08(%ebp),%eax		# return destination;
 	leave
 	ret
 
@@ -128,6 +129,7 @@ memset:
 5:	# Restore scratch registers.
 	pop	%edi
 6:	# End of the function.
+	movl	0x08(%ebp),%eax		# return buf;
 	leave
 	ret
 
