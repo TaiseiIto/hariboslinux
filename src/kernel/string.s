@@ -64,12 +64,9 @@ memcpy:
 	subl	%eax,	%edi		# EDI -= EAX;
 	std				# DF = 1;
 5:	# Copy from source to destination.
-	movl	%ecx,	%eax		# EAX = size;
-	xorl	%edx,	%edx		# EDX = 0;
-	movl	$0x00000004,%ebx	# EBX = 0x00000004;
-	divl	%ebx			# EAX = size / 4;
-					# EDX = size % 4;
-	movl	%eax,	%ecx		# ECX = size / 4;
+	movl	%ecx,	%edx		# EDX = size;
+	shrl	$0x02,	%ecx		# ECX = size / 4;
+	andl	$0x00000003,%edx	# EDX = size % 4;
 	rep	movsl			# while(ECX--)
 					# {
 					#	*(int *)EDI = *(int *)ESI;
@@ -81,7 +78,7 @@ memcpy:
 	movsw				# *(short *)EDI = *(short *)ESI;
 					# ESI += DF ? -2 : 2;
 					# EDI += DF ? -2 : 2;
-	subl	$0x00000002,%edx
+	subl	$0x00000002,%edx	# EDX = size % 2;
 6:	# Copy the last byte.
 	jz	7f			# if(!EDX)goto 7;
 	movsb				# *(char *)EDI = *(char *)ESI;
@@ -116,14 +113,21 @@ memset:
 	shll	$0x10,	%eax		# EAX = {0, 0, ch, ch};
 	movw	%dx,	%ax		# EAX = {ch, ch, ch, ch};
 	movl	0x10(%ebp),%ecx		# ECX = size;
-3:	# Set ch
+3:	# Set buf
 	movl	%ecx,	%edx		# EDX = size;
 	shrl	$0x02,	%ecx		# ECX = size / 4;
 	andl	$0x00000003,%edx	# EDX = size % 4;
-	rep stosl
-4:	# Restore scratch registers.
+	rep	stosl			# while(ECX--)*((int *)EDI)++ = EAX;
+	cmpl	$0x00000002,%edx	# if(size % 4 < 2)goto 6;
+	jb	4f
+	stosw				# *((short *)EDI)++ = AX;
+	subl	$0x00000002,%edx	# EDX = size % 2;
+4:	# Set the last byte.
+	jz	5f			# if(!EDX)goto 7;
+	stosb				# *((char *)EDI++) = AL;
+5:	# Restore scratch registers.
 	pop	%edi
-5:	# End of the function.
+6:	# End of the function.
 	leave
 	ret
 
