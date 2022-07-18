@@ -26,8 +26,41 @@
 # );
 memcpy:
 0:
+	# Save the scratch registers
 	pushl	%ebp
 	movl	%esp,	%ebp
+	pushl	%ebx
+	pushl	%esi
+	pushl	%edi
+	pushfl
+1:	# Get arguments.
+	movl	0x08(%ebp),%edi		# %edi = destination
+	movl	0x0c(%ebp),%esi 	# %esi = source
+	movl	0x10(%ebp),%ecx 	# %ecx = size
+2:	# Judge the copy direction.
+	cmp	%esi,	%edi		# if destination <= source then copy forward.
+	jbe	4f
+	movl	%esi,	%edx		# %edx = source
+	addl	%ecx,	%edx		# %edx = source + size
+	cmp	%edx,	%edi		# if source + size <= destination then copy forward.
+	jbe	4f
+3:	# Invert copy direction.
+	std
+	addl	%ecx,	%esi		# %esi = source + size
+	addl	%ecx,	%edi		# %edi = destination + size
+4:	# Copy from source to destination.
+	movl	%ecx,	%eax		# %eax = size
+	xorl	%edx,	%edx		# %edx = 0
+	movl	$0x00000004,%ebx	# %ebx = 0x00000004
+	divl	%ebx			# %eax = size / 4
+					# %edx = size % 4
+	movl	%eax,	%ecx		# %ecx = size / 4
+	rep	movsl
+5:	# Restore the scratch registers.
+	popfl
+	popl	%edi
+	popl	%esi
+	popl	%ebx
 	leave
 	ret
 
