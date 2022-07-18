@@ -3,4 +3,5 @@ fontdata.c
 *.s
 !interrupt_gates.s
 !io.s
+!string.s
 
