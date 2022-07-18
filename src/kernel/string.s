@@ -18,42 +18,73 @@
 	.type	strcpy,	@function
 	.type	strlen,	@function
 
-memcpy:				# void *memcpy(void *destination, void const *source, size_t size);
+# void *memcpy
+# (
+#	void *destination,	// 0x08(%ebp)
+#	void const *source,	// 0x0c(%ebp)
+#	size_t size		// 0x10(%ebp)
+# );
+memcpy:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	leave
 	ret
 
-memset:				# void *memset(void *buf, char ch, size_t size);
+# void *memset
+# (
+# 	void *buf,		// 0x08(%ebp)
+# 	char ch,		// 0x0c(%ebp)
+# 	size_t size		// 0x10(%ebp)
+# );
+memset:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	leave
 	ret
 
-strchr:				# char const *strchr(char const *string, char character);
+# char const *strchr
+# (
+# 	char const *string,	// 0x08(%ebp)
+# 	char character		// 0x0c(%ebp)
+# );
+strchr:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	leave
 	ret
 
-strcmp:				# int strcmp(char const *string1, char const *string2);
+# int strcmp
+# (
+# 	char const *string1,	// 0x08(%ebp)
+# 	char const *string2	// 0x0c(%ebp)
+# );
+strcmp:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	leave
 	ret
 
-strcpy:				# char *strcpy(char *destination, char const *source);
+# char *strcpy
+# (
+# 	char *destination,	// 0x08(%ebp)
+# 	char const *source	// 0x08(%ebp)
+# );
+strcpy:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	leave
 	ret
 
-strlen:				# unsigned int strlen(char const *string);
+# unsigned int strlen
+# (
+# 	char const *string	// 0x08(%ebp)
+# );
+strlen:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
