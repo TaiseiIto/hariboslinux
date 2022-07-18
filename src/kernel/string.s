@@ -25,7 +25,7 @@
 #	size_t size		// 0x10(%ebp)
 # );
 memcpy:
-0:	# Begin of the function.
+0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
 1:	# Save the scratch registers.
@@ -50,13 +50,14 @@ memcpy:
 	addl	%ecx,	%edi		# edi = destination + size;
 	test	%ecx,	%ecx
 	jz	7f			# if(!size)goto 7;
-	xorl	%edx,	%edx		# edx = 0;
 	movl	$0x00000001,%eax	# eax = 0x00000001;
-	cmp	$0x00000002,%ecx	# edx = 2 <= size;
+	cmp	$0x00000002,%ecx	# dl = 2 <= size;
 	setae	%dl
+	movzx	%dl,	%edx		# edx = (unsigned int)dl;
 	addl	%edx,	%eax		# eax = 2 <= size ? 2 : 1;
-	cmp	$0x00000004,%ecx	# edx = 4 <= size;
+	cmp	$0x00000004,%ecx	# dl = 4 <= size;
 	setae	%dl
+	movzx	%dl,	%edx		# edx = (unsigned int)dl;
 	shll	$0x01,	%edx		# edx = 2 * (4 <= size);
 	addl	%edx,	%eax		# eax = 4 <= size ? 4 : 2 <= size ? 2 : 1;
 	subl	%eax,	%esi		# esi -= eax;
@@ -102,9 +103,10 @@ memcpy:
 # 	size_t size		// 0x10(%ebp)
 # );
 memset:
-0:
+0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
+1:	# End of the function.
 	leave
 	ret
 
@@ -114,9 +116,10 @@ memset:
 # 	char character		// 0x0c(%ebp)
 # );
 strchr:
-0:
+0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
+1:	# End of the function.
 	leave
 	ret
 
@@ -126,9 +129,10 @@ strchr:
 # 	char const *string2	// 0x0c(%ebp)
 # );
 strcmp:
-0:
+0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
+1:	# End of the function.
 	leave
 	ret
 
@@ -138,9 +142,10 @@ strcmp:
 # 	char const *source	// 0x08(%ebp)
 # );
 strcpy:
-0:
+0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
+1:	# End of the function.
 	leave
 	ret
 
@@ -149,9 +154,10 @@ strcpy:
 # 	char const *string	// 0x08(%ebp)
 # );
 strlen:
-0:
+0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
+1:	# End of the function.
 	leave
 	ret
 
