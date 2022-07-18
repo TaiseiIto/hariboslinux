@@ -28,7 +28,7 @@ memcpy:
 0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
-1:	# Save the scratch registers.
+1:	# Save the preserved registers.
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
@@ -43,19 +43,19 @@ memcpy:
 	jb	5f			# if(destination < source)goto 5;
 	movl	%esi,	%edx		# EDX = source;
 	addl	%ecx,	%edx		# EDX = source + size;
-	cmp	%edi,	%edx		# if(source + size <= destination)goto 5;
+	cmpl	%edi,	%edx		# if(source + size <= destination)goto 5;
 	jbe	5f
 4:	# Invert copy direction.
 	addl	%ecx,	%esi		# ESI = source + size;
 	addl	%ecx,	%edi		# EDI = destination + size;
-	test	%ecx,	%ecx
+	testl	%ecx,	%ecx
 	jz	7f			# if(!size)goto 7;
 	movl	$0x00000001,%eax	# EAX = 0x00000001;
-	cmp	$0x00000002,%ecx	# DL = 2 <= size;
+	cmpl	$0x00000002,%ecx	# DL = 2 <= size;
 	setae	%dl
 	movzx	%dl,	%edx		# EDX = (unsigned int)DL;
 	addl	%edx,	%eax		# EAX = 2 <= size ? 2 : 1;
-	cmp	$0x00000004,%ecx	# DL = 4 <= size;
+	cmpl	$0x00000004,%ecx	# DL = 4 <= size;
 	setae	%dl
 	movzx	%dl,	%edx		# EDX = (unsigned int)DL;
 	shll	$0x01,	%edx		# EDX = 2 * (4 <= size);
@@ -84,7 +84,7 @@ memcpy:
 	movsb				# *(char *)EDI = *(char *)ESI;
 					# ESI += DF ? -1 : 1;
 					# EDI += DF ? -1 : 1;
-7:	# Restore the scratch registers.
+7:	# Restore the preserved registers.
 	popfl
 	popl	%edi
 	popl	%esi
@@ -104,7 +104,7 @@ memset:
 0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
-1:	# Save scratch registers.
+1:	# Save a preserved register.
 	pushl	%edi
 2:	# Load the arguments.
 	movl	0x08(%ebp),%edi		# EDI = buf;
@@ -126,7 +126,7 @@ memset:
 4:	# Set the last byte.
 	jz	5f			# if(!EDX)goto 7;
 	stosb				# *((char *)EDI++) = AL;
-5:	# Restore scratch registers.
+5:	# Restore a preserved register.
 	pop	%edi
 6:	# End of the function.
 	movl	0x08(%ebp),%eax		# return buf;
@@ -142,7 +142,25 @@ strchr:
 0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
-1:	# End of the function.
+1:	# Save a preserved register.
+	pushl	%edi
+2:	# Load the arguments.
+	movl	0x08(%ebp),%edi		# EDI = string;
+	pushl	%edi
+	call	strlen			# EAX = strlen(string);
+	movl	%eax,	%ecx		# ECX = strlen(string);
+	movb	0x0c(%ebp),%al		# AL = character;
+3:	# Search the character.
+	repne	scasb			# while(ECX--)if(*((char *)EDI)++ == AL)break;
+	cmpb	%al,	(%edi)		# if(*((char *)EDI != character)goto 4;
+	jne	4f
+	movl	%edi,	%eax		# EAX = (char *)EDI;
+	jmp	5f
+4:	# The character is not found.
+	xorl	%eax,	%eax		# EAX = NULL;
+5:	# Restore a preserved register.
+	popl	%edi
+6:	# End of the function.
 	leave
 	ret
 
