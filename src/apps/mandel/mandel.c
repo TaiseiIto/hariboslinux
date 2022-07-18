@@ -29,6 +29,7 @@ int main(void)
 	Complex c[window_height][window_width];
 	Complex z[window_height][window_width];
 	Complex cursor_position;
+	unsigned int const accuracy = 10;
 	double zoom_ratio = 2.0;
 	double pixel_distance = (max_real - min_real) / (double)window_width;
 	short drag_x;
@@ -52,8 +53,8 @@ int main(void)
 		z[y][x].real = 0.0;
 		z[y][x].imag = 0.0;
 	}
-	printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
-	printf("%.10llf per pixel\n", pixel_distance);
+	printf("Center %.*llf%+.*llfi\n", accuracy, c[window_height / 2][window_width / 2].real, accuracy, c[window_height / 2][window_width / 2].imag);
+	printf("%.*llf per pixel\n", accuracy, pixel_distance);
 	while(flags & WINDOW_EXISTS)
 	{
 		ApplicationEvent application_event = dequeue_application_event();
@@ -89,8 +90,8 @@ int main(void)
 						}
 						fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 						current_color = blue;
-						printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
-						printf("%.10llf per pixel\n", pixel_distance);
+						printf("Center %.*llf%+.*llfi\n", accuracy, c[window_height / 2][window_width / 2].real, accuracy, c[window_height / 2][window_width / 2].imag);
+						printf("%.*llf per pixel\n", accuracy, pixel_distance);
 					}
 				}
 				else
@@ -114,8 +115,8 @@ int main(void)
 							}
 							fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 							current_color = blue;
-							printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
-							printf("%.10llf per pixel\n", pixel_distance);
+							printf("Center %.*llf%+.*llfi\n", accuracy, c[window_height / 2][window_width / 2].real, accuracy, c[window_height / 2][window_width / 2].imag);
+							printf("%.*llf per pixel\n", accuracy, pixel_distance);
 						}
 						flags &= ~DRAGGED;
 					}
@@ -168,8 +169,8 @@ int main(void)
 				}
 				fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 				current_color = blue;
-				printf("Center %.10llf%+.10llfi\n", c[window_height / 2][window_width / 2].real, c[window_height / 2][window_width / 2].imag);
-				printf("%.10llf per pixel\n", pixel_distance);
+				printf("Center %.*llf%+.*llfi\n", accuracy, c[window_height / 2][window_width / 2].real, accuracy, c[window_height / 2][window_width / 2].imag);
+				printf("%.*llf per pixel\n", accuracy, pixel_distance);
 			}
 			break;
 		}
