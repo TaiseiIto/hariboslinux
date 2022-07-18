@@ -38,8 +38,9 @@ memcpy:
 	movl	0x0c(%ebp),%esi 	# esi = source;
 	movl	0x10(%ebp),%ecx 	# ecx = size;
 3:	# Judge the copy direction.
-	cmp	%esi,	%edi		# if(destination <= source)goto 5;
-	jbe	5f
+	cmp	%esi,	%edi
+	je	7f			# if(destination == source)goto 7;
+	jb	5f			# if(destination < source)goto 5;
 	movl	%esi,	%edx		# edx = source;
 	addl	%ecx,	%edx		# edx = source + size;
 	cmp	%edi,	%edx		# if(source + size <= destination)goto 5;
@@ -47,6 +48,19 @@ memcpy:
 4:	# Invert copy direction.
 	addl	%ecx,	%esi		# esi = source + size;
 	addl	%ecx,	%edi		# edi = destination + size;
+	test	%ecx,	%ecx
+	jz	7f			# if(!size)goto 7;
+	xorl	%edx,	%edx		# edx = 0;
+	movl	$0x00000001,%eax	# eax = 0x00000001;
+	cmp	$0x00000002,%ecx	# edx = 2 <= size;
+	setae	%dl
+	addl	%edx,	%eax		# eax = 2 <= size ? 2 : 1;
+	cmp	$0x00000004,%ecx	# edx = 4 <= size;
+	setae	%dl
+	shll	$0x01,	%edx		# edx = 2 * (4 <= size);
+	addl	%edx,	%eax		# eax = 4 <= size ? 4 : 2 <= size ? 2 : 1;
+	subl	%eax,	%esi		# esi -= eax;
+	subl	%eax,	%edi		# edi -= eax;
 	std				# DF = 1;
 5:	# Copy from source to destination.
 	movl	%ecx,	%eax		# eax = size;
