@@ -25,42 +25,59 @@
 #	size_t size		// 0x10(%ebp)
 # );
 memcpy:
-0:
-	# Save the scratch registers
+0:	# Begin of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
+1:	# Save the scratch registers.
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
 	pushfl
-1:	# Get arguments.
-	movl	0x08(%ebp),%edi		# %edi = destination
-	movl	0x0c(%ebp),%esi 	# %esi = source
-	movl	0x10(%ebp),%ecx 	# %ecx = size
-2:	# Judge the copy direction.
-	cmp	%esi,	%edi		# if destination <= source then copy forward.
-	jbe	4f
-	movl	%esi,	%edx		# %edx = source
-	addl	%ecx,	%edx		# %edx = source + size
-	cmp	%edx,	%edi		# if source + size <= destination then copy forward.
-	jbe	4f
-3:	# Invert copy direction.
-	std
-	addl	%ecx,	%esi		# %esi = source + size
-	addl	%ecx,	%edi		# %edi = destination + size
-4:	# Copy from source to destination.
-	movl	%ecx,	%eax		# %eax = size
-	xorl	%edx,	%edx		# %edx = 0
-	movl	$0x00000004,%ebx	# %ebx = 0x00000004
-	divl	%ebx			# %eax = size / 4
-					# %edx = size % 4
-	movl	%eax,	%ecx		# %ecx = size / 4
-	rep	movsl
-5:	# Restore the scratch registers.
+2:	# Get arguments.
+	movl	0x08(%ebp),%edi		# edi = destination;
+	movl	0x0c(%ebp),%esi 	# esi = source;
+	movl	0x10(%ebp),%ecx 	# ecx = size;
+3:	# Judge the copy direction.
+	cmp	%esi,	%edi		# if(destination <= source)goto 5;
+	jbe	5f
+	movl	%esi,	%edx		# edx = source;
+	addl	%ecx,	%edx		# edx = source + size;
+	cmp	%edi,	%edx		# if(source + size <= destination)goto 5;
+	jbe	5f
+4:	# Invert copy direction.
+	addl	%ecx,	%esi		# esi = source + size;
+	addl	%ecx,	%edi		# edi = destination + size;
+	std				# DF = 1;
+5:	# Copy from source to destination.
+	movl	%ecx,	%eax		# eax = size;
+	xorl	%edx,	%edx		# edx = 0;
+	movl	$0x00000004,%ebx	# ebx = 0x00000004;
+	divl	%ebx			# eax = size / 4;
+					# edx = size % 4;
+	movl	%eax,	%ecx		# ecx = size / 4;
+	rep	movsl			# while(ecx--)
+					# {
+					#	*(int *)edi = *(int *)esi;
+					#	esi += DF ? -4 : 4;
+					#	edi += DF ? -4 : 4;
+					# }
+	cmpl	$0x00000002,%edx	# if(size % 4 < 2)goto 6;
+	jb	6f
+	movsw				# *(short *)edi = *(short *)esi;
+					# esi += DF ? -2 : 2;
+					# edi += DF ? -2 : 2;
+	subl	$0x00000002,%edx
+6:	# Copy the last byte.
+	jz	7f			# if(!edx)goto 7;
+	movsb				# *(char *)edi = *(char *)esi;
+					# esi += DF ? -1 : 1;
+					# edi += DF ? -1 : 1;
+7:	# Restore the scratch registers.
 	popfl
 	popl	%edi
 	popl	%esi
 	popl	%ebx
+8:	# End of the function.
 	leave
 	ret
 
