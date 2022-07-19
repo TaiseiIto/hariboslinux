@@ -2,4 +2,5 @@
 *.s
 !crt.s
 !io.s
+!string.s
 
