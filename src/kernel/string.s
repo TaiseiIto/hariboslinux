@@ -214,13 +214,21 @@ strcmp:
 # char *strcpy
 # (
 # 	char *destination,	// 0x08(%ebp)
-# 	char const *source	// 0x08(%ebp)
+# 	char const *source	// 0x0c(%ebp)
 # );
 strcpy:
 0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
-1:	# End of the function.
+1:	# Get source length.
+	pushl	0x0c(%ebp)
+	call	strlen
+2:	# Call memcpy.
+	pushl	%eax
+	pushl	0x0c(%ebp)
+	pushl	0x08(%ebp)
+	call	memcpy
+3:	# End of the function.
 	leave
 	ret
 
