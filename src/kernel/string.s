@@ -192,7 +192,7 @@ strcmp:
 	movl	%ebx,	%eax		# EAX = strlen(string2);
 4:	# Compare the strings.
 	movl	%eax,	%ecx		# ECX = min(strlen(string1), strlen(string2));
-	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++);
+	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
 	ja	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
 	jb	6f			# if(*(char *)EDI < *(char *)ESI)
 	# if(*(char *)ESI == *(char *)EDI)return 0;
@@ -240,7 +240,19 @@ strlen:
 0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
-1:	# End of the function.
+1:	# Save preserved register.
+	pushl	%edi
+2:	# Load the arguments.
+	movl	0x08(%ebp),%edi		# EDI = string;
+3:	# Count characters.
+	xorl	%eax,	%eax		# EAX = 0;
+	movl	$0xffffffff,%ecx	# ECX = -1;
+	repne	scasb			# while(ECX--)if(!*((char *)EDI)++)break;
+	notl	%ecx			# ECX = strlen(string);
+	movl	%ecx,	%eax		# EAX = strlen(string);
+4:	# Restore preserved register.
+	popl	%edi
+5:	# End of the function.
 	leave
 	ret
 
