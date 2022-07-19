@@ -30,8 +30,8 @@ memcpy:
 	movl	%esp,	%ebp
 1:	# Save the preserved registers.
 	pushl	%ebx
-	pushl	%esi
 	pushl	%edi
+	pushl	%esi
 2:	# Load the arguments.
 	movl	0x08(%ebp),%edi		# EDI = destination;
 	movl	0x0c(%ebp),%esi 	# ESI = source;
@@ -85,8 +85,8 @@ memcpy:
 					# EDI += DF ? -1 : 1;
 7:	# Restore the preserved registers.
 	cld
-	popl	%edi
 	popl	%esi
+	popl	%edi
 	popl	%ebx
 8:	# End of the function.
 	movl	0x08(%ebp),%eax		# return destination;
@@ -147,6 +147,7 @@ strchr:
 	movl	0x08(%ebp),%edi		# EDI = string;
 	pushl	%edi
 	call	strlen			# EAX = strlen(string);
+	addl	$0x00000004,%esp
 	movl	%eax,	%ecx		# ECX = strlen(string);
 	movb	0x0c(%ebp),%al		# AL = character;
 3:	# Search the character.
@@ -172,7 +173,41 @@ strcmp:
 0:	# Start of the function.
 	pushl	%ebp
 	movl	%esp,	%ebp
-1:	# End of the function.
+1:	# Save preserved registers.
+	pushl	%ebx
+	pushl	%edi
+	pushl	%esi
+2:	# Load the arguments.
+	movl	0x08(%ebp),%esi		# ESI = string1;
+	movl	0x0c(%ebp),%edi		# EDI = string2;
+	pushl	%esi
+	call	strlen			# EAX = strlen(string1);
+	movl	%eax,	%ebx		# EBX = strlen(string1);
+	pushl	%edi
+	call	strlen			# EAX = strlen(string2);
+	addl	$0x00000008,%esp
+3:	# Choose shorter string length.
+	cmpl	%ebx,	%eax		# if(strlen(string2) < strlen(string1))EAX = strlen(string2);
+	jbe	4f			# if(strlen(string1) <= strlen(string2))goto 4;
+	movl	%ebx,	%eax		# EAX = strlen(string2);
+4:	# Compare the strings.
+	movl	%eax,	%ecx		# ECX = min(strlen(string1), strlen(string2));
+	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++);
+	ja	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
+	jb	6f			# if(*(char *)EDI < *(char *)ESI)
+	# if(*(char *)ESI == *(char *)EDI)return 0;
+	xorl	%eax,	%eax
+	jmp	7f
+5:	# if(*(char *)ESI < *(char *)EDI)return -1;
+	movl	$0xffffffff,%eax
+	jmp	7f
+6:	# if(*(char *)EDI < *(char *)ESI)return 1;
+	movl	$0x00000001,%eax
+7:	# Restore preserved registers.
+	popl	%esi
+	popl	%edi
+	popl	%ebx
+8:	# End of the function.
 	leave
 	ret
 
