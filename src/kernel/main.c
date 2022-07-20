@@ -18,6 +18,7 @@
 #include "serial.h"
 #include "sheet.h"
 #include "stdio.h"
+#include "string.h"
 #include "task.h"
 #include "text_box.h"
 #include "timer.h"
@@ -108,6 +109,24 @@ int main(void)
 	test_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
 	// Serial status timer
 	serial_status_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
+	// DEBUG
+	printf_serial("strlen(\"\") = %d\n", strlen(""));
+	printf_serial("strlen(\"a\") = %d\n", strlen("a"));
+	printf_serial("strlen(\"ab\") = %d\n", strlen("ab"));
+	printf_serial("strlen(\"abc\") = %d\n", strlen("abc"));
+	printf_serial("strlen(\"abcd\") = %d\n", strlen("abcd"));
+	printf_serial("strlen(\"abcde\") = %d\n", strlen("abcde"));
+	printf_serial("strlen(\"abcdef\") = %d\n", strlen("abcdef"));
+	printf_serial("strlen(\"abcdefg\") = %d\n", strlen("abcdefg"));
+	printf_serial("strlen(\"abcdefgh\") = %d\n", strlen("abcdefgh"));
+	printf_serial("strlen(\"abcdefghi\") = %d\n", strlen("abcdefghi"));
+	printf_serial("strlen(\"abcdefghij\") = %d\n", strlen("abcdefghij"));
+	char *debug_source = "hel";
+	char *debug_destination = "tor world!";
+	strcpy(debug_destination, debug_source);
+	printf_serial("debug_source = %s\n", debug_source);
+	printf_serial("debug_destination = %s\n", debug_destination);
+	printf_serial("debug_destination + 4 = %s\n", debug_destination + 4);
 	while(true)
 	{
 		Event const *event;
