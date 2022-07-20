@@ -96,12 +96,15 @@ memset:
 	shrl	$0x02,	%ecx		# ECX = size / 4;
 	andl	$0x00000003,%edx	# EDX = size % 4;
 	rep	stosl			# while(ECX--)*((int *)EDI)++ = EAX;
-	cmpl	$0x00000002,%edx	# if(size % 4 < 2)goto 6;
-	jb	4f
+	testl	%edx,	%edx		# if(!(size % 4))goto 5;
+	jz	5f
+	cmpl	$0x00000001,%edx	# if(size % 4 == 1)goto 4;
+	je	4f
 	stosw				# *((short *)EDI)++ = AX;
 	subl	$0x00000002,%edx	# EDX = size % 2;
+	testl	%edx,	%edx		# if(!(size % 2))goto 5;
+	jz	5f
 4:	# Set the last byte.
-	jz	5f			# if(!EDX)goto 7;
 	stosb				# *((char *)EDI++) = AL;
 5:	# Restore a preserved register.
 	pop	%edi
