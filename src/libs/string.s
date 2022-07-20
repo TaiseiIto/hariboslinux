@@ -167,6 +167,7 @@ strcmp:
 	movl	%ebx,	%eax		# EAX = strlen(string2);
 4:	# Compare the strings.
 	movl	%eax,	%ecx		# ECX = min(strlen(string1), strlen(string2));
+	incl	%ecx			# ECX = min(strlen(string1), strlen(string2)) + 1;
 	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
 	ja	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
 	jb	6f			# if(*(char *)EDI < *(char *)ESI)
@@ -197,7 +198,8 @@ strcpy:
 	movl	%esp,	%ebp
 1:	# Get source length.
 	pushl	0x0c(%ebp)
-	call	strlen
+	call	strlen			# EAX = strlen(source);
+	incl	%eax			# EAX = strlen(source) + 1;
 2:	# Call memcpy.
 	pushl	%eax
 	pushl	0x0c(%ebp)
@@ -223,8 +225,9 @@ strlen:
 	xorl	%eax,	%eax		# EAX = 0;
 	movl	$0xffffffff,%ecx	# ECX = -1;
 	repne	scasb			# while(ECX--)if(!*((char *)EDI)++)break;
-	notl	%ecx			# ECX = strlen(string);
-	movl	%ecx,	%eax		# EAX = strlen(string);
+	movl	%ecx,	%eax		# EAX = ~(strlen(string) + 1);
+	notl	%eax			# EAX = strlen(string) + 1;
+	decl	%eax			# EAX = strlen(string);
 4:	# Restore preserved register.
 	popl	%edi
 5:	# End of the function.
