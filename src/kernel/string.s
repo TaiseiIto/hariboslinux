@@ -18,6 +18,8 @@
 	.type	strcpy,	@function
 	.type	strlen,	@function
 
+	.text
+
 # void *memcpy
 # (
 #	void *destination,	// 0x08(%ebp)
