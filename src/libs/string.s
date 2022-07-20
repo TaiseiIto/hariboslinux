@@ -48,14 +48,17 @@ memcpy:
 					#	ESI += DF ? -4 : 4;
 					#	EDI += DF ? -4 : 4;
 					# }
-	cmpl	$0x00000002,%edx	# if(size % 4 < 2)goto 6;
-	jb	4f
+	testl	%edx,	%edx		# if(!(size % 4))goto 5;
+	jz	5f
+	cmpl	$0x00000001,%edx	# if(size % 4 == 1)goto 4;
+	je	4f
 	movsw				# *(short *)EDI = *(short *)ESI;
 					# ESI += DF ? -2 : 2;
 					# EDI += DF ? -2 : 2;
 	subl	$0x00000002,%edx	# EDX = size % 2;
+	testl	%edx,	%edx		# if(!(size % 2))goto 5;
+	jz	5f
 4:	# Copy the last byte.
-	jz	5f			# if(!EDX)goto 7;
 	movsb				# *(char *)EDI = *(char *)ESI;
 					# ESI += DF ? -1 : 1;
 					# EDI += DF ? -1 : 1;
