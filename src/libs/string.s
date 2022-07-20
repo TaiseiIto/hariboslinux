@@ -38,33 +38,7 @@ memcpy:
 	movl	0x08(%ebp),%edi		# EDI = destination;
 	movl	0x0c(%ebp),%esi 	# ESI = source;
 	movl	0x10(%ebp),%ecx 	# ECX = size;
-3:	# Judge the copy direction.
-	cmp	%esi,	%edi
-	je	7f			# if(destination == source)goto 7;
-	jb	5f			# if(destination < source)goto 5;
-	movl	%esi,	%edx		# EDX = source;
-	addl	%ecx,	%edx		# EDX = source + size;
-	cmpl	%edi,	%edx		# if(source + size <= destination)goto 5;
-	jbe	5f
-4:	# Invert copy direction.
-	addl	%ecx,	%esi		# ESI = source + size;
-	addl	%ecx,	%edi		# EDI = destination + size;
-	testl	%ecx,	%ecx
-	jz	7f			# if(!size)goto 7;
-	movl	$0x00000001,%eax	# EAX = 0x00000001;
-	cmpl	$0x00000002,%ecx	# DL = 2 <= size;
-	setae	%dl
-	movzx	%dl,	%edx		# EDX = (unsigned int)DL;
-	addl	%edx,	%eax		# EAX = 2 <= size ? 2 : 1;
-	cmpl	$0x00000004,%ecx	# DL = 4 <= size;
-	setae	%dl
-	movzx	%dl,	%edx		# EDX = (unsigned int)DL;
-	shll	$0x01,	%edx		# EDX = 2 * (4 <= size);
-	addl	%edx,	%eax		# EAX = 4 <= size ? 4 : 2 <= size ? 2 : 1;
-	subl	%eax,	%esi		# ESI -= EAX;
-	subl	%eax,	%edi		# EDI -= EAX;
-	std				# DF = 1;
-5:	# Copy from source to destination.
+3:	# Copy from source to destination.
 	movl	%ecx,	%edx		# EDX = size;
 	shrl	$0x02,	%ecx		# ECX = size / 4;
 	andl	$0x00000003,%edx	# EDX = size % 4;
@@ -75,22 +49,21 @@ memcpy:
 					#	EDI += DF ? -4 : 4;
 					# }
 	cmpl	$0x00000002,%edx	# if(size % 4 < 2)goto 6;
-	jb	6f
+	jb	4f
 	movsw				# *(short *)EDI = *(short *)ESI;
 					# ESI += DF ? -2 : 2;
 					# EDI += DF ? -2 : 2;
 	subl	$0x00000002,%edx	# EDX = size % 2;
-6:	# Copy the last byte.
-	jz	7f			# if(!EDX)goto 7;
+4:	# Copy the last byte.
+	jz	5f			# if(!EDX)goto 7;
 	movsb				# *(char *)EDI = *(char *)ESI;
 					# ESI += DF ? -1 : 1;
 					# EDI += DF ? -1 : 1;
-7:	# Restore the preserved registers.
-	cld
+5:	# Restore the preserved registers.
 	popl	%esi
 	popl	%edi
 	popl	%ebx
-8:	# End of the function.
+6:	# End of the function.
 	movl	0x08(%ebp),%eax		# return destination;
 	leave
 	ret
