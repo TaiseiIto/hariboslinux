@@ -22,10 +22,10 @@ OBJECTS = beep.o chain_string.o cmos.o console.o ctype.o disk.o exception.o font
 all: kernel.bin
 
 clean:
-	rm -f $$(ls *.bin *.o *.s | grep -v "^interrupt_gates.s$$\|^io.s$$")
+	rm -f $$(ls *.bin *.o *.s | grep -v "^interrupt_gates.s$$\|^io.s$$\|^string.s$$")
 	make clean -C font
 
-kernel.bin: $(OBJECTS) interrupt_gates.o io.o
+kernel.bin: $(OBJECTS) interrupt_gates.o io.o string.o
 	$(LINKER) $^ $(LINKER_I386_OPTION) $(LINKER_MAP_OPTION) $(LINKER_OUTPUT_OPTION) $@ $(LINKER_SCRIPT_OPTION) $(@:.bin=.ld)
 
 fontdata.c: font/fontdata.c
@@ -37,6 +37,8 @@ font/fontdata.c: font/bitmap.txt font/Makefile font/translator.c
 interrupt_gates.o: interrupt_gates.s
 
 io.o: io.s
+
+string.o: string.s
 
 rebuild: clean
 	make
