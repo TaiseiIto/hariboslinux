@@ -127,6 +127,7 @@ int main(void)
 	printf_serial("debug_source = %s\n", debug_source);
 	printf_serial("debug_destination = %s\n", debug_destination);
 	printf_serial("debug_destination + 4 = %s\n", debug_destination + 4);
+	printf_serial("strchr(\"Hello, World!\\n\", 'W') == \"%s\"\n", strchr("Hello, World!\n", 'W'));
 	while(true)
 	{
 		Event const *event;
