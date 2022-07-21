@@ -133,6 +133,7 @@ strchr:
 	movb	0x0c(%ebp),%al		# AL = character;
 3:	# Search the character.
 	repne	scasb			# while(ECX--)if(*((char *)EDI)++ == AL)break;
+	decl	%edi
 	cmpb	%al,	(%edi)		# if(*((char *)EDI != character)goto 4;
 	jne	4f
 	movl	%edi,	%eax		# EAX = (char *)EDI;
