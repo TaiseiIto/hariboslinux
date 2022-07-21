@@ -56,7 +56,7 @@ memcpy:				# void memcpy(unsigned short dest_seg, void *dest_addr, unsigned shor
 	pushl	%esi
 	pushl	%edi
 	movw	%es,	%dx
-	shll	$0x8,	%edx
+	shll	$0x10,	%edx
 	movw	%fs,	%dx
 	pushl	%edx
 1:
@@ -91,7 +91,7 @@ memcpy:				# void memcpy(unsigned short dest_seg, void *dest_addr, unsigned shor
 6:
 	popl	%edx
 	movw	%dx,	%fs
-	shrl	$0x8,	%edx
+	shrl	$0x10,	%edx
 	movw	%dx,	%es
 	popl	%edi
 	popl	%esi
