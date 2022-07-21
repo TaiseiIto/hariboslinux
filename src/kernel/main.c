@@ -127,7 +127,18 @@ int main(void)
 	printf_serial("debug_source = %s\n", debug_source);
 	printf_serial("debug_destination = %s\n", debug_destination);
 	printf_serial("debug_destination + 4 = %s\n", debug_destination + 4);
-	printf_serial("strchr(\"Hello, World!\\n\", 'W') == \"%s\"\n", strchr("Hello, World!\n", 'W'));
+	printf_serial("strchr(\"Hello, World!\", 'H') == \"%s\"\n", strchr("Hello, World!", 'H'));
+	printf_serial("strchr(\"Hello, World!\", 'W') == \"%s\"\n", strchr("Hello, World!", 'W'));
+	printf_serial("strchr(\"Hello, World!\", '!') == \"%s\"\n", strchr("Hello, World!", '!'));
+	printf_serial("strchr(\"Hello, World!\", 'a') == \"%s\"\n", strchr("Hello, World!", 'a'));
+	printf_serial("strcmp(\"\", \"\") = %d\n", strcmp("", ""));
+	printf_serial("strcmp(\"abc\", \"\") = %d\n", strcmp("abc", ""));
+	printf_serial("strcmp(\"\", \"def\") = %d\n", strcmp("", "def"));
+	printf_serial("strcmp(\"abc\", \"def\") = %d\n", strcmp("abc", "def"));
+	printf_serial("strcmp(\"abc\", \"aba\") = %d\n", strcmp("abc", "aba"));
+	printf_serial("strcmp(\"abc\", \"abd\") = %d\n", strcmp("abc", "abd"));
+	printf_serial("strcmp(\"abc\", \"abcd\") = %d\n", strcmp("abc", "abcd"));
+	printf_serial("strcmp(\"abcde\", \"abcd\") = %d\n", strcmp("abcde", "abcd"));
 	while(true)
 	{
 		Event const *event;
