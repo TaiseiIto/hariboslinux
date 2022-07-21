@@ -127,6 +127,8 @@ int main(void)
 	printf_serial("debug_source = %s\n", debug_source);
 	printf_serial("debug_destination = %s\n", debug_destination);
 	printf_serial("debug_destination + 4 = %s\n", debug_destination + 4);
+	memset(debug_destination, 'P', 4);
+	printf_serial("debug_destination = %s\n", debug_destination);
 	printf_serial("strchr(\"Hello, World!\", 'H') == \"%s\"\n", strchr("Hello, World!", 'H'));
 	printf_serial("strchr(\"Hello, World!\", 'W') == \"%s\"\n", strchr("Hello, World!", 'W'));
 	printf_serial("strchr(\"Hello, World!\", '!') == \"%s\"\n", strchr("Hello, World!", '!'));
