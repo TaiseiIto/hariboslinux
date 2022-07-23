@@ -8,8 +8,10 @@
 	.globl	cli
 	.globl	clts
 	.globl	exit_application
+	.globl	fldcw
 	.globl	fninit
 	.globl	fnsave
+	.globl	fnstcw
 	.globl	frstor
 	.globl	get_caller_variadic_arg
 	.globl	get_eflags
@@ -40,8 +42,10 @@
 	.type	cli,			@function
 	.type	clts,			@function
 	.type	exit_application,	@function
+	.type	fldcw,			@function
 	.type	fninit,			@function
 	.type	fnsave,			@function
+	.type	fnstcw,			@function
 	.type	frstor,			@function
 	.type	get_caller_variadic_arg,@function
 	.type	get_eflags,		@function
@@ -185,6 +189,15 @@ exit_application:
 	leave
 	ret
 
+fldcw:				# void fldcw(unsigned short *control);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fldcw	(%edx)
+	leave
+	ret
+
 				# // initialize FPU
 fninit:				# void fninit(void);
 0:
@@ -201,6 +214,15 @@ fnsave:				# void fnsave(FPURegisters *fpu_registers);
 	movl	%esp,	%ebp
 	movl	0x08(%ebp),%edx
 	fnsave	(%edx)
+	leave
+	ret
+
+fnstcw:				# void fnstcw(unsigned short *control);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fnstcw	(%edx)
 	leave
 	ret
 
