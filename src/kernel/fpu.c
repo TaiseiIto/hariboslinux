@@ -10,8 +10,12 @@ Task const *get_fpu_user_task(void)
 
 void init_fpu(void)
 {
+	unsigned short control;
 	prohibit_switch_task();
 	fninit();
+	fnstcw(&control);
+	control &= ~FPU_STATUS_EXCEPTION_ZERO_DIVIDE;
+	fldcw(&control);
 	fpu_user_task = get_current_task();
 	fpu_user_task->flags |= FPU_INITIALIZED;
 	allow_switch_task();
