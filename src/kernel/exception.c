@@ -91,6 +91,7 @@ void device_not_available_exception_handler(void)
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_OVERFLOW)printf_shell(shell, "FPU OVERFLOW!!!\n");
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_UNDERFLOW)printf_shell(shell, "FPU UNDERFLOW!!!\n");
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_PRECISION)printf_shell(shell, "FPU PRECISION!!!\n");
+		fnclex();
 	}
 	switch_interrupt_serial_mode();
 }
@@ -391,6 +392,7 @@ void x87_floating_point_exception_handler(void)
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_OVERFLOW)printf_shell(shell, "FPU OVERFLOW!!!\n");
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_UNDERFLOW)printf_shell(shell, "FPU UNDERFLOW!!!\n");
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_PRECISION)printf_shell(shell, "FPU PRECISION!!!\n");
+		fnclex();
 	}
 	else kernel_panic();
 	switch_interrupt_serial_mode();

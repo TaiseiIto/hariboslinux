@@ -8,6 +8,7 @@
 	.globl	cli
 	.globl	clts
 	.globl	exit_application
+	.globl	fnclex
 	.globl	fldcw
 	.globl	fninit
 	.globl	fnsave
@@ -43,6 +44,7 @@
 	.type	cli,			@function
 	.type	clts,			@function
 	.type	exit_application,	@function
+	.type	fnclex,			@function
 	.type	fldcw,			@function
 	.type	fninit,			@function
 	.type	fnsave,			@function
@@ -191,6 +193,16 @@ exit_application:
 	leave
 	ret
 
+				# // clear FPU exceptions.
+fnclex:				# void fclex(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fnclex
+	leave
+	ret
+
+				# // load FPU control word from memory to FPU control register.
 fldcw:				# void fldcw(unsigned short *control);
 0:
 	pushl	%ebp

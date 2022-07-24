@@ -35,6 +35,9 @@ void clts(void);
 
 unsigned int exit_application(unsigned int return_value, unsigned int esp0);
 
+// clear FPU exceptions.
+void fnclex(void);
+
 // load FPU control word from memory to FPU control register.
 void fldcw(unsigned short *control);
 
