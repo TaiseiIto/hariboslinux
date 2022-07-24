@@ -17,6 +17,7 @@ void alignment_check_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ALIGNMENT CHECK EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("ALIGNMENT CHECK EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
@@ -45,6 +46,7 @@ void control_protection_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "CONTROL PROTECTION EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("CONTROL_PROTECTION EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
@@ -91,6 +93,7 @@ void double_fault_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "DOUBLE FAULT EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("DOUBLE FAULT EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
@@ -119,7 +122,9 @@ void general_protection_fault_exception_handler(unsigned int error_code)
 	else
 	{
 		printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "GENERAL PROTECTION FAULT EXCEPTION!!!\n");
+		printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 		printf_serial("GENERAL PROTECTION FAULT EXCEPTION!!!\n");
+		printf_serial("ERROR CODE = %#010.8X\n", error_code);
 		kernel_panic();
 	}
 	switch_interrupt_serial_mode();
@@ -138,6 +143,7 @@ void invalid_TSS_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "INVALID TSS EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("INVALID TSS EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
@@ -182,6 +188,7 @@ void page_fault_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "PAGE FAULT EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("PAGE FAULT EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
@@ -292,6 +299,7 @@ void security_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "SECURITY EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("SECURITY EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
@@ -302,6 +310,7 @@ void segment_not_present_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "SEGMENT NOT PRESENT EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("SEGMENT NOT PRESENT EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
@@ -321,6 +330,7 @@ void stack_segment_fault_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "STACK SEGMENT FAULT EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("STACK SEGMENT FAULT EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
@@ -340,6 +350,7 @@ void vmm_communication_exception_handler(unsigned int error_code)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "VMM COMMUNICATION EXCEPTION!!!\n");
+	printf_screen(0x0000, 0x0001 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "ERROR CODE = %#010.8X\n", error_code);
 	printf_serial("VMM COMMUNICATION EXCEPTION!!!\n");
 	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
