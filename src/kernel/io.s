@@ -16,6 +16,7 @@
 	.globl	fnstsw
 	.globl	frstor
 	.globl	get_caller_variadic_arg
+	.globl	get_cr0
 	.globl	get_eflags
 	.globl	get_variadic_arg
 	.globl	hlt
@@ -52,6 +53,7 @@
 	.type	fnstsw,			@function
 	.type	frstor,			@function
 	.type	get_caller_variadic_arg,@function
+	.type	get_cr0,		@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
 	.type	hlt,			@function
@@ -270,6 +272,15 @@ get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);
 	movl	0x08(%ebp),%edx
 	movl	0x08(%esi,%edx,0x04),%eax
 	popl	%esi
+	leave
+	ret
+
+				# // get CR0
+get_cr0:			# unsigned int get_cr0(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	%cr0,	%eax
 	leave
 	ret
 
