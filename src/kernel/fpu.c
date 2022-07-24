@@ -10,6 +10,7 @@ Task const *get_fpu_user_task(void)
 
 void init_fpu(void)
 {
+	unsigned short control;
 	prohibit_switch_task();
 	fninit();
 	fnstcw(&control);
