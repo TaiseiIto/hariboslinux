@@ -74,9 +74,6 @@ void debug_exception_handler(void)
 void device_not_available_exception_handler(void)
 {
 	unsigned short fpu_status_word;
-	Shell *shell = get_current_shell();
-	printf_shell(shell, "DEVICE NOT AVAILABLE EXCEPTION!!!\n");
-	printf_shell(shell, "task = %p\n", get_current_task());
 	switch_polling_serial_mode();
 	clts();
 	take_fpu();
@@ -86,7 +83,7 @@ void device_not_available_exception_handler(void)
 		fnclex();
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
 		{
-			printf_shell(shell, "FPU ZERO DIVIDE!!!\n");
+			printf_shell(get_current_shell(), "FPU ZERO DIVIDE!!!\n");
 			release_fpu();
 			exit_application(-1, get_current_task()->task_status_segment.esp0);
 		}
@@ -374,17 +371,14 @@ void vmm_communication_exception_handler(unsigned int error_code)
 void x87_floating_point_exception_handler(void)
 {
 	unsigned short fpu_status_word;
-	Shell *shell = get_current_shell();
 	switch_polling_serial_mode();
 	fpu_status_word = fnstsw();
-	printf_shell(shell, "X87 FLOATING POINT EXCEPTION!!!\n");
-	printf_shell(shell, "task = %p\n", get_current_task());
 	if(fpu_status_word & (FPU_STATUS_EXCEPTION_INVALID_OPERATION | FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND | FPU_STATUS_EXCEPTION_ZERO_DIVIDE | FPU_STATUS_EXCEPTION_OVERFLOW | FPU_STATUS_EXCEPTION_UNDERFLOW | FPU_STATUS_EXCEPTION_PRECISION))
 	{
 		fnclex();
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
 		{
-			printf_shell(shell, "FPU ZERO DIVIDE!!!\n");
+			printf_shell(get_current_shell(), "FPU ZERO DIVIDE!!!\n");
 			release_fpu();
 			exit_application(-1, get_current_task()->task_status_segment.esp0);
 		}
