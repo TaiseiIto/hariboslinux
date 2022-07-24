@@ -12,6 +12,7 @@
 	.globl	fninit
 	.globl	fnsave
 	.globl	fnstcw
+	.globl	fnstsw
 	.globl	frstor
 	.globl	get_caller_variadic_arg
 	.globl	get_eflags
@@ -46,6 +47,7 @@
 	.type	fninit,			@function
 	.type	fnsave,			@function
 	.type	fnstcw,			@function
+	.type	fnstsw,			@function
 	.type	frstor,			@function
 	.type	get_caller_variadic_arg,@function
 	.type	get_eflags,		@function
@@ -226,6 +228,14 @@ fnstcw:				# void fnstcw(unsigned short *control);
 	leave
 	ret
 
+				# // get FPU status word from FPU status register.
+fnstsw:				# unsigned short fnstsw(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fnstsw	%ax
+	leave
+	ret
 				# // load FPU registers
 frstor:				# void frstor(FPURegisters const *fpu_registers);
 0:

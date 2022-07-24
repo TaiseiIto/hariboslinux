@@ -47,6 +47,9 @@ void fnsave(FPURegisters *fpu_registers);
 // store FPU control word from FPU control register to memory.
 void fnstcw(unsigned short *control);
 
+// get FPU status word from FPU status register.
+unsigned short fnstsw(void);
+
 // load FPU registers
 void frstor(FPURegisters const *fpu_registers);
 
