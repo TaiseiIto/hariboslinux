@@ -74,19 +74,22 @@ void debug_exception_handler(void)
 void device_not_available_exception_handler(void)
 {
 	unsigned short fpu_status_word;
-	Shell *shell = get_current_shell();
 	switch_polling_serial_mode();
-	clts();
-	take_fpu();
+	if(get_cr0() & CR0_TASK_SWITCHED)
+	{
+		clts();
+		take_fpu();
+	}
 	fpu_status_word = fnstsw();
 	if(fpu_status_word & (FPU_STATUS_EXCEPTION_INVALID_OPERATION | FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND | FPU_STATUS_EXCEPTION_ZERO_DIVIDE | FPU_STATUS_EXCEPTION_OVERFLOW | FPU_STATUS_EXCEPTION_UNDERFLOW | FPU_STATUS_EXCEPTION_PRECISION))
 	{
+		fnclex();
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
 		{
-			printf_shell(shell, "FPU ZERO DIVIDE!!!\n");
+			printf_shell(get_current_shell(), "FPU ZERO DIVIDE!!!\n");
+			release_fpu();
 			exit_application(-1, get_current_task()->task_status_segment.esp0);
 		}
-		fnclex();
 	}
 	switch_interrupt_serial_mode();
 }
@@ -371,17 +374,17 @@ void vmm_communication_exception_handler(unsigned int error_code)
 void x87_floating_point_exception_handler(void)
 {
 	unsigned short fpu_status_word;
-	Shell *shell = get_current_shell();
 	switch_polling_serial_mode();
 	fpu_status_word = fnstsw();
 	if(fpu_status_word & (FPU_STATUS_EXCEPTION_INVALID_OPERATION | FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND | FPU_STATUS_EXCEPTION_ZERO_DIVIDE | FPU_STATUS_EXCEPTION_OVERFLOW | FPU_STATUS_EXCEPTION_UNDERFLOW | FPU_STATUS_EXCEPTION_PRECISION))
 	{
+		fnclex();
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
 		{
-			printf_shell(shell, "FPU ZERO DIVIDE!!!\n");
+			printf_shell(get_current_shell(), "FPU ZERO DIVIDE!!!\n");
+			release_fpu();
 			exit_application(-1, get_current_task()->task_status_segment.esp0);
 		}
-		fnclex();
 	}
 	else kernel_panic();
 	switch_interrupt_serial_mode();

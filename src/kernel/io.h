@@ -60,6 +60,10 @@ void frstor(FPURegisters const *fpu_registers);
 // the first arg is 0th
 unsigned int get_caller_variadic_arg(unsigned int);
 
+// get CR0
+unsigned int get_cr0(void);
+#define CR0_TASK_SWITCHED	0x00000008
+
 // get eflags register
 unsigned int get_eflags(void);
 #define EFLAGS_NOTHING		0x00000002
