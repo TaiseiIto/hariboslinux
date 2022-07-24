@@ -79,12 +79,16 @@ void device_not_available_exception_handler(void)
 	clts();
 	take_fpu();
 	fpu_status_word = fnstsw();
-	if(fpu_status_word & FPU_STATUS_EXCEPTION_INVALID_OPERATION)printf_shell(shell, "FPU INVALID OPERATION!!!\n");
-	if(fpu_status_word & FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND)printf_shell(shell, "FPU DENORMALIZED OPERAND!!!\n");
-	if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)printf_shell(shell, "FPU ZERO DIVIDE!!!\n");
-	if(fpu_status_word & FPU_STATUS_EXCEPTION_OVERFLOW)printf_shell(shell, "FPU OVERFLOW!!!\n");
-	if(fpu_status_word & FPU_STATUS_EXCEPTION_UNDERFLOW)printf_shell(shell, "FPU UNDERFLOW!!!\n");
-	if(fpu_status_word & FPU_STATUS_EXCEPTION_PRECISION)printf_shell(shell, "FPU PRECISION!!!\n");
+	if(fpu_status_word & (FPU_STATUS_EXCEPTION_INVALID_OPERATION | FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND | FPU_STATUS_EXCEPTION_ZERO_DIVIDE | FPU_STATUS_EXCEPTION_OVERFLOW | FPU_STATUS_EXCEPTION_UNDERFLOW | FPU_STATUS_EXCEPTION_PRECISION))
+	{
+		if(fpu_status_word & FPU_STATUS_EXCEPTION_INVALID_OPERATION)printf_shell(shell, "FPU INVALID OPERATION!!!\n");
+		if(fpu_status_word & FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND)printf_shell(shell, "FPU DENORMALIZED OPERAND!!!\n");
+		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)printf_shell(shell, "FPU ZERO DIVIDE!!!\n");
+		if(fpu_status_word & FPU_STATUS_EXCEPTION_OVERFLOW)printf_shell(shell, "FPU OVERFLOW!!!\n");
+		if(fpu_status_word & FPU_STATUS_EXCEPTION_UNDERFLOW)printf_shell(shell, "FPU UNDERFLOW!!!\n");
+		if(fpu_status_word & FPU_STATUS_EXCEPTION_PRECISION)printf_shell(shell, "FPU PRECISION!!!\n");
+		exit_application(-1, get_current_task()->task_status_segment.esp0);
+	}
 	switch_interrupt_serial_mode();
 }
 
