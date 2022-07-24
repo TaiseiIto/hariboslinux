@@ -1078,15 +1078,18 @@ interrupt_gate0x08:		# void interrupt_gate0x08(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	double_fault_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1151,15 +1154,18 @@ interrupt_gate0x0a:		# void interrupt_gate0x0a(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	invalid_TSS_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1188,15 +1194,18 @@ interrupt_gate0x0b:		# void interrupt_gate0x0b(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	segment_not_present_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1225,15 +1234,18 @@ interrupt_gate0x0c:		# void interrupt_gate0x0c(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	stack_segment_fault_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1262,6 +1274,7 @@ interrupt_gate0x0d:		# void interrupt_gate0x0d(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
@@ -1269,7 +1282,9 @@ interrupt_gate0x0d:		# void interrupt_gate0x0d(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	sti
+	pushl	%eax			# Push error code
 	call	general_protection_fault_exception_handler
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1298,15 +1313,18 @@ interrupt_gate0x0e:		# void interrupt_gate0x0e(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	page_fault_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1407,15 +1425,18 @@ interrupt_gate0x11:		# void interrupt_gate0x11(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	alignment_check_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1552,15 +1573,18 @@ interrupt_gate0x15:		# void interrupt_gate0x15(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	control_protection_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1841,15 +1865,18 @@ interrupt_gate0x1d:		# void interrupt_gate0x1d(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	vmm_communication_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
@@ -1878,15 +1905,18 @@ interrupt_gate0x1e:		# void interrupt_gate0x1e(void);
 	shll	$0x10,	%edx
 	movw	%ds,	%dx
 	pushl	%edx
+	movl	-0x2c(%esp),%eax	# EAX = error code
 	movw	$kernel_data_segment_selector,%dx
 	movw	%dx	,%ds
 	movw	%dx	,%es
 	movw	%dx	,%fs
 	movw	%dx	,%gs
 	movw	%dx	,%ss
+	pushl	%eax			# Push error code
 	call	cli_task_interrupt
 	call	security_exception_handler
 	call	sti_task_interrupt
+	addl	$0x00000004,%esp	# Discard error code
 	popl	%edx
 	movw	%dx,	%ds
 	shrl	$0x10,	%edx
