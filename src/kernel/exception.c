@@ -35,7 +35,17 @@ void breakpoint_exception_handler(void)
 {
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "BREAKPOINT EXCEPTION!!!\n");
-	print_serial("BREAKPOINT EXCEPTION!!!\n");
+	printf_serial("BREAKPOINT EXCEPTION!!!\n");
+	kernel_panic();
+	switch_interrupt_serial_mode();
+}
+
+void control_protection_exception_handler(unsigned int error_code)
+{
+	switch_polling_serial_mode();
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "CONTROL PROTECTION EXCEPTION!!!\n");
+	printf_serial("CONTROL_PROTECTION EXCEPTION!!!\n");
+	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }
@@ -94,13 +104,14 @@ void fpu_error_exception_handler(void)
 	switch_interrupt_serial_mode();
 }
 
-void general_protection_fault_exception_handler(void)
+void general_protection_fault_exception_handler(unsigned int error_code)
 {
 	Shell *shell = get_current_shell();
 	switch_polling_serial_mode();
 	if(shell)
 	{
 		printf_shell(shell, "GENERAL PROTECTION FAULT!!!\n");
+		printf_shell(shell, "ERROR CODE = %#010.8X\n", error_code);
 		exit_application(-1, get_current_task()->task_status_segment.esp0);
 	}
 	else
@@ -173,73 +184,73 @@ void page_fault_exception_handler(void)
 	switch_interrupt_serial_mode();
 }
 
-void reserved_exception_handler0x00(void)
+void reserved_exception_handler0x0f(void)
 {
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0x00!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0X0F!!!\n");
 	print_serial("PAGE FAULT EXCEPTION!!!\n");
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }
 
-void reserved_exception_handler0x01(void)
+void reserved_exception_handler0x16(void)
 {
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0x01!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0X16!!!\n");
 	print_serial("PAGE FAULT EXCEPTION!!!\n");
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }
 
-void reserved_exception_handler0x02(void)
+void reserved_exception_handler0x17(void)
 {
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0x02!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0X17!!!\n");
 	print_serial("PAGE FAULT EXCEPTION!!!\n");
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }
 
-void reserved_exception_handler0x03(void)
+void reserved_exception_handler0x18(void)
 {
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0x03!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0X18!!!\n");
 	print_serial("PAGE FAULT EXCEPTION!!!\n");
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }
 
-void reserved_exception_handler0x04(void)
+void reserved_exception_handler0x19(void)
 {
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0x04!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0X19!!!\n");
 	print_serial("PAGE FAULT EXCEPTION!!!\n");
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }
 
-void reserved_exception_handler0x05(void)
+void reserved_exception_handler0x1a(void)
 {
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0x05!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0X1A!!!\n");
 	print_serial("PAGE FAULT EXCEPTION!!!\n");
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }
 
-void reserved_exception_handler0x06(void)
+void reserved_exception_handler0x1b(void)
 {
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0x06!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0X1B!!!\n");
 	print_serial("PAGE FAULT EXCEPTION!!!\n");
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }
 
-void reserved_exception_handler0x07(void)
+void reserved_exception_handler0x1f(void)
 {
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0x07!!!\n");
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "RESERVED EXCEPTION 0X1F!!!\n");
 	print_serial("PAGE FAULT EXCEPTION!!!\n");
 	kernel_panic();
 	switch_interrupt_serial_mode();
@@ -314,6 +325,16 @@ void virtualization_exception_handler(void)
 	switch_polling_serial_mode();
 	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "VIRTUALIZATION EXCEPTION!!!\n");
 	print_serial("VIRTUALIZATION EXCEPTION!!!\n");
+	kernel_panic();
+	switch_interrupt_serial_mode();
+}
+
+void vmm_communication_exception_handler(unsigned int error_code)
+{
+	switch_polling_serial_mode();
+	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "VMM COMMUNICATION EXCEPTION!!!\n");
+	printf_serial("VMM COMMUNICATION EXCEPTION!!!\n");
+	printf_serial("ERROR CODE = %#010.8X\n", error_code);
 	kernel_panic();
 	switch_interrupt_serial_mode();
 }

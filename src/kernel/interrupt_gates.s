@@ -241,17 +241,14 @@
 	.extern pit_interrupt_handler
 	.extern primary_ATA_hard_disk_interrupt_handler
 	.extern rtc_interrupt_handler
-	.extern reserved_exception_handler0x00
-	.extern reserved_exception_handler0x01
-	.extern reserved_exception_handler0x02
-	.extern reserved_exception_handler0x03
-	.extern reserved_exception_handler0x04
-	.extern reserved_exception_handler0x05
-	.extern reserved_exception_handler0x06
-	.extern reserved_exception_handler0x07
-	.extern reserved_exception_handler0x08
-	.extern reserved_exception_handler0x09
-	.extern reserved_exception_handler0x0a
+	.extern reserved_exception_handler0x0f
+	.extern reserved_exception_handler0x16
+	.extern reserved_exception_handler0x17
+	.extern reserved_exception_handler0x18
+	.extern reserved_exception_handler0x19
+	.extern reserved_exception_handler0x1a
+	.extern reserved_exception_handler0x1b
+	.extern reserved_exception_handler0x1f
 	.extern secondary_ATA_hard_disk_interrupt_handler
 	.extern	security_exception_handler
 	.extern	segment_not_present_exception_handler
@@ -1101,6 +1098,7 @@ interrupt_gate0x08:		# void interrupt_gate0x08(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // coprocessor segment overrun exception handler
@@ -1173,6 +1171,7 @@ interrupt_gate0x0a:		# void interrupt_gate0x0a(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // segment not present exception handler
@@ -1209,6 +1208,7 @@ interrupt_gate0x0b:		# void interrupt_gate0x0b(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // stack segment fault exception handler
@@ -1245,6 +1245,7 @@ interrupt_gate0x0c:		# void interrupt_gate0x0c(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // general protection fault exception handler
@@ -1280,6 +1281,7 @@ interrupt_gate0x0d:		# void interrupt_gate0x0d(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // page fault exception handler
@@ -1316,6 +1318,7 @@ interrupt_gate0x0e:		# void interrupt_gate0x0e(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // reserved exception handler
@@ -1339,7 +1342,7 @@ interrupt_gate0x0f:		# void interrupt_gate0x0e(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x00
+	call	reserved_exception_handler0x0f
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1424,6 +1427,7 @@ interrupt_gate0x11:		# void interrupt_gate0x11(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // machine check exception handler
@@ -1534,7 +1538,7 @@ interrupt_gate0x14:		# void interrupt_gate0x14(void);
 	popal
 	iret
 
-				# // reserved exception handler
+				# // control protection exception handler
 interrupt_gate0x15:		# void interrupt_gate0x15(void);
 0:
 	pushal
@@ -1555,7 +1559,7 @@ interrupt_gate0x15:		# void interrupt_gate0x15(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x01
+	call	control_protection_exception_handler
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1568,6 +1572,7 @@ interrupt_gate0x15:		# void interrupt_gate0x15(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // reserved exception handler
@@ -1591,7 +1596,7 @@ interrupt_gate0x16:		# void interrupt_gate0x16(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x02
+	call	reserved_exception_handler0x16
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1627,7 +1632,7 @@ interrupt_gate0x17:		# void interrupt_gate0x17(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x03
+	call	reserved_exception_handler0x17
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1663,7 +1668,7 @@ interrupt_gate0x18:		# void interrupt_gate0x18(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x04
+	call	reserved_exception_handler0x18
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1699,7 +1704,7 @@ interrupt_gate0x19:		# void interrupt_gate0x19(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x05
+	call	reserved_exception_handler0x19
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1735,7 +1740,7 @@ interrupt_gate0x1a:		# void interrupt_gate0x1a(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x06
+	call	reserved_exception_handler0x1a
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1771,7 +1776,7 @@ interrupt_gate0x1b:		# void interrupt_gate0x1b(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x07
+	call	reserved_exception_handler0x1b
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1822,7 +1827,7 @@ interrupt_gate0x1c:		# void interrupt_gate0x1c(void);
 	popal
 	iret
 
-				# // reserved exception handler
+				# // VMM communication exception handler
 interrupt_gate0x1d:		# void interrupt_gate0x1d(void);
 0:
 	pushal
@@ -1843,7 +1848,7 @@ interrupt_gate0x1d:		# void interrupt_gate0x1d(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x09
+	call	vmm_communication_exception_handler
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
@@ -1856,6 +1861,7 @@ interrupt_gate0x1d:		# void interrupt_gate0x1d(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // security exception handler
@@ -1892,6 +1898,7 @@ interrupt_gate0x1e:		# void interrupt_gate0x1e(void);
 	popl	%edx
 	movw	%dx,	%ss
 	popal
+	addl	$0x00000004,%esp	# Discard error code
 	iret
 
 				# // reserved exception handler
@@ -1915,7 +1922,7 @@ interrupt_gate0x1f:		# void interrupt_gate0x1f(void);
 	movw	%dx	,%gs
 	movw	%dx	,%ss
 	call	cli_task_interrupt
-	call	reserved_exception_handler0x0a
+	call	reserved_exception_handler0x1f
 	call	sti_task_interrupt
 	popl	%edx
 	movw	%dx,	%ds
