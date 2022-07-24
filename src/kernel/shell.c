@@ -295,8 +295,6 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	// Alloc application segments.
 	data_segment = alloc_local_segment(task->ldt, application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	executable_segment = alloc_local_segment(task->ldt, application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
-	// Initialize FPU.
-	init_fpu();
 	// Call application.
 	((CommandTaskReturn *)arguments->task_return->task_return)->return_value = call_application
 	(
