@@ -374,8 +374,7 @@ void x87_floating_point_exception_handler(void)
 	unsigned short fpu_status_word;
 	Shell *shell = get_current_shell();
 	switch_polling_serial_mode();
-	printf_screen(0x0000, 0x0000 * CHAR_HEIGHT, exception_text_foreground_color, exception_text_background_color, "X87 FLOATING POINT EXCEPTION!!!\n");
-	printf_serial("X87 FLOATING POINT EXCEPTION!!!\n");
+	printf_shell(shell, "X87 FLOATING POINT EXCEPTION!!!\n");
 	fpu_status_word = fnstsw();
 	if(fpu_status_word & (FPU_STATUS_EXCEPTION_INVALID_OPERATION | FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND | FPU_STATUS_EXCEPTION_ZERO_DIVIDE | FPU_STATUS_EXCEPTION_OVERFLOW | FPU_STATUS_EXCEPTION_UNDERFLOW | FPU_STATUS_EXCEPTION_PRECISION))
 	{
