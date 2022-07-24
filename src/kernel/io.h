@@ -35,11 +35,23 @@ void clts(void);
 
 unsigned int exit_application(unsigned int return_value, unsigned int esp0);
 
+// clear FPU exceptions.
+void fnclex(void);
+
+// load FPU control word from memory to FPU control register.
+void fldcw(unsigned short *control);
+
 // initialize FPU
 void fninit(void);
 
 // store FPU registers
 void fnsave(FPURegisters *fpu_registers);
+
+// store FPU control word from FPU control register to memory.
+void fnstcw(unsigned short *control);
+
+// get FPU status word from FPU status register.
+unsigned short fnstsw(void);
 
 // load FPU registers
 void frstor(FPURegisters const *fpu_registers);

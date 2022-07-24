@@ -51,5 +51,9 @@ void put_char_serial(char character);
 // input a character to serial console
 void serial_console_input(char character);
 
+// Change serial mode
+void switch_interrupt_serial_mode(void);
+void switch_polling_serial_mode(void);
+
 #endif
 
