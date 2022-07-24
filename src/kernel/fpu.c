@@ -1,6 +1,5 @@
 #include "fpu.h"
 #include "io.h"
-#include "shell.h"
 
 Task *fpu_user_task = NULL;
 
@@ -11,14 +10,11 @@ Task const *get_fpu_user_task(void)
 
 void init_fpu(void)
 {
-	unsigned short control;
 	prohibit_switch_task();
 	fninit();
 	fnstcw(&control);
 	control &= ~FPU_STATUS_EXCEPTION_ZERO_DIVIDE;
 	fldcw(&control);
-	fnstcw(&control);
-	printf_shell(get_current_shell(), "control word = %#06.4x\n", control);
 	fpu_user_task = get_current_task();
 	fpu_user_task->flags |= FPU_INITIALIZED;
 	allow_switch_task();
