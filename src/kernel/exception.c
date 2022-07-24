@@ -73,24 +73,22 @@ void debug_exception_handler(void)
 
 void device_not_available_exception_handler(void)
 {
+	unsigned short fpu_status_word;
 	switch_polling_serial_mode();
 	if(get_cr0() & CR0_TASK_SWITCHED)
 	{
 		clts();
 		take_fpu();
 	}
-	else
+	fpu_status_word = fnstsw();
+	if(fpu_status_word & (FPU_STATUS_EXCEPTION_INVALID_OPERATION | FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND | FPU_STATUS_EXCEPTION_ZERO_DIVIDE | FPU_STATUS_EXCEPTION_OVERFLOW | FPU_STATUS_EXCEPTION_UNDERFLOW | FPU_STATUS_EXCEPTION_PRECISION))
 	{
-		unsigned short fpu_status_word = fnstsw();
-		if(fpu_status_word & (FPU_STATUS_EXCEPTION_INVALID_OPERATION | FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND | FPU_STATUS_EXCEPTION_ZERO_DIVIDE | FPU_STATUS_EXCEPTION_OVERFLOW | FPU_STATUS_EXCEPTION_UNDERFLOW | FPU_STATUS_EXCEPTION_PRECISION))
+		fnclex();
+		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
 		{
-			fnclex();
-			if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
-			{
-				printf_shell(get_current_shell(), "FPU ZERO DIVIDE!!!\n");
-				release_fpu();
-				exit_application(-1, get_current_task()->task_status_segment.esp0);
-			}
+			printf_shell(get_current_shell(), "FPU ZERO DIVIDE!!!\n");
+			release_fpu();
+			exit_application(-1, get_current_task()->task_status_segment.esp0);
 		}
 	}
 	switch_interrupt_serial_mode();
