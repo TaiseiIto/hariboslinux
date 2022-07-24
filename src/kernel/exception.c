@@ -75,6 +75,7 @@ void device_not_available_exception_handler(void)
 {
 	unsigned short fpu_status_word;
 	Shell *shell = get_current_shell();
+	printf_shell(shell, "DEVICE NOT AVAILABLE EXCEPTION!!!\n");
 	switch_polling_serial_mode();
 	clts();
 	take_fpu();
@@ -375,6 +376,7 @@ void x87_floating_point_exception_handler(void)
 	Shell *shell = get_current_shell();
 	switch_polling_serial_mode();
 	fpu_status_word = fnstsw();
+	printf_shell(shell, "X87 FLOATING POINT EXCEPTION!!!\n");
 	if(fpu_status_word & (FPU_STATUS_EXCEPTION_INVALID_OPERATION | FPU_STATUS_EXCEPTION_DENORMALIZED_OPERAND | FPU_STATUS_EXCEPTION_ZERO_DIVIDE | FPU_STATUS_EXCEPTION_OVERFLOW | FPU_STATUS_EXCEPTION_UNDERFLOW | FPU_STATUS_EXCEPTION_PRECISION))
 	{
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
