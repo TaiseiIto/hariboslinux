@@ -84,6 +84,7 @@ void device_not_available_exception_handler(void)
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
 		{
 			printf_shell(shell, "FPU ZERO DIVIDE!!!\n");
+			release_fpu();
 			exit_application(-1, get_current_task()->task_status_segment.esp0);
 		}
 		fnclex();
@@ -379,6 +380,7 @@ void x87_floating_point_exception_handler(void)
 		if(fpu_status_word & FPU_STATUS_EXCEPTION_ZERO_DIVIDE)
 		{
 			printf_shell(shell, "FPU ZERO DIVIDE!!!\n");
+			release_fpu();
 			exit_application(-1, get_current_task()->task_status_segment.esp0);
 		}
 		fnclex();
