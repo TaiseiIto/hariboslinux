@@ -38,7 +38,7 @@ void free(void *address)
 
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index)
 {
-	return ((MemoryRegionDescriptor const *)0x00000900)[index];
+	return ((MemoryRegionDescriptor const *)MEMORY_MAP_MEMORY_INFORMATION)[index];
 }
 
 MemorySection const *get_root_memory_section(void)
