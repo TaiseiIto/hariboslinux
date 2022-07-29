@@ -1,8 +1,8 @@
-#include "stdio.h"
+#include "dev.h"
 
 int main(void)
 {
-	printf("Hello, World!\n");
+	shutdown();
 	return 0;
 }
 

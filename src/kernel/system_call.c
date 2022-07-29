@@ -147,7 +147,8 @@ typedef struct _ConsoleCommand
 typedef struct _CPUCommand
 {
 	unsigned char type;
-	#define CPU_COMMAND_HLT	0x0
+	#define CPU_COMMAND_HLT		0x0
+	#define CPU_COMMAND_SHUTDOWN	0x1
 } CPUCommand;
 
 typedef struct _MemoryCommand
@@ -609,6 +610,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				{
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
+					break;
+				case CPU_COMMAND_SHUTDOWN:
+					printf_shell(shell, "Receive shutdown request.\n");
 					break;
 				default:
 					ERROR(); // Invalid CPU command.
