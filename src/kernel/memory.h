@@ -48,6 +48,8 @@ typedef struct
 	unsigned long long base;
 	unsigned long long length;
 	unsigned int type;
+	#define MEMORY_REGION_AVAILABLE	0x01
+	#define MEMORY_REGION_ACPI	0x03
 	unsigned int attribute;
 } MemoryRegionDescriptor;
 
