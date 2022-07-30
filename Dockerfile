@@ -1,31 +1,23 @@
-FROM alpine
-RUN apk update
+FROM ubunt
+RUN apt update
 
 # gcc, git, ld, make, etc.
-RUN apk add --no-cache alpine-sdk
-# git setting
-RUN git config --global pull.rebase false
+RUN apt install build-essential -y
 # bison
-RUN apk add --no-cache bison
+RUN apt install bison -y
 # flex
-RUN apk add --no-cache flex
-# gpg
-RUN apk add --no-cache gnupg
-# ssh
-RUN apk add --no-cache openssh
-RUN mkdir /root/.ssh
+RUN apt install flex -y
+# git
+RUN apt install git -y
+RUN git config --global pull.rebase false
 # emulator
-RUN apk add --no-cache qemu-system-i386
+RUN apt install qemu-system-i386 -y
 # texinfo
-RUN apk add --no-cache texinfo
+RUN apt install texinfo -y
 # tmux
-RUN apk add --no-cache tmux
-# set time zone UTC+9 (Japan)
-RUN apk add --no-cache tzdata
-RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-RUN apk del tzdata
+RUN apt install tmux -y
 # editor
-RUN apk add --no-cache vim
+RUN apt install vim -y
 
 # clone the repository
 WORKDIR /root
@@ -39,8 +31,7 @@ WORKDIR hariboslinux
 RUN make
 
 # ash setting
-ENV ENV="/root/.profile"
-RUN cp ash/.profile "$ENV"
+RUN cat ash/.profile >> /root/.profile
 
 # gdb setting
 RUN echo add-auto-load-safe-path `pwd`/gdb/.gdbinit > /root/.gdbinit
@@ -52,7 +43,7 @@ RUN wget https://raw.githubusercontent.com/qemu/qemu/master/gdb-xml/i386-32bit.x
 RUN cp tmux/.tmux.conf ..
 
 # vim setting
-RUN cp vim/.vimrc ..
+RUN cat vim/.vimrc >> ../.vimrc
 
 # VNC port
 EXPOSE 5900
