@@ -7,6 +7,8 @@ RUN apk add --no-cache alpine-sdk
 RUN git config --global pull.rebase false
 # bison
 RUN apk add --no-cache bison
+# flex
+RUN apk add --no-cache flex
 # gpg
 RUN apk add --no-cache gnupg
 # ssh
