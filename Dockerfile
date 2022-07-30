@@ -5,8 +5,8 @@ RUN apk update
 RUN apk add --no-cache alpine-sdk
 # git setting
 RUN git config --global pull.rebase false
-# debugger
-RUN apk add --no-cache gdb
+# bison
+RUN apk add --no-cache bison
 # gpg
 RUN apk add --no-cache gnupg
 # ssh
@@ -14,6 +14,8 @@ RUN apk add --no-cache openssh
 RUN mkdir /root/.ssh
 # emulator
 RUN apk add --no-cache qemu-system-i386
+# texinfo
+RUN apk add --no-cache texinfo
 # tmux
 RUN apk add --no-cache tmux
 # set time zone UTC+9 (Japan)
@@ -26,6 +28,9 @@ RUN apk add --no-cache vim
 # clone the repository
 WORKDIR /root
 RUN git clone https://github.com/TaiseiIto/hariboslinux.git
+
+# clone GDB
+RUN git clone git://sourceware.org/git/binutils-gdb.git
 
 # make the OS image file
 WORKDIR hariboslinux
