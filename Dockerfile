@@ -38,6 +38,7 @@ RUN make install
 WORKDIR /root
 RUN git clone https://github.com/TaiseiIto/hariboslinux.git
 WORKDIR /root/hariboslinux
+RUN git checkout issue105
 RUN make
 
 # ash setting
