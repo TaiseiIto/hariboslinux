@@ -5,6 +5,8 @@ RUN apt update
 RUN apt install build-essential -y
 # bison
 RUN apt install bison -y
+# expat
+RUN apt install libexpat-dev -y
 # flex
 RUN apt install flex -y
 # git
@@ -28,7 +30,7 @@ RUN apt install wget -y
 WORKDIR /root
 RUN git clone git://sourceware.org/git/binutils-gdb.git
 WORKDIR /root/binutils-gdb
-RUN ./configure
+RUN ./configure --with-expat
 RUN make install
 
 # clone the repository
