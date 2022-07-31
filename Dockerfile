@@ -1,4 +1,4 @@
-FROM ubunt
+FROM ubuntu
 RUN apt update
 
 # gcc, git, ld, make, etc.
