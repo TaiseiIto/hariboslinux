@@ -1,0 +1,4 @@
+run fpu_test < debuggee_input.txt
+quit
+y
+
