@@ -18,6 +18,8 @@ RUN apt install texinfo -y
 RUN apt install tmux -y
 # editor
 RUN apt install vim -y
+# wget
+RUN apt install wget -y
 
 # clone the repository
 WORKDIR /root
