@@ -1,7 +1,7 @@
-global	_start
+	.globl	main
 	.text
-_start:
-	movq	rax,	0x3c
-	xorq	rdi,	rdi
+main:
+	movq	$0x000000000000003c,	%rax
+	xorq	%rdi,	%rdi
 	syscall
 
