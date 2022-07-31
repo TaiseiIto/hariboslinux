@@ -46,6 +46,7 @@ RUN cat ash/.profile >> /root/.bashrc
 
 # gdb setting
 RUN echo add-auto-load-safe-path `pwd`/gdb/.gdbinit > /root/.gdbinit
+RUN echo add-auto-load-safe-path `pwd`/fpu_test/.gdbinit > /root/.gdbinit
 
 # gdb real mode disassemble
 RUN wget https://raw.githubusercontent.com/qemu/qemu/master/gdb-xml/i386-32bit.xml -P gdb
