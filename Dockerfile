@@ -24,17 +24,17 @@ RUN apt install vim -y
 # wget
 RUN apt install wget -y
 
-# clone the repository
-WORKDIR /root
-RUN git clone https://github.com/TaiseiIto/hariboslinux.git
-WORKDIR /root/hariboslinux
-RUN make
-
 # clone GDB
 WORKDIR /root
 RUN git clone git://sourceware.org/git/binutils-gdb.git
 WORKDIR /root/binutils-gdb
 RUN ./configure
+RUN make
+
+# clone the repository
+WORKDIR /root
+RUN git clone https://github.com/TaiseiIto/hariboslinux.git
+WORKDIR /root/hariboslinux
 RUN make
 
 # ash setting
