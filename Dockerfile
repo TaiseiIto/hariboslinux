@@ -11,6 +11,8 @@ RUN apt install flex -y
 RUN apt install git -y
 RUN git config --global pull.rebase false
 RUN mkdir /root/.ssh
+# gmp
+RUN apt install libgmp-dev -y
 # emulator
 RUN apt install qemu-system-i386 -y
 # texinfo
@@ -25,16 +27,18 @@ RUN apt install wget -y
 # clone the repository
 WORKDIR /root
 RUN git clone https://github.com/TaiseiIto/hariboslinux.git
+WORKDIR /root/hariboslinux
+RUN make
 
 # clone GDB
+WORKDIR /root
 RUN git clone git://sourceware.org/git/binutils-gdb.git
-
-# make the OS image file
-WORKDIR hariboslinux
+WORKDIR /root/binutils-gdb
+RUN ./configure
 RUN make
 
 # ash setting
-RUN cat ash/.profile >> /root/.profile
+RUN cat ash/.profile >> /root/.bashrc
 
 # gdb setting
 RUN echo add-auto-load-safe-path `pwd`/gdb/.gdbinit > /root/.gdbinit
