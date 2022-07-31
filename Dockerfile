@@ -31,7 +31,8 @@ WORKDIR /root
 RUN git clone git://sourceware.org/git/binutils-gdb.git
 WORKDIR /root/binutils-gdb
 RUN ./configure --with-expat
-RUN make install
+# RUN make
+# RUN make install
 
 # clone the repository
 WORKDIR /root
