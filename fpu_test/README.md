@@ -63,6 +63,13 @@ Opcode:              0x0000
 To find the cause of the bug of GDB, I try to observe the process of gdb debugging `fpu_test` as bellow.
 
 ```
-
+~/hariboslinux/fpu_test# gdb gdb
+(gdb) break main
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break start_event_loop
+(gdb) continue
+Thread 1 "gdb" hit Breakpoint 2, 0x00005574c67e7b0f in start_event_loop () at main.c:428
+428               gdb::observers::command_error.notify ();
+(gdb)
 ```
 
