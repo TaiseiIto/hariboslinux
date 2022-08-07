@@ -105,7 +105,7 @@ Thread 1 "gdb" hit Breakpoint 2, 0x00005574c67e7b0f in start_event_loop () at ma
 24
 ```
 
-### How is the REGNUM determined?
+## How is the REGNUM determined?
 
 the REGNUM of FPU control register is given as `I387_FCTRL_REGNUM (tdep)` at line 229 of `~/binutils-gdb/gdb/i387-tdep.c`
 
@@ -123,5 +123,25 @@ And `I387_ST0_REGNUM` is defined at line 32 of the same header.
 
 ```
 #define I387_ST0_REGNUM(tdep) ((tdep)->st0_regnum)
+```
+
+So, `I387_FCTRL_REGNUM(tdep)` is equal to `tdep->st0_regnum + 8`.
+
+## `tdep->st0_regnum` is different
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break i387-tdep.c : 229
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print tdep->st0_regnum + 8
+24
+```
+
+```
+~/hariboslinux # gdb gdb
+(gdb) break i387-tdep.c : 229
+(gdb) run < debuggee_input.txt
+(gdb) print tdep->st0_regnum + 8
+16
 ```
 
