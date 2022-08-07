@@ -96,7 +96,7 @@ Thread 1 "gdb" hit Breakpoint 2, 0x00005574c67e7b0f in start_event_loop () at ma
 ```
 
 ```
-~/hariboslinux # gdb gdb
+~/hariboslinux # make debug
 (gdb) break i387-tdep.c : 229
 (gdb) run < debuggee_input.txt
 (gdb) break read_frame_register_unsigned
@@ -138,7 +138,7 @@ So, `I387_FCTRL_REGNUM(tdep)` is equal to `tdep->st0_regnum + 8`.
 ```
 
 ```
-~/hariboslinux # gdb gdb
+~/hariboslinux # make debug
 (gdb) break i387-tdep.c : 229
 (gdb) run < debuggee_input.txt
 (gdb) print tdep->st0_regnum + 8
@@ -170,7 +170,7 @@ Actually,
 ```
 
 ```
-~/hariboslinux # gdb gdb
+~/hariboslinux # make debug
 (gdb) break i387_print_float_info
 (gdb) run < debuggee_input.txt
 (gdb) print ((i386_gdbarch_tdep *)gdbarch->tdep)->st0_regnum
