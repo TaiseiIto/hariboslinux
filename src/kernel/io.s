@@ -10,6 +10,7 @@
 	.globl	exit_application
 	.globl	fnclex
 	.globl	fldcw
+	.globl	fldpi
 	.globl	fninit
 	.globl	fnsave
 	.globl	fnstcw
@@ -47,6 +48,7 @@
 	.type	exit_application,	@function
 	.type	fnclex,			@function
 	.type	fldcw,			@function
+	.type	fldpi,			@function
 	.type	fninit,			@function
 	.type	fnsave,			@function
 	.type	fnstcw,			@function
@@ -211,6 +213,14 @@ fldcw:				# void fldcw(unsigned short *control);
 	movl	%esp,	%ebp
 	movl	0x08(%ebp),%edx
 	fldcw	(%edx)
+	leave
+	ret
+
+fldpi:				# void fldpi(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fldpi
 	leave
 	ret
 

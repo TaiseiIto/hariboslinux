@@ -41,6 +41,10 @@ void fnclex(void);
 // load FPU control word from memory to FPU control register.
 void fldcw(unsigned short *control);
 
+// load pi to FPU stack
+// test for GDB
+void fldpi(void);
+
 // initialize FPU
 void fninit(void);
 
