@@ -94,7 +94,7 @@ download-image:
 # debug the operating system onQEMU by gdb
 debug: $(IMAGE_FILE) stop
 	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
-	gdb < debuggee_input.txt
+	gdb gdb
 
 # Only the developer can execute it.
 # usage : $ make gitconfig KEY=<GitHub private key path> GPG=<.gnupg path>
