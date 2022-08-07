@@ -83,7 +83,7 @@ Thread 1 "gdb" hit Breakpoint 2, 0x00005574c67e7b0f in start_event_loop () at ma
 * The control word `0x037f` is stored to `fctrl` at `~/binutils-gdb/gdb/i387-tdep.c` line 229 `fctrl_p = read_frame_register_unsigned (frame, I387_FCTRL_REGNUM (tdep), &fctrl);` in a function `i387_print_float_info`.
 * The control word `0x037f` is stored to `*val` at `~/binutils-gdb/gdb/frame.c` line 1365 `*val = extract_unsigned_integer (value_contents (regval).data (), size, byte_order);` in a function `read_frame_register_unsigned`.
 
-## Reprodution
+## regnum is different
 
 ```
 ~/hariboslinux/fpu_test # gdb gdb
@@ -91,5 +91,17 @@ Thread 1 "gdb" hit Breakpoint 2, 0x00005574c67e7b0f in start_event_loop () at ma
 (gdb) run fpu_test < debuggee_input.txt
 (gdb) break read_frame_register_unsigned
 (gdb) continue
+(gdb) print regnum
+32
+```
+
+```
+~/hariboslinux # gdb gdb
+(gdb) break i387-tdep.c : 229
+(gdb) run < debuggee_input.txt
+(gdb) break read_frame_register_unsigned
+(gdb) continue
+(gdb) print regnum
+24
 ```
 
