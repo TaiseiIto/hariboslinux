@@ -113,3 +113,15 @@ the REGNUM of FPU control register is given as `I387_FCTRL_REGNUM (tdep)` at lin
   fctrl_p = read_frame_register_unsigned (frame, I387_FCTRL_REGNUM (tdep), &fctrl);
 ```
 
+`I387_FCTRL_REGNUM` is defined at line 56 of `~/binutils-gdb/gdb/i387-tdep.h`.
+
+```
+#define I387_FCTRL_REGNUM(tdep) (I387_ST0_REGNUM (tdep) + 8)
+```
+
+And `I387_ST0_REGNUM` is defined at line 32 of the same header.
+
+```
+#define I387_ST0_REGNUM(tdep) ((tdep)->st0_regnum)
+```
+
