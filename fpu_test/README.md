@@ -77,5 +77,7 @@ Thread 1 "gdb" hit Breakpoint 2, 0x00005574c67e7b0f in start_event_loop () at ma
 
 * There is a while loop statement that is the "event loop" in a function `start_event_loop` at `~/binutils-gdb/gdb/main.c`.
 * A function `gdb_do_one_event` at `~/binutils-gdb/gdb/event-loop.cc` that process one event is called in the event loop.
-* A function `i387_print_float_info` at `~/binutils-gdb/gdb/i387-idep.c` prints FPU registers by gdb command `info float`.
+* A function `i387_print_float_info` at `~/binutils-gdb/gdb/i387-tdep.c` prints FPU registers by gdb command `info float`.
+* `i387_print_float_info` calls `print_i387_control_word` at `~/binutils-gdb/gdb/i387-tdep.c` to print control word register.
+* `print_i387_control_word` calls `hex_string_custom` at `~/binutils-gdb/gdbsupport/print-utils.cc` to convert the control word `0x037f` given as the first argument into a hexadecimal string.
 
