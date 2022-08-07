@@ -145,3 +145,35 @@ So, `I387_FCTRL_REGNUM(tdep)` is equal to `tdep->st0_regnum + 8`.
 16
 ```
 
+## What is `tdep`
+
+line 207 of `~/binutils-gdb/gdb/i387-tdep.c`
+
+```
+i386_gdbarch_tdep *tdep = gdbarch_tdep<i386_gdbarch_tdep>(gdbarch);
+```
+
+In other words,
+
+```
+i386_gdbarch_tdep *tdep = (i386_gdbarch_tdep *)(gdbarch->tdep);
+```
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break i387_print_float_info
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep *)gdbarch->tdep)->st0_regnum
+24
+```
+
+```
+~/hariboslinux # gdb gdb
+(gdb) break i387_print_float_info
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep *)gdbarch->tdep)->st0_regnum
+16
+```
+
