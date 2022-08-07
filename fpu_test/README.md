@@ -83,7 +83,7 @@ Thread 1 "gdb" hit Breakpoint 2, 0x00005574c67e7b0f in start_event_loop () at ma
 * The control word `0x037f` is stored to `fctrl` at `~/binutils-gdb/gdb/i387-tdep.c` line 229 `fctrl_p = read_frame_register_unsigned (frame, I387_FCTRL_REGNUM (tdep), &fctrl);` in a function `i387_print_float_info`.
 * The control word `0x037f` is stored to `*val` at `~/binutils-gdb/gdb/frame.c` line 1365 `*val = extract_unsigned_integer (value_contents (regval).data (), size, byte_order);` in a function `read_frame_register_unsigned`.
 
-## regnum is different
+## REGNUM (REGister NUMber) is different
 
 ```
 ~/hariboslinux/fpu_test # gdb gdb
@@ -103,5 +103,13 @@ Thread 1 "gdb" hit Breakpoint 2, 0x00005574c67e7b0f in start_event_loop () at ma
 (gdb) continue
 (gdb) print regnum
 24
+```
+
+### How is the REGNUM determined?
+
+the REGNUM of FPU control register is given as `I387_FCTRL_REGNUM (tdep)` at line 229 of `~/binutils-gdb/gdb/i387-tdep.c`
+
+```
+  fctrl_p = read_frame_register_unsigned (frame, I387_FCTRL_REGNUM (tdep), &fctrl);
 ```
 
