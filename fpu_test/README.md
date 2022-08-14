@@ -354,7 +354,7 @@ $1 = 16
 * There is the function `get_prev_frame_raw` in `~/binutils-gdb/gdb` line 2345-2394.
 * The argument `this_frame` is stored in `prev_frame->next` in line 2389.
 
-So,
+Actually,
 
 ```
 ~/hariboslinux/fpu_test # gdb gdb
@@ -380,7 +380,7 @@ $1 = 16
 
 * `this_frame` comes from `this_frame`, the argument of `get_prev_frame_maybe_check_cycle`.
 
-So,
+Actually,
 
 ```
 ~/hariboslinux/fpu_test # gdb gdb
@@ -397,6 +397,39 @@ And
 ~/hariboslinux # make debug
 (gdb) break get_prev_frame_maybe_check_cycle
 (gdb) run < debuggee_input.txt
+(gdb) next
+(gdb) print ((i386_gdbarch_tdep*)this_frame->prev_arch.arch->tdep)->st0_regnum
+$1 = 16
+```
+
+* Moreover, it comes from `get_prev_frame_always_1`
+* By execution of `` in `frame.c` line 2164 shown below, an valid address is stored to `this_frame->prev_arch.arch`.
+
+```
+struct gdbarch *gdbarch = get_frame_arch (this_frame);
+```
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break frame.c : 2164
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print this_frame->prev_arch.arch
+$1 = (gdbarch*) 0x0
+(gdb) next
+(gdb) print ((i386_gdbarch_tdep*)this_frame->prev_arch.arch->tdep)->st0_regnum
+$2 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 2164
+(gdb) run < debuggee_input.txt
+(gdb) print this_frame->prev_arch.arch
+$1 = (gdbarch*) 0x0
 (gdb) next
 (gdb) print ((i386_gdbarch_tdep*)this_frame->prev_arch.arch->tdep)->st0_regnum
 $1 = 16
