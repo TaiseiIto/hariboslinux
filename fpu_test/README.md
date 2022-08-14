@@ -511,3 +511,25 @@ And
 $1 = 16
 ```
 
+Then, in the function `sentinel_frame_prev_arch` in `sentinel-frame.c` line 73, above `this` is `((struct frame_unwind_cache*)*this_prologue_cache)->regcache`.
+
+So,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) sentinel_frame_prev_arch
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)*this_prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) sentinel_frame_prev_arch
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)*this_prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
+
