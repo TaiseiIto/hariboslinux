@@ -435,3 +435,31 @@ $1 = (gdbarch*) 0x0
 $1 = 16
 ```
 
+## `get_frame_arch`
+
+* `get_frame_arch` in `frame.c` line 2164 is defined as `get_frame_arch` in `frame.c` line 2886.
+* The function `get_frame_arch` calls `frame_unwind_arch` in `frame.c` line 2891.
+* In the function `frame_unwind_arch`, in `frame.c` line 2900, `arch` is generated and finally its stored as `this_frame->prev_arch.arch`.
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break frame.c : 2900
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) next
+(gdb) print ((i386_gdbarch_tdep*)arch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 2900
+(gdb) run < debuggee_input.txt
+(gdb) next
+(gdb) print ((i386_gdbarch_tdep*)arch->tdep)->st0_regnum
+$1 = 16
+```
+
