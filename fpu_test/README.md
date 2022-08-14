@@ -517,7 +517,7 @@ So,
 
 ```
 ~/hariboslinux/fpu_test # gdb gdb
-(gdb) sentinel_frame_prev_arch
+(gdb) break sentinel_frame_prev_arch
 (gdb) run fpu_test < debuggee_input.txt
 (gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)*this_prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
 $1 = 24
@@ -527,9 +527,31 @@ And
 
 ```
 ~/hariboslinux # make debug
-(gdb) sentinel_frame_prev_arch
+(gdb) break sentinel_frame_prev_arch
 (gdb) run < debuggee_input.txt
 (gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)*this_prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
+
+Moreover, above `this_prologue_cache` is `&next_frame->prologue_cache` in `frame.c` line 2900.
+
+So,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break frame.c : 2900
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)next_frame->prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 2900
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)next_frame->prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
 $1 = 16
 ```
 
