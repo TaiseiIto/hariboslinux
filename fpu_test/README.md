@@ -481,7 +481,7 @@ sentinel_frame_prev_arch (struct frame_info *this_frame,
 
 ## `reg_buffer::arch`
 
-`cache->regcache->arch` in `~/binutils-gdb/gdb/sentinel-frame.c` line 77 is `reg_buffer::arch` in `~/binutils-gdb/gdb/sentinel-frame.c` line 229.
+`cache->regcache->arch` in `~/binutils-gdb/gdb/sentinel-frame.c` line 77 is `reg_buffer::arch` in `~/binutils-gdb/gdb/regcache.c` line 229.
 
 ```
 gdbarch *
