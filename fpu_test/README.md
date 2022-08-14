@@ -463,3 +463,19 @@ And
 $1 = 16
 ```
 
+## `sentinel_frame_prev_arch`
+
+* A function `sentinel_frame_prev_arch` in `sentinel-frame.c` line 73 is called in `frame.c` line 2900.
+
+```
+static struct gdbarch *
+sentinel_frame_prev_arch (struct frame_info *this_frame,
+			  void **this_prologue_cache)
+{
+  struct frame_unwind_cache *cache
+    = (struct frame_unwind_cache *) *this_prologue_cache;
+
+  return cache->regcache->arch ();
+}
+```
+
