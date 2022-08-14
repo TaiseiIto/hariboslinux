@@ -242,7 +242,7 @@ get_selected_frame (const char *message)
 * In the beginning of the function, `selected_frame` is `NULL`.
 * `lookup_selected_frame` stores a valid address in a global variable `selected_frame` and return it as `frame`.
 
-# `lookup_selected_frame`
+## `lookup_selected_frame`
 
 `~/binutils-gdb/gdb/frame.c` line 1709-1722
 
@@ -267,7 +267,7 @@ lookup_selected_frame (struct frame_id a_frame_id, int frame_level)
 
 * `select_frame` stores `get_current_frame()` to `selected_frame`
 
-# `get_current_frame`
+## `get_current_frame`
 
 In `~/binutils-gdb/gdb/frame.c` line 1643, `get_prev_frame_always_1` outputs the frame.
 
@@ -297,5 +297,14 @@ And
 (gdb) continue
 (gdb) print ((i386_gdbarch_tdep*)frame->next->prev_arch.arch->tdep)->st0_regnum
 $1 = 16
+```
+
+## `get_prev_frame_always_1`
+
+* There is the function `get_prev_frame_always_1` in `~/binutils-gdb/gdb/grame.c` line 2149-2297.
+* In `~/binutils-gdb/gdb/grame.c` line 2296, `get_prev_frame_maybe_check_cycle` returns the frame.
+
+```
+return get_prev_frame_maybe_check_cycle (this_frame);
 ```
 
