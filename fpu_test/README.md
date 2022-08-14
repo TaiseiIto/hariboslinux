@@ -577,3 +577,25 @@ And
 $1 = 16
 ```
 
+Moreover, above `this_frame` is `sentinel_frame` in `frame.c` line 1643
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break frame.c : 1643
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)sentinel_frame->next->prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 1643
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)sentinel_frame->next->prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
+
