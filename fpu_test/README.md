@@ -491,3 +491,23 @@ reg_buffer::arch () const
 }
 ```
 
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break regcache.c : 232
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)this->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 232
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)this->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
+
