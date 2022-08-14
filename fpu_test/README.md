@@ -218,3 +218,27 @@ And
 $1 = 16
 ```
 
+## `get_selected_frame`
+
+`~/binutils-gdb/gdb/frame.c` line 1802-1815.
+
+```
+struct frame_info *
+get_selected_frame (const char *message)
+{
+  if (selected_frame == NULL)
+    {
+      if (message != NULL && !has_stack_frames ())
+	error (("%s"), message);
+
+      lookup_selected_frame (selected_frame_id, selected_frame_level);
+    }
+  /* There is always a frame.  */
+  gdb_assert (selected_frame != NULL);
+  return selected_frame;
+}
+```
+
+* In the beginning of the function, `selected_frame` is `NULL`.
+* `loopup_selected_frame` stores a valid address in a global variable `selected_frame` and return it as `frame`.
+
