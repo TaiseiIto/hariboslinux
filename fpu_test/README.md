@@ -240,5 +240,32 @@ get_selected_frame (const char *message)
 ```
 
 * In the beginning of the function, `selected_frame` is `NULL`.
-* `loopup_selected_frame` stores a valid address in a global variable `selected_frame` and return it as `frame`.
+* `lookup_selected_frame` stores a valid address in a global variable `selected_frame` and return it as `frame`.
+
+# `lookup_selected_frame`
+
+`~/binutils-gdb/gdb/frame.c` line 1709-1722
+
+```
+void
+lookup_selected_frame (struct frame_id a_frame_id, int frame_level)
+{
+  struct frame_info *frame = NULL;
+  int count;
+
+  /* This either means there was no selected frame, or the selected
+     frame was the current frame.  In either case, select the current
+     frame.  */
+  if (frame_level == -1)
+    {
+      select_frame (get_current_frame ());
+      return;
+    }
+...
+}
+```
+
+* `select_frame` stores `get_current_frame()` to `selected_frame`
+
+# `get_current_frame`
 
