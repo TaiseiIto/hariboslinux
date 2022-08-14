@@ -269,3 +269,33 @@ lookup_selected_frame (struct frame_id a_frame_id, int frame_level)
 
 # `get_current_frame`
 
+In `~/binutils-gdb/gdb/frame.c` line 1643, `get_prev_frame_always_1` outputs the frame.
+
+```
+  current_frame = get_prev_frame_always_1 (sentinel_frame);
+```
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_current_frame
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break 1644
+(gdb) continue
+(gdb) print ((i386_gdbarch_tdep*)current_frame->next->prev_arch.arch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break get_current_frame
+(gdb) run < debuggee_input.txt
+(gdb) break 1644
+(gdb) continue
+(gdb) print ((i386_gdbarch_tdep*)frame->next->prev_arch.arch->tdep)->st0_regnum
+$1 = 16
+```
+
