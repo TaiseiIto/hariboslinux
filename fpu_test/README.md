@@ -627,3 +627,25 @@ And
 $1 = 16
 ```
 
+Moreover, above `((struct frame_unwind_cache*)frame->prologue_cache)->regcache` is the argument `regcache` of the function `create_sentinel_frame`.
+
+So,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break create_sentinel_frame
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break create_sentinel_frame
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
+
