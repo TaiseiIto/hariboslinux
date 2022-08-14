@@ -310,7 +310,7 @@ return get_prev_frame_maybe_check_cycle (this_frame);
 
 ## `get_prev_frame_maybe_check_cycle`
 
-* There is the function `get_prev_frame_maybe_check_cycle` in `~/binutils-gdb/frame.c` line 2061-2143.
+* There is the function `get_prev_frame_maybe_check_cycle` in `~/binutils-gdb/gdb/frame.c` line 2061-2143.
 * `get_prev_frame_raw` returns the frame in line 2064.
 
 ```
@@ -346,6 +346,31 @@ And
 (gdb) break 2075
 (gdb) continue
 (gdb) print ((i386_gdbarch_tdep*)prev_frame->next->prev_arch.arch->tdep)->st0_regnum
+$1 = 16
+```
+
+## `get_prev_frame_raw`
+
+* There is the function `get_prev_frame_raw` in `~/binutils-gdb/gdb` line 2345-2394.
+* The argument `this_frame` is stored in `prev_frame->next` in line 2389.
+
+So,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_prev_frame_raw
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)this_frame->prev_arch.arch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break get_prev_frame_raw
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)this_frame->prev_arch.arch->tdep)->st0_regnum
 $1 = 16
 ```
 
