@@ -555,3 +555,25 @@ And
 $1 = 16
 ```
 
+Moreover, above `next_frame` is `this_frame->next` in `get_prev_frame_always_1` in `frame.c` line 2149.
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_prev_frame_always_1
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)this_frame->next->prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break get_prev_frame_always_1
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)((struct frame_unwind_cache*)this_frame->next->prologue_cache)->regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
+
