@@ -376,3 +376,29 @@ And
 $1 = 16
 ```
 
+## Where does `this_frame` come from?
+
+* `this_frame` comes from `this_frame`, the argument of `get_prev_frame_maybe_check_cycle`.
+
+So,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_prev_frame_maybe_check_cycle
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) next
+(gdb) print ((i386_gdbarch_tdep*)this_frame->prev_arch.arch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break get_prev_frame_maybe_check_cycle
+(gdb) run < debuggee_input.txt
+(gdb) next
+(gdb) print ((i386_gdbarch_tdep*)this_frame->prev_arch.arch->tdep)->st0_regnum
+$1 = 16
+```
+
