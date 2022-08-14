@@ -145,7 +145,7 @@ So, `I387_FCTRL_REGNUM(tdep)` is equal to `tdep->st0_regnum + 8`.
 16
 ```
 
-## What is `tdep`
+## What is `tdep`?
 
 line 207 of `~/binutils-gdb/gdb/i387-tdep.c`
 
@@ -175,5 +175,46 @@ Actually,
 (gdb) run < debuggee_input.txt
 (gdb) print ((i386_gdbarch_tdep *)gdbarch->tdep)->st0_regnum
 16
+```
+
+## Where does `gdbarch` come from?
+
+`~/binutils-gdb/gdb/infcmd.c` line 2908-2918.
+
+```
+static void
+info_float_command (const char *args, int from_tty)
+{
+  struct frame_info *frame;
+
+  if (!target_has_registers ())
+    error (_("The program has no registers now."));
+
+  frame = get_selected_frame (NULL);
+  gdbarch_print_float_info (get_frame_arch (frame), gdb_stdout, frame, args);
+}
+```
+
+* The `gdbarch` is given as `get_frame_arch(frame)` to `gdbarch_print_float_info`.
+* Also, `get_frame_arch(frame)` is actually `frame->next->prev_arch.arch`.
+
+So,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break infcmd.c : 2917
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)frame->next->prev_arch.arch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break infcmd.c : 2917
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)frame->next->prev_arch.arch->tdep)->st0_regnum
+$1 = 16
 ```
 
