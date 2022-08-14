@@ -599,6 +599,8 @@ And
 $1 = 16
 ```
 
+## `create_sentinel_frame`
+
 Moreover, above `sentinel_frame->next->prologue` is generated in `frame.c` line 1576.
 
 ```
