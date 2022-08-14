@@ -601,6 +601,10 @@ $1 = 16
 
 Moreover, above `sentinel_frame->next->prologue` is generated in `frame.c` line 1576.
 
+```
+  frame->prologue_cache = sentinel_frame_cache (regcache);
+```
+
 So,
 
 ```
