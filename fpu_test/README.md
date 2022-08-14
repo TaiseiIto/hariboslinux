@@ -403,7 +403,7 @@ $1 = 16
 ```
 
 * Moreover, it comes from `get_prev_frame_always_1`
-* By execution of `` in `frame.c` line 2164 shown below, an valid address is stored to `this_frame->prev_arch.arch`.
+* By execution of `get_frame_arch` in `frame.c` line 2164 shown below, an valid address is stored to `this_frame->prev_arch.arch`.
 
 ```
 struct gdbarch *gdbarch = get_frame_arch (this_frame);
