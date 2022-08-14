@@ -213,7 +213,7 @@ And
 ```
 ~/hariboslinux # make debug
 (gdb) break infcmd.c : 2917
-(gdb) run fpu_test < debuggee_input.txt
+(gdb) run < debuggee_input.txt
 (gdb) print ((i386_gdbarch_tdep*)frame->next->prev_arch.arch->tdep)->st0_regnum
 $1 = 16
 ```
