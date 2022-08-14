@@ -302,7 +302,7 @@ $1 = 16
 ## `get_prev_frame_always_1`
 
 * There is the function `get_prev_frame_always_1` in `~/binutils-gdb/gdb/frame.c` line 2149-2297.
-* In `~/binutils-gdb/gdb/grame.c` line 2296, `get_prev_frame_maybe_check_cycle` returns the frame.
+* In `~/binutils-gdb/gdb/frame.c` line 2296, `get_prev_frame_maybe_check_cycle` returns the frame.
 
 ```
 return get_prev_frame_maybe_check_cycle (this_frame);
