@@ -270,6 +270,32 @@ And,
 $1 = 0x0
 ```
 
+* Above `value` is stored in `sentinel-frame.c` line 53.
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_frame_register_value
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break sentinel-frame.c : 54
+(gdb) continue
+(gdb) p/x *(unsinged int*)value->contents.get()
+$1 = 0x37f
+```
+
+And,
+
+```
+~/hariboslinux # make debug
+(gdb) break get_frame_register_value
+(gdb) run debuggee_input.txt
+(gdb) break sentinel-frame.c : 54
+(gdb) continue
+(gdb) p/x *(unsinged int*)value->contents.get()
+$1 = 0x0
+```
+
 ## REGNUM (REGister NUMber) is different
 
 ```
