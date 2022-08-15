@@ -195,7 +195,7 @@ $1 = 0x0
 Above `value` is came from `regval` generated in `frame.c` line 1356.
 
 ```
-~/hariboslinux/gpu_test # gdb gdb
+~/hariboslinux/fpu_test # gdb gdb
 (gdb) break frame.c : 1358
 (gdb) run fpu_test < debuggee_input.txt
 (gdb) p/x *(unsigned int*)regval->contents.get()
@@ -209,6 +209,34 @@ And
 (gdb) break frame.c : 1358
 (gdb) run fpu_test < debuggee_input.txt
 (gdb) p/x *(unsigned int*)regval->contents.get()
+$1 = 0x0
+```
+
+* `get_frame_register_value` in `frame.c` line 1283 returns above `regval`.
+* `get_frame_register_value` in `frame.c` line 1283 calls `frame_unwind_register_value` in `frame.c` line 1219.
+* `frame_unwind_register_value` in `frame.c` line 1219 returns `value`, above `regval`, in `frame.c` line 1277.
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_frame_register_value
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break frame.c : 1277
+(gdb) continue
+(gdb) p/x *(unsinged int*)value->contents.get()
+$1 = 0x37f
+```
+
+And,
+
+```
+~/hariboslinux # make debug
+(gdb) break get_frame_register_value
+(gdb) run debuggee_input.txt
+(gdb) break frame.c : 1277
+(gdb) continue
+(gdb) p/x *(unsinged int*)value->contents.get()
 $1 = 0x0
 ```
 
