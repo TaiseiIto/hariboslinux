@@ -649,3 +649,35 @@ And
 $1 = 16
 ```
 
+## Where is `create_sentinel_frame` called?
+
+The function `create_sentinel_frame` is called by `get_current_frame` in `frame.c` line 1629.
+
+```
+  if (sentinel_frame == NULL)
+    sentinel_frame =
+      create_sentinel_frame (current_program_space, get_current_regcache ());
+```
+
+So, `regcache` is return value of `get_current_regcache()`.
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break frame.c : 1629
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)get_current_regcache()->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 1629
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)get_current_regcache()->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
+
