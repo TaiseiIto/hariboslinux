@@ -681,3 +681,8 @@ And
 $1 = 16
 ```
 
+* `get_current_regcache` in `frame.c` line 427 calls `get_thread_regcache` in `regcache.c` line 418.
+* `get_thread_regcache` in `regcache.c` line 418 calls `get_thread_regcache` in `regcache.c` line 397.
+* `get_thread_regcache` in `regcache.c` line 397 calls `get_thread_arch_regcache` in `regcache.c` line 381.
+* `get_thread_arch_regcache` in `regcache.c` line 381 calls `get_thread_arch_aspace_regcache`. in `regcache.c` line 350.
+
