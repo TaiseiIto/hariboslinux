@@ -240,6 +240,36 @@ And,
 $1 = 0x0
 ```
 
+Above `value` is stored in `frame.c` line 1233.
+
+```
+value *value = next_frame->unwind->prev_register (next_frame,
+```
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_frame_register_value
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break frame.c : 1237
+(gdb) continue
+(gdb) p/x *(unsinged int*)value->contents.get()
+$1 = 0x37f
+```
+
+And,
+
+```
+~/hariboslinux # make debug
+(gdb) break get_frame_register_value
+(gdb) run debuggee_input.txt
+(gdb) break frame.c : 1237
+(gdb) continue
+(gdb) p/x *(unsinged int*)value->contents.get()
+$1 = 0x0
+```
+
 ## REGNUM (REGister NUMber) is different
 
 ```
