@@ -685,4 +685,25 @@ $1 = 16
 * `get_thread_regcache` in `regcache.c` line 418 calls `get_thread_regcache` in `regcache.c` line 397.
 * `get_thread_regcache` in `regcache.c` line 397 calls `get_thread_arch_regcache` in `regcache.c` line 381.
 * `get_thread_arch_regcache` in `regcache.c` line 381 calls `get_thread_arch_aspace_regcache`. in `regcache.c` line 350.
+* `get_thread_arch_aspace_regcache`. in `regcache.c` line 350 returns `new_regcache` at `redbache.c` line 378.
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break regcache.c : 378
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)new_regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 378
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)new_regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
 
