@@ -30,7 +30,7 @@ RUN apt install wget -y
 WORKDIR /root
 RUN git clone git://sourceware.org/git/binutils-gdb.git
 WORKDIR /root/binutils-gdb
-RUN ./configure --with-expat
+RUN ./configure --with-expat CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-inline"
 RUN make
 RUN make install
 
