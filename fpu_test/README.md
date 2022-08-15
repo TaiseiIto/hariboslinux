@@ -131,6 +131,34 @@ And
 $1 = 0x0
 ```
 
+* `value_contents` in `~/binutils-gdb/gdb/value.c` line 1417 calls `value_contents_writeable` in `~/binutils-gdb/gdb/value.c` line 1427.
+* `value_contents_writeable` in `~/binutils-gdb/gdb/value.c` line 1427 calls `value_contents_raw` in `~/binutils-gdb/gdb/value.c` line 1158.
+* `value_contents_raw` in `~/binutils-gdb/gdb/value.c` line 1158 calls `make_array_view` in `~/binutils-gdb/gdbsupport/array-view.h` line 288.
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break frame.c : 1365
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break make_array_view
+(gdb) continue
+(gdb) p/x *(unsigned int *)array
+$1 = 0x37f
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 1365
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break make_array_view
+(gdb) continue
+(gdb) p/x *(unsigned int *)array
+$1 = 0x0
+```
+
 ## REGNUM (REGister NUMber) is different
 
 ```
