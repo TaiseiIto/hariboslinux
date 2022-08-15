@@ -192,6 +192,26 @@ And
 $1 = 0x0
 ```
 
+Above `value` is came from `regval` generated in `frame.c` line 1356.
+
+```
+~/hariboslinux/gpu_test # gdb gdb
+(gdb) break frame.c : 1358
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x *(unsigned int*)regval->contents.get()
+$1 = 0x37f
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 1358
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x *(unsigned int*)regval->contents.get()
+$1 = 0x0
+```
+
 ## REGNUM (REGister NUMber) is different
 
 ```
