@@ -755,3 +755,25 @@ And
 $1 = 16
 ```
 
+## Where does `arch` come from?
+
+Above `arch` comes from the third argument `current_thread_arch` in `regcache.c` line 413.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break regcache.c : 413
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)current_thread_arch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 413
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)current_thread_arch->tdep)->st0_regnum
+$1 = 16
+```
+
