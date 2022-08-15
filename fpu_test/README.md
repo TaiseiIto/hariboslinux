@@ -159,6 +159,39 @@ And
 $1 = 0x0
 ```
 
+* Above `array` is the first argument in `~/binutils-gdb/gdb/value.c` line 1164.
+
+```
+  return gdb::make_array_view
+    (value->contents.get () + value->embedded_offset * unit_size, length);
+```
+
+* `value->embedded_offset` is 0.
+
+So,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break frame.c : 1365
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break value.c : 1164
+(gdb) continue
+(gdb) p/x *(unsigned int *)value->contents.get()
+$1 = 0x37f
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 1365
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break value.c : 1164
+(gdb) continue
+(gdb) p/x *(unsigned int *)value->contents.get()
+$1 = 0x0
+```
+
 ## REGNUM (REGister NUMber) is different
 
 ```
