@@ -707,3 +707,31 @@ And
 $1 = 16
 ```
 
+## Where is `new_regcache` created in?
+
+Above `new_regcache` is created in `regcache.c` line 372.
+
+```
+  regcache *new_regcache = new regcache (target, arch, aspace);
+```
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break regcache.c : 373
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)new_regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 373
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)new_regcache->m_descr->gdbarch->tdep)->st0_regnum
+$1 = 16
+```
+
