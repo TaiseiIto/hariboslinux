@@ -320,6 +320,43 @@ And,
 $1 = 0x0
 ```
 
+The control value `0x037f` is written to `buf` in `regcache.c` line 613.
+
+```
+    memcpy (buf, register_buffer (regnum),
+	    m_descr->sizeof_register[regnum]);
+```
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_frame_register_value
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break regcache.c : 613
+(gdb) continue
+(gdb) p/x *(unsinged int*)buf
+$1 = 0x0
+(gdb) next
+(gdb) p/x *(unsinged int*)buf
+$1 = 0x37f
+```
+
+And,
+
+```
+~/hariboslinux # gdb gdb
+(gdb) break get_frame_register_value
+(gdb) run < debuggee_input.txt
+(gdb) break regcache.c : 613
+(gdb) continue
+(gdb) p/x *(unsinged int*)buf
+$1 = 0x0
+(gdb) next
+(gdb) p/x *(unsinged int*)buf
+$1 = 0x0
+```
+
 ## REGNUM (REGister NUMber) is different
 
 ```
