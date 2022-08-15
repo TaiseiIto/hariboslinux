@@ -735,3 +735,23 @@ And
 $1 = 16
 ```
 
+And the second argument `arch` to `regcache` constructor in `regcache.c` line 372 is stored to `new_regcache->m_descr->gdbarch`.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break regcache.c : 372
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)arch->tdep)->st0_regnum
+$1 = 24
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 372
+(gdb) run < debuggee_input.txt
+(gdb) print ((i386_gdbarch_tdep*)arch->tdep)->st0_regnum
+$1 = 16
+```
+
