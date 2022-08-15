@@ -296,6 +296,30 @@ And,
 $1 = 0x0
 ```
 
+Above `value` is `result` in `regcache.c` line 760.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break get_frame_register_value
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break regcache.c : 760
+(gdb) continue
+(gdb) p/x *(unsinged int*)result->contents.get()
+$1 = 0x37f
+```
+
+And,
+
+```
+~/hariboslinux # make debug
+(gdb) break get_frame_register_value
+(gdb) run debuggee_input.txt
+(gdb) break regcache.c : 760
+(gdb) continue
+(gdb) p/x *(unsinged int*)result->contents.get()
+$1 = 0x0
+```
+
 ## REGNUM (REGister NUMber) is different
 
 ```
