@@ -103,6 +103,34 @@ And
 $1 = 0x0
 ```
 
+* Moreover, `value_contents_writeable` returns the control value in `value.c` line 1418.
+
+```
+gdb::array_view<const gdb_byte> result = value_contents_writeable (value);
+```
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break value.c : 1419
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x *(unsigned int *)result->m_array
+$1 = 0x37f
+```
+
+And
+
+```
+~/hariboslinux # make debug
+(gdb) break frame.c : 1365
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break value.c : 1419
+(gdb) continue
+(gdb) p/x *(unsigned int *)result->m_array
+$1 = 0x0
+```
+
 ## REGNUM (REGister NUMber) is different
 
 ```
