@@ -371,28 +371,36 @@ Actually,
 
 ```
 ~/hariboslinux/fpu_test # gdb gdb
-(gdb) break i387-tdep.c : 229
+(gdb) break main
 (gdb) run fpu_test < debuggee_input.txt
+(gdb) break i387-tdep.c : 229
+(gdb) continue
+(gdb) break regcache.c : 613
+(gdb) continue
 (gdb) break reg_buffer::register_buffer
 (gdb) continue
-(gdb) x/40g m_registers.get()
 (gdb) p/x regnum
 (gdb) p/x m_descr->register_offset[regnum]
 (gdb) p/x *(unsigned int*)(m_registers.get()+m_descr->register_offset[regnum])
+(gdb) x/40g m_registers.get()
 ```
 
 And,
 
 ```
 ~/hariboslinux # make debug
-(gdb) break i387-tdep.c : 229
+(gdb) break main
 (gdb) run < debuggee_input.txt
+(gdb) break i387-tdep.c : 229
+(gdb) continue
+(gdb) break regcache.c : 613
+(gdb) continue
 (gdb) break reg_buffer::register_buffer
 (gdb) continue
-(gdb) x/40g m_registers.get()
 (gdb) p/x regnum
 (gdb) p/x m_descr->register_offset[regnum]
 (gdb) p/x *(unsigned int*)(m_registers.get()+m_descr->register_offset[regnum])
+(gdb) x/40g m_registers.get()
 (gdb) p/x *(unsigned int*)(m_registers.get()+0x8c)
 ```
 
