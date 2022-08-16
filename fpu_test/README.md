@@ -1271,7 +1271,7 @@ $1 = 0x18
 ```
 
 ```
-~/hariboslinux # gdb gdb
+~/hariboslinux # make debug
 (gdb) break main
 (gdb) run fpu_test < debuggee_input.txt
 (gdb) watch inferior_list
