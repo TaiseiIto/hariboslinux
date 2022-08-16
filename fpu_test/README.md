@@ -1150,3 +1150,23 @@ And
 $1 = 16
 ```
 
+## Where does `current_thread_arch` come from?
+
+Above `current_thread_arch` is came from `target_thread_architecture` in `target.c` line 437.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break target_thread_architecture
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)current_inferior()->top_target()->thread_architecture(ptid)->tdep)->st0_regnum
+$1 = 0x18
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break target_thread_architecture
+(gdb) run < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)current_inferior()->top_target()->thread_architecture(ptid)->tdep)->st0_regnum
+$1 = 0x10
+```
+
