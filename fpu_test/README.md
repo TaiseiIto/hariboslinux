@@ -1273,7 +1273,7 @@ $1 = 0x18
 ```
 ~/hariboslinux # make debug
 (gdb) break main
-(gdb) run fpu_test < debuggee_input.txt
+(gdb) run < debuggee_input.txt
 (gdb) watch inferior_list
 (gdb) continue
 inferior_list.m_front is written at ~/binutils-gdb/gdbsupport/intrusive_list.h : 414
