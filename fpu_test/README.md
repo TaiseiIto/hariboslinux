@@ -1188,3 +1188,23 @@ $1 = 0x18
 $1 = 0x10
 ```
 
+## Where does `inf` come from?
+
+`find_inferior_pid` in `inferior.c` line 291 returns `inf` in line 299.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break inferior.c : 299
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)inf->gdbarch->tdep)->st0_regnum
+$1 = 0x18
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break inferior.c : 299
+(gdb) run < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)inf->gdbarch->tdep)->st0_regnum
+$1 = 0x10
+```
+
