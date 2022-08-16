@@ -1244,3 +1244,5 @@ $1 = 0x18
 $1 = 0x10
 ```
 
+There is the `inferior_list` in `~/binutils-gdb/gdb/inferior.h` line 690.
+
