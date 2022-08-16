@@ -357,3 +357,42 @@ $1 = 0x0
 $1 = 0x0
 ```
 
+`reg_buffer::register_buffer` in `~/binutils-gdb/gdb/regcache.c` line 240 returns the address of the register specified by `regnum`.
+
+```
+gdb_byte *
+reg_buffer::register_buffer (int regnum) const
+{
+  return m_registers.get () + m_descr->register_offset[regnum];
+}
+```
+
+Actually,
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break i387-tdep.c : 229
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) break reg_bugger::register_buffer
+(gdb) continue
+(gdb) x/40g m_registers.get()
+(gdb) p/x regnum
+(gdb) p/x m_descr->register_offset[regnum]
+(gdb) p/x *(unsigned int*)(m_registers.get()+m_descr->register_offset[regnum])
+```
+
+And,
+
+```
+~/hariboslinux # make debug
+(gdb) break i387-tdep.c : 229
+(gdb) run < debuggee_input.txt
+(gdb) break reg_bugger::register_buffer
+(gdb) continue
+(gdb) x/40g m_registers.get()
+(gdb) p/x regnum
+(gdb) p/x m_descr->register_offset[regnum]
+(gdb) p/x *(unsigned int*)(m_registers.get()+m_descr->register_offset[regnum])
+(gdb) p/x *(unsigned int*)(m_registers.get()+0x8c)
+```
+
