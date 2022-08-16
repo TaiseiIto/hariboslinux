@@ -1170,3 +1170,21 @@ $1 = 0x18
 $1 = 0x10
 ```
 
+Moreover, `current_inferior()->top_target()->thread_architecture` is `process_stratum_target::thread_architecture` in `process-stratum-target.c` line 47 and this function return `inf->gdbarch` in line 49.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break process-stratum-target.c : 47
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)inf->gdbarch->tdep)->st0_regnum
+$1 = 0x18
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break process-stratum-target.c : 47
+(gdb) run < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)inf->gdbarch->tdep)->st0_regnum
+$1 = 0x10
+```
+
