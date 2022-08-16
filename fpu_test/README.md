@@ -1254,18 +1254,19 @@ There is the `inferior_list` in `~/binutils-gdb/gdb/inferior.h` line 690.
 (gdb) run fpu_test < debuggee_input.txt
 (gdb) watch inferior_list
 (gdb) continue
-inferior_list.m_front is written at 
+inferior_list.m_front is written at ~/binutils-gdb/gdbsupport/intrusive_list.h : 414
 (gdb) print inferior_list.m_front->gdbarch
-$1 = 0x0
+$1 = (gdbarch *) 0x0
 (gdb) watch inferior_list.m_front->gdbarch
 (gdb) continue
+inferior_list.m_back is written at ~/binutils-gdb/gdbsupport/intrusive_list.h : 415
 (gdb) continue
-inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1451
+inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1450
 (gdb) p/x ((i386_gdbarch_tdep*)inferior_list.m_front->gdbarch->tdep)->st0_regnum
 $1 = 0x10
 (gdb) continue
-inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1451
+inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1450
 (gdb) p/x ((i386_gdbarch_tdep*)inferior_list.m_front->gdbarch->tdep)->st0_regnum
-$1 = 0x10
+$1 = 0x18
 ```
 
