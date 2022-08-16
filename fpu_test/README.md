@@ -1226,3 +1226,21 @@ $1 = 0x18
 $1 = 0x10
 ```
 
+Moreover, `(inferior*)all_inferiors(targ).m_begin.m_inf_iter.m_elem` is `inferior_list.m_frond`
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break find_inferior_pid
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)inferior_list.m_front->gdbarch->tdep)->st0_regnum
+$1 = 0x18
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break find_inferior_pid
+(gdb) run < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)inferior_list.m_front->gdbarch->tdep)->st0_regnum
+$1 = 0x10
+```
+
