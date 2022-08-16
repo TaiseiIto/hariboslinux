@@ -1304,3 +1304,89 @@ $1 = 0x10
 $1 = 0x18
 ```
 
+# I found the behavioral branch point between GDB debugging `hariboslinux` and it debugging `fpu_test`.
+
+* They write `inferior_list.m_front->gdbarch` twice equally.
+* But in the second writing of `inferior_list.m_front->gdbarch`, their backtrace is different.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break main
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) watch inferior_list
+(gdb) continue
+inferior_list.m_front is written at ~/binutils-gdb/gdbsupport/intrusive_list.h : 414
+(gdb) print inferior_list.m_front->gdbarch
+$1 = (gdbarch *) 0x0
+(gdb) watch inferior_list.m_front->gdbarch
+(gdb) continue
+inferior_list.m_back is written at ~/binutils-gdb/gdbsupport/intrusive_list.h : 415
+(gdb) continue
+inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1450
+(gdb) p/x ((i386_gdbarch_tdep*)inferior_list.m_front->gdbarch->tdep)->st0_regnum
+$1 = 0x10
+(gdb) continue
+inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1450
+(gdb) p/x ((i386_gdbarch_tdep*)inferior_list.m_front->gdbarch->tdep)->st0_regnum
+$1 = 0x18
+(gdb) backtrace
+#0  set_target_gdbarch (new_gdbarch=0x5581c1c63010) at arch-utils.c:1451
+#1  0x00005581bf950927 in set_gdbarch_from_file (abfd=0x5581c1c61700) at arch-utils.c:657
+#2  0x00005581bfbe6c0e in exec_file_attach (filename=0x7fffa03b08bd "fpu_test", from_tty=1) at exec.c:491
+#3  0x00005581bfd0e4ef in catch_command_errors (command=0x5581bfbe66b5 <exec_file_attach(char const*, int)>,
+		    arg=0x7fffa03b08bd "fpu_test", from_tty=1, do_bp_actions=false) at main.c:513
+#4  0x00005581bfd0f81f in captured_main_1 (context=0x7fffa03af8c0) at main.c:1209
+#5  0x00005581bfd0fef8 in captured_main (data=0x7fffa03af8c0) at main.c:1319
+#6  0x00005581bfd0ff6f in gdb_main (args=0x7fffa03af8c0) at main.c:1344
+#7  0x00005581bf8c4de6 in main (argc=2, argv=0x7fffa03af9f8) at gdb.c:32
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break main
+(gdb) run < debuggee_input.txt
+(gdb) watch inferior_list
+(gdb) continue
+inferior_list.m_front is written at ~/binutils-gdb/gdbsupport/intrusive_list.h : 414
+(gdb) print inferior_list.m_front->gdbarch
+$1 = (gdbarch *) 0x0
+(gdb) watch inferior_list.m_front->gdbarch
+(gdb) continue
+inferior_list.m_back is written at ~/binutils-gdb/gdbsupport/intrusive_list.h : 415
+(gdb) continue
+inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1450
+(gdb) p/x ((i386_gdbarch_tdep*)inferior_list.m_front->gdbarch->tdep)->st0_regnum
+$1 = 0x10
+(gdb) continue
+inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1450
+(gdb) p/x ((i386_gdbarch_tdep*)inferior_list.m_front->gdbarch->tdep)->st0_regnum
+$1 = 0x10
+(gdb) backtrace
+#0  set_target_gdbarch (new_gdbarch=0x561847a8e270) at arch-utils.c:1451
+#1  0x000056184664882b in gdbarch_update_p (info=...) at arch-utils.c:625
+#2  0x0000561846bc632a in target_find_description () at target-descriptions.c:569
+#3  0x0000561846afc0ab in remote_target::start_remote_1 (this=0x561847a3a560, from_tty=1, extended_p=0)
+    at remote.c:4833
+#4  0x0000561846afcb98 in remote_target::start_remote (this=0x561847a3a560, from_tty=1, extended_p=0) at remote.c:5070
+#5  0x0000561846afe3ad in remote_target::open_1 (name=0x5618479a7f7e "localhost:2159", from_tty=1, extended_p=0)
+        at remote.c:5873
+#6  0x0000561846afcc33 in remote_target::open (name=0x5618479a7f7e "localhost:2159", from_tty=1) at remote.c:5092
+#7  0x0000561846bdefc2 in open_target (args=0x5618479a7f7e "localhost:2159", from_tty=1, command=0x561847a198d0)
+	    at target.c:853
+#8  0x00005618467388d7 in cmd_func (cmd=0x561847a198d0, args=0x5618479a7f7e "localhost:2159", from_tty=1)
+	        at cli/cli-decode.c:2516
+#9  0x0000561846c0d734 in execute_command (p=0x5618479a7f8b "9", from_tty=1) at top.c:699
+#10 0x00005618468db76e in command_handler (command=0x5618479a7f70 "") at event-top.c:598
+#11 0x00005618468dbcac in command_line_handler (rl=...) at event-top.c:842
+#12 0x00005618468dbe60 in gdb_readline_no_editing_callback (client_data=0x5618479ad560) at event-top.c:907
+#13 0x00005618468db570 in stdin_event_handler (error=0, client_data=0x5618479ad560) at event-top.c:525
+#14 0x0000561846e543c1 in handle_file_event (file_ptr=0x561847a83c80, ready_mask=1) at event-loop.cc:549
+#15 0x0000561846e549b1 in gdb_wait_for_event (block=0) at event-loop.cc:670
+#16 0x0000561846e53724 in gdb_do_one_event () at event-loop.cc:210
+#17 0x0000561846a062f2 in start_event_loop () at main.c:411
+#18 0x0000561846a0643f in captured_command_loop () at main.c:471
+#19 0x0000561846a07efd in captured_main (data=0x7ffc07725960) at main.c:1329
+#20 0x0000561846a07f6f in gdb_main (args=0x7ffc07725960) at main.c:1344
+#21 0x00005618465bcde6 in main (argc=1, argv=0x7ffc07725a98) at gdb.c:32
+```
+
