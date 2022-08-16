@@ -192,7 +192,7 @@ And
 $1 = 0x0
 ```
 
-Above `value` is came from `regval` generated in `frame.c` line 1356.
+Above `value` is come from `regval` generated in `frame.c` line 1356.
 
 ```
 ~/hariboslinux/fpu_test # gdb gdb
@@ -1152,7 +1152,7 @@ $1 = 16
 
 ## Where does `current_thread_arch` come from?
 
-Above `current_thread_arch` is came from `target_thread_architecture` in `target.c` line 437.
+Above `current_thread_arch` is come from `target_thread_architecture` in `target.c` line 437.
 
 ```
 ~/hariboslinux/fpu_test # gdb gdb
@@ -1205,6 +1205,24 @@ $1 = 0x18
 (gdb) break inferior.c : 299
 (gdb) run < debuggee_input.txt
 (gdb) p/x ((i386_gdbarch_tdep*)inf->gdbarch->tdep)->st0_regnum
+$1 = 0x10
+```
+
+Moreover, above `inf` is come from `all_inferiors`.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break find_inferior_pid
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)((inferior*)all_inferiors(targ).m_begin.m_inf_iter.m_elem)->gdbarch->tdep)->st0_regnum
+$1 = 0x18
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break find_inferior_pid
+(gdb) run < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)((inferior*)all_inferiors(targ).m_begin.m_inf_iter.m_elem)->gdbarch->tdep)->st0_regnum
 $1 = 0x10
 ```
 
