@@ -357,6 +357,8 @@ $1 = 0x0
 $1 = 0x0
 ```
 
+# I found the debuggee registers.
+
 `reg_buffer::register_buffer` in `~/binutils-gdb/gdb/regcache.c` line 240 returns the address of the register specified by `regnum`.
 
 ```
@@ -442,4 +444,15 @@ $3 = 0x0
 (gdb) p/x *(unsigned int*)(m_registers.get()+0x8c)
 $4 = 0x37f
 ```
+
+* This is debuggee registers in the GDB memory.
+* `m_registers` is correct because GDB can print CPU registers correctly and there is a correct FPU control word `0x037f`.
+* `regnum` is wrong.
+* `m_descr->registers_offset[regnum]` is wrong because even if `regnum` is `0x20` then wrong FPU control word is got.
+
+## What should I do next?
+
+* I should research that ...
+	* Why is `regnum` different?
+	* Why is the offset of `0x037f` different?
 
