@@ -1292,3 +1292,15 @@ inferior_list.m_front->gdbarch is written at ~/binutils-gdb/gdb/arch-utils.c : 1
 $1 = 0x10
 ```
 
+## Where does `gdbarch` come from?
+
+`gdbarch` is created in `~/binutils-gdb/gdb/arch-utils.c` line 653 and stored into `inferior_list.m_front->gdbarch`.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break arch-utils.c : 655
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)gdbarch->tdep)->st0_regnum
+$1 = 0x18
+```
+
