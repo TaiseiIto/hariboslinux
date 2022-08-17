@@ -1548,3 +1548,16 @@ The secong arrival to the breakpoint
 i386_gdbarch_init (info=..., arches=0x5558f5471fd0) at i386-tdep.c:8447
 ```
 
+`i386_gdbarch_init` at `i386-tdep.c` line 8447 returns `gdbarch` at line 8803.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break i386-tdep.c : 8803
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x((i386_gdbarch_tdep*)gdbarch->tdep)->st0_regnum
+$1 = 0x10
+(gdb) continue
+(gdb) p/x((i386_gdbarch_tdep*)gdbarch->tdep)->st0_regnum
+$2 = 0x18
+```
+
