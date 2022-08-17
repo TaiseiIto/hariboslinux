@@ -1499,3 +1499,20 @@ st0_regnum assignment is done.
 $1 = 0x10
 ```
 
+## Why `st0_regnum` is `0x18` in case of GDB debugging `fpu_test`?
+
+`new_gdbarch` is returned at `arch-utils.c` line 1440.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break arch-utils.c : 1440
+(gdb) run fpu_test < debuggee_input.txt
+The first arrival to the breakpoint
+(gdb) p/x ((i386_gdbarch_tdep*)new_gdbarch->tdep)->st0_regnum
+$1 = 0x10
+(gdb) continue
+The secong arrival to the breakpoint
+(gdb) p/x ((i386_gdbarch_tdep*)new_gdbarch->tdep)->st0_regnum
+$1 = 0x18
+```
+
