@@ -1405,3 +1405,18 @@ The second arrival to the breakpoint
 $1 = 0x10
 ```
 
+## Who generates `new_gdbarch`?
+
+`gdbarch_find_by_info` at `~/binutils-gdb/gdb/arch-utils.c` line 1334 generates `new_gdbarch` and return at line 1440.
+
+```
+~/hariboslinux # make debug
+(gdb) break arch-utils.c : 1440
+(gdb) run < debuggee_input.txt
+The first arrival to the breakpoint
+(gdb) continue
+The second arrival to the breakpoint
+(gdb) p/x ((i386_gdbarch_tdep*)new_gdbarch->tdep)st0_regnum
+$1 = 0x10
+```
+
