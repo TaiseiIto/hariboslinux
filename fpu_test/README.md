@@ -1658,3 +1658,5 @@ $3 = 0x0
 $4 = 0x37f
 ```
 
+`m_descr->register_offset[regnum]` must be `0x8c` but it's `0x90`.
+
