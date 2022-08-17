@@ -1390,3 +1390,18 @@ $1 = 0x10
 #21 0x00005618465bcde6 in main (argc=1, argv=0x7ffc07725a98) at gdb.c:32
 ```
 
+## Where does `inferior_list.m_front->gdbarch` come from?
+
+`inferior_list.m_front->gdbarch` is the first argument of `set_target_gdbarch` and it generated at `~/binutils-gdb/gdb/arch-urils.c` line 596.
+
+```
+~/hariboslinux # make debug
+(gdb) break arch-utils.c : 599
+(gdb) run < debuggee_input.txt
+The first arrival to the breakpoint
+(gdb) continue
+The second arrival to the breakpoint
+(gdb) p/x ((i386_gdbarch_tdep*)new_gdbarch->tdep)->st0_regnum
+$1 = 0x10
+```
+
