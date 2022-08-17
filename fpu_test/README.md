@@ -1607,5 +1607,5 @@ And `AMD64_ST0_REGNUM` is defined at `~/binutils-gdb/gdb/amd64-tdep.h` line 59.
 AMD64_ST0_REGNUM = 24,	/* %st0 */
 ```
 
-# I think the `st0_regnum` difference between `i386` and `amd64` because they have different register sets.
+# I think the `st0_regnum` difference between `i386` and `amd64` is not a problem because they have different register sets.
 
