@@ -1442,10 +1442,49 @@ $1 = 0x10
 
 # I found `st0_regnum` assignment.
 
-`0x10` is stored to `st0_regnum` at `i386-tdep.c` line 8479.
+`0x10` is stored to `st0_regnum` at `~/binutils-gdb/gdb/i386-tdep.c` line 8479.
 
 ```
   tdep->st0_regnum = I386_ST0_REGNUM;
+```
+
+And `I386_ST0_REGNUM` is defined as `0x10` at `~/binutils-gdb/gdb/i386-tdep.h` line 293.
+
+```
+enum i386_regnum
+{
+  I386_EAX_REGNUM,		/* %eax */
+  I386_ECX_REGNUM,		/* %ecx */
+  I386_EDX_REGNUM,		/* %edx */
+  I386_EBX_REGNUM,		/* %ebx */
+  I386_ESP_REGNUM,		/* %esp */
+  I386_EBP_REGNUM,		/* %ebp */
+  I386_ESI_REGNUM,		/* %esi */
+  I386_EDI_REGNUM,		/* %edi */
+  I386_EIP_REGNUM,		/* %eip */
+  I386_EFLAGS_REGNUM,		/* %eflags */
+  I386_CS_REGNUM,		/* %cs */
+  I386_SS_REGNUM,		/* %ss */
+  I386_DS_REGNUM,		/* %ds */
+  I386_ES_REGNUM,		/* %es */
+  I386_FS_REGNUM,		/* %fs */
+  I386_GS_REGNUM,		/* %gs */
+  I386_ST0_REGNUM,		/* %st(0) */
+  I386_MXCSR_REGNUM = 40,	/* %mxcsr */ 
+  I386_YMM0H_REGNUM,		/* %ymm0h */
+  I386_YMM7H_REGNUM = I386_YMM0H_REGNUM + 7,
+  I386_BND0R_REGNUM,
+  I386_BND3R_REGNUM = I386_BND0R_REGNUM + 3,
+  I386_BNDCFGU_REGNUM,
+  I386_BNDSTATUS_REGNUM,
+  I386_K0_REGNUM,		/* %k0 */
+  I386_K7_REGNUM = I386_K0_REGNUM + 7,
+  I386_ZMM0H_REGNUM,		/* %zmm0h */
+  I386_ZMM7H_REGNUM = I386_ZMM0H_REGNUM + 7,
+  I386_PKRU_REGNUM,
+  I386_FSBASE_REGNUM,
+  I386_GSBASE_REGNUM
+};
 ```
 
 ```
