@@ -1561,3 +1561,37 @@ $1 = 0x10
 $2 = 0x18
 ```
 
+## Watch `tdep->st0_regnum`
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break i386-tdep.c : 8465
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) continue
+(gdb) p/x tdep->st0_regnum
+$1 = 0x0
+(gdb) watch tdep->st0_regnum
+(gdb) continue
+~/binutils/gdb/i386-tdep.c : 8482
+(gdb) p/x tdep->st0_regnum
+$1 = 0x10
+(gdb) continue
+~/binutils/gdb/amd64-tdep.c : 3197
+(gdb) p/x tdep->st0_regnum
+$1 = 0x18
+(gdb) backtrace
+#0  amd64_init_abi (info=..., gdbarch=0x55cbb8e15ff0, default_tdesc=0x55cbb8e145b0) at amd64-tdep.c:3197
+#1  0x000055cbb69ad95f in amd64_linux_init_abi (info=..., gdbarch=0x55cbb8e15ff0) at amd64-linux-tdep.c:1863
+#2  0x000055cbb6dfea35 in gdbarch_init_osabi (info=..., gdbarch=0x55cbb8e15ff0) at osabi.c:395
+#3  0x000055cbb6ccdc84 in i386_gdbarch_init (info=..., arches=0x0) at i386-tdep.c:8701
+#4  0x000055cbb69d1c5a in gdbarch_find_by_info (info=...) at arch-utils.c:1375
+#5  0x000055cbb69be8f0 in set_gdbarch_from_file (abfd=0x55cbb8e146e0) at arch-utils.c:653
+#6  0x000055cbb6c54c0e in exec_file_attach (filename=0x7fff744b28ca "fpu_test", from_tty=1) at exec.c:491
+#7  0x000055cbb6d7c4ef in catch_command_errors (command=0x55cbb6c546b5 <exec_file_attach(char const*, int)>,
+		    arg=0x7fff744b28ca "fpu_test", from_tty=1, do_bp_actions=false) at main.c:513
+#8  0x000055cbb6d7d81f in captured_main_1 (context=0x7fff744b17b0) at main.c:1209
+#9  0x000055cbb6d7def8 in captured_main (data=0x7fff744b17b0) at main.c:1319
+#10 0x000055cbb6d7df6f in gdb_main (args=0x7fff744b17b0) at main.c:1344
+#11 0x000055cbb6932de6 in main (argc=2, argv=0x7fff744b18e8) at gdb.c:32
+```
+
