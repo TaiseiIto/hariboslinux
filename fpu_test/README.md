@@ -1420,3 +1420,23 @@ The second arrival to the breakpoint
 $1 = 0x10
 ```
 
+Moreover, `new_gdbarch` is generated at `~/binutils-gdb/gdb/arch-utils.c` line 1375.
+
+```
+new_gdbarch = rego->init (info, rego->arches);
+```
+
+* Above `rego->init` is `i386_gdbarch_init` at `i386-tdep.c` line 8447.
+* `i386_gdbarch_init` at `i386-tdep.c` line 8447 returns `gdbarch` at line 8803.
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8803
+(gdb) run < debuggee_input.txt
+The first arrival to the breakpoint
+(gdb) continue
+The second arrival to the breakpoint
+(gdb) p/x ((i386_gdbarch_tdep*)gdbarch->tdep)->st0_regnum
+$1 = 0x10
+```
+
