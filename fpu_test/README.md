@@ -1609,3 +1609,52 @@ AMD64_ST0_REGNUM = 24,	/* %st0 */
 
 # I think the `st0_regnum` difference between `i386` and `amd64` is not a problem because they have different register sets.
 
+## I should analyse abound `regbuffer` and a map from `regnum` to `register_offset`
+
+`~/binutils-gdb/gdb/regcache.c` line 240.
+
+```
+gdb_byte *
+reg_buffer::register_buffer (int regnum) const
+{
+  return m_registers.get () + m_descr->register_offset[regnum];
+}
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break main
+(gdb) run < debuggee_input.txt
+(gdb) break i387-tdep.c : 229
+(gdb) continue
+(gdb) break regcache.c : 613
+(gdb) continue
+(gdb) break reg_buffer::register_buffer
+(gdb) continue
+(gdb) p/x regnum
+$1 = 0x18
+(gdb) p/x m_descr->register_offset[regnum]
+$2 = 0x90
+(gdb) p/x *(unsigned int*)(m_registers.get()+m_descr->register_offset[regnum])
+$3 = 0x0
+(gdb) x/32g m_registers.get()
+0x55e837f93de0: 0x000000000000aa55      0x0000000000000000
+0x55e837f93df0: 0x0000000000006f00      0x0000000000000000
+0x55e837f93e00: 0x0000020200007c00      0x0000000000000000
+0x55e837f93e10: 0x0000000000000000      0x0000000000000000
+0x55e837f93e20: 0x0000000000000000      0x0000000000000000
+0x55e837f93e30: 0x0000000000000000      0x0000000000000000
+0x55e837f93e40: 0x0000000000000000      0x0000000000000000
+0x55e837f93e50: 0x0000000000000000      0x0000000000000000
+0x55e837f93e60: 0x0000000000000000      0x0000037f00000000
+0x55e837f93e70: 0x0000000000000000      0x0000000000000000
+0x55e837f93e80: 0x0000000000000000      0x0000000000000000
+0x55e837f93e90: 0x0000000000000000      0x0000001000000000
+0x55e837f93ea0: 0x0000000000000000      0x0000000000000000
+0x55e837f93eb0: 0x0000000000000000      0x0000000000000000
+0x55e837f93ec0: 0x0000000000000000      0x0000000000000000
+0x55e837f93ed0: 0x0000000000000000      0x0000000000000000
+(gdb) p/x *(unsigned int*)(m_registers.get()+0x8c)
+$4 = 0x37f
+```
+
