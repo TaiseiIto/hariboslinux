@@ -1516,3 +1516,21 @@ The secong arrival to the breakpoint
 $1 = 0x18
 ```
 
+And, `new_gdbarch` is stored at `arch-utils.c` line 1375.
+
+```
+new_gdbarch = rego->init (info, rego->arches);
+```
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break arch-utils.c : 1379
+(gdb) run fpu_test < debuggee_input.txt
+(gdb) p/x ((i386_gdbarch_tdep*)new_gdbarch->tdep)->st0_regnum
+$1 = 0x10
+(gdb) continue
+The secong arrival to the breakpoint
+(gdb) p/x ((i386_gdbarch_tdep*)new_gdbarch->tdep)->st0_regnum
+$1 = 0x18
+```
+
