@@ -1526,11 +1526,25 @@ new_gdbarch = rego->init (info, rego->arches);
 ~/hariboslinux/fpu_test # gdb gdb
 (gdb) break arch-utils.c : 1379
 (gdb) run fpu_test < debuggee_input.txt
+The first arrival to the breakpoint
 (gdb) p/x ((i386_gdbarch_tdep*)new_gdbarch->tdep)->st0_regnum
 $1 = 0x10
 (gdb) continue
 The secong arrival to the breakpoint
 (gdb) p/x ((i386_gdbarch_tdep*)new_gdbarch->tdep)->st0_regnum
 $1 = 0x18
+```
+
+Above `rego->init` is `i386_gdbarch_init` at `i386-tdep.c` line 8447.
+
+```
+~/hariboslinux/fpu_test # gdb gdb
+(gdb) break arch-utils.c : 1375
+(gdb) run fpu_test < debuggee_input.txt
+The first arrival to the breakpoint
+(gdb) continue
+The secong arrival to the breakpoint
+(gdb) step
+i386_gdbarch_init (info=..., arches=0x5558f5471fd0) at i386-tdep.c:8447
 ```
 
