@@ -1601,3 +1601,9 @@ $1 = 0x18
 tdep->st0_regnum = AMD64_ST0_REGNUM;
 ```
 
+And `AMD64_ST0_REGNUM` is defined at `~/binutils-gdb/gdb/amd64-tdep.h` line 59.
+
+```
+AMD64_ST0_REGNUM = 24,	/* %st0 */
+```
+
