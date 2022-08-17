@@ -1440,3 +1440,23 @@ The second arrival to the breakpoint
 $1 = 0x10
 ```
 
+# I found `st0_regnum` assignment.
+
+`0x10` is stored to `st0_regnum` at `i386-tdep.c` line 8479.
+
+```
+  tdep->st0_regnum = I386_ST0_REGNUM;
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8465
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) watch tdep->st0_regnum
+(gdb) continue
+st0_regnum assignment is done.
+(gdb) p/x tdep->st0_regnum
+$1 = 0x10
+```
+
