@@ -1595,3 +1595,9 @@ $1 = 0x18
 #11 0x000055cbb6932de6 in main (argc=2, argv=0x7fff744b18e8) at gdb.c:32
 ```
 
+`AMD64_ST0_REGNUM` is stored to `tdep->st0_regnum` in `~/binutils/gdb/amd64-tdep.c` line 3196.
+
+```
+tdep->st0_regnum = AMD64_ST0_REGNUM;
+```
+
