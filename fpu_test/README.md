@@ -2170,3 +2170,6 @@ using ptid_regcache_map
 using pid_ptid_regcache_map = std::unordered_map<int, ptid_regcache_map>;
 ```
 
+* They are got from a global variable `regcaches`
+* Watch the glocal variable `regcaches`.
+
