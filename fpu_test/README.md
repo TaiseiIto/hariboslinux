@@ -2133,3 +2133,40 @@ Above `range` is `ptid_regc_map.equal_range(ptid)` at `~/binutils-gdb/gdb/regcac
 0x55aecc767eb0: 0x0000000000000000      0x0000000000000000
 ```
 
+* Above `ptid_regc_map` is `pid_ptid_regc_map[ptid.pid ()]` at `~/binutils-gdb/gdb/regcache.c` line 361.
+* But when I have tried to print `pid_ptid_regc_map[ptid.pid ()]`, An error has occured because `pid_ptid_regc_map` is a hash map implemented as C++ standard library.
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 361
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) print pid_ptid_regc_map[1]
+Attempt to take address of value not located in memory
+```
+
+* There are definitions of `pid_ptid_regc_map` and `ptid_regc_map` in `~/binutils-gdb/gdb/regcache.c` line 357.
+
+```
+  /* Find the map for this target.  */
+  pid_ptid_regcache_map &pid_ptid_regc_map = regcaches[target];
+
+  /* Find the map for this pid.  */
+  ptid_regcache_map &ptid_regc_map = pid_ptid_regc_map[ptid.pid ()];
+```
+
+* And there are definitions of `ptid_regcache_map` and `pid_ptid_regcache_map` in `~/binutils-gdb/gdb/regcache.c` line 330.
+* They are hash maps.
+
+```
+/* Type to map a ptid to a list of regcaches (one thread may have multiple
+   regcaches, associated to different gdbarches).  */
+
+using ptid_regcache_map
+  = std::unordered_multimap<ptid_t, regcache_up, hash_ptid>;
+
+/* Type holding regcaches for a given pid.  */
+
+using pid_ptid_regcache_map = std::unordered_map<int, ptid_regcache_map>;
+```
+
