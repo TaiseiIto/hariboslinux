@@ -1937,3 +1937,13 @@ regcache.c : 197
 $1 = 0x90
 ```
 
+* `register_offset` is defined at `init_regcache_descr` in `regcache.c` line 79.
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 138
+(gdb) run < debuggee_input.txt
+(gdb) p/x descr->register_offset[0x18]
+$1 = 0x90
+```
+
