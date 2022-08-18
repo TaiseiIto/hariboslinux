@@ -1894,15 +1894,15 @@ $1 = 0x90
 0x559471b37eb0: 0x0000000000000000      0x0000000000000000
 ```
 
-Above `(struct frame_unwind_cache*)sentinel_frame->prologue_cache)->regcache` is `it->second.get()` at `regcache.c` line 368.
+Above `(struct frame_unwind_cache*)sentinel_frame->prologue_cache)->regcache` is `new_regcache` at `regcache.c` line 378.
 
 ```
 ~/hariboslinux # make debug
-(gdb) break regcache.c : 368
+(gdb) break regcache.c : 378
 (gdb) run < debuggee_input.txt
-(gdb) p/x it->second.get()->m_descr->register_offset[0x18]
+(gdb) p/x new_regcache->m_descr->register_offset[0x18]
 $1 = 0x90
-(gdb) x/32g it->second.get()->m_registers.get()
+(gdb) x/32g new_regcache->m_registers.get()
 0x55886e0b8dc0: 0x0000000000000000      0x0000000000000663
 0x55886e0b8dd0: 0x0000000000000000      0x0000000000000000
 0x55886e0b8de0: 0x000000020000fff0      0x000000000000f000
