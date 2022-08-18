@@ -2000,3 +2000,6 @@ According to `i386-tdep.h` line 275, `i387-tdep.h` line 56 and the above result,
 | FOOFF         |            0x1e |            0xa8 |
 | FOP           |            0x1f |            0xac |
 
+* I this there is no problem in the above table.
+* So, I should observe writing to register cache.
+
