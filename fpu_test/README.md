@@ -1894,7 +1894,8 @@ $1 = 0x90
 0x559471b37eb0: 0x0000000000000000      0x0000000000000000
 ```
 
-Above `(struct frame_unwind_cache*)sentinel_frame->prologue_cache)->regcache` is `new_regcache` at `regcache.c` line 378.
+* Above `(struct frame_unwind_cache*)sentinel_frame->prologue_cache)->regcache` is `new_regcache` at `regcache.c` line 378.
+* The registers are not initialized yet.
 
 ```
 ~/hariboslinux # make debug
