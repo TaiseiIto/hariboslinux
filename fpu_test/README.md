@@ -1922,3 +1922,18 @@ $1 = 0x90
 0x559d69cabea0: 0x0000000000000000      0x0000559d69ca8f48
 ```
 
+Above `m_descr` is stored at `regcache.c` : 192.
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 372
+(gdb) run < debuggee_input.txt
+(gdb) break regcache::regcache
+(gdb) continue
+(gdb) watch this->m_descr
+(gdb) continue
+regcache.c : 197
+(gdb) p/x m_descr->register_offset[0x18]
+$1 = 0x90
+```
+
