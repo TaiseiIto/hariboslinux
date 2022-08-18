@@ -1943,7 +1943,60 @@ $1 = 0x90
 ~/hariboslinux # make debug
 (gdb) break regcache.c : 138
 (gdb) run < debuggee_input.txt
-(gdb) p/x descr->register_offset[0x18]
-$1 = 0x90
+(gdb) p/x
+(gdb) x/32g descr->register_offset
+0x55be65dcb2c0: 0x0000000000000000      0x0000000000000004
+0x55be65dcb2d0: 0x0000000000000008      0x000000000000000c
+0x55be65dcb2e0: 0x0000000000000010      0x0000000000000014
+0x55be65dcb2f0: 0x0000000000000018      0x000000000000001c
+0x55be65dcb300: 0x0000000000000020      0x0000000000000024
+0x55be65dcb310: 0x0000000000000028      0x000000000000002c
+0x55be65dcb320: 0x0000000000000030      0x0000000000000034
+0x55be65dcb330: 0x0000000000000038      0x000000000000003c
+0x55be65dcb340: 0x0000000000000040      0x000000000000004a
+0x55be65dcb350: 0x0000000000000054      0x000000000000005e
+0x55be65dcb360: 0x0000000000000068      0x0000000000000072
+0x55be65dcb370: 0x000000000000007c      0x0000000000000086
+0x55be65dcb380: 0x0000000000000090      0x0000000000000094
+0x55be65dcb390: 0x0000000000000098      0x000000000000009c
+0x55be65dcb3a0: 0x00000000000000a0      0x00000000000000a4
+0x55be65dcb3b0: 0x00000000000000a8      0x00000000000000ac
 ```
+
+According to `i386-tdep.h` line 275, `i387-tdep.h` line 56 and the above result, registers are deployed on memory as bellow.
+
+| Register name | Register number | Register offset |
+| :------------ | --------------: | --------------: |
+| EAX           |            0x00 |            0x00 |
+| ECX           |            0x01 |            0x04 |
+| EDX           |            0x02 |            0x08 |
+| EBX           |            0x03 |            0x0c |
+| ESP           |            0x04 |            0x10 |
+| EBP           |            0x05 |            0x14 |
+| ESI           |            0x06 |            0x18 |
+| EDI           |            0x07 |            0x1c |
+| EIP           |            0x08 |            0x20 |
+| EFLAGS        |            0x09 |            0x24 |
+| CS            |            0x0a |            0x28 |
+| SS            |            0x0b |            0x2c |
+| DS            |            0x0c |            0x30 |
+| ES            |            0x0d |            0x34 |
+| FS            |            0x0e |            0x38 |
+| GS            |            0x0f |            0x3c |
+| R0            |            0x10 |            0x40 |
+| R1            |            0x11 |            0x4a |
+| R2            |            0x12 |            0x54 |
+| R3            |            0x13 |            0x5e |
+| R4            |            0x14 |            0x68 |
+| R5            |            0x15 |            0x72 |
+| R6            |            0x16 |            0x7c |
+| R7            |            0x17 |            0x86 |
+| FCTRL         |            0x18 |            0x90 |
+| FSTAT         |            0x19 |            0x94 |
+| FTAG          |            0x1a |            0x98 |
+| FISEG         |            0x1b |            0x9c |
+| FIOFF         |            0x1c |            0xa0 |
+| FOSEG         |            0x1d |            0xa4 |
+| FOOFF         |            0x1e |            0xa8 |
+| FOP           |            0x1f |            0xac |
 
