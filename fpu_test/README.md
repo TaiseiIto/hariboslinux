@@ -2173,3 +2173,38 @@ using pid_ptid_regcache_map = std::unordered_map<int, ptid_regcache_map>;
 * They are got from a global variable `regcaches`
 * Watch the glocal variable `regcaches`.
 
+## I found `m_registers` initialization.
+
+* A class `reg_buffer` is defined at `~/binutils-gdb/gdb/regcache.h` line 187.
+* `m_registers` is defined at the same file line 264.
+* `m_registers` is initialized at `~/binutils-gdb/gdb/regcache.c` line 205.
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 205
+(gdb) run < debuggee_input.c
+The first arrival to the breapoint.
+(gdb) continue
+The second arrival to the breapoint.
+(gdb) x/32gx m_registers.get()
+0x0: Cannot access memory at address 0x0
+(gdb) next
+(gdb) x/32gx m_registers.get()
+0x561caf8e3de0: 0x00005619ce445c83      0x0000000000000000
+0x561caf8e3df0: 0x0000000000000000      0x0000000000000000
+0x561caf8e3e00: 0x000000020000fff0      0x000000000000f000
+0x561caf8e3e10: 0x0000000000000000      0x0000000000000000
+0x561caf8e3e20: 0x0000000000000000      0x0000000000000000
+0x561caf8e3e30: 0x0000000000000000      0x0000000000000000
+0x561caf8e3e40: 0x0000000000000000      0x0000000000000000
+0x561caf8e3e50: 0x0000000000000000      0x0000000000000000
+0x561caf8e3e60: 0x0000000000000000      0x0000037f00000000
+0x561caf8e3e70: 0x0000000000000000      0x0000000000000000
+0x561caf8e3e80: 0x0000000000000000      0x0000000000000000
+0x561caf8e3e90: 0x0000000000000000      0x6000001000000000
+0x561caf8e3ea0: 0x0000000000000000      0x0000000000000000
+0x561caf8e3eb0: 0x0000000000000000      0x0000000000000000
+0x561caf8e3ec0: 0x0000000000000000      0x0000000000000000
+0x561caf8e3ed0: 0x0000000000000000      0x0000000000000000
+```
+
