@@ -2433,3 +2433,24 @@ The second arrival to the breapoint.
 #34 0x000055801b510de6 in main (argc=1, argv=0x7ffd232e1718) at gdb.c:32
 ```
 
+`~/binutils-gdb/gdb/regcache.c` line 1067 writes registers.
+
+```
+      memcpy (regbuf, buf, size);
+```
+
+* Where does the above `buf` come from?
+* The above `buf` is `regs+r->offset` at `~/binutils-gdb/gdb/remote.c` line 8570.
+
+```
+~/hariboslinux # make debug
+(gdb) break remote.c : 8570 if r->regnum == 0x17
+(gdb) run < debuggee_input.txt
+(gdb) p/x r->regnum
+$1 = 0x17
+(gdb) p/x r->offset
+$2 = 0xae
+(gdb) x/gx regs+r->offset
+0x7ffe371732be: 0x037f000000000000
+```
+
