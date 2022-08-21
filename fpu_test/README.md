@@ -2666,3 +2666,5 @@ remote_target::read_frame (this=0x55799f7ac980, buf_p=0x55799f7ac9a8) at remote.
 * `remote_target::read_frame` read characters from QEMU by serial communication.
 * So, `this->m_remote_state.buf.data()`, hexadecimal values represented as string and meaning values of the registers of the debuggee, comes from packets sending QEMU.
 
+# Where does the register offsets `r->offset` at `~/binutils-gdb/gdb/remote.c` line 8570 come from?
+
