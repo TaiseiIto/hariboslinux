@@ -2533,3 +2533,13 @@ $1 = 0x55ae87435280 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0f
 $1 = 0x55d2398bc3f0 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0ff00000200000000f", '0' <repeats 69 times>, "1000006", '0' <repeats 201 times>, "7f03", '0' <repeats 316 times>, "801f0000"
 ```
 
+`rs` is `&this->m_remote_state`
+
+```
+~/hariboslinux # make debug
+(gdb) break remote_target::process_g_packet
+(gdb) run < debuggee_input.txt
+(gdb) print this->m_remote_state.buf.data()
+$1 = 0x55ba5427a3f0 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0ff00000200000000f", '0' <repeats 69 times>, "1000006", '0' <repeats 201 times>, "7f03", '0' <repeats 316 times>, "801f0000"
+```
+
