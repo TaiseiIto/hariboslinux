@@ -2454,3 +2454,40 @@ $2 = 0xae
 0x7ffe371732be: 0x037f000000000000
 ```
 
+* `rsa->regs` at `~/binutils-gdb/gdb/remote.c` line 8551.
+
+| Register | i    | rsa->regs[i].regnum | rsa->regs[i].offset|
+| :------- | ---: | ------------------: | -----------------: |
+| EAX      | 0x00 |                0x00 |               0x00 |
+| ECX      | 0x01 |                0x01 |               0x04 |
+| EDX      | 0x02 |                0x02 |               0x08 |
+| EBX      | 0x03 |                0x03 |               0x0c |
+| ESP      | 0x04 |                0x04 |               0x10 |
+| EBP      | 0x05 |                0x05 |               0x14 |
+| ESI      | 0x06 |                0x06 |               0x18 |
+| EDI      | 0x07 |                0x07 |               0x1c |
+| EIP      | 0x08 |                0x08 |               0x20 |
+| EFLAGS   | 0x09 |                0x09 |               0x24 |
+| CS       | 0x0a |                0x0a |               0x28 |
+| SS       | 0x0b |                0x0b |               0x2c |
+| DS       | 0x0c |                0x0c |               0x30 |
+| ES       | 0x0d |                0x0d |               0x34 |
+| FS       | 0x0e |                0x0e |               0x38 |
+| GS       | 0x0f |                0x0f |               0x3c |
+| R0       | 0x10 |                0x10 |               0x68 |
+| R1       | 0x11 |                0x11 |               0x72 |
+| R2       | 0x12 |                0x12 |               0x7c |
+| R3       | 0x13 |                0x13 |               0x86 |
+| R4       | 0x14 |                0x14 |               0x90 |
+| R5       | 0x15 |                0x15 |               0x9a |
+| R6       | 0x16 |                0x16 |               0xa4 |
+| R7       | 0x17 |                0x17 |               0xae |
+| FCTRL    | 0x18 |                0x18 |               0xb8 |
+| FSTAT    | 0x19 |                0x19 |               0xbc |
+| FTAG     | 0x1a |                0x1a |               0xc0 |
+| FISEG    | 0x1b |                0x1b |               0xc4 |
+| FIOFF    | 0x1c |                0x1c |               0xc8 |
+| FOSEG    | 0x1d |                0x1d |               0xcc |
+| FOOFF    | 0x1e |                0x1e |               0xd0 |
+| FOP      | 0x1f |                0x1f |               0xd4 |
+
