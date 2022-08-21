@@ -2283,3 +2283,77 @@ The second arrival to the breapoint.
 #34 0x0000557ab9de0de6 in main (argc=1, argv=0x7ffdbadf0a08) at gdb.c:32
 ```
 
+* Watch *(short*)(m_registers.get()+0x90) where FCTRL should be.
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 207
+(gdb) run < debuggee_input.txt
+(gdb) x/32gx m_registers.get()
+0x5565bb8b6de0: 0x00005560edd06cd6      0x0000000000000000
+0x5565bb8b6df0: 0x0000000000000000      0x0000000000000000
+0x5565bb8b6e00: 0x00005565bb8b3f78      0x00005565bb8c1f80
+0x5565bb8b6e10: 0x0000000000000006      0x0000000000000040
+0x5565bb8b6e20: 0x000000000000000c      0x00005565bb8b3f78
+0x5565bb8b6e30: 0x00005565bb8c21e0      0x0000000000000006
+0x5565bb8b6e40: 0x0000000000000040      0x000000000000000f
+0x5565bb8b6e50: 0x00005565bb8b3f78      0x00005565bb8be910
+0x5565bb8b6e60: 0x0000000000000006      0x0000000000000040
+0x5565bb8b6e70: 0x0000000000000002      0x00005565bb8b3f78
+0x5565bb8b6e80: 0x00005565bb8b6f50      0x0000000000000000
+0x5565bb8b6e90: 0x00005565bb8b735c      0x00005565bb8b707a
+0x5565bb8b6ea0: 0x00005565bb8b707a      0x00005565bb8b3f78
+0x5565bb8b6eb0: 0x0000000000000000      0x0000000000000000
+0x5565bb8b6ec0: 0x0000000000000000      0x0000000000000000
+0x5565bb8b6ed0: 0x0000000000000000      0x00005565bb8b3f78
+(gdb) watch *(short*)(0x5565bb8b6de0+0x90)
+(gdb) continue
+(gdb) backtrace
+#0  0x00007f531d63699f in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#1  0x00005565ba909c4e in reg_buffer::raw_supply (this=0x5565bb8c68c0, regnum=24, buf=0x7ffdc3e0dba8)
+    at regcache.c:1067
+#2  0x00005565ba92e3db in remote_target::process_g_packet (this=0x5565bb866980, regcache=0x5565bb8c68c0)
+        at remote.c:8570
+#3  0x00005565ba92e44d in remote_target::fetch_registers_using_g (this=0x5565bb866980, regcache=0x5565bb8c68c0)
+	    at remote.c:8579
+#4  0x00005565ba92e60b in remote_target::fetch_registers (this=0x5565bb866980, regcache=0x5565bb8c68c0, regnum=8)
+	        at remote.c:8628
+#5  0x00005565baa1f494 in target_fetch_registers (regcache=0x5565bb8c68c0, regno=8) at target.c:3948
+#6  0x00005565ba908242 in regcache::raw_update (this=0x5565bb8c68c0, regnum=8) at regcache.c:594
+#7  0x00005565ba9082fb in readable_regcache::raw_read (this=0x5565bb8c68c0, regnum=8,
+		    buf=0x7ffdc3e0de90 "\340\336\340\303\375\177") at regcache.c:608
+#8  0x00005565ba9086de in readable_regcache::cooked_read (this=0x5565bb8c68c0, regnum=8,
+		    buf=0x7ffdc3e0de90 "\340\336\340\303\375\177") at regcache.c:697
+#9  0x00005565ba90fb10 in readable_regcache::cooked_read<unsigned long, void> (this=0x5565bb8c68c0, regnum=8,
+		    val=0x7ffdc3e0df60) at regcache.c:782
+#10 0x00005565ba908bed in regcache_cooked_read_unsigned (regcache=0x5565bb8c68c0, regnum=8, val=0x7ffdc3e0df60)
+    at regcache.c:796
+#11 0x00005565ba90a5e8 in regcache_read_pc (regcache=0x5565bb8c68c0) at regcache.c:1332
+#12 0x00005565ba7ad441 in adjust_pc_after_break (thread=0x5565bb8bf750, ws=...) at infrun.c:4508
+#13 0x00005565ba7b0105 in handle_inferior_event (ecs=0x7ffdc3e0e200) at infrun.c:5407
+#14 0x00005565ba7abfa7 in wait_for_inferior (inf=0x5565bb7dbb90) at infrun.c:4024
+#15 0x00005565ba7aa195 in start_remote (from_tty=1) at infrun.c:3442
+#16 0x00005565ba924735 in remote_target::start_remote_1 (this=0x5565bb866980, from_tty=1, extended_p=0)
+        at remote.c:4979
+#17 0x00005565ba924b7e in remote_target::start_remote (this=0x5565bb866980, from_tty=1, extended_p=0) at remote.c:5070
+#18 0x00005565ba926393 in remote_target::open_1 (name=0x5565bb7d3f7e "localhost:2159", from_tty=1, extended_p=0)
+	    at remote.c:5873
+#19 0x00005565ba924c19 in remote_target::open (name=0x5565bb7d3f7e "localhost:2159", from_tty=1) at remote.c:5092
+#20 0x00005565baa0871c in open_target (args=0x5565bb7d3f7e "localhost:2159", from_tty=1, command=0x5565bb8458e0)
+	        at target.c:853
+#21 0x00005565ba560895 in cmd_func (cmd=0x5565bb8458e0, args=0x5565bb7d3f7e "localhost:2159", from_tty=1)
+		    at cli/cli-decode.c:2516
+#22 0x00005565baa36e93 in execute_command (p=0x5565bb7d3f8b "9", from_tty=1) at top.c:699
+#23 0x00005565ba70374a in command_handler (command=0x5565bb7d3f70 "") at event-top.c:598
+#24 0x00005565ba703c88 in command_line_handler (rl=...) at event-top.c:842
+#25 0x00005565ba703e3c in gdb_readline_no_editing_callback (client_data=0x5565bb7d9560) at event-top.c:907
+#26 0x00005565ba70354c in stdin_event_handler (error=0, client_data=0x5565bb7d9560) at event-top.c:525
+#27 0x00005565bac7d607 in handle_file_event (file_ptr=0x5565bb8afcb0, ready_mask=1) at event-loop.cc:574
+#28 0x00005565bac7dbf7 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#29 0x00005565bac7c89f in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#30 0x00005565ba82e2d7 in start_event_loop () at main.c:411
+#31 0x00005565ba82e424 in captured_command_loop () at main.c:471
+#32 0x00005565ba82fee2 in captured_main (data=0x7ffdc3e0eb50) at main.c:1329
+#33 0x00005565ba82ff54 in gdb_main (args=0x7ffdc3e0eb50) at main.c:1344
+#34 0x00005565ba3e4de6 in main (argc=1, argv=0x7ffdc3e0ec88) at gdb.c:32
+```
