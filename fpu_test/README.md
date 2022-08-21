@@ -2491,3 +2491,21 @@ $2 = 0xae
 | FOOFF    | 0x1e |                0x1e |               0xd0 |
 | FOP      | 0x1f |                0x1f |               0xd4 |
 
+At `~/binutils-gdb/gdb/remote.c` line 8570 I should research
+
+* Where does the register values `regs` come from?
+* Where does the register offsets `r->offset` come from?
+
+# Where does the register values `regs` come from?
+
+It comes from `p`, hexadecimal represented as string,
+
+```
+~/hariboslinux # make debug
+(gdb) break remote.c : 8537
+(gdb) run < debuggee_input.txt
+(gdb) set print elements 0
+(gdb) print p
+$1 = 0x558369086260 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0ff00000200000000f", '0' <repeats 69 times>, "1000006", '0' <repeats 201 times>, "7f03", '0' <repeats 316 times>, "801f0000"
+```
+
