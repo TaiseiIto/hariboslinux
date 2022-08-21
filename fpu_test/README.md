@@ -2600,3 +2600,66 @@ $1 = 0x55925c1583f0 "g"
 $2 = 0x55925c1583f0 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0ff00000200000000f", '0' <repeats 69 times>, "1000006", '0' <repeats 201 times>, "7f03", '0' <repeats 316 times>, "801f0000"
 ```
 
+* watch `this->m_remote_state.buf.data()`
+
+```
+~/hariboslinux # make debug
+(gdb) break remote_target::send_g_packet
+(gdb) run < debuggee_input.txt
+(gdb) print this->m_remote_state.buf.data()
+$1 = 0x55799f7fe3f0 "OK"
+(gdb) watch *(char*)(0x55799f7fe3f0+0x200)
+(gdb) continue
+remote_target::read_frame (this=0x55799f7ac980, buf_p=0x55799f7ac9a8) at remote.c:9857
+(gdb) backtrace
+#0  remote_target::read_frame (this=0x55799f7ac980, buf_p=0x55799f7ac9a8) at remote.c:9857
+#1  0x000055799eaa14fd in remote_target::getpkt_or_notif_sane_1 (this=0x55799f7ac980, buf=0x55799f7ac9a8, forever=0,
+		    expecting_notif=0, is_notif=0x0) at remote.c:9969
+#2  0x000055799eaa1853 in remote_target::getpkt_sane (this=0x55799f7ac980, buf=0x55799f7ac9a8, forever=0)
+    at remote.c:10048
+#3  0x000055799eaa139f in remote_target::getpkt (this=0x55799f7ac980, buf=0x55799f7ac9a8, forever=0) at remote.c:9890
+#4  0x000055799ea9dcc4 in remote_target::send_g_packet (this=0x55799f7ac980) at remote.c:8443
+#5  0x000055799ea9e43a in remote_target::fetch_registers_using_g (this=0x55799f7ac980, regcache=0x55799f80d960)
+        at remote.c:8578
+#6  0x000055799ea9e60b in remote_target::fetch_registers (this=0x55799f7ac980, regcache=0x55799f80d960, regnum=8)
+	    at remote.c:8628
+#7  0x000055799eb8f494 in target_fetch_registers (regcache=0x55799f80d960, regno=8) at target.c:3948
+#8  0x000055799ea78242 in regcache::raw_update (this=0x55799f80d960, regnum=8) at regcache.c:594
+#9  0x000055799ea782fb in readable_regcache::raw_read (this=0x55799f80d960, regnum=8,
+		    buf=0x7ffe961a3860 "\260\070\032\226\376\177") at regcache.c:608
+#10 0x000055799ea786de in readable_regcache::cooked_read (this=0x55799f80d960, regnum=8,
+		    buf=0x7ffe961a3860 "\260\070\032\226\376\177") at regcache.c:697
+#11 0x000055799ea7fb10 in readable_regcache::cooked_read<unsigned long, void> (this=0x55799f80d960, regnum=8,
+		    val=0x7ffe961a3930) at regcache.c:782
+#12 0x000055799ea78bed in regcache_cooked_read_unsigned (regcache=0x55799f80d960, regnum=8, val=0x7ffe961a3930)
+    at regcache.c:796
+#13 0x000055799ea7a5e8 in regcache_read_pc (regcache=0x55799f80d960) at regcache.c:1332
+#14 0x000055799e91d441 in adjust_pc_after_break (thread=0x55799f800470, ws=...) at infrun.c:4508
+#15 0x000055799e920105 in handle_inferior_event (ecs=0x7ffe961a3bd0) at infrun.c:5407
+#16 0x000055799e91bfa7 in wait_for_inferior (inf=0x55799f721b90) at infrun.c:4024
+#17 0x000055799e91a195 in start_remote (from_tty=1) at infrun.c:3442
+#18 0x000055799ea94735 in remote_target::start_remote_1 (this=0x55799f7ac980, from_tty=1, extended_p=0)
+        at remote.c:4979
+#19 0x000055799ea94b7e in remote_target::start_remote (this=0x55799f7ac980, from_tty=1, extended_p=0) at remote.c:5070
+#20 0x000055799ea96393 in remote_target::open_1 (name=0x55799f719f4e "localhost:2159", from_tty=1, extended_p=0)
+	    at remote.c:5873
+#21 0x000055799ea94c19 in remote_target::open (name=0x55799f719f4e "localhost:2159", from_tty=1) at remote.c:5092
+#22 0x000055799eb7871c in open_target (args=0x55799f719f4e "localhost:2159", from_tty=1, command=0x55799f78b8e0)
+	        at target.c:853
+#23 0x000055799e6d0895 in cmd_func (cmd=0x55799f78b8e0, args=0x55799f719f4e "localhost:2159", from_tty=1)
+		    at cli/cli-decode.c:2516
+#24 0x000055799eba6e93 in execute_command (p=0x55799f719f5b "9", from_tty=1) at top.c:699
+#25 0x000055799e87374a in command_handler (command=0x55799f719f40 "") at event-top.c:598
+#26 0x000055799e873c88 in command_line_handler (rl=...) at event-top.c:842
+#27 0x000055799e873e3c in gdb_readline_no_editing_callback (client_data=0x55799f71f560) at event-top.c:907
+#28 0x000055799e87354c in stdin_event_handler (error=0, client_data=0x55799f71f560) at event-top.c:525
+#29 0x000055799eded607 in handle_file_event (file_ptr=0x55799f7f5c90, ready_mask=1) at event-loop.cc:574
+#30 0x000055799ededbf7 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#31 0x000055799edec89f in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#32 0x000055799e99e2d7 in start_event_loop () at main.c:411
+#33 0x000055799e99e424 in captured_command_loop () at main.c:471
+#34 0x000055799e99fee2 in captured_main (data=0x7ffe961a4520) at main.c:1329
+#35 0x000055799e99ff54 in gdb_main (args=0x7ffe961a4520) at main.c:1344
+#36 0x000055799e554de6 in main (argc=1, argv=0x7ffe961a4658) at gdb.c:32
+```
+
