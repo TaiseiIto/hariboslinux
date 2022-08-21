@@ -2509,3 +2509,15 @@ It comes from `p`, hexadecimal represented as string,
 $1 = 0x558369086260 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0ff00000200000000f", '0' <repeats 69 times>, "1000006", '0' <repeats 201 times>, "7f03", '0' <repeats 316 times>, "801f0000"
 ```
 
+`p` comes from `rs`
+
+
+```
+~/hariboslinux # make debug
+(gdb) break remote.c : 8474
+(gdb) run < debuggee_input.txt
+(gdb) set print elements 0
+(gdb) print rs->buf.data()
+$1 = 0x55ae87435280 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0ff00000200000000f", '0' <repeats 69 times>, "1000006", '0' <repeats 201 times>, "7f03", '0' <repeats 316 times>, "801f0000"
+```
+
