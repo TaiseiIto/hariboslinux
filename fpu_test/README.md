@@ -2587,16 +2587,16 @@ $1 = 0x55ba5427a3f0 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0f
 #32 0x0000557f99e3ede6 in main (argc=1, argv=0x7ffc7339c8f8) at gdb.c:32
 ```
 
-* `remote.c` line 8578 writes `this->m_remote_state.buf.data()`
+* `remote.c` line 8443 writes `this->m_remote_state.buf.data()`
 
 ```
 ~/hariboslinux # make debug
-(gdb) break remote.c : 8578
+(gdb) break remote.c : 8443
 (gdb) run < debuggee_input.txt
 (gdb) print this->m_remote_state.buf.data()
-$1 = 0x561fd7f1a3f0 "OK"
+$1 = 0x55925c1583f0 "g"
 (gdb) next
 (gdb) print this->m_remote_state.buf.data()
-$2 = 0x561fd7f1a3f0 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0ff00000200000000f", '0' <repeats 69 times>, "1000006", '0' <repeats 201 times>, "7f03", '0' <repeats 316 times>, "801f0000"
+$2 = 0x55925c1583f0 '0' <repeats 16 times>, "6306", '0' <repeats 44 times>, "f0ff00000200000000f", '0' <repeats 69 times>, "1000006", '0' <repeats 201 times>, "7f03", '0' <repeats 316 times>, "801f0000"
 ```
 
