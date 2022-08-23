@@ -2710,3 +2710,21 @@ $1 = 0x0
 $1 = 0xb8
 ```
 
+* `this->regs[0x18].offset` is stored at `remote.c` line 1440.
+
+```
+~/hariboslinux # make debug
+(gdb) break map_regcache_remote_table
+(gdb) run < debuggee_input.txt
+The first arrival to map_regcache_remote_table
+(gdb) continue
+The second arrival to map_regcache_remote_table
+(gdb) p/x regs[0x18].offset
+$1 = 0x0
+(gdb) watch regs[0x18].offset
+(gdb) continue
+remote.c : 1440 executed.
+(gdb) p/x regs[0x18].offset
+$1 = 0xb8
+```
+
