@@ -2781,16 +2781,16 @@ $1 = 0xb8
 |          |   0x25 |                        0x1c |
 |          |   0x26 |                        0x1d |
 |          |   0x27 |                        0x1e |
-|          |   0x28 |                        0x1f |
-|          |   0x29 |                        0x52 |
-|          |   0x2a |                        0x53 |
-|          |   0x2b |                        0x54 |
-|          |   0x2c |                        0x55 |
-|          |   0x2d |                        0x56 |
-|          |   0x2e |                        0x57 |
-|          |   0x2f |                        0x58 |
-|          |   0x30 |                        0x59 |
-|          |   0x31 |                        0x5a |
+| MXCSR    |   0x28 |                        0x1f |
+| YMM0H    |   0x29 |                        0x52 |
+| YMM1H    |   0x2a |                        0x53 |
+| YMM2H    |   0x2b |                        0x54 |
+| YMM3H    |   0x2c |                        0x55 |
+| YMM4H    |   0x2d |                        0x56 |
+| YMM5H    |   0x2e |                        0x57 |
+| YMM6H    |   0x2f |                        0x58 |
+| YMM7H    |   0x30 |                        0x59 |
+| BND0R    |   0x31 |                        0x5a |
 
 * How is register size determined?
 
