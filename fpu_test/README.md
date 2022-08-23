@@ -2678,3 +2678,13 @@ remote_target::read_frame (this=0x55799f7ac980, buf_p=0x55799f7ac9a8) at remote.
 $1 = 0xb8
 ```
 
+* Above `rsa` is `rs->m_arch_states.find(gdbarch)->second` at `remote.c` line 8474.
+
+```
+~/hariboslinux # make debug
+(gdb) break remote.c : 8474
+(gdb) run < debuggee_input.txt
+(gdb) p/x rs->m_arch_states.find(gdbarch)->second.regs[0x18].offset
+$1 = 0xb8
+```
+
