@@ -2710,7 +2710,7 @@ $1 = 0x0
 $1 = 0xb8
 ```
 
-* `this->regs[0x18].offset` is stored at `remote.c` line 1440.
+* `this->regs[0x18].offset` is stored at `~/binutils-gdb/gdb/remote.c` line 1440.
 
 ```
 ~/hariboslinux # make debug
@@ -2727,4 +2727,17 @@ remote.c : 1440 executed.
 (gdb) p/x regs[0x18].offset
 $1 = 0xb8
 ```
+
+* Register offsets are determined at `~/binutils-gdb/gdb/remote.c` line 1437-1442.
+
+```
+  for (regnum = 0, offset = 0; regnum < num_remote_regs; regnum++)
+    {
+      remote_regs[regnum]->in_g_packet = 1;
+      remote_regs[regnum]->offset = offset;
+      offset += register_size (gdbarch, remote_regs[regnum]->regnum);
+    }
+```
+
+* How is register size determined?
 
