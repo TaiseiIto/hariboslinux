@@ -2678,13 +2678,19 @@ remote_target::read_frame (this=0x55799f7ac980, buf_p=0x55799f7ac9a8) at remote.
 $1 = 0xb8
 ```
 
-* Above `rsa` is `rs->m_arch_states.find(gdbarch)->second` at `remote.c` line 8474.
+* Above `rsa` is `struct remote_arch_state` at `~/binutils-gdb/gdb/remote.c` line 203 and its constructor is `remote_arch_state::remote_arch_state` defined at line 205 and and implemented at line 1469.
 
 ```
 ~/hariboslinux # make debug
-(gdb) break remote.c : 8474
+(gdb) break remote_arch_state::remote_arch_state
 (gdb) run < debuggee_input.txt
-(gdb) p/x rs->m_arch_states.find(gdbarch)->second.regs[0x18].offset
+The first arribal to the breakpoint.
+(gdb) continue
+The second arribal to the breakpoint.
+(gdb) break 1500
+(gdb) continue
+The end of the constructor.
+(gdb) p/x this->regs[0x18].offset
 $1 = 0xb8
 ```
 
