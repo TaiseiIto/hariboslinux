@@ -2739,5 +2739,58 @@ $1 = 0xb8
     }
 ```
 
+| Register | regnum | remote_regs[regnum]->regnum |
+| :------- | -----: | --------------------------: |
+| EAX      |   0x00 |                        0x00 |
+| ECX      |   0x01 |                        0x01 |
+| EDX      |   0x02 |                        0x02 |
+| EBX      |   0x03 |                        0x03 |
+| ESP      |   0x04 |                        0x04 |
+| EBP      |   0x05 |                        0x05 |
+| ESI      |   0x06 |                        0x06 |
+| EDI      |   0x07 |                        0x07 |
+| EIP      |   0x08 |                        0x08 |
+| EFLAGS   |   0x09 |                        0x09 |
+| CS       |   0x0a |                        0x0a |
+| SS       |   0x0b |                        0x0b |
+| DS       |   0x0c |                        0x0c |
+| ES       |   0x0d |                        0x0d |
+| FS       |   0x0e |                        0x0e |
+| GS       |   0x0f |                        0x0f |
+| R0       |   0x10 |                        0x49 |
+| R1       |   0x11 |                        0x4a |
+| R2       |   0x12 |                        0x4b |
+| R3       |   0x13 |                        0x4c |
+| R4       |   0x14 |                        0x4d |
+| R5       |   0x15 |                        0x4e |
+| R6       |   0x16 |                        0x4f |
+| R7       |   0x17 |                        0x50 |
+| FCTRL    |   0x18 |                        0x51 |
+| FSTAT    |   0x19 |                        0x10 |
+| FTAG     |   0x1a |                        0x11 |
+| FISEG    |   0x1b |                        0x12 |
+| FIOFF    |   0x1c |                        0x13 |
+| FOSEG    |   0x1d |                        0x14 |
+| FOOFF    |   0x1e |                        0x15 |
+| FOP      |   0x1f |                        0x16 |
+|          |   0x20 |                        0x17 |
+|          |   0x21 |                        0x18 |
+|          |   0x22 |                        0x19 |
+|          |   0x23 |                        0x1a |
+|          |   0x24 |                        0x1b |
+|          |   0x25 |                        0x1c |
+|          |   0x26 |                        0x1d |
+|          |   0x27 |                        0x1e |
+|          |   0x28 |                        0x1f |
+|          |   0x29 |                        0x52 |
+|          |   0x2a |                        0x53 |
+|          |   0x2b |                        0x54 |
+|          |   0x2c |                        0x55 |
+|          |   0x2d |                        0x56 |
+|          |   0x2e |                        0x57 |
+|          |   0x2f |                        0x58 |
+|          |   0x30 |                        0x59 |
+|          |   0x31 |                        0x5a |
+
 * How is register size determined?
 
