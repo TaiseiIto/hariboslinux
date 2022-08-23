@@ -2668,3 +2668,13 @@ remote_target::read_frame (this=0x55799f7ac980, buf_p=0x55799f7ac9a8) at remote.
 
 # Where does the register offsets `r->offset` at `~/binutils-gdb/gdb/remote.c` line 8570 come from?
 
+* The offset of FCTRL is `rsa->regs[0x18].offset` at `remote.c` line 8475.
+
+```
+~/hariboslinux # make debug
+(gdb) break remote.c : 8475
+(gdb) run debuggee_input.txt
+(gdb) p/x rsa->regs[0x18].offset
+$1 = 0xb8
+```
+
