@@ -2694,3 +2694,19 @@ The end of the constructor.
 $1 = 0xb8
 ```
 
+* `this->regs[0x18].offset` is stored at `remote.c` line 1477.
+
+```
+~/hariboslinux # make debug
+(gdb) break remote.c : 1477
+(gdb) run < debuggee_input.txt
+The first arrival to remote.c : 1477
+(gdb) continue
+The second arrival to remote.c : 1477
+(gdb) p/x this->regs[0x18].offset
+$1 = 0x0
+(gdb) next
+(gdb) p/x this->regs[0x18].offset
+$1 = 0xb8
+```
+
