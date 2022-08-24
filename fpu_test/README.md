@@ -2792,5 +2792,7 @@ $1 = 0xb8
 | YMM7H    |   0x30 |                        0x59 |                      0x0148 |                                                0x10 |
 | BND0R    |   0x31 |                        0x5a |                      0x0158 |                                                0x04 |
 
-* How is register size determined?
+* How is `remote_regs[regnum]->regnum` determined?
+
+* How is `register_size(gdbarch, remote_regs[regnum]->regnum)` determined?
 
