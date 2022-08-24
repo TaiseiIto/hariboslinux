@@ -2796,6 +2796,7 @@ $1 = 0xb8
 |          |   0x31 |                        0x5a |                      0x0158 |                                                0x04 |
 
 * How is `remote_regs[regnum]->regnum` determined?
-
+	* `remote_regs` is `regs` sorted by `pnum`.
+	* `regnum` equals `remote_regs[regnum]->pnum` and also `regs[remote_regs[regnum]->regnum]` and means register order sent by `QEMU`.
 * How is `register_size(gdbarch, remote_regs[regnum]->regnum)` determined?
 
