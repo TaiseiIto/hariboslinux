@@ -2739,6 +2739,9 @@ $1 = 0xb8
     }
 ```
 
+* `GDB` interprets register values list sent by `QEMU` as below.
+* For example, `QEMU` writes `FCTRL` in offset `0xb4`. But `GDB` interprets there is it in offset `0xb8`.
+
 | Register | regnum | remote_regs[regnum]->regnum | remote_regs[regnum]->offset | register_size(gdbarch, remote_regs[regnum]->regnum) |
 | :------- | -----: | --------------------------: | --------------------------: | --------------------------------------------------: |
 | EAX      |   0x00 |                        0x00 |                      0x0000 |                                                0x04 |
