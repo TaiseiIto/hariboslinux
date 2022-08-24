@@ -2798,5 +2798,6 @@ $1 = 0xb8
 * How is `remote_regs[regnum]->regnum` determined?
 	* `remote_regs` is `regs` sorted by `pnum`.
 	* `regnum` equals `remote_regs[regnum]->pnum` and also `regs[remote_regs[regnum]->regnum]` and means register order sent by `QEMU`.
+	* `regs[x].pnum` is determined by `gdbarch_remote_register_number` at `~/binutils-gdb/gdb/remote.c` line 1417.
 * How is `register_size(gdbarch, remote_regs[regnum]->regnum)` determined?
 
