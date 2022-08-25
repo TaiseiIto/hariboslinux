@@ -2917,5 +2917,29 @@ Above means `x` is a register number in GDB and `y` is QEMU sends the register `
 #43 0x0000564f488e8de6 in main (argc=1, argv=0x7ffe0f186bf8) at gdb.c:32
 ```
 
-There is the same gdbarch address in `#23` in the above backtrace.
+* There is the same gdbarch address in `#23` in the above backtrace.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break gdbarch_has_shared_address_space 
+(gdb) run < debuggee_input.txt
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x00].reg->target_regnum
+$1 = 0x0
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x0f].reg->target_regnum
+$2 = 0xf
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x49].reg->target_regnum
+$3 = 0x10
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x51].reg->target_regnum
+$4 = 0x18
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x10].reg->target_regnum
+$5 = 0x19
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x1f].reg->target_regnum
+$6 = 0x28
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x52].reg->target_regnum
+$7 = 0x29
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x5a].reg->target_regnum
+$8 = 0x31
+```
 
