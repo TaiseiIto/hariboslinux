@@ -2984,3 +2984,37 @@ $7 = 0x29
 $8 = 0x31
 ```
 
+* `current_inferior_` is initialized at `~/binutils-gdb/gdbsupport/gdb_reh_ptr.h` line 126.
+* `current_inferior_.m_obj->gdbarch` is initialized at `~/binutils-gdb/gdb/arch-utils.c` line 1443 twice.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) watch current_inferior_
+(gdb) run < debuggee_input.tx
+~/binutils-gdb/gdbsupport/gdb_ref_ptr.h : 126
+(gdb) delete 1
+(gdb) watch current_inferior_.m_obj->gdbarch
+(gdb) continue
+~/binutils-gdb/gdb/arch-utils.c : 1443
+(gdb) continue
+~/binutils-gdb/gdb/arch-utils.c : 1443
+(gdb) p/x ((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x00].reg->target_regnum
+$1 = 0x0
+(gdb) p/x ((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x0f].reg->target_regnum
+$2 = 0xf
+(gdb) p/x ((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x49].reg->target_regnum
+$3 = 0x10
+(gdb) p/x ((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x51].reg->target_regnum
+$4 = 0x18
+(gdb) p/x ((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x10].reg->target_regnum
+$5 = 0x19
+(gdb) p/x ((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x1f].reg->target_regnum
+$6 = 0x28
+(gdb) p/x ((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x52].reg->target_regnum
+$7 = 0x29
+(gdb) p/x ((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x5a].reg->target_regnum
+$8 = 0x31
+```
+
