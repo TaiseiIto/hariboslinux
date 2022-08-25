@@ -2836,6 +2836,8 @@ $41 = 0x29
 $42 = 0x31
 ```
 
+For example,
+
 ```
 (gdb) p/x tdesc_data.get(gdbarch)->arch_regs[x].reg->target_regnum
  = y
