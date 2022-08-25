@@ -2801,3 +2801,11 @@ $1 = 0xb8
 	* `regs[x].pnum` is determined by `gdbarch_remote_register_number` at `~/binutils-gdb/gdb/remote.c` line 1417.
 * How is `register_size(gdbarch, remote_regs[regnum]->regnum)` determined?
 
+# How is `r->pnum` meaning register order sent by `QEMU` is determined at `~/binutils-gdb/gdb/remote.c` line 1417?
+
+* `gdbarch_remote_register_number(gdbarch, regnum)` at `gdbarch.c` line 2939 returns `tdesc_remote_register_number(gdbarch, regno)`
+* `tdepsc_remote_register_number(gdbarch, regno)` at `target-descriptions.c` line 985 returns `tdesc_find_register(gdbarch, regno)->target_regnum`
+* `tdesc_find_register(gdbarch, regno)` at `target-descriptions.c` line 880 returns `tdesc_find_arch_register(gdbarch, regno)->reg`
+* `tdesc_find_arch_register(gdbarch, regno)` at `target-descriptions.c` line 869 returns `&get_arch_data(gdbarch)->arch_regs[regno]`
+* `get_arch_data(gdbarch)` at `target-descriptions.c` line 488 returns `tdesc_data.get(gdbarch)`
+
