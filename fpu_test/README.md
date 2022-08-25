@@ -2809,3 +2809,37 @@ $1 = 0xb8
 * `tdesc_find_arch_register(gdbarch, regno)` at `target-descriptions.c` line 869 returns `&get_arch_data(gdbarch)->arch_regs[regno]`
 * `get_arch_data(gdbarch)` at `target-descriptions.c` line 488 returns `tdesc_data.get(gdbarch)`
 
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break map_regcache_remote_table
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break 1417
+(gdb) continue
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[0x00].reg->target_regnum
+$35 = 0x0
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[0x0f].reg->target_regnum
+$36 = 0xf
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[0x49].reg->target_regnum
+$37 = 0x10
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[0x51].reg->target_regnum
+$38 = 0x18
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[0x10].reg->target_regnum
+$39 = 0x19
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[0x1f].reg->target_regnum
+$40 = 0x28
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[0x52].reg->target_regnum
+$41 = 0x29
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[0x5a].reg->target_regnum
+$42 = 0x31
+```
+
+```
+(gdb) p/x tdesc_data.get(gdbarch)->arch_regs[x].reg->target_regnum
+ = y
+```
+
+Above means `x` is a register number in GDB and `y` is QEMU sends the register `y`th in the all registers.
+
