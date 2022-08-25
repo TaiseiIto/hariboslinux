@@ -2943,3 +2943,20 @@ $7 = 0x29
 $8 = 0x31
 ```
 
+* `gdbarch` is `current_inferior_->m_obj->gdbarch`
+
+```
+~/hariboslinux # make debug
+(gdb) break update_address_spaces
+(gdb) run < debuggee_input.txt
+(gdb) break target_gdbarch
+(gdb) continue
+~/binutils-gdb/gdb/arch-utils.c : 1452
+return current_inferior()->gdbarch;
+(gdb) step
+~/binutils-gdb/gdb/inferior.c : 55
+return current_inferior_.get()
+(gdb) step
+~/binutils-gdb/gdbsupport/gdb_ref_ptr.h : 132
+```
+
