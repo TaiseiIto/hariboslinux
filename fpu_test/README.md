@@ -2917,3 +2917,5 @@ Above means `x` is a register number in GDB and `y` is QEMU sends the register `
 #43 0x0000564f488e8de6 in main (argc=1, argv=0x7ffe0f186bf8) at gdb.c:32
 ```
 
+There is the same gdbarch address in `#23` in the above backtrace.
+
