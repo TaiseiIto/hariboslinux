@@ -3135,7 +3135,11 @@ $7 = 0x29
 $8 = 0x31
 ```
 
-* `((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs` is validated at `i386-tdep.c` line 8726.
+* `((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs` is validated at `~/binutils-gdb/gdb/i386-tdep.c` line 8726.
+
+```
+tdesc_use_registers (gdbarch, tdesc, std::move (tdesc_data));
+```
 
 Actually,
 
@@ -3165,5 +3169,37 @@ $6 = 0x28
 $7 = 0x29
 (gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x5a].reg->target_regnum
 $8 = 0x31
+```
+
+* `tdesc_use_registers` at `~/binutils-gdb/gdb/target-descriptions.c` line 1087 stores `target_regnum` at line 1162-1168.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break target_descriptions.c : 1158
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) next
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x00].reg
+$1 = NULL
+(gdb) break 1171
+(gdb) continue
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x00].reg->target_regnum
+$2 = 0x0
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x0f].reg->target_regnum
+$3 = 0xf
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x49].reg->target_regnum
+$4 = 0x10
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x51].reg->target_regnum
+$5 = 0x18
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x10].reg->target_regnum
+$6 = 0x19
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x1f].reg->target_regnum
+$7 = 0x28
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x52].reg->target_regnum
+$8 = 0x29
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x5a].reg->target_regnum
+$9 = 0x31
 ```
 
