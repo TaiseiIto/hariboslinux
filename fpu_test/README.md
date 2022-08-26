@@ -3072,3 +3072,66 @@ $7 = 0x29
 $8 = 0x31
 ```
 
+* `new_gdbarch` is generated at `~/binutils-gdb/gdb/arch-utils.c` line 1367.
+
+```
+  new_gdbarch = rego->init (info, rego->arches);
+```
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break arch-utils.c : 1371
+(gdb) run < debuggee_input.txt
+The first arrival to the breakpoint.
+(gdb) continue
+The second arrival to the breakpoint.
+(gdb) p/x ((tdesc_arch_data*)new_gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x00].reg->target_regnum
+$1 = 0x0
+(gdb) p/x ((tdesc_arch_data*)new_gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x0f].reg->target_regnum
+$2 = 0xf
+(gdb) p/x ((tdesc_arch_data*)new_gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x49].reg->target_regnum
+$3 = 0x10
+(gdb) p/x ((tdesc_arch_data*)new_gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x51].reg->target_regnum
+$4 = 0x18
+(gdb) p/x ((tdesc_arch_data*)new_gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x10].reg->target_regnum
+$5 = 0x19
+(gdb) p/x ((tdesc_arch_data*)new_gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x1f].reg->target_regnum
+$6 = 0x28
+(gdb) p/x ((tdesc_arch_data*)new_gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x52].reg->target_regnum
+$7 = 0x29
+(gdb) p/x ((tdesc_arch_data*)new_gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[0x5a].reg->target_regnum
+$8 = 0x31
+```
+
+* `rego->init` at `~/binutils-gdb/gdb/arch-utils.c` line 1367 is `i386_gdbarch_init` at `~/binutils-gdb/gdb/i386-tdep.c` line 8445.
+* `i386_gdbarch_init` at `~/binutils-gdb/gdb/i386-tdep.c` line 8445 returns `gdbarch` at line 8803.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8803
+(gdb) run < debuggee_input.txt
+The first arrival to the breakpoint.
+(gdb) continue
+The second arrival to the breakpoint.
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x00].reg->target_regnum
+$1 = 0x0
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x0f].reg->target_regnum
+$2 = 0xf
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x49].reg->target_regnum
+$3 = 0x10
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x51].reg->target_regnum
+$4 = 0x18
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x10].reg->target_regnum
+$5 = 0x19
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x1f].reg->target_regnum
+$6 = 0x28
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x52].reg->target_regnum
+$7 = 0x29
+(gdb) p/x ((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x5a].reg->target_regnum
+$8 = 0x31
+```
+
