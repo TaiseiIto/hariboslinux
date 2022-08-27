@@ -3203,3 +3203,22 @@ $8 = 0x29
 $9 = 0x31
 ```
 
+* Type of `((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[x]` is `tdest_arch_reg`.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break target-descriptions.c : 1158
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_rach_reg::tdesc_arch_reg
+(gdb) continue
+(gdb) p/x reg_->target_regnum
+$1 = 0x10
+(gdb) continue
+(gdb) p/x reg_->target_regnum
+$2 = 0x11
+...
+```
+
