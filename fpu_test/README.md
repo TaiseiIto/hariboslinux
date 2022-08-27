@@ -3269,5 +3269,35 @@ $2 = 0xf
 $3 = 0x19
 (gdb) p/x early_data->arch_regs[0x1f].reg->target_regnum
 $4 = 0x28
+(gdb) backtrace
+#0  tdesc_use_registers (gdbarch=0x559838dc1430, target_desc=0x559838dce6b0, early_data=..., unk_reg_cb=0x0)
+    at target-descriptions.c:1087
+#1  0x0000559836522d59 in i386_gdbarch_init (info=..., arches=0x0) at i386-tdep.c:8726
+#2  0x0000559836226c2e in gdbarch_find_by_info (info=...) at arch-utils.c:1367
+#3  0x0000559836213730 in gdbarch_update_p (info=...) at arch-utils.c:596
+#4  0x0000559836792baa in target_find_description () at target-descriptions.c:569
+#5  0x00005598366c7091 in remote_target::start_remote_1 (this=0x559838d6d980, from_tty=1, extended_p=0)
+        at remote.c:4833
+#6  0x00005598366c7b7e in remote_target::start_remote (this=0x559838d6d980, from_tty=1, extended_p=0) at remote.c:5070
+#7  0x00005598366c9393 in remote_target::open_1 (name=0x559838cdaf4e "localhost:2159", from_tty=1, extended_p=0)
+	    at remote.c:5873
+#8  0x00005598366c7c19 in remote_target::open (name=0x559838cdaf4e "localhost:2159", from_tty=1) at remote.c:5092
+#9  0x00005598367ab71c in open_target (args=0x559838cdaf4e "localhost:2159", from_tty=1, command=0x559838d4c8e0)
+	        at target.c:853
+#10 0x0000559836303895 in cmd_func (cmd=0x559838d4c8e0, args=0x559838cdaf4e "localhost:2159", from_tty=1)
+		    at cli/cli-decode.c:2516
+#11 0x00005598367d9e93 in execute_command (p=0x559838cdaf5b "9", from_tty=1) at top.c:699
+#12 0x00005598364a674a in command_handler (command=0x559838cdaf40 "") at event-top.c:598
+#13 0x00005598364a6c88 in command_line_handler (rl=...) at event-top.c:842
+#14 0x00005598364a6e3c in gdb_readline_no_editing_callback (client_data=0x559838ce0560) at event-top.c:907
+#15 0x00005598364a654c in stdin_event_handler (error=0, client_data=0x559838ce0560) at event-top.c:525
+#16 0x0000559836a20607 in handle_file_event (file_ptr=0x559838db6cb0, ready_mask=1) at event-loop.cc:574
+#17 0x0000559836a20bf7 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#18 0x0000559836a1f89f in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#19 0x00005598365d12d7 in start_event_loop () at main.c:411
+#20 0x00005598365d1424 in captured_command_loop () at main.c:471
+#21 0x00005598365d2ee2 in captured_main (data=0x7fffa6214b80) at main.c:1329
+#22 0x00005598365d2f54 in gdb_main (args=0x7fffa6214b80) at main.c:1344
+#23 0x0000559836187de6 in main (argc=1, argv=0x7fffa6214cb8) at gdb.c:32
 ```
 
