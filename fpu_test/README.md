@@ -3320,3 +3320,25 @@ $3 = 0x19
 $4 = 0x28
 ```
 
+* The above `target_regnum` is validated by `i386_validate_tdesc_p` at `i386-tdep.c` line 8703.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8703
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) p/x tdesc_data->arch_regs[0x00]
+Cannot access memory at address 0x0
+(gdb) next
+(gdb) p/x tdesc_data->arch_regs[0x00].reg->target_regnum
+$1 = 0x0
+(gdb) p/x tdesc_data->arch_regs[0x0f].reg->target_regnum
+$2 = 0xf
+(gdb) p/x tdesc_data->arch_regs[0x10].reg->target_regnum
+$3 = 0x19
+(gdb) p/x tdesc_data->arch_regs[0x1f].reg->target_regnum
+$4 = 0x28
+```
+
