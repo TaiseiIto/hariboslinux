@@ -3477,3 +3477,145 @@ target-descriptions.c : 805 tdesc_numbered_register(..., regno = 30, name = "foo
 target-descriptions.c : 805 tdesc_numbered_register(..., regno = 31, name = "fop")
 ```
 
+* `data->arch_regs[regno]` is stored at `target-descriptions.c` line 815.
+* `regno` means register number in GDB.
+* `data->arch_regs[regno].reg->target_regnum` means register order send from QEMU.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8357
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break target-descriptions.c : 817
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 0, name = "eax")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$1 = 0x0
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 1, name = "ecx")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$2 = 0x1
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 2, name = "edx")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$3 = 0x2
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 3, name = "ebx")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$4 = 0x3
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 4, name = "esp")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$5 = 0x4
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 5, name = "ebp")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$6 = 0x5
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 6, name = "esi")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$7 = 0x6
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 7, name = "edi")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$8 = 0x7
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 8, name = "eip")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$9 = 0x8
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 9, name = "eflags")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$10 = 0x9
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 10, name = "cs")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$11 = 0xa
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 11, name = "ss")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$12 = 0xb
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 12, name = "ds")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$13 = 0xc
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 13, name = "es")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$14 = 0xd
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 14, name = "fs")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$15 = 0xe
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 15, name = "gs")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$16 = 0xf
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 16, name = "st0")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$17 = 0x19
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 17, name = "st1")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$18 = 0x1a
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 18, name = "st2")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$19 = 0x1b
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 19, name = "st3")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$20 = 0x1c
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 20, name = "st4")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$21 = 0x1d
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 21, name = "st5")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$22 = 0x1e
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 22, name = "st6")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$23 = 0x1f
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 23, name = "st7")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$24 = 0x20
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 24, name = "fctrl")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$25 = 0x21
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 25, name = "fstat")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$26 = 0x22
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 26, name = "ftag")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$27 = 0x23
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 27, name = "fiseg")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$28 = 0x24
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 28, name = "fioff")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$29 = 0x25
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 29, name = "foseg")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$30 = 0x26
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 30, name = "fooff")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$31 = 0x27
+(gdb) continue
+target-descriptions.c : 817 tdesc_numbered_register(..., regno = 31, name = "fop")
+(gdb) p/x data->arch_regs[regno].reg->target_regnum
+$32 = 0x28
+```
+
