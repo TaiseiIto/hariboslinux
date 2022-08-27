@@ -3252,3 +3252,22 @@ $4 = 0x19
 $5 = 0x28
 ```
 
+* The above `data` is the third argument `early_data` of the function.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break tdesc_use_registers
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) p/x early_data->arch_regs[0x00].reg->target_regnum
+$1 = 0x0
+(gdb) p/x early_data->arch_regs[0x0f].reg->target_regnum
+$2 = 0xf
+(gdb) p/x early_data->arch_regs[0x10].reg->target_regnum
+$3 = 0x19
+(gdb) p/x early_data->arch_regs[0x1f].reg->target_regnum
+$4 = 0x28
+```
+
