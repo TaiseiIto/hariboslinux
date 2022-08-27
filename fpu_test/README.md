@@ -3365,3 +3365,115 @@ $3 = 0x19
 $4 = 0x28
 ```
 
+* A function `tdesc_numbered_register` at `target-descriptions.c` line 805 validates the each elements of `tdesc_data->arch_regs`.
+* The below table means relationship of the arguments `regno` and `name` of the function.
+
+| regno | name   |
+| ----: | :----- |
+|   0x0 | eax    |
+|   0x1 | ecx    |
+|   0x2 | edx    |
+|   0x3 | ebx    |
+|   0x4 | esp    |
+|   0x5 | ebp    |
+|   0x6 | esi    |
+|   0x7 | edi    |
+|   0x8 | eip    |
+|   0x9 | eflags |
+|   0xa | cs     |
+|   0xb | ss     |
+|   0xc | ds     |
+|   0xd | es     |
+|   0xe | fs     |
+|   0xf | gx     |
+|  0x10 | st0    |
+|  0x11 | st1    |
+|  0x12 | st2    |
+|  0x13 | st3    |
+|  0x14 | st4    |
+|  0x15 | st5    |
+|  0x16 | st6    |
+|  0x17 | st7    |
+|  0x18 | fctrl  |
+|  0x19 | fstat  |
+|  0x1a | ftag   |
+|  0x1b | fiseg  |
+|  0x1c | fioff  |
+|  0x1d | foseg  |
+|  0x1e | fooff  |
+|  0x1f | fop    |
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8357
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_numbered_register
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 0, name = "eax")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 1, name = "ecx")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 2, name = "edx")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 3, name = "ebx")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 4, name = "esp")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 5, name = "ebp")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 6, name = "esi")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 7, name = "edi")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 8, name = "eip")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 9, name = "eflags")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 10, name = "cs")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 11, name = "ss")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 12, name = "ds")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 13, name = "es")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 14, name = "fs")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 15, name = "gs")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 16, name = "st0")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 17, name = "st1")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 18, name = "st2")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 19, name = "st3")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 20, name = "st4")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 21, name = "st5")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 22, name = "st6")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 23, name = "st7")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 24, name = "fctrl")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 25, name = "fstat")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 26, name = "ftag")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 27, name = "fiseg")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 28, name = "fioff")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 29, name = "foseg")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 30, name = "fooff")
+(gdb) continue
+target-descriptions.c : 805 tdesc_numbered_register(..., regno = 31, name = "fop")
+```
+
