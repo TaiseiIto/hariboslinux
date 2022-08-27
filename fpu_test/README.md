@@ -3203,6 +3203,33 @@ $8 = 0x29
 $9 = 0x31
 ```
 
+* `((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])` is equal to `data`.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break target-descriptions.c : 1171
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) p/x data->arch_regs[0x00].reg->target_regnum
+$2 = 0x0
+(gdb) p/x data->arch_regs[0x0f].reg->target_regnum
+$3 = 0xf
+(gdb) p/x data->arch_regs[0x49].reg->target_regnum
+$4 = 0x10
+(gdb) p/x data->arch_regs[0x51].reg->target_regnum
+$5 = 0x18
+(gdb) p/x data->arch_regs[0x10].reg->target_regnum
+$6 = 0x19
+(gdb) p/x data->arch_regs[0x1f].reg->target_regnum
+$7 = 0x28
+(gdb) p/x data->arch_regs[0x52].reg->target_regnum
+$8 = 0x29
+(gdb) p/x data->arch_regs[0x5a].reg->target_regnum
+$9 = 0x31
+```
+
 * Type of `((tdesc_arch_data*)gdbarch->registry_fields.m_fields[tdesc_data.m_key])->arch_regs[x]` is `tdest_arch_reg`.
 
 Actually,
