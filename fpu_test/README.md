@@ -3841,3 +3841,18 @@ $2 = 0
 * The type `tdesc_reg` is defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 67.
 * The type `tdesc_reg` defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 67 has `std::string name` and `long target_regnum` means order of sending by QEMU.
 
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8260
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) step
+target-desctiptions.c : 733 tdesc_find_feature
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)target_desc->features.begin())->get()->registers.begin())->get()->name._M_dataplus._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)target_desc->features.begin())->get()->registers.begin())->get()->target_regnum
+$2 = 0
+```
+
