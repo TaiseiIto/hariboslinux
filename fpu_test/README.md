@@ -3763,6 +3763,8 @@ $32 = 0x28
 * `feature->registers` at `~/binutils-gdb/gdb/target-descriptions.c` line 792 has informations of the registers.
 * Type of the `feature` is `tdesc_feature` defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 384.
 * Type of `feature->registers`, a member of `feature`, is `std::vector<tdesc_reg_up>`.
+* The type `tdesc_reg_up` is defined as `std::unique_ptr<tdesc_reg>` at `~/binutils-gdb/gdbsupport/tdesc.h` line 132.
+* The type `tdesc_reg` is defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 67.
 
 Actually,
 
