@@ -3759,3 +3759,23 @@ target-descriptions.c : 817 tdesc_numbered_register(..., regno = 31, name = "fop
 $32 = 0x28
 ```
 
+* `tdesc_find_register_early` at `~/binutils-gdb/gdb/target-descriptions.c` line 788 returns the above `reg`.
+* `feature->registers` at `~/binutils-gdb/gdb/target-descriptions.c` line 792 has informations of the registers.
+* Type of the `feature` is `tdesc_feature` defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 384.
+* Type of `feature->registers`, a member of `feature`, is `std::vector<tdesc_reg_up>`.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i385-tdep.c : 8357
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) kbreak tdesc_numbered_register
+(gdb) continue
+(gdb) print ((tdesc_reg_up*)feature->registers.begin())->get()->name._M_dataplus._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)feature->registers.begin())->get()->target_number
+$2 = 0
+```
+
