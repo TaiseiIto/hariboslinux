@@ -3761,7 +3761,7 @@ $32 = 0x28
 
 * `tdesc_find_register_early` at `~/binutils-gdb/gdb/target-descriptions.c` line 788 returns the above `reg`.
 * `feature->registers` at `~/binutils-gdb/gdb/target-descriptions.c` line 792 has informations of the registers.
-* Type of the `feature` is `tdesc_feature` defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 384.
+* Type of the `feature` is `tdesc_feature` defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 284.
 * Type of `feature->registers`, a member of `feature`, is `std::vector<tdesc_reg_up>`.
 * The type `tdesc_reg_up` is defined as `std::unique_ptr<tdesc_reg>` at `~/binutils-gdb/gdbsupport/tdesc.h` line 132.
 * The type `tdesc_reg` is defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 67.
@@ -3832,4 +3832,12 @@ $2 = 0
 ```
 
 * The function `tdesc_find_features` finds a feature by the second argument `name` in the first argument `target_desc->features`.
+* The type of the first argument `target_desc` of the function `tdesc_find_feature` at `~/binutils-gdb/gdb/target-descriptions.c` line 730 is `struct target_desc` defined at `~/binutils-gdb/gdbserver/tdesc.h` line 30.
+* The type `struct target_desc` defined at `~/binutils-gdb/gdbserver/tdesc.h` line 30 has `std::vector<tdesc_feature_up> features`.
+* The type `tdesc_feature_up` of `target_desc::features` is defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 314 as `std::unique_ptr<tdesc_feature>`.
+* The type `tdesc_feature` is defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 284.
+* The type `tdesc_feature` defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 284 has `std::vector<tdesc_reg_up> registers`.
+* The type `tdesc_reg_up` is defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 132 as `std::unique_ptr<tdesc_reg>`.
+* The type `tdesc_reg` is defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 67.
+* The type `tdesc_reg` defined at `~/binutils-gdb/gdbsupport/tdesc.h` line 67 has `std::string name` and `long target_regnum` means order of sending by QEMU.
 
