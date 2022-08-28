@@ -3812,3 +3812,24 @@ $2 = 0
 #24 0x0000562f1af74de6 in main (argc=1, argv=0x7ffdefd344a8) at gdb.c:32
 ```
 
+* The above `feature` is generated at `~/binutils-gdb/gdb/i386-tdep.c` line 8360 as a return of `tdesc_find_feature` at `~/binutils-gdb/gdb/target-descriptions.c` line 733.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8260
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) step
+target-desctiptions.c : 733 tdesc_find_feature
+(gdb) break 736
+(gdb) continue
+(gdb) print ((tdesc_reg_up*)feature.get()->registers.begin())->get()->name._M_dataplus._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)feature.get()->registers.begin())->get()->target_regnum
+$2 = 0
+```
+
+* The function `tdesc_find_features` finds a feature by the second argument `name` in the first argument `target_desc->features`.
+
