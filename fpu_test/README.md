@@ -3768,10 +3768,10 @@ Actually,
 
 ```
 ~/hariboslinux # make debug
-(gdb) break i385-tdep.c : 8357
+(gdb) break i386-tdep.c : 8357
 (gdb) run < debuggee_input.txt
 (gdb) continue
-(gdb) kbreak tdesc_numbered_register
+(gdb) break tdesc_numbered_register
 (gdb) continue
 (gdb) print ((tdesc_reg_up*)feature->registers.begin())->get()->name._M_dataplus._M_p
 $1 = "eax"
