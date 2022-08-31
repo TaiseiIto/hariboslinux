@@ -3900,3 +3900,18 @@ $2 = 0
 #23 0x0000564514bbfde6 in main (argc=1, argv=0x7ffcef8def58) at gdb.c:32
 ```
 
+* The above `tdep->tdesc` is stored at `~/binutils-gdb/gdb/i386-tdep.c` line 8640.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i386-tdep.c : 8640
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)info.target_desc->features.begin())->get()->registers.begin())->get()->name._M_dataplus._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)info.target_desc->features.begin())->get()->registers.begin())->get()->target_regnum
+$2 = 0
+```
+
