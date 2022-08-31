@@ -3958,3 +3958,17 @@ $2 = 0
 #22 0x000055dd92a53de6 in main (argc=1, argv=0x7ffd7e1c7b08) at gdb.c:32
 ```
 
+* GDB stores `tdesc_info->tdesc` into the above `info.target_desc` at `~/binutils-gdb/gdb/tdesc-descriptions.c` line 568.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break target-descriptions.c : 568
+(gdb) run < debuggee_input.txt
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)tdesc_info->tdesc->features.begin())->get()->registers.begin())->get()->name._M_dataplus._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)tdesc_info->tdesc->features.begin())->get()->registers.begin())->get()->target_regnum
+$2 = 0
+```
+
