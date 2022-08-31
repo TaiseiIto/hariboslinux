@@ -3972,3 +3972,31 @@ $1 = "eax"
 $2 = 0
 ```
 
+* The above `tdesc_info->tdesc` is stored at `target-descriptions.c` line 554.
+
+```
+    tdesc_info->tdesc = target_read_description_xml
+      (current_inferior ()->top_target ());
+```
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break target_find_description
+(gdb) run < debuggee_input.txt
+(gdb) watch tdesc_info
+(gdb) continue
+tdesc_info is stored
+target_descriptions.c : 537
+(gdb) delete 2
+(gdb) watch tdesc_info->tdesc
+(gdb) continue
+tdesc_info->tdesc is stored
+target_descriptions.c : 558
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)tdesc_info->tdesc->features.begin())->get()->registers.begin())->get()->name._M_dataplus._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)tdesc_info->tdesc->features.begin())->get()->registers.begin())->get()->target_regnum
+$2 = 0
+```
+
