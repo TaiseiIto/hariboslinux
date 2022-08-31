@@ -3856,3 +3856,47 @@ $1 = "eax"
 $2 = 0
 ```
 
+* The above `target_desc` is `tdep->tdesc` from the first argument `tdep` of a function `i386_validate_tdesc_p`.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break i386_validate_tdesc_p
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)tdep->tdesc->features.begin())->get()->registers.begin())->get()->name._M_dataplus._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)tdep->tdesc->features.begin())->get()->registers.begin())->get()->target_regnum
+$2 = 0
+(gdb) backtrace
+#0  i386_validate_tdesc_p (tdep=0x564517a14480, tdesc_data=0x564517938430) at i386-tdep.c:8249
+#1  0x0000564514f5afe0 in i386_gdbarch_init (info=..., arches=0x0) at i386-tdep.c:8703
+#2  0x0000564514c5ec2e in gdbarch_find_by_info (info=...) at arch-utils.c:1367
+#3  0x0000564514c4b730 in gdbarch_update_p (info=...) at arch-utils.c:596
+#4  0x00005645151caee8 in target_find_description () at target-descriptions.c:569
+#5  0x00005645150ff3cf in remote_target::start_remote_1 (this=0x5645179c3ab0, from_tty=1, extended_p=0)
+    at remote.c:4833
+#6  0x00005645150ffebc in remote_target::start_remote (this=0x5645179c3ab0, from_tty=1, extended_p=0) at remote.c:5070
+#7  0x00005645151016d1 in remote_target::open_1 (name=0x564517930f4e "localhost:2159", from_tty=1, extended_p=0)
+        at remote.c:5873
+#8  0x00005645150fff57 in remote_target::open (name=0x564517930f4e "localhost:2159", from_tty=1) at remote.c:5092
+#9  0x00005645151e3a5a in open_target (args=0x564517930f4e "localhost:2159", from_tty=1, command=0x5645179a2a10)
+	    at target.c:853
+#10 0x0000564514d3ba07 in cmd_func (cmd=0x5645179a2a10, args=0x564517930f4e "localhost:2159", from_tty=1)
+	        at cli/cli-decode.c:2543
+#11 0x00005645152121d1 in execute_command (p=0x564517930f5b "9", from_tty=1) at top.c:699
+#12 0x0000564514ede91c in command_handler (command=0x564517930f40 "") at event-top.c:598
+#13 0x0000564514edee5a in command_line_handler (rl=...) at event-top.c:842
+#14 0x0000564514edf00e in gdb_readline_no_editing_callback (client_data=0x564517936560) at event-top.c:907
+#15 0x0000564514ede71e in stdin_event_handler (error=0, client_data=0x564517936560) at event-top.c:525
+#16 0x00005645154589f3 in handle_file_event (file_ptr=0x564517a0cde0, ready_mask=1) at event-loop.cc:574
+#17 0x0000564515458fe3 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#18 0x0000564515457c8b in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#19 0x0000564515009635 in start_event_loop () at main.c:411
+#20 0x0000564515009782 in captured_command_loop () at main.c:471
+#21 0x000056451500b240 in captured_main (data=0x7ffcef8dee20) at main.c:1329
+#22 0x000056451500b2b2 in gdb_main (args=0x7ffcef8dee20) at main.c:1344
+#23 0x0000564514bbfde6 in main (argc=1, argv=0x7ffcef8def58) at gdb.c:32
+```
+
