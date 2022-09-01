@@ -3177,7 +3177,7 @@ Actually,
 
 ```
 ~/hariboslinux # make debug
-(gdb) break target_descriptions.c : 1158
+(gdb) break target-descriptions.c : 1158
 (gdb) run < debuggee_input.txt
 (gdb) continue
 (gdb) next
@@ -3988,12 +3988,12 @@ Actually,
 (gdb) watch tdesc_info
 (gdb) continue
 tdesc_info is stored
-target_descriptions.c : 537
+target-descriptions.c : 537
 (gdb) delete 2
 (gdb) watch tdesc_info->tdesc
 (gdb) continue
 tdesc_info->tdesc is stored
-target_descriptions.c : 558
+target-descriptions.c : 558
 (gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)tdesc_info->tdesc->features.begin())->get()->registers.begin())->get()->name._M_dataplus._M_p
 $1 = "eax"
 (gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)tdesc_info->tdesc->features.begin())->get()->registers.begin())->get()->target_regnum
