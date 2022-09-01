@@ -4000,3 +4000,17 @@ $1 = "eax"
 $2 = 0
 ```
 
+* `data.tdesc` is returned at `~/binutils-gdb/gdb/xml-tdesc.c` line 649 and stored to `tdesc_info->tdesc`.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break xml-tdesc.c : 649
+(gdb) run < debuggee_input.txt
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)data.tdesc->features.begin())->get()->registers.begin())->get()->name._M_dataplus._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)data.tdesc->features.begin())->get()->registers.begin())->get()->target_regnum
+$2 = 0
+```
+
