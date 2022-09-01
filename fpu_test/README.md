@@ -4014,3 +4014,7 @@ $1 = "eax"
 $2 = 0
 ```
 
+* The first argument of the function `tdesc_parse_xml` at `~/binutils-gdb/gdb/xml-tdesc.c` is maybe xml representing register layout sent by QEMU.
+* Where does the xml come from?
+
+
