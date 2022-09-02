@@ -4014,6 +4014,20 @@ $1 = "eax"
 $2 = 0
 ```
 
+* The register layaout is determined at `~/binutils-gdb/gdb/xml-support.c` line 627.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break xml-support.c : 628
+(gdb) run < debuggee_input.txt
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)((tdesc_parsing_data*)user_data)->tdesc->features.begin())->get()->registers.begin())->get()->name._M_dataplux._M_p
+$1 = "eax"
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)((tdesc_parsing_data*)user_data)->tdesc->features.begin())->get()->registers.begin())->get()->target_regnum
+$2 = 0
+```
+
 * The 4th argument of the function `gdb_xml_parse_quick` at `~/binutils-gdb/gdb/xml-support.c` line 622 is maybe xml representing register layout sent by QEMU.
 * Where does the xml come from?
 
