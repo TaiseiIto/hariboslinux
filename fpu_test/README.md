@@ -4044,6 +4044,26 @@ $1 = "eax"
 $2 = 0
 ```
 
+* `tdesc_reg::tdesc_reg` at `~/binutils-gdb/gdbsupport/tdesc.cc` line 26 creates the register informations.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break xml-support.c : 627
+(gdb) run < debuggee_input.txt
+(gdb) break tdesc_reg::tdesc_reg
+(gdb) continue
+~/binutils-gdb/gdbsupport/tdesc.cc : 26 tdesc_reg::tdesc_reg
+(gdb) print name_._M_dataplus._M_p
+$1 = "eax"
+(gdb) p/x regnum
+$2 = 0x0
+(gdb) p/x bitsize_
+$2 = 0x20
+(gdb) backtrace
+```
+
 * The 4th argument of the function `gdb_xml_parse_quick` at `~/binutils-gdb/gdb/xml-support.c` line 622 is maybe xml representing register layout sent by QEMU.
 * Where does the xml come from?
 
