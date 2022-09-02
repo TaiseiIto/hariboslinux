@@ -4111,6 +4111,59 @@ $2 = 0x20
 #32 0x000055e56ec8bde6 in main (argc=1, argv=0x7ffd67d47f38) at gdb.c:32
 ```
 
+| name_._M_dataplus._M_p | regnum | bitsize_ |
+| :--------------------- | -----: | -------: |
+| eax                    | 0x00   | 0x20     |
+| ecx                    | 0x01   | 0x20     |
+| edx                    | 0x02   | 0x20     |
+| ebx                    | 0x03   | 0x20     |
+| esp                    | 0x04   | 0x20     |
+| ebp                    | 0x05   | 0x20     |
+| esi                    | 0x06   | 0x20     |
+| edi                    | 0x07   | 0x20     |
+| eip                    | 0x08   | 0x20     |
+| eflags                 | 0x09   | 0x20     |
+| cs                     | 0x0a   | 0x20     |
+| ss                     | 0x0b   | 0x20     |
+| ds                     | 0x0c   | 0x20     |
+| es                     | 0x0d   | 0x20     |
+| fs                     | 0x0e   | 0x20     |
+| gs                     | 0x0f   | 0x20     |
+| fs_base                | 0x10   | 0x20     |
+| gs_base                | 0x11   | 0x20     |
+| k_gs_base              | 0x12   | 0x20     |
+| cr0                    | 0x13   | 0x20     |
+| cr2                    | 0x14   | 0x20     |
+| cr3                    | 0x15   | 0x20     |
+| cr4                    | 0x16   | 0x20     |
+| cr8                    | 0x17   | 0x20     |
+| efer                   | 0x18   | 0x20     |
+| st0                    | 0x19   | 0x50     |
+| st1                    | 0x1a   | 0x50     |
+| st2                    | 0x1b   | 0x50     |
+| st3                    | 0x1c   | 0x50     |
+| st4                    | 0x1d   | 0x50     |
+| st5                    | 0x1e   | 0x50     |
+| st6                    | 0x1f   | 0x50     |
+| st7                    | 0x20   | 0x50     |
+| fctrl                  | 0x21   | 0x20     |
+| fstat                  | 0x22   | 0x20     |
+| ftag                   | 0x23   | 0x20     |
+| fiseg                  | 0x24   | 0x20     |
+| fioff                  | 0x25   | 0x20     |
+| foseg                  | 0x26   | 0x20     |
+| fooff                  | 0x27   | 0x20     |
+| fop                    | 0x28   | 0x20     |
+| xmm0                   | 0x29   | 0x80     |
+| xmm1                   | 0x2a   | 0x80     |
+| xmm2                   | 0x2b   | 0x80     |
+| xmm3                   | 0x2c   | 0x80     |
+| xmm4                   | 0x2d   | 0x80     |
+| xmm5                   | 0x2e   | 0x80     |
+| xmm6                   | 0x2f   | 0x80     |
+| xmm7                   | 0x30   | 0x80     |
+| mxcsr                  | 0x31   | 0x20     |
+
 * The 4th argument of the function `gdb_xml_parse_quick` at `~/binutils-gdb/gdb/xml-support.c` line 622 is maybe xml representing register layout sent by QEMU.
 * Where does the xml come from?
 
