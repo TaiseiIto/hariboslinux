@@ -4062,6 +4062,53 @@ $2 = 0x0
 (gdb) p/x bitsize_
 $2 = 0x20
 (gdb) backtrace
+#0  tdesc_reg::tdesc_reg (this=0x55e57094d3c0, feature=0x55e570963b20, name_=..., regnum=0, save_restore_=1,
+		    group_=0x0, bitsize_=32, type_=0x55e570959b60 "int32") at tdesc.cc:23
+#1  0x000055e56f52ee6f in tdesc_create_reg (feature=0x55e570963b20, name=0x55e570964590 "eax", regnum=0,
+		    save_restore=1, group=0x0, bitsize=32, type=0x55e570959b60 "int32") at tdesc.cc:144
+#2  0x000055e56f3ad98f in tdesc_start_reg (parser=0x7ffd67d47380, element=0x55e56f981da0 <feature_children>,
+		    user_data=0x7ffd67d47440, attributes=...) at xml-tdesc.c:215
+#3  0x000055e56f3a488f in gdb_xml_parser::start_element (this=0x7ffd67d47380, name=0x55e57095c13c "reg",
+		    attrs=0x55e570959f60) at xml-support.c:367
+#4  0x000055e56f3a4946 in gdb_xml_start_element_wrapper (data=0x7ffd67d47380, name=0x55e57095c13c "reg",
+		    attrs=0x55e570959f60) at xml-support.c:389
+#5  0x00007facdd38049c in ?? () from /lib/x86_64-linux-gnu/libexpat.so.1
+#6  0x00007facdd37ed7e in ?? () from /lib/x86_64-linux-gnu/libexpat.so.1
+#7  0x00007facdd37fc6c in ?? () from /lib/x86_64-linux-gnu/libexpat.so.1
+#8  0x00007facdd383db5 in XML_ParseBuffer () from /lib/x86_64-linux-gnu/libexpat.so.1
+#9  0x000055e56f3a507b in gdb_xml_parser::parse (this=0x7ffd67d47380,
+		    buffer=0x55e570967e70 "...") at xml-support.c:587
+#10 0x000055e56f3a52c4 in gdb_xml_parse_quick (name=0x55e56f695cae "target description",
+		    dtd_name=0x55e56f695cf8 "gdb-target.dtd", elements=0x55e56f982040 <tdesc_elements>,
+		        document=0x55e570967e70 "...", user_data=0x7ffd67d47440)
+    at xml-support.c:627
+#11 0x000055e56f3ae548 in tdesc_parse_xml (
+		    document=0x55e570957540 "<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target><architecture>i386</architecture><xi:include href=\"i386-32bit.xml\"/></target>", fetcher=...) at xml-tdesc.c:644
+#12 0x000055e56f3ae915 in target_read_description_xml (ops=0x55e570903ab0) at xml-tdesc.c:717
+#13 0x000055e56f296e76 in target_find_description () at target-descriptions.c:555
+#14 0x000055e56f1cb3cf in remote_target::start_remote_1 (this=0x55e570903ab0, from_tty=1, extended_p=0)
+    at remote.c:4833
+#15 0x000055e56f1cbebc in remote_target::start_remote (this=0x55e570903ab0, from_tty=1, extended_p=0) at remote.c:5070
+#16 0x000055e56f1cd6d1 in remote_target::open_1 (name=0x55e570870f4e "localhost:2159", from_tty=1, extended_p=0)
+        at remote.c:5873
+#17 0x000055e56f1cbf57 in remote_target::open (name=0x55e570870f4e "localhost:2159", from_tty=1) at remote.c:5092
+#18 0x000055e56f2afa5a in open_target (args=0x55e570870f4e "localhost:2159", from_tty=1, command=0x55e5708e2a10)
+	    at target.c:853
+#19 0x000055e56ee07a07 in cmd_func (cmd=0x55e5708e2a10, args=0x55e570870f4e "localhost:2159", from_tty=1)
+	        at cli/cli-decode.c:2543
+#20 0x000055e56f2de1d1 in execute_command (p=0x55e570870f5b "9", from_tty=1) at top.c:699
+#21 0x000055e56efaa91c in command_handler (command=0x55e570870f40 "") at event-top.c:598
+#22 0x000055e56efaae5a in command_line_handler (rl=...) at event-top.c:842
+#23 0x000055e56efab00e in gdb_readline_no_editing_callback (client_data=0x55e570876560) at event-top.c:907
+#24 0x000055e56efaa71e in stdin_event_handler (error=0, client_data=0x55e570876560) at event-top.c:525
+#25 0x000055e56f5249f3 in handle_file_event (file_ptr=0x55e57094cdc0, ready_mask=1) at event-loop.cc:574
+#26 0x000055e56f524fe3 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#27 0x000055e56f523c8b in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#28 0x000055e56f0d5635 in start_event_loop () at main.c:411
+#29 0x000055e56f0d5782 in captured_command_loop () at main.c:471
+#30 0x000055e56f0d7240 in captured_main (data=0x7ffd67d47e00) at main.c:1329
+#31 0x000055e56f0d72b2 in gdb_main (args=0x7ffd67d47e00) at main.c:1344
+#32 0x000055e56ec8bde6 in main (argc=1, argv=0x7ffd67d47f38) at gdb.c:32
 ```
 
 * The 4th argument of the function `gdb_xml_parse_quick` at `~/binutils-gdb/gdb/xml-support.c` line 622 is maybe xml representing register layout sent by QEMU.
