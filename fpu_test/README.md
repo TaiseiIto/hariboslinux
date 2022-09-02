@@ -2742,58 +2742,58 @@ $1 = 0xb8
 * `GDB` interprets register values list sent by `QEMU` as below.
 * For example, `QEMU` writes `FCTRL` in offset `0xb4`. But `GDB` interprets there is it in offset `0xb8`.
 
-| Register | regnum | remote_regs[regnum]->regnum | remote_regs[regnum]->offset | register_size(gdbarch, remote_regs[regnum]->regnum) |
-| :------- | -----: | --------------------------: | --------------------------: | --------------------------------------------------: |
-| EAX      |   0x00 |                        0x00 |                      0x0000 |                                                0x04 |
-| ECX      |   0x01 |                        0x01 |                      0x0004 |                                                0x04 |
-| EDX      |   0x02 |                        0x02 |                      0x0008 |                                                0x04 |
-| EBX      |   0x03 |                        0x03 |                      0x000c |                                                0x04 |
-| ESP      |   0x04 |                        0x04 |                      0x0010 |                                                0x04 |
-| EBP      |   0x05 |                        0x05 |                      0x0014 |                                                0x04 |
-| ESI      |   0x06 |                        0x06 |                      0x0018 |                                                0x04 |
-| EDI      |   0x07 |                        0x07 |                      0x001c |                                                0x04 |
-| EIP      |   0x08 |                        0x08 |                      0x0020 |                                                0x04 |
-| EFLAGS   |   0x09 |                        0x09 |                      0x0024 |                                                0x04 |
-| CS       |   0x0a |                        0x0a |                      0x0028 |                                                0x04 |
-| SS       |   0x0b |                        0x0b |                      0x002c |                                                0x04 |
-| DS       |   0x0c |                        0x0c |                      0x0030 |                                                0x04 |
-| ES       |   0x0d |                        0x0d |                      0x0034 |                                                0x04 |
-| FS       |   0x0e |                        0x0e |                      0x0038 |                                                0x04 |
-| GS       |   0x0f |                        0x0f |                      0x003c |                                                0x04 |
-|          |   0x10 |                        0x49 |                      0x0040 |                                                0x04 |
-|          |   0x11 |                        0x4a |                      0x0044 |                                                0x04 |
-|          |   0x12 |                        0x4b |                      0x0048 |                                                0x04 |
-|          |   0x13 |                        0x4c |                      0x004c |                                                0x04 |
-|          |   0x14 |                        0x4d |                      0x0050 |                                                0x04 |
-|          |   0x15 |                        0x4e |                      0x0054 |                                                0x04 |
-|          |   0x16 |                        0x4f |                      0x0058 |                                                0x04 |
-|          |   0x17 |                        0x50 |                      0x005c |                                                0x04 |
-|          |   0x18 |                        0x51 |                      0x0060 |                                                0x08 |
-| R0       |   0x19 |                        0x10 |                      0x0068 |                                                0x0a |
-| R1       |   0x1a |                        0x11 |                      0x0072 |                                                0x0a |
-| R2       |   0x1b |                        0x12 |                      0x007c |                                                0x0a |
-| R3       |   0x1c |                        0x13 |                      0x0086 |                                                0x0a |
-| R4       |   0x1d |                        0x14 |                      0x0090 |                                                0x0a |
-| R5       |   0x1e |                        0x15 |                      0x009a |                                                0x0a |
-| R6       |   0x1f |                        0x16 |                      0x00a4 |                                                0x0a |
-| R7       |   0x20 |                        0x17 |                      0x00ae |                                                0x0a |
-| FCTRL    |   0x21 |                        0x18 |                      0x00b8 |                                                0x04 |
-| FSTAT    |   0x22 |                        0x19 |                      0x00bc |                                                0x04 |
-| FTAG     |   0x23 |                        0x1a |                      0x00c0 |                                                0x04 |
-| FISEG    |   0x24 |                        0x1b |                      0x00c4 |                                                0x04 |
-| FIOFF    |   0x25 |                        0x1c |                      0x00c8 |                                                0x04 |
-| FOSEG    |   0x26 |                        0x1d |                      0x00cc |                                                0x04 |
-| FOOFF    |   0x27 |                        0x1e |                      0x00d0 |                                                0x04 |
-| FOP      |   0x28 |                        0x1f |                      0x00d4 |                                                0x04 |
-|          |   0x29 |                        0x52 |                      0x00d8 |                                                0x10 |
-|          |   0x2a |                        0x53 |                      0x00e8 |                                                0x10 |
-|          |   0x2b |                        0x54 |                      0x00f8 |                                                0x10 |
-|          |   0x2c |                        0x55 |                      0x0108 |                                                0x10 |
-|          |   0x2d |                        0x56 |                      0x0118 |                                                0x10 |
-|          |   0x2e |                        0x57 |                      0x0128 |                                                0x10 |
-|          |   0x2f |                        0x58 |                      0x0138 |                                                0x10 |
-|          |   0x30 |                        0x59 |                      0x0148 |                                                0x10 |
-|          |   0x31 |                        0x5a |                      0x0158 |                                                0x04 |
+| Register    | regnum | remote_regs[regnum]->regnum | remote_regs[regnum]->offset | register_size(gdbarch, remote_regs[regnum]->regnum) |
+| :---------- | -----: | --------------------------: | --------------------------: | --------------------------------------------------: |
+| EAX         |   0x00 |                        0x00 |                      0x0000 |                                                0x04 |
+| ECX         |   0x01 |                        0x01 |                      0x0004 |                                                0x04 |
+| EDX         |   0x02 |                        0x02 |                      0x0008 |                                                0x04 |
+| EBX         |   0x03 |                        0x03 |                      0x000c |                                                0x04 |
+| ESP         |   0x04 |                        0x04 |                      0x0010 |                                                0x04 |
+| EBP         |   0x05 |                        0x05 |                      0x0014 |                                                0x04 |
+| ESI         |   0x06 |                        0x06 |                      0x0018 |                                                0x04 |
+| EDI         |   0x07 |                        0x07 |                      0x001c |                                                0x04 |
+| EIP         |   0x08 |                        0x08 |                      0x0020 |                                                0x04 |
+| EFLAGS      |   0x09 |                        0x09 |                      0x0024 |                                                0x04 |
+| CS          |   0x0a |                        0x0a |                      0x0028 |                                                0x04 |
+| SS          |   0x0b |                        0x0b |                      0x002c |                                                0x04 |
+| DS          |   0x0c |                        0x0c |                      0x0030 |                                                0x04 |
+| ES          |   0x0d |                        0x0d |                      0x0034 |                                                0x04 |
+| FS          |   0x0e |                        0x0e |                      0x0038 |                                                0x04 |
+| GS          |   0x0f |                        0x0f |                      0x003c |                                                0x04 |
+| FS\_BASE    |   0x10 |                        0x49 |                      0x0040 |                                                0x04 |
+| GS\_BASE    |   0x11 |                        0x4a |                      0x0044 |                                                0x04 |
+| K\_GS\_BASE |   0x12 |                        0x4b |                      0x0048 |                                                0x04 |
+| CR0         |   0x13 |                        0x4c |                      0x004c |                                                0x04 |
+| CR2         |   0x14 |                        0x4d |                      0x0050 |                                                0x04 |
+| CR3         |   0x15 |                        0x4e |                      0x0054 |                                                0x04 |
+| CR4         |   0x16 |                        0x4f |                      0x0058 |                                                0x04 |
+| CR8         |   0x17 |                        0x50 |                      0x005c |                                                0x04 |
+| EFER        |   0x18 |                        0x51 |                      0x0060 |                                                0x08 |
+| ST0         |   0x19 |                        0x10 |                      0x0068 |                                                0x0a |
+| ST1         |   0x1a |                        0x11 |                      0x0072 |                                                0x0a |
+| ST2         |   0x1b |                        0x12 |                      0x007c |                                                0x0a |
+| ST3         |   0x1c |                        0x13 |                      0x0086 |                                                0x0a |
+| ST4         |   0x1d |                        0x14 |                      0x0090 |                                                0x0a |
+| ST5         |   0x1e |                        0x15 |                      0x009a |                                                0x0a |
+| ST6         |   0x1f |                        0x16 |                      0x00a4 |                                                0x0a |
+| ST7         |   0x20 |                        0x17 |                      0x00ae |                                                0x0a |
+| FCTRL       |   0x21 |                        0x18 |                      0x00b8 |                                                0x04 |
+| FSTAT       |   0x22 |                        0x19 |                      0x00bc |                                                0x04 |
+| FTAG        |   0x23 |                        0x1a |                      0x00c0 |                                                0x04 |
+| FISEG       |   0x24 |                        0x1b |                      0x00c4 |                                                0x04 |
+| FIOFF       |   0x25 |                        0x1c |                      0x00c8 |                                                0x04 |
+| FOSEG       |   0x26 |                        0x1d |                      0x00cc |                                                0x04 |
+| FOOFF       |   0x27 |                        0x1e |                      0x00d0 |                                                0x04 |
+| FOP         |   0x28 |                        0x1f |                      0x00d4 |                                                0x04 |
+| XMM0        |   0x29 |                        0x52 |                      0x00d8 |                                                0x10 |
+| XMM1        |   0x2a |                        0x53 |                      0x00e8 |                                                0x10 |
+| XMM2        |   0x2b |                        0x54 |                      0x00f8 |                                                0x10 |
+| XMM3        |   0x2c |                        0x55 |                      0x0108 |                                                0x10 |
+| XMM4        |   0x2d |                        0x56 |                      0x0118 |                                                0x10 |
+| XMM5        |   0x2e |                        0x57 |                      0x0128 |                                                0x10 |
+| XMM6        |   0x2f |                        0x58 |                      0x0138 |                                                0x10 |
+| XMM7        |   0x30 |                        0x59 |                      0x0148 |                                                0x10 |
+| MXCSR       |   0x31 |                        0x5a |                      0x0158 |                                                0x04 |
 
 * How is `remote_regs[regnum]->regnum` determined?
 	* `remote_regs` is `regs` sorted by `pnum`.
