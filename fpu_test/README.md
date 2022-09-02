@@ -4022,9 +4022,9 @@ Actually,
 ~/hariboslinux # make debug
 (gdb) break xml-support.c : 628
 (gdb) run < debuggee_input.txt
-(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)((tdesc_parsing_data*)user_data)->tdesc->features.begin())->get()->registers.begin())->get()->name._M_dataplux._M_p
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)((tdesc_parsing_data*)parser.m_user_data)->tdesc->features.begin())->get()->registers.begin())->get()->name._M_dataplus._M_p
 $1 = "eax"
-(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)((tdesc_parsing_data*)user_data)->tdesc->features.begin())->get()->registers.begin())->get()->target_regnum
+(gdb) print ((tdesc_reg_up*)((tdesc_feature_up*)((tdesc_parsing_data*)parser.m_user_data)->tdesc->features.begin())->get()->registers.begin())->get()->target_regnum
 $2 = 0
 ```
 
