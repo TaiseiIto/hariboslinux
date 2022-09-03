@@ -5175,17 +5175,40 @@ Actually,
 ~/hariboslinux # make debug
 (gdb) break regcache.c : 88
 (gdb) run < debuggee_input.txt
-regcache.c : 88
+~/binutils-gdb/gdb/regcache.c : 88
 (gdb) continue
-regcache.c : 88
+~/binutils-gdb/gdb/regcache.c : 88
 (gdb) watch descr->register_type
 (gdb) continue
-regcache.c : 99
+~/binutils-gdb/gdb/regcache.c : 99
 (gdb) delete 2
 (gdb) watch descr->register_type[0x51]
 (gdb) continue
-regcache.c : 99
+~/binutils-gdb/gdb/regcache.c : 99
 (gdb) p/x descr->register_type[0x51]->length
+$1 = 0x8
+```
+
+* The above `descr->register_type[0x51]` is `arch_reg->type` at `~/binutils-gdb/gdb/target-descriptions.c` line 979.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break 100 if i == 0x51
+(gdb) continue
+(gdb) step
+~/binutils-gdb/gdb/gdbarch.c : 2247 gdbarch_register_type
+(gdb) break 2251
+(gdb) continue
+(gdb) step
+~/binutils-gdb/gdb/target-descriptions.c : 911 tdesc_register_type
+(gdb) break 979
+(gdb) continue
+(gdb) p/x arch_reg->type->length
 $1 = 0x8
 ```
 
