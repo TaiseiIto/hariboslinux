@@ -4367,6 +4367,38 @@ Actually,
   <reg name="mxcsr" bitsize="32" type="i386_mxcsr" group="vector"/>
 </feature>
 </target>
+(gdb) backtrace
+#0  gdb_xml_parse_quick (name=0x55ca87f0dcae "target description", dtd_name=0x55ca87f0dcf8 "gdb-target.dtd",
+		    elements=0x55ca881fa040 <tdesc_elements>,
+		        document=0x55ca888e3e70 "...", user_data=0x7ffc50746460)
+    at xml-support.c:623
+#1  0x000055ca87c26548 in tdesc_parse_xml (
+		    document=0x55ca888d3540 "<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target><architecture>i386</architecture><xi:include href=\"i386-32bit.xml\"/></target>", fetcher=...) at xml-tdesc.c:644
+#2  0x000055ca87c26915 in target_read_description_xml (ops=0x55ca8887fab0) at xml-tdesc.c:717
+#3  0x000055ca87b0ee76 in target_find_description () at target-descriptions.c:555
+#4  0x000055ca87a433cf in remote_target::start_remote_1 (this=0x55ca8887fab0, from_tty=1, extended_p=0)
+    at remote.c:4833
+#5  0x000055ca87a43ebc in remote_target::start_remote (this=0x55ca8887fab0, from_tty=1, extended_p=0) at remote.c:5070
+#6  0x000055ca87a456d1 in remote_target::open_1 (name=0x55ca887ecf4e "localhost:2159", from_tty=1, extended_p=0)
+        at remote.c:5873
+#7  0x000055ca87a43f57 in remote_target::open (name=0x55ca887ecf4e "localhost:2159", from_tty=1) at remote.c:5092
+#8  0x000055ca87b27a5a in open_target (args=0x55ca887ecf4e "localhost:2159", from_tty=1, command=0x55ca8885ea10)
+	    at target.c:853
+#9  0x000055ca8767fa07 in cmd_func (cmd=0x55ca8885ea10, args=0x55ca887ecf4e "localhost:2159", from_tty=1)
+	        at cli/cli-decode.c:2543
+#10 0x000055ca87b561d1 in execute_command (p=0x55ca887ecf5b "9", from_tty=1) at top.c:699
+#11 0x000055ca8782291c in command_handler (command=0x55ca887ecf40 "") at event-top.c:598
+#12 0x000055ca87822e5a in command_line_handler (rl=...) at event-top.c:842
+#13 0x000055ca8782300e in gdb_readline_no_editing_callback (client_data=0x55ca887f2560) at event-top.c:907
+#14 0x000055ca8782271e in stdin_event_handler (error=0, client_data=0x55ca887f2560) at event-top.c:525
+#15 0x000055ca87d9c9f3 in handle_file_event (file_ptr=0x55ca888c8dc0, ready_mask=1) at event-loop.cc:574
+#16 0x000055ca87d9cfe3 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#17 0x000055ca87d9bc8b in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#18 0x000055ca8794d635 in start_event_loop () at main.c:411
+#19 0x000055ca8794d782 in captured_command_loop () at main.c:471
+#20 0x000055ca8794f240 in captured_main (data=0x7ffc50746e20) at main.c:1329
+#21 0x000055ca8794f2b2 in gdb_main (args=0x7ffc50746e20) at main.c:1344
+#22 0x000055ca87503de6 in main (argc=1, argv=0x7ffc50746f58) at gdb.c:32
 ```
 
 * Where does the above xml come from?
