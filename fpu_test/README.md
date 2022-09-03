@@ -5033,5 +5033,68 @@ The second arrival to the same breakpoint
 (gdb) continue
 (gdb) p/x ((struct regcache_descr*)gdbarch->registry_fields.get(regcache_descr_handle.m_key))->sizeof_register[0x51]
 $1 = 0x8
+(gdb) backtrace
+#0  map_regcache_remote_table (gdbarch=0x5562a517b540, regs=0x5562a51818d0) at remote.c:1441
+#1  0x00005562a2f2179d in remote_arch_state::remote_arch_state (this=0x5562a509c440, gdbarch=0x5562a517b540)
+    at remote.c:1478
+#2  0x00005562a2f5140f in std::pair<gdbarch* const, remote_arch_state>::pair<gdbarch*&, 0ul, gdbarch*&, 0ul> (
+    this=0x5562a509c438, __tuple1=..., __tuple2=...) at /usr/include/c++/11/tuple:1824
+#3  0x00005562a2f510dd in std::pair<gdbarch* const, remote_arch_state>::pair<gdbarch*&, gdbarch*&> (
+    this=0x5562a509c438, __first=..., __second=...) at /usr/include/c++/11/tuple:1813
+#4  0x00005562a2f50af6 in __gnu_cxx::new_allocator<std::__detail::_Hash_node<std::pair<gdbarch* const, remote_arch_state>, false> >::construct<std::pair<gdbarch* const, remote_arch_state>, std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x5562a5127d10, __p=0x5562a509c438)
+    at /usr/include/c++/11/ext/new_allocator.h:162
+#5  0x00005562a2f50009 in std::allocator_traits<std::allocator<std::__detail::_Hash_node<std::pair<gdbarch* const, remote_arch_state>, false> > >::construct<std::pair<gdbarch* const, remote_arch_state>, std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (__a=..., __p=0x5562a509c438)
+    at /usr/include/c++/11/bits/alloc_traits.h:516
+#6  0x00005562a2f4f08b in std::__detail::_Hashtable_alloc<std::allocator<std::__detail::_Hash_node<std::pair<gdbarch* const, remote_arch_state>, false> > >::_M_allocate_node<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x5562a5127d10) at /usr/include/c++/11/bits/hashtable_policy.h:1878
+#7  0x00005562a2f4dd9b in std::_Hashtable<gdbarch*, std::pair<gdbarch* const, remote_arch_state>, std::allocator<std::pair<gdbarch* const, remote_arch_state> >, std::__detail::_Select1st, std::equal_to<gdbarch*>, std::hash<gdbarch*>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_Scoped_node::_Scoped_node<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x7fff97a5e490, __h=0x5562a5127d10) at /usr/include/c++/11/bits/hashtable.h:304
+#8  0x00005562a2f4c0df in std::_Hashtable<gdbarch*, std::pair<gdbarch* const, remote_arch_state>, std::allocator<std::pair<gdbarch* const, remote_arch_state> >, std::__detail::_Select1st, std::equal_to<gdbarch*>, std::hash<gdbarch*>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x5562a5127d10) at /usr/include/c++/11/bits/hashtable.h:1966
+#9  0x00005562a2f49b66 in std::_Hashtable<gdbarch*, std::pair<gdbarch* const, remote_arch_state>, std::allocator<std::pair<gdbarch* const, remote_arch_state> >, std::__detail::_Select1st, std::equal_to<gdbarch*>, std::hash<gdbarch*>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::emplace<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x5562a5127d10) at /usr/include/c++/11/bits/hashtable.h:915
+#10 0x00005562a2f47a84 in std::unordered_map<gdbarch*, remote_arch_state, std::hash<gdbarch*>, std::equal_to<gdbarch*>, std::allocator<std::pair<gdbarch* const, remote_arch_state> > >::emplace<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x5562a5127d10) at /usr/include/c++/11/bits/unordered_map.h:389
+#11 0x00005562a2f210c6 in remote_state::get_remote_arch_state (this=0x5562a5127ad8, gdbarch=0x5562a517b540)
+    at remote.c:1327
+#12 0x00005562a2f21177 in remote_target::get_remote_state (this=0x5562a5127ab0) at remote.c:1353
+#13 0x00005562a2f327ab in remote_target::set_remote_traceframe (this=0x5562a5127ab0) at remote.c:8589
+#14 0x00005562a2f38db2 in remote_target::xfer_partial (this=0x5562a5127ab0, object=TARGET_OBJECT_AUXV, annex=0x0,
+    readbuf=0x5562a51808c0 "\200\323\025\327&\177", writebuf=0x0, offset=0, len=4096, xfered_len=0x7fff97a5e810)
+    at remote.c:11235
+#15 0x00005562a300e891 in target_xfer_partial (ops=0x5562a5127ab0, object=TARGET_OBJECT_AUXV, annex=0x0,
+    readbuf=0x5562a51808c0 "\200\323\025\327&\177", writebuf=0x0, offset=0, len=4096, xfered_len=0x7fff97a5e810)
+    at target.c:1730
+#16 0x00005562a300f09b in target_read_partial (ops=0x5562a5127ab0, object=TARGET_OBJECT_AUXV, annex=0x0,
+    buf=0x5562a51808c0 "\200\323\025\327&\177", offset=0, len=4096, xfered_len=0x7fff97a5e810) at target.c:1964
+#17 0x00005562a3025ee6 in target_read_alloc_1<unsigned char> (ops=0x5562a5127ab0, object=TARGET_OBJECT_AUXV,
+    annex=0x0) at target.c:2299
+#18 0x00005562a300faa4 in target_read_alloc (ops=0x5562a5127ab0, object=TARGET_OBJECT_AUXV, annex=0x0)
+    at target.c:2328
+#19 0x00005562a2a9de3c in get_auxv_inferior_data (ops=0x5562a5127ab0) at auxv.c:367
+#20 0x00005562a2a9dea8 in target_auxv_search (ops=0x5562a5127ab0, match=0, valp=0x7fff97a5e978) at auxv.c:381
+#21 0x00005562a2e0c0e0 in linux_is_uclinux () at linux-tdep.c:422
+#22 0x00005562a2e0c137 in linux_has_shared_address_space (gdbarch=0x5562a517b540) at linux-tdep.c:429
+#23 0x00005562a2a857b5 in gdbarch_has_shared_address_space (gdbarch=0x5562a517b540)
+    at /root/binutils-gdb/gdb/gdbarch.c:4843
+#24 0x00005562a2edfbf6 in update_address_spaces () at progspace.c:372
+#25 0x00005562a2f283d4 in remote_target::start_remote_1 (this=0x5562a5127ab0, from_tty=1, extended_p=0)
+    at remote.c:4837
+#26 0x00005562a2f28ebc in remote_target::start_remote (this=0x5562a5127ab0, from_tty=1, extended_p=0) at remote.c:5070
+#27 0x00005562a2f2a6d1 in remote_target::open_1 (name=0x5562a5094f4e "localhost:2159", from_tty=1, extended_p=0)
+    at remote.c:5873
+#28 0x00005562a2f28f57 in remote_target::open (name=0x5562a5094f4e "localhost:2159", from_tty=1) at remote.c:5092
+#29 0x00005562a300ca5a in open_target (args=0x5562a5094f4e "localhost:2159", from_tty=1, command=0x5562a5106a10)
+    at target.c:853
+#30 0x00005562a2b64a07 in cmd_func (cmd=0x5562a5106a10, args=0x5562a5094f4e "localhost:2159", from_tty=1)
+    at cli/cli-decode.c:2543
+#31 0x00005562a303b1d1 in execute_command (p=0x5562a5094f5b "9", from_tty=1) at top.c:699
+#32 0x00005562a2d0791c in command_handler (command=0x5562a5094f40 "") at event-top.c:598
+#33 0x00005562a2d07e5a in command_line_handler (rl=...) at event-top.c:842
+#34 0x00005562a2d0800e in gdb_readline_no_editing_callback (client_data=0x5562a509a560) at event-top.c:907
+#35 0x00005562a2d0771e in stdin_event_handler (error=0, client_data=0x5562a509a560) at event-top.c:525
+#36 0x00005562a32819f3 in handle_file_event (file_ptr=0x5562a5170dc0, ready_mask=1) at event-loop.cc:574
+#37 0x00005562a3281fe3 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#38 0x00005562a3280c8b in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#39 0x00005562a2e32635 in start_event_loop () at main.c:411
+#40 0x00005562a2e32782 in captured_command_loop () at main.c:471
+#41 0x00005562a2e34240 in captured_main (data=0x7fff97a5f2f0) at main.c:1329
+#42 0x00005562a2e342b2 in gdb_main (args=0x7fff97a5f2f0) at main.c:1344
+#43 0x00005562a29e8de6 in main (argc=1, argv=0x7fff97a5f428) at gdb.c:32
 ```
 
