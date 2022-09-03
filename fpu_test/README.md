@@ -4995,3 +4995,28 @@ Actually,
 $1 = 0x8
 ```
 
+* The above `reg_obj` is `arch->registry_fields` in a function `registry_accessor<gdbarch>::get` at `~/binutils-gdb/gdb/arch-utils.c` line 1206.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break map_regcache_remote_table
+(gdb) run < debuggee_input.txt
+~/binutils-gdb/gdb/remote.c : 1405
+(gdb) continue
+~/binutils-gdb/gdb/remote.c : 1405
+(gdb) break register_size if regnum == 0x51
+(gdb) continue
+~/binutils-gdb/gdb/regcache.c : 172
+(gdb) break regcache_descr
+(gdb) continue
+~/binutils-gdb/gdb/regcache.c : 144
+(gdb) step
+~/binutils-gdb/gdb/registry.h : 110
+(gdb) step
+~/binutils-gdb/gdb/arch-utils.c : 1206
+(gdb) p/x ((struct regcache_descr*)arch->registry_fields.get(regcache_descr_handle.m_key))->sizeof_register[0x51]
+$1 = 0x8
+```
+
