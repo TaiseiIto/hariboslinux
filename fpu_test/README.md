@@ -4846,5 +4846,76 @@ v16i8"/>
 
   <reg name="mxcsr" bitsize="32" type="i386_mxcsr" group="vector"/>
 </feature>
+(gdb) backtrace
+#0  remote_unescape_input (
+    buffer=0x561134ebc541 "v16i8\"/>\n\t<field name=\"v8_int16\" type=\"v8i16\"/>\n\t<field name=\"v4_int32\" type=\"v4i32\"/>\n\t<field name=\"v2_int64\" type=\"v2i64\"/>\n\t<field name=\"uint128\" type=\"uint128\"/>\n  </union>\n  <flags id=\"i386_mxcsr\" size=\"4\">\n\t<field name=\"IE\" start=\"0\" end=\"0\"/>\n\t<field name=\"DE\" start=\"1\" end=\"1\"/>\n\t<field name=\"ZE\" start=\"2\" end=\"2\"/>\n\t<field name=\"OE\" start=\"3\" end=\"3\"/>\n\t<field name=\"UE\" start=\"4\" end=\"4\"/>\n\t<field name=\"PE\" start=\"5\" end=\"5\"/>\n\t<field name=\"DAZ\" start=\"6\" end=\"6\"/>\n\t<field name=\"IM\" start=\"7\" end=\"7\"/>\n\t<field name=\"DM\" start=\"8\" end=\"8\"/>\n\t<field name=\"ZM\" start=\"9\" end=\"9\"/>\n\t<field name=\"OM\" start=\"10\" end=\"10\"/>\n\t<field name=\"UM\" start=\"11\" end=\"11\"/>\n\t<field name=\"PM\" start=\"12\" end=\"12\"/>\n\t<field name=\"FZ\" start=\"15\" end=\"15\"/>\n  </flags>\n\n  <reg name=\"xmm0\" bitsize=\"128\" type=\"vec128\"/>\n  <reg name=\"xmm1\" bitsize=\"128\" type=\"vec128\"/>\n  <reg name=\"xmm2\" bitsize=\"128\" type=\"vec128\"/>\n  <reg name=\"xmm3\" bitsize=\"128\" type=\"vec128\"/>\n  <reg name=\"xmm4\" bitsize=\"128\" type=\"vec128\"/>\n  <reg name=\"xmm5\" bitsize=\"128\" type=\"vec128\"/>\n  <reg name=\"xmm6\" bitsize=\"128\" type=\"vec128\"/>\n  <reg name=\"xmm7\" bitsize=\"128\" type=\"vec128\"/>\n\n  <reg name=\"mxcsr\" bitsize=\"32\" type=\"i386_mxcsr\" group=\"vector\"/>\n</feature>\n", len=1237, out_buf=0x561134ec82d7 "", out_maxlen=4091)
+    at rsp-low.cc:233
+#1  0x000056113320dc98 in remote_target::remote_read_qxfer (this=0x561134e6aab0,
+    object_name=0x561133677c42 "features", annex=0x561134ec16a0 "i386-32bit.xml", readbuf=0x561134ec82d7 "",
+    offset=6135, len=4096, xfered_len=0x7ffe3130c410, packet=0x561133a9ac58 <remote_protocol_packets+760>)
+    at remote.c:11201
+#2  0x000056113320e08b in remote_target::xfer_partial (this=0x561134e6aab0, object=TARGET_OBJECT_AVAILABLE_FEATURES,
+    annex=0x561134ec16a0 "i386-32bit.xml", readbuf=0x561134ec82d7 "", writebuf=0x0, offset=6135, len=4096,
+    xfered_len=0x7ffe3130c410) at remote.c:11312
+#3  0x00005611332e3891 in target_xfer_partial (ops=0x561134e6aab0, object=TARGET_OBJECT_AVAILABLE_FEATURES,
+    annex=0x561134ec16a0 "i386-32bit.xml", readbuf=0x561134ec82d7 "", writebuf=0x0, offset=6135, len=4096,
+    xfered_len=0x7ffe3130c410) at target.c:1730
+#4  0x00005611332e409b in target_read_partial (ops=0x561134e6aab0, object=TARGET_OBJECT_AVAILABLE_FEATURES,
+    annex=0x561134ec16a0 "i386-32bit.xml", buf=0x561134ec82d7 "", offset=6135, len=4096, xfered_len=0x7ffe3130c410)
+    at target.c:1964
+#5  0x00005611332fb06c in target_read_alloc_1<char> (ops=0x561134e6aab0, object=TARGET_OBJECT_AVAILABLE_FEATURES,
+    annex=0x561134ec16a0 "i386-32bit.xml") at target.c:2299
+#6  0x00005611332e4b02 in target_read_stralloc (ops=0x561134e6aab0, object=TARGET_OBJECT_AVAILABLE_FEATURES,
+    annex=0x561134ec16a0 "i386-32bit.xml") at target.c:2338
+#7  0x00005611333e0807 in fetch_available_features_from_target (name=0x561134ec16a0 "i386-32bit.xml",
+    ops=0x561134e6aab0) at xml-tdesc.c:697
+#8  0x00005611333e085f in operator() (__closure=0x7ffe3130cbc8, name=0x561134ec16a0 "i386-32bit.xml")
+    at xml-tdesc.c:714
+#9  0x00005611333e0e4b in operator() (__closure=0x0, ecall=..., args#0=0x561134ec16a0 "i386-32bit.xml")
+    at ./../gdbsupport/function-view.h:304
+#10 0x00005611333e0ea5 in _FUN () at ./../gdbsupport/function-view.h:298
+#11 0x00005611333d892f in gdb::function_view<gdb::optional<std::vector<char, gdb::default_init_allocator<char, std::allocator<char> > > > (char const*)>::operator()(char const*) const (this=0x7ffe3130ca60,
+    args#0=0x561134ec16a0 "i386-32bit.xml") at ./../gdbsupport/function-view.h:288
+#12 0x00005611333d7668 in xinclude_start_include (parser=0x7ffe3130ca70, element=0x5611339b3b80 <xinclude_elements>,
+    user_data=0x7ffe3130ca50, attributes=...) at xml-support.c:790
+#13 0x00005611333d688f in gdb_xml_parser::start_element (this=0x7ffe3130ca70,
+    name=0x561134ec1660 "http://www.w3.org/2001/XInclude!include", attrs=0x561134ebacf0) at xml-support.c:367
+#14 0x00005611333d6946 in gdb_xml_start_element_wrapper (data=0x7ffe3130ca70,
+    name=0x561134ec1660 "http://www.w3.org/2001/XInclude!include", attrs=0x561134ebacf0) at xml-support.c:389
+#15 0x00007fe0554db49c in ?? () from /lib/x86_64-linux-gnu/libexpat.so.1
+#16 0x00007fe0554d9d7e in ?? () from /lib/x86_64-linux-gnu/libexpat.so.1
+#17 0x00007fe0554dac6c in ?? () from /lib/x86_64-linux-gnu/libexpat.so.1
+#18 0x00007fe0554dedb5 in XML_ParseBuffer () from /lib/x86_64-linux-gnu/libexpat.so.1
+#19 0x00005611333d707b in gdb_xml_parser::parse (this=0x7ffe3130ca70,
+    buffer=0x561134ebe560 "<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target><architecture>i386</architecture><xi:include href=\"i386-32bit.xml\"/></target>") at xml-support.c:587
+#20 0x00005611333d7a28 in xml_process_xincludes(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&, char const*, char const*, gdb::function_view<gdb::optional<std::vector<char, gdb::default_init_allocator<char, std::allocator<char> > > > (char const*)>, int) (result=..., name=0x5611336c7cae "target description",
+    text=0x561134ebe560 "<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target><architecture>i386</architecture><xi:include href=\"i386-32bit.xml\"/></target>", fetcher=..., depth=0) at xml-support.c:900
+#21 0x00005611333e0441 in tdesc_parse_xml (
+    document=0x561134ebe560 "<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target><architecture>i386</architecture><xi:include href=\"i386-32bit.xml\"/></target>", fetcher=...) at xml-tdesc.c:626
+#22 0x00005611333e0915 in target_read_description_xml (ops=0x561134e6aab0) at xml-tdesc.c:717
+#23 0x00005611332c8e76 in target_find_description () at target-descriptions.c:555
+#24 0x00005611331fd3cf in remote_target::start_remote_1 (this=0x561134e6aab0, from_tty=1, extended_p=0)
+    at remote.c:4833
+#25 0x00005611331fdebc in remote_target::start_remote (this=0x561134e6aab0, from_tty=1, extended_p=0) at remote.c:5070
+#26 0x00005611331ff6d1 in remote_target::open_1 (name=0x561134dd7f4e "localhost:2159", from_tty=1, extended_p=0)
+    at remote.c:5873
+#27 0x00005611331fdf57 in remote_target::open (name=0x561134dd7f4e "localhost:2159", from_tty=1) at remote.c:5092
+#28 0x00005611332e1a5a in open_target (args=0x561134dd7f4e "localhost:2159", from_tty=1, command=0x561134e49a10)
+    at target.c:853
+#29 0x0000561132e39a07 in cmd_func (cmd=0x561134e49a10, args=0x561134dd7f4e "localhost:2159", from_tty=1)
+    at cli/cli-decode.c:2543
+#30 0x00005611333101d1 in execute_command (p=0x561134dd7f5b "9", from_tty=1) at top.c:699
+#31 0x0000561132fdc91c in command_handler (command=0x561134dd7f40 "") at event-top.c:598
+#32 0x0000561132fdce5a in command_line_handler (rl=...) at event-top.c:842
+#33 0x0000561132fdd00e in gdb_readline_no_editing_callback (client_data=0x561134ddd560) at event-top.c:907
+#34 0x0000561132fdc71e in stdin_event_handler (error=0, client_data=0x561134ddd560) at event-top.c:525
+#35 0x00005611335569f3 in handle_file_event (file_ptr=0x561134eb3de0, ready_mask=1) at event-loop.cc:574
+#36 0x0000561133556fe3 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#37 0x0000561133555c8b in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#38 0x0000561133107635 in start_event_loop () at main.c:411
+#39 0x0000561133107782 in captured_command_loop () at main.c:471
+#40 0x0000561133109240 in captured_main (data=0x7ffe3130d4f0) at main.c:1329
+#41 0x00005611331092b2 in gdb_main (args=0x7ffe3130d4f0) at main.c:1344
+#42 0x0000561132cbdde6 in main (argc=1, argv=0x7ffe3130d628) at gdb.c:32
 ```
 
