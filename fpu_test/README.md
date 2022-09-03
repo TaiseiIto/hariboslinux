@@ -4970,3 +4970,28 @@ Actually,
 $1 = 0x8
 ```
 
+* The above `regcache_descr_handle.get(gdbarch)` is `((struct regcache_descr *)reg_obj->get(this->m_key))` at `~/binutils-gdb/gdb/registry.h` line 111.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break map_regcache_remote_table
+(gdb) run < debuggee_input.txt
+~/binutils-gdb/gdb/remote.c : 1405
+(gdb) continue
+~/binutils-gdb/gdb/remote.c : 1405
+(gdb) break register_size if regnum == 0x51
+(gdb) continue
+~/binutils-gdb/gdb/regcache.c : 172
+(gdb) break regcache_descr
+(gdb) continue
+~/binutils-gdb/gdb/regcache.c : 144
+(gdb) step
+~/binutils-gdb/gdb/registry.h : 110
+(gdb) next
+~/binutils-gdb/gdb/registry.h : 111
+(gdb) p/x ((struct regcache_descr*)reg_obj->get(this->m_key))->sizeof_register[0x51]
+$1 = 0x8
+```
+
