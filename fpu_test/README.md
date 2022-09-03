@@ -5020,3 +5020,18 @@ Actually,
 $1 = 0x8
 ```
 
+So, the size of EFER in GDB is shown as below.
+
+```
+~/hariboslinux # make debug
+(gdb) break map_regcache_remote_table
+(gdb) run < debuggee_input.txt
+The first arrival to ~/binutils-gdb/gdb/remote.c : 1405 map_regcache_remote_table
+(gdb) continue
+The second arrival to the same breakpoint
+(gdb) break 1441 if regnum == 0x18
+(gdb) continue
+(gdb) p/x ((struct regcache_descr*)gdbarch->registry_fields.get(regcache_descr_handle.m_key))->sizeof_register[0x51]
+$1 = 0x8
+```
+
