@@ -4414,3 +4414,15 @@ Actually,
 ...
 ```
 
+* The above xml is `tdesc_str->data()` at `~/binutils-gdb/gdb/xml-tdesc.c` line 717.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break xml-tdesc.c : 717
+(gdb) run < debuggee_input.txt
+(gdb) print tdesc_str->data()
+$1 = 0x5601ace96540 "<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target><architecture>i386</architecture><xi:include href=\"i386-32bit.xml\"/></target>"
+```
+
