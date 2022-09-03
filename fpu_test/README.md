@@ -5111,3 +5111,29 @@ Actually,
 $1 = 0x8
 ```
 
+* The size of EFER register is stored at `~/binutils-gdb/gdb/regcache.c` line 121.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache_descr::regcache_descr
+(gdb) run < debuggee_input.txt
+regcache.c : 44
+(gdb) continue
+regcache.c : 44
+(gdb) finish
+regcahce.c : 87
+(gdb) next
+regcahce.c : 88
+(gdb) watch descr->sizeof_register
+(gdb) continue
+regcache.c : 118
+(gdb) delete 2
+(gdb) watch descr->sizeof_register[0x51]
+(gdb) continue
+regcache.c : 122
+(gdb) p/x descr->sizeof_register[0x51]
+$1 = 0x8
+```
+
