@@ -4919,3 +4919,5 @@ v16i8"/>
 #42 0x0000561132cbdde6 in main (argc=1, argv=0x7ffe3130d628) at gdb.c:32
 ```
 
+So, the above xml is sent from QEMU.
+
