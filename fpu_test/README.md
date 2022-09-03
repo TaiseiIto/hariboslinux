@@ -5158,7 +5158,7 @@ regcache.c : 84
 (gdb) break 121 if i == 0x51
 (gdb) continue
 regcache.c : 121
-(gdb) p/x descr->register_type[0x51]->length
+(gdb) p/x descr->register_type[i]->length
 $1 = 0x8
 ```
 
