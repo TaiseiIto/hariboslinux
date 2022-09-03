@@ -4921,3 +4921,31 @@ v16i8"/>
 
 So, the above xml is sent from QEMU.
 
+# Why does GDB think that size of EFER register sent by QEMU is 0x08 bytes?
+
+* The register number of EFER is 0x18.
+* So I can observe decision of the size of EFER register.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break map_regcache_remote_table
+(gdb) run < debuggee_input.txt
+The first arrival to ~/binutils-gdb/gdb/remote.c : 1405 map_regcache_remote_table
+(gdb) continue
+The second arrival to the same breakpoint
+(gdb) break 1441 if regnum == 0x18
+(gdb) continue
+(gdb) p/x regnum
+$1 = 0x18
+(gdb) p/x remote_regs[regnum]->regnum
+$2 = 0x51
+(gdb) step
+~/binutils-gdb/gdb/regcache.c : 172 register_size
+(gdb) p/x regnum
+$3 = 0x51
+(gdb) p/x regcache_descr(gdbarch)->sizeof_register[regnum]
+$4 = 0x08
+```
+
