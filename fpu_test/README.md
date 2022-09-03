@@ -4164,6 +4164,7 @@ $2 = 0x20
 | xmm7                   | 0x30   | 0x80     |
 | mxcsr                  | 0x31   | 0x20     |
 
+* The informations of the above table are got from below xml by a function `tdesc_start_reg` at `~/binutils-gdb/gdb/xml-tdesc.c` line 173.
 * The 4th argument of the function `gdb_xml_parse_quick` at `~/binutils-gdb/gdb/xml-support.c` line 622 is maybe xml representing register layout sent by QEMU.
 * Where does the xml come from?
 
@@ -4367,4 +4368,6 @@ Actually,
 </feature>
 </target>
 ```
+
+* Where does the above xml come from?
 
