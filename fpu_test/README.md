@@ -4949,3 +4949,24 @@ $3 = 0x51
 $4 = 0x08
 ```
 
+* Above `regcache_descr(gdbarch)` is `regcache_descr_handle.get(gdbarch)` in a function `regcache_descr` at `~/binutils-gdb/gdb/regcache.c` line 144.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break map_regcache_remote_table
+(gdb) run < debuggee_input.txt
+~/binutils-gdb/gdb/remote.c : 1405
+(gdb) continue
+~/binutils-gdb/gdb/remote.c : 1405
+(gdb) break register_size if regnum == 0x51
+(gdb) continue
+~/binutils-gdb/gdb/regcache.c : 172
+(gdb) break regcache_descr
+(gdb) continue
+~/binutils-gdb/gdb/regcache.c : 144
+(gdb) p/x regcache_descr_handle.get(gdbarch)->sizeof_register[0x51]
+$1 = 0x8
+```
+
