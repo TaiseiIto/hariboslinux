@@ -5155,10 +5155,37 @@ So,
 (gdb) run < debuggee_input.txt
 regcache.c : 84
 (gdb) continue
+regcache.c : 84
 (gdb) break 121 if i == 0x51
 (gdb) continue
 regcache.c : 121
 (gdb) p/x descr->register_type[i]->length
+$1 = 0x8
+```
+
+* The above `descr->register_type[i]` is stored at `~/binutils-gdb/gdb/regcache.c` line 100.
+
+```
+descr->register_type[i] = gdbarch_register_type (gdbarch, i);
+```
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 88
+(gdb) run < debuggee_input.txt
+regcache.c : 88
+(gdb) continue
+regcache.c : 88
+(gdb) watch descr->register_type
+(gdb) continue
+regcache.c : 99
+(gdb) delete 2
+(gdb) watch descr->register_type[0x51]
+(gdb) continue
+regcache.c : 99
+(gdb) p/x descr->register_type[0x51]->length
 $1 = 0x8
 ```
 
