@@ -5113,6 +5113,10 @@ $1 = 0x8
 
 * The size of EFER register is stored at `~/binutils-gdb/gdb/regcache.c` line 121.
 
+```
+descr->sizeof_register[i] = TYPE_LENGTH (descr->register_type[i]);
+```
+
 Actually,
 
 ```
@@ -5134,6 +5138,27 @@ regcache.c : 118
 (gdb) continue
 regcache.c : 122
 (gdb) p/x descr->sizeof_register[0x51]
+$1 = 0x8
+```
+
+* The macro function `TYPE_LENGTH` returning size of the registers is defined at `~/binutils-gdb/gdb/gdbtypes.h` line 2099.
+
+```
+#define TYPE_LENGTH(thistype) (thistype)->length
+```
+
+So,
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+regcache.c : 84
+(gdb) continue
+(gdb) break 121 if i == 0x51
+(gdb) continue
+regcache.c : 121
+(gdb) p/x descr->register_type[0x51]->length
 $1 = 0x8
 ```
 
