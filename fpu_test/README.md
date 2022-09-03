@@ -4401,5 +4401,16 @@ Actually,
 #22 0x000055ca87503de6 in main (argc=1, argv=0x7ffc50746f58) at gdb.c:32
 ```
 
-* Where does the above xml come from?
+* The above xml is `expanded_text` at `~/binutils-gdb/gdb/xml-tdesc.c` line 636.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break xml-tdesc.c : 636
+(gdb) run < debuggee_input.txt
+(gdb) printf "%s\n", expanded_test._M_dataplus._M_p
+<!DOCTYPE target SYSTEM "gdb-target.dtd"><target><architecture>i386</architecture>
+...
+```
 
