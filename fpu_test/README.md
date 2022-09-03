@@ -5098,3 +5098,16 @@ $1 = 0x8
 #43 0x00005562a29e8de6 in main (argc=1, argv=0x7fff97a5f428) at gdb.c:32
 ```
 
+* The above `(struct regcache_descr*)gdbarch->registry_fields.get(regcache_descr_handle.m_key)` is `descr` at `~/binutils-gdb/gdb/regcache.c` line 138.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break regcache.c : 138
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) p/x descr->sizeof_register[0x51]
+$1 = 0x8
+```
+
