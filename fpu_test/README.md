@@ -4426,3 +4426,16 @@ Actually,
 $1 = 0x5601ace96540 "<?xml version=\"1.0\"?><!DOCTYPE target SYSTEM \"gdb-target.dtd\"><target><architecture>i386</architecture><xi:include href=\"i386-32bit.xml\"/></target>"
 ```
 
+* The above xml is `buf` at `~/binutils-gdb/gdb/target.c` line 2357.
+
+```
+~/hariboslinux # make debug
+(gdb) break target.c : 2357
+(gdb) run < debuggee_input.txt
+(gdb) print annex
+(gdb) printf "%s\n", buf->data()
+(gdb) continue
+(gdb) print annex
+(gdb) printf "%s\n", buf->data()
+```
+
