@@ -5310,9 +5310,10 @@ $2 = 0x8
 (gdb) delete 2
 (gdb) delete 3
 (gdb) p/x $rbp
-$1 = 
-(gdb) break 313 if $rbp == 
+$1 = 0x7ffe508c7cf0
+(gdb) break 313 if $rbp == 0x7ffe508c7cf0
 (gdb) continue
+(gdb) delete 4
 (gdb) watch gdb_type.m_type
 (gdb) continue
 ~/binutils-gdb/gdb/target-descriptions.c : 171
