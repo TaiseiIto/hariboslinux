@@ -5643,3 +5643,11 @@ $1 = 0x8
 #50 0x000055fd08444de6 in main (argc=1, argv=0x7fff641b5808) at gdb.c:32
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) break gdbarch_has_shared_address_space
+(gdb) run < debuggee_input.txt
+(gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)gdbarch->registry_fields.get(tdesc_data.m_key))->arch_regs[0x51].reg->tdesc_type)->size
+$1 = 0x8
+```
+
