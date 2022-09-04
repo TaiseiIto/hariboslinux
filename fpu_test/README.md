@@ -5706,3 +5706,12 @@ $1 = 0x8
 #21 0x000055ec96b90de6 in main (argc=1, argv=0x7ffcd4076cc8) at gdb.c:32
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) break arch-utils.c : 599
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)new_gdbarch->registry_fields.get(tdesc_data.m_key))->arch_regs[0x51].reg->tdesc_type)->size
+$1 = 0x8
+```
+
