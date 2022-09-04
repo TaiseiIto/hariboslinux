@@ -5295,3 +5295,31 @@ $2 = 0x8
 
 # Why The size of EFER is 8 bytes at `~/binutils-gdb/gdb/target-descriptions.c` line 314?
 
+* `m_type->length` gets 8 at `~/binutils-gdb/gdb/target-descriptions.c` line 273.
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break make_gdb_type
+(gdb) continue
+(gdb) delete 1
+(gdb) delete 2
+(gdb) delete 3
+(gdb) p/x $rbp
+$1 = 
+(gdb) break 313 if $rbp == 
+(gdb) continue
+(gdb) watch gdb_type.m_type
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 171
+gdb_type.m_type == NULL
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 276
+(gdb) p/x m_type->length
+$2 = 0x8
+```
+
