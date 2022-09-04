@@ -5249,7 +5249,7 @@ $1 = 0x8
 (gdb) continue
 (gdb) break make_gdb_type
 (gdb) continue
-~/binutils-gdb/gdb/target-descriptions.c : 932 make_gdb_type
+~/binutils-gdb/gdb/target-descriptions.c : 56 make_gdb_type
 (gdb) delete 1
 (gdb) delete 2
 (gdb) delete 3
@@ -5258,6 +5258,35 @@ $1 = 0x7ffee9755030
 (gdb) break 314 if $rbp == 0x7ffee9755030
 (gdb) continue
 (gdb) p/x gdb_type.m_type->length
+$2 = 0x8
+```
+
+* The size of EFER is 4 bytes at `~/binutils-gdb/gdb/target-descriptions.c` line 313.
+* The size of EFER is 8 bytes at `~/binutils-gdb/gdb/target-descriptions.c` line 314.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break make_gdb_type
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 56 make_gdb_type
+(gdb) delete 1
+(gdb) delete 2
+(gdb) delete 3
+(gdb) next
+~/binutils-gdb/gdb/target-descriptions.c : 312
+(gdb) next
+~/binutils-gdb/gdb/target-descriptions.c : 313
+(gdb) p/x gdb_type.m_type->length
+$1 = 0x4
+(gdb) next
+~/binutils-gdb/gdb/target-descriptions.c : 314
 $2 = 0x8
 ```
 
