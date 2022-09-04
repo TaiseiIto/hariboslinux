@@ -5487,3 +5487,21 @@ Actually,
 $1 = 0x8
 ```
 
+* Function `tdesc_find_arch_register` returns above `arch_reg`.
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break tdesc_find_arch_register
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 869 tdesc_find_arch_register
+(gdb) next
+~/binutils-gdb/gdb/target-descriptions.c : 871
+(gdb) p/x ((tdesc_type_with_fields*)data->arch_regs[regno].reg->tdesc_type)->size
+$1 = 0x8
+```
+
