@@ -5765,7 +5765,7 @@ $1 = 0x8
 ~/binutils-gdb/gdb/i386-tdep.c : 8465
 (gdb) break 8729
 (gdb) continue
-(gdb) p/x ((tdesc_type_with_fields*)((tdesc_type_with_fields*)((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x51].reg->tdesc_type)->size
+(gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)gdbarch->registry_fields.m_fields[::tdesc_data.m_key])->arch_regs[0x51].reg->tdesc_type)->size
 $1 = 0x8
 ```
 
