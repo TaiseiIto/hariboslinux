@@ -5378,5 +5378,78 @@ $1 = 0x7ffe508c7cf0
 (gdb) continue
 (gdb) p/x e->size
 $1 = 0x8
+(gdb) backtrace
+#0  gdb_type_creator::make_gdb_type_flags (this=0x7ffc3cc03d70, e=0x55fcb1167150) at target-descriptions.c:271
+#1  0x000055fcafbf73cf in gdb_type_creator::visit (this=0x7ffc3cc03d70, e=0x55fcb1167150) at target-descriptions.c:183
+#2  0x000055fcafe92518 in tdesc_type_with_fields::accept (this=0x55fcb1167150, v=...) at ../gdbsupport/tdesc.h:274
+#3  0x000055fcafbf7c04 in make_gdb_type (gdbarch=0x55fcb115a560, ttype=0x55fcb1167150) at target-descriptions.c:313
+#4  0x000055fcafbf8cff in tdesc_register_type (gdbarch=0x55fcb115a560, regno=81) at target-descriptions.c:932
+#5  0x000055fcaf67ffe6 in gdbarch_register_type (gdbarch=0x55fcb115a560, reg_nr=81)
+    at /root/binutils-gdb/gdb/gdbarch.c:2251
+#6  0x000055fcafb0ee50 in init_regcache_descr (gdbarch=0x55fcb115a560) at regcache.c:100
+#7  0x000055fcafb0f025 in regcache_descr (gdbarch=0x55fcb115a560) at regcache.c:147
+#8  0x000055fcafb0f0f2 in register_size (gdbarch=0x55fcb115a560, regnum=0) at regcache.c:172
+#9  0x000055fcafb25322 in map_regcache_remote_table (gdbarch=0x55fcb115a560, regs=0x55fcb1169e60) at remote.c:1413
+#10 0x000055fcafb2579d in remote_arch_state::remote_arch_state (this=0x55fcb107b440, gdbarch=0x55fcb115a560)
+        at remote.c:1478
+#11 0x000055fcafb5540f in std::pair<gdbarch* const, remote_arch_state>::pair<gdbarch*&, 0ul, gdbarch*&, 0ul> (
+		    this=0x55fcb107b438, __tuple1=..., __tuple2=...) at /usr/include/c++/11/tuple:1824
+#12 0x000055fcafb550dd in std::pair<gdbarch* const, remote_arch_state>::pair<gdbarch*&, gdbarch*&> (
+		    this=0x55fcb107b438, __first=..., __second=...) at /usr/include/c++/11/tuple:1813
+#13 0x000055fcafb54af6 in __gnu_cxx::new_allocator<std::__detail::_Hash_node<std::pair<gdbarch* const, remote_arch_state>, false> >::construct<std::pair<gdbarch* const, remote_arch_state>, std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x55fcb1106d10, __p=0x55fcb107b438)
+    at /usr/include/c++/11/ext/new_allocator.h:162
+#14 0x000055fcafb54009 in std::allocator_traits<std::allocator<std::__detail::_Hash_node<std::pair<gdbarch* const, remote_arch_state>, false> > >::construct<std::pair<gdbarch* const, remote_arch_state>, std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (__a=..., __p=0x55fcb107b438)
+        at /usr/include/c++/11/bits/alloc_traits.h:516
+#15 0x000055fcafb5308b in std::__detail::_Hashtable_alloc<std::allocator<std::__detail::_Hash_node<std::pair<gdbarch* const, remote_arch_state>, false> > >::_M_allocate_node<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x55fcb1106d10) at /usr/include/c++/11/bits/hashtable_policy.h:1878
+#16 0x000055fcafb51d9b in std::_Hashtable<gdbarch*, std::pair<gdbarch* const, remote_arch_state>, std::allocator<std::pair<gdbarch* const, remote_arch_state> >, std::__detail::_Select1st, std::equal_to<gdbarch*>, std::hash<gdbarch*>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_Scoped_node::_Scoped_node<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x7ffc3cc04190, __h=0x55fcb1106d10) at /usr/include/c++/11/bits/hashtable.h:304
+#17 0x000055fcafb500df in std::_Hashtable<gdbarch*, std::pair<gdbarch* const, remote_arch_state>, std::allocator<std::pair<gdbarch* const, remote_arch_state> >, std::__detail::_Select1st, std::equal_to<gdbarch*>, std::hash<gdbarch*>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::_M_emplace<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x55fcb1106d10) at /usr/include/c++/11/bits/hashtable.h:1966
+#18 0x000055fcafb4db66 in std::_Hashtable<gdbarch*, std::pair<gdbarch* const, remote_arch_state>, std::allocator<std::pair<gdbarch* const, remote_arch_state> >, std::__detail::_Select1st, std::equal_to<gdbarch*>, std::hash<gdbarch*>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, false, true> >::emplace<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x55fcb1106d10) at /usr/include/c++/11/bits/hashtable.h:915
+#19 0x000055fcafb4ba84 in std::unordered_map<gdbarch*, remote_arch_state, std::hash<gdbarch*>, std::equal_to<gdbarch*>,std::allocator<std::pair<gdbarch* const, remote_arch_state> > >::emplace<std::piecewise_construct_t const&, std::tuple<gdbarch*&>, std::tuple<gdbarch*&> > (this=0x55fcb1106d10) at /usr/include/c++/11/bits/unordered_map.h:389
+#20 0x000055fcafb250c6 in remote_state::get_remote_arch_state (this=0x55fcb1106ad8, gdbarch=0x55fcb115a560)
+	    at remote.c:1327
+#21 0x000055fcafb25177 in remote_target::get_remote_state (this=0x55fcb1106ab0) at remote.c:1353
+#22 0x000055fcafb367ab in remote_target::set_remote_traceframe (this=0x55fcb1106ab0) at remote.c:8589
+#23 0x000055fcafb3cdb2 in remote_target::xfer_partial (this=0x55fcb1106ab0, object=TARGET_OBJECT_AUXV, annex=0x0,
+		    readbuf=0x55fcb1168e50 "\200C\006\340\327\177", writebuf=0x0, offset=0, len=4096, xfered_len=0x7ffc3cc04510)
+    at remote.c:11235
+#24 0x000055fcafc12891 in target_xfer_partial (ops=0x55fcb1106ab0, object=TARGET_OBJECT_AUXV, annex=0x0,
+		    readbuf=0x55fcb1168e50 "\200C\006\340\327\177", writebuf=0x0, offset=0, len=4096, xfered_len=0x7ffc3cc04510)
+    at target.c:1730
+#25 0x000055fcafc1309b in target_read_partial (ops=0x55fcb1106ab0, object=TARGET_OBJECT_AUXV, annex=0x0,
+		    buf=0x55fcb1168e50 "\200C\006\340\327\177", offset=0, len=4096, xfered_len=0x7ffc3cc04510) at target.c:1964
+#26 0x000055fcafc29ee6 in target_read_alloc_1<unsigned char> (ops=0x55fcb1106ab0, object=TARGET_OBJECT_AUXV,
+		    annex=0x0) at target.c:2299
+#27 0x000055fcafc13aa4 in target_read_alloc (ops=0x55fcb1106ab0, object=TARGET_OBJECT_AUXV, annex=0x0)
+    at target.c:2328
+#28 0x000055fcaf6a1e3c in get_auxv_inferior_data (ops=0x55fcb1106ab0) at auxv.c:367
+#29 0x000055fcaf6a1ea8 in target_auxv_search (ops=0x55fcb1106ab0, match=0, valp=0x7ffc3cc04678) at auxv.c:381
+#30 0x000055fcafa100e0 in linux_is_uclinux () at linux-tdep.c:422
+#31 0x000055fcafa10137 in linux_has_shared_address_space (gdbarch=0x55fcb115a560) at linux-tdep.c:429
+#32 0x000055fcaf6897b5 in gdbarch_has_shared_address_space (gdbarch=0x55fcb115a560)
+        at /root/binutils-gdb/gdb/gdbarch.c:4843
+#33 0x000055fcafae3bf6 in update_address_spaces () at progspace.c:372
+#34 0x000055fcafb2c3d4 in remote_target::start_remote_1 (this=0x55fcb1106ab0, from_tty=1, extended_p=0)
+	    at remote.c:4837
+#35 0x000055fcafb2cebc in remote_target::start_remote (this=0x55fcb1106ab0, from_tty=1, extended_p=0) at remote.c:5070
+#36 0x000055fcafb2e6d1 in remote_target::open_1 (name=0x55fcb1073f4e "localhost:2159", from_tty=1, extended_p=0)
+	        at remote.c:5873
+#37 0x000055fcafb2cf57 in remote_target::open (name=0x55fcb1073f4e "localhost:2159", from_tty=1) at remote.c:5092
+#38 0x000055fcafc10a5a in open_target (args=0x55fcb1073f4e "localhost:2159", from_tty=1, command=0x55fcb10e5a10)
+		    at target.c:853
+#39 0x000055fcaf768a07 in cmd_func (cmd=0x55fcb10e5a10, args=0x55fcb1073f4e "localhost:2159", from_tty=1)
+		        at cli/cli-decode.c:2543
+#40 0x000055fcafc3f1d1 in execute_command (p=0x55fcb1073f5b "9", from_tty=1) at top.c:699
+#41 0x000055fcaf90b91c in command_handler (command=0x55fcb1073f40 "") at event-top.c:598
+#42 0x000055fcaf90be5a in command_line_handler (rl=...) at event-top.c:842
+#43 0x000055fcaf90c00e in gdb_readline_no_editing_callback (client_data=0x55fcb1079560) at event-top.c:907
+#44 0x000055fcaf90b71e in stdin_event_handler (error=0, client_data=0x55fcb1079560) at event-top.c:525
+#45 0x000055fcafe859f3 in handle_file_event (file_ptr=0x55fcb114fde0, ready_mask=1) at event-loop.cc:574
+#46 0x000055fcafe85fe3 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#47 0x000055fcafe84c8b in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#48 0x000055fcafa36635 in start_event_loop () at main.c:411
+#49 0x000055fcafa36782 in captured_command_loop () at main.c:471
+#50 0x000055fcafa38240 in captured_main (data=0x7ffc3cc04ff0) at main.c:1329
+#51 0x000055fcafa382b2 in gdb_main (args=0x7ffc3cc04ff0) at main.c:1344
+#52 0x000055fcaf5ecde6 in main (argc=1, argv=0x7ffc3cc05128) at gdb.c:32
 ```
 
