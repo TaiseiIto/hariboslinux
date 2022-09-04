@@ -5453,3 +5453,20 @@ $1 = 0x8
 #52 0x000055fcaf5ecde6 in main (argc=1, argv=0x7ffc3cc05128) at gdb.c:32
 ```
 
+* The above `e` is `(tdesc_type_with_fields*)reg->tdesc_type` at `~/binutils-gdb/gdb/target-descriptions.c` line 932.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break target-descriptions.c : 932
+(gdb) continue
+(gdb) p/x ((tdesc_type_with_fields*)reg->tdesc_type)->size
+$1 = 0x8
+```
+
