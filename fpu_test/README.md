@@ -5324,3 +5324,32 @@ gdb_type.m_type == NULL
 $2 = 0x8
 ```
 
+* The above `m_type` is created at `~/binutils-gdb/gdb/gdbtypes.c` line 5939.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break make_gdb_type
+(gdb) continue
+(gdb) delete 1
+(gdb) delete 2
+(gdb) delete 3
+(gdb) p/x $rbp
+$1 = 0x7ffe508c7cf0
+(gdb) break 313 if $rbp == 0x7ffe508c7cf0
+(gdb) continue
+(gdb) break arch_flags_type
+(gdb) continue
+~/binutils-gdb/gdb/gdbtype.c : 5939
+(gdb) next
+~/binutils-gdb/gdb/gdbtype.c : 5940
+(gdb) p/x type->length
+$2 = 0x8
+```
+
