@@ -5287,6 +5287,7 @@ Actually,
 $1 = 0x4
 (gdb) next
 ~/binutils-gdb/gdb/target-descriptions.c : 314
+(gdb) p/x gdb_type.m_type->length
 $2 = 0x8
 ```
 
