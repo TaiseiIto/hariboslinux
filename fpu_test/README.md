@@ -5651,3 +5651,16 @@ $1 = 0x8
 $1 = 0x8
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) break update_address_spaces
+(gdb) run < debuggee_input.txt
+(gdb) break target_gdbarch
+(gdb) continue
+~/binutils-gdb/gdb/arch-utils.c : 1452
+(gdb) step
+~/binutils-gdb/gdb/inferior.c : 55
+(gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.get(tdesc_data.m_key))->arch_regs[0x51].reg->tdesc_type)->size
+$1 = 0x8
+```
+
