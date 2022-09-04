@@ -5367,6 +5367,15 @@ Actually,
 (gdb) continue
 (gdb) break make_gdb_type
 (gdb) continue
+(gdb) delete 1
+(gdb) delete 2
+(gdb) delete 3
+(gdb) p/x $rbp
+$1 = 0x7ffe508c7cf0
+(gdb) break 313 if $rbp == 0x7ffe508c7cf0
+(gdb) continue
+(gdb) break make_gdb_type_flags
+(gdb) continue
 (gdb) p/x e->size
 $1 = 0x8
 ```
