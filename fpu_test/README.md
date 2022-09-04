@@ -5741,3 +5741,17 @@ $1 = 0x8
 $1 = 0x8
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) break arch-utils.c : 1367
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) step
+~/binutils-gdb/gdb/i386-tdep.c : 8447 i386_gdbarch_init
+(gdb) break 8803
+(gdb) continue
+~/binutils-gdb/gdb/i386-tdep.c : 8803
+(gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)gdbarch->registry_fields.get(::tdesc_data.m_key))->arch_regs[0x51].reg->tdesc_type)->size
+$1 = 0x8
+```
+
