@@ -5254,10 +5254,10 @@ $1 = 0x8
 (gdb) delete 2
 (gdb) delete 3
 (gdb) p/x $rbp
-$1 =
-(gdb) break 314 if $rbp ==
+$1 = 0x7ffee9755030
+(gdb) break 314 if $rbp == 0x7ffee9755030
 (gdb) continue
-(gdb) p/x gdb_type->m_type->length
+(gdb) p/x gdb_type.m_type->length
 $2 = 0x8
 ```
 
