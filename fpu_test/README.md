@@ -5290,3 +5290,7 @@ $1 = 0x4
 $2 = 0x8
 ```
 
+# Whe The size of EFER is 4 bytes at `~/binutils-gdb/gdb/target-descriptions.c` line 313?
+
+# Why The size of EFER is 8 bytes at `~/binutils-gdb/gdb/target-descriptions.c` line 314?
+
