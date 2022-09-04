@@ -5664,3 +5664,18 @@ $1 = 0x8
 $1 = 0x8
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) watch current_inferior_
+(gdb) run < debuggee_input.txt
+~/binutils-gdb/gdbsupport/gdb_reg_ptr.h : 126
+(gdb) delete 1
+(gdb) watch current_inferior_.m_obj->gdbarch
+(gdb) continue
+~/binutils-gdb/gdb/arch-utils.c : 1443
+(gdb) continue
+~/binutils-gdb/gdb/arch-utils.c : 1443
+(gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.get(tdesc_data.m_key))->arch_regs[0x51].reg->tdesc_type)->size
+$1 = 0x8
+```
+
