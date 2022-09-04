@@ -5237,3 +5237,27 @@ delete "watch arch_reg"
 $1 = 0x8
 ```
 
+* The above `arch_reg->type` is `gdb_type->m_type` at `~/binutils-gdb/gdb/target-descriptions.c` line 314.
+* The function `make_gdb_type` at `~/binutils-gdb/gdb/target-descriptions.c` line 56 is recursive.
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break make_gdb_type
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 932 make_gdb_type
+(gdb) delete 1
+(gdb) delete 2
+(gdb) delete 3
+(gdb) p/x $rbp
+$1 =
+(gdb) break 314 if $rbp ==
+(gdb) continue
+(gdb) p/x gdb_type->m_type->length
+$2 = 0x8
+```
+
