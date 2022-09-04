@@ -5470,3 +5470,20 @@ Actually,
 $1 = 0x8
 ```
 
+* The above `reg` is `arch_reg->reg` at `~/binutils-gdb/gdb/target-descriptionc.s` line 912.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break target-descriptions.c : 912
+(gdb) continue
+(gdb) p/x ((tdesc_type_with_fields*)arch_reg->reg->tdesc_type)->size
+$1 = 0x8
+```
+
