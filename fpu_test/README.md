@@ -5212,3 +5212,28 @@ Actually,
 $1 = 0x8
 ```
 
+* The above `arch_reg->type` is created at `~/binutils-gdb/gdb/target-descriptions.c` line 932.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break 100 if i == 0x51
+(gdb) continue
+(gdb) break tdesc_register_type
+(gdb) continue
+(gdb) watch arch_reg
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 912
+(gdb) delete 4
+delete "watch arch_reg"
+(gdb) watch arch_reg->type
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 932
+(gdb) p/x arch_reg->type->length
+$1 = 0x8
+```
+
