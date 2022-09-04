@@ -5711,6 +5711,19 @@ $1 = 0x8
 (gdb) break arch-utils.c : 599
 (gdb) run < debuggee_input.txt
 (gdb) continue
+~/binutils-gdb/gdb/arch-utils.c : 599
+(gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)new_gdbarch->registry_fields.get(tdesc_data.m_key))->arch_regs[0x51].reg->tdesc_type)->size
+$1 = 0x8
+```
+
+```
+~/hariboslinux # make debug
+(gdb) break gdbarch_find_by_info
+(gdb) run < debuggee_input.txt
+(gdb) continue
+~/binutils-gdb/gdb/arch-utils.c : 1326
+(gdb) break 1432
+(gdb) continue
 (gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)new_gdbarch->registry_fields.get(tdesc_data.m_key))->arch_regs[0x51].reg->tdesc_type)->size
 $1 = 0x8
 ```
