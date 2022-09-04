@@ -5677,5 +5677,32 @@ $1 = 0x8
 ~/binutils-gdb/gdb/arch-utils.c : 1443
 (gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)current_inferior_.m_obj->gdbarch->registry_fields.get(tdesc_data.m_key))->arch_regs[0x51].reg->tdesc_type)->size
 $1 = 0x8
+(gdb) backtrace
+#0  set_target_gdbarch (new_gdbarch=0x55ec994b28f0) at arch-utils.c:1443
+#1  0x000055ec96c1c82b in gdbarch_update_p (info=...) at arch-utils.c:625
+#2  0x000055ec9719bee8 in target_find_description () at target-descriptions.c:569
+#3  0x000055ec970d03cf in remote_target::start_remote_1 (this=0x55ec99459ab0, from_tty=1, extended_p=0)
+    at remote.c:4833
+#4  0x000055ec970d0ebc in remote_target::start_remote (this=0x55ec99459ab0, from_tty=1, extended_p=0) at remote.c:5070
+#5  0x000055ec970d26d1 in remote_target::open_1 (name=0x55ec993c6f4e "localhost:2159", from_tty=1, extended_p=0)
+        at remote.c:5873
+#6  0x000055ec970d0f57 in remote_target::open (name=0x55ec993c6f4e "localhost:2159", from_tty=1) at remote.c:5092
+#7  0x000055ec971b4a5a in open_target (args=0x55ec993c6f4e "localhost:2159", from_tty=1, command=0x55ec99438a10)
+	    at target.c:853
+#8  0x000055ec96d0ca07 in cmd_func (cmd=0x55ec99438a10, args=0x55ec993c6f4e "localhost:2159", from_tty=1)
+	        at cli/cli-decode.c:2543
+#9  0x000055ec971e31d1 in execute_command (p=0x55ec993c6f5b "9", from_tty=1) at top.c:699
+#10 0x000055ec96eaf91c in command_handler (command=0x55ec993c6f40 "") at event-top.c:598
+#11 0x000055ec96eafe5a in command_line_handler (rl=...) at event-top.c:842
+#12 0x000055ec96eb000e in gdb_readline_no_editing_callback (client_data=0x55ec993cc560) at event-top.c:907
+#13 0x000055ec96eaf71e in stdin_event_handler (error=0, client_data=0x55ec993cc560) at event-top.c:525
+#14 0x000055ec974299f3 in handle_file_event (file_ptr=0x55ec994a2dc0, ready_mask=1) at event-loop.cc:574
+#15 0x000055ec97429fe3 in gdb_wait_for_event (block=0) at event-loop.cc:695
+#16 0x000055ec97428c8b in gdb_do_one_event (mstimeout=-1) at event-loop.cc:217
+#17 0x000055ec96fda635 in start_event_loop () at main.c:411
+#18 0x000055ec96fda782 in captured_command_loop () at main.c:471
+#19 0x000055ec96fdc240 in captured_main (data=0x7ffcd4076b90) at main.c:1329
+#20 0x000055ec96fdc2b2 in gdb_main (args=0x7ffcd4076b90) at main.c:1344
+#21 0x000055ec96b90de6 in main (argc=1, argv=0x7ffcd4076cc8) at gdb.c:32
 ```
 
