@@ -5353,3 +5353,21 @@ $1 = 0x7ffe508c7cf0
 $2 = 0x8
 ```
 
+* The above `type->length` is calculated from the third argument `bit` of the function `arch_flags_type`.
+* The size of the register is `e->size` in `make_gdb_type_flags` at `~/binutils-gdb/gdb/target-descriptions.c` line 271.
+
+Actually,
+
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break make_gdb_type
+(gdb) continue
+(gdb) p/x e->size
+$1 = 0x8
+```
+
