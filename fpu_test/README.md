@@ -5521,3 +5521,21 @@ $1 = 0x8
 $1 = 0x8
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) break init_regcache_descr
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) break tdesc_register_type if regno == 0x51
+(gdb) continue
+(gdb) break get_arch_data
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 488
+(gdb) step
+~/binutils-gdb/gdb/registry.h : 110
+(gdb) next
+~/binutils-gdb/gdb/registry.h : 111
+(gdb) p/x ((tdesc_type_with_fields*)((tdesc_arch_data*)reg_obj->get(this->m_key))->arch_regs[0x51].reg->tdesc_type)->size
+$1 = 0x8
+```
+
