@@ -5782,3 +5782,16 @@ $1 = 0x8
 $1 = 0x8
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) break tdesc_use_registers
+(gdb) run < debuggee_input.txt
+~/binutils-gdb/gdb/target-descriptions.c : 1087
+(gdb) continue
+~/binutils-gdb/gdb/target-descriptions.c : 1087
+(gdb) break 1166 if ((tdesc_type_with_fields*)reg.get()->tdesc_type)->size == 0x8
+(gdb) continue
+(gdb) p/x ((tdesc_type_with_fields*)reg.get()->tdesc_type)->size
+$1 = 0x8
+```
+
