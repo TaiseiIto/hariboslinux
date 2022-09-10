@@ -5773,3 +5773,12 @@ $1 = 0x8
 $1 = 0x8
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) break target-descriptions.c : 1171
+(gdb) run < debuggee_input.txt
+(gdb) continue
+(gdb) p/x ((tdesc_type_with_fields*)data->arch_regs[0x51].reg->tdesc_type)->size
+$1 = 0x8
+```
+
