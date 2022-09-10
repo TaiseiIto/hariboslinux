@@ -5791,7 +5791,9 @@ $1 = 0x8
 ~/binutils-gdb/gdb/target-descriptions.c : 1087
 (gdb) break 1166 if ((tdesc_type_with_fields*)reg.get()->tdesc_type)->size == 0x8
 (gdb) continue
+(gdb) p/x num_regs
+$1 = 0x51
 (gdb) p/x ((tdesc_type_with_fields*)reg.get()->tdesc_type)->size
-$1 = 0x8
+$2 = 0x8
 ```
 
