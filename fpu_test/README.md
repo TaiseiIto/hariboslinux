@@ -5797,3 +5797,15 @@ $1 = 0x51
 $2 = 0x8
 ```
 
+```
+~/hariboslinux # make debug
+(gdb) break tdesc_type_with_fields::tdesc_type_with_fields if size_ == 8
+(gdb) run < debuggee_input.txt
+~/binutils-gdb/gdbsupport/tdesc.h : 269
+(gdb) print name._M_dataplus._M_p
+$1 = "i386_efer"
+(gdb) p/x size_
+$2 = 0x8
+(gdb) backtrace
+```
+
