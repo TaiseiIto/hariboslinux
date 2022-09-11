@@ -13,10 +13,18 @@ RUN apt install flex -y
 RUN apt install git -y
 RUN git config --global pull.rebase false
 RUN mkdir /root/.ssh
+# glib
+RUN apt install libglib2.0-dev -y
 # gmp
 RUN apt install libgmp-dev -y
-# emulator
-RUN apt install qemu-system-i386 -y
+# pixman
+RUN apt install libpixman-1-dev -y
+# ninja
+RUN apt install ninja-build -y
+# python
+RUN apt install python3 -y
+# pkg-config
+RUN apt install pkg-config -y
 # texinfo
 RUN apt install texinfo -y
 # tmux
@@ -26,7 +34,7 @@ RUN apt install vim -y
 # wget
 RUN apt install wget -y
 
-# clone GDB
+# GDB
 WORKDIR /root
 RUN git clone git://sourceware.org/git/binutils-gdb.git
 WORKDIR /root/binutils-gdb
@@ -34,12 +42,20 @@ RUN ./configure --with-expat CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-i
 RUN make
 RUN make install
 
-# clone the repository
+# hariboslinux
 WORKDIR /root
 RUN git clone https://github.com/TaiseiIto/hariboslinux.git
 WORKDIR /root/hariboslinux
 RUN git checkout issue105
 RUN make
+
+# QEMU
+WORKDIR /root
+RUN git clone https://gitlab.com/qemu-project/qemu.git
+WORKDIR /root/qemu
+RUN ./configure --target-list=i386-softmmu CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-inline"
+RUN make
+RUN make install
 
 # ash setting
 RUN cat ash/.profile >> /root/.bashrc
