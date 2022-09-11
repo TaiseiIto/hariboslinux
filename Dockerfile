@@ -42,13 +42,6 @@ RUN ./configure --with-expat CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-i
 RUN make
 RUN make install
 
-# hariboslinux
-WORKDIR /root
-RUN git clone https://github.com/TaiseiIto/hariboslinux.git
-WORKDIR /root/hariboslinux
-RUN git checkout issue105
-RUN make
-
 # QEMU
 WORKDIR /root
 RUN git clone https://gitlab.com/qemu-project/qemu.git
@@ -56,6 +49,13 @@ WORKDIR /root/qemu
 RUN ./configure --target-list=i386-softmmu CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-inline"
 RUN make
 RUN make install
+
+# hariboslinux
+WORKDIR /root
+RUN git clone https://github.com/TaiseiIto/hariboslinux.git
+WORKDIR /root/hariboslinux
+RUN git checkout issue105
+RUN make
 
 # ash setting
 RUN cat ash/.profile >> /root/.bashrc
