@@ -11,6 +11,7 @@ RUN apt install libexpat-dev -y
 RUN apt install flex -y
 # git
 RUN apt install git -y
+RUN apt install git-email -y
 RUN git config --global pull.rebase false
 RUN mkdir /root/.ssh
 # glib
