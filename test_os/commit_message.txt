@@ -1,3 +1,44 @@
+---------- Begin of result 1 ----------
+
+$ make test
+(gdb) target remote localhost:2159
+(gdb) break *0x7c00
+(gdb) continue
+(gdb) x/10i $eip
+=> 0x7c00:      fninit
+   0x7c02:      fld1
+   0x7c04:      fldl2t
+   0x7c06:      fldl2e
+   0x7c08:      fldpi
+   0x7c0a:      fldlg2
+   0x7c0c:      fldln2
+   0x7c0e:      fldz
+   0x7c10:      hlt
+   0x7c11:      jmp    0x7c10
+(gdb) break *0x7c10
+(gdb) continue
+(gdb) info float
+  R7: Valid   0x0000037f3fff80000000 +9.185555460266999444e-4934 Denormal
+  R6: Valid   0x000000004000d49a784b +2.56521115372749819e-4937  Denormal
+  R5: Valid   0xcd1b8afe3fffb8aa3b29 -1.960870532096122377e+1010
+  R4: Valid   0x5c17f0bc4000c90fdaa2 +1.914514747773691148e+2165
+  R3: Valid   0x2168c2353ffd9a209a84 +6.533729021523866343e-2358
+  R2: Valid   0xfbcff7993ffeb17217f7 -4.548119628708025252e+4609
+  R1: Valid   0xd1cf79ac000000000000 Unsupported
+=>R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x0000
+                       TOP: 0
+Control Word:        0x0800
+                       PC: Single Precision (24-bits)
+                       RC: Round up
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+
+---------- End of result 1 ----------
+
 ---------- Begin of result 2 ----------
 
 $ make test
