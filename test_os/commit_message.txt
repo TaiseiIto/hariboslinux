@@ -1,10 +1,15 @@
 gdb-xml: Fix size of EFER register on i386 architecture when debugged by GDB
 
-1. Bug
+1. A bug
 
 GDB cannot print the x87 FPU registers correctly when the GDB is debugging an OS working on qemu-system-i386.
 
-1.1 Reproduction of the bug
+1.1 Environment
+
+Architecture : x86
+OS           : Ubuntu
+
+1.2 Reproduction of the bug
 
 The following 3 files are needed to reproduce the bug.
 
@@ -14,10 +19,10 @@ The following 3 files are needed to reproduce the bug.
 
 And the following 2 tools, too.
 
+* build-essential
 * gdb
-* make
 
-The contents of these files are below.
+The contents of the above files are below.
 
 ---------- Begin of test_os.s ----------
 
@@ -94,6 +99,14 @@ $(TEST_OS_OBJ): $(TEST_OS_ASM)
 	gcc $^ -c -nostdlib -o $@ -Wall -Wextra
 
 ---------- End of Makefile ----------
+
+Put these files on a same directory.
+"test_os.s" is source code of tiny OS to run on QEMU.
+The OS consists only a boot sector pushing some floating point values onto x87 FPU stack.
+"test_os.ld" is its linker script.
+And you can "make" "test_os.img", a raw image of the OS.
+Now, there are all things to reproduce the bug.
+You can "make test" to let QEMU run the OS and wait for GDB, then GDB will start.
 
 ---------- Begin of result 1 ----------
 
