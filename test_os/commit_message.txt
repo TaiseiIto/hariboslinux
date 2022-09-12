@@ -102,7 +102,8 @@ $(TEST_OS_OBJ): $(TEST_OS_ASM)
 
 Put these files on a same directory.
 "test_os.s" is source code of tiny OS to run on QEMU.
-The OS consists only a boot sector pushing some floating point values onto x87 FPU stack.
+The OS consists only a boot sector.
+It initialize x87 FPU and pushes some floating point values onto x87 FPU stack.
 "test_os.ld" is its linker script.
 And you can "make" "test_os.img", a raw image of the OS.
 Now, there are all things to reproduce the bug.
@@ -149,6 +150,18 @@ Opcode:              0x0000
 
 ---------- End of result 1 ----------
 
+First, in GDB interface, connect localhost:2159 where QEMU is waiting for GDB.
+Second, Proceed to 0x7c00 and confirm there are intentional instructions.
+Finally, Proceed to 0x7c10 and confirm contents of the x87 FPU registers.
+
+There are absolutely different values from what the OS has pushed in registers from "R0" to "R7", the x87 FPU stack.
+Furthermore, the control word seems to be wrong.
+The first instruction "fninit" in the OS makes the control word 0x037f but it is 0x0800 in the above result.
+
+2. Cause
+3. Modification
+4. Result
+
 ---------- Begin of result 2 ----------
 
 $ make test
@@ -190,5 +203,5 @@ Opcode:              0x0000
 
 ---------- End of result 2 ----------
 
-Test result comparison
+5. Test result comparison
 
