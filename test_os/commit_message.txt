@@ -1,3 +1,100 @@
+gdb-xml: Fix size of EFER register on i386 architecture when debugged by GDB
+
+1. Bug
+
+GDB cannot print the x87 FPU registers correctly when the GDB is debugging an OS working on qemu-system-i386.
+
+1.1 Reproduction of the bug
+
+The following 3 files are needed to reproduce the bug.
+
+* test_os.s
+* test_os.ld
+* Makefile
+
+And the following 2 tools, too.
+
+* gdb
+* make
+
+The contents of these files are below.
+
+---------- Begin of test_os.s ----------
+
+	.code16
+	.text
+main:
+	fninit	# Initialize the FPU
+	fld1	# Push 1.0
+	fldl2t	# Push log 2 10
+	fldl2e	# Push log 2 e
+	fldpi	# Push pi
+	fldlg2	# Push log 10 2
+	fldln2	# Push log e 2
+	fldz	# Push 0.0
+loop:
+	hlt
+	jmp loop
+
+---------- End of test_os.s ----------
+
+---------- Begin of test_os.ld ----------
+
+OUTPUT_FORMAT("binary");
+
+BASE = 0x00007c00;
+
+SECTIONS
+{
+	. = BASE;
+	.text :
+	{
+		test_os.o(.text)
+	}
+	. = BASE;
+	. += 0x00000200;
+	. -= 0x00000002;
+	.boot_sector_sign :
+	{
+		BYTE(0x55);
+		BYTE(0xaa);
+	}
+	/DISCARD/ :
+	{
+		*(.eh_frame)
+		*(.note.gnu.property)
+	}
+}
+
+---------- End of test_os.ld ----------
+
+---------- Begin of Makefile ----------
+
+TEST_OS_NAME = test_os
+TEST_OS_ASM = $(TEST_OS_NAME).s
+TEST_OS_IMG = $(TEST_OS_NAME).img
+TEST_OS_LNK = $(TEST_OS_NAME).ld
+TEST_OS_MAP = $(TEST_OS_NAME).map
+TEST_OS_OBJ = $(TEST_OS_NAME).o
+
+all: $(TEST_OS_IMG)
+
+test: $(TEST_OS_IMG) stop-qemu
+	(qemu-system-i386 -boot order=a -drive file=$<,format=raw,if=floppy -S -gdb tcp::2159 -vnc localhost:0 &) && \
+	gdb && \
+	make stop-qemu
+
+stop-qemu:
+	for i in $$(ps ax | grep qemu | grep -v grep | awk '{print $$1}'); do kill $$i; done
+
+$(TEST_OS_IMG): $(TEST_OS_OBJ) $(TEST_OS_LNK)
+	ld $< -Map $(TEST_OS_MAP) -o $@ -T $(word 2, $^)
+
+$(TEST_OS_OBJ): $(TEST_OS_ASM)
+	gcc $^ -c -nostdlib -o $@ -Wall -Wextra
+
+---------- End of Makefile ----------
+
 ---------- Begin of result 1 ----------
 
 $ make test
@@ -79,4 +176,6 @@ Operand Pointer:     0x00:0x00000000
 Opcode:              0x0000
 
 ---------- End of result 2 ----------
+
+Test result comparison
 
