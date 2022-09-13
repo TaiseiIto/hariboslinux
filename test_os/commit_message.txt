@@ -1,5 +1,10 @@
 gdb-xml: Fix size of EFER register on i386 architecture when debugged by GDB
 
+Before this commit, there were contradictory description about size of EFER retister.
+As a result, when GDB was debugging an OS running on QEMU, the GDB couldn't decode 'g' packets correctly.
+After this commit, GDB can decode 'g' packets correctly.
+Below are details.
+
 1. A bug
 
 GDB cannot print the x87 FPU registers correctly when the GDB is debugging an OS working on qemu-system-i386.
@@ -161,7 +166,7 @@ The first instruction "fninit" in the OS makes the control word 0x037f but it is
 
 2. Cause
 
-There is a cause in exchanging 'G' packet between QEMU and GDB.
+There is a cause in exchanging 'g' packet between QEMU and GDB.
 This packet sends registers of machine emulated by QEMU to GDB.
 And its format is defined in "qemu/gdb-xml/i386-32bit.xml".
 Size of EFER register is defined in two places, line 113 and 129.
@@ -182,9 +187,9 @@ The above line says size of EFER is 8 bytes.
 
 The above line says size of EFER is 32 bits.
 These lines contradict each other.
-QEMU, the packet sender, assign 4 bytes for EFER in 'G' packet based on the line 113.
-GDB, the packet receiver, extract 8 bytes for EFER in 'G' packet based on the line 129.
-As a result, all registers located after EFER in 'G' packet has been shifted 4 bytes in GDB.
+QEMU, the packet sender, assign 4 bytes for EFER in 'g' packet based on the line 113.
+GDB, the packet receiver, extract 8 bytes for EFER in 'g' packet based on the line 129.
+As a result, all registers located after EFER in 'g' packet has been shifted 4 bytes in GDB.
 
 3. Modification
 
