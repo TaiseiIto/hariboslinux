@@ -108,6 +108,7 @@ It initialize x87 FPU and pushes some floating point values onto x87 FPU stack.
 And you can "make" "test_os.img", a raw image of the OS.
 Now, there are all things to reproduce the bug.
 You can "make test" to let QEMU run the OS and wait for GDB, then GDB will start.
+Below is "result 1" reproducing the bug.
 
 ---------- Begin of result 1 ----------
 
@@ -154,7 +155,7 @@ First, in GDB interface, connect localhost:2159 where QEMU is waiting for GDB.
 Second, Proceed to 0x7c00 and confirm there are intentional instructions.
 Finally, Proceed to 0x7c10 and confirm contents of the x87 FPU registers.
 
-There are absolutely different values from what the OS has pushed in registers from "R0" to "R7", the x87 FPU stack.
+There are values different from what the OS pushed in registers from "R0" to "R7", the x87 FPU stack.
 Furthermore, the control word seems to be wrong.
 The first instruction "fninit" in the OS makes the control word 0x037f but it is 0x0800 in the above result.
 
@@ -190,6 +191,8 @@ As a result, all registers located after EFER in 'G' packet has been shifted 4 b
 Unify size of EFER 4 bytes.
 
 4. Result
+
+Below is "result 2" doing same operation as "result 1" using the modified xml.
 
 ---------- Begin of result 2 ----------
 
@@ -232,5 +235,28 @@ Opcode:              0x0000
 
 ---------- End of result 2 ----------
 
-5. Test result comparison
+There are more reasonable values than previous.
+Control word gets correct, too.
+But order of FPU stack is wrong.
+Correct FPU stack should be like below.
+
+---------- Begin of Correct FPU stack ----------
+
+  R7: Valid   0x3fff8000000000000000 +1
+  R6: Valid   0x4000d49a784bcd1b8afe +3.321928094887362348
+  R5: Valid   0x3fffb8aa3b295c17f0bc +1.442695040888963407
+  R4: Valid   0x4000c90fdaa22168c235 +3.141592653589793239
+  R3: Valid   0x3ffd9a209a84fbcff799 +0.3010299956639811952
+  R2: Valid   0x3ffeb17217f7d1cf79ac +0.6931471805599453094
+=>R1: Valid   0x00000000000000000000 +0
+  R0: Valid   0x00000000000000000000 +0
+
+---------- End of Correct FPU stack ----------
+
+The floor of the stack is "R7" and should have value "1.0" that the OS pushed first.
+The top of the stack is "R1" and should have value "0.0", the last pushed value.
+The stack of the second result seems to have been rotated up 1 element.
+I think there are confusing between physical registers from "R0" to "R7" and stack top relative pointer from "ST0" to "ST7".
+But I think this problem should be handled as another bug.
+So this patch includes only modification of size of EFER register.
 
