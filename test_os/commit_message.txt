@@ -183,7 +183,7 @@ The above line says size of EFER is 32 bits.
 These lines contradics each other.
 QEMU, the packet sender, assign 4 bytes for EFER in 'G' packet based on the line 113.
 GDB, the packet receiver, extract 8 bytes for EFER in 'G' packet based on the line 129.
-Then, all registers located after EFER in 'G' packet has been shifted 4 bytes in GDB.
+As a result, all registers located after EFER in 'G' packet has been shifted 4 bytes in GDB.
 
 3. Modification
 
