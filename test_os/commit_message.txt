@@ -181,7 +181,7 @@ The above line says size of EFER is 8 bytes.
 ----------------------------------------------------------
 
 The above line says size of EFER is 32 bits.
-These lines contradics each other.
+These lines contradict each other.
 QEMU, the packet sender, assign 4 bytes for EFER in 'G' packet based on the line 113.
 GDB, the packet receiver, extract 8 bytes for EFER in 'G' packet based on the line 129.
 As a result, all registers located after EFER in 'G' packet has been shifted 4 bytes in GDB.
@@ -235,7 +235,7 @@ Opcode:              0x0000
 
 ---------- End of result 2 ----------
 
-There are more reasonable values than previous.
+There are more reasonable values in the FPU stack than previous.
 Control word gets correct, too.
 But order of FPU stack is wrong.
 Correct FPU stack should be like below.
