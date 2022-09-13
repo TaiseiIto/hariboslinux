@@ -159,7 +159,36 @@ Furthermore, the control word seems to be wrong.
 The first instruction "fninit" in the OS makes the control word 0x037f but it is 0x0800 in the above result.
 
 2. Cause
+
+There is a cause in exchanging 'G' packet between QEMU and GDB.
+This packet sends registers of machine emulated by QEMU to GDB.
+And its format is defined in "qemu/gdb-xml/i386-32bit.xml".
+Size of EFER register is defined in two places, line 113 and 129.
+
+---------- qemu/gdb-xml/i386-32bit.xml line 113 ----------
+
+  <flags id="i386_efer" size="8">
+
+----------------------------------------------------------
+
+The above line says size of EFER is 8 bytes.
+
+---------- qemu/gdb-xml/i386-32bit.xml line 129 ----------
+
+  <reg name="efer" bitsize="32" type="i386_efer"/>
+
+----------------------------------------------------------
+
+The above line says size of EFER is 32 bits.
+These lines contradics each other.
+QEMU, the packet sender, assign 4 bytes for EFER in 'G' packet based on the line 113.
+GDB, the packet receiver, extract 8 bytes for EFER in 'G' packet based on the line 129.
+Then, all registers located after EFER in 'G' packet has been shifted 4 bytes in GDB.
+
 3. Modification
+
+Unify size of EFER 4 bytes.
+
 4. Result
 
 ---------- Begin of result 2 ----------
