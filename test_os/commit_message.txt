@@ -8,7 +8,7 @@ As a result, when GDB is debugging an OS running on QEMU, the GDB cannot read 'g
 QEMU, the packet sender, assign 4 bytes for EFER in 'g' packet based on the line 113.
 GDB, the packet receiver, extract 8 bytes for EFER in 'g' packet based on the line 129.
 Therefore, all registers located behind EFER in 'g' packet has been shifted 4 bytes in GDB.
-After this commit, GDB can decode 'g' packets correctly.
+After this commit, GDB can read 'g' packets correctly.
 
 Below are details.
 
