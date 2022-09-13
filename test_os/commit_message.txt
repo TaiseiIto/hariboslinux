@@ -1,8 +1,15 @@
 gdb-xml: Fix size of EFER register on i386 architecture when debugged by GDB
 
-Before this commit, there were contradictory description about size of EFER retister.
-As a result, when GDB was debugging an OS running on QEMU, the GDB couldn't decode 'g' packets correctly.
+Before this commit, there were contradictory descriptions about size of EFER register.
+Line 113 says the size is 8 bytes.
+Line 129 says the size is 4 bytes.
+As a result, when GDB is debugging an OS running on QEMU, the GDB cannot read 'g' packets correctly.
+'g' packet transmits values of each registers of machine emulated by QEMU to GDB.
+QEMU, the packet sender, assign 4 bytes for EFER in 'g' packet based on the line 113.
+GDB, the packet receiver, extract 8 bytes for EFER in 'g' packet based on the line 129.
+Therefore, all registers located behind EFER in 'g' packet has been shifted 4 bytes in GDB.
 After this commit, GDB can decode 'g' packets correctly.
+
 Below are details.
 
 1. A bug
