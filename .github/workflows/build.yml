@@ -11,7 +11,7 @@ jobs:
       - names: Checkout the repository
         uses: actions/checkout@main
       - names: Build the OS
-        uses: make -C hariboslinux
+        run: make -C hariboslinux
       - names: Upload the OS image
         uses: actions/upload-artifact@main
         with:
