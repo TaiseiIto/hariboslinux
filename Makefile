@@ -76,7 +76,7 @@ clean-devenv:
 
 # Build docker environment
 devenv:
-	$(SCRIPT_PREFIX)script$(DELIMITER)devenv$(SCRIPT_SUFFIX) $(DOCKER) $(DOCKER_IMAGE) $(DOCKER_IMAGE_TAG) $(DOCKER_CONTAINER)
+	$(SCRIPT_PREFIX)script$(DELIMITER)devenv$(SCRIPT_SUFFIX) $(DOCKER) $(DOCKER_IMAGE) $(DOCKER_IMAGE_TAG) $(DOCKER_CONTAINER) $(VNC_PORT)
 
 diskcontents/kernel.bin: src/kernel.bin
 	cp $^ $@
