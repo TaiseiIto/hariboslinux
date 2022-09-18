@@ -1,7 +1,7 @@
 @ECHO OFF
 
 REM Usage: $ clean_devenv.bat <docker command> <image name> <container name>
-REM This program removes docker image "theos-devenv" and container "theos-devenv".
+REM This program removes docker image "hariboslinux" and container "hariboslinux".
 REM This program should be called from "../Makefile" with command "make clean-devenv".
 
 SET ERROR=FALSE

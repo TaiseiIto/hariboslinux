@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Usage: $ ./clean_devenv.sh <docker command> <image name> <container name>
-# This program removes docker image "theos-devenv" and container "theos-devenv".
+# This program removes docker image "hariboslinux" and container "hariboslinux".
 # This program should be called from "../Makefile" with command "make clean-devenv".
 
 if [ $# -eq 3 ]; then

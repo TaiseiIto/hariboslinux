@@ -1,7 +1,7 @@
 @ECHO OFF
 
 REM Usage: ./devenv.sh <docker command> <image name> <image tag> <container name>
-REM This program creates and logs in to docker image "theos-devenv" and container "theos-devenv".
+REM This program creates and logs in to docker image "hariboslinux" and container "hariboslinux".
 REM This program should be called from "../Makefile" with command "make devenv".
 
 SETLOCAL ENABLEDELAYEDEXPANSION

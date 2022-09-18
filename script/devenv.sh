@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Usage: ./devenv.sh <docker command> <image name> <image tag> <container name>
-# This program creates and logs in to docker image "theos-devenv" and container "theos-devenv".
+# This program creates and logs in to docker image "hariboslinux" and container "hariboslinux".
 # This program should be called from "../Makefile" with command "make devenv".
 
 currentdir=$(pwd)
