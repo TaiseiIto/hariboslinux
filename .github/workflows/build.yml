@@ -8,11 +8,11 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - names: Checkout the repository
+      - name: Checkout the repository
         uses: actions/checkout@main
-      - names: Build the OS
+      - name: Build the OS
         run: make -C hariboslinux
-      - names: Upload the OS image
+      - name: Upload the OS image
         uses: actions/upload-artifact@main
         with:
           name: FAT12 floppy disc raw image
