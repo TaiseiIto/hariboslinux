@@ -100,7 +100,7 @@ debug: $(IMAGE_FILE) stop
 gitconfig:
 	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER):/root/hariboslinux/ssh/github && \
 	$(DOCKER) cp $(GPG) $(DOCKER_CONTAINER):/root/.gnupg && \
-	make docker-start && \
+	$(DOCKER) start $(DOCKER_CONTAINER) && \
 	$(DOCKER) exec -it $(DOCKER_CONTAINER) /root/hariboslinux/git/gitconfig.sh
 
 # Rebuild the OS
