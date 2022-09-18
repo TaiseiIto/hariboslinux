@@ -16,5 +16,5 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: FAT12 floppy disc raw image
-          path: hariboslinux/haribos.img
+          path: haribos.img
 
