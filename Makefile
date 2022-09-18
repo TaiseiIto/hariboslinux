@@ -101,7 +101,8 @@ gitconfig:
 	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER):/root/hariboslinux/ssh/github && \
 	$(DOCKER) cp $(GPG) $(DOCKER_CONTAINER):/root/.gnupg && \
 	$(DOCKER) start $(DOCKER_CONTAINER) && \
-	$(DOCKER) exec -it $(DOCKER_CONTAINER) /root/hariboslinux/git/gitconfig.sh
+	$(DOCKER) exec -it $(DOCKER_CONTAINER) /root/hariboslinux/git/gitconfig.sh && \
+	$(DOCKER) stop $(DOCKER_CONTAINER)
 
 # Rebuild the OS
 rebuild: clean
