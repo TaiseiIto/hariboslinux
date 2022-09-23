@@ -74,6 +74,13 @@ clean:
 clean-devenv:
 	$(SCRIPT_PREFIX)script$(DELIMITER)clean-devenv$(SCRIPT_SUFFIX) $(DOCKER) $(DOCKER_IMAGE) $(DOCKER_CONTAINER)
 
+# Debug the operating system onQEMU by gdb
+debug: $(IMAGE_FILE) stop
+	tmux new-session \; source-file tmux/.tmux.debug-haribos.conf
+
+debug-qemu:
+	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_TIMEZONE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) | tee $(EMULATOR_SERIAL_OUT)
+
 # Build docker environment
 devenv:
 	$(SCRIPT_PREFIX)script$(DELIMITER)devenv$(SCRIPT_SUFFIX) $(DOCKER) $(DOCKER_IMAGE) $(DOCKER_IMAGE_TAG) $(DOCKER_CONTAINER) $(VNC_PORT)
@@ -89,11 +96,6 @@ diskcontents/%.com: src/%.com
 
 download-image:
 	$(DOCKER) cp $(DOCKER_CONTAINER):/root/hariboslinux/$(IMAGE_FILE) .
-
-# Debug the operating system onQEMU by gdb
-debug: $(IMAGE_FILE) stop
-	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
-	make -C gdb
 
 # Only the developer can execute it.
 # usage : $ make gitconfig KEY=<GitHub private key path> GPG=<.gnupg path>
