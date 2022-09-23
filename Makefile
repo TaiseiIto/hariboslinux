@@ -75,7 +75,7 @@ clean-devenv:
 	$(SCRIPT_PREFIX)script$(DELIMITER)clean-devenv$(SCRIPT_SUFFIX) $(DOCKER) $(DOCKER_IMAGE) $(DOCKER_CONTAINER)
 
 # Debug the operating system onQEMU by gdb
-debug: $(IMAGE_FILE) stop
+debug: $(IMAGE_FILE) stop-qemu
 	tmux new-session \; source-file tmux/.tmux.debug-haribos.conf
 
 debug-qemu:
@@ -121,7 +121,7 @@ run:
 	tmux new-session \; source-file tmux/.tmux.run-haribos.conf
 
 # run the OS on QEMU
-run-qemu: $(IMAGE_FILE) stop
+run-qemu: $(IMAGE_FILE) stop-qemu
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_TIMEZONE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) | tee $(EMULATOR_SERIAL_OUT)
 
 src/kernel.bin: $(wildcard src/kernel/*.c src/kernel/*.h)
@@ -134,8 +134,12 @@ src/%.com:
 	make -C src
 
 # stop QEMU
-stop:
+stop-qemu:
 	for i in $$(ps ax | grep $(EMULATOR) | grep -v grep | awk '{print $$1}'); do kill $$i; done
+
+# stop TMUX
+stop-tmux:
+	for i in $$(ps ax | grep tmux | grep -v grep | awk '{print $$1}'); do kill $$i; done
 
 # update the OS
 update: update-repository
