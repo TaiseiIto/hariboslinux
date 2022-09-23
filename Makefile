@@ -138,7 +138,7 @@ stop-qemu:
 	for i in $$(ps ax | grep $(EMULATOR) | grep -v grep | awk '{print $$1}'); do kill $$i; done
 
 # stop TMUX
-stop-tmux:
+stop-tmux: stop-qemu
 	for i in $$(ps ax | grep tmux | grep -v grep | awk '{print $$1}'); do kill $$i; done
 
 # update the OS
