@@ -17,6 +17,7 @@ TaskLevel *current_task_level;
 TaskLevel *highest_task_level;
 TaskLevel *lowest_task_level;
 
+void breakpoint(void);
 void idle_task_procedure(void *arguments);
 void print_task_structure(void);
 
@@ -31,6 +32,11 @@ void allow_switch_task(void)
 		}
 	}
 	else ERROR(); // already allowed.
+}
+
+void breakpoint(void)
+{
+	return;
 }
 
 void cli_task(void)
@@ -122,6 +128,7 @@ void continue_task(Task *task)
 	case TASK_STATUS_RUN:
 		// The task has already started.
 		ERROR();
+		breakpoint();
 		break;
 	default:
 		// Invalid task status
