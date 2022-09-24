@@ -55,7 +55,6 @@ int main(int argc, char const * const * const argv)
 	center.imag = 0.0;
 	if(2 <= argc)center = string2complex(argv[1]);
 	printf("Center %.*llf%+.*llfi\n", accuracy, center.real, accuracy, center.imag);
-	for(int argi = 1; argi < argc; argi++)printf("atof(argv[%d]) = %.*llf\n", argi, accuracy, atof(argv[argi]));
 	for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
 	{
 		c[y][x].real = (double)x * pixel_distance + min_real;
