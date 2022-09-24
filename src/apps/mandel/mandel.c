@@ -1,6 +1,7 @@
 #include "dev.h"
 #include "math.h"
 #include "stdio.h"
+#include "stdlib.h"
 
 typedef struct
 {
@@ -13,7 +14,7 @@ Complex cadd(Complex c1, Complex c2);
 Complex cmul(Complex c1, Complex c2);
 Color next_color(Color color);
 
-int main(void)
+int main(int argc, char const * const * const argv)
 {
 	#define CTRL_PUSHED	0x01
 	#define DRAGGED		0x02
@@ -46,6 +47,7 @@ int main(void)
 	blue.blue = 0xff;
 	blue.alpha = 0xff;
 	current_color = blue;
+	for(int argi = 1; argi < argc; argi++)printf("atof(argv[%d]) = %.*llf\n", argi, accuracy, atof(argv[argi]));
 	for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
 	{
 		c[y][x].real = (double)x * pixel_distance + min_real;
