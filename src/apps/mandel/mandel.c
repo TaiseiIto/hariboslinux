@@ -53,8 +53,13 @@ int main(int argc, char const * const * const argv)
 	current_color = blue;
 	center.real = 0.0;
 	center.imag = 0.0;
-	if(2 <= argc)center = string2complex(argv[1]);
-	printf("Center %.*llf%+.*llfi\n", accuracy, center.real, accuracy, center.imag);
+	if(2 <= argc)
+	{
+		center = string2complex(argv[1]);
+		if(3 <= argc)pixel_distance = atof(argv[2]);
+		min_real = center.real - (double)(window_width / 2) * pixel_distance;
+		min_imag = center.imag - (double)(window_height / 2) * pixel_distance;
+	}
 	for(unsigned short y = 0; y < window_height; y++)for(unsigned short x = 0; x < window_width; x++)
 	{
 		c[y][x].real = (double)x * pixel_distance + min_real;
@@ -62,7 +67,7 @@ int main(int argc, char const * const * const argv)
 		z[y][x].real = 0.0;
 		z[y][x].imag = 0.0;
 	}
-	printf("Center %.*llf%+.*llfi\n", accuracy, c[window_height / 2][window_width / 2].real, accuracy, c[window_height / 2][window_width / 2].imag);
+	printf("Center %.*llf%+.*llfi\n", accuracy, center.real, accuracy, center.imag);
 	printf("%.*llf per pixel\n", accuracy, pixel_distance);
 	while(flags & WINDOW_EXISTS)
 	{
@@ -99,7 +104,8 @@ int main(int argc, char const * const * const argv)
 						}
 						fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 						current_color = blue;
-						printf("Center %.*llf%+.*llfi\n", accuracy, c[window_height / 2][window_width / 2].real, accuracy, c[window_height / 2][window_width / 2].imag);
+						center = c[window_height / 2][window_width / 2];
+						printf("Center %.*llf%+.*llfi\n", accuracy, center.real, accuracy, center.imag);
 						printf("%.*llf per pixel\n", accuracy, pixel_distance);
 					}
 				}
@@ -124,7 +130,8 @@ int main(int argc, char const * const * const argv)
 							}
 							fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 							current_color = blue;
-							printf("Center %.*llf%+.*llfi\n", accuracy, c[window_height / 2][window_width / 2].real, accuracy, c[window_height / 2][window_width / 2].imag);
+							center = c[window_height / 2][window_width / 2];
+							printf("Center %.*llf%+.*llfi\n", accuracy, center.real, accuracy, center.imag);
 							printf("%.*llf per pixel\n", accuracy, pixel_distance);
 						}
 						flags &= ~DRAGGED;
@@ -178,7 +185,8 @@ int main(int argc, char const * const * const argv)
 				}
 				fill_box_window(window, 0x0000, 0x0000, window_width, window_height, black);
 				current_color = blue;
-				printf("Center %.*llf%+.*llfi\n", accuracy, c[window_height / 2][window_width / 2].real, accuracy, c[window_height / 2][window_width / 2].imag);
+				center = c[window_height / 2][window_width / 2];
+				printf("Center %.*llf%+.*llfi\n", accuracy, center.real, accuracy, center.imag);
 				printf("%.*llf per pixel\n", accuracy, pixel_distance);
 			}
 			break;
