@@ -335,6 +335,24 @@ Complex string2complex(char const *string)
 		}
 		break;
 	}
+	switch(read_phase)
+	{
+	case SEARCHING_DOUBLE_STRING_A_BEGIN:
+		break;
+	case SEARCHING_DOUBLE_STRING_A_END:
+		double_string_a_end = string + strlen(string);
+		break;
+	case SEARCHING_DOUBLE_STRING_B_BEGIN:
+		break;
+	case SEARCHING_DOUBLE_STRING_B_END:
+		double_string_b_end = string + strlen(string);
+		break;
+	case FOUND_DOUBLE_STRING_B_END:
+		break;
+	default:
+		ERROR();
+		return result;
+	}
 	if(imag_sign == double_string_a_end)
 	{
 		real_string_begin = double_string_b_begin;
