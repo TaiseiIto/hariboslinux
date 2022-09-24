@@ -213,18 +213,18 @@ Complex cmul(Complex c1, Complex c2)
 Complex string2complex(char const *string)
 {
 	Complex result;
-	char const *double_string_a_begin;
-	char const *double_string_a_end;
-	char const *double_string_b_begin;
-	char const *double_string_b_end;
-	char *real_string;
-	unsigned int real_string_length;
-	char const *real_string_begin;
-	char const *real_string_end;
-	char *imag_string;
-	unsigned int imag_string_length;
-	char const *imag_string_begin;
-	char const *imag_string_end;
+	char const *double_string_a_begin = NULL;
+	char const *double_string_a_end = NULL;
+	char const *double_string_b_begin = NULL;
+	char const *double_string_b_end = NULL;
+	char *real_string = NULL;
+	unsigned int real_string_length = 0;
+	char const *real_string_begin = NULL;
+	char const *real_string_end = NULL;
+	char *imag_string = NULL;
+	unsigned int imag_string_length = 0;
+	char const *imag_string_begin = NULL;
+	char const *imag_string_end = NULL;
 	char const *imag_sign = NULL;
 	unsigned char read_phase;
 	#define SEARCHING_DOUBLE_STRING_A_BEGIN	0x00
@@ -252,6 +252,9 @@ Complex string2complex(char const *string)
 			double_string_b_end = reader;
 			read_phase = FOUND_DOUBLE_STRING_B_END;
 			break;
+		case FOUND_DOUBLE_STRING_B_END:
+			ERROR();
+			return result;
 		default:
 			ERROR();
 			return result;
@@ -278,6 +281,9 @@ Complex string2complex(char const *string)
 		case SEARCHING_DOUBLE_STRING_B_END:
 			ERROR();
 			return result;
+		case FOUND_DOUBLE_STRING_B_END:
+			ERROR();
+			return result;
 		default:
 			ERROR();
 			return result;
@@ -293,6 +299,9 @@ Complex string2complex(char const *string)
 		case SEARCHING_DOUBLE_STRING_A_END:
 		case SEARCHING_DOUBLE_STRING_B_END:
 			break;
+		case FOUND_DOUBLE_STRING_B_END:
+			ERROR();
+			return result;
 		default:
 			ERROR();
 			return result;
@@ -312,6 +321,9 @@ Complex string2complex(char const *string)
 		case SEARCHING_DOUBLE_STRING_A_END:
 		case SEARCHING_DOUBLE_STRING_B_END:
 			break;
+		case FOUND_DOUBLE_STRING_B_END:
+			ERROR();
+			return result;
 		default:
 			ERROR();
 			return result;
@@ -337,17 +349,23 @@ Complex string2complex(char const *string)
 		imag_string_begin = double_string_b_begin;
 		imag_string_end = double_string_b_end;
 	}
-	real_string_length = (unsigned int)real_string_end - (unsigned int)real_string_begin;
-	real_string = malloc(real_string_length + 1);
-	memcpy(real_string, real_string_begin, real_string_length);
-	real_string[real_string_length] = '\0';
-	result.real = atof(real_string);
-	free(real_string);
-	imag_string_length = (unsigned int)imag_string_end - (unsigned int)imag_string_begin;
-	imag_string = malloc(imag_string_length + 1);
-	memcpy(imag_string, imag_string_begin, imag_string_length);
-	imag_string[imag_string_length] = '\0';
-	result.imag = atof(imag_string);
+	if(real_string_begin && real_string_end)
+	{
+		real_string_length = (unsigned int)real_string_end - (unsigned int)real_string_begin;
+		real_string = malloc(real_string_length + 1);
+		memcpy(real_string, real_string_begin, real_string_length);
+		real_string[real_string_length] = '\0';
+		result.real = atof(real_string);
+		free(real_string);
+	}
+	if(imag_string_begin && imag_string_end)
+	{
+		imag_string_length = (unsigned int)imag_string_end - (unsigned int)imag_string_begin;
+		imag_string = malloc(imag_string_length + 1);
+		memcpy(imag_string, imag_string_begin, imag_string_length);
+		imag_string[imag_string_length] = '\0';
+		result.imag = atof(imag_string);
+	}
 	return result;
 }
 
