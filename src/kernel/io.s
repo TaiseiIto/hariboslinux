@@ -8,10 +8,15 @@
 	.globl	cli
 	.globl	clts
 	.globl	exit_application
+	.globl	fnclex
+	.globl	fldcw
 	.globl	fninit
 	.globl	fnsave
+	.globl	fnstcw
+	.globl	fnstsw
 	.globl	frstor
 	.globl	get_caller_variadic_arg
+	.globl	get_cr0
 	.globl	get_eflags
 	.globl	get_variadic_arg
 	.globl	hlt
@@ -40,10 +45,15 @@
 	.type	cli,			@function
 	.type	clts,			@function
 	.type	exit_application,	@function
+	.type	fnclex,			@function
+	.type	fldcw,			@function
 	.type	fninit,			@function
 	.type	fnsave,			@function
+	.type	fnstcw,			@function
+	.type	fnstsw,			@function
 	.type	frstor,			@function
 	.type	get_caller_variadic_arg,@function
+	.type	get_cr0,		@function
 	.type	get_eflags,		@function
 	.type	get_variadic_arg,	@function
 	.type	hlt,			@function
@@ -185,6 +195,25 @@ exit_application:
 	leave
 	ret
 
+				# // clear FPU exceptions.
+fnclex:				# void fclex(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fnclex
+	leave
+	ret
+
+				# // load FPU control word from memory to FPU control register.
+fldcw:				# void fldcw(unsigned short *control);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fldcw	(%edx)
+	leave
+	ret
+
 				# // initialize FPU
 fninit:				# void fninit(void);
 0:
@@ -204,6 +233,23 @@ fnsave:				# void fnsave(FPURegisters *fpu_registers);
 	leave
 	ret
 
+fnstcw:				# void fnstcw(unsigned short *control);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	0x08(%ebp),%edx
+	fnstcw	(%edx)
+	leave
+	ret
+
+				# // get FPU status word from FPU status register.
+fnstsw:				# unsigned short fnstsw(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	fnstsw	%ax
+	leave
+	ret
 				# // load FPU registers
 frstor:				# void frstor(FPURegisters const *fpu_registers);
 0:
@@ -226,6 +272,15 @@ get_caller_variadic_arg:	# unsigned int get_caller_variadic_arg(unsigned int);
 	movl	0x08(%ebp),%edx
 	movl	0x08(%esi,%edx,0x04),%eax
 	popl	%esi
+	leave
+	ret
+
+				# // get CR0
+get_cr0:			# unsigned int get_cr0(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	movl	%cr0,	%eax
 	leave
 	ret
 

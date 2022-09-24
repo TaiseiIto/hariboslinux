@@ -488,3 +488,15 @@ void serial_console_input(char character)
 	}
 }
 
+// Change serial mode
+void switch_interrupt_serial_mode(void)
+{
+	com1_flags |= COM_INTERRUPT;
+}
+
+// Change serial mode
+void switch_polling_serial_mode(void)
+{
+	com1_flags &= ~COM_INTERRUPT;
+}
+
