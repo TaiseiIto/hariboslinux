@@ -288,6 +288,12 @@ typedef struct _Symbols
 char *combine_argv(int argc, char const * const * const argv);
 Complex complex_abs(Complex a);
 Complex complex_addition(Complex a, Complex b);
+Complex complex_acos(Complex x);
+Complex complex_acosh(Complex x);
+Complex complex_asin(Complex x);
+Complex complex_asinh(Complex x);
+Complex complex_atan(Complex x);
+Complex complex_atanh(Complex x);
 Complex complex_cos(Complex theta);
 Complex complex_cosh(Complex x);
 Complex complex_division(Complex a, Complex b);
@@ -371,6 +377,69 @@ Complex complex_addition(Complex a, Complex b)
 	result.real = a.real + b.real;
 	result.imag = a.imag + b.imag;
 	return result;
+}
+
+Complex complex_acos(Complex x)
+{
+	Complex minus_i;
+	Complex one;
+	minus_i.real = 0.0;
+	minus_i.imag = -1.0;
+	one.real = 1.0;
+	one.imag = 0.0;
+	return complex_multiplication(i, complex_log(complex_addition(x, complex_sqrt(complex_subtraction(complex_multiplication(x, x), one)))));
+}
+
+Complex complex_acosh(Complex x)
+{
+	Complex one;
+	one.real = 1.0;
+	one.imag = 0.0;
+	return complex_log(complex_addition(x, complex_sqrt(complex_subtract(complex_multiplication(x, x), one))));
+}
+
+Complex complex_asin(Complex x)
+{
+	Complex i;
+	Complex one;
+	i.real = 0.0;
+	i.imag = 1.0;
+	one.real = 1.0;
+	one.imag = 0.0;
+	return complex_multiplication(i, complex_log(complex_addition(complex_multiplication(x, i), complex_sqrt(complex_subtraction(one, complex_multiplication(x, x))))));
+}
+
+Complex complex_asinh(Complex x)
+{
+	Complex i;
+	Complex one;
+	i.real = 0.0;
+	i.imag = 1.0;
+	one.real = 1.0;
+	one.imag = 0.0;
+	return complex_multiplication(i, complex_log(complex_addition(complex_multiplication(x, i), complex_sqrt(complex_addition(one, complex_multiplication(x, x))))));
+}
+
+Complex complex_atan(Complex x)
+{
+	Complex i;
+	Complex half_i;
+	i.real = 0.0;
+	i.imag = 1.0;
+	half_i.real = 0.0;
+	half_i.imag = 0.5;
+	return complex_multiplication(half_i, complex_log(complex_division(complex_addition(x, i), complex_subtraction(x, i))));
+}
+
+Complex complex_atanh(Complex x)
+{
+	Complex half;
+	Complex one;
+	half.real = 0.5;
+	half.imag = 0.0;
+	one.real = 1.0;
+	one.imag = 0.0;
+	return complex_multiplication(half, complex_log(complex_division(complex_addition(one, x), complex_subtraction(one, x))));
 }
 
 Complex complex_cos(Complex theta)
