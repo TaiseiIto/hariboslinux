@@ -44,8 +44,6 @@
 #include "stdlib.h"
 #include "string.h"
 
-#define DEBUG
-
 struct _Symbol;
 
 typedef enum _SymbolType
