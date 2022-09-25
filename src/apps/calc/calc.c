@@ -326,12 +326,14 @@ int main(int argc, char const * const * const argv)
 	symbols = syntactic_analysis(symbols);
 	if(!symbols.first_symbol)
 	{
-		ERROR(); // no symbol error
+		ERROR();
+		printf("NO SYMBOL ERROR\n");
 		exit(-1);
 	}
 	if(symbols.first_symbol != symbols.last_symbol)
 	{
-		ERROR(); // syntactic analysis error
+		ERROR();
+		printf("SYNTACTIC ANALYSIS ERROR\n");
 		print_symbols(symbols);
 		exit(-1);
 	}
@@ -341,6 +343,13 @@ int main(int argc, char const * const * const argv)
 	print_symbols(symbols);
 	printf("\n");
 	#endif
+	if(symbols.first_symbol != symbols.last_symbol || symbols.first_symbol->type != formula)
+	{
+		ERROR();
+		printf("SEMANTIC ANALYSIS ERROR\n");
+		print_symbols(symbols);
+		exit(-1);
+	}
 	printf("%.10llf%+.10llfi\n", symbols.first_symbol->value.real, symbols.first_symbol->value.imag);
 	delete_symbols(symbols);
 	free(input_string);
