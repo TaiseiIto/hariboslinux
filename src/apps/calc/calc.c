@@ -3192,6 +3192,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			if(symbol->next && (symbol->next->type == plus || symbol->next->type == minus) && symbol->next->next && symbol->next->next->type == factor)
 			{
 				if(symbol->next->next->next && symbol->next->next->next->type == asterisk)break;
+				if(symbol->next->next->next && symbol->next->next->next->type == i)break;
 				if(symbol->next->next->next && symbol->next->next->next->type == slash)break;
 				// <term> ::= <term> <plus> <factor> | <term> <minus> <factor>
 				new_symbol = malloc(sizeof(*new_symbol));
