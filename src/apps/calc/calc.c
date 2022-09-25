@@ -4,10 +4,11 @@
 // <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
 // <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
 // <power>             ::= <operand> | <power> <circumflex> <operand>
-// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <pi> | <function> <left_parenthesis> <formula> <right_parenthesis>
+// <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <i> | <pi> | <function> <left_parenthesis> <formula> <right_parenthesis>
 // <function>          ::= <function_acos> | <function_asin> | <function_atan> | <function_cos> | <function_cosh> | <function_log> | <function_sin> | <function_sinh> | <function_sqrt> | <function_tan> | <function_tanh>
-// <pi>                ::= <alphabets "pi">
 // <e>                 ::= <alphabets "e">
+// <i>                 ::= <alphabets "i">
+// <pi>                ::= <alphabets "pi">
 // <function_acos>     ::= <alphabets "acos">
 // <function_acosh>    ::= <alphabets "acosh">
 // <function_asin>     ::= <alphabets "asin">
@@ -72,6 +73,7 @@ typedef enum _SymbolType
 	function_sqrt,
 	function_tan,
 	function_tanh,
+	i,
 	left_parenthesis,
 	minus,
 	number,
@@ -200,6 +202,11 @@ typedef struct _FunctionTanh
 	struct _Symbol *alphabets;
 } FunctionTanh;
 
+typedef struct _I
+{
+	struct _Symbol *alphabets;
+} I;
+
 typedef struct _Numbers
 {
 	struct _Symbol *numbers;
@@ -256,6 +263,7 @@ typedef union _Component
 	FunctionSqrt function_sqrt;
 	FunctionTan function_tan;
 	FunctionTanh function_tanh;
+	I i;
 	Numbers numbers;
 	Operand operand;
 	Pi pi;
@@ -649,6 +657,9 @@ void delete_symbol(Symbol *symbol)
 		break;
 	case function_tanh:
 		if(symbol->component.function_tanh.alphabets)delete_symbol(symbol->component.function_tanh.alphabets);
+		break;
+	case i:
+		if(symbol->component.i.alphabets)delete_symbol(symbol->component.i.alphabets);
 		break;
 	case left_parenthesis:
 		break;
@@ -1262,6 +1273,22 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			free(alphabets_char_array);
 		}
 		return output;
+	case i:
+		if(symbol->component.i.alphabets)
+		{
+			alphabets_chain_string = symbol_to_chain_string(symbol->component.i.alphabets);
+			insert_char_front(alphabets_chain_string, alphabets_chain_string->first_character, ' ');
+			replace_chain_string(alphabets_chain_string, "\n", "\n ");
+			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
+		}
+		else alphabets_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, alphabets_char_array);
+		if(symbol->component.i.alphabets)
+		{
+			delete_chain_string(alphabets_chain_string);
+			free(alphabets_char_array);
+		}
+		return output;
 	case numbers:
 		if(symbol->component.numbers.numbers)
 		{
@@ -1488,6 +1515,7 @@ char const *symbol_type_name(SymbolType symbol_type)
 	static char const * const function_sqrt_name = "function_sqrt";
 	static char const * const function_tan_name = "function_tan";
 	static char const * const function_tanh_name = "function_tanh";
+	static char const * const i_name = "i";
 	static char const * const left_parenthesis_name = "left parenthesis";
 	static char const * const minus_name = "minus";
 	static char const * const number_name = "number";
@@ -1551,6 +1579,8 @@ char const *symbol_type_name(SymbolType symbol_type)
 		return function_tan_name;
 	case function_tanh:
 		return function_tanh_name;
+	case i:
+		return i_name;
 	case left_parenthesis:
 		return left_parenthesis_name;
 	case minus:
@@ -1667,6 +1697,10 @@ void semantic_analysis(Symbol* symbol)
 	case function:
 		symbol->value.real = 0.0;
 		symbol->value.imag = 0.0;
+		break;
+	case i:
+		symbol->value.real = 0.0;
+		symbol->value.imag = 1.0;
 		break;
 	case left_parenthesis:
 		symbol->value.real = 0.0;
@@ -2127,6 +2161,29 @@ Symbols syntactic_analysis(Symbols symbols)
 					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 					#ifdef DEBUG
 					printf("\n<e> ::= <alphabets \"e\">\n");
+					print_symbols(symbols);
+					#endif
+				}
+				else if(!strcmp(word, "i"))
+				{
+					// <i> ::= <alphabets "i">
+					new_symbol = malloc(sizeof(*new_symbol));
+					new_symbol->type = i;
+					new_symbol->component.i.alphabets = symbol;
+					new_symbol->string.initial = symbol->string.initial;
+					new_symbol->string.length = symbol->string.length;
+					new_symbol->previous = symbol->previous;
+					new_symbol->next = symbol->next;
+					if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+					if(new_symbol->next)new_symbol->next->previous = new_symbol;
+					if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+					if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+					symbol->previous = NULL;
+					symbol->next = NULL;
+					next_symbol = new_symbol;
+					flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+					#ifdef DEBUG
+					printf("\n<i> ::= <alphabets \"i\">\n");
 					print_symbols(symbols);
 					#endif
 				}
@@ -2759,6 +2816,31 @@ Symbols syntactic_analysis(Symbols symbols)
 			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 			#ifdef DEBUG
 			printf("\n<function> ::= <function_tanh>\n");
+			print_symbols(symbols);
+			#endif
+			break;
+		case i:
+			// <operand> ::= <i>
+			new_symbol = malloc(sizeof(*new_symbol));
+			new_symbol->type = operand;
+			new_symbol->component.operand.function = NULL;
+			new_symbol->component.operand.value = symbol;
+			new_symbol->component.operand.left_parenthesis = NULL;
+			new_symbol->component.operand.right_parenthesis = NULL;
+			new_symbol->string.initial = symbol->string.initial;
+			new_symbol->string.length = symbol->string.length;
+			new_symbol->previous = symbol->previous;
+			new_symbol->next = symbol->next;
+			if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+			if(new_symbol->next)new_symbol->next->previous = new_symbol;
+			if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+			if(symbols.last_symbol == symbol)symbols.last_symbol = new_symbol;
+			symbol->previous = NULL;
+			symbol->next = NULL;
+			next_symbol = new_symbol;
+			flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+			#ifdef DEBUG
+			printf("\n<operand> ::= <i>\n");
 			print_symbols(symbols);
 			#endif
 			break;
