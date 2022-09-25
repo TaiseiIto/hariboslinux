@@ -473,7 +473,7 @@ Complex complex_cos(Complex theta)
 	minus_i.imag = -1.0;
 	two.real = 2.0;
 	two.imag = 0.0;
-	return complex_division(complex_subtraction(complex_exp(complex_multiplication(theta, i)), complex_exp(complex_multiplication(theta, minus_i))), two);
+	return complex_division(complex_addition(complex_exp(complex_multiplication(theta, i)), complex_exp(complex_multiplication(theta, minus_i))), two);
 }
 
 Complex complex_cosh(Complex x)
