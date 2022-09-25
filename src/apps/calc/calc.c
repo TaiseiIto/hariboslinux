@@ -805,6 +805,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	ChainString *dot_chain_string;
 	ChainString *factor_chain_string;
 	ChainString *function_chain_string;
+	ChainString *i_chain_string;
 	ChainString *integer_chain_string;
 	ChainString *left_formula_chain_string;
 	ChainString *left_parenthesis_chain_string;
@@ -825,6 +826,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 	char *dot_char_array;
 	char *factor_char_array;
 	char *function_char_array;
+	char *i_char_array;
 	char *integer_char_array;
 	char *left_formula_char_array;
 	char *left_parenthesis_char_array;
@@ -964,7 +966,15 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			power_char_array = create_char_array_from_chain_string(power_chain_string);
 		}
 		else power_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, factor_char_array, operator_char_array, power_char_array);
+		if(symbol->component.factor.i)
+		{
+			i_chain_string = symbol_to_chain_string(symbol->component.factor.i);
+			insert_char_front(i_chain_string, i_chain_string->first_character, ' ');
+			replace_chain_string(i_chain_string, "\n", "\n ");
+			i_char_array = create_char_array_from_chain_string(i_chain_string);
+		}
+		else i_char_array = "";
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, factor_char_array, operator_char_array, power_char_array, i_char_array);
 		if(symbol->component.factor.factor)
 		{
 			delete_chain_string(factor_chain_string);
@@ -979,6 +989,11 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 		{
 			delete_chain_string(power_chain_string);
 			free(power_char_array);
+		}
+		if(symbol->component.factor.i)
+		{
+			delete_chain_string(i_chain_string);
+			free(i_char_array);
 		}
 		return output;
 	case formula:
@@ -2855,6 +2870,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			break;
 		case i:
 			if(symbol->previous && symbol->previous->type == factor)break;
+			if(symbol->previous && symbol->previous->type == numbers)break;
 			// <operand> ::= <i>
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
