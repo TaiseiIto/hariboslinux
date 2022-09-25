@@ -30,7 +30,7 @@
 // <number>            ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 // <dot>               ::= '.'
 // <plus>              ::= '+'
-// <minux>             ::= '-'
+// <minus>             ::= '-'
 // <asterisk>          ::= '*'
 // <slash>             ::= '/'
 // <circumflex>        ::= '^'
@@ -387,7 +387,7 @@ Complex complex_acos(Complex x)
 	minus_i.imag = -1.0;
 	one.real = 1.0;
 	one.imag = 0.0;
-	return complex_multiplication(i, complex_log(complex_addition(x, complex_sqrt(complex_subtraction(complex_multiplication(x, x), one)))));
+	return complex_multiplication(minus_i, complex_log(complex_addition(x, complex_sqrt(complex_subtraction(complex_multiplication(x, x), one)))));
 }
 
 Complex complex_acosh(Complex x)
@@ -395,7 +395,7 @@ Complex complex_acosh(Complex x)
 	Complex one;
 	one.real = 1.0;
 	one.imag = 0.0;
-	return complex_log(complex_addition(x, complex_sqrt(complex_subtract(complex_multiplication(x, x), one))));
+	return complex_log(complex_addition(x, complex_sqrt(complex_subtraction(complex_multiplication(x, x), one))));
 }
 
 Complex complex_asin(Complex x)
@@ -464,7 +464,7 @@ Complex complex_cosh(Complex x)
 	minus_one.imag = 0.0;
 	two.real = 2.0;
 	two.imag = 0.0;
-	return complex_division(complex_addition(complex_exp(x), complex_exp(complex_multiplication(minux_one, x))), two);
+	return complex_division(complex_addition(complex_exp(x), complex_exp(complex_multiplication(minus_one, x))), two);
 }
 
 Complex complex_division(Complex a, Complex b)
@@ -526,7 +526,7 @@ Complex complex_sinh(Complex x)
 	minus_one.imag = 0.0;
 	two.real = 2.0;
 	two.imag = 0.0;
-	return complex_division(complex_subtraction(complex_exp(x), complex_exp(complex_multiplication(minux_one, x))), two);
+	return complex_division(complex_subtraction(complex_exp(x), complex_exp(complex_multiplication(minus_one, x))), two);
 }
 
 Complex complex_subtraction(Complex a, Complex b)
@@ -1591,9 +1591,9 @@ void semantic_analysis(Symbol* symbol)
 			double divisor = 1.0;
 			unsigned int divisor_level;
 			for(divisor_level = 0; divisor_level <= symbol->component.absolute.decimal->component.numbers.level; divisor_level++)divisor *= 10.0;
-			symbol->value.real = symbol->component.absolute.decimal->value / divisor;
+			symbol->value.real = symbol->component.absolute.decimal->value.real / divisor;
 		}
-		if(symbol->component.absolute.integer)symbol->value += symbol->component.absolute.integer->value;
+		if(symbol->component.absolute.integer)symbol->value.real += symbol->component.absolute.integer->value.real;
 		break;
 	case alphabet:
 		symbol->value.real = 0.0;
@@ -1674,8 +1674,8 @@ void semantic_analysis(Symbol* symbol)
 	case numbers:
 		if(symbol->component.numbers.numbers)semantic_analysis(symbol->component.numbers.numbers);
 		if(symbol->component.numbers.number)semantic_analysis(symbol->component.numbers.number);
-		symbol->value.real = symbol->component.numbers.numbers ? 10.0 * symbol->component.numbers.numbers->value : 0.0;
-		symbol->value.real += symbol->component.numbers.number->value;
+		symbol->value.real = symbol->component.numbers.numbers ? 10.0 * symbol->component.numbers.numbers->value.real : 0.0;
+		symbol->value.real += symbol->component.numbers.number->value.real;
 		symbol->value.imag = 0.0;
 		break;
 	case operand:
@@ -1712,7 +1712,7 @@ void semantic_analysis(Symbol* symbol)
 				symbol->value = complex_cosh(symbol->component.operand.value->value);
 				break;
 			case function_log:
-				if(symbol->component.operand.value->type == formula && symbol->component.operand.value->component.formula.left_formula && symbol->component.operand.value->component.formula.right_formula)symbol->value = complex_log2(symbol->component.operand.value->component.formula.right_formula->value) / complex_log2(symbol->component.operand.value->component.formula.left_formula->value);
+				if(symbol->component.operand.value->type == formula && symbol->component.operand.value->component.formula.left_formula && symbol->component.operand.value->component.formula.right_formula)symbol->value = complex_division(complex_log(symbol->component.operand.value->component.formula.right_formula->value), complex_log(symbol->component.operand.value->component.formula.left_formula->value));
 				else
 				{
 					ERROR(); // left_formula or right_formula is not found.
