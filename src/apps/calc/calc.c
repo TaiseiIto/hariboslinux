@@ -263,12 +263,18 @@ typedef union _Component
 	Term term;
 } Component;
 
+typedef struct
+{
+	double real;
+	double imag;
+} Complex;
+
 typedef struct _Symbol
 {
 	Component component;
 	Substring string;
 	SymbolType type;
-	double value;
+	Complex value;
 	struct _Symbol *previous;
 	struct _Symbol *next;
 } Symbol;
@@ -280,9 +286,25 @@ typedef struct _Symbols
 } Symbols;
 
 char *combine_argv(int argc, char const * const * const argv);
+Complex complex_abs(Complex a);
+Complex complex_addition(Complex a, Complex b);
+Complex complex_cos(Complex theta);
+Complex complex_cosh(Complex x);
+Complex complex_division(Complex a, Complex b);
+Complex complex_exp(Complex exponent);
+Complex complex_log(Complex power);
+Complex complex_multiplication(Complex a, Complex b);
+Complex complex_pow(Complex base, Complex exponent);
+Complex complex_sin(Complex theta);
+Complex complex_sinh(Complex x);
+Complex complex_subtraction(Complex a, Complex b);
+Complex complex_sqrt(Complex x);
+Complex complex_tan(Complex theta);
+Complex complex_tanh(Complex x);
 void delete_symbol(Symbol *symbol);
 void delete_symbols(Symbols symbols);
 Symbols lexical_analysis(char const * const input_string);
+void print_complex(Complex value);
 void print_symbols(Symbols const symbols);
 SymbolType substring2symbol_type(Substring substring);
 char *symbol_to_string(Symbol const *symbol);
@@ -313,7 +335,7 @@ int main(int argc, char const * const * const argv)
 	print_symbols(symbols);
 	printf("\n");
 	#endif
-	printf("%.6llf\n", symbols.first_symbol->value);
+	printf("%.10llf%+.10llfi\n", symbols.first_symbol->value.real, symbols.first_symbol->value.imag);
 	delete_symbols(symbols);
 	free(input_string);
 	return 0;
@@ -333,6 +355,135 @@ char *combine_argv(int argc, char const * const * const argv)
 		writer += strlen(argv[argi]);
 	}
 	return combined_string;
+}
+
+Complex complex_abs(Complex a)
+{
+	Complex result;
+	result.real = sqrt(a.real * a.real + a.imag * a.imag);
+	result.imag = 0.0;
+	return result;
+}
+
+Complex complex_addition(Complex a, Complex b)
+{
+	Complex result;
+	result.real = a.real + b.real;
+	result.imag = a.imag + b.imag;
+	return result;
+}
+
+Complex complex_cos(Complex theta)
+{
+	Complex i;
+	Complex minus_i;
+	Complex two;
+	i.real = 0.0;
+	i.imag = 1.0;
+	minus_i.real = 0.0;
+	minus_i.imag = -1.0;
+	two.real = 2.0;
+	two.imag = 0.0;
+	return complex_division(complex_subtraction(complex_exp(complex_multiplication(theta, i)), complex_exp(complex_multiplication(theta, minus_i))), two);
+}
+
+Complex complex_cosh(Complex x)
+{
+	Complex minus_one;
+	Complex two;
+	minus_one.real = -1.0;
+	minus_one.imag = 0.0;
+	two.real = 2.0;
+	two.imag = 0.0;
+	return complex_division(complex_addition(complex_exp(x), complex_exp(complex_multiplication(minux_one, x))), two);
+}
+
+Complex complex_division(Complex a, Complex b)
+{
+	Complex result;
+	result.real = (a.real * b.real + a.imag * b.imag) / (b.real * b.real + b.imag * b.imag);
+	result.imag = (a.imag * b.real - a.real * b.imag) / (b.real * b.real + b.imag * b.imag);
+	return result;
+}
+
+Complex complex_exp(Complex exponent)
+{
+	Complex result;
+	result.real = exp(exponent.real) * cos(exponent.imag);
+	result.imag = exp(exponent.real) * sin(exponent.imag);
+	return result;
+}
+
+Complex complex_log(Complex power)
+{
+	Complex result;
+	result.real = log(complex_abs(power).real);
+	result.imag = atan2(power.imag, power.real);
+	return result;
+}
+
+Complex complex_multiplication(Complex a, Complex b)
+{
+	Complex result;
+	result.real = a.real * b.real - a.imag * b.imag;
+	result.imag = a.real * b.imag + a.imag * b.real;
+	return result;
+}
+
+Complex complex_pow(Complex base, Complex exponent)
+{
+	return complex_exp(complex_multiplication(exponent, complex_log(base)));
+}
+
+Complex complex_sin(Complex theta)
+{
+	Complex i;
+	Complex minus_i;
+	Complex two_i;
+	i.real = 0.0;
+	i.imag = 1.0;
+	minus_i.real = 0.0;
+	minus_i.imag = -1.0;
+	two_i.real = 0.0;
+	two_i.imag = 2.0;
+	return complex_division(complex_subtraction(complex_exp(complex_multiplication(theta, i)), complex_exp(complex_multiplication(theta, minus_i))), two_i);
+}
+
+Complex complex_sinh(Complex x)
+{
+	Complex minus_one;
+	Complex two;
+	minus_one.real = -1.0;
+	minus_one.imag = 0.0;
+	two.real = 2.0;
+	two.imag = 0.0;
+	return complex_division(complex_subtraction(complex_exp(x), complex_exp(complex_multiplication(minux_one, x))), two);
+}
+
+Complex complex_subtraction(Complex a, Complex b)
+{
+	Complex result;
+	result.real = a.real - b.real;
+	result.imag = a.imag - b.imag;
+	return result;
+}
+
+Complex complex_sqrt(Complex x)
+{
+	Complex exponent;
+	exponent.real = 0.5;
+	exponent.imag = 0.0;
+	return complex_pow(x, exponent);
+}
+
+Complex complex_tan(Complex theta)
+{
+	return complex_division(complex_sin(theta), complex_cos(theta));
+}
+
+Complex complex_tanh(Complex x)
+{
+	return complex_division(complex_sinh(x), complex_cosh(x));
 }
 
 void delete_symbol(Symbol *symbol)
@@ -634,7 +785,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			decimal_char_array = create_char_array_from_chain_string(decimal_chain_string);
 		}
 		else decimal_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, integer_char_array, dot_char_array, decimal_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, integer_char_array, dot_char_array, decimal_char_array);
 		if(symbol->component.absolute.integer)
 		{
 			delete_chain_string(integer_chain_string);
@@ -689,7 +840,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
 		}
 		else alphabets_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, alphabets_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, alphabets_char_array);
 		if(symbol->component.e.alphabets)
 		{
 			delete_chain_string(alphabets_chain_string);
@@ -721,7 +872,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			power_char_array = create_char_array_from_chain_string(power_chain_string);
 		}
 		else power_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, factor_char_array, operator_char_array, power_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, factor_char_array, operator_char_array, power_char_array);
 		if(symbol->component.factor.factor)
 		{
 			delete_chain_string(factor_chain_string);
@@ -771,7 +922,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			right_formula_char_array = create_char_array_from_chain_string(right_formula_chain_string);
 		}
 		else right_formula_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array, left_formula_char_array, comma_char_array, right_formula_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, term_char_array, left_formula_char_array, comma_char_array, right_formula_char_array);
 		if(symbol->component.formula.term)
 		{
 			delete_chain_string(term_chain_string);
@@ -1050,7 +1201,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			number_char_array = create_char_array_from_chain_string(number_chain_string);
 		}
 		else number_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, numbers_char_array, number_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, numbers_char_array, number_char_array);
 		if(symbol->component.numbers.numbers)
 		{
 			delete_chain_string(numbers_chain_string);
@@ -1095,7 +1246,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			value_char_array = create_char_array_from_chain_string(value_chain_string);
 		}
 		else value_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, function_char_array, left_parenthesis_char_array, value_char_array, right_parenthesis_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, function_char_array, left_parenthesis_char_array, value_char_array, right_parenthesis_char_array);
 		if(symbol->component.operand.function)
 		{
 			delete_chain_string(function_chain_string);
@@ -1126,7 +1277,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			alphabets_char_array = create_char_array_from_chain_string(alphabets_chain_string);
 		}
 		else alphabets_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, alphabets_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, alphabets_char_array);
 		if(symbol->component.pi.alphabets)
 		{
 			delete_chain_string(alphabets_chain_string);
@@ -1158,7 +1309,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
 		}
 		else operand_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, power_char_array, circumflex_char_array, operand_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, power_char_array, circumflex_char_array, operand_char_array);
 		if(symbol->component.power.power)
 		{
 			delete_chain_string(power_chain_string);
@@ -1200,7 +1351,7 @@ ChainString *symbol_to_chain_string(Symbol const *symbol)
 			factor_char_array = create_char_array_from_chain_string(factor_chain_string);
 		}
 		else factor_char_array = "";
-		output = create_format_chain_string("%s \"%0.*s\" = %.6llf\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value, term_char_array, operator_char_array, factor_char_array);
+		output = create_format_chain_string("%s \"%0.*s\" = %.10llf%+.10llfi\n%s%s%s", symbol_type_name(symbol->type), symbol->string.length, symbol->string.initial, symbol->value.real, symbol->value.imag, term_char_array, operator_char_array, factor_char_array);
 		if(symbol->component.term.term)
 		{
 			delete_chain_string(term_chain_string);
@@ -1364,36 +1515,44 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.absolute.integer)semantic_analysis(symbol->component.absolute.integer);
 		if(symbol->component.absolute.dot)semantic_analysis(symbol->component.absolute.dot);
 		if(symbol->component.absolute.decimal)semantic_analysis(symbol->component.absolute.decimal);
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		if(symbol->component.absolute.decimal)
 		{
 			double divisor = 1.0;
 			unsigned int divisor_level;
 			for(divisor_level = 0; divisor_level <= symbol->component.absolute.decimal->component.numbers.level; divisor_level++)divisor *= 10.0;
-			symbol->value = symbol->component.absolute.decimal->value / divisor;
+			symbol->value.real = symbol->component.absolute.decimal->value / divisor;
 		}
 		if(symbol->component.absolute.integer)symbol->value += symbol->component.absolute.integer->value;
 		break;
 	case alphabet:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case alphabets:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case asterisk:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case circumflex:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case comma:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case dot:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case e:
-		symbol->value = M_E;
+		symbol->value.real = M_E;
+		symbol->value.imag = 0.0;
 		break;
 	case factor:
 		if(symbol->component.factor.factor)semantic_analysis(symbol->component.factor.factor);
@@ -1403,10 +1562,10 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.factor.operator && symbol->component.factor.factor)switch(symbol->component.factor.operator->type)
 		{
 		case asterisk:
-			symbol->value = symbol->component.factor.factor->value * symbol->component.factor.power->value;
+			symbol->value = complex_multiplication(symbol->component.factor.factor->value, symbol->component.factor.power->value);
 			break;
 		case slash:
-			symbol->value = symbol->component.factor.factor->value / symbol->component.factor.power->value;
+			symbol->value = complex_division(symbol->component.factor.factor->value, symbol->component.factor.power->value);
 			break;
 		default:
 			ERROR(); // Invalid symbol
@@ -1421,25 +1580,34 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.formula.left_formula)semantic_analysis(symbol->component.formula.left_formula);
 		if(symbol->component.formula.right_formula)semantic_analysis(symbol->component.formula.right_formula);
 		if(symbol->component.formula.term)symbol->value = symbol->component.formula.term->value;
-		else symbol->value = 0.0 / 0.0;
+		else
+		{
+			symbol->value.real = 0.0 / 0.0;
+			symbol->value.imag = 0.0 / 0.0;
+		}
 		break;
 	case function:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case left_parenthesis:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case minus:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case number:
-		symbol->value = (double)((int)(*symbol->string.initial - '0'));
+		symbol->value.real = (double)((int)(*symbol->string.initial - '0'));
+		symbol->value.imag = 0.0;
 		break;
 	case numbers:
 		if(symbol->component.numbers.numbers)semantic_analysis(symbol->component.numbers.numbers);
 		if(symbol->component.numbers.number)semantic_analysis(symbol->component.numbers.number);
-		symbol->value = symbol->component.numbers.numbers ? 10.0 * symbol->component.numbers.numbers->value : 0.0;
-		symbol->value += symbol->component.numbers.number->value;
+		symbol->value.real = symbol->component.numbers.numbers ? 10.0 * symbol->component.numbers.numbers->value : 0.0;
+		symbol->value.real += symbol->component.numbers.number->value;
+		symbol->value.imag = 0.0;
 		break;
 	case operand:
 		if(symbol->component.operand.function)semantic_analysis(symbol->component.operand.function);
@@ -1451,31 +1619,31 @@ void semantic_analysis(Symbol* symbol)
 			if(symbol->component.operand.function && symbol->component.operand.function->type == function && symbol->component.operand.function->component.function.function)switch(symbol->component.operand.function->component.function.function->type)
 			{
 			case function_acos:
-				symbol->value = acos(symbol->component.operand.value->value);
+				symbol->value = complex_acos(symbol->component.operand.value->value);
 				break;
 			case function_acosh:
-				symbol->value = acosh(symbol->component.operand.value->value);
+				symbol->value = complex_acosh(symbol->component.operand.value->value);
 				break;
 			case function_asin:
-				symbol->value = asin(symbol->component.operand.value->value);
+				symbol->value = complex_asin(symbol->component.operand.value->value);
 				break;
 			case function_asinh:
-				symbol->value = asinh(symbol->component.operand.value->value);
+				symbol->value = complex_asinh(symbol->component.operand.value->value);
 				break;
 			case function_atan:
-				symbol->value = atan(symbol->component.operand.value->value);
+				symbol->value = complex_atan(symbol->component.operand.value->value);
 				break;
 			case function_atanh:
-				symbol->value = atanh(symbol->component.operand.value->value);
+				symbol->value = complex_atanh(symbol->component.operand.value->value);
 				break;
 			case function_cos:
-				symbol->value = cos(symbol->component.operand.value->value);
+				symbol->value = complex_cos(symbol->component.operand.value->value);
 				break;
 			case function_cosh:
-				symbol->value = cosh(symbol->component.operand.value->value);
+				symbol->value = complex_cosh(symbol->component.operand.value->value);
 				break;
 			case function_log:
-				if(symbol->component.operand.value->type == formula && symbol->component.operand.value->component.formula.left_formula && symbol->component.operand.value->component.formula.right_formula)symbol->value = log2(symbol->component.operand.value->component.formula.right_formula->value) / log2(symbol->component.operand.value->component.formula.left_formula->value);
+				if(symbol->component.operand.value->type == formula && symbol->component.operand.value->component.formula.left_formula && symbol->component.operand.value->component.formula.right_formula)symbol->value = complex_log2(symbol->component.operand.value->component.formula.right_formula->value) / complex_log2(symbol->component.operand.value->component.formula.left_formula->value);
 				else
 				{
 					ERROR(); // left_formula or right_formula is not found.
@@ -1484,19 +1652,19 @@ void semantic_analysis(Symbol* symbol)
 				}
 				break;
 			case function_sin:
-				symbol->value = sin(symbol->component.operand.value->value);
+				symbol->value = complex_sin(symbol->component.operand.value->value);
 				break;
 			case function_sinh:
-				symbol->value = sinh(symbol->component.operand.value->value);
+				symbol->value = complex_sinh(symbol->component.operand.value->value);
 				break;
 			case function_sqrt:
-				symbol->value = sqrt(symbol->component.operand.value->value);
+				symbol->value = complex_sqrt(symbol->component.operand.value->value);
 				break;
 			case function_tan:
-				symbol->value = tan(symbol->component.operand.value->value);
+				symbol->value = complex_tan(symbol->component.operand.value->value);
 				break;
 			case function_tanh:
-				symbol->value = tanh(symbol->component.operand.value->value);
+				symbol->value = complex_tanh(symbol->component.operand.value->value);
 				break;
 			default:
 				ERROR(); // Invalid function type.
@@ -1513,10 +1681,12 @@ void semantic_analysis(Symbol* symbol)
 		}
 		break;
 	case pi:
-		symbol->value = M_PI;
+		symbol->value.real = M_PI;
+		symbol->value.imag = 0.0;
 		break;
 	case plus:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case power:
 		if(symbol->component.power.power)semantic_analysis(symbol->component.power.power);
@@ -1524,7 +1694,7 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.power.operand)semantic_analysis(symbol->component.power.operand);
 		if(symbol->component.power.operand)
 		{
-			if(symbol->component.power.power && symbol->component.power.circumflex)symbol->value = pow(symbol->component.power.power->value, symbol->component.power.operand->value);
+			if(symbol->component.power.power && symbol->component.power.circumflex)symbol->value = complex_pow(symbol->component.power.power->value, symbol->component.power.operand->value);
 			else symbol->value = symbol->component.power.operand->value;
 		}
 		else
@@ -1535,10 +1705,12 @@ void semantic_analysis(Symbol* symbol)
 		}
 		break;
 	case right_parenthesis:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case slash:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	case term:
 		if(symbol->component.term.term)semantic_analysis(symbol->component.term.term);
@@ -1547,10 +1719,10 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.term.term && symbol->component.term.operator)switch(symbol->component.term.operator->type)
 		{
 		case plus:
-			symbol->value = symbol->component.term.term->value + symbol->component.term.factor->value;
+			symbol->value = complex_addition(symbol->component.term.term->value, symbol->component.term.factor->value);
 			break;
 		case minus:
-			symbol->value = symbol->component.term.term->value - symbol->component.term.factor->value;
+			symbol->value = complex_subtraction(symbol->component.term.term->value, symbol->component.term.factor->value);
 			break;
 		default:
 			ERROR(); // Invalid symbol
@@ -1563,7 +1735,8 @@ void semantic_analysis(Symbol* symbol)
 			symbol->value = symbol->component.term.factor->value;
 			break;
 		case minus:
-			symbol->value = 0.0 - symbol->component.term.factor->value;
+			symbol->value.real = 0.0 - symbol->component.term.factor->value.real;
+			symbol->value.imag = 0.0 - symbol->component.term.factor->value.imag;
 			break;
 		default:
 			ERROR(); // Invalid symbol
@@ -1573,7 +1746,8 @@ void semantic_analysis(Symbol* symbol)
 		else symbol->value = symbol->component.term.factor->value;
 		break;
 	case invalid_symbol_type:
-		symbol->value = 0.0;
+		symbol->value.real = 0.0;
+		symbol->value.imag = 0.0;
 		break;
 	default:
 		ERROR(); // Invalid symbol
