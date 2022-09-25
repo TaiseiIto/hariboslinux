@@ -44,6 +44,8 @@
 #include "stdlib.h"
 #include "string.h"
 
+#define DEBUG
+
 struct _Symbol;
 
 typedef enum _SymbolType
@@ -2446,6 +2448,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				print_symbols(symbols);
 				#endif
 			}
+			else if(symbol->next && symbol->next->type == alphabet)break;
 			else if(symbol->next && symbol->next->type == asterisk)break;
 			else if(symbol->next && symbol->next->type == slash)break;
 			else if(symbol->previous && symbol->previous->type == plus)break;
@@ -2851,6 +2854,7 @@ Symbols syntactic_analysis(Symbols symbols)
 			#endif
 			break;
 		case i:
+			if(symbol->previous && symbol->previous->type == factor)break;
 			// <operand> ::= <i>
 			new_symbol = malloc(sizeof(*new_symbol));
 			new_symbol->type = operand;
