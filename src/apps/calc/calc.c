@@ -2,7 +2,7 @@
 //
 // <formula>           ::= <term> | <formula> <comma> <formula>
 // <term>              ::= <factor> | <plus> <factor> | <minus> <factor> | <term> <plus> <factor> | <term> <minus> <factor>
-// <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power>
+// <factor>            ::= <power> | <factor> <asterisk> <power> | <factor> <slash> <power> | <factor> <i>
 // <power>             ::= <operand> | <power> <circumflex> <operand>
 // <operand>           ::= <absolute> | <left_parenthesis> <formula> <right_parenthesis> | <e> | <i> | <pi> | <function> <left_parenthesis> <formula> <right_parenthesis>
 // <function>          ::= <function_acos> | <function_asin> | <function_atan> | <function_cos> | <function_cosh> | <function_log> | <function_sin> | <function_sinh> | <function_sqrt> | <function_tan> | <function_tanh>
@@ -117,6 +117,7 @@ typedef struct _Factor
 	struct _Symbol *factor;
 	struct _Symbol *operator;
 	struct _Symbol *power;
+	struct _Symbol *i;
 } Factor;
 
 typedef struct _Formula
@@ -1666,7 +1667,7 @@ void semantic_analysis(Symbol* symbol)
 		if(symbol->component.factor.factor)semantic_analysis(symbol->component.factor.factor);
 		if(symbol->component.factor.operator)semantic_analysis(symbol->component.factor.operator);
 		if(symbol->component.factor.power)semantic_analysis(symbol->component.factor.power);
-		
+		if(symbol->component.factor.i)semantic_analysis(symbol->component.factor.i);
 		if(symbol->component.factor.operator && symbol->component.factor.factor)switch(symbol->component.factor.operator->type)
 		{
 		case asterisk:
@@ -1680,6 +1681,7 @@ void semantic_analysis(Symbol* symbol)
 			exit(-1);
 			break;
 		}
+		else if(symbol->component.factor.factor && symbol->component.factor.i)symbol->value = complex_multiplication(symbol->component.factor.factor->value, symbol->component.factor.i->value);
 		else symbol->value = symbol->component.factor.power->value;
 		break;
 	case formula:
@@ -2394,6 +2396,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				new_symbol->component.factor.factor = symbol;
 				new_symbol->component.factor.operator = symbol->next;
 				new_symbol->component.factor.power = symbol->next->next;
+				new_symbol->component.factor.i = NULL;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length + symbol->next->string.length + symbol->next->next->string.length;
 				new_symbol->previous = symbol->previous;
@@ -2412,6 +2415,34 @@ Symbols syntactic_analysis(Symbols symbols)
 				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
 				#ifdef DEBUG
 				printf("\n<factor> ::= <factor> <asterisk> <power> | <factor> <slash> <power>\n");
+				print_symbols(symbols);
+				#endif
+			}
+			else if(symbol->next && symbol->next->type == i)
+			{
+				// <factor> ::= <factor> <i>
+				new_symbol = malloc(sizeof(*new_symbol));
+				new_symbol->type = factor;
+				new_symbol->component.factor.factor = symbol;
+				new_symbol->component.factor.operator = NULL;
+				new_symbol->component.factor.power = NULL;
+				new_symbol->component.factor.i = symbol->next;
+				new_symbol->string.initial = symbol->string.initial;
+				new_symbol->string.length = symbol->string.length + symbol->next->string.length;
+				new_symbol->previous = symbol->previous;
+				new_symbol->next = symbol->next->next;
+				if(new_symbol->previous)new_symbol->previous->next = new_symbol;
+				if(new_symbol->next)new_symbol->next->previous = new_symbol;
+				if(symbols.first_symbol == symbol)symbols.first_symbol = new_symbol;
+				if(symbols.last_symbol == symbol->next)symbols.last_symbol = new_symbol;
+				symbol->next->previous = NULL;
+				symbol->next->next = NULL;
+				symbol->previous = NULL;
+				symbol->next = NULL;
+				next_symbol = new_symbol;
+				flags |= SYNTACTIC_ANALYSIS_FLAG_CHANGED;
+				#ifdef DEBUG
+				printf("\n<factor> ::= <factor> <i>\n");
 				print_symbols(symbols);
 				#endif
 			}
@@ -3114,6 +3145,7 @@ Symbols syntactic_analysis(Symbols symbols)
 				new_symbol->component.factor.factor = NULL;
 				new_symbol->component.factor.operator = NULL;
 				new_symbol->component.factor.power = symbol;
+				new_symbol->component.factor.i = NULL;
 				new_symbol->string.initial = symbol->string.initial;
 				new_symbol->string.length = symbol->string.length;
 				new_symbol->previous = symbol->previous;
