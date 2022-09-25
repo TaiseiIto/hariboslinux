@@ -6,7 +6,7 @@
 
 #define _STRING(x) #x
 #define _STRING2(x) _STRING(x)
-#define ERROR() puts("ERROR " __FILE__ " : " _STRING2(__LINE__) "\n")
+#define ERROR() puts("ERROR " __FILE__ " : " _STRING2(__LINE__))
 
 typedef struct _FileIntormation
 {
