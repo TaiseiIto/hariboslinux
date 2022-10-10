@@ -214,23 +214,26 @@ strncmp:
 	movl	0x08(%ebp),%esi		# ESI = string1;
 	movl	0x0c(%ebp),%edi		# EDI = string2;
 	movl	0x10(%ebp),%ecx		# ECX = n;
-3:	# Compare the strings.
+3:	# if(n == 0)return 0;
+	testl	%ecx,	%ecx
+	jz	5f
+4:	# Compare the strings.
 	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
-	ja	4f			# if(*(char *)ESI < *(char *)EDI)goto 4f;
-	jb	5f			# if(*(char *)EDI < *(char *)ESI)goto 5f;
-	# if(*(char *)ESI == *(char *)EDI)return 0;
+	ja	6f			# if(*(char *)ESI < *(char *)EDI)goto 4f;
+	jb	7f			# if(*(char *)EDI < *(char *)ESI)goto 5f;
+5:	# if(*(char *)ESI == *(char *)EDI)return 0;
 	xorl	%eax,	%eax
-	jmp	6f
-4:	# if(*(char *)ESI < *(char *)EDI)return -1;
+	jmp	8f
+6:	# if(*(char *)ESI < *(char *)EDI)return -1;
 	movl	$0xffffffff,%eax
-	jmp	6f
-5:	# if(*(char *)EDI < *(char *)ESI)return 1;
+	jmp	8f
+7:	# if(*(char *)EDI < *(char *)ESI)return 1;
 	movl	$0x00000001,%eax
-6:	# Restore preserved registers.
+8:	# Restore preserved registers.
 	popl	%esi
 	popl	%edi
 	popl	%ebx
-7:	# End of the function.
+9:	# End of the function.
 	leave
 	ret
 
