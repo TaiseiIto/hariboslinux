@@ -16,6 +16,24 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 
 ACPITableHeader const *get_rsdt_header(void)
 {
-	return (ACPITableHeader const *)get_acpi_memory_region_descriptor().base;
+	return (ACPITableHeader const *)(unsigned int)get_acpi_memory_region_descriptor().base;
+}
+
+ACPITableHeader const *get_sdt_header(unsigned int index)
+{
+	ACPITableHeader const *rsdt_header =  get_rsdt_header();
+	ACPITableHeader const * const *sdt_headers = (ACPITableHeader const * const *)((unsigned int)rsdt_header + sizeof(*rsdt_header));
+	if(get_num_of_sdts() <= index)
+	{
+		ERROR(); // index is too big.
+		return NULL;
+	}
+	return sdt_headers[index];
+}
+
+unsigned int get_num_of_sdts(void)
+{
+	ACPITableHeader const *rsdt_header =  get_rsdt_header();
+	return (rsdt_header->length - sizeof(*rsdt_header)) / sizeof(ACPITableHeader*);
 }
 

@@ -18,6 +18,8 @@ typedef struct _ACPITableHeader
 
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
 ACPITableHeader const *get_rsdt_header(void);
+ACPITableHeader const *get_sdt_header(unsigned int index);
+unsigned int get_num_of_sdts(void);
 
 #endif
 
