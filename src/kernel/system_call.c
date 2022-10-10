@@ -2,6 +2,7 @@
 // http://faculty.nps.edu/cseagle/assembly/sys_call.html
 // https://rninche01.tistory.com/entry/Linux-system-call-table-%EC%A0%95%EB%A6%ACx86-x64
 
+#include "acpi.h"
 #include "common.h"
 #include "disk.h"
 #include "event.h"
@@ -609,19 +610,15 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 					MemoryRegionDescriptor acpi_memory_region_descriptor;
-					unsigned int acpi_memory_region_descriptor_index;
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
 					break;
 				case CPU_COMMAND_SHUTDOWN:
-					for(acpi_memory_region_descriptor = get_memory_region_descriptor(acpi_memory_region_descriptor_index = 0); acpi_memory_region_descriptor.base != 0 || acpi_memory_region_descriptor.length != 0 || acpi_memory_region_descriptor.type != 0 || acpi_memory_region_descriptor.attribute != 0; acpi_memory_region_descriptor = get_memory_region_descriptor(++acpi_memory_region_descriptor_index))if(acpi_memory_region_descriptor.type == MEMORY_REGION_ACPI)
-					{
-						printf_shell(shell, "acpi_memory_region_descriptor.base = %#018.16llx\n", acpi_memory_region_descriptor.base);
-						printf_shell(shell, "acpi_memory_region_descriptor.length = %#018.16llx\n", acpi_memory_region_descriptor.length);
-						printf_shell(shell, "acpi_memory_region_descriptor.type = %#010.8llx\n", acpi_memory_region_descriptor.type);
-						printf_shell(shell, "acpi_memory_region_descriptor.attribute = %#010.8llx\n", acpi_memory_region_descriptor.attribute);
-						break;
-					}
+					acpi_memory_region_descriptor = get_acpi_memory_region_descriptor();
+					printf_shell(shell, "acpi_memory_region_descriptor.base = %#018.16llx\n", acpi_memory_region_descriptor.base);
+					printf_shell(shell, "acpi_memory_region_descriptor.length = %#018.16llx\n", acpi_memory_region_descriptor.length);
+					printf_shell(shell, "acpi_memory_region_descriptor.type = %#010.8llx\n", acpi_memory_region_descriptor.type);
+					printf_shell(shell, "acpi_memory_region_descriptor.attribute = %#010.8llx\n", acpi_memory_region_descriptor.attribute);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.

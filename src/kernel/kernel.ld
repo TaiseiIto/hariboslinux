@@ -9,6 +9,7 @@ SECTIONS
 	.text :
 	{
 		main.o(.text)
+		acpi.o(.text)
 		beep.o(.text)
 		chain_string.o(.text)
 		cmos.o(.text)
@@ -52,6 +53,7 @@ SECTIONS
 	.rodata :
 	{
 		main.o(.rodata)
+		acpi.o(.rodata)
 		beep.o(.rodata)
 		chain_string.o(.rodata)
 		cmos.o(.rodata)
@@ -95,6 +97,7 @@ SECTIONS
 	.data :
 	{
 		main.o(.data)
+		acpi.o(.data)
 		beep.o(.data)
 		chain_string.o(.data)
 		cmos.o(.data)
@@ -138,6 +141,7 @@ SECTIONS
 	.bss :
 	{
 		main.o(.bss)
+		acpi.o(.bss)
 		beep.o(.bss)
 		chain_string.o(.bss)
 		cmos.o(.bss)
@@ -181,6 +185,7 @@ SECTIONS
 	COMMON :
 	{
 		main.o(COMMON)
+		acpi.o(COMMON)
 		beep.o(COMMON)
 		chain_string.o(COMMON)
 		cmos.o(COMMON)
