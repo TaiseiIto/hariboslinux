@@ -214,38 +214,23 @@ strncmp:
 	movl	0x08(%ebp),%esi		# ESI = string1;
 	movl	0x0c(%ebp),%edi		# EDI = string2;
 	movl	0x10(%ebp),%ecx		# ECX = n;
-	pushl	%esi
-	call	strlen			# EAX = strlen(string1);
-	movl	%eax,	%ebx		# EBX = strlen(string1);
-	pushl	%edi
-	call	strlen			# EAX = strlen(string2);
-	addl	$0x00000008,%esp
-3:	# Choose shorter string length.
-	cmpl	%ebx,	%eax		# if(strlen(string1) < strlen(string2))EAX = strlen(string1);
-	jbe	4f			# if(strlen(string2) <= strlen(string1))goto 4;
-	movl	%ebx,	%eax		# EAX = strlen(string1);
-4:
-	incl	%eax			# EAX = min(strlen(string1), strlen(string2)) + 1;
-	cmpl	%eax,	%ecx		# if(min(strlen(string1), strlen(string2)) + 1 < n)ECX = min(strlen(string1), strlen(string2)) + 1;
-	jbe	5f			# if(n <= min(strlen(string1), strlen(string2)) + 1)goto 5;
-	movl	%eax,	%ecx		# ECX = min(strlen(string1), strlen(string2)) + 1;
-5:	# Compare the strings.
+3:	# Compare the strings.
 	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
-	ja	6f			# if(*(char *)ESI < *(char *)EDI)goto 6f;
-	jb	7f			# if(*(char *)EDI < *(char *)ESI)goto 7f;
+	ja	4f			# if(*(char *)ESI < *(char *)EDI)goto 4f;
+	jb	5f			# if(*(char *)EDI < *(char *)ESI)goto 5f;
 	# if(*(char *)ESI == *(char *)EDI)return 0;
 	xorl	%eax,	%eax
-	jmp	8f
-6:	# if(*(char *)ESI < *(char *)EDI)return -1;
+	jmp	6f
+4:	# if(*(char *)ESI < *(char *)EDI)return -1;
 	movl	$0xffffffff,%eax
-	jmp	8f
-7:	# if(*(char *)EDI < *(char *)ESI)return 1;
+	jmp	6f
+5:	# if(*(char *)EDI < *(char *)ESI)return 1;
 	movl	$0x00000001,%eax
-8:	# Restore preserved registers.
+6:	# Restore preserved registers.
 	popl	%esi
 	popl	%edi
 	popl	%ebx
-9:	# End of the function.
+7:	# End of the function.
 	leave
 	ret
 
