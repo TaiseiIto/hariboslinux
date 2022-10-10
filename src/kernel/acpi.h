@@ -3,7 +3,21 @@
 
 #include "memory.h"
 
+typedef struct _ACPITableHeader
+{
+	char signature[4];
+	unsigned int length;
+	unsigned char revision;
+	unsigned char checksum;
+	char oem_id[6];
+	char oem_table_id[8];
+	unsigned int oem_revision;
+	unsigned int creater_id;
+	unsigned int creater_revision;
+} ACPITableHeader;
+
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
+ACPITableHeader const *get_acpi_first_table_header(void);
 
 #endif
 

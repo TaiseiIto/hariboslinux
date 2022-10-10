@@ -14,3 +14,8 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 	return acpi_memory_region_descriptor;
 }
 
+ACPITableHeader const *get_acpi_first_table_header(void)
+{
+	return (ACPITableHeader const *)get_acpi_memory_region_descriptor().base;
+}
+
