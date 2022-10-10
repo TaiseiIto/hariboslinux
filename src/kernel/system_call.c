@@ -611,7 +611,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 					MemoryRegionDescriptor acpi_memory_region_descriptor;
-					ACPITableHeader const *acpi_first_table_header;
+					ACPITableHeader const *rsdt_header;
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
 					break;
@@ -621,16 +621,16 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_shell(shell, "acpi_memory_region_descriptor.length = %#018.16llx\n", acpi_memory_region_descriptor.length);
 					printf_shell(shell, "acpi_memory_region_descriptor.type = %#010.8llx\n", acpi_memory_region_descriptor.type);
 					printf_shell(shell, "acpi_memory_region_descriptor.attribute = %#010.8llx\n", acpi_memory_region_descriptor.attribute);
-					acpi_first_table_header = get_acpi_first_table_header();
-					printf_shell(shell, "acpi_first_table_header.signature = %.*s\n", _countof(acpi_first_table_header->signature), acpi_first_table_header->signature);
-					printf_shell(shell, "acpi_first_table_header.length = %#010.8x\n", acpi_first_table_header->length);
-					printf_shell(shell, "acpi_first_table_header.revision = %#04.2x\n", acpi_first_table_header->revision);
-					printf_shell(shell, "acpi_first_table_header.checksum = %#04.2x\n", acpi_first_table_header->checksum);
-					printf_shell(shell, "acpi_first_table_header.oem_id = %.*s\n", _countof(acpi_first_table_header->oem_id), acpi_first_table_header->oem_id);
-					printf_shell(shell, "acpi_first_table_header.oem_table_id = %.*s\n", _countof(acpi_first_table_header->oem_table_id), acpi_first_table_header->oem_table_id);
-					printf_shell(shell, "acpi_first_table_header.oem_revision = %#010.8x\n", acpi_first_table_header->oem_revision);
-					printf_shell(shell, "acpi_first_table_header.creater_id = %#010.8x\n", acpi_first_table_header->creater_id);
-					printf_shell(shell, "acpi_first_table_header.creater_revision = %#010.8x\n", acpi_first_table_header->creater_revision);
+					rsdt_header = get_rsdt_header();
+					printf_shell(shell, "rsdt_header.signature = %.*s\n", _countof(rsdt_header->signature), rsdt_header->signature);
+					printf_shell(shell, "rsdt_header.length = %#010.8x\n", rsdt_header->length);
+					printf_shell(shell, "rsdt_header.revision = %#04.2x\n", rsdt_header->revision);
+					printf_shell(shell, "rsdt_header.checksum = %#04.2x\n", rsdt_header->checksum);
+					printf_shell(shell, "rsdt_header.oem_id = %.*s\n", _countof(rsdt_header->oem_id), rsdt_header->oem_id);
+					printf_shell(shell, "rsdt_header.oem_table_id = %.*s\n", _countof(rsdt_header->oem_table_id), rsdt_header->oem_table_id);
+					printf_shell(shell, "rsdt_header.oem_revision = %#010.8x\n", rsdt_header->oem_revision);
+					printf_shell(shell, "rsdt_header.creater_id = %#010.8x\n", rsdt_header->creater_id);
+					printf_shell(shell, "rsdt_header.creater_revision = %#010.8x\n", rsdt_header->creater_revision);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.

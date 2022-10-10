@@ -17,7 +17,7 @@ typedef struct _ACPITableHeader
 } ACPITableHeader;
 
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
-ACPITableHeader const *get_acpi_first_table_header(void);
+ACPITableHeader const *get_rsdt_header(void);
 
 #endif
 
