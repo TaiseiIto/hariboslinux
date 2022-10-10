@@ -1,5 +1,15 @@
 #include "acpi.h"
 #include "serial.h"
+#include "string.h"
+
+ACPITableHeader const *find_sdt_header(char const *signature)
+{
+	ACPITableHeader const * const *sdt_headers = get_sdt_headers();
+	unsigned int num_of_sdt_headers = get_num_of_sdt_headers();
+	for(unsigned int sdt_header_index = 0; sdt_header_index < num_of_sdt_headers; sdt_header_index++)if(!strncmp(sdt_headers[sdt_header_index]->signature, signature, sizeof(sdt_headers[sdt_header_index]->signature)))return sdt_headers[sdt_header_index];
+	ERROR(); // SDT that has a specified signature is not found.
+	return NULL;
+}
 
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 {
@@ -19,19 +29,13 @@ ACPITableHeader const *get_rsdt_header(void)
 	return (ACPITableHeader const *)(unsigned int)get_acpi_memory_region_descriptor().base;
 }
 
-ACPITableHeader const *get_sdt_header(unsigned int index)
+ACPITableHeader const * const *get_sdt_headers(void)
 {
 	ACPITableHeader const *rsdt_header =  get_rsdt_header();
-	ACPITableHeader const * const *sdt_headers = (ACPITableHeader const * const *)((unsigned int)rsdt_header + sizeof(*rsdt_header));
-	if(get_num_of_sdts() <= index)
-	{
-		ERROR(); // index is too big.
-		return NULL;
-	}
-	return sdt_headers[index];
+	return (ACPITableHeader const * const *)((unsigned int)rsdt_header + sizeof(*rsdt_header));
 }
 
-unsigned int get_num_of_sdts(void)
+unsigned int get_num_of_sdt_headers(void)
 {
 	ACPITableHeader const *rsdt_header =  get_rsdt_header();
 	return (rsdt_header->length - sizeof(*rsdt_header)) / sizeof(ACPITableHeader*);

@@ -16,10 +16,11 @@ typedef struct _ACPITableHeader
 	unsigned int creater_revision;
 } ACPITableHeader;
 
+ACPITableHeader const *find_sdt_header(char const *signature);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
 ACPITableHeader const *get_rsdt_header(void);
-ACPITableHeader const *get_sdt_header(unsigned int index);
-unsigned int get_num_of_sdts(void);
+ACPITableHeader const * const *get_sdt_headers(void);
+unsigned int get_num_of_sdt_headers(void);
 
 #endif
 
