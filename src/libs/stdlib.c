@@ -43,24 +43,81 @@ void delete_ring(Ring *ring);
 void *ring_element(Ring *ring, int index);
 unsigned int *mersenne_twister_ring_element(int index);
 
+double atof(char const *digits)
+{
+	double denominator = 1.0;
+	double value = 0.0;
+	unsigned char flags;
+	#define ATOF_FLAG_MINUS	0x01
+	#define ATOF_FLAG_PLUS	0x02
+	#define ATOF_FLAG_POINT 0x04
+	flags = ATOF_FLAG_PLUS;
+	switch(*digits)
+	{
+	case '+':
+		digits++;
+		break;
+	case '-':
+		flags &= ~ATOF_FLAG_PLUS;
+		flags |= ATOF_FLAG_MINUS;
+		digits++;
+		break;
+	}
+	for(; *digits; digits++)
+		if(*digits == '.')flags |= ATOF_FLAG_POINT;
+		else if(isdigit(*digits))
+		{
+			if(flags & ATOF_FLAG_POINT)
+			{
+				denominator *= 10.0;
+				if(flags & ATOF_FLAG_PLUS)value += (double)(*digits - '0') / denominator;
+				if(flags & ATOF_FLAG_MINUS)value -= (double)(*digits - '0') / denominator;
+			}
+			else
+			{
+				value *= 10.0;
+				if(flags & ATOF_FLAG_PLUS)value += (double)(*digits - '0');
+				if(flags & ATOF_FLAG_MINUS)value -= (double)(*digits - '0');
+			}
+		}
+		else 
+		{
+			ERROR();
+			return 0;
+		}
+	return value;
+}
+
 int atoi(char const *digits)
 {
 	int value = 0;
-	unsigned char flags = 0x00;
+	unsigned char flags;
 	#define ATOI_FLAG_MINUS 0x01
-	if(*digits == '-')
+	#define ATOI_FLAG_PLUS 0x02
+	flags = ATOI_FLAG_PLUS;
+	switch(*digits)
 	{
+	case '+':
+		digits++;
+		break;
+	case '-':
+		flags &= ~ATOI_FLAG_PLUS;
 		flags |= ATOI_FLAG_MINUS;
 		digits++;
+		break;
 	}
 	for(; *digits; digits++)
 		if(isdigit(*digits))
 		{
 			value *= 10;
 			if(flags & ATOI_FLAG_MINUS)value -= *digits - '0';
-			else value += *digits - '0';
+			if(flags & ATOI_FLAG_PLUS)value += *digits - '0';
 		}
-		else return 0;
+		else
+		{
+			ERROR();
+			return 0;
+		}
 	return value;
 }
 

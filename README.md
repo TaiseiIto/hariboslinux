@@ -285,52 +285,26 @@ $ cd hariboslinux
 ```
 
 ### Docker image生成
-以下のcommandでdocker imageが準備されます．
+以下のcommandでdocker環境が準備されます．
 ```
-$ make docker-build
+$ make devenv
+/~/hariboslinux #
 ```
 
-### Docker container生成および起動
-さらに，以下のcommandでdocker containerが起動します．
-```
-$ make docker-run
-```
-containerの/bin/shが起動します．
+以下のコマンドでcontainerから抜け，containerを停止します．
+
 ```
 /~/hariboslinux # exit
 ```
-でcontainerから抜け，containerを停止します．
 
-また，以下のようなcommandも用意してあります．
-
-### Docker container起動
+以下のコマンドでdocker環境を作り直します．
 ```
-$ make docker-start
+$ make rebuild-devenv
 ```
 
-### Docker container login
+以下のコマンドでdocker環境を削除します．
 ```
-$ make docker-login
-```
-containerの/bin/shに入ります．
-```
-/~/hariboslinux # exit
-```
-でcontainerから抜け，containerを停止します．
-
-### Docker container停止
-```
-$ make docker-stop
-```
-
-### Docker container削除
-```
-$ make docker-remove-container
-```
-
-### Docker image削除
-```
-$ make docker-remove-image
+$ make clean-devenv
 ```
 
 ## OSのimage fileおよびその更新
@@ -364,7 +338,9 @@ Docker containerを起動すると，このrepositoryが`~/hariboslinux`にclone
 ### git setting
 git commitをするために，emailとnameを設定します．
 ```
-/~/hariboslinux # make gitconfig
+/~/hariboslinux # make gitconfig KEY=path/to/ssh/key GPG=path/to/.gnupg
+Your GitHub email:email@address
+Your GitHub name:TaiseiIto
 ```
 
 ## gdbの使い方

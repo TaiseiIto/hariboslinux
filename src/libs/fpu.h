@@ -83,6 +83,7 @@ double fpu_acosh(double x);
 double fpu_asin(double x);
 double fpu_asinh(double x);
 double fpu_atan(double x);
+double fpu_atan2(double x, double y);
 double fpu_atanh(double x);
 double fpu_atan2(double y, double x);
 double fpu_cos(double x);

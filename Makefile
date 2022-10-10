@@ -1,3 +1,15 @@
+# OS specific symbols
+ifeq ($(OS), Windows_NT)
+BLANK =
+DELIMITER = \$(BLANK)
+SCRIPT_PREFIX = 
+SCRIPT_SUFFIX = .bat
+else
+DELIMITER = /
+SCRIPT_PREFIX = ./
+SCRIPT_SUFFIX = .sh
+endif
+
 # floppy disk image file of the built operating system
 IMAGE_FILE = haribos.img
 BOOT_SECTORS = diskcontents/bootsector.bin
@@ -18,9 +30,9 @@ COMPILER_WARNING_OPTION = -Wall -Wextra
 
 # docker
 DOCKER = docker
-DOCKER_IMAGE_NAME = hariboslinux
+DOCKER_IMAGE = hariboslinux
 DOCKER_IMAGE_TAG = latest
-DOCKER_CONTAINER_NAME = hariboslinux
+DOCKER_CONTAINER = hariboslinux
 DOCKER_CONTAINER_SHELL = /bin/sh
 DOCKER_VNC_PORT_OPTION = -p $(VNC_PORT):$(VNC_PORT)
 
@@ -58,6 +70,21 @@ clean:
 	rm -f diskcontents/*.bin diskcontents/*.com $(IMAGE_PACKER) *.bin *.o *.img
 	make clean -C src
 
+# Clean docker environment
+clean-devenv:
+	$(SCRIPT_PREFIX)script$(DELIMITER)clean-devenv$(SCRIPT_SUFFIX) $(DOCKER) $(DOCKER_IMAGE) $(DOCKER_CONTAINER)
+
+# Debug the operating system onQEMU by gdb
+debug: $(IMAGE_FILE) stop-qemu
+	tmux new-session \; source-file tmux/.tmux.debug-haribos.conf
+
+debug-qemu:
+	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_TIMEZONE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) | tee $(EMULATOR_SERIAL_OUT)
+
+# Build docker environment
+devenv:
+	$(SCRIPT_PREFIX)script$(DELIMITER)devenv$(SCRIPT_SUFFIX) $(DOCKER) $(DOCKER_IMAGE) $(DOCKER_IMAGE_TAG) $(DOCKER_CONTAINER) $(VNC_PORT)
+
 diskcontents/kernel.bin: src/kernel.bin
 	cp $^ $@
 
@@ -67,47 +94,26 @@ diskcontents/%.bin: src/%.bin
 diskcontents/%.com: src/%.com
 	cp $^ $@
 
-docker-build:
-	$(DOCKER) build --no-cache -t $(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG) .
-
-docker-login:
-	$(DOCKER) attach $(DOCKER_CONTAINER_NAME)
-
-docker-remove-container:
-	$(DOCKER) rm $(DOCKER_CONTAINER_NAME)
-
-docker-remove-image:
-	$(DOCKER) rmi $(DOCKER_IMAGE_NAME)
-
-docker-run:
-	$(DOCKER) run --name $(DOCKER_CONTAINER_NAME) $(DOCKER_VNC_PORT_OPTION) -i -t $(DOCKER_IMAGE_NAME)
-
-docker-start:
-	$(DOCKER) start $(DOCKER_CONTAINER_NAME)
-
-docker-stop:
-	$(DOCKER) stop $(DOCKER_CONTAINER_NAME)
-
 download-image:
-	$(DOCKER) cp $(DOCKER_CONTAINER_NAME):/root/hariboslinux/$(IMAGE_FILE) .
-
-# debug the operating system onQEMU by gdb
-debug: $(IMAGE_FILE) stop
-	($(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) $(EMULATOR_DEBUG_OPTION) &) && \
-	make -C gdb
+	$(DOCKER) cp $(DOCKER_CONTAINER):/root/hariboslinux/$(IMAGE_FILE) .
 
 # Only the developer can execute it.
 # usage : $ make gitconfig KEY=<GitHub private key path> GPG=<.gnupg path>
 gitconfig:
-	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER_NAME):/root/hariboslinux/ssh/github && \
-	$(DOCKER) cp $(GPG) $(DOCKER_CONTAINER_NAME):/root/.gnupg && \
-	make docker-start && \
-	$(DOCKER) exec -it $(DOCKER_CONTAINER_NAME) /root/hariboslinux/git/gitconfig.sh
+	$(DOCKER) cp $(KEY) $(DOCKER_CONTAINER):/root/hariboslinux/ssh/github && \
+	$(DOCKER) cp $(GPG) $(DOCKER_CONTAINER):/root/.gnupg && \
+	$(DOCKER) start $(DOCKER_CONTAINER) && \
+	$(DOCKER) exec -it $(DOCKER_CONTAINER) /root/hariboslinux/git/gitconfig.sh && \
+	$(DOCKER) stop $(DOCKER_CONTAINER)
 
-# rebuild the OS
+# Rebuild the OS
 rebuild: clean
 	make 2>&1 | tee $(MAKE_OUT)
 	! grep -i -e error -e warning $(MAKE_OUT)
+
+# Rebuild docker environment
+rebuild-devenv: clean-devenv
+	make devenv
 
 # run the OS on QEMU with interactive serial interface
 run:
@@ -115,7 +121,7 @@ run:
 	tmux new-session \; source-file tmux/.tmux.run-haribos.conf
 
 # run the OS on QEMU
-run-qemu: $(IMAGE_FILE) stop
+run-qemu: $(IMAGE_FILE) stop-qemu
 	$(EMULATOR) $(EMULATOR_BOOT_OPTION) $(EMULATOR_DRIVE_OPTION) $(EMULATOR_MEMORY_OPTION) $(EMULATOR_SERIAL_OPTION) $(EMULATOR_TIMEZONE_OPTION) $(EMULATOR_VIDEO_OPTION) $(EMULATOR_VNC_OPTION) | tee $(EMULATOR_SERIAL_OUT)
 
 src/kernel.bin: $(wildcard src/kernel/*.c src/kernel/*.h)
@@ -128,8 +134,12 @@ src/%.com:
 	make -C src
 
 # stop QEMU
-stop:
+stop-qemu:
 	for i in $$(ps ax | grep $(EMULATOR) | grep -v grep | awk '{print $$1}'); do kill $$i; done
+
+# stop TMUX
+stop: stop-qemu
+	for i in $$(ps ax | grep tmux | grep -v grep | awk '{print $$1}'); do kill $$i; done
 
 # update the OS
 update: update-repository
