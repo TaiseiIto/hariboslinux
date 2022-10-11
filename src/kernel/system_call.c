@@ -19,8 +19,6 @@
 #define STDIN	0x00000000
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
-#define PRINT_ACPI_TABLE_HEADER(x) print_acpi_table_header((x), _STRING(x))
-#define PRINT_GENERIC_ADDRESS_STRUCTURE(x) print_generic_address_structure((x), _STRING(x))
 
 typedef struct _ApplicationTimer
 {
@@ -262,8 +260,6 @@ void delete_windows(void);
 SystemCallStatus *get_system_call_status(void);
 ApplicationTimer *get_application_timer_from_timer(Timer const *timer);
 ApplicationWindow *get_application_window_from_window(Window const *window);
-void print_acpi_table_header(ACPITableHeader const *acpi_table_header, char const *name);
-void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name);
 int system_call_close(FileDescriptor *file_descriptor);
 int system_call_exit(int return_value);
 FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
@@ -411,30 +407,6 @@ ApplicationWindow *get_application_window_from_window(Window const *window)
 		application_window = application_window->next;
 	} while(application_window != application_windows);
 	return NULL;
-}
-
-void print_acpi_table_header(ACPITableHeader const *acpi_table_header, char const *name)
-{
-	Shell *shell = get_current_shell();
-	printf_shell(shell, "%s->signature = %.*s\n", name, sizeof(acpi_table_header->signature), acpi_table_header->signature);
-	printf_shell(shell, "%s->length = %#010.8x\n", name, acpi_table_header->length);
-	printf_shell(shell, "%s->revision = %#04.2x\n", name, acpi_table_header->revision);
-	printf_shell(shell, "%s->checksum = %#04.2x\n", name, acpi_table_header->checksum);
-	printf_shell(shell, "%s->oem_id = %.*s\n", name, sizeof(acpi_table_header->oem_id), acpi_table_header->oem_id);
-	printf_shell(shell, "%s->oem_table_id = %.*s\n", name, sizeof(acpi_table_header->oem_table_id), acpi_table_header->oem_table_id);
-	printf_shell(shell, "%s->oem_revision = %#010.8x\n", name, acpi_table_header->oem_revision);
-	printf_shell(shell, "%s->creater_id = %#010.8x\n", name, acpi_table_header->creater_id);
-	printf_shell(shell, "%s->creater_revision = %#010.8x\n", name, acpi_table_header->creater_revision);
-}
-
-void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name)
-{
-	Shell *shell = get_current_shell();
-	printf_shell(shell, "%s.address_space = %#04.2x\n", name, generic_address_structure.address_space);
-	printf_shell(shell, "%s.bit_width = %#04.2x\n", name, generic_address_structure.bit_width);
-	printf_shell(shell, "%s.bit_offset = %#04.2x\n", name, generic_address_structure.bit_offset);
-	printf_shell(shell, "%s.access_size = %#04.2x\n", name, generic_address_structure.access_size);
-	printf_shell(shell, "%s.address = %#018.16x\n", name, generic_address_structure.address);
 }
 
 int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)

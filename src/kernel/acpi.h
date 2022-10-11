@@ -6,6 +6,10 @@
 #define _ACPI_H_
 
 #include "memory.h"
+#include "shell.h"
+
+#define PRINT_ACPI_TABLE_HEADER(x) print_acpi_table_header((x), _STRING(x))
+#define PRINT_GENERIC_ADDRESS_STRUCTURE(x) print_generic_address_structure((x), _STRING(x))
 
 typedef struct _ACPITableHeader
 {
@@ -156,6 +160,8 @@ unsigned int get_num_of_sdt_headers(void);
 ACPITableHeader const *get_rsdt_header(void);
 ACPITableHeader const *get_sdt_header(char const *signature);
 ACPITableHeader const * const *get_sdt_headers(void);
+void print_acpi_table_header(ACPITableHeader const *acpi_table_header, char const *name);
+void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name);
 
 #endif
 
