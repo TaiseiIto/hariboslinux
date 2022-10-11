@@ -19,6 +19,7 @@
 #define STDIN	0x00000000
 #define STDOUT	0x00000001
 #define STDERR	0x00000002
+#define PRINT_GENERIC_ADDRESS_STRUCTURE(x) print_generic_address_structure((x), _STRING(x))
 
 typedef struct _ApplicationTimer
 {
@@ -260,6 +261,7 @@ void delete_windows(void);
 SystemCallStatus *get_system_call_status(void);
 ApplicationTimer *get_application_timer_from_timer(Timer const *timer);
 ApplicationWindow *get_application_window_from_window(Window const *window);
+void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name);
 int system_call_close(FileDescriptor *file_descriptor);
 int system_call_exit(int return_value);
 FileDescriptor *system_call_open(char const *file_name, unsigned int flags);
@@ -407,6 +409,16 @@ ApplicationWindow *get_application_window_from_window(Window const *window)
 		application_window = application_window->next;
 	} while(application_window != application_windows);
 	return NULL;
+}
+
+void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name)
+{
+	Shell *shell = get_current_shell();
+	printf_shell(shell, "%s.address_space = %#04.2x\n", name, generic_address_structure.address_space);
+	printf_shell(shell, "%s.bit_width = %#04.2x\n", name, generic_address_structure.bit_width);
+	printf_shell(shell, "%s.bit_offset = %#04.2x\n", name, generic_address_structure.bit_offset);
+	printf_shell(shell, "%s.access_size = %#04.2x\n", name, generic_address_structure.access_size);
+	printf_shell(shell, "%s.address = %#018.16x\n", name, generic_address_structure.address);
 }
 
 int system_call(int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp)
@@ -632,7 +644,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_shell(shell, "rsdt_header->oem_revision = %#010.8x\n", rsdt_header->oem_revision);
 					printf_shell(shell, "rsdt_header->creater_id = %#010.8x\n", rsdt_header->creater_id);
 					printf_shell(shell, "rsdt_header->creater_revision = %#010.8x\n", rsdt_header->creater_revision);
-					printf_shell(shell, "num_of_sdt_headers = %010.8x\n", get_num_of_sdt_headers());
+					printf_shell(shell, "num_of_sdt_headers = %#010.8x\n", get_num_of_sdt_headers());
 					fadt = get_fadt();
 					printf_shell(shell, "fadt->header.signature = %.*s\n", _countof(fadt->header.signature), fadt->header.signature);
 					printf_shell(shell, "fadt->header.length = %#010.8x\n", fadt->header.length);
@@ -681,11 +693,22 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_shell(shell, "fadt->iapc_boot_arch = %#06.4x\n", fadt->iapc_boot_arch);
 					printf_shell(shell, "fadt->reserved1 = %#04.2x\n", fadt->reserved1);
 					printf_shell(shell, "fadt->flags = %#010.8x\n", fadt->flags);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->reset_reg);
 					printf_shell(shell, "fadt->reset_value = %#04.2x\n", fadt->reset_value);
 					printf_shell(shell, "fadt->arm_boot_arch = %#06.4x\n", fadt->arm_boot_arch);
 					printf_shell(shell, "fadt->fadt_minor_version = %#04.2x\n", fadt->fadt_minor_version);
 					printf_shell(shell, "fadt->x_firmware_ctrl = %#018.16llx\n", fadt->x_firmware_ctrl);
 					printf_shell(shell, "fadt->x_dsdt = %#018.16llx\n", fadt->x_dsdt);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm1a_evt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm1b_evt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm1a_cnt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm1b_cnt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm2_cnt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm_tmr_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm_gpe0_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm_gpe1_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->sleep_control_reg);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->sleep_status_reg);
 					printf_shell(shell, "fadt->hypervisor_vender_identity = %#018.16llx\n", fadt->hypervisor_vender_identity);
 					break;
 				default:
