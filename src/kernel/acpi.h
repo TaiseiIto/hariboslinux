@@ -55,7 +55,7 @@ typedef struct _FADT
 {
 	ACPITableHeader header;
 	void *firmware_ctrl;
-	void *dsdt;
+	ACPITableHeader const *dsdt;
 	unsigned char reserved0;
 	unsigned char preferred_pm_profile;
 	#define FADT_PREFERRED_PM_PROFILE_UNSPECIFIED		0x00
