@@ -1,5 +1,5 @@
 // bibliography
-// https://uefi.org/sites/default/files/resources/ACPI_6_3_final_Jan30.pdf
+// https://uefi.org/sites/default/files/resources/ACPI_Spec_6_4_Jan22.pdf
 // https://wiki.osdev.org/FADT
 
 #ifndef _ACPI_H_
