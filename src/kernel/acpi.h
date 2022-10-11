@@ -156,6 +156,7 @@ typedef struct _FADT
 } __attribute__((packed)) FADT;
 
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
+ACPITableHeader const *get_dsdt_header(void);
 FADT const *get_fadt(void);
 unsigned int get_num_of_sdt_headers(void);
 ACPITableHeader const *get_rsdt_header(void);

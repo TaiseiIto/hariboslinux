@@ -611,6 +611,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 					MemoryRegionDescriptor acpi_memory_region_descriptor;
+					ACPITableHeader const *dsdt_header;
 					ACPITableHeader const *rsdt_header;
 					FADT const *fadt;
 				case CPU_COMMAND_HLT:
@@ -628,7 +629,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					fadt = get_fadt();
 					PRINT_ACPI_TABLE_HEADER(fadt->header);
 					printf_shell(shell, "fadt->firmware_ctrl = %p\n", fadt->firmware_ctrl);
-					PRINT_ACPI_TABLE_HEADER_P(fadt->dsdt);
+					printf_shell(shell, "fadt->dsdt = %p\n", fadt->dsdt);
 					printf_shell(shell, "fadt->reserved0 = %#04.2x\n", fadt->reserved0);
 					printf_shell(shell, "fadt->preferred_pm_profile = %#04.2x\n", fadt->preferred_pm_profile);
 					printf_shell(shell, "fadt->sci_int = %#06.4x\n", fadt->sci_int);
@@ -682,6 +683,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->sleep_control_reg);
 					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->sleep_status_reg);
 					printf_shell(shell, "fadt->hypervisor_vender_identity = %#018.16llx\n", fadt->hypervisor_vender_identity);
+					dsdt_header = get_dsdt_header();
+					PRINT_ACPI_TABLE_HEADER_P(dsdt_header);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.

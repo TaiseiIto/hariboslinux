@@ -30,6 +30,17 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 	return acpi_memory_region_descriptor;
 }
 
+ACPITableHeader const *get_dsdt_header(void)
+{
+	ACPITableHeader const *dsdt_header = get_fadt()->dsdt;
+	if(acpi_table_is_correct(dsdt_header))return dsdt_header;
+	else
+	{
+		ERROR(); // DSDT is incorrect!
+		return NULL;
+	}
+}
+
 FADT const *get_fadt(void)
 {
 	return (FADT const *)get_sdt_header("FACP");
@@ -37,7 +48,7 @@ FADT const *get_fadt(void)
 
 unsigned int get_num_of_sdt_headers(void)
 {
-	ACPITableHeader const *rsdt_header =  get_rsdt_header();
+	ACPITableHeader const *rsdt_header = get_rsdt_header();
 	return (rsdt_header->length - sizeof(*rsdt_header)) / sizeof(ACPITableHeader*);
 }
 
