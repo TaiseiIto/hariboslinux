@@ -135,7 +135,7 @@ typedef struct _FADT
 	#define FADT_ARM_BOOT_ARCH_PSCI_COMPLIANT	0x0001
 	#define FADT_ARM_BOOT_ARCH_PSCI_USE_HVC		0x0002
 	unsigned char fadt_minor_version;
-	unsigned long long x_firmware_crrl;
+	unsigned long long x_firmware_ctrl;
 	unsigned long long x_dsdt;
 	GenericAddressStructure x_pm1a_evt_blk;
 	GenericAddressStructure x_pm1b_evt_blk;
