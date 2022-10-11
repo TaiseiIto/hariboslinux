@@ -67,7 +67,21 @@ ACPITableHeader const * const *get_sdt_headers(void)
 	return (ACPITableHeader const * const *)((unsigned int)rsdt_header + sizeof(*rsdt_header));
 }
 
-void print_acpi_table_header(ACPITableHeader const *acpi_table_header, char const *name)
+void print_acpi_table_header(ACPITableHeader acpi_table_header, char const *name)
+{
+	Shell *shell = get_current_shell();
+	printf_shell(shell, "%s.signature = %.*s\n", name, sizeof(acpi_table_header.signature), acpi_table_header.signature);
+	printf_shell(shell, "%s.length = %#010.8x\n", name, acpi_table_header.length);
+	printf_shell(shell, "%s.revision = %#04.2x\n", name, acpi_table_header.revision);
+	printf_shell(shell, "%s.checksum = %#04.2x\n", name, acpi_table_header.checksum);
+	printf_shell(shell, "%s.oem_id = %.*s\n", name, sizeof(acpi_table_header.oem_id), acpi_table_header.oem_id);
+	printf_shell(shell, "%s.oem_table_id = %.*s\n", name, sizeof(acpi_table_header.oem_table_id), acpi_table_header.oem_table_id);
+	printf_shell(shell, "%s.oem_revision = %#010.8x\n", name, acpi_table_header.oem_revision);
+	printf_shell(shell, "%s.creater_id = %#010.8x\n", name, acpi_table_header.creater_id);
+	printf_shell(shell, "%s.creater_revision = %#010.8x\n", name, acpi_table_header.creater_revision);
+}
+
+void print_acpi_table_header_p(ACPITableHeader const *acpi_table_header, char const *name)
 {
 	Shell *shell = get_current_shell();
 	printf_shell(shell, "%s->signature = %.*s\n", name, sizeof(acpi_table_header->signature), acpi_table_header->signature);
