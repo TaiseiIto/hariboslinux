@@ -17,15 +17,6 @@ bool acpi_table_is_correct(ACPITableHeader const *header)
 	else return true;
 }
 
-ACPITableHeader const *find_sdt_header(char const *signature)
-{
-	ACPITableHeader const * const *sdt_headers = get_sdt_headers();
-	unsigned int num_of_sdt_headers = get_num_of_sdt_headers();
-	for(unsigned int sdt_header_index = 0; sdt_header_index < num_of_sdt_headers; sdt_header_index++)if(!strncmp(sdt_headers[sdt_header_index]->signature, signature, sizeof(sdt_headers[sdt_header_index]->signature)) && acpi_table_is_correct(sdt_headers[sdt_header_index]))return sdt_headers[sdt_header_index];
-	ERROR(); // SDT that has a specified signature is not found.
-	return NULL;
-}
-
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 {
 	MemoryRegionDescriptor acpi_memory_region_descriptor;
@@ -39,6 +30,17 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 	return acpi_memory_region_descriptor;
 }
 
+FADT const *get_fadt(void)
+{
+	return (FADT const *)get_sdt_header("FACP");
+}
+
+unsigned int get_num_of_sdt_headers(void)
+{
+	ACPITableHeader const *rsdt_header =  get_rsdt_header();
+	return (rsdt_header->length - sizeof(*rsdt_header)) / sizeof(ACPITableHeader*);
+}
+
 ACPITableHeader const *get_rsdt_header(void)
 {
 	ACPITableHeader const *rsdt_header = (ACPITableHeader const *)(unsigned int)get_acpi_memory_region_descriptor().base;
@@ -50,15 +52,18 @@ ACPITableHeader const *get_rsdt_header(void)
 	}
 }
 
+ACPITableHeader const *get_sdt_header(char const *signature)
+{
+	ACPITableHeader const * const *sdt_headers = get_sdt_headers();
+	unsigned int num_of_sdt_headers = get_num_of_sdt_headers();
+	for(unsigned int sdt_header_index = 0; sdt_header_index < num_of_sdt_headers; sdt_header_index++)if(!strncmp(sdt_headers[sdt_header_index]->signature, signature, sizeof(sdt_headers[sdt_header_index]->signature)) && acpi_table_is_correct(sdt_headers[sdt_header_index]))return sdt_headers[sdt_header_index];
+	ERROR(); // SDT that has a specified signature is not found.
+	return NULL;
+}
+
 ACPITableHeader const * const *get_sdt_headers(void)
 {
 	ACPITableHeader const *rsdt_header =  get_rsdt_header();
 	return (ACPITableHeader const * const *)((unsigned int)rsdt_header + sizeof(*rsdt_header));
-}
-
-unsigned int get_num_of_sdt_headers(void)
-{
-	ACPITableHeader const *rsdt_header =  get_rsdt_header();
-	return (rsdt_header->length - sizeof(*rsdt_header)) / sizeof(ACPITableHeader*);
 }
 

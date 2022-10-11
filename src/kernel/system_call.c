@@ -612,7 +612,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				{
 					MemoryRegionDescriptor acpi_memory_region_descriptor;
 					ACPITableHeader const *rsdt_header;
-					ACPITableHeader const *fadt_header;
+					FADT const *fadt;
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
 					break;
@@ -633,16 +633,16 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_shell(shell, "rsdt_header->creater_id = %#010.8x\n", rsdt_header->creater_id);
 					printf_shell(shell, "rsdt_header->creater_revision = %#010.8x\n", rsdt_header->creater_revision);
 					printf_shell(shell, "num_of_sdt_headers = %010.8x\n", get_num_of_sdt_headers());
-					fadt_header = find_sdt_header("FACP");
-					printf_shell(shell, "fadt_header->signature = %.*s\n", _countof(fadt_header->signature), fadt_header->signature);
-					printf_shell(shell, "fadt_header->length = %#010.8x\n", fadt_header->length);
-					printf_shell(shell, "fadt_header->revision = %#04.2x\n", fadt_header->revision);
-					printf_shell(shell, "fadt_header->checksum = %#04.2x\n", fadt_header->checksum);
-					printf_shell(shell, "fadt_header->oem_id = %.*s\n", _countof(fadt_header->oem_id), fadt_header->oem_id);
-					printf_shell(shell, "fadt_header->oem_table_id = %.*s\n", _countof(fadt_header->oem_table_id), fadt_header->oem_table_id);
-					printf_shell(shell, "fadt_header->oem_revision = %#010.8x\n", fadt_header->oem_revision);
-					printf_shell(shell, "fadt_header->creater_id = %#010.8x\n", fadt_header->creater_id);
-					printf_shell(shell, "fadt_header->creater_revision = %#010.8x\n", fadt_header->creater_revision);
+					fadt = get_fadt();
+					printf_shell(shell, "fadt->header.signature = %.*s\n", _countof(fadt->header.signature), fadt->header.signature);
+					printf_shell(shell, "fadt->header.length = %#010.8x\n", fadt->header.length);
+					printf_shell(shell, "fadt->header.revision = %#04.2x\n", fadt->header.revision);
+					printf_shell(shell, "fadt->header.checksum = %#04.2x\n", fadt->header.checksum);
+					printf_shell(shell, "fadt->header.oem_id = %.*s\n", _countof(fadt->header.oem_id), fadt->header.oem_id);
+					printf_shell(shell, "fadt->header.oem_table_id = %.*s\n", _countof(fadt->header.oem_table_id), fadt->header.oem_table_id);
+					printf_shell(shell, "fadt->header.oem_revision = %#010.8x\n", fadt->header.oem_revision);
+					printf_shell(shell, "fadt->header.creater_id = %#010.8x\n", fadt->header.creater_id);
+					printf_shell(shell, "fadt->header.creater_revision = %#010.8x\n", fadt->header.creater_revision);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.
