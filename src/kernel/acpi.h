@@ -163,6 +163,7 @@ struct _AMLSymbol;
 
 typedef enum _AMLSymbolType
 {
+	aml_def_alias,
 	aml_expression_opcode,
 	aml_name_space_modifier_obj,
 	aml_object,
@@ -176,6 +177,13 @@ typedef struct _AMLSubstring
 	unsigned char const *initial;
 	size_t length;
 } AMLSubstring;
+
+typedef struct _AMLDefAlias
+{
+	struct _AMLSymbol *alias_op;
+	struct _AMLSymbol *name_string_a;
+	struct _AMLSymbol *name_string_b;
+} AMLDefAlias;
 
 typedef struct _AMLExpressionOpcode
 {
@@ -280,6 +288,7 @@ typedef struct _AMLTermObj
 
 typedef union _AMLComponent
 {
+	AMLDefAlias def_alias;
 	AMLExpressionOpcode expression_opcode;
 	AMLNameSpaceModifierObj name_space_modifier_obj;
 	AMLObject object;
@@ -298,6 +307,8 @@ typedef struct _AMLSymbol
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol);
 char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
+// <def_alias> := <alias_op> <name_string> <name_string>
+AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 // <expression_opcode> := <def_aquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 // <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
