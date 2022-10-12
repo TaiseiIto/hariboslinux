@@ -4,126 +4,126 @@
 #include "stdbool.h"
 #include "string.h"
 
-unsigned char const aml_byte_zero_op = 0x00;
-unsigned char const aml_byte_one_op = 0x01;
-unsigned char const aml_byte_alias_op = 0x06;
-unsigned char const aml_byte_name_op = 0x08;
-unsigned char const aml_byte_byte_prefix = 0x0a;
-unsigned char const aml_byte_word_prefix = 0x0b;
-unsigned char const aml_byte_dword_prefix = 0xc;
-unsigned char const aml_byte_string_prefix = 0xd;
-unsigned char const aml_byte_qword_prefix = 0xe;
-unsigned char const aml_byte_scope_op = 0x10;
-unsigned char const aml_byte_buffer_op = 0x11;
-unsigned char const aml_byte_package_op = 0x12;
-unsigned char const aml_byte_var_package_op = 0x13;
-unsigned char const aml_byte_method_op = 0x14;
-unsigned char const aml_byte_external_op = 0x15;
-unsigned char const aml_byte_dual_name_prefix = 0x2e;
-unsigned char const aml_byte_multi_name_prefix = 0x2f;
-unsigned char const aml_byte_ext_op_prefix = 0x5b;
-unsigned char const aml_byte_mutex_op = 0x01;
-unsigned char const aml_byte_event_op = 0x02;
-unsigned char const aml_byte_cond_ref_of_op = 0x12;
-unsigned char const aml_byte_create_field_op = 0x13;
-unsigned char const aml_byte_load_table_op = 0x1f;
-unsigned char const aml_byte_load_op = 0x20;
-unsigned char const aml_byte_stall_op = 0x21;
-unsigned char const aml_byte_sleep_op = 0x22;
-unsigned char const aml_byte_acquire_op = 0x23;
-unsigned char const aml_byte_signal_op = 0x24;
-unsigned char const aml_byte_wait_op = 0x25;
-unsigned char const aml_byte_reset_op = 0x26;
-unsigned char const aml_byte_release_op = 0x27;
-unsigned char const aml_byte_from_bcd_op = 0x28;
-unsigned char const aml_byte_to_bcd = 0x29;
-unsigned char const aml_byte_revision_op = 0x30;
-unsigned char const aml_byte_debug_op = 0x31;
-unsigned char const aml_byte_fatal_op = 0x32;
-unsigned char const aml_byte_timer_op = 0x33;
-unsigned char const aml_byte_op_refion_op = 0x80;
-unsigned char const aml_byte_field_op = 0x81;
-unsigned char const aml_byte_device_op = 0x82;
-unsigned char const aml_byte_power_res_op = 0x84;
-unsigned char const aml_byte_thermal_zone_op = 0x85;
-unsigned char const aml_byte_index_field_op = 0x86;
-unsigned char const aml_byte_bank_field_op = 0x87;
-unsigned char const aml_byte_data_region_op = 0x88;
-unsigned char const aml_byte_root_char = 0x5c;
-unsigned char const aml_byte_parent_prefix_char = 0x5e;
-unsigned char const aml_byte_name_char = 0x5f;
-unsigned char const aml_byte_local_0_op = 0x60;
-unsigned char const aml_byte_local_1_op = 0x61;
-unsigned char const aml_byte_local_2_op = 0x62;
-unsigned char const aml_byte_local_3_op = 0x63;
-unsigned char const aml_byte_local_4_op = 0x64;
-unsigned char const aml_byte_local_5_op = 0x65;
-unsigned char const aml_byte_local_6_op = 0x66;
-unsigned char const aml_byte_local_7_op = 0x67;
-unsigned char const aml_byte_arg_0_op = 0x68;
-unsigned char const aml_byte_arg_1_op = 0x69;
-unsigned char const aml_byte_arg_2_op = 0x6a;
-unsigned char const aml_byte_arg_3_op = 0x6b;
-unsigned char const aml_byte_arg_4_op = 0x6c;
-unsigned char const aml_byte_arg_5_op = 0x6d;
-unsigned char const aml_byte_arg_6_op = 0x6e;
-unsigned char const aml_byte_store_op = 0x70;
-unsigned char const aml_byte_ref_of_op = 0x71;
-unsigned char const aml_byte_add_op = 0x72;
-unsigned char const aml_byte_concat_op = 0x73;
-unsigned char const aml_byte_subtract_op = 0x74;
-unsigned char const aml_byte_increment_op = 0x75;
-unsigned char const aml_byte_decrement_op = 0x76;
-unsigned char const aml_byte_multiply_op = 0x77;
-unsigned char const aml_byte_divide_op = 0x78;
-unsigned char const aml_byte_shift_left_op = 0x79;
-unsigned char const aml_byte_shift_right_op = 0x7a;
-unsigned char const aml_byte_and_op = 0x7b;
-unsigned char const aml_byte_nand_op = 0x7c;
-unsigned char const aml_byte_or_op = 0x7d;
-unsigned char const aml_byte_nor_op = 0x7e;
-unsigned char const aml_byte_xor_op = 0x7f;
-unsigned char const aml_byte_not_op = 0x80;
-unsigned char const aml_byte_find_set_left_bit_op = 0x81;
-unsigned char const aml_byte_find_set_right_bit_op = 0x82;
-unsigned char const aml_byte_deref_of_op = 0x83;
-unsigned char const aml_byte_concat_res_op = 0x84;
-unsigned char const aml_byte_mod_op = 0x85;
-unsigned char const aml_byte_notify_op = 0x86;
-unsigned char const aml_byte_size_of_op = 0x87;
-unsigned char const aml_byte_index_op = 0x88;
-unsigned char const aml_byte_match_op = 0x89;
-unsigned char const aml_byte_create_dword_field_op = 0x8a;
-unsigned char const aml_byte_create_word_field_op = 0x8b;
-unsigned char const aml_byte_create_byte_field_op = 0x8c;
-unsigned char const aml_byte_create_bit_field_op = 0x8d;
-unsigned char const aml_byte_object_type_op = 0x8e;
-unsigned char const aml_byte_create_qword_field_op = 0x8f;
-unsigned char const aml_byte_land_op = 0x90;
-unsigned char const aml_byte_lor_op = 0x91;
-unsigned char const aml_byte_lnot_op = 0x92;
-unsigned char const aml_byte_lnot_equal_op = 0x93;
-unsigned char const aml_byte_lless_equal_op = 0x94;
-unsigned char const aml_byte_lgreater_equal_op = 0x95;
-unsigned char const aml_byte_lequal_op = 0x93;
-unsigned char const aml_byte_lgreater_op = 0x94;
-unsigned char const aml_byte_lless_op = 0x95;
-unsigned char const aml_byte_to_buffer_op = 0x96;
-unsigned char const aml_byte_to_decimal_string_op = 0x97;
-unsigned char const aml_byte_to_hex_string_op = 0x98;
-unsigned char const aml_byte_to_integer_op = 0x99;
-unsigned char const aml_byte_to_string_op = 0x9c;
-unsigned char const aml_byte_copy_object_op = 0x9d;
-unsigned char const aml_byte_mid_op = 0x9e;
-unsigned char const aml_byte_comtinue_op = 0x9f;
-unsigned char const aml_byte_if_op = 0xa0;
-unsigned char const aml_byte_else_op = 0xa1;
-unsigned char const aml_byte_while_op = 0xa2;
-unsigned char const aml_byte_noop_op = 0xa3;
-unsigned char const aml_byte_return_op = 0xa4;
-unsigned char const aml_byte_break_op = 0xa5;
-unsigned char const aml_byte_break_point_op = 0xcc;
-unsigned char const aml_byte_ones_op = 0xff;
+#define AML_BYTE_ZERO_OP		0x00
+#define AML_BYTE_ONE_OP			0x01
+#define AML_BYTE_ALIAS_OP		0x06
+#define AML_BYTE_NAME_OP		0x08
+#define AML_BYTE_BYTE_PREFIX		0x0a
+#define AML_BYTE_WORD_PREFIX		0x0b
+#define AML_BYTE_DWORD_PREFIX		0xc
+#define AML_BYTE_STRING_PREFIX		0xd
+#define AML_BYTE_QWORD_PREFIX		0xe
+#define AML_BYTE_SCOPE_OP		0x10
+#define AML_BYTE_BUFFER_OP		0x11
+#define AML_BYTE_PACKAGE_OP		0x12
+#define AML_BYTE_VAR_PACKAGE_OP		0x13
+#define AML_BYTE_METHOD_OP		0x14
+#define AML_BYTE_EXTERNAL_OP		0x15
+#define AML_BYTE_DUAL_NAME_PREFIX	0x2e
+#define AML_BYTE_MULTI_NAME_PREFIX	0x2f
+#define AML_BYTE_EXT_OP_PREFIX		0x5b
+#define AML_BYTE_MUTEX_OP		0x01
+#define AML_BYTE_EVENT_OP		0x02
+#define AML_BYTE_COND_REF_OF_OP		0x12
+#define AML_BYTE_CREATE_FIELD_OP	0x13
+#define AML_BYTE_LOAD_TABLE_OP		0x1f
+#define AML_BYTE_LOAD_OP		0x20
+#define AML_BYTE_STALL_OP		0x21
+#define AML_BYTE_SLEEP_OP		0x22
+#define AML_BYTE_ACQUIRE_OP		0x23
+#define AML_BYTE_SIGNAL_OP		0x24
+#define AML_BYTE_WAIT_OP		0x25
+#define AML_BYTE_RESET_OP		0x26
+#define AML_BYTE_RELEASE_OP		0x27
+#define AML_BYTE_FROM_BCD_OP		0x28
+#define AML_BYTE_TO_BCD			0x29
+#define AML_BYTE_REVISION_OP		0x30
+#define AML_BYTE_DEBUG_OP		0x31
+#define AML_BYTE_FATAL_OP		0x32
+#define AML_BYTE_TIMER_OP		0x33
+#define AML_BYTE_OP_REFION_OP		0x80
+#define AML_BYTE_FIELD_OP		0x81
+#define AML_BYTE_DEVICE_OP		0x82
+#define AML_BYTE_POWER_RES_OP		0x84
+#define AML_BYTE_THERMAL_ZONE_OP	0x85
+#define AML_BYTE_INDEX_FIELD_OP		0x86
+#define AML_BYTE_BANK_FIELD_OP		0x87
+#define AML_BYTE_DATA_REGION_OP		0x88
+#define AML_BYTE_ROOT_CHAR		0x5c
+#define AML_BYTE_PARENT_PREFIX_CHAR	0x5e
+#define AML_BYTE_NAME_CHAR		0x5f
+#define AML_BYTE_LOCAL_0_OP		0x60
+#define AML_BYTE_LOCAL_1_OP		0x61
+#define AML_BYTE_LOCAL_2_OP		0x62
+#define AML_BYTE_LOCAL_3_OP		0x63
+#define AML_BYTE_LOCAL_4_OP		0x64
+#define AML_BYTE_LOCAL_5_OP		0x65
+#define AML_BYTE_LOCAL_6_OP		0x66
+#define AML_BYTE_LOCAL_7_OP		0x67
+#define AML_BYTE_ARG_0_OP		0x68
+#define AML_BYTE_ARG_1_OP		0x69
+#define AML_BYTE_ARG_2_OP		0x6a
+#define AML_BYTE_ARG_3_OP		0x6b
+#define AML_BYTE_ARG_4_OP		0x6c
+#define AML_BYTE_ARG_5_OP		0x6d
+#define AML_BYTE_ARG_6_OP		0x6e
+#define AML_BYTE_STORE_OP		0x70
+#define AML_BYTE_REF_OF_OP		0x71
+#define AML_BYTE_ADD_OP			0x72
+#define AML_BYTE_CONCAT_OP		0x73
+#define AML_BYTE_SUBTRACT_OP		0x74
+#define AML_BYTE_INCREMENT_OP		0x75
+#define AML_BYTE_DECREMENT_OP		0x76
+#define AML_BYTE_MULTIPLY_OP		0x77
+#define AML_BYTE_DIVIDE_OP		0x78
+#define AML_BYTE_SHIFT_LEFT_OP		0x79
+#define AML_BYTE_SHIFT_RIGHT_OP		0x7a
+#define AML_BYTE_AND_OP			0x7b
+#define AML_BYTE_NAND_OP		0x7c
+#define AML_BYTE_OR_OP			0x7d
+#define AML_BYTE_NOR_OP			0x7e
+#define AML_BYTE_XOR_OP			0x7f
+#define AML_BYTE_NOT_OP			0x80
+#define AML_BYTE_FIND_SET_LEFT_BIT_OP	0x81
+#define AML_BYTE_FIND_SET_RIGHT_BIT_OP	0x82
+#define AML_BYTE_DEREF_OF_OP		0x83
+#define AML_BYTE_CONCAT_RES_OP		0x84
+#define AML_BYTE_MOD_OP			0x85
+#define AML_BYTE_NOTIFY_OP		0x86
+#define AML_BYTE_SIZE_OF_OP		0x87
+#define AML_BYTE_INDEX_OP		0x88
+#define AML_BYTE_MATCH_OP		0x89
+#define AML_BYTE_CREATE_DWORD_FIELD_OP	0x8a
+#define AML_BYTE_CREATE_WORD_FIELD_OP	0x8b
+#define AML_BYTE_CREATE_BYTE_FIELD_OP	0x8c
+#define AML_BYTE_CREATE_BIT_FIELD_OP	0x8d
+#define AML_BYTE_OBJECT_TYPE_OP		0x8e
+#define AML_BYTE_CREATE_QWORD_FIELD_OP	0x8f
+#define AML_BYTE_LAND_OP		0x90
+#define AML_BYTE_LOR_OP			0x91
+#define AML_BYTE_LNOT_OP		0x92
+#define AML_BYTE_LNOT_EQUAL_OP		0x93
+#define AML_BYTE_LLESS_EQUAL_OP		0x94
+#define AML_BYTE_LGREATER_EQUAL_OP	0x95
+#define AML_BYTE_LEQUAL_OP		0x93
+#define AML_BYTE_LGREATER_OP		0x94
+#define AML_BYTE_LLESS_OP		0x95
+#define AML_BYTE_TO_BUFFER_OP		0x96
+#define AML_BYTE_TO_DECIMAL_STRING_OP	0x97
+#define AML_BYTE_TO_HEX_STRING_OP	0x98
+#define AML_BYTE_TO_INTEGER_OP		0x99
+#define AML_BYTE_TO_STRING_OP		0x9c
+#define AML_BYTE_COPY_OBJECT_OP		0x9d
+#define AML_BYTE_MID_OP			0x9e
+#define AML_BYTE_COMTINUE_OP		0x9f
+#define AML_BYTE_IF_OP			0xa0
+#define AML_BYTE_ELSE_OP		0xa1
+#define AML_BYTE_WHILE_OP		0xa2
+#define AML_BYTE_NOOP_OP		0xa3
+#define AML_BYTE_RETURN_OP		0xa4
+#define AML_BYTE_BREAK_OP		0xa5
+#define AML_BYTE_BREAK_POINT_OP		0xcc
+#define AML_BYTE_ONES_OP		0xff
 
 bool acpi_table_is_correct(ACPITableHeader const *header);
 
@@ -1424,7 +1424,7 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 	alias_op->string.initial = aml.initial;
 	alias_op->string.length = 1;
 	alias_op->type = aml_alias_op;
-	if(*alias_op->string.initial != aml_byte_alias_op)ERROR(); // Incorrect alias_op
+	if(*alias_op->string.initial != AML_BYTE_ALIAS_OP)ERROR(); // Incorrect alias_op
 	return alias_op;
 }
 
