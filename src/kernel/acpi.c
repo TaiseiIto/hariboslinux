@@ -17,6 +17,41 @@ bool acpi_table_is_correct(ACPITableHeader const *header)
 	else return true;
 }
 
+// <term_list> := Nothing | <term_obj> <term_list>
+AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
+{
+	AMLSymbol *term_list = malloc(sizeof(*term_list));
+	term_list->string.initial = aml.initial;
+	term_list->string.length = 0;
+	term_list->type = aml_term_list;
+	if(aml.length)
+	{
+		// <term_list> := <term_obj> <term_list>
+		term_list->component.term_list.term_obj = analyse_aml_term_obj(aml);
+		term_list->component.term_list.term_list = NULL;
+	}
+	else
+	{
+		// <term_list> := Nothing
+		term_list->component.term_list.term_list = NULL;
+		term_list->component.term_list.term_obj = NULL;
+	}
+	return term_list;
+}
+
+// <term_obj> := <object> | <statement_opcode> | <expression_opcode>
+AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
+{
+	AMLSymbol *term_obj = malloc(sizeof(*term_obj));
+	term_obj->string.initial = aml.initial;
+	term_obj->string.length = 0;
+	term_obj->type = aml_term_obj;
+	term_obj->component.term_obj.object = NULL;
+	term_obj->component.term_obj.statement_opcode = NULL;
+	term_obj->component.term_obj.expression_opcode = NULL;
+	return term_obj;
+}
+
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 {
 	MemoryRegionDescriptor acpi_memory_region_descriptor;

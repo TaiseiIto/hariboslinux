@@ -159,12 +159,50 @@ typedef struct _FADT
 
 // Structures related to AML
 
+struct _AMLSymbol;
+
+typedef enum _AMLSymbolType
+{
+	aml_term_list,
+	aml_term_obj,
+} AMLSymbolType;
+
 typedef struct _AMLSubstring
 {
 	unsigned char const *initial;
 	size_t length;
 } AMLSubstring;
 
+typedef struct _AMLTermList
+{
+	struct _AMLSymbol *term_list;
+	struct _AMLSymbol *term_obj;
+} AMLTermList;
+
+typedef struct _AMLTermObj
+{
+	struct _AMLSymbol *object;
+	struct _AMLSymbol *statement_opcode;
+	struct _AMLSymbol *expression_opcode;
+} AMLTermObj;
+
+typedef union _AMLComponent
+{
+	AMLTermList term_list;
+	AMLTermObj term_obj;
+} AMLComponent;
+
+typedef struct _AMLSymbol
+{
+	AMLSubstring string;
+	AMLSymbolType type;
+	AMLComponent component;
+} AMLSymbol;
+
+// <term_list> := Nothing | <term_obj> <term_list>
+AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
+// <term_obj> := <object> | <statement_opcode> | <expression_opcode>
+AMLSymbol *analyse_aml_term_obj(AMLSubstring aml);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
 AMLSubstring get_dsdt_aml(void);
 ACPITableHeader const *get_dsdt_header(void);
