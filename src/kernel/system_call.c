@@ -613,6 +613,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					MemoryRegionDescriptor acpi_memory_region_descriptor;
 					ACPITableHeader const *dsdt_header;
 					ACPITableHeader const *rsdt_header;
+					AMLSubstring dsdt_aml;
 					FADT const *fadt;
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
@@ -685,6 +686,10 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_shell(shell, "fadt->hypervisor_vender_identity = %#018.16llx\n", fadt->hypervisor_vender_identity);
 					dsdt_header = get_dsdt_header();
 					PRINT_ACPI_TABLE_HEADER_P(dsdt_header);
+					dsdt_aml = get_dsdt_aml();
+					printf_shell(shell, "---------- DSDT AML ----------\n");
+					for(unsigned int i = 0; i < dsdt_aml.length; i++)printf_shell(shell, "%c", dsdt_aml.initial[i]);
+					printf_shell(shell, "\n");
 					break;
 				default:
 					ERROR(); // Invalid CPU command.

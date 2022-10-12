@@ -30,6 +30,15 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 	return acpi_memory_region_descriptor;
 }
 
+AMLSubstring get_dsdt_aml(void)
+{
+	AMLSubstring dsdt_aml;
+	ACPITableHeader const *dsdt_header = get_dsdt_header();
+	dsdt_aml.initial = (unsigned char const *)((unsigned int)dsdt_header + sizeof(*dsdt_header));
+	dsdt_aml.length = dsdt_header->length - sizeof(*dsdt_header);
+	return dsdt_aml;
+}
+
 ACPITableHeader const *get_dsdt_header(void)
 {
 	ACPITableHeader const *dsdt_header = get_fadt()->dsdt;

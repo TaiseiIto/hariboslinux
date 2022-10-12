@@ -12,6 +12,8 @@
 #define PRINT_ACPI_TABLE_HEADER_P(x) print_acpi_table_header_p((x), _STRING(x))
 #define PRINT_GENERIC_ADDRESS_STRUCTURE(x) print_generic_address_structure((x), _STRING(x))
 
+// ACPI structures
+
 typedef struct _ACPITableHeader
 {
 	char signature[4];
@@ -155,7 +157,16 @@ typedef struct _FADT
 	unsigned long long hypervisor_vender_identity;
 } __attribute__((packed)) FADT;
 
+// Structures related to AML
+
+typedef struct _AMLSubstring
+{
+	unsigned char const *initial;
+	size_t length;
+} AMLSubstring;
+
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
+AMLSubstring get_dsdt_aml(void);
 ACPITableHeader const *get_dsdt_header(void);
 FADT const *get_fadt(void);
 unsigned int get_num_of_sdt_headers(void);
