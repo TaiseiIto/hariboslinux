@@ -169,6 +169,7 @@ typedef enum _AMLSymbolType
 	aml_name_space_modifier_obj,
 	aml_name_string,
 	aml_object,
+	aml_root_char,
 	aml_statement_opcode,
 	aml_term_list,
 	aml_term_obj,
@@ -329,6 +330,8 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml);
 AMLSymbol *analyse_aml_name_string(AMLSubstring aml);
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSubstring aml);
+// <root_char> := 0x5c
+AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
 // <term_list> := Nothing | <term_obj> <term_list>

@@ -1160,6 +1160,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(name_space_modifier_obj_char_array);
 		}
 		break;
+	case aml_root_char:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)
 		{
@@ -1438,6 +1441,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
 	static char const * const aml_object_name = "Object";
+	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
@@ -1453,6 +1457,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_name_space_modifier_obj_name;
 	case aml_object:
 		return aml_object_name;
+	case aml_root_char:
+		return aml_root_char_name;
 	case aml_statement_opcode:
 		return aml_statement_opcode_name;
 	case aml_term_list:
@@ -1480,9 +1486,31 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 {
 	AMLSymbol *def_alias = malloc(sizeof(*def_alias));
+	AMLSubstring name_string_a_aml;
+	AMLSubstring name_string_b_aml;
 	def_alias->component.def_alias.alias_op = analyse_aml_alias_op(aml);
-	def_alias->component.def_alias.name_string_a = NULL;
-	def_alias->component.def_alias.name_string_b = NULL;
+	name_string_a_aml.initial = def_alias->component.def_alias.alias_op->string.initial + def_alias->component.def_alias.alias_op->string.length;
+	name_string_a_aml.length = aml.length - def_alias->component.def_alias.alias_op->string.length;
+	switch(*name_string_a_aml.initial)
+	{
+	case AML_BYTE_ROOT_CHAR:
+		break;
+	default:
+		ERROR(); // Syntax error
+		break;
+	}
+	def_alias->component.def_alias.name_string_a = analyse_aml_name_string(name_string_a_aml);
+	name_string_b_aml.initial = def_alias->component.def_alias.name_string_a->string.initial + def_alias->component.def_alias.name_string_a->string.length;
+	name_string_b_aml.length = name_string_a_aml.length - def_alias->component.def_alias.name_string_a->string.length;
+	switch(*name_string_b_aml.initial)
+	{
+	case AML_BYTE_ROOT_CHAR:
+		break;
+	default:
+		ERROR(); // Syntax error
+		break;
+	}
+	def_alias->component.def_alias.name_string_b = analyse_aml_name_string(name_string_b_aml);
 	def_alias->string.initial = aml.initial;
 	def_alias->string.length = 0;
 	def_alias->type = aml_def_alias;
@@ -1577,6 +1605,12 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	name_string->component.name_string.root_char = NULL;
 	name_string->component.name_string.prefix_path = NULL;
 	name_string->component.name_string.name_path = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_ROOT_CHAR:
+		name_string->component.name_string.root_char = analyse_aml_root_char(aml);
+		break;
+	}
 	name_string->string.initial = aml.initial;
 	name_string->string.length = 0;
 	name_string->type = aml_name_string;
@@ -1599,6 +1633,17 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	object->string.length = 0;
 	object->type = aml_object;
 	return object;
+}
+
+// <root_char> := 0x5c
+AMLSymbol *analyse_aml_root_char(AMLSubstring aml)
+{
+	AMLSymbol *root_char = malloc(sizeof(*root_char));
+	root_char->string.initial = aml.initial;
+	root_char->string.length = 1;
+	root_char->type = aml_root_char;
+	if(*root_char->string.initial != AML_BYTE_ROOT_CHAR)ERROR(); // Incorrect root_char
+	return root_char;
 }
 
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
@@ -1750,6 +1795,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
 		if(aml_symbol->component.object.name_space_modifier_obj)delete_aml_symbol(aml_symbol->component.object.name_space_modifier_obj);
+		break;
+	case aml_root_char:
 		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break);
