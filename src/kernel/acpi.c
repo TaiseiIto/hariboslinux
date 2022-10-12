@@ -4,6 +4,127 @@
 #include "stdbool.h"
 #include "string.h"
 
+unsigned char const aml_byte_zero_op = 0x00;
+unsigned char const aml_byte_one_op = 0x01;
+unsigned char const aml_byte_alias_op = 0x06;
+unsigned char const aml_byte_name_op = 0x08;
+unsigned char const aml_byte_byte_prefix = 0x0a;
+unsigned char const aml_byte_word_prefix = 0x0b;
+unsigned char const aml_byte_dword_prefix = 0xc;
+unsigned char const aml_byte_string_prefix = 0xd;
+unsigned char const aml_byte_qword_prefix = 0xe;
+unsigned char const aml_byte_scope_op = 0x10;
+unsigned char const aml_byte_buffer_op = 0x11;
+unsigned char const aml_byte_package_op = 0x12;
+unsigned char const aml_byte_var_package_op = 0x13;
+unsigned char const aml_byte_method_op = 0x14;
+unsigned char const aml_byte_external_op = 0x15;
+unsigned char const aml_byte_dual_name_prefix = 0x2e;
+unsigned char const aml_byte_multi_name_prefix = 0x2f;
+unsigned char const aml_byte_ext_op_prefix = 0x5b;
+unsigned char const aml_byte_mutex_op = 0x01;
+unsigned char const aml_byte_event_op = 0x02;
+unsigned char const aml_byte_cond_ref_of_op = 0x12;
+unsigned char const aml_byte_create_field_op = 0x13;
+unsigned char const aml_byte_load_table_op = 0x1f;
+unsigned char const aml_byte_load_op = 0x20;
+unsigned char const aml_byte_stall_op = 0x21;
+unsigned char const aml_byte_sleep_op = 0x22;
+unsigned char const aml_byte_acquire_op = 0x23;
+unsigned char const aml_byte_signal_op = 0x24;
+unsigned char const aml_byte_wait_op = 0x25;
+unsigned char const aml_byte_reset_op = 0x26;
+unsigned char const aml_byte_release_op = 0x27;
+unsigned char const aml_byte_from_bcd_op = 0x28;
+unsigned char const aml_byte_to_bcd = 0x29;
+unsigned char const aml_byte_revision_op = 0x30;
+unsigned char const aml_byte_debug_op = 0x31;
+unsigned char const aml_byte_fatal_op = 0x32;
+unsigned char const aml_byte_timer_op = 0x33;
+unsigned char const aml_byte_op_refion_op = 0x80;
+unsigned char const aml_byte_field_op = 0x81;
+unsigned char const aml_byte_device_op = 0x82;
+unsigned char const aml_byte_power_res_op = 0x84;
+unsigned char const aml_byte_thermal_zone_op = 0x85;
+unsigned char const aml_byte_index_field_op = 0x86;
+unsigned char const aml_byte_bank_field_op = 0x87;
+unsigned char const aml_byte_data_region_op = 0x88;
+unsigned char const aml_byte_root_char = 0x5c;
+unsigned char const aml_byte_parent_prefix_char = 0x5e;
+unsigned char const aml_byte_name_char = 0x5f;
+unsigned char const aml_byte_local_0_op = 0x60;
+unsigned char const aml_byte_local_1_op = 0x61;
+unsigned char const aml_byte_local_2_op = 0x62;
+unsigned char const aml_byte_local_3_op = 0x63;
+unsigned char const aml_byte_local_4_op = 0x64;
+unsigned char const aml_byte_local_5_op = 0x65;
+unsigned char const aml_byte_local_6_op = 0x66;
+unsigned char const aml_byte_local_7_op = 0x67;
+unsigned char const aml_byte_arg_0_op = 0x68;
+unsigned char const aml_byte_arg_1_op = 0x69;
+unsigned char const aml_byte_arg_2_op = 0x6a;
+unsigned char const aml_byte_arg_3_op = 0x6b;
+unsigned char const aml_byte_arg_4_op = 0x6c;
+unsigned char const aml_byte_arg_5_op = 0x6d;
+unsigned char const aml_byte_arg_6_op = 0x6e;
+unsigned char const aml_byte_store_op = 0x70;
+unsigned char const aml_byte_ref_of_op = 0x71;
+unsigned char const aml_byte_add_op = 0x72;
+unsigned char const aml_byte_concat_op = 0x73;
+unsigned char const aml_byte_subtract_op = 0x74;
+unsigned char const aml_byte_increment_op = 0x75;
+unsigned char const aml_byte_decrement_op = 0x76;
+unsigned char const aml_byte_multiply_op = 0x77;
+unsigned char const aml_byte_divide_op = 0x78;
+unsigned char const aml_byte_shift_left_op = 0x79;
+unsigned char const aml_byte_shift_right_op = 0x7a;
+unsigned char const aml_byte_and_op = 0x7b;
+unsigned char const aml_byte_nand_op = 0x7c;
+unsigned char const aml_byte_or_op = 0x7d;
+unsigned char const aml_byte_nor_op = 0x7e;
+unsigned char const aml_byte_xor_op = 0x7f;
+unsigned char const aml_byte_not_op = 0x80;
+unsigned char const aml_byte_find_set_left_bit_op = 0x81;
+unsigned char const aml_byte_find_set_right_bit_op = 0x82;
+unsigned char const aml_byte_deref_of_op = 0x83;
+unsigned char const aml_byte_concat_res_op = 0x84;
+unsigned char const aml_byte_mod_op = 0x85;
+unsigned char const aml_byte_notify_op = 0x86;
+unsigned char const aml_byte_size_of_op = 0x87;
+unsigned char const aml_byte_index_op = 0x88;
+unsigned char const aml_byte_match_op = 0x89;
+unsigned char const aml_byte_create_dword_field_op = 0x8a;
+unsigned char const aml_byte_create_word_field_op = 0x8b;
+unsigned char const aml_byte_create_byte_field_op = 0x8c;
+unsigned char const aml_byte_create_bit_field_op = 0x8d;
+unsigned char const aml_byte_object_type_op = 0x8e;
+unsigned char const aml_byte_create_qword_field_op = 0x8f;
+unsigned char const aml_byte_land_op = 0x90;
+unsigned char const aml_byte_lor_op = 0x91;
+unsigned char const aml_byte_lnot_op = 0x92;
+unsigned char const aml_byte_lnot_equal_op = 0x93;
+unsigned char const aml_byte_lless_equal_op = 0x94;
+unsigned char const aml_byte_lgreater_equal_op = 0x95;
+unsigned char const aml_byte_lequal_op = 0x93;
+unsigned char const aml_byte_lgreater_op = 0x94;
+unsigned char const aml_byte_lless_op = 0x95;
+unsigned char const aml_byte_to_buffer_op = 0x96;
+unsigned char const aml_byte_to_decimal_string_op = 0x97;
+unsigned char const aml_byte_to_hex_string_op = 0x98;
+unsigned char const aml_byte_to_integer_op = 0x99;
+unsigned char const aml_byte_to_string_op = 0x9c;
+unsigned char const aml_byte_copy_object_op = 0x9d;
+unsigned char const aml_byte_mid_op = 0x9e;
+unsigned char const aml_byte_comtinue_op = 0x9f;
+unsigned char const aml_byte_if_op = 0xa0;
+unsigned char const aml_byte_else_op = 0xa1;
+unsigned char const aml_byte_while_op = 0xa2;
+unsigned char const aml_byte_noop_op = 0xa3;
+unsigned char const aml_byte_return_op = 0xa4;
+unsigned char const aml_byte_break_op = 0xa5;
+unsigned char const aml_byte_break_point_op = 0xcc;
+unsigned char const aml_byte_ones_op = 0xff;
+
 bool acpi_table_is_correct(ACPITableHeader const *header);
 
 bool acpi_table_is_correct(ACPITableHeader const *header)
@@ -183,6 +304,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *term_obj_char_array;
 	switch(aml_symbol->type)
 	{
+	case aml_alias_op:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)
 		{
@@ -1261,6 +1385,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
+	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
@@ -1270,6 +1395,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_term_obj_name = "TermObj";
 	switch(aml_symbol_type)
 	{
+	case aml_alias_op:
+		return aml_alias_op_name;
 	case aml_def_alias:
 		return aml_def_alias_name;
 	case aml_expression_opcode:
@@ -1290,16 +1417,27 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	}
 }
 
+// <alias_op> := 0x06
+AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
+{
+	AMLSymbol *alias_op = malloc(sizeof(*alias_op));
+	alias_op->string.initial = aml.initial;
+	alias_op->string.length = 1;
+	alias_op->type = aml_alias_op;
+	if(*alias_op->string.initial != aml_byte_alias_op)ERROR(); // Incorrect alias_op
+	return alias_op;
+}
+
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 {
 	AMLSymbol *def_alias = malloc(sizeof(*def_alias));
+	def_alias->component.def_alias.alias_op = analyse_aml_alias_op(aml);
+	def_alias->component.def_alias.name_string_a = NULL;
+	def_alias->component.def_alias.name_string_b = NULL;
 	def_alias->string.initial = aml.initial;
 	def_alias->string.length = 0;
 	def_alias->type = aml_def_alias;
-	def_alias->component.def_alias.alias_op = NULL;
-	def_alias->component.def_alias.name_string_a = NULL;
-	def_alias->component.def_alias.name_string_b = NULL;
 	return def_alias;
 }
 
@@ -1307,9 +1445,6 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 {
 	AMLSymbol *expression_opcode = malloc(sizeof(*expression_opcode));
-	expression_opcode->string.initial = aml.initial;
-	expression_opcode->string.length = 0;
-	expression_opcode->component.expression_opcode.def_add = NULL;
 	expression_opcode->component.expression_opcode.def_and = NULL;
 	expression_opcode->component.expression_opcode.def_aquire = NULL;
 	expression_opcode->component.expression_opcode.def_buffer = NULL;
@@ -1362,6 +1497,9 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.def_wait = NULL;
 	expression_opcode->component.expression_opcode.def_xor = NULL;
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
+	expression_opcode->string.initial = aml.initial;
+	expression_opcode->string.length = 0;
+	expression_opcode->component.expression_opcode.def_add = NULL;
 	return expression_opcode;
 }
 
@@ -1369,12 +1507,12 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 {
 	AMLSymbol *name_space_modifier_obj = malloc(sizeof(*name_space_modifier_obj));
-	name_space_modifier_obj->string.initial = aml.initial;
-	name_space_modifier_obj->string.length = 0;
-	name_space_modifier_obj->type = aml_name_space_modifier_obj;
 	name_space_modifier_obj->component.name_space_modifier_obj.def_alias = NULL;
 	name_space_modifier_obj->component.name_space_modifier_obj.def_name = NULL;
 	name_space_modifier_obj->component.name_space_modifier_obj.def_scope = NULL;
+	name_space_modifier_obj->string.initial = aml.initial;
+	name_space_modifier_obj->string.length = 0;
+	name_space_modifier_obj->type = aml_name_space_modifier_obj;
 	return name_space_modifier_obj;
 }
 
@@ -1382,11 +1520,11 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 AMLSymbol *analyse_aml_object(AMLSubstring aml)
 {
 	AMLSymbol *object = malloc(sizeof(*object));
+	object->component.object.name_space_modifier_obj = NULL;
+	object->component.object.named_obj = NULL;
 	object->string.initial = aml.initial;
 	object->string.length = 0;
 	object->type = aml_object;
-	object->component.object.name_space_modifier_obj = NULL;
-	object->component.object.named_obj = NULL;
 	return object;
 }
 
@@ -1394,9 +1532,6 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 {
 	AMLSymbol *statement_opcode = malloc(sizeof(*statement_opcode));
-	statement_opcode->string.initial = aml.initial;
-	statement_opcode->string.length = 0;
-	statement_opcode->type = aml_statement_opcode;
 	statement_opcode->component.statement_opcode.def_break = NULL;
 	statement_opcode->component.statement_opcode.def_break_point = NULL;
 	statement_opcode->component.statement_opcode.def_continue = NULL;
@@ -1411,6 +1546,9 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 	statement_opcode->component.statement_opcode.def_sleep = NULL;
 	statement_opcode->component.statement_opcode.def_stall = NULL;
 	statement_opcode->component.statement_opcode.def_while = NULL;
+	statement_opcode->string.initial = aml.initial;
+	statement_opcode->string.length = 0;
+	statement_opcode->type = aml_statement_opcode;
 	return statement_opcode;
 }
 
@@ -1440,12 +1578,12 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 {
 	AMLSymbol *term_obj = malloc(sizeof(*term_obj));
-	term_obj->string.initial = aml.initial;
-	term_obj->string.length = 0;
-	term_obj->type = aml_term_obj;
 	term_obj->component.term_obj.object = NULL;
 	term_obj->component.term_obj.statement_opcode = NULL;
 	term_obj->component.term_obj.expression_opcode = NULL;
+	term_obj->string.initial = aml.initial;
+	term_obj->string.length = 0;
+	term_obj->type = aml_term_obj;
 	return term_obj;
 }
 
@@ -1458,6 +1596,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 {
 	switch(aml_symbol->type)
 	{
+	case aml_alias_op:
+		break;
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
 		if(aml_symbol->component.def_alias.name_string_a)delete_aml_symbol(aml_symbol->component.def_alias.name_string_a);
