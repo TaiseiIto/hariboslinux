@@ -5,8 +5,7 @@
 #ifndef _ACPI_H_
 #define _ACPI_H_
 
-#include "memory.h"
-#include "shell.h"
+#include "chain_string.h"
 
 #define PRINT_ACPI_TABLE_HEADER(x) print_acpi_table_header((x), _STRING(x))
 #define PRINT_ACPI_TABLE_HEADER_P(x) print_acpi_table_header_p((x), _STRING(x))
@@ -199,6 +198,9 @@ typedef struct _AMLSymbol
 	AMLComponent component;
 } AMLSymbol;
 
+ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol);
+char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
+char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 // <term_list> := Nothing | <term_obj> <term_list>
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
@@ -213,6 +215,7 @@ ACPITableHeader const *get_sdt_header(char const *signature);
 ACPITableHeader const * const *get_sdt_headers(void);
 void print_acpi_table_header(ACPITableHeader acpi_table_header, char const *name);
 void print_acpi_table_header_p(ACPITableHeader const *acpi_table_header, char const *name);
+void print_aml_symbol(AMLSymbol const *aml_symbol);
 void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name);
 
 #endif

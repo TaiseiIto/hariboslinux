@@ -1,5 +1,6 @@
 #include "acpi.h"
 #include "serial.h"
+#include "shell.h"
 #include "stdbool.h"
 #include "string.h"
 
@@ -15,6 +16,123 @@ bool acpi_table_is_correct(ACPITableHeader const *header)
 		return false;
 	}
 	else return true;
+}
+
+ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
+{
+	ChainString *output;
+	ChainString *expression_opcode_chain_string;
+	ChainString *object_chain_string;
+	ChainString *statement_opcode_chain_string;
+	ChainString *term_list_chain_string;
+	ChainString *term_obj_chain_string;
+	char *expression_opcode_char_array;
+	char *object_char_array;
+	char *statement_opcode_char_array;
+	char *term_list_char_array;
+	char *term_obj_char_array;
+	switch(aml_symbol->type)
+	{
+	case aml_term_list:
+		if(aml_symbol->component.term_list.term_obj)
+		{
+			term_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_list.term_obj);
+			insert_char_front(term_obj_chain_string, term_obj_chain_string->first_character, ' ');
+			replace_chain_string(term_obj_chain_string, "\n", " \n");
+			term_obj_char_array = create_char_array_from_chain_string(term_obj_chain_string);
+		}
+		else term_obj_char_array = "";
+		if(aml_symbol->component.term_list.term_list)
+		{
+			term_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_list.term_list);
+			insert_char_front(term_list_chain_string, term_list_chain_string->first_character, ' ');
+			replace_chain_string(term_list_chain_string, "\n", " \n");
+			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
+		}
+		else term_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), term_obj_char_array, term_list_char_array);
+		if(aml_symbol->component.term_list.term_obj)
+		{
+			delete_chain_string(term_obj_chain_string);
+			free(term_obj_char_array);
+		}
+		if(aml_symbol->component.term_list.term_list)
+		{
+			delete_chain_string(term_list_chain_string);
+			free(term_list_char_array);
+		}
+		break;
+	case aml_term_obj:
+		if(aml_symbol->component.term_obj.object)
+		{
+			object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_obj.object);
+			insert_char_front(object_chain_string, object_chain_string->first_character, ' ');
+			replace_chain_string(object_chain_string, "\n", " \n");
+			object_char_array = create_char_array_from_chain_string(object_chain_string);
+		}
+		else object_char_array = "";
+		if(aml_symbol->component.term_obj.statement_opcode)
+		{
+			statement_opcode_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_obj.statement_opcode);
+			insert_char_front(statement_opcode_chain_string, statement_opcode_chain_string->first_character, ' ');
+			replace_chain_string(statement_opcode_chain_string, "\n", " \n");
+			statement_opcode_char_array = create_char_array_from_chain_string(statement_opcode_chain_string);
+		}
+		else statement_opcode_char_array = "";
+		if(aml_symbol->component.term_obj.expression_opcode)
+		{
+			expression_opcode_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_obj.expression_opcode);
+			insert_char_front(expression_opcode_chain_string, expression_opcode_chain_string->first_character, ' ');
+			replace_chain_string(expression_opcode_chain_string, "\n", " \n");
+			expression_opcode_char_array = create_char_array_from_chain_string(expression_opcode_chain_string);
+		}
+		else expression_opcode_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), object_char_array, statement_opcode_char_array, expression_opcode_char_array);
+		if(aml_symbol->component.term_obj.object)
+		{
+			delete_chain_string(object_chain_string);
+			free(object_char_array);
+		}
+		if(aml_symbol->component.term_obj.statement_opcode)
+		{
+			delete_chain_string(statement_opcode_chain_string);
+			free(statement_opcode_char_array);
+		}
+		if(aml_symbol->component.term_obj.expression_opcode)
+		{
+			delete_chain_string(expression_opcode_chain_string);
+			free(expression_opcode_char_array);
+		}
+		break;
+	default:
+		ERROR(); // Invalid AML symbol type
+		break;
+	}
+	return output;
+}
+
+char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
+{
+	ChainString *aml_symbol_chain_string = aml_symbol_to_chain_string(aml_symbol);
+	char *aml_symbol_string = create_char_array_from_chain_string(aml_symbol_chain_string);
+	delete_chain_string(aml_symbol_chain_string);
+	return aml_symbol_string;
+}
+
+char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
+{
+	static char const * const aml_term_list_name = "TermList";
+	static char const * const aml_term_obj_name = "TermObj";
+	switch(aml_symbol_type)
+	{
+	case aml_term_list:
+		return aml_term_list_name;
+	case aml_term_obj:
+		return aml_term_obj_name;
+	default:
+		ERROR(); // Invalid AML symbol type
+		return NULL;
+	}
 }
 
 // <term_list> := Nothing | <term_obj> <term_list>
@@ -148,6 +266,13 @@ void print_acpi_table_header_p(ACPITableHeader const *acpi_table_header, char co
 	printf_shell(shell, "%s->oem_revision = %#010.8x\n", name, acpi_table_header->oem_revision);
 	printf_shell(shell, "%s->creater_id = %#010.8x\n", name, acpi_table_header->creater_id);
 	printf_shell(shell, "%s->creater_revision = %#010.8x\n", name, acpi_table_header->creater_revision);
+}
+
+void print_aml_symbol(AMLSymbol const *aml_symbol)
+{
+	char *aml_symbol_string = aml_symbol_to_string(aml_symbol);
+	printf_shell(get_current_shell(), aml_symbol_string);
+	free(aml_symbol_string);
 }
 
 void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name)
