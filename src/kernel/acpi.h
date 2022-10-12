@@ -163,6 +163,7 @@ struct _AMLSymbol;
 
 typedef enum _AMLSymbolType
 {
+	aml_expression_opcode,
 	aml_object,
 	aml_statement_opcode,
 	aml_term_list,
@@ -177,9 +178,9 @@ typedef struct _AMLSubstring
 
 typedef struct _AMLExpressionOpcode
 {
-	struct _AMLSymbol *def_aquire;
 	struct _AMLSymbol *def_add;
 	struct _AMLSymbol *def_and;
+	struct _AMLSymbol *def_aquire;
 	struct _AMLSymbol *def_buffer;
 	struct _AMLSymbol *def_concat;
 	struct _AMLSymbol *def_concat_res;
@@ -199,12 +200,12 @@ typedef struct _AMLExpressionOpcode
 	struct _AMLSymbol *def_l_greater_equal;
 	struct _AMLSymbol *def_l_less;
 	struct _AMLSymbol *def_l_less_equal;
-	struct _AMLSymbol *def_mid;
 	struct _AMLSymbol *def_l_not;
 	struct _AMLSymbol *def_l_not_equal;
-	struct _AMLSymbol *def_load_table;
 	struct _AMLSymbol *def_l_or;
+	struct _AMLSymbol *def_load_table;
 	struct _AMLSymbol *def_match;
+	struct _AMLSymbol *def_mid;
 	struct _AMLSymbol *def_mod;
 	struct _AMLSymbol *def_multiply;
 	struct _AMLSymbol *def_nand;
@@ -213,7 +214,6 @@ typedef struct _AMLExpressionOpcode
 	struct _AMLSymbol *def_object_type;
 	struct _AMLSymbol *def_or;
 	struct _AMLSymbol *def_package;
-	struct _AMLSymbol *def_var_package;
 	struct _AMLSymbol *def_ref_of;
 	struct _AMLSymbol *def_shift_left;
 	struct _AMLSymbol *def_shift_right;
@@ -227,6 +227,7 @@ typedef struct _AMLExpressionOpcode
 	struct _AMLSymbol *def_to_hex_string;
 	struct _AMLSymbol *def_to_integer;
 	struct _AMLSymbol *def_to_string;
+	struct _AMLSymbol *def_var_package;
 	struct _AMLSymbol *def_wait;
 	struct _AMLSymbol *def_xor;
 	struct _AMLSymbol *method_invocation;
@@ -271,6 +272,7 @@ typedef struct _AMLTermObj
 
 typedef union _AMLComponent
 {
+	AMLExpressionOpcode expression_opcode;
 	AMLObject object;
 	AMLStatementOpcode statement_opcode;
 	AMLTermList term_list;

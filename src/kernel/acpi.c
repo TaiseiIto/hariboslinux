@@ -21,50 +21,848 @@ bool acpi_table_is_correct(ACPITableHeader const *header)
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 {
 	ChainString *output;
+	ChainString *def_add_chain_string;
+	ChainString *def_and_chain_string;
+	ChainString *def_aquire_chain_string;
 	ChainString *def_break_chain_string;
 	ChainString *def_break_point_chain_string;
+	ChainString *def_buffer_chain_string;
+	ChainString *def_concat_chain_string;
+	ChainString *def_concat_res_chain_string;
+	ChainString *def_cond_ref_of_chain_string;
 	ChainString *def_continue_chain_string;
+	ChainString *def_copy_object_chain_string;
+	ChainString *def_decrement_chain_string;
+	ChainString *def_deref_of_chain_string;
+	ChainString *def_divide_chain_string;
 	ChainString *def_fatal_chain_string;
+	ChainString *def_find_set_left_bit_chain_string;
+	ChainString *def_find_set_right_bit_chain_string;
+	ChainString *def_from_bcd_chain_string;
 	ChainString *def_if_else_chain_string;
+	ChainString *def_increment_chain_string;
+	ChainString *def_index_chain_string;
+	ChainString *def_l_and_chain_string;
+	ChainString *def_l_equal_chain_string;
+	ChainString *def_l_greater_chain_string;
+	ChainString *def_l_greater_equal_chain_string;
+	ChainString *def_l_less_chain_string;
+	ChainString *def_l_less_equal_chain_string;
+	ChainString *def_l_not_chain_string;
+	ChainString *def_l_not_equal_chain_string;
+	ChainString *def_l_or_chain_string;
+	ChainString *def_load_table_chain_string;
+	ChainString *def_match_chain_string;
+	ChainString *def_mid_chain_string;
+	ChainString *def_mod_chain_string;
+	ChainString *def_multiply_chain_string;
+	ChainString *def_nand_chain_string;
 	ChainString *def_noop_chain_string;
+	ChainString *def_nor_chain_string;
+	ChainString *def_not_chain_string;
 	ChainString *def_notify_chain_string;
+	ChainString *def_object_type_chain_string;
+	ChainString *def_or_chain_string;
+	ChainString *def_package_chain_string;
+	ChainString *def_ref_of_chain_string;
 	ChainString *def_release_chain_string;
 	ChainString *def_reset_chain_string;
 	ChainString *def_return_chain_string;
+	ChainString *def_shift_left_chain_string;
+	ChainString *def_shift_right_chain_string;
 	ChainString *def_signal_chain_string;
+	ChainString *def_size_of_chain_string;
 	ChainString *def_sleep_chain_string;
 	ChainString *def_stall_chain_string;
+	ChainString *def_store_chain_string;
+	ChainString *def_subtract_chain_string;
+	ChainString *def_timer_chain_string;
+	ChainString *def_to_bcd_chain_string;
+	ChainString *def_to_buffer_chain_string;
+	ChainString *def_to_decimal_string_chain_string;
+	ChainString *def_to_hex_string_chain_string;
+	ChainString *def_to_integer_chain_string;
+	ChainString *def_to_string_chain_string;
+	ChainString *def_var_package_chain_string;
+	ChainString *def_wait_chain_string;
 	ChainString *def_while_chain_string;
+	ChainString *def_xor_chain_string;
 	ChainString *expression_opcode_chain_string;
-	ChainString *named_obj_chain_string;
+	ChainString *method_invocation_chain_string;
 	ChainString *name_space_modifier_obj_chain_string;
+	ChainString *named_obj_chain_string;
 	ChainString *object_chain_string;
 	ChainString *statement_opcode_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
+	char *def_add_char_array;
+	char *def_and_char_array;
+	char *def_aquire_char_array;
 	char *def_break_char_array;
 	char *def_break_point_char_array;
+	char *def_buffer_char_array;
+	char *def_concat_char_array;
+	char *def_concat_res_char_array;
+	char *def_cond_ref_of_char_array;
 	char *def_continue_char_array;
+	char *def_copy_object_char_array;
+	char *def_decrement_char_array;
+	char *def_deref_of_char_array;
+	char *def_divide_char_array;
 	char *def_fatal_char_array;
+	char *def_find_set_left_bit_char_array;
+	char *def_find_set_right_bit_char_array;
+	char *def_from_bcd_char_array;
 	char *def_if_else_char_array;
+	char *def_increment_char_array;
+	char *def_index_char_array;
+	char *def_l_and_char_array;
+	char *def_l_equal_char_array;
+	char *def_l_greater_char_array;
+	char *def_l_greater_equal_char_array;
+	char *def_l_less_char_array;
+	char *def_l_less_equal_char_array;
+	char *def_l_not_char_array;
+	char *def_l_not_equal_char_array;
+	char *def_l_or_char_array;
+	char *def_load_table_char_array;
+	char *def_match_char_array;
+	char *def_mid_char_array;
+	char *def_mod_char_array;
+	char *def_multiply_char_array;
+	char *def_nand_char_array;
 	char *def_noop_char_array;
+	char *def_nor_char_array;
+	char *def_not_char_array;
 	char *def_notify_char_array;
+	char *def_object_type_char_array;
+	char *def_or_char_array;
+	char *def_package_char_array;
+	char *def_ref_of_char_array;
 	char *def_release_char_array;
 	char *def_reset_char_array;
 	char *def_return_char_array;
+	char *def_shift_left_char_array;
+	char *def_shift_right_char_array;
 	char *def_signal_char_array;
+	char *def_size_of_char_array;
 	char *def_sleep_char_array;
 	char *def_stall_char_array;
+	char *def_store_char_array;
+	char *def_subtract_char_array;
+	char *def_timer_char_array;
+	char *def_to_bcd_char_array;
+	char *def_to_buffer_char_array;
+	char *def_to_decimal_string_char_array;
+	char *def_to_hex_string_char_array;
+	char *def_to_integer_char_array;
+	char *def_to_string_char_array;
+	char *def_var_package_char_array;
+	char *def_wait_char_array;
 	char *def_while_char_array;
+	char *def_xor_char_array;
 	char *expression_opcode_char_array;
-	char *named_obj_char_array;
+	char *method_invocation_char_array;
 	char *name_space_modifier_obj_char_array;
+	char *named_obj_char_array;
 	char *object_char_array;
 	char *statement_opcode_char_array;
 	char *term_list_char_array;
 	char *term_obj_char_array;
 	switch(aml_symbol->type)
 	{
+	case aml_expression_opcode:
+		if(aml_symbol->component.expression_opcode.def_add)
+		{
+			def_add_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_add);
+			insert_char_front(def_add_chain_string, def_add_chain_string->first_character, ' ');
+			replace_chain_string(def_add_chain_string, "\n", " \n");
+			def_add_char_array = create_char_array_from_chain_string(def_add_chain_string);
+		}
+		else def_add_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_and)
+		{
+			def_and_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_and);
+			insert_char_front(def_and_chain_string, def_and_chain_string->first_character, ' ');
+			replace_chain_string(def_and_chain_string, "\n", " \n");
+			def_and_char_array = create_char_array_from_chain_string(def_and_chain_string);
+		}
+		else def_and_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_aquire)
+		{
+			def_aquire_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_aquire);
+			insert_char_front(def_aquire_chain_string, def_aquire_chain_string->first_character, ' ');
+			replace_chain_string(def_aquire_chain_string, "\n", " \n");
+			def_aquire_char_array = create_char_array_from_chain_string(def_aquire_chain_string);
+		}
+		else def_aquire_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_buffer)
+		{
+			def_buffer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_buffer);
+			insert_char_front(def_buffer_chain_string, def_buffer_chain_string->first_character, ' ');
+			replace_chain_string(def_buffer_chain_string, "\n", " \n");
+			def_buffer_char_array = create_char_array_from_chain_string(def_buffer_chain_string);
+		}
+		else def_buffer_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_concat)
+		{
+			def_concat_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_concat);
+			insert_char_front(def_concat_chain_string, def_concat_chain_string->first_character, ' ');
+			replace_chain_string(def_concat_chain_string, "\n", " \n");
+			def_concat_char_array = create_char_array_from_chain_string(def_concat_chain_string);
+		}
+		else def_concat_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_concat_res)
+		{
+			def_concat_res_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_concat_res);
+			insert_char_front(def_concat_res_chain_string, def_concat_res_chain_string->first_character, ' ');
+			replace_chain_string(def_concat_res_chain_string, "\n", " \n");
+			def_concat_res_char_array = create_char_array_from_chain_string(def_concat_res_chain_string);
+		}
+		else def_concat_res_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_cond_ref_of)
+		{
+			def_cond_ref_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_cond_ref_of);
+			insert_char_front(def_cond_ref_of_chain_string, def_cond_ref_of_chain_string->first_character, ' ');
+			replace_chain_string(def_cond_ref_of_chain_string, "\n", " \n");
+			def_cond_ref_of_char_array = create_char_array_from_chain_string(def_cond_ref_of_chain_string);
+		}
+		else def_cond_ref_of_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_copy_object)
+		{
+			def_copy_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_copy_object);
+			insert_char_front(def_copy_object_chain_string, def_copy_object_chain_string->first_character, ' ');
+			replace_chain_string(def_copy_object_chain_string, "\n", " \n");
+			def_copy_object_char_array = create_char_array_from_chain_string(def_copy_object_chain_string);
+		}
+		else def_copy_object_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_decrement)
+		{
+			def_decrement_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_decrement);
+			insert_char_front(def_decrement_chain_string, def_decrement_chain_string->first_character, ' ');
+			replace_chain_string(def_decrement_chain_string, "\n", " \n");
+			def_decrement_char_array = create_char_array_from_chain_string(def_decrement_chain_string);
+		}
+		else def_decrement_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_deref_of)
+		{
+			def_deref_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_deref_of);
+			insert_char_front(def_deref_of_chain_string, def_deref_of_chain_string->first_character, ' ');
+			replace_chain_string(def_deref_of_chain_string, "\n", " \n");
+			def_deref_of_char_array = create_char_array_from_chain_string(def_deref_of_chain_string);
+		}
+		else def_deref_of_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_divide)
+		{
+			def_divide_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_divide);
+			insert_char_front(def_divide_chain_string, def_divide_chain_string->first_character, ' ');
+			replace_chain_string(def_divide_chain_string, "\n", " \n");
+			def_divide_char_array = create_char_array_from_chain_string(def_divide_chain_string);
+		}
+		else def_divide_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_find_set_left_bit)
+		{
+			def_find_set_left_bit_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_find_set_left_bit);
+			insert_char_front(def_find_set_left_bit_chain_string, def_find_set_left_bit_chain_string->first_character, ' ');
+			replace_chain_string(def_find_set_left_bit_chain_string, "\n", " \n");
+			def_find_set_left_bit_char_array = create_char_array_from_chain_string(def_find_set_left_bit_chain_string);
+		}
+		else def_find_set_left_bit_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_find_set_right_bit)
+		{
+			def_find_set_right_bit_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_find_set_right_bit);
+			insert_char_front(def_find_set_right_bit_chain_string, def_find_set_right_bit_chain_string->first_character, ' ');
+			replace_chain_string(def_find_set_right_bit_chain_string, "\n", " \n");
+			def_find_set_right_bit_char_array = create_char_array_from_chain_string(def_find_set_right_bit_chain_string);
+		}
+		else def_find_set_right_bit_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_from_bcd)
+		{
+			def_from_bcd_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_from_bcd);
+			insert_char_front(def_from_bcd_chain_string, def_from_bcd_chain_string->first_character, ' ');
+			replace_chain_string(def_from_bcd_chain_string, "\n", " \n");
+			def_from_bcd_char_array = create_char_array_from_chain_string(def_from_bcd_chain_string);
+		}
+		else def_from_bcd_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_increment)
+		{
+			def_increment_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_increment);
+			insert_char_front(def_increment_chain_string, def_increment_chain_string->first_character, ' ');
+			replace_chain_string(def_increment_chain_string, "\n", " \n");
+			def_increment_char_array = create_char_array_from_chain_string(def_increment_chain_string);
+		}
+		else def_increment_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_index)
+		{
+			def_index_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_index);
+			insert_char_front(def_index_chain_string, def_index_chain_string->first_character, ' ');
+			replace_chain_string(def_index_chain_string, "\n", " \n");
+			def_index_char_array = create_char_array_from_chain_string(def_index_chain_string);
+		}
+		else def_index_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_and)
+		{
+			def_l_and_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_and);
+			insert_char_front(def_l_and_chain_string, def_l_and_chain_string->first_character, ' ');
+			replace_chain_string(def_l_and_chain_string, "\n", " \n");
+			def_l_and_char_array = create_char_array_from_chain_string(def_l_and_chain_string);
+		}
+		else def_l_and_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_equal)
+		{
+			def_l_equal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_equal);
+			insert_char_front(def_l_equal_chain_string, def_l_equal_chain_string->first_character, ' ');
+			replace_chain_string(def_l_equal_chain_string, "\n", " \n");
+			def_l_equal_char_array = create_char_array_from_chain_string(def_l_equal_chain_string);
+		}
+		else def_l_equal_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_greater)
+		{
+			def_l_greater_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_greater);
+			insert_char_front(def_l_greater_chain_string, def_l_greater_chain_string->first_character, ' ');
+			replace_chain_string(def_l_greater_chain_string, "\n", " \n");
+			def_l_greater_char_array = create_char_array_from_chain_string(def_l_greater_chain_string);
+		}
+		else def_l_greater_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_greater_equal)
+		{
+			def_l_greater_equal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_greater_equal);
+			insert_char_front(def_l_greater_equal_chain_string, def_l_greater_equal_chain_string->first_character, ' ');
+			replace_chain_string(def_l_greater_equal_chain_string, "\n", " \n");
+			def_l_greater_equal_char_array = create_char_array_from_chain_string(def_l_greater_equal_chain_string);
+		}
+		else def_l_greater_equal_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_less)
+		{
+			def_l_less_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_less);
+			insert_char_front(def_l_less_chain_string, def_l_less_chain_string->first_character, ' ');
+			replace_chain_string(def_l_less_chain_string, "\n", " \n");
+			def_l_less_char_array = create_char_array_from_chain_string(def_l_less_chain_string);
+		}
+		else def_l_less_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_less_equal)
+		{
+			def_l_less_equal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_less_equal);
+			insert_char_front(def_l_less_equal_chain_string, def_l_less_equal_chain_string->first_character, ' ');
+			replace_chain_string(def_l_less_equal_chain_string, "\n", " \n");
+			def_l_less_equal_char_array = create_char_array_from_chain_string(def_l_less_equal_chain_string);
+		}
+		else def_l_less_equal_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_not)
+		{
+			def_l_not_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_not);
+			insert_char_front(def_l_not_chain_string, def_l_not_chain_string->first_character, ' ');
+			replace_chain_string(def_l_not_chain_string, "\n", " \n");
+			def_l_not_char_array = create_char_array_from_chain_string(def_l_not_chain_string);
+		}
+		else def_l_not_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_not_equal)
+		{
+			def_l_not_equal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_not_equal);
+			insert_char_front(def_l_not_equal_chain_string, def_l_not_equal_chain_string->first_character, ' ');
+			replace_chain_string(def_l_not_equal_chain_string, "\n", " \n");
+			def_l_not_equal_char_array = create_char_array_from_chain_string(def_l_not_equal_chain_string);
+		}
+		else def_l_not_equal_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_l_or)
+		{
+			def_l_or_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_or);
+			insert_char_front(def_l_or_chain_string, def_l_or_chain_string->first_character, ' ');
+			replace_chain_string(def_l_or_chain_string, "\n", " \n");
+			def_l_or_char_array = create_char_array_from_chain_string(def_l_or_chain_string);
+		}
+		else def_l_or_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_load_table)
+		{
+			def_load_table_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_load_table);
+			insert_char_front(def_load_table_chain_string, def_load_table_chain_string->first_character, ' ');
+			replace_chain_string(def_load_table_chain_string, "\n", " \n");
+			def_load_table_char_array = create_char_array_from_chain_string(def_load_table_chain_string);
+		}
+		else def_load_table_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_match)
+		{
+			def_match_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_match);
+			insert_char_front(def_match_chain_string, def_match_chain_string->first_character, ' ');
+			replace_chain_string(def_match_chain_string, "\n", " \n");
+			def_match_char_array = create_char_array_from_chain_string(def_match_chain_string);
+		}
+		else def_match_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_mid)
+		{
+			def_mid_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_mid);
+			insert_char_front(def_mid_chain_string, def_mid_chain_string->first_character, ' ');
+			replace_chain_string(def_mid_chain_string, "\n", " \n");
+			def_mid_char_array = create_char_array_from_chain_string(def_mid_chain_string);
+		}
+		else def_mid_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_mod)
+		{
+			def_mod_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_mod);
+			insert_char_front(def_mod_chain_string, def_mod_chain_string->first_character, ' ');
+			replace_chain_string(def_mod_chain_string, "\n", " \n");
+			def_mod_char_array = create_char_array_from_chain_string(def_mod_chain_string);
+		}
+		else def_mod_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_multiply)
+		{
+			def_multiply_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_multiply);
+			insert_char_front(def_multiply_chain_string, def_multiply_chain_string->first_character, ' ');
+			replace_chain_string(def_multiply_chain_string, "\n", " \n");
+			def_multiply_char_array = create_char_array_from_chain_string(def_multiply_chain_string);
+		}
+		else def_multiply_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_nand)
+		{
+			def_nand_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_nand);
+			insert_char_front(def_nand_chain_string, def_nand_chain_string->first_character, ' ');
+			replace_chain_string(def_nand_chain_string, "\n", " \n");
+			def_nand_char_array = create_char_array_from_chain_string(def_nand_chain_string);
+		}
+		else def_nand_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_nor)
+		{
+			def_nor_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_nor);
+			insert_char_front(def_nor_chain_string, def_nor_chain_string->first_character, ' ');
+			replace_chain_string(def_nor_chain_string, "\n", " \n");
+			def_nor_char_array = create_char_array_from_chain_string(def_nor_chain_string);
+		}
+		else def_nor_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_not)
+		{
+			def_not_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_not);
+			insert_char_front(def_not_chain_string, def_not_chain_string->first_character, ' ');
+			replace_chain_string(def_not_chain_string, "\n", " \n");
+			def_not_char_array = create_char_array_from_chain_string(def_not_chain_string);
+		}
+		else def_not_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_object_type)
+		{
+			def_object_type_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_object_type);
+			insert_char_front(def_object_type_chain_string, def_object_type_chain_string->first_character, ' ');
+			replace_chain_string(def_object_type_chain_string, "\n", " \n");
+			def_object_type_char_array = create_char_array_from_chain_string(def_object_type_chain_string);
+		}
+		else def_object_type_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_or)
+		{
+			def_or_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_or);
+			insert_char_front(def_or_chain_string, def_or_chain_string->first_character, ' ');
+			replace_chain_string(def_or_chain_string, "\n", " \n");
+			def_or_char_array = create_char_array_from_chain_string(def_or_chain_string);
+		}
+		else def_or_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_package)
+		{
+			def_package_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_package);
+			insert_char_front(def_package_chain_string, def_package_chain_string->first_character, ' ');
+			replace_chain_string(def_package_chain_string, "\n", " \n");
+			def_package_char_array = create_char_array_from_chain_string(def_package_chain_string);
+		}
+		else def_package_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_ref_of)
+		{
+			def_ref_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_ref_of);
+			insert_char_front(def_ref_of_chain_string, def_ref_of_chain_string->first_character, ' ');
+			replace_chain_string(def_ref_of_chain_string, "\n", " \n");
+			def_ref_of_char_array = create_char_array_from_chain_string(def_ref_of_chain_string);
+		}
+		else def_ref_of_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_shift_left)
+		{
+			def_shift_left_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_shift_left);
+			insert_char_front(def_shift_left_chain_string, def_shift_left_chain_string->first_character, ' ');
+			replace_chain_string(def_shift_left_chain_string, "\n", " \n");
+			def_shift_left_char_array = create_char_array_from_chain_string(def_shift_left_chain_string);
+		}
+		else def_shift_left_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_shift_right)
+		{
+			def_shift_right_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_shift_right);
+			insert_char_front(def_shift_right_chain_string, def_shift_right_chain_string->first_character, ' ');
+			replace_chain_string(def_shift_right_chain_string, "\n", " \n");
+			def_shift_right_char_array = create_char_array_from_chain_string(def_shift_right_chain_string);
+		}
+		else def_shift_right_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_size_of)
+		{
+			def_size_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_size_of);
+			insert_char_front(def_size_of_chain_string, def_size_of_chain_string->first_character, ' ');
+			replace_chain_string(def_size_of_chain_string, "\n", " \n");
+			def_size_of_char_array = create_char_array_from_chain_string(def_size_of_chain_string);
+		}
+		else def_size_of_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_store)
+		{
+			def_store_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_store);
+			insert_char_front(def_store_chain_string, def_store_chain_string->first_character, ' ');
+			replace_chain_string(def_store_chain_string, "\n", " \n");
+			def_store_char_array = create_char_array_from_chain_string(def_store_chain_string);
+		}
+		else def_store_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_subtract)
+		{
+			def_subtract_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_subtract);
+			insert_char_front(def_subtract_chain_string, def_subtract_chain_string->first_character, ' ');
+			replace_chain_string(def_subtract_chain_string, "\n", " \n");
+			def_subtract_char_array = create_char_array_from_chain_string(def_subtract_chain_string);
+		}
+		else def_subtract_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_timer)
+		{
+			def_timer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_timer);
+			insert_char_front(def_timer_chain_string, def_timer_chain_string->first_character, ' ');
+			replace_chain_string(def_timer_chain_string, "\n", " \n");
+			def_timer_char_array = create_char_array_from_chain_string(def_timer_chain_string);
+		}
+		else def_timer_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_to_bcd)
+		{
+			def_to_bcd_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_bcd);
+			insert_char_front(def_to_bcd_chain_string, def_to_bcd_chain_string->first_character, ' ');
+			replace_chain_string(def_to_bcd_chain_string, "\n", " \n");
+			def_to_bcd_char_array = create_char_array_from_chain_string(def_to_bcd_chain_string);
+		}
+		else def_to_bcd_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_to_buffer)
+		{
+			def_to_buffer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_buffer);
+			insert_char_front(def_to_buffer_chain_string, def_to_buffer_chain_string->first_character, ' ');
+			replace_chain_string(def_to_buffer_chain_string, "\n", " \n");
+			def_to_buffer_char_array = create_char_array_from_chain_string(def_to_buffer_chain_string);
+		}
+		else def_to_buffer_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_to_decimal_string)
+		{
+			def_to_decimal_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_decimal_string);
+			insert_char_front(def_to_decimal_string_chain_string, def_to_decimal_string_chain_string->first_character, ' ');
+			replace_chain_string(def_to_decimal_string_chain_string, "\n", " \n");
+			def_to_decimal_string_char_array = create_char_array_from_chain_string(def_to_decimal_string_chain_string);
+		}
+		else def_to_decimal_string_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_to_hex_string)
+		{
+			def_to_hex_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_hex_string);
+			insert_char_front(def_to_hex_string_chain_string, def_to_hex_string_chain_string->first_character, ' ');
+			replace_chain_string(def_to_hex_string_chain_string, "\n", " \n");
+			def_to_hex_string_char_array = create_char_array_from_chain_string(def_to_hex_string_chain_string);
+		}
+		else def_to_hex_string_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_to_integer)
+		{
+			def_to_integer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_integer);
+			insert_char_front(def_to_integer_chain_string, def_to_integer_chain_string->first_character, ' ');
+			replace_chain_string(def_to_integer_chain_string, "\n", " \n");
+			def_to_integer_char_array = create_char_array_from_chain_string(def_to_integer_chain_string);
+		}
+		else def_to_integer_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_to_string)
+		{
+			def_to_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_string);
+			insert_char_front(def_to_string_chain_string, def_to_string_chain_string->first_character, ' ');
+			replace_chain_string(def_to_string_chain_string, "\n", " \n");
+			def_to_string_char_array = create_char_array_from_chain_string(def_to_string_chain_string);
+		}
+		else def_to_string_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_var_package)
+		{
+			def_var_package_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_var_package);
+			insert_char_front(def_var_package_chain_string, def_var_package_chain_string->first_character, ' ');
+			replace_chain_string(def_var_package_chain_string, "\n", " \n");
+			def_var_package_char_array = create_char_array_from_chain_string(def_var_package_chain_string);
+		}
+		else def_var_package_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_wait)
+		{
+			def_wait_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_wait);
+			insert_char_front(def_wait_chain_string, def_wait_chain_string->first_character, ' ');
+			replace_chain_string(def_wait_chain_string, "\n", " \n");
+			def_wait_char_array = create_char_array_from_chain_string(def_wait_chain_string);
+		}
+		else def_wait_char_array = "";
+		if(aml_symbol->component.expression_opcode.def_xor)
+		{
+			def_xor_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_xor);
+			insert_char_front(def_xor_chain_string, def_xor_chain_string->first_character, ' ');
+			replace_chain_string(def_xor_chain_string, "\n", " \n");
+			def_xor_char_array = create_char_array_from_chain_string(def_xor_chain_string);
+		}
+		else def_xor_char_array = "";
+		if(aml_symbol->component.expression_opcode.method_invocation)
+		{
+			method_invocation_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.method_invocation);
+			insert_char_front(method_invocation_chain_string, method_invocation_chain_string->first_character, ' ');
+			replace_chain_string(method_invocation_chain_string, "\n", " \n");
+			method_invocation_char_array = create_char_array_from_chain_string(method_invocation_chain_string);
+		}
+		else method_invocation_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), def_add_char_array, def_and_char_array, def_aquire_char_array, def_buffer_char_array, def_concat_char_array, def_concat_res_char_array, def_cond_ref_of_char_array, def_copy_object_char_array, def_decrement_char_array, def_deref_of_char_array, def_divide_char_array, def_find_set_left_bit_char_array, def_find_set_right_bit_char_array, def_from_bcd_char_array, def_increment_char_array, def_index_char_array, def_l_and_char_array, def_l_equal_char_array, def_l_greater_char_array, def_l_greater_equal_char_array, def_l_less_char_array, def_l_less_equal_char_array, def_l_not_char_array, def_l_not_equal_char_array, def_l_or_char_array, def_load_table_char_array, def_match_char_array, def_mid_char_array, def_mod_char_array, def_multiply_char_array, def_nand_char_array, def_nor_char_array, def_not_char_array, def_object_type_char_array, def_or_char_array, def_package_char_array, def_ref_of_char_array, def_shift_left_char_array, def_shift_right_char_array, def_size_of_char_array, def_store_char_array, def_subtract_char_array, def_timer_char_array, def_to_bcd_char_array, def_to_buffer_char_array, def_to_decimal_string_char_array, def_to_hex_string_char_array, def_to_integer_char_array, def_to_string_char_array, def_var_package_char_array, def_wait_char_array, def_xor_char_array, method_invocation_char_array);
+		if(aml_symbol->component.expression_opcode.def_add)
+		{
+			delete_chain_string(def_add_chain_string);
+			free(def_add_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_and)
+		{
+			delete_chain_string(def_and_chain_string);
+			free(def_and_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_aquire)
+		{
+			delete_chain_string(def_aquire_chain_string);
+			free(def_aquire_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_buffer)
+		{
+			delete_chain_string(def_buffer_chain_string);
+			free(def_buffer_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_concat)
+		{
+			delete_chain_string(def_concat_chain_string);
+			free(def_concat_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_concat_res)
+		{
+			delete_chain_string(def_concat_res_chain_string);
+			free(def_concat_res_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_cond_ref_of)
+		{
+			delete_chain_string(def_cond_ref_of_chain_string);
+			free(def_cond_ref_of_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_copy_object)
+		{
+			delete_chain_string(def_copy_object_chain_string);
+			free(def_copy_object_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_decrement)
+		{
+			delete_chain_string(def_decrement_chain_string);
+			free(def_decrement_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_deref_of)
+		{
+			delete_chain_string(def_deref_of_chain_string);
+			free(def_deref_of_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_divide)
+		{
+			delete_chain_string(def_divide_chain_string);
+			free(def_divide_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_find_set_left_bit)
+		{
+			delete_chain_string(def_find_set_left_bit_chain_string);
+			free(def_find_set_left_bit_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_find_set_right_bit)
+		{
+			delete_chain_string(def_find_set_right_bit_chain_string);
+			free(def_find_set_right_bit_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_from_bcd)
+		{
+			delete_chain_string(def_from_bcd_chain_string);
+			free(def_from_bcd_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_increment)
+		{
+			delete_chain_string(def_increment_chain_string);
+			free(def_increment_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_index)
+		{
+			delete_chain_string(def_index_chain_string);
+			free(def_index_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_and)
+		{
+			delete_chain_string(def_l_and_chain_string);
+			free(def_l_and_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_equal)
+		{
+			delete_chain_string(def_l_equal_chain_string);
+			free(def_l_equal_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_greater)
+		{
+			delete_chain_string(def_l_greater_chain_string);
+			free(def_l_greater_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_greater_equal)
+		{
+			delete_chain_string(def_l_greater_equal_chain_string);
+			free(def_l_greater_equal_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_less)
+		{
+			delete_chain_string(def_l_less_chain_string);
+			free(def_l_less_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_less_equal)
+		{
+			delete_chain_string(def_l_less_equal_chain_string);
+			free(def_l_less_equal_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_not)
+		{
+			delete_chain_string(def_l_not_chain_string);
+			free(def_l_not_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_not_equal)
+		{
+			delete_chain_string(def_l_not_equal_chain_string);
+			free(def_l_not_equal_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_l_or)
+		{
+			delete_chain_string(def_l_or_chain_string);
+			free(def_l_or_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_load_table)
+		{
+			delete_chain_string(def_load_table_chain_string);
+			free(def_load_table_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_match)
+		{
+			delete_chain_string(def_match_chain_string);
+			free(def_match_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_mid)
+		{
+			delete_chain_string(def_mid_chain_string);
+			free(def_mid_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_mod)
+		{
+			delete_chain_string(def_mod_chain_string);
+			free(def_mod_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_multiply)
+		{
+			delete_chain_string(def_multiply_chain_string);
+			free(def_multiply_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_nand)
+		{
+			delete_chain_string(def_nand_chain_string);
+			free(def_nand_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_nor)
+		{
+			delete_chain_string(def_nor_chain_string);
+			free(def_nor_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_not)
+		{
+			delete_chain_string(def_not_chain_string);
+			free(def_not_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_object_type)
+		{
+			delete_chain_string(def_object_type_chain_string);
+			free(def_object_type_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_or)
+		{
+			delete_chain_string(def_or_chain_string);
+			free(def_or_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_package)
+		{
+			delete_chain_string(def_package_chain_string);
+			free(def_package_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_ref_of)
+		{
+			delete_chain_string(def_ref_of_chain_string);
+			free(def_ref_of_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_shift_left)
+		{
+			delete_chain_string(def_shift_left_chain_string);
+			free(def_shift_left_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_shift_right)
+		{
+			delete_chain_string(def_shift_right_chain_string);
+			free(def_shift_right_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_size_of)
+		{
+			delete_chain_string(def_size_of_chain_string);
+			free(def_size_of_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_store)
+		{
+			delete_chain_string(def_store_chain_string);
+			free(def_store_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_subtract)
+		{
+			delete_chain_string(def_subtract_chain_string);
+			free(def_subtract_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_timer)
+		{
+			delete_chain_string(def_timer_chain_string);
+			free(def_timer_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_to_bcd)
+		{
+			delete_chain_string(def_to_bcd_chain_string);
+			free(def_to_bcd_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_to_buffer)
+		{
+			delete_chain_string(def_to_buffer_chain_string);
+			free(def_to_buffer_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_to_decimal_string)
+		{
+			delete_chain_string(def_to_decimal_string_chain_string);
+			free(def_to_decimal_string_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_to_hex_string)
+		{
+			delete_chain_string(def_to_hex_string_chain_string);
+			free(def_to_hex_string_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_to_integer)
+		{
+			delete_chain_string(def_to_integer_chain_string);
+			free(def_to_integer_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_to_string)
+		{
+			delete_chain_string(def_to_string_chain_string);
+			free(def_to_string_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_var_package)
+		{
+			delete_chain_string(def_var_package_chain_string);
+			free(def_var_package_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_wait)
+		{
+			delete_chain_string(def_wait_chain_string);
+			free(def_wait_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.def_xor)
+		{
+			delete_chain_string(def_xor_chain_string);
+			free(def_xor_char_array);
+		}
+		if(aml_symbol->component.expression_opcode.method_invocation)
+		{
+			delete_chain_string(method_invocation_chain_string);
+			free(method_invocation_char_array);
+		}
+		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)
 		{
@@ -367,12 +1165,15 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
+	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
 	switch(aml_symbol_type)
 	{
+	case aml_expression_opcode:
+		return aml_expression_opcode_name;
 	case aml_object:
 		return aml_object_name;
 	case aml_statement_opcode:
@@ -385,6 +1186,68 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		ERROR(); // Invalid AML symbol type
 		return NULL;
 	}
+}
+
+// <expression_opcode> := <def_aquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
+AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
+{
+	AMLSymbol *expression_opcode = malloc(sizeof(*expression_opcode));
+	expression_opcode->string.initial = aml.initial;
+	expression_opcode->string.length = 0;
+	expression_opcode->component.expression_opcode.def_add = NULL;
+	expression_opcode->component.expression_opcode.def_and = NULL;
+	expression_opcode->component.expression_opcode.def_aquire = NULL;
+	expression_opcode->component.expression_opcode.def_buffer = NULL;
+	expression_opcode->component.expression_opcode.def_concat = NULL;
+	expression_opcode->component.expression_opcode.def_concat_res = NULL;
+	expression_opcode->component.expression_opcode.def_cond_ref_of = NULL;
+	expression_opcode->component.expression_opcode.def_copy_object = NULL;
+	expression_opcode->component.expression_opcode.def_decrement = NULL;
+	expression_opcode->component.expression_opcode.def_deref_of = NULL;
+	expression_opcode->component.expression_opcode.def_divide = NULL;
+	expression_opcode->component.expression_opcode.def_find_set_left_bit = NULL;
+	expression_opcode->component.expression_opcode.def_find_set_right_bit = NULL;
+	expression_opcode->component.expression_opcode.def_from_bcd = NULL;
+	expression_opcode->component.expression_opcode.def_increment = NULL;
+	expression_opcode->component.expression_opcode.def_index = NULL;
+	expression_opcode->component.expression_opcode.def_l_and = NULL;
+	expression_opcode->component.expression_opcode.def_l_equal = NULL;
+	expression_opcode->component.expression_opcode.def_l_greater = NULL;
+	expression_opcode->component.expression_opcode.def_l_greater_equal = NULL;
+	expression_opcode->component.expression_opcode.def_l_less = NULL;
+	expression_opcode->component.expression_opcode.def_l_less_equal = NULL;
+	expression_opcode->component.expression_opcode.def_l_not = NULL;
+	expression_opcode->component.expression_opcode.def_l_not_equal = NULL;
+	expression_opcode->component.expression_opcode.def_l_or = NULL;
+	expression_opcode->component.expression_opcode.def_load_table = NULL;
+	expression_opcode->component.expression_opcode.def_match = NULL;
+	expression_opcode->component.expression_opcode.def_mid = NULL;
+	expression_opcode->component.expression_opcode.def_mod = NULL;
+	expression_opcode->component.expression_opcode.def_multiply = NULL;
+	expression_opcode->component.expression_opcode.def_nand = NULL;
+	expression_opcode->component.expression_opcode.def_nor = NULL;
+	expression_opcode->component.expression_opcode.def_not = NULL;
+	expression_opcode->component.expression_opcode.def_object_type = NULL;
+	expression_opcode->component.expression_opcode.def_or = NULL;
+	expression_opcode->component.expression_opcode.def_package = NULL;
+	expression_opcode->component.expression_opcode.def_ref_of = NULL;
+	expression_opcode->component.expression_opcode.def_shift_left = NULL;
+	expression_opcode->component.expression_opcode.def_shift_right = NULL;
+	expression_opcode->component.expression_opcode.def_size_of = NULL;
+	expression_opcode->component.expression_opcode.def_store = NULL;
+	expression_opcode->component.expression_opcode.def_subtract = NULL;
+	expression_opcode->component.expression_opcode.def_timer = NULL;
+	expression_opcode->component.expression_opcode.def_to_bcd = NULL;
+	expression_opcode->component.expression_opcode.def_to_buffer = NULL;
+	expression_opcode->component.expression_opcode.def_to_decimal_string = NULL;
+	expression_opcode->component.expression_opcode.def_to_hex_string = NULL;
+	expression_opcode->component.expression_opcode.def_to_integer = NULL;
+	expression_opcode->component.expression_opcode.def_to_string = NULL;
+	expression_opcode->component.expression_opcode.def_var_package = NULL;
+	expression_opcode->component.expression_opcode.def_wait = NULL;
+	expression_opcode->component.expression_opcode.def_xor = NULL;
+	expression_opcode->component.expression_opcode.method_invocation = NULL;
+	return expression_opcode;
 }
 
 // <object> := <name_space_modifier_obj> | <named_obj>
@@ -467,6 +1330,61 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 {
 	switch(aml_symbol->type)
 	{
+	case aml_expression_opcode:
+		if(aml_symbol->component.expression_opcode.def_add)delete_aml_symbol(aml_symbol->component.expression_opcode.def_add);
+		if(aml_symbol->component.expression_opcode.def_and)delete_aml_symbol(aml_symbol->component.expression_opcode.def_and);
+		if(aml_symbol->component.expression_opcode.def_aquire)delete_aml_symbol(aml_symbol->component.expression_opcode.def_aquire);
+		if(aml_symbol->component.expression_opcode.def_buffer)delete_aml_symbol(aml_symbol->component.expression_opcode.def_buffer);
+		if(aml_symbol->component.expression_opcode.def_concat)delete_aml_symbol(aml_symbol->component.expression_opcode.def_concat);
+		if(aml_symbol->component.expression_opcode.def_concat_res)delete_aml_symbol(aml_symbol->component.expression_opcode.def_concat_res);
+		if(aml_symbol->component.expression_opcode.def_cond_ref_of)delete_aml_symbol(aml_symbol->component.expression_opcode.def_cond_ref_of);
+		if(aml_symbol->component.expression_opcode.def_copy_object)delete_aml_symbol(aml_symbol->component.expression_opcode.def_copy_object);
+		if(aml_symbol->component.expression_opcode.def_decrement)delete_aml_symbol(aml_symbol->component.expression_opcode.def_decrement);
+		if(aml_symbol->component.expression_opcode.def_deref_of)delete_aml_symbol(aml_symbol->component.expression_opcode.def_deref_of);
+		if(aml_symbol->component.expression_opcode.def_divide)delete_aml_symbol(aml_symbol->component.expression_opcode.def_divide);
+		if(aml_symbol->component.expression_opcode.def_find_set_left_bit)delete_aml_symbol(aml_symbol->component.expression_opcode.def_find_set_left_bit);
+		if(aml_symbol->component.expression_opcode.def_find_set_right_bit)delete_aml_symbol(aml_symbol->component.expression_opcode.def_find_set_right_bit);
+		if(aml_symbol->component.expression_opcode.def_from_bcd)delete_aml_symbol(aml_symbol->component.expression_opcode.def_from_bcd);
+		if(aml_symbol->component.expression_opcode.def_increment)delete_aml_symbol(aml_symbol->component.expression_opcode.def_increment);
+		if(aml_symbol->component.expression_opcode.def_index)delete_aml_symbol(aml_symbol->component.expression_opcode.def_index);
+		if(aml_symbol->component.expression_opcode.def_l_and)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_and);
+		if(aml_symbol->component.expression_opcode.def_l_equal)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_equal);
+		if(aml_symbol->component.expression_opcode.def_l_greater)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_greater);
+		if(aml_symbol->component.expression_opcode.def_l_greater_equal)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_greater_equal);
+		if(aml_symbol->component.expression_opcode.def_l_less)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_less);
+		if(aml_symbol->component.expression_opcode.def_l_less_equal)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_less_equal);
+		if(aml_symbol->component.expression_opcode.def_l_not)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_not);
+		if(aml_symbol->component.expression_opcode.def_l_not_equal)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_not_equal);
+		if(aml_symbol->component.expression_opcode.def_l_or)delete_aml_symbol(aml_symbol->component.expression_opcode.def_l_or);
+		if(aml_symbol->component.expression_opcode.def_load_table)delete_aml_symbol(aml_symbol->component.expression_opcode.def_load_table);
+		if(aml_symbol->component.expression_opcode.def_match)delete_aml_symbol(aml_symbol->component.expression_opcode.def_match);
+		if(aml_symbol->component.expression_opcode.def_mid)delete_aml_symbol(aml_symbol->component.expression_opcode.def_mid);
+		if(aml_symbol->component.expression_opcode.def_mod)delete_aml_symbol(aml_symbol->component.expression_opcode.def_mod);
+		if(aml_symbol->component.expression_opcode.def_multiply)delete_aml_symbol(aml_symbol->component.expression_opcode.def_multiply);
+		if(aml_symbol->component.expression_opcode.def_nand)delete_aml_symbol(aml_symbol->component.expression_opcode.def_nand);
+		if(aml_symbol->component.expression_opcode.def_nor)delete_aml_symbol(aml_symbol->component.expression_opcode.def_nor);
+		if(aml_symbol->component.expression_opcode.def_not)delete_aml_symbol(aml_symbol->component.expression_opcode.def_not);
+		if(aml_symbol->component.expression_opcode.def_object_type)delete_aml_symbol(aml_symbol->component.expression_opcode.def_object_type);
+		if(aml_symbol->component.expression_opcode.def_or)delete_aml_symbol(aml_symbol->component.expression_opcode.def_or);
+		if(aml_symbol->component.expression_opcode.def_package)delete_aml_symbol(aml_symbol->component.expression_opcode.def_package);
+		if(aml_symbol->component.expression_opcode.def_ref_of)delete_aml_symbol(aml_symbol->component.expression_opcode.def_ref_of);
+		if(aml_symbol->component.expression_opcode.def_shift_left)delete_aml_symbol(aml_symbol->component.expression_opcode.def_shift_left);
+		if(aml_symbol->component.expression_opcode.def_shift_right)delete_aml_symbol(aml_symbol->component.expression_opcode.def_shift_right);
+		if(aml_symbol->component.expression_opcode.def_size_of)delete_aml_symbol(aml_symbol->component.expression_opcode.def_size_of);
+		if(aml_symbol->component.expression_opcode.def_store)delete_aml_symbol(aml_symbol->component.expression_opcode.def_store);
+		if(aml_symbol->component.expression_opcode.def_subtract)delete_aml_symbol(aml_symbol->component.expression_opcode.def_subtract);
+		if(aml_symbol->component.expression_opcode.def_timer)delete_aml_symbol(aml_symbol->component.expression_opcode.def_timer);
+		if(aml_symbol->component.expression_opcode.def_to_bcd)delete_aml_symbol(aml_symbol->component.expression_opcode.def_to_bcd);
+		if(aml_symbol->component.expression_opcode.def_to_buffer)delete_aml_symbol(aml_symbol->component.expression_opcode.def_to_buffer);
+		if(aml_symbol->component.expression_opcode.def_to_decimal_string)delete_aml_symbol(aml_symbol->component.expression_opcode.def_to_decimal_string);
+		if(aml_symbol->component.expression_opcode.def_to_hex_string)delete_aml_symbol(aml_symbol->component.expression_opcode.def_to_hex_string);
+		if(aml_symbol->component.expression_opcode.def_to_integer)delete_aml_symbol(aml_symbol->component.expression_opcode.def_to_integer);
+		if(aml_symbol->component.expression_opcode.def_to_string)delete_aml_symbol(aml_symbol->component.expression_opcode.def_to_string);
+		if(aml_symbol->component.expression_opcode.def_var_package)delete_aml_symbol(aml_symbol->component.expression_opcode.def_var_package);
+		if(aml_symbol->component.expression_opcode.def_wait)delete_aml_symbol(aml_symbol->component.expression_opcode.def_wait);
+		if(aml_symbol->component.expression_opcode.def_xor)delete_aml_symbol(aml_symbol->component.expression_opcode.def_xor);
+		if(aml_symbol->component.expression_opcode.method_invocation)delete_aml_symbol(aml_symbol->component.expression_opcode.method_invocation);
+		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
 		if(aml_symbol->component.object.name_space_modifier_obj)delete_aml_symbol(aml_symbol->component.object.name_space_modifier_obj);
