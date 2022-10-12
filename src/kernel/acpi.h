@@ -6,6 +6,7 @@
 #define _ACPI_H_
 
 #include "chain_string.h"
+#include "memory.h"
 
 #define PRINT_ACPI_TABLE_HEADER(x) print_acpi_table_header((x), _STRING(x))
 #define PRINT_ACPI_TABLE_HEADER_P(x) print_acpi_table_header_p((x), _STRING(x))
