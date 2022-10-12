@@ -21,6 +21,20 @@ bool acpi_table_is_correct(ACPITableHeader const *header)
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 {
 	ChainString *output;
+	ChainString *def_break_chain_string;
+	ChainString *def_break_point_chain_string;
+	ChainString *def_continue_chain_string;
+	ChainString *def_fatal_chain_string;
+	ChainString *def_if_else_chain_string;
+	ChainString *def_noop_chain_string;
+	ChainString *def_notify_chain_string;
+	ChainString *def_release_chain_string;
+	ChainString *def_reset_chain_string;
+	ChainString *def_return_chain_string;
+	ChainString *def_signal_chain_string;
+	ChainString *def_sleep_chain_string;
+	ChainString *def_stall_chain_string;
+	ChainString *def_while_chain_string;
 	ChainString *expression_opcode_chain_string;
 	ChainString *named_obj_chain_string;
 	ChainString *name_space_modifier_obj_chain_string;
@@ -28,6 +42,20 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *statement_opcode_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
+	char *def_break_char_array;
+	char *def_break_point_char_array;
+	char *def_continue_char_array;
+	char *def_fatal_char_array;
+	char *def_if_else_char_array;
+	char *def_noop_char_array;
+	char *def_notify_char_array;
+	char *def_release_char_array;
+	char *def_reset_char_array;
+	char *def_return_char_array;
+	char *def_signal_char_array;
+	char *def_sleep_char_array;
+	char *def_stall_char_array;
+	char *def_while_char_array;
 	char *expression_opcode_char_array;
 	char *named_obj_char_array;
 	char *name_space_modifier_obj_char_array;
@@ -64,6 +92,191 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(name_space_modifier_obj_chain_string);
 			free(name_space_modifier_obj_char_array);
+		}
+		break;
+	case aml_statement_opcode:
+		if(aml_symbol->component.statement_opcode.def_break)
+		{
+			def_break_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_break);
+			insert_char_front(def_break_chain_string, def_break_chain_string->first_character, ' ');
+			replace_chain_string(def_break_chain_string, "\n", " \n");
+			def_break_char_array = create_char_array_from_chain_string(def_break_chain_string);
+		}
+		else def_break_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_break_point)
+		{
+			def_break_point_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_break_point);
+			insert_char_front(def_break_point_chain_string, def_break_point_chain_string->first_character, ' ');
+			replace_chain_string(def_break_point_chain_string, "\n", " \n");
+			def_break_point_char_array = create_char_array_from_chain_string(def_break_point_chain_string);
+		}
+		else def_break_point_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_continue)
+		{
+			def_continue_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_continue);
+			insert_char_front(def_continue_chain_string, def_continue_chain_string->first_character, ' ');
+			replace_chain_string(def_continue_chain_string, "\n", " \n");
+			def_continue_char_array = create_char_array_from_chain_string(def_continue_chain_string);
+		}
+		else def_continue_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_fatal)
+		{
+			def_fatal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_fatal);
+			insert_char_front(def_fatal_chain_string, def_fatal_chain_string->first_character, ' ');
+			replace_chain_string(def_fatal_chain_string, "\n", " \n");
+			def_fatal_char_array = create_char_array_from_chain_string(def_fatal_chain_string);
+		}
+		else def_fatal_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_if_else)
+		{
+			def_if_else_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_if_else);
+			insert_char_front(def_if_else_chain_string, def_if_else_chain_string->first_character, ' ');
+			replace_chain_string(def_if_else_chain_string, "\n", " \n");
+			def_if_else_char_array = create_char_array_from_chain_string(def_if_else_chain_string);
+		}
+		else def_if_else_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_noop)
+		{
+			def_noop_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_noop);
+			insert_char_front(def_noop_chain_string, def_noop_chain_string->first_character, ' ');
+			replace_chain_string(def_noop_chain_string, "\n", " \n");
+			def_noop_char_array = create_char_array_from_chain_string(def_noop_chain_string);
+		}
+		else def_noop_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_notify)
+		{
+			def_notify_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_notify);
+			insert_char_front(def_notify_chain_string, def_notify_chain_string->first_character, ' ');
+			replace_chain_string(def_notify_chain_string, "\n", " \n");
+			def_notify_char_array = create_char_array_from_chain_string(def_notify_chain_string);
+		}
+		else def_notify_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_release)
+		{
+			def_release_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_release);
+			insert_char_front(def_release_chain_string, def_release_chain_string->first_character, ' ');
+			replace_chain_string(def_release_chain_string, "\n", " \n");
+			def_release_char_array = create_char_array_from_chain_string(def_release_chain_string);
+		}
+		else def_release_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_reset)
+		{
+			def_reset_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_reset);
+			insert_char_front(def_reset_chain_string, def_reset_chain_string->first_character, ' ');
+			replace_chain_string(def_reset_chain_string, "\n", " \n");
+			def_reset_char_array = create_char_array_from_chain_string(def_reset_chain_string);
+		}
+		else def_reset_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_return)
+		{
+			def_return_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_return);
+			insert_char_front(def_return_chain_string, def_return_chain_string->first_character, ' ');
+			replace_chain_string(def_return_chain_string, "\n", " \n");
+			def_return_char_array = create_char_array_from_chain_string(def_return_chain_string);
+		}
+		else def_return_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_signal)
+		{
+			def_signal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_signal);
+			insert_char_front(def_signal_chain_string, def_signal_chain_string->first_character, ' ');
+			replace_chain_string(def_signal_chain_string, "\n", " \n");
+			def_signal_char_array = create_char_array_from_chain_string(def_signal_chain_string);
+		}
+		else def_signal_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_sleep)
+		{
+			def_sleep_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_sleep);
+			insert_char_front(def_sleep_chain_string, def_sleep_chain_string->first_character, ' ');
+			replace_chain_string(def_sleep_chain_string, "\n", " \n");
+			def_sleep_char_array = create_char_array_from_chain_string(def_sleep_chain_string);
+		}
+		else def_sleep_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_stall)
+		{
+			def_stall_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_stall);
+			insert_char_front(def_stall_chain_string, def_stall_chain_string->first_character, ' ');
+			replace_chain_string(def_stall_chain_string, "\n", " \n");
+			def_stall_char_array = create_char_array_from_chain_string(def_stall_chain_string);
+		}
+		else def_stall_char_array = "";
+		if(aml_symbol->component.statement_opcode.def_while)
+		{
+			def_while_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_while);
+			insert_char_front(def_while_chain_string, def_while_chain_string->first_character, ' ');
+			replace_chain_string(def_while_chain_string, "\n", " \n");
+			def_while_char_array = create_char_array_from_chain_string(def_while_chain_string);
+		}
+		else def_while_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s%s%s%s%s%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), def_break_char_array, def_break_point_char_array, def_continue_char_array, def_fatal_char_array, def_if_else_char_array, def_noop_char_array, def_notify_char_array, def_release_char_array, def_reset_char_array, def_return_char_array, def_signal_char_array, def_sleep_char_array, def_stall_char_array, def_while_char_array);
+		if(aml_symbol->component.statement_opcode.def_break)
+		{
+			delete_chain_string(def_break_chain_string);
+			free(def_break_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_break_point)
+		{
+			delete_chain_string(def_break_point_chain_string);
+			free(def_break_point_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_continue)
+		{
+			delete_chain_string(def_continue_chain_string);
+			free(def_continue_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_fatal)
+		{
+			delete_chain_string(def_fatal_chain_string);
+			free(def_fatal_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_if_else)
+		{
+			delete_chain_string(def_if_else_chain_string);
+			free(def_if_else_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_noop)
+		{
+			delete_chain_string(def_noop_chain_string);
+			free(def_noop_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_notify)
+		{
+			delete_chain_string(def_notify_chain_string);
+			free(def_notify_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_release)
+		{
+			delete_chain_string(def_release_chain_string);
+			free(def_release_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_reset)
+		{
+			delete_chain_string(def_reset_chain_string);
+			free(def_reset_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_return)
+		{
+			delete_chain_string(def_return_chain_string);
+			free(def_return_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_signal)
+		{
+			delete_chain_string(def_signal_chain_string);
+			free(def_signal_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_sleep)
+		{
+			delete_chain_string(def_sleep_chain_string);
+			free(def_sleep_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_stall)
+		{
+			delete_chain_string(def_stall_chain_string);
+			free(def_stall_char_array);
+		}
+		if(aml_symbol->component.statement_opcode.def_while)
+		{
+			delete_chain_string(def_while_chain_string);
+			free(def_while_char_array);
 		}
 		break;
 	case aml_term_list:
@@ -155,12 +368,15 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_object_name = "Object";
+	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
 	switch(aml_symbol_type)
 	{
 	case aml_object:
 		return aml_object_name;
+	case aml_statement_opcode:
+		return aml_statement_opcode_name;
 	case aml_term_list:
 		return aml_term_list_name;
 	case aml_term_obj:
@@ -181,6 +397,30 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	object->component.object.name_space_modifier_obj = NULL;
 	object->component.object.named_obj = NULL;
 	return object;
+}
+
+// <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
+AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
+{
+	AMLSymbol *statement_opcode = malloc(sizeof(*statement_opcode));
+	statement_opcode->string.initial = aml.initial;
+	statement_opcode->string.length = 0;
+	statement_opcode->type = aml_statement_opcode;
+	statement_opcode->component.statement_opcode.def_break = NULL;
+	statement_opcode->component.statement_opcode.def_break_point = NULL;
+	statement_opcode->component.statement_opcode.def_continue = NULL;
+	statement_opcode->component.statement_opcode.def_fatal = NULL;
+	statement_opcode->component.statement_opcode.def_if_else = NULL;
+	statement_opcode->component.statement_opcode.def_noop = NULL;
+	statement_opcode->component.statement_opcode.def_notify = NULL;
+	statement_opcode->component.statement_opcode.def_release = NULL;
+	statement_opcode->component.statement_opcode.def_reset = NULL;
+	statement_opcode->component.statement_opcode.def_return = NULL;
+	statement_opcode->component.statement_opcode.def_signal = NULL;
+	statement_opcode->component.statement_opcode.def_sleep = NULL;
+	statement_opcode->component.statement_opcode.def_stall = NULL;
+	statement_opcode->component.statement_opcode.def_while = NULL;
+	return statement_opcode;
 }
 
 // <term_list> := Nothing | <term_obj> <term_list>
@@ -230,6 +470,22 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
 		if(aml_symbol->component.object.name_space_modifier_obj)delete_aml_symbol(aml_symbol->component.object.name_space_modifier_obj);
+		break;
+	case aml_statement_opcode:
+		if(aml_symbol->component.statement_opcode.def_break)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break);
+		if(aml_symbol->component.statement_opcode.def_break_point)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break_point);
+		if(aml_symbol->component.statement_opcode.def_continue)delete_aml_symbol(aml_symbol->component.statement_opcode.def_continue);
+		if(aml_symbol->component.statement_opcode.def_fatal)delete_aml_symbol(aml_symbol->component.statement_opcode.def_fatal);
+		if(aml_symbol->component.statement_opcode.def_if_else)delete_aml_symbol(aml_symbol->component.statement_opcode.def_if_else);
+		if(aml_symbol->component.statement_opcode.def_noop)delete_aml_symbol(aml_symbol->component.statement_opcode.def_noop);
+		if(aml_symbol->component.statement_opcode.def_notify)delete_aml_symbol(aml_symbol->component.statement_opcode.def_notify);
+		if(aml_symbol->component.statement_opcode.def_release)delete_aml_symbol(aml_symbol->component.statement_opcode.def_release);
+		if(aml_symbol->component.statement_opcode.def_reset)delete_aml_symbol(aml_symbol->component.statement_opcode.def_reset);
+		if(aml_symbol->component.statement_opcode.def_return)delete_aml_symbol(aml_symbol->component.statement_opcode.def_return);
+		if(aml_symbol->component.statement_opcode.def_signal)delete_aml_symbol(aml_symbol->component.statement_opcode.def_signal);
+		if(aml_symbol->component.statement_opcode.def_sleep)delete_aml_symbol(aml_symbol->component.statement_opcode.def_sleep);
+		if(aml_symbol->component.statement_opcode.def_stall)delete_aml_symbol(aml_symbol->component.statement_opcode.def_stall);
+		if(aml_symbol->component.statement_opcode.def_while)delete_aml_symbol(aml_symbol->component.statement_opcode.def_while);
 		break;
 	case aml_term_list:
 		if(aml_symbol->component.term_list.term_list)delete_aml_symbol(aml_symbol->component.term_list.term_list);
