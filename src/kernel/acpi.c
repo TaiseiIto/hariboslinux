@@ -192,6 +192,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		ERROR(); // Invalid AML symbol type
 		break;
 	}
+	free(aml_symbol);
 }
 
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
