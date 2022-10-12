@@ -206,6 +206,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
 AMLSymbol *analyse_aml_term_obj(AMLSubstring aml);
+AMLSymbol *create_dsdt_aml_syntax_tree(void);
+void delete_aml_symbol(AMLSymbol *aml_symbol);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
 AMLSubstring get_dsdt_aml(void);
 ACPITableHeader const *get_dsdt_header(void);

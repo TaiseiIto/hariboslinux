@@ -170,6 +170,30 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	return term_obj;
 }
 
+AMLSymbol *create_dsdt_aml_syntax_tree(void)
+{
+	return analyse_aml_term_list(get_dsdt_aml());
+}
+
+void delete_aml_symbol(AMLSymbol *aml_symbol)
+{
+	switch(aml_symbol->type)
+	{
+	case aml_term_list:
+		if(aml_symbol->component.term_list.term_list)delete_aml_symbol(aml_symbol->component.term_list.term_list);
+		if(aml_symbol->component.term_list.term_obj)delete_aml_symbol(aml_symbol->component.term_list.term_obj);
+		break;
+	case aml_term_obj:
+		if(aml_symbol->component.term_obj.object)delete_aml_symbol(aml_symbol->component.term_obj.object);
+		if(aml_symbol->component.term_obj.statement_opcode)delete_aml_symbol(aml_symbol->component.term_obj.statement_opcode);
+		if(aml_symbol->component.term_obj.expression_opcode)delete_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
+		break;
+	default:
+		ERROR(); // Invalid AML symbol type
+		break;
+	}
+}
+
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 {
 	MemoryRegionDescriptor acpi_memory_region_descriptor;

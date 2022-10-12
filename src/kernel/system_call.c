@@ -614,6 +614,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					ACPITableHeader const *dsdt_header;
 					ACPITableHeader const *rsdt_header;
 					AMLSubstring dsdt_aml;
+					AMLSymbol *dsdt_aml_syntax_tree;
 					FADT const *fadt;
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
@@ -690,6 +691,10 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_shell(shell, "---------- DSDT AML ----------\n");
 					for(unsigned int i = 0; i < dsdt_aml.length; i++)printf_shell(shell, "%2.2x%c", dsdt_aml.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
 					printf_shell(shell, "\n");
+					printf_shell(shell, "---------- DSDT AML SYNTAX TREE ----------\n");
+					dsdt_aml_syntax_tree = create_dsdt_aml_syntax_tree();
+					print_aml_symbol(dsdt_aml_syntax_tree);
+					delete_aml_symbol(dsdt_aml_syntax_tree);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.
