@@ -167,6 +167,7 @@ typedef enum _AMLSymbolType
 	aml_def_alias,
 	aml_expression_opcode,
 	aml_name_space_modifier_obj,
+	aml_name_string,
 	aml_object,
 	aml_statement_opcode,
 	aml_term_list,
@@ -250,6 +251,13 @@ typedef struct _AMLNameSpaceModifierObj
 	struct _AMLSymbol *def_scope;
 } AMLNameSpaceModifierObj;
 
+typedef struct _AMLNameString
+{
+	struct _AMLSymbol *name_path;
+	struct _AMLSymbol *prefix_path;
+	struct _AMLSymbol *root_char;
+} AMLNameString;
+
 typedef struct _AMLObject
 {
 	struct _AMLSymbol *named_obj;
@@ -292,6 +300,7 @@ typedef union _AMLComponent
 	AMLDefAlias def_alias;
 	AMLExpressionOpcode expression_opcode;
 	AMLNameSpaceModifierObj name_space_modifier_obj;
+	AMLNameString name_string;
 	AMLObject object;
 	AMLStatementOpcode statement_opcode;
 	AMLTermList term_list;
@@ -316,6 +325,8 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 // <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
 AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml);
+// <name_string> := <root_char> <name_path> | <prefix_path> <name_path>
+AMLSymbol *analyse_aml_name_string(AMLSubstring aml);
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>

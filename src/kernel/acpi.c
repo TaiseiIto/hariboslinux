@@ -141,7 +141,6 @@ bool acpi_table_is_correct(ACPITableHeader const *header)
 
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 {
-	ChainString *output;
 	ChainString *alias_op_chain_string;
 	ChainString *def_add_chain_string;
 	ChainString *def_alias_chain_string;
@@ -214,11 +213,15 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_xor_chain_string;
 	ChainString *expression_opcode_chain_string;
 	ChainString *method_invocation_chain_string;
+	ChainString *name_path_chain_string;
 	ChainString *name_space_modifier_obj_chain_string;
 	ChainString *name_string_a_chain_string;
 	ChainString *name_string_b_chain_string;
 	ChainString *named_obj_chain_string;
 	ChainString *object_chain_string;
+	ChainString *output;
+	ChainString *prefix_path_chain_string;
+	ChainString *root_char_chain_string;
 	ChainString *statement_opcode_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
@@ -294,11 +297,14 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_xor_char_array;
 	char *expression_opcode_char_array;
 	char *method_invocation_char_array;
+	char *name_path_char_array;
 	char *name_space_modifier_obj_char_array;
 	char *name_string_a_char_array;
 	char *name_string_b_char_array;
 	char *named_obj_char_array;
 	char *object_char_array;
+	char *prefix_path_char_array;
+	char *root_char_char_array;
 	char *statement_opcode_char_array;
 	char *term_list_char_array;
 	char *term_obj_char_array;
@@ -1083,6 +1089,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(def_scope_char_array);
 		}
 		break;
+	case aml_name_string:
+		if(aml_symbol->component.name_string.name_path)
+		{
+			name_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_string.name_path);
+			insert_char_front(name_path_chain_string, name_path_chain_string->first_character, ' ');
+			replace_chain_string(name_path_chain_string, "\n", " \n");
+			name_path_char_array = create_char_array_from_chain_string(name_path_chain_string);
+		}
+		else name_path_char_array = "";
+		if(aml_symbol->component.name_string.prefix_path)
+		{
+			prefix_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_string.prefix_path);
+			insert_char_front(prefix_path_chain_string, prefix_path_chain_string->first_character, ' ');
+			replace_chain_string(prefix_path_chain_string, "\n", " \n");
+			prefix_path_char_array = create_char_array_from_chain_string(prefix_path_chain_string);
+		}
+		else prefix_path_char_array = "";
+		if(aml_symbol->component.name_string.root_char)
+		{
+			root_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_string.root_char);
+			insert_char_front(root_char_chain_string, root_char_chain_string->first_character, ' ');
+			replace_chain_string(root_char_chain_string, "\n", " \n");
+			root_char_char_array = create_char_array_from_chain_string(root_char_chain_string);
+		}
+		else root_char_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", root_char_char_array, prefix_path_char_array, name_path_char_array);
+		if(aml_symbol->component.name_string.name_path)
+		{
+			delete_chain_string(name_path_chain_string);
+			free(name_path_char_array);
+		}
+		if(aml_symbol->component.name_string.prefix_path)
+		{
+			delete_chain_string(prefix_path_chain_string);
+			free(prefix_path_char_array);
+		}
+		if(aml_symbol->component.name_string.root_char)
+		{
+			delete_chain_string(root_char_chain_string);
+			free(root_char_char_array);
+		}
+		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)
 		{
@@ -1522,6 +1570,19 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 	return name_space_modifier_obj;
 }
 
+// <name_string> := <root_char> <name_path> | <prefix_path> <name_path>
+AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
+{
+	AMLSymbol *name_string = malloc(sizeof(*name_string));
+	name_string->component.name_string.root_char = NULL;
+	name_string->component.name_string.prefix_path = NULL;
+	name_string->component.name_string.name_path = NULL;
+	name_string->string.initial = aml.initial;
+	name_string->string.length = 0;
+	name_string->type = aml_name_string;
+	return name_string;
+}
+
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSubstring aml)
 {
@@ -1680,6 +1741,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.name_space_modifier_obj.def_alias)delete_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_alias);
 		if(aml_symbol->component.name_space_modifier_obj.def_name)delete_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_name);
 		if(aml_symbol->component.name_space_modifier_obj.def_scope)delete_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_scope);
+		break;
+	case aml_name_string:
+		if(aml_symbol->component.name_string.name_path)delete_aml_symbol(aml_symbol->component.name_string.name_path);
+		if(aml_symbol->component.name_string.prefix_path)delete_aml_symbol(aml_symbol->component.name_string.prefix_path);
+		if(aml_symbol->component.name_string.root_char)delete_aml_symbol(aml_symbol->component.name_string.root_char);
 		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
