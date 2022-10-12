@@ -163,6 +163,7 @@ struct _AMLSymbol;
 
 typedef enum _AMLSymbolType
 {
+	aml_object,
 	aml_term_list,
 	aml_term_obj,
 } AMLSymbolType;
@@ -172,6 +173,12 @@ typedef struct _AMLSubstring
 	unsigned char const *initial;
 	size_t length;
 } AMLSubstring;
+
+typedef struct _AMLObject
+{
+	struct _AMLSymbol *named_obj;
+	struct _AMLSymbol *name_space_modifier_obj;
+} AMLObject;
 
 typedef struct _AMLTermList
 {
@@ -188,6 +195,7 @@ typedef struct _AMLTermObj
 
 typedef union _AMLComponent
 {
+	AMLObject object;
 	AMLTermList term_list;
 	AMLTermObj term_obj;
 } AMLComponent;
@@ -202,6 +210,8 @@ typedef struct _AMLSymbol
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol);
 char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
+// <object> := <name_space_modifier_obj> | <named_obj>
+AMLSymbol *analyse_aml_object(AMLSubstring aml);
 // <term_list> := Nothing | <term_obj> <term_list>
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>

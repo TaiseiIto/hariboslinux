@@ -22,17 +22,50 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 {
 	ChainString *output;
 	ChainString *expression_opcode_chain_string;
+	ChainString *named_obj_chain_string;
+	ChainString *name_space_modifier_obj_chain_string;
 	ChainString *object_chain_string;
 	ChainString *statement_opcode_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
 	char *expression_opcode_char_array;
+	char *named_obj_char_array;
+	char *name_space_modifier_obj_char_array;
 	char *object_char_array;
 	char *statement_opcode_char_array;
 	char *term_list_char_array;
 	char *term_obj_char_array;
 	switch(aml_symbol->type)
 	{
+	case aml_object:
+		if(aml_symbol->component.object.named_obj)
+		{
+			named_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.object.named_obj);
+			insert_char_front(named_obj_chain_string, named_obj_chain_string->first_character, ' ');
+			replace_chain_string(named_obj_chain_string, "\n", " \n");
+			named_obj_char_array = create_char_array_from_chain_string(named_obj_chain_string);
+		}
+		else named_obj_char_array = "";
+		if(aml_symbol->component.object.name_space_modifier_obj)
+		{
+			name_space_modifier_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.object.name_space_modifier_obj);
+			insert_char_front(name_space_modifier_obj_chain_string, name_space_modifier_obj_chain_string->first_character, ' ');
+			replace_chain_string(name_space_modifier_obj_chain_string, "\n", " \n");
+			name_space_modifier_obj_char_array = create_char_array_from_chain_string(name_space_modifier_obj_chain_string);
+		}
+		else name_space_modifier_obj_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), named_obj_char_array, name_space_modifier_obj_char_array);
+		if(aml_symbol->component.object.named_obj)
+		{
+			delete_chain_string(named_obj_chain_string);
+			free(named_obj_char_array);
+		}
+		if(aml_symbol->component.object.name_space_modifier_obj)
+		{
+			delete_chain_string(name_space_modifier_obj_chain_string);
+			free(name_space_modifier_obj_char_array);
+		}
+		break;
 	case aml_term_list:
 		if(aml_symbol->component.term_list.term_obj)
 		{
@@ -121,10 +154,13 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
+	static char const * const aml_object_name = "Object";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
 	switch(aml_symbol_type)
 	{
+	case aml_object:
+		return aml_object_name;
 	case aml_term_list:
 		return aml_term_list_name;
 	case aml_term_obj:
@@ -133,6 +169,18 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		ERROR(); // Invalid AML symbol type
 		return NULL;
 	}
+}
+
+// <object> := <name_space_modifier_obj> | <named_obj>
+AMLSymbol *analyse_aml_object(AMLSubstring aml)
+{
+	AMLSymbol *object = malloc(sizeof(*object));
+	object->string.initial = aml.initial;
+	object->string.length = 0;
+	object->type = aml_object;
+	object->component.object.name_space_modifier_obj = NULL;
+	object->component.object.named_obj = NULL;
+	return object;
 }
 
 // <term_list> := Nothing | <term_obj> <term_list>
@@ -179,6 +227,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 {
 	switch(aml_symbol->type)
 	{
+	case aml_object:
+		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
+		if(aml_symbol->component.object.name_space_modifier_obj)delete_aml_symbol(aml_symbol->component.object.name_space_modifier_obj);
+		break;
 	case aml_term_list:
 		if(aml_symbol->component.term_list.term_list)delete_aml_symbol(aml_symbol->component.term_list.term_list);
 		if(aml_symbol->component.term_list.term_obj)delete_aml_symbol(aml_symbol->component.term_list.term_obj);
