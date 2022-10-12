@@ -22,6 +22,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 {
 	ChainString *output;
 	ChainString *def_add_chain_string;
+	ChainString *def_alias_chain_string;
 	ChainString *def_and_chain_string;
 	ChainString *def_aquire_chain_string;
 	ChainString *def_break_chain_string;
@@ -56,6 +57,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_mid_chain_string;
 	ChainString *def_mod_chain_string;
 	ChainString *def_multiply_chain_string;
+	ChainString *def_name_chain_string;
 	ChainString *def_nand_chain_string;
 	ChainString *def_noop_chain_string;
 	ChainString *def_nor_chain_string;
@@ -68,6 +70,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_release_chain_string;
 	ChainString *def_reset_chain_string;
 	ChainString *def_return_chain_string;
+	ChainString *def_scope_chain_string;
 	ChainString *def_shift_left_chain_string;
 	ChainString *def_shift_right_chain_string;
 	ChainString *def_signal_chain_string;
@@ -96,6 +99,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
 	char *def_add_char_array;
+	char *def_alias_char_array;
 	char *def_and_char_array;
 	char *def_aquire_char_array;
 	char *def_break_char_array;
@@ -130,6 +134,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_mid_char_array;
 	char *def_mod_char_array;
 	char *def_multiply_char_array;
+	char *def_name_char_array;
 	char *def_nand_char_array;
 	char *def_noop_char_array;
 	char *def_nor_char_array;
@@ -142,6 +147,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_release_char_array;
 	char *def_reset_char_array;
 	char *def_return_char_array;
+	char *def_scope_char_array;
 	char *def_shift_left_char_array;
 	char *def_shift_right_char_array;
 	char *def_signal_char_array;
@@ -863,6 +869,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(method_invocation_char_array);
 		}
 		break;
+	case aml_name_space_modifier_obj:
+		if(aml_symbol->component.name_space_modifier_obj.def_alias)
+		{
+			def_alias_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_space_modifier_obj.def_alias);
+			insert_char_front(def_alias_chain_string, def_alias_chain_string->first_character, ' ');
+			replace_chain_string(def_alias_chain_string, "\n", " \n");
+			def_alias_char_array = create_char_array_from_chain_string(def_alias_chain_string);
+		}
+		else def_alias_char_array = "";
+		if(aml_symbol->component.name_space_modifier_obj.def_name)
+		{
+			def_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_space_modifier_obj.def_name);
+			insert_char_front(def_name_chain_string, def_name_chain_string->first_character, ' ');
+			replace_chain_string(def_name_chain_string, "\n", " \n");
+			def_name_char_array = create_char_array_from_chain_string(def_name_chain_string);
+		}
+		else def_name_char_array = "";
+		if(aml_symbol->component.name_space_modifier_obj.def_scope)
+		{
+			def_scope_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_space_modifier_obj.def_scope);
+			insert_char_front(def_scope_chain_string, def_scope_chain_string->first_character, ' ');
+			replace_chain_string(def_scope_chain_string, "\n", " \n");
+			def_scope_char_array = create_char_array_from_chain_string(def_scope_chain_string);
+		}
+		else def_scope_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), def_alias_char_array, def_name_char_array, def_scope_char_array);
+		if(aml_symbol->component.name_space_modifier_obj.def_alias)
+		{
+			delete_chain_string(def_alias_chain_string);
+			free(def_alias_char_array);
+		}
+		if(aml_symbol->component.name_space_modifier_obj.def_name)
+		{
+			delete_chain_string(def_name_chain_string);
+			free(def_name_char_array);
+		}
+		if(aml_symbol->component.name_space_modifier_obj.def_scope)
+		{
+			delete_chain_string(def_scope_chain_string);
+			free(def_scope_char_array);
+		}
+		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)
 		{
@@ -1166,6 +1214,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
+	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_term_list_name = "TermList";
@@ -1174,6 +1223,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	{
 	case aml_expression_opcode:
 		return aml_expression_opcode_name;
+	case aml_name_space_modifier_obj:
+		return aml_name_space_modifier_obj_name;
 	case aml_object:
 		return aml_object_name;
 	case aml_statement_opcode:
@@ -1248,6 +1299,19 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.def_xor = NULL;
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
 	return expression_opcode;
+}
+
+// <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
+AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
+{
+	AMLSymbol *name_space_modifier_obj = malloc(sizeof(*name_space_modifier_obj));
+	name_space_modifier_obj->string.initial = aml.initial;
+	name_space_modifier_obj->string.length = 0;
+	name_space_modifier_obj->type = aml_name_space_modifier_obj;
+	name_space_modifier_obj->component.name_space_modifier_obj.def_alias = NULL;
+	name_space_modifier_obj->component.name_space_modifier_obj.def_name = NULL;
+	name_space_modifier_obj->component.name_space_modifier_obj.def_scope = NULL;
+	return name_space_modifier_obj;
 }
 
 // <object> := <name_space_modifier_obj> | <named_obj>
@@ -1384,6 +1448,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.expression_opcode.def_wait)delete_aml_symbol(aml_symbol->component.expression_opcode.def_wait);
 		if(aml_symbol->component.expression_opcode.def_xor)delete_aml_symbol(aml_symbol->component.expression_opcode.def_xor);
 		if(aml_symbol->component.expression_opcode.method_invocation)delete_aml_symbol(aml_symbol->component.expression_opcode.method_invocation);
+		break;
+	case aml_name_space_modifier_obj:
+		if(aml_symbol->component.name_space_modifier_obj.def_alias)delete_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_alias);
+		if(aml_symbol->component.name_space_modifier_obj.def_name)delete_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_name);
+		if(aml_symbol->component.name_space_modifier_obj.def_scope)delete_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_scope);
 		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
