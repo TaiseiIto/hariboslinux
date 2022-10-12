@@ -1510,6 +1510,12 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 	name_space_modifier_obj->component.name_space_modifier_obj.def_alias = NULL;
 	name_space_modifier_obj->component.name_space_modifier_obj.def_name = NULL;
 	name_space_modifier_obj->component.name_space_modifier_obj.def_scope = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_ALIAS_OP:
+		name_space_modifier_obj->component.name_space_modifier_obj.def_alias = analyse_aml_def_alias(aml);
+		break;
+	}
 	name_space_modifier_obj->string.initial = aml.initial;
 	name_space_modifier_obj->string.length = 0;
 	name_space_modifier_obj->type = aml_name_space_modifier_obj;
@@ -1522,6 +1528,12 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	AMLSymbol *object = malloc(sizeof(*object));
 	object->component.object.name_space_modifier_obj = NULL;
 	object->component.object.named_obj = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_ALIAS_OP:
+		object->component.object.name_space_modifier_obj = analyse_aml_name_space_modifier_obj(aml);
+		break;
+	}
 	object->string.initial = aml.initial;
 	object->string.length = 0;
 	object->type = aml_object;
@@ -1581,6 +1593,12 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	term_obj->component.term_obj.object = NULL;
 	term_obj->component.term_obj.statement_opcode = NULL;
 	term_obj->component.term_obj.expression_opcode = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_ALIAS_OP:
+		term_obj->component.term_obj.object = analyse_aml_object(aml);
+		break;
+	}
 	term_obj->string.initial = aml.initial;
 	term_obj->string.length = 0;
 	term_obj->type = aml_term_obj;
