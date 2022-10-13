@@ -212,6 +212,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_wait_chain_string;
 	ChainString *def_while_chain_string;
 	ChainString *def_xor_chain_string;
+	ChainString *digit_char_chain_string;
 	ChainString *dual_name_path_chain_string;
 	ChainString *expression_opcode_chain_string;
 	ChainString *lead_name_char_chain_string;
@@ -302,6 +303,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_wait_char_array;
 	char *def_while_char_array;
 	char *def_xor_char_array;
+	char *digit_char_char_array;
 	char *dual_name_path_char_array;
 	char *expression_opcode_char_array;
 	char *lead_name_char_char_array;
@@ -1051,6 +1053,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_lead_name_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_name_char:
+		if(aml_symbol->component.name_char.digit_char)
+		{
+			digit_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_char.digit_char);
+			insert_char_front(digit_char_chain_string, digit_char_chain_string->first_character, ' ');
+			replace_chain_string(digit_char_chain_string, "\n", " \n");
+			digit_char_char_array = create_char_array_from_chain_string(digit_char_chain_string);
+		}
+		else digit_char_char_array = "";
+		if(aml_symbol->component.name_char.lead_name_char)
+		{
+			lead_name_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_char.lead_name_char);
+			insert_char_front(lead_name_char_chain_string, lead_name_char_chain_string->first_character, ' ');
+			replace_chain_string(lead_name_char_chain_string, "\n", " \n");
+			lead_name_char_char_array = create_char_array_from_chain_string(lead_name_char_chain_string);
+		}
+		else lead_name_char_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), digit_char_char_array, lead_name_char_char_array);
+		if(aml_symbol->component.name_char.digit_char)
+		{
+			delete_chain_string(digit_char_chain_string);
+			free(digit_char_char_array);
+		}
+		if(aml_symbol->component.name_char.lead_name_char)
+		{
+			delete_chain_string(lead_name_char_chain_string);
+			free(lead_name_char_char_array);
+		}
+		break;
 	case aml_name_path:
 		if(aml_symbol->component.name_path.name_seg)
 		{
@@ -1558,6 +1589,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
+	static char const * const aml_name_char_name = "NameChar";
 	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
@@ -1578,6 +1610,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_expression_opcode_name;
 	case aml_lead_name_char:
 		return aml_lead_name_char_name;
+	case aml_name_char:
+		return aml_name_char_name;
 	case aml_name_path:
 		return aml_name_path_name;
 	case aml_name_seg:
@@ -1719,6 +1753,23 @@ AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml)
 	lead_name_char->type = aml_lead_name_char;
 	if(!(('A' <= *lead_name_char->string.initial && *lead_name_char->string.initial <= 'Z') || *lead_name_char->string.initial == '_'))ERROR(); // Incorrect lead name char
 	return lead_name_char;
+}
+
+// <name_char> := <digit_name_char> | <lead_name_char>
+AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
+{
+	AMLSymbol *name_char = malloc(sizeof(*name_char));
+	name_char->string.initial = aml.initial;
+	name_char->string.length = 0;
+	name_char->type = aml_name_char;
+	name_char->component.name_char.digit_char = NULL;
+	name_char->component.name_char.lead_name_char = NULL;
+	if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+	{
+		name_char->component.name_char.lead_name_char = analyse_aml_name_char(aml);
+		name_char->string.length += name_char->component.name_char.lead_name_char->string.length;
+	}
+	return name_char;
 }
 
 // <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
@@ -2006,6 +2057,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.expression_opcode.method_invocation)delete_aml_symbol(aml_symbol->component.expression_opcode.method_invocation);
 		break;
 	case aml_lead_name_char:
+		break;
+	case aml_name_char:
+		if(aml_symbol->component.name_char.digit_char)delete_aml_symbol(aml_symbol->component.name_char.digit_char);
+		if(aml_symbol->component.name_char.lead_name_char)delete_aml_symbol(aml_symbol->component.name_char.lead_name_char);
 		break;
 	case aml_name_path:
 		if(aml_symbol->component.name_path.name_seg)delete_aml_symbol(aml_symbol->component.name_path.name_seg);

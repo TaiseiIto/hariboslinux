@@ -167,6 +167,7 @@ typedef enum _AMLSymbolType
 	aml_def_alias,
 	aml_expression_opcode,
 	aml_lead_name_char,
+	aml_name_char,
 	aml_name_path,
 	aml_name_seg,
 	aml_name_space_modifier_obj,
@@ -249,6 +250,12 @@ typedef struct _AMLExpressionOpcode
 	struct _AMLSymbol *method_invocation;
 } AMLExpressionOpcode;
 
+typedef struct _AMLNameChar
+{
+	struct _AMLSymbol *digit_char;
+	struct _AMLSymbol *lead_name_char;
+} AMLNameChar;
+
 typedef struct _AMLNamePath
 {
 	struct _AMLSymbol *name_seg;
@@ -324,6 +331,7 @@ typedef union _AMLComponent
 {
 	AMLDefAlias def_alias;
 	AMLExpressionOpcode expression_opcode;
+	AMLNameChar name_char;
 	AMLNamePath name_path;
 	AMLNameSeg name_seg;
 	AMLNameSpaceModifierObj name_space_modifier_obj;
@@ -353,6 +361,8 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 // <lead_name_char> := 'A' - 'Z' | '_'
 AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
+// <name_char> := <digit_name_char> | <lead_name_char>
+AMLSymbol *analyse_aml_name_char(AMLSubstring aml);
 // <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
 AMLSymbol *analyse_aml_name_path(AMLSubstring aml);
 // <name_seg> := <lead_name_char> <name_char> <name_char> <name_char>
