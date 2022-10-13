@@ -1048,6 +1048,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(method_invocation_char_array);
 		}
 		break;
+	case aml_lead_name_char:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_name_path:
 		if(aml_symbol->component.name_path.name_seg)
 		{
@@ -1554,6 +1557,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
+	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
@@ -1572,6 +1576,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_alias_name;
 	case aml_expression_opcode:
 		return aml_expression_opcode_name;
+	case aml_lead_name_char:
+		return aml_lead_name_char_name;
 	case aml_name_path:
 		return aml_name_path_name;
 	case aml_name_seg:
@@ -1702,6 +1708,17 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.def_xor = NULL;
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
 	return expression_opcode;
+}
+
+// <lead_name_char> := 'A' - 'Z' | '_'
+AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml)
+{
+	AMLSymbol *lead_name_char = malloc(sizeof(*lead_name_char));
+	lead_name_char->string.initial = aml.initial;
+	lead_name_char->string.length = 1;
+	lead_name_char->type = aml_lead_name_char;
+	if(!(('A' <= *lead_name_char->string.initial && *lead_name_char->string.initial <= 'Z') || *lead_name_char->string.initial == '_'))ERROR(); // Incorrect lead name char
+	return lead_name_char;
 }
 
 // <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
@@ -1978,6 +1995,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.expression_opcode.def_wait)delete_aml_symbol(aml_symbol->component.expression_opcode.def_wait);
 		if(aml_symbol->component.expression_opcode.def_xor)delete_aml_symbol(aml_symbol->component.expression_opcode.def_xor);
 		if(aml_symbol->component.expression_opcode.method_invocation)delete_aml_symbol(aml_symbol->component.expression_opcode.method_invocation);
+		break;
+	case aml_lead_name_char:
 		break;
 	case aml_name_path:
 		if(aml_symbol->component.name_path.name_seg)delete_aml_symbol(aml_symbol->component.name_path.name_seg);
