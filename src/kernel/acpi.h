@@ -166,6 +166,7 @@ typedef enum _AMLSymbolType
 	aml_alias_op,
 	aml_def_alias,
 	aml_expression_opcode,
+	aml_name_path,
 	aml_name_space_modifier_obj,
 	aml_name_string,
 	aml_object,
@@ -247,6 +248,14 @@ typedef struct _AMLExpressionOpcode
 	struct _AMLSymbol *method_invocation;
 } AMLExpressionOpcode;
 
+typedef struct _AMLNamePath
+{
+	struct _AMLSymbol *name_seg;
+	struct _AMLSymbol *dual_name_path;
+	struct _AMLSymbol *multi_name_path;
+	struct _AMLSymbol *null_name;
+} AMLNamePath;
+
 typedef struct _AMLNameSpaceModifierObj
 {
 	struct _AMLSymbol *def_alias;
@@ -308,6 +317,7 @@ typedef union _AMLComponent
 {
 	AMLDefAlias def_alias;
 	AMLExpressionOpcode expression_opcode;
+	AMLNamePath name_path;
 	AMLNameSpaceModifierObj name_space_modifier_obj;
 	AMLNameString name_string;
 	AMLObject object;
@@ -333,17 +343,19 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 // <expression_opcode> := <def_aquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
+// <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
+AMLSymbol *analyse_aml_name_path(AMLSubstring aml);
 // <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
 AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml);
 // <name_string> := <root_char> <name_path> | <prefix_path> <name_path>
 AMLSymbol *analyse_aml_name_string(AMLSubstring aml);
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSubstring aml);
-// <parent_prefix_char> := 0x5e
+// <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
 AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml);
-// <root_char> := 0x5c
+// <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);

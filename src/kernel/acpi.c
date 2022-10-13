@@ -211,13 +211,17 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_wait_chain_string;
 	ChainString *def_while_chain_string;
 	ChainString *def_xor_chain_string;
+	ChainString *dual_name_path_chain_string;
 	ChainString *expression_opcode_chain_string;
 	ChainString *method_invocation_chain_string;
+	ChainString *multi_name_path_chain_string;
 	ChainString *name_path_chain_string;
+	ChainString *name_seg_chain_string;
 	ChainString *name_space_modifier_obj_chain_string;
 	ChainString *name_string_a_chain_string;
 	ChainString *name_string_b_chain_string;
 	ChainString *named_obj_chain_string;
+	ChainString *null_name_chain_string;
 	ChainString *object_chain_string;
 	ChainString *output;
 	ChainString *parent_prefix_char_chain_string;
@@ -296,13 +300,17 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_wait_char_array;
 	char *def_while_char_array;
 	char *def_xor_char_array;
+	char *dual_name_path_char_array;
 	char *expression_opcode_char_array;
 	char *method_invocation_char_array;
+	char *multi_name_path_char_array;
 	char *name_path_char_array;
+	char *name_seg_char_array;
 	char *name_space_modifier_obj_char_array;
 	char *name_string_a_char_array;
 	char *name_string_b_char_array;
 	char *named_obj_char_array;
+	char *null_name_char_array;
 	char *object_char_array;
 	char *parent_prefix_char_char_array;
 	char *prefix_path_char_array;
@@ -1049,6 +1057,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(method_invocation_char_array);
 		}
 		break;
+	case aml_name_path:
+		if(aml_symbol->component.name_path.name_seg)
+		{
+			name_seg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_path.name_seg);
+			insert_char_front(name_seg_chain_string, name_seg_chain_string->first_character, ' ');
+			replace_chain_string(name_seg_chain_string, "\n", " \n");
+			name_seg_char_array = create_char_array_from_chain_string(name_seg_chain_string);
+		}
+		else name_seg_char_array = "";
+		if(aml_symbol->component.name_path.dual_name_path)
+		{
+			dual_name_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_path.dual_name_path);
+			insert_char_front(dual_name_path_chain_string, dual_name_path_chain_string->first_character, ' ');
+			replace_chain_string(dual_name_path_chain_string, "\n", " \n");
+			dual_name_path_char_array = create_char_array_from_chain_string(dual_name_path_chain_string);
+		}
+		else dual_name_path_char_array = "";
+		if(aml_symbol->component.name_path.multi_name_path)
+		{
+			multi_name_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_path.multi_name_path);
+			insert_char_front(multi_name_path_chain_string, multi_name_path_chain_string->first_character, ' ');
+			replace_chain_string(multi_name_path_chain_string, "\n", " \n");
+			multi_name_path_char_array = create_char_array_from_chain_string(multi_name_path_chain_string);
+		}
+		else multi_name_path_char_array = "";
+		if(aml_symbol->component.name_path.null_name)
+		{
+			null_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_path.null_name);
+			insert_char_front(null_name_chain_string, null_name_chain_string->first_character, ' ');
+			replace_chain_string(null_name_chain_string, "\n", " \n");
+			null_name_char_array = create_char_array_from_chain_string(null_name_chain_string);
+		}
+		else null_name_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), name_seg_char_array, dual_name_path_char_array, multi_name_path_char_array, null_name_char_array);
+		if(aml_symbol->component.name_path.name_seg)
+		{
+			delete_chain_string(name_seg_chain_string);
+			free(name_seg_char_array);
+		}
+		if(aml_symbol->component.name_path.dual_name_path)
+		{
+			delete_chain_string(dual_name_path_chain_string);
+			free(dual_name_path_char_array);
+		}
+		if(aml_symbol->component.name_path.multi_name_path)
+		{
+			delete_chain_string(multi_name_path_chain_string);
+			free(multi_name_path_char_array);
+		}
+		if(aml_symbol->component.name_path.null_name)
+		{
+			delete_chain_string(null_name_chain_string);
+			free(null_name_char_array);
+		}
+		break;
 	case aml_name_space_modifier_obj:
 		if(aml_symbol->component.name_space_modifier_obj.def_alias)
 		{
@@ -1470,6 +1533,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
+	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
@@ -1486,6 +1550,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_alias_name;
 	case aml_expression_opcode:
 		return aml_expression_opcode_name;
+	case aml_name_path:
+		return aml_name_path_name;
 	case aml_name_space_modifier_obj:
 		return aml_name_space_modifier_obj_name;
 	case aml_object:
@@ -1617,6 +1683,20 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	return expression_opcode;
 }
 
+// <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
+AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
+{
+	AMLSymbol *name_path = malloc(sizeof(*name_path));
+	name_path->component.name_path.name_seg = NULL;
+	name_path->component.name_path.dual_name_path = NULL;
+	name_path->component.name_path.multi_name_path = NULL;
+	name_path->component.name_path.null_name = NULL;
+	name_path->string.initial = aml.initial;
+	name_path->string.length = 0;
+	name_path->type = aml_name_path;
+	return name_path;
+}
+
 // <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
 AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 {
@@ -1676,7 +1756,7 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	return object;
 }
 
-// <parent_prefix_char> := 0x5e
+// <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml)
 {
 	AMLSymbol *parent_prefix_char = malloc(sizeof(*parent_prefix_char));
@@ -1709,7 +1789,7 @@ AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 	return prefix_path;
 }
 
-// <root_char> := 0x5c
+// <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml)
 {
 	AMLSymbol *root_char = malloc(sizeof(*root_char));
@@ -1855,6 +1935,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.expression_opcode.def_wait)delete_aml_symbol(aml_symbol->component.expression_opcode.def_wait);
 		if(aml_symbol->component.expression_opcode.def_xor)delete_aml_symbol(aml_symbol->component.expression_opcode.def_xor);
 		if(aml_symbol->component.expression_opcode.method_invocation)delete_aml_symbol(aml_symbol->component.expression_opcode.method_invocation);
+		break;
+	case aml_name_path:
+		if(aml_symbol->component.name_path.name_seg)delete_aml_symbol(aml_symbol->component.name_path.name_seg);
+		if(aml_symbol->component.name_path.dual_name_path)delete_aml_symbol(aml_symbol->component.name_path.dual_name_path);
+		if(aml_symbol->component.name_path.multi_name_path)delete_aml_symbol(aml_symbol->component.name_path.multi_name_path);
+		if(aml_symbol->component.name_path.null_name)delete_aml_symbol(aml_symbol->component.name_path.null_name);
 		break;
 	case aml_name_space_modifier_obj:
 		if(aml_symbol->component.name_space_modifier_obj.def_alias)delete_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_alias);
