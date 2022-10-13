@@ -1152,6 +1152,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		free(name_segs_chain_string);
 		free(name_segs_char_array);
 		break;
+	case aml_multi_name_prefix:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_name_char:
 		if(aml_symbol->component.name_char.digit_char)
 		{
@@ -1696,6 +1699,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
+	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
 	static char const * const aml_name_char_name = "NameChar";
 	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_seg_name = "NameSeg";
@@ -1725,6 +1729,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_lead_name_char_name;
 	case aml_multi_name_path:
 		return aml_multi_name_path_name;
+	case aml_multi_name_prefix:
+		return aml_multi_name_prefix_name;
 	case aml_name_char:
 		return aml_name_char_name;
 	case aml_name_path:
@@ -1925,6 +1931,17 @@ AMLSymbol *analyse_aml_multi_name_path(AMLSubstring aml)
 	return multi_name_path;
 }
 
+// <mult_name_prefix> := AML_BYTE_MULTI_NAME_PREFIX
+AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml)
+{
+	AMLSymbol *multi_name_prefix = malloc(sizeof(*multi_name_prefix));
+	multi_name_prefix->string.initial = aml.initial;
+	multi_name_prefix->string.length = 1;
+	multi_name_prefix->type = aml_multi_name_prefix;
+	if(*multi_name_prefix->string.initial != AML_BYTE_MULTI_NAME_PREFIX)ERROR(); // Incorrect munti name prefix
+	return multi_name_prefix;
+}
+
 // <name_char> := <digit_char> | <lead_char>
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 {
@@ -1963,6 +1980,9 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 	{
 	case AML_BYTE_DUAL_NAME_PREFIX:
 		name_path->component.name_path.dual_name_path = analyse_aml_dual_name_path(aml);
+		break;
+	case AML_BYTE_MULTI_NAME_PREFIX:
+		name_path->component.name_path.multi_name_path = analyse_aml_multi_name_path(aml);
 		break;
 	default:
 		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
@@ -2255,6 +2275,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		free(aml_symbol->component.multi_name_path.name_seg);
 		if(aml_symbol->component.multi_name_path.multi_name_prefix)delete_aml_symbol(aml_symbol->component.multi_name_path.multi_name_prefix);
 		if(aml_symbol->component.multi_name_path.seg_count)delete_aml_symbol(aml_symbol->component.multi_name_path.seg_count);
+		break;
+	case aml_multi_name_prefix:
 		break;
 	case aml_name_char:
 		if(aml_symbol->component.name_char.digit_char)delete_aml_symbol(aml_symbol->component.name_char.digit_char);
