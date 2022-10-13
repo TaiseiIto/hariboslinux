@@ -358,6 +358,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(name_strings_char_array[i]);
 		}
 		break;
+	case aml_digit_char:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.def_add)
 		{
@@ -1587,6 +1590,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_def_alias_name = "DefAlias";
+	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_name_char_name = "NameChar";
@@ -1606,6 +1610,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_alias_op_name;
 	case aml_def_alias:
 		return aml_def_alias_name;
+	case aml_digit_char:
+		return aml_digit_char_name;
 	case aml_expression_opcode:
 		return aml_expression_opcode_name;
 	case aml_lead_name_char:
@@ -1679,6 +1685,17 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 		def_alias->string.length += (*name_string)->string.length;
 	}
 	return def_alias;
+}
+
+// <digit_char> := '0' - '9'
+AMLSymbol *analyse_aml_digit_char(AMLSubstring aml)
+{
+	AMLSymbol *digit_char = malloc(sizeof(*digit_char));
+	digit_char->string.initial = aml.initial;
+	digit_char->string.length = 1;
+	digit_char->type = aml_digit_char;
+	if(!('0' <= *digit_char->string.initial && *digit_char->string.initial <= '9'))ERROR(); // Incorrect digit char
+	return digit_char;
 }
 
 // <expression_opcode> := <def_aquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
@@ -1755,7 +1772,7 @@ AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml)
 	return lead_name_char;
 }
 
-// <name_char> := <digit_name_char> | <lead_name_char>
+// <name_char> := <digit_char> | <lead_char>
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 {
 	AMLSymbol *name_char = malloc(sizeof(*name_char));
@@ -1764,11 +1781,17 @@ AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 	name_char->type = aml_name_char;
 	name_char->component.name_char.digit_char = NULL;
 	name_char->component.name_char.lead_name_char = NULL;
-	if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+	if('0' <= *aml.initial && *aml.initial <= '9')
+	{
+		name_char->component.name_char.digit_char = analyse_aml_digit_char(aml);
+		name_char->string.length += name_char->component.name_char.digit_char->string.length;
+	}
+	else if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
 	{
 		name_char->component.name_char.lead_name_char = analyse_aml_name_char(aml);
 		name_char->string.length += name_char->component.name_char.lead_name_char->string.length;
 	}
+	else ERROR(); // Incorrect name char
 	return name_char;
 }
 
@@ -2000,6 +2023,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
 		for(AMLSymbol **name_string = aml_symbol->component.def_alias.name_string; name_string != aml_symbol->component.def_alias.name_string + _countof(aml_symbol->component.def_alias.name_string); name_string++)if(*name_string)delete_aml_symbol(*name_string);
+		break;
+	case aml_digit_char:
 		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.def_add)delete_aml_symbol(aml_symbol->component.expression_opcode.def_add);

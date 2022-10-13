@@ -165,6 +165,7 @@ typedef enum _AMLSymbolType
 {
 	aml_alias_op,
 	aml_def_alias,
+	aml_digit_char,
 	aml_expression_opcode,
 	aml_lead_name_char,
 	aml_name_char,
@@ -357,11 +358,13 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
+// <digit_char> := '0' - '9'
+AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 // <expression_opcode> := <def_aquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
-// <lead_name_char> := 'A' - 'Z' | '_'
+// <lead_char> := 'A' - 'Z' | '_'
 AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
-// <name_char> := <digit_name_char> | <lead_name_char>
+// <name_char> := <digit_char> | <lead_char>
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml);
 // <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
 AMLSymbol *analyse_aml_name_path(AMLSubstring aml);
