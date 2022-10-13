@@ -167,6 +167,7 @@ typedef enum _AMLSymbolType
 	aml_def_alias,
 	aml_expression_opcode,
 	aml_name_path,
+	aml_name_seg,
 	aml_name_space_modifier_obj,
 	aml_name_string,
 	aml_object,
@@ -255,6 +256,12 @@ typedef struct _AMLNamePath
 	struct _AMLSymbol *null_name;
 } AMLNamePath;
 
+typedef struct _AMLNameSeg
+{
+	struct _AMLSymbol *lead_name_char;
+	struct _AMLSymbol *name_char[3];
+} AMLNameSeg;
+
 typedef struct _AMLNameSpaceModifierObj
 {
 	struct _AMLSymbol *def_alias;
@@ -317,6 +324,7 @@ typedef union _AMLComponent
 	AMLDefAlias def_alias;
 	AMLExpressionOpcode expression_opcode;
 	AMLNamePath name_path;
+	AMLNameSeg name_seg;
 	AMLNameSpaceModifierObj name_space_modifier_obj;
 	AMLNameString name_string;
 	AMLObject object;
@@ -336,7 +344,7 @@ typedef struct _AMLSymbol
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol);
 char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
-// <alias_op> := 0x06
+// <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
@@ -344,6 +352,8 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 // <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
 AMLSymbol *analyse_aml_name_path(AMLSubstring aml);
+// <name_seg> := <lead_name_char> <name_char> <name_char> <name_char>
+AMLSymbol *analyse_aml_name_seg(AMLSubstring aml);
 // <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
 AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml);
 // <name_string> := <root_char> <name_path> | <prefix_path> <name_path>

@@ -214,8 +214,10 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_xor_chain_string;
 	ChainString *dual_name_path_chain_string;
 	ChainString *expression_opcode_chain_string;
+	ChainString *lead_name_char_chain_string;
 	ChainString *method_invocation_chain_string;
 	ChainString *multi_name_path_chain_string;
+	ChainString *name_chars_chain_string[3];
 	ChainString *name_path_chain_string;
 	ChainString *name_seg_chain_string;
 	ChainString *name_space_modifier_obj_chain_string;
@@ -302,8 +304,10 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_xor_char_array;
 	char *dual_name_path_char_array;
 	char *expression_opcode_char_array;
+	char *lead_name_char_char_array;
 	char *method_invocation_char_array;
 	char *multi_name_path_char_array;
+	char *name_chars_char_array[3];
 	char *name_path_char_array;
 	char *name_seg_char_array;
 	char *name_space_modifier_obj_char_array;
@@ -340,7 +344,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		else name_strings_char_array[i] = "";
 		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), alias_op_char_array);
-		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_alias.name_string); i++)if(aml_symbol->component.def_alias.name_string[i])insert_chain_string_back(output, output->last_character, name_strings_chain_string[i]);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_alias.name_string); i++)if(aml_symbol->component.def_alias.name_string[i])insert_char_array_back(output, output->last_character, name_strings_char_array[i]);
 		if(aml_symbol->component.def_alias.alias_op)
 		{
 			delete_chain_string(alias_op_chain_string);
@@ -1099,6 +1103,36 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(null_name_char_array);
 		}
 		break;
+	case aml_name_seg:
+		if(aml_symbol->component.name_seg.lead_name_char)
+		{
+			lead_name_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_seg.lead_name_char);
+			insert_char_front(lead_name_char_chain_string, lead_name_char_chain_string->first_character, ' ');
+			replace_chain_string(lead_name_char_chain_string, "\n", " \n");
+			lead_name_char_char_array = create_char_array_from_chain_string(lead_name_char_chain_string);
+		}
+		else lead_name_char_char_array = "";
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.name_seg.name_char); i++)if(aml_symbol->component.name_seg.name_char[i])
+		{
+			name_chars_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.name_seg.name_char[i]);
+			insert_char_front(name_chars_chain_string[i], name_chars_chain_string[i]->first_character, ' ');
+			replace_chain_string(name_chars_chain_string[i], "\n", " \n");
+			name_chars_char_array[i] = create_char_array_from_chain_string(name_chars_chain_string[i]);
+		}
+		else name_chars_char_array[i] = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), lead_name_char_char_array);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.name_seg.name_char); i++)insert_char_array_back(output, output->last_character, name_chars_char_array[i]);
+		if(aml_symbol->component.name_seg.lead_name_char)
+		{
+			delete_chain_string(lead_name_char_chain_string);
+			free(lead_name_char_char_array);
+		}
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.name_seg.name_char); i++)if(aml_symbol->component.name_seg.name_char[i])
+		{
+			delete_chain_string(name_chars_chain_string[i]);
+			free(name_chars_char_array[i]);
+		}
+		break;
 	case aml_name_space_modifier_obj:
 		if(aml_symbol->component.name_space_modifier_obj.def_alias)
 		{
@@ -1521,6 +1555,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_name_path_name = "NamePath";
+	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
@@ -1539,6 +1574,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_expression_opcode_name;
 	case aml_name_path:
 		return aml_name_path_name;
+	case aml_name_seg:
+		return aml_name_seg_name;
 	case aml_name_space_modifier_obj:
 		return aml_name_space_modifier_obj_name;
 	case aml_object:
@@ -1561,7 +1598,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	}
 }
 
-// <alias_op> := 0x06
+// <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 {
 	AMLSymbol *alias_op = malloc(sizeof(*alias_op));
@@ -1679,6 +1716,21 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 	name_path->component.name_path.multi_name_path = NULL;
 	name_path->component.name_path.null_name = NULL;
 	return name_path;
+}
+
+// <name_seg> := <lead_name_char> <name_char> <name_char> <name_char>
+AMLSymbol *analyse_aml_name_seg(AMLSubstring aml)
+{
+	AMLSymbol *name_seg = malloc(sizeof(*name_seg));
+	name_seg->string.initial = aml.initial;
+	name_seg->string.length = 0;
+	name_seg->type = aml_name_seg;
+	name_seg->component.name_seg.lead_name_char = NULL;
+	for(AMLSymbol **name_char = name_seg->component.name_seg.name_char; name_char != name_seg->component.name_seg.name_char + _countof(name_seg->component.name_seg.name_char); name_char++)
+	{
+		*name_char = NULL;
+	}
+	return name_seg;
 }
 
 // <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
@@ -1932,6 +1984,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.name_path.dual_name_path)delete_aml_symbol(aml_symbol->component.name_path.dual_name_path);
 		if(aml_symbol->component.name_path.multi_name_path)delete_aml_symbol(aml_symbol->component.name_path.multi_name_path);
 		if(aml_symbol->component.name_path.null_name)delete_aml_symbol(aml_symbol->component.name_path.null_name);
+		break;
+	case aml_name_seg:
+		if(aml_symbol->component.name_seg.lead_name_char)delete_aml_symbol(aml_symbol->component.name_seg.lead_name_char);
+		for(AMLSymbol **name_char = aml_symbol->component.name_seg.name_char; name_char != aml_symbol->component.name_seg.name_char + _countof(aml_symbol->component.name_seg.name_char); name_char++)if(*name_char)delete_aml_symbol(*name_char);
 		break;
 	case aml_name_space_modifier_obj:
 		if(aml_symbol->component.name_space_modifier_obj.def_alias)delete_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_alias);
