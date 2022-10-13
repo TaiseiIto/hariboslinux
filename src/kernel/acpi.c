@@ -5,6 +5,7 @@
 #include "stdlib.h"
 #include "string.h"
 
+#define AML_BYTE_NULL_NAME		0x00
 #define AML_BYTE_ZERO_OP		0x00
 #define AML_BYTE_ONE_OP			0x01
 #define AML_BYTE_ALIAS_OP		0x06
@@ -1357,6 +1358,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(root_char_char_array);
 		}
 		break;
+	case aml_null_name:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)
 		{
@@ -1707,6 +1711,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
+	static char const * const aml_null_name_name = "NullName";
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_prefix_path_name = "PrefixPath";
@@ -1743,6 +1748,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_name_seg_name;
 	case aml_name_space_modifier_obj:
 		return aml_name_space_modifier_obj_name;
+	case aml_null_name:
+		return aml_null_name_name;
 	case aml_object:
 		return aml_object_name;
 	case aml_parent_prefix_char:
@@ -1998,9 +2005,15 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 	{
 	case AML_BYTE_DUAL_NAME_PREFIX:
 		name_path->component.name_path.dual_name_path = analyse_aml_dual_name_path(aml);
+		name_path->string.length += name_path->component.name_path.dual_name_path->string.length;
 		break;
 	case AML_BYTE_MULTI_NAME_PREFIX:
 		name_path->component.name_path.multi_name_path = analyse_aml_multi_name_path(aml);
+		name_path->string.length += name_path->component.name_path.multi_name_path->string.length;
+		break;
+	case AML_BYTE_NULL_NAME:
+		name_path->component.name_path.null_name = analyse_aml_null_name(aml);
+		name_path->string.length += name_path->component.name_path.null_name->string.length;
 		break;
 	default:
 		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
@@ -2082,6 +2095,17 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	name_string->component.name_string.name_path = analyse_aml_name_path(aml);
 	name_string->string.length += name_string->component.name_string.name_path->string.length;
 	return name_string;
+}
+
+// <null_name> := AML_BYTE_NULL_NAME
+AMLSymbol *analyse_aml_null_name(AMLSubstring aml)
+{
+	AMLSymbol *null_name = malloc(sizeof(*null_name));
+	null_name->string.initial = aml.initial;
+	null_name->string.length = 1;
+	null_name->type = aml_null_name;
+	if(*null_name->string.initial != AML_BYTE_NULL_NAME)ERROR(); // Incorrect null name
+	return null_name;
 }
 
 // <object> := <name_space_modifier_obj> | <named_obj>
