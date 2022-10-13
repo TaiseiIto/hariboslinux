@@ -1418,6 +1418,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_root_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_seg_count:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)
 		{
@@ -1708,6 +1711,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_prefix_path_name = "PrefixPath";
 	static char const * const aml_root_char_name = "RootChar";
+	static char const * const aml_seg_count_name = "SegCount";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
@@ -1747,6 +1751,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_prefix_path_name;
 	case aml_root_char:
 		return aml_root_char_name;
+	case aml_seg_count:
+		return aml_seg_count_name;
 	case aml_statement_opcode:
 		return aml_statement_opcode_name;
 	case aml_term_list:
@@ -1925,9 +1931,22 @@ AMLSymbol *analyse_aml_multi_name_path(AMLSubstring aml)
 	multi_name_path->string.initial = aml.initial;
 	multi_name_path->string.length = 0;
 	multi_name_path->type = aml_multi_name_path;
-	multi_name_path->component.multi_name_path.multi_name_prefix = NULL;
-	multi_name_path->component.multi_name_path.seg_count = NULL;
-	multi_name_path->component.multi_name_path.name_seg = NULL;
+	multi_name_path->component.multi_name_path.multi_name_prefix = analyse_aml_multi_name_prefix(aml);
+	multi_name_path->string.length += multi_name_path->component.multi_name_path.multi_name_prefix->string.length;
+	aml.initial += multi_name_path->component.multi_name_path.multi_name_prefix->string.length;
+	aml.length -= multi_name_path->component.multi_name_path.multi_name_prefix->string.length;
+	multi_name_path->component.multi_name_path.seg_count = analyse_aml_seg_count(aml);
+	multi_name_path->string.length += multi_name_path->component.multi_name_path.seg_count->string.length;
+	aml.initial += multi_name_path->component.multi_name_path.seg_count->string.length;
+	aml.length -= multi_name_path->component.multi_name_path.seg_count->string.length;
+	multi_name_path->component.multi_name_path.name_seg = malloc(*multi_name_path->component.multi_name_path.seg_count->string.initial * sizeof(*multi_name_path->component.multi_name_path.name_seg));
+	for(unsigned int i = 0; i < *multi_name_path->component.multi_name_path.seg_count->string.initial; i++)
+	{
+		multi_name_path->component.multi_name_path.name_seg[i] = analyse_aml_name_seg(aml);
+		multi_name_path->string.length += multi_name_path->component.multi_name_path.name_seg[i]->string.length;
+		aml.initial += multi_name_path->component.multi_name_path.name_seg[i]->string.length;
+		aml.length -= multi_name_path->component.multi_name_path.name_seg[i]->string.length;
+	}
 	return multi_name_path;
 }
 
@@ -2123,6 +2142,17 @@ AMLSymbol *analyse_aml_root_char(AMLSubstring aml)
 	return root_char;
 }
 
+// <seg_count> := 0x01 - 0xff
+AMLSymbol *analyse_aml_seg_count(AMLSubstring aml)
+{
+	AMLSymbol *seg_count = malloc(sizeof(*seg_count));
+	seg_count->string.initial = aml.initial;
+	seg_count->string.length = 1;
+	seg_count->type = aml_seg_count;
+	if(*seg_count->string.initial == 0x00)ERROR(); // SegCount can be from 1 to 255.
+	return seg_count;
+}
+
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 {
@@ -2310,6 +2340,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.prefix_path.parent_prefix_char)delete_aml_symbol(aml_symbol->component.prefix_path.parent_prefix_char);
 		if(aml_symbol->component.prefix_path.prefix_path)delete_aml_symbol(aml_symbol->component.prefix_path.prefix_path);
 	case aml_root_char:
+		break;
+	case aml_seg_count:
 		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break);

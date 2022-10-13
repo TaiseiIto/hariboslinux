@@ -181,6 +181,7 @@ typedef enum _AMLSymbolType
 	aml_parent_prefix_char,
 	aml_prefix_path,
 	aml_root_char,
+	aml_seg_count,
 	aml_statement_opcode,
 	aml_term_list,
 	aml_term_obj,
@@ -409,6 +410,8 @@ AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml);
 // <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
+// <seg_count> := 0x01 - 0xff
+AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
 // <term_list> := Nothing | <term_obj> <term_list>
