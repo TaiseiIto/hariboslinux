@@ -220,6 +220,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *named_obj_chain_string;
 	ChainString *object_chain_string;
 	ChainString *output;
+	ChainString *parent_prefix_char_chain_string;
 	ChainString *prefix_path_chain_string;
 	ChainString *root_char_chain_string;
 	ChainString *statement_opcode_chain_string;
@@ -303,6 +304,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *name_string_b_char_array;
 	char *named_obj_char_array;
 	char *object_char_array;
+	char *parent_prefix_char_char_array;
 	char *prefix_path_char_array;
 	char *root_char_char_array;
 	char *statement_opcode_char_array;
@@ -1160,6 +1162,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(name_space_modifier_obj_char_array);
 		}
 		break;
+	case aml_prefix_path:
+		if(aml_symbol->component.prefix_path.parent_prefix_char)
+		{
+			parent_prefix_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.prefix_path.parent_prefix_char);
+			insert_char_front(parent_prefix_char_chain_string, parent_prefix_char_chain_string->first_character, ' ');
+			replace_chain_string(parent_prefix_char_chain_string, "\n", " \n");
+			parent_prefix_char_char_array = create_char_array_from_chain_string(parent_prefix_char_chain_string);
+		}
+		else parent_prefix_char_char_array = "";
+		if(aml_symbol->component.prefix_path.prefix_path)
+		{
+			prefix_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.prefix_path.prefix_path);
+			insert_char_front(prefix_path_chain_string, prefix_path_chain_string->first_character, ' ');
+			replace_chain_string(prefix_path_chain_string, "\n", " \n");
+			prefix_path_char_array = create_char_array_from_chain_string(prefix_path_chain_string);
+		}
+		else prefix_path_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), parent_prefix_char_char_array, prefix_path_char_array);
+		if(aml_symbol->component.prefix_path.parent_prefix_char)
+		{
+			delete_chain_string(parent_prefix_char_chain_string);
+			free(parent_prefix_char_char_array);
+		}
+		if(aml_symbol->component.prefix_path.parent_prefix_char)
+		{
+			delete_chain_string(parent_prefix_char_chain_string);
+			free(parent_prefix_char_char_array);
+		}
+		break;
 	case aml_root_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -1441,6 +1472,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
 	static char const * const aml_object_name = "Object";
+	static char const * const aml_prefix_path_name = "PrefixPath";
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_term_list_name = "TermList";
@@ -1457,6 +1489,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_name_space_modifier_obj_name;
 	case aml_object:
 		return aml_object_name;
+	case aml_prefix_path:
+		return aml_prefix_path_name;
 	case aml_root_char:
 		return aml_root_char_name;
 	case aml_statement_opcode:
@@ -1635,6 +1669,18 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	return object;
 }
 
+// <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
+AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
+{
+	AMLSymbol *prefix_path = malloc(sizeof(*prefix_path));
+	prefix_path->component.prefix_path.parent_prefix_char = NULL;
+	prefix_path->component.prefix_path.prefix_path = NULL;
+	prefix_path->string.initial = aml.initial;
+	prefix_path->string.length = 0;
+	prefix_path->type = aml_prefix_path;
+	return prefix_path;
+}
+
 // <root_char> := 0x5c
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml)
 {
@@ -1796,6 +1842,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
 		if(aml_symbol->component.object.name_space_modifier_obj)delete_aml_symbol(aml_symbol->component.object.name_space_modifier_obj);
 		break;
+	case aml_prefix_path:
+		if(aml_symbol->component.prefix_path.parent_prefix_char)delete_aml_symbol(aml_symbol->component.prefix_path.parent_prefix_char);
+		if(aml_symbol->component.prefix_path.prefix_path)delete_aml_symbol(aml_symbol->component.prefix_path.prefix_path);
 	case aml_root_char:
 		break;
 	case aml_statement_opcode:
