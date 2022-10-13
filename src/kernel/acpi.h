@@ -187,8 +187,7 @@ typedef struct _AMLSubstring
 typedef struct _AMLDefAlias
 {
 	struct _AMLSymbol *alias_op;
-	struct _AMLSymbol *name_string_a;
-	struct _AMLSymbol *name_string_b;
+	struct _AMLSymbol *name_string[2];
 } AMLDefAlias;
 
 typedef struct _AMLExpressionOpcode

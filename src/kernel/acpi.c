@@ -2,6 +2,7 @@
 #include "serial.h"
 #include "shell.h"
 #include "stdbool.h"
+#include "stdlib.h"
 #include "string.h"
 
 #define AML_BYTE_ZERO_OP		0x00
@@ -218,8 +219,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *name_path_chain_string;
 	ChainString *name_seg_chain_string;
 	ChainString *name_space_modifier_obj_chain_string;
-	ChainString *name_string_a_chain_string;
-	ChainString *name_string_b_chain_string;
+	ChainString *name_strings_chain_string[2];
 	ChainString *named_obj_chain_string;
 	ChainString *null_name_chain_string;
 	ChainString *object_chain_string;
@@ -307,8 +307,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *name_path_char_array;
 	char *name_seg_char_array;
 	char *name_space_modifier_obj_char_array;
-	char *name_string_a_char_array;
-	char *name_string_b_char_array;
+	char *name_strings_char_array[2];
 	char *named_obj_char_array;
 	char *null_name_char_array;
 	char *object_char_array;
@@ -332,37 +331,25 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			alias_op_char_array = create_char_array_from_chain_string(alias_op_chain_string);
 		}
 		else alias_op_char_array = "";
-		if(aml_symbol->component.def_alias.name_string_a)
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_alias.name_string); i++)if(aml_symbol->component.def_alias.name_string[i])
 		{
-			name_string_a_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_alias.name_string_a);
-			insert_char_front(name_string_a_chain_string, name_string_a_chain_string->first_character, ' ');
-			replace_chain_string(name_string_a_chain_string, "\n", " \n");
-			name_string_a_char_array = create_char_array_from_chain_string(name_string_a_chain_string);
+			name_strings_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.def_alias.name_string[i]);
+			insert_char_front(name_strings_chain_string[i], name_strings_chain_string[i]->first_character, ' ');
+			replace_chain_string(name_strings_chain_string[i], "\n", " \n");
+			name_strings_char_array[i] = create_char_array_from_chain_string(name_strings_chain_string[i]);
 		}
-		else name_string_a_char_array = "";
-		if(aml_symbol->component.def_alias.name_string_b)
-		{
-			name_string_b_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_alias.name_string_b);
-			insert_char_front(name_string_b_chain_string, name_string_b_chain_string->first_character, ' ');
-			replace_chain_string(name_string_b_chain_string, "\n", " \n");
-			name_string_b_char_array = create_char_array_from_chain_string(name_string_b_chain_string);
-		}
-		else name_string_b_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), alias_op_char_array, name_string_a_char_array, name_string_b_char_array);
+		else name_strings_char_array[i] = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), alias_op_char_array);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_alias.name_string); i++)if(aml_symbol->component.def_alias.name_string[i])insert_chain_string_back(output, output->last_character, name_strings_chain_string[i]);
 		if(aml_symbol->component.def_alias.alias_op)
 		{
 			delete_chain_string(alias_op_chain_string);
 			free(alias_op_char_array);
 		}
-		if(aml_symbol->component.def_alias.name_string_a)
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_alias.name_string); i++)if(aml_symbol->component.def_alias.name_string[i])
 		{
-			delete_chain_string(name_string_a_chain_string);
-			free(name_string_a_char_array);
-		}
-		if(aml_symbol->component.def_alias.name_string_b)
-		{
-			delete_chain_string(name_string_b_chain_string);
-			free(name_string_b_char_array);
+			delete_chain_string(name_strings_chain_string[i]);
+			free(name_strings_char_array[i]);
 		}
 		break;
 	case aml_expression_opcode:
@@ -1589,35 +1576,31 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 {
 	AMLSymbol *def_alias = malloc(sizeof(*def_alias));
-	AMLSubstring name_string_a_aml;
-	AMLSubstring name_string_b_aml;
-	def_alias->component.def_alias.alias_op = analyse_aml_alias_op(aml);
-	name_string_a_aml.initial = def_alias->component.def_alias.alias_op->string.initial + def_alias->component.def_alias.alias_op->string.length;
-	name_string_a_aml.length = aml.length - def_alias->component.def_alias.alias_op->string.length;
-	switch(*name_string_a_aml.initial)
-	{
-	case AML_BYTE_PARENT_PREFIX_CHAR:
-	case AML_BYTE_ROOT_CHAR:
-		break;
-	default:
-		ERROR(); // Syntax error
-		break;
-	}
-	def_alias->component.def_alias.name_string_a = analyse_aml_name_string(name_string_a_aml);
-	name_string_b_aml.initial = def_alias->component.def_alias.name_string_a->string.initial + def_alias->component.def_alias.name_string_a->string.length;
-	name_string_b_aml.length = name_string_a_aml.length - def_alias->component.def_alias.name_string_a->string.length;
-	switch(*name_string_b_aml.initial)
-	{
-	case AML_BYTE_ROOT_CHAR:
-		break;
-	default:
-		ERROR(); // Syntax error
-		break;
-	}
-	def_alias->component.def_alias.name_string_b = analyse_aml_name_string(name_string_b_aml);
+
+	AMLSubstring name_string_aml;
 	def_alias->string.initial = aml.initial;
 	def_alias->string.length = 0;
 	def_alias->type = aml_def_alias;
+	def_alias->component.def_alias.alias_op = analyse_aml_alias_op(aml);
+	name_string_aml.initial = def_alias->component.def_alias.alias_op->string.initial + def_alias->component.def_alias.alias_op->string.length;
+	name_string_aml.length = aml.length - def_alias->component.def_alias.alias_op->string.length;
+	def_alias->string.length += def_alias->component.def_alias.alias_op->string.length;
+	for(AMLSymbol **name_string = def_alias->component.def_alias.name_string; name_string != def_alias->component.def_alias.name_string + _countof(def_alias->component.def_alias.name_string); name_string++)
+	{
+		switch(*name_string_aml.initial)
+		{
+		case AML_BYTE_PARENT_PREFIX_CHAR:
+		case AML_BYTE_ROOT_CHAR:
+			break;
+		default:
+			ERROR(); // Syntax error
+			break;
+		}
+		*name_string = analyse_aml_name_string(name_string_aml);
+		name_string_aml.initial += (*name_string)->string.length;
+		name_string_aml.length -= (*name_string)->string.length;
+		def_alias->string.length += (*name_string)->string.length;
+	}
 	return def_alias;
 }
 
@@ -1625,6 +1608,10 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 {
 	AMLSymbol *expression_opcode = malloc(sizeof(*expression_opcode));
+	expression_opcode->string.initial = aml.initial;
+	expression_opcode->string.length = 0;
+	expression_opcode->type = aml_expression_opcode;
+	expression_opcode->component.expression_opcode.def_add = NULL;
 	expression_opcode->component.expression_opcode.def_and = NULL;
 	expression_opcode->component.expression_opcode.def_aquire = NULL;
 	expression_opcode->component.expression_opcode.def_buffer = NULL;
@@ -1677,9 +1664,6 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.def_wait = NULL;
 	expression_opcode->component.expression_opcode.def_xor = NULL;
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
-	expression_opcode->string.initial = aml.initial;
-	expression_opcode->string.length = 0;
-	expression_opcode->component.expression_opcode.def_add = NULL;
 	return expression_opcode;
 }
 
@@ -1687,13 +1671,13 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 {
 	AMLSymbol *name_path = malloc(sizeof(*name_path));
+	name_path->string.initial = aml.initial;
+	name_path->string.length = 0;
+	name_path->type = aml_name_path;
 	name_path->component.name_path.name_seg = NULL;
 	name_path->component.name_path.dual_name_path = NULL;
 	name_path->component.name_path.multi_name_path = NULL;
 	name_path->component.name_path.null_name = NULL;
-	name_path->string.initial = aml.initial;
-	name_path->string.length = 0;
-	name_path->type = aml_name_path;
 	return name_path;
 }
 
@@ -1701,6 +1685,9 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 {
 	AMLSymbol *name_space_modifier_obj = malloc(sizeof(*name_space_modifier_obj));
+	name_space_modifier_obj->string.initial = aml.initial;
+	name_space_modifier_obj->string.length = 0;
+	name_space_modifier_obj->type = aml_name_space_modifier_obj;
 	name_space_modifier_obj->component.name_space_modifier_obj.def_alias = NULL;
 	name_space_modifier_obj->component.name_space_modifier_obj.def_name = NULL;
 	name_space_modifier_obj->component.name_space_modifier_obj.def_scope = NULL;
@@ -1708,11 +1695,9 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 	{
 	case AML_BYTE_ALIAS_OP:
 		name_space_modifier_obj->component.name_space_modifier_obj.def_alias = analyse_aml_def_alias(aml);
+		name_space_modifier_obj->string.length += name_space_modifier_obj->component.name_space_modifier_obj.def_alias->string.length;
 		break;
 	}
-	name_space_modifier_obj->string.initial = aml.initial;
-	name_space_modifier_obj->string.length = 0;
-	name_space_modifier_obj->type = aml_name_space_modifier_obj;
 	return name_space_modifier_obj;
 }
 
@@ -1720,6 +1705,9 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 {
 	AMLSymbol *name_string = malloc(sizeof(*name_string));
+	name_string->string.initial = aml.initial;
+	name_string->string.length = 0;
+	name_string->type = aml_name_string;
 	name_string->component.name_string.root_char = NULL;
 	name_string->component.name_string.prefix_path = NULL;
 	name_string->component.name_string.name_path = NULL;
@@ -1727,14 +1715,13 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	{
 	case AML_BYTE_PARENT_PREFIX_CHAR:
 		name_string->component.name_string.prefix_path = analyse_aml_prefix_path(aml);
+		name_string->string.length += name_string->component.name_string.prefix_path->string.length;
 		break;
 	case AML_BYTE_ROOT_CHAR:
 		name_string->component.name_string.root_char = analyse_aml_root_char(aml);
+		name_string->string.length += name_string->component.name_string.root_char->string.length;
 		break;
 	}
-	name_string->string.initial = aml.initial;
-	name_string->string.length = 0;
-	name_string->type = aml_name_string;
 	return name_string;
 }
 
@@ -1742,17 +1729,18 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 AMLSymbol *analyse_aml_object(AMLSubstring aml)
 {
 	AMLSymbol *object = malloc(sizeof(*object));
+	object->string.initial = aml.initial;
+	object->string.length = 0;
+	object->type = aml_object;
 	object->component.object.name_space_modifier_obj = NULL;
 	object->component.object.named_obj = NULL;
 	switch(*aml.initial)
 	{
 	case AML_BYTE_ALIAS_OP:
 		object->component.object.name_space_modifier_obj = analyse_aml_name_space_modifier_obj(aml);
+		object->string.length += object->component.object.name_space_modifier_obj->string.length;
 		break;
 	}
-	object->string.initial = aml.initial;
-	object->string.length = 0;
-	object->type = aml_object;
 	return object;
 }
 
@@ -1772,6 +1760,9 @@ AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 {
 	AMLSymbol *prefix_path = malloc(sizeof(*prefix_path));
 	AMLSubstring next_prefix_path_aml;
+	prefix_path->string.initial = aml.initial;
+	prefix_path->string.length = 0;
+	prefix_path->type = aml_prefix_path;
 	prefix_path->component.prefix_path.parent_prefix_char = NULL;
 	prefix_path->component.prefix_path.prefix_path = NULL;
 	switch(*aml.initial)
@@ -1780,12 +1771,11 @@ AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 		prefix_path->component.prefix_path.parent_prefix_char = analyse_aml_parent_prefix_char(aml);
 		next_prefix_path_aml.initial = aml.initial + prefix_path->component.prefix_path.parent_prefix_char->string.length;
 		next_prefix_path_aml.length = aml.length - prefix_path->component.prefix_path.parent_prefix_char->string.length;
+		prefix_path->string.length += prefix_path->component.prefix_path.parent_prefix_char->string.length;
 		prefix_path->component.prefix_path.prefix_path = analyse_aml_prefix_path(next_prefix_path_aml);
+		prefix_path->string.length += prefix_path->component.prefix_path.prefix_path->string.length;
 		break;
 	}
-	prefix_path->string.initial = aml.initial;
-	prefix_path->string.length = 0;
-	prefix_path->type = aml_prefix_path;
 	return prefix_path;
 }
 
@@ -1804,6 +1794,9 @@ AMLSymbol *analyse_aml_root_char(AMLSubstring aml)
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 {
 	AMLSymbol *statement_opcode = malloc(sizeof(*statement_opcode));
+	statement_opcode->string.initial = aml.initial;
+	statement_opcode->string.length = 0;
+	statement_opcode->type = aml_statement_opcode;
 	statement_opcode->component.statement_opcode.def_break = NULL;
 	statement_opcode->component.statement_opcode.def_break_point = NULL;
 	statement_opcode->component.statement_opcode.def_continue = NULL;
@@ -1818,9 +1811,6 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 	statement_opcode->component.statement_opcode.def_sleep = NULL;
 	statement_opcode->component.statement_opcode.def_stall = NULL;
 	statement_opcode->component.statement_opcode.def_while = NULL;
-	statement_opcode->string.initial = aml.initial;
-	statement_opcode->string.length = 0;
-	statement_opcode->type = aml_statement_opcode;
 	return statement_opcode;
 }
 
@@ -1835,6 +1825,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 	{
 		// <term_list> := <term_obj> <term_list>
 		term_list->component.term_list.term_obj = analyse_aml_term_obj(aml);
+		term_list->string.length += term_list->component.term_list.term_obj->string.length;
 		term_list->component.term_list.term_list = NULL;
 	}
 	else
@@ -1850,6 +1841,9 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 {
 	AMLSymbol *term_obj = malloc(sizeof(*term_obj));
+	term_obj->string.initial = aml.initial;
+	term_obj->string.length = 0;
+	term_obj->type = aml_term_obj;
 	term_obj->component.term_obj.object = NULL;
 	term_obj->component.term_obj.statement_opcode = NULL;
 	term_obj->component.term_obj.expression_opcode = NULL;
@@ -1857,11 +1851,9 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	{
 	case AML_BYTE_ALIAS_OP:
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
+		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
 	}
-	term_obj->string.initial = aml.initial;
-	term_obj->string.length = 0;
-	term_obj->type = aml_term_obj;
 	return term_obj;
 }
 
@@ -1878,8 +1870,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
-		if(aml_symbol->component.def_alias.name_string_a)delete_aml_symbol(aml_symbol->component.def_alias.name_string_a);
-		if(aml_symbol->component.def_alias.name_string_b)delete_aml_symbol(aml_symbol->component.def_alias.name_string_b);
+		for(AMLSymbol **name_string = aml_symbol->component.def_alias.name_string; name_string != aml_symbol->component.def_alias.name_string + _countof(aml_symbol->component.def_alias.name_string); name_string++)if(*name_string)delete_aml_symbol(*name_string);
 		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.def_add)delete_aml_symbol(aml_symbol->component.expression_opcode.def_add);
