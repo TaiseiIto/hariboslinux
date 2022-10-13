@@ -169,6 +169,7 @@ typedef enum _AMLSymbolType
 	aml_name_space_modifier_obj,
 	aml_name_string,
 	aml_object,
+	aml_parent_prefix_char,
 	aml_prefix_path,
 	aml_root_char,
 	aml_statement_opcode,
@@ -338,6 +339,8 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml);
 AMLSymbol *analyse_aml_name_string(AMLSubstring aml);
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSubstring aml);
+// <parent_prefix_char> := 0x5e
+AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
 AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml);
 // <root_char> := 0x5c

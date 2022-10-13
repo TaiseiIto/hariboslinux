@@ -1472,6 +1472,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
 	static char const * const aml_object_name = "Object";
+	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_prefix_path_name = "PrefixPath";
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
@@ -1489,6 +1490,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_name_space_modifier_obj_name;
 	case aml_object:
 		return aml_object_name;
+	case aml_parent_prefix_char:
+		return aml_parent_prefix_char_name;
 	case aml_prefix_path:
 		return aml_prefix_path_name;
 	case aml_root_char:
@@ -1527,6 +1530,7 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 	name_string_a_aml.length = aml.length - def_alias->component.def_alias.alias_op->string.length;
 	switch(*name_string_a_aml.initial)
 	{
+	case AML_BYTE_PARENT_PREFIX_CHAR:
 	case AML_BYTE_ROOT_CHAR:
 		break;
 	default:
@@ -1641,6 +1645,9 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	name_string->component.name_string.name_path = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+		name_string->component.name_string.prefix_path = analyse_aml_prefix_path(aml);
+		break;
 	case AML_BYTE_ROOT_CHAR:
 		name_string->component.name_string.root_char = analyse_aml_root_char(aml);
 		break;
@@ -1669,12 +1676,33 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	return object;
 }
 
+// <parent_prefix_char> := 0x5e
+AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml)
+{
+	AMLSymbol *parent_prefix_char = malloc(sizeof(*parent_prefix_char));
+	parent_prefix_char->string.initial = aml.initial;
+	parent_prefix_char->string.length = 1;
+	parent_prefix_char->type = aml_parent_prefix_char;
+	if(*parent_prefix_char->string.initial != AML_BYTE_PARENT_PREFIX_CHAR)ERROR(); // Incorrect parent prefix char
+	return parent_prefix_char;
+}
+
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
 AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 {
 	AMLSymbol *prefix_path = malloc(sizeof(*prefix_path));
+	AMLSubstring next_prefix_path_aml;
 	prefix_path->component.prefix_path.parent_prefix_char = NULL;
 	prefix_path->component.prefix_path.prefix_path = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+		prefix_path->component.prefix_path.parent_prefix_char = analyse_aml_parent_prefix_char(aml);
+		next_prefix_path_aml.initial = aml.initial + prefix_path->component.prefix_path.parent_prefix_char->string.length;
+		next_prefix_path_aml.length = aml.length - prefix_path->component.prefix_path.parent_prefix_char->string.length;
+		prefix_path->component.prefix_path.prefix_path = analyse_aml_prefix_path(next_prefix_path_aml);
+		break;
+	}
 	prefix_path->string.initial = aml.initial;
 	prefix_path->string.length = 0;
 	prefix_path->type = aml_prefix_path;
