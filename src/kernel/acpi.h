@@ -165,6 +165,7 @@ typedef enum _AMLSymbolType
 {
 	aml_alias_op,
 	aml_def_alias,
+	aml_def_name,
 	aml_digit_char,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
@@ -199,6 +200,13 @@ typedef struct _AMLDefAlias
 	struct _AMLSymbol *alias_op;
 	struct _AMLSymbol *name_string[2];
 } AMLDefAlias;
+
+typedef struct _AMLDefName
+{
+	struct _AMLSymbol *name_op;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *data_ref_object;
+} AMLDefName;
 
 typedef struct _AMLDualNamePath
 {
@@ -350,6 +358,7 @@ typedef struct _AMLTermObj
 typedef union _AMLComponent
 {
 	AMLDefAlias def_alias;
+	AMLDefName def_name;
 	AMLDualNamePath dual_name_path;
 	AMLExpressionOpcode expression_opcode;
 	AMLMultiNamePath multi_name_path;
@@ -379,6 +388,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
+// <def_name> := <name_op> <name_string> <data_ref_object>
+AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>

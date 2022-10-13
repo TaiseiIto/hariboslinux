@@ -147,6 +147,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
 	ChainString *alias_op_chain_string;
+	ChainString *data_ref_object_chain_string;
 	ChainString *def_add_chain_string;
 	ChainString *def_alias_chain_string;
 	ChainString *def_and_chain_string;
@@ -224,9 +225,11 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *method_invocation_chain_string;
 	ChainString *multi_name_path_chain_string;
 	ChainString *multi_name_prefix_chain_string;
+	ChainString *name_op_chain_string;
 	ChainString *name_path_chain_string;
 	ChainString *name_seg_chain_string;
 	ChainString *name_space_modifier_obj_chain_string;
+	ChainString *name_string_chain_string;
 	ChainString *named_obj_chain_string;
 	ChainString *null_name_chain_string;
 	ChainString *object_chain_string;
@@ -242,6 +245,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char **name_segs_char_array;
 	char **name_strings_char_array;
 	char *alias_op_char_array;
+	char *data_ref_object_char_array;
 	char *def_add_char_array;
 	char *def_alias_char_array;
 	char *def_and_char_array;
@@ -319,9 +323,11 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *method_invocation_char_array;
 	char *multi_name_path_char_array;
 	char *multi_name_prefix_char_array;
+	char *name_op_char_array;
 	char *name_path_char_array;
 	char *name_seg_char_array;
 	char *name_space_modifier_obj_char_array;
+	char *name_string_char_array;
 	char *named_obj_char_array;
 	char *null_name_char_array;
 	char *object_char_array;
@@ -370,6 +376,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		free(name_strings_chain_string);
 		free(name_strings_char_array);
+		break;
+	case aml_def_name:
+		if(aml_symbol->component.def_name.name_op)
+		{
+			name_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_name.name_op);
+			insert_char_front(name_op_chain_string, name_op_chain_string->first_character, ' ');
+			replace_chain_string(name_op_chain_string, "\n", " \n");
+			name_op_char_array = create_char_array_from_chain_string(name_op_chain_string);
+		}
+		else name_op_char_array = "";
+		if(aml_symbol->component.def_name.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_name.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", " \n");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.def_name.data_ref_object)
+		{
+			data_ref_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_name.data_ref_object);
+			insert_char_front(data_ref_object_chain_string, data_ref_object_chain_string->first_character, ' ');
+			replace_chain_string(data_ref_object_chain_string, "\n", " \n");
+			data_ref_object_char_array = create_char_array_from_chain_string(data_ref_object_chain_string);
+		}
+		else data_ref_object_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), name_op_char_array, name_string_char_array, data_ref_object_char_array);
+		if(aml_symbol->component.def_name.name_op)
+		{
+			delete_chain_string(name_op_chain_string);
+			free(name_op_char_array);
+		}
+		if(aml_symbol->component.def_name.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.def_name.data_ref_object)
+		{
+			delete_chain_string(data_ref_object_chain_string);
+			free(data_ref_object_char_array);
+		}
 		break;
 	case aml_digit_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
@@ -1700,6 +1748,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_def_alias_name = "DefAlias";
+	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
 	static char const * const aml_digit_char_name = "DigitChar";
@@ -1726,6 +1775,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_alias_op_name;
 	case aml_def_alias:
 		return aml_def_alias_name;
+	case aml_def_name:
+		return aml_def_name_name;
 	case aml_digit_char:
 		return aml_digit_char_name;
 	case aml_dual_name_path:
@@ -1811,6 +1862,19 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 		aml.length -= (*name_string)->string.length;
 	}
 	return def_alias;
+}
+
+// <def_name> := <name_op> <name_string> <data_ref_object>
+AMLSymbol *analyse_aml_def_name(AMLSubstring aml)
+{
+	AMLSymbol *def_name = malloc(sizeof(*def_name));
+	def_name->string.initial = aml.initial;
+	def_name->string.length = 0;
+	def_name->type = aml_def_name;
+	def_name->component.def_name.name_op = NULL;
+	def_name->component.def_name.name_string = NULL;
+	def_name->component.def_name.data_ref_object = NULL;
+	return def_name;
 }
 
 // <digit_char> := '0' - '9'
@@ -2266,6 +2330,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
 		for(AMLSymbol **name_string = aml_symbol->component.def_alias.name_string; name_string != aml_symbol->component.def_alias.name_string + _countof(aml_symbol->component.def_alias.name_string); name_string++)if(*name_string)delete_aml_symbol(*name_string);
+		break;
+	case aml_def_name:
+		if(aml_symbol->component.def_name.name_op)delete_aml_symbol(aml_symbol->component.def_name.name_op);
+		if(aml_symbol->component.def_name.name_string)delete_aml_symbol(aml_symbol->component.def_name.name_string);
+		if(aml_symbol->component.def_name.data_ref_object)delete_aml_symbol(aml_symbol->component.def_name.data_ref_object);
 		break;
 	case aml_digit_char:
 		break;
