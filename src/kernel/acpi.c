@@ -401,6 +401,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		break;
 	case aml_byte_data:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_byte_prefix:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2000,6 +2002,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(word_data_char_array);
 		}
 		break;
+	case aml_word_prefix:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	default:
 		ERROR(); // Invalid AML symbol type
 		break;
@@ -2048,6 +2053,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
 	static char const * const aml_word_const_name = "WordConst";
+	static char const * const aml_word_prefix_name = "WordPrefix";
 	switch(aml_symbol_type)
 	{
 	case aml_alias_op:
@@ -2112,6 +2118,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_term_obj_name;
 	case aml_word_const:
 		return aml_word_const_name;
+	case aml_word_prefix:
+		return aml_word_prefix_name;
 	default:
 		ERROR(); // Invalid AML symbol type
 		return NULL;
@@ -2186,6 +2194,7 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
 		computational_data->component.computational_data.byte_const = analyse_aml_byte_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.byte_const->string.length;
 		break;
@@ -2206,6 +2215,7 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
 		data_object->component.data_object.computational_data = analyse_aml_computational_data(aml);
 		data_object->string.length += data_object->component.data_object.computational_data->string.length;
 		break;
@@ -2225,6 +2235,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
 		data_ref_object->component.data_ref_object.data_object = analyse_aml_data_object(aml);
 		data_ref_object->string.length += data_ref_object->component.data_ref_object.data_object->string.length;
 		break;
@@ -2744,9 +2755,23 @@ AMLSymbol *analyse_aml_word_const(AMLSubstring aml)
 	word_const->string.initial = aml.initial;
 	word_const->string.length = 0;
 	word_const->type = aml_word_const;
-	word_const->component.word_const.word_prefix = NULL;
+	word_const->component.word_const.word_prefix = analyse_aml_word_prefix(aml);
+	word_const->string.length += word_const->component.word_const.word_prefix->string.length;
+	aml.initial += word_const->component.word_const.word_prefix->string.length;
+	aml.length -= word_const->component.word_const.word_prefix->string.length;
 	word_const->component.word_const.word_data = NULL;
 	return word_const;
+}
+
+// <word_prefix> := AML_BYTE_WORD_PREFIX
+AMLSymbol *analyse_aml_word_prefix(AMLSubstring aml)
+{
+	AMLSymbol *word_prefix = malloc(sizeof(*word_prefix));
+	word_prefix->string.initial = aml.initial;
+	word_prefix->string.length = 1;
+	word_prefix->type = aml_word_prefix;
+	if(*aml.initial != AML_BYTE_WORD_PREFIX)ERROR(); // Incorrect word prefix
+	return word_prefix;
 }
 
 AMLSymbol *create_dsdt_aml_syntax_tree(void)
@@ -2934,6 +2959,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_word_const:
 		if(aml_symbol->component.word_const.word_prefix)delete_aml_symbol(aml_symbol->component.word_const.word_prefix);
 		if(aml_symbol->component.word_const.word_data)delete_aml_symbol(aml_symbol->component.word_const.word_data);
+		break;
+	case aml_word_prefix:
 		break;
 	default:
 		ERROR(); // Invalid AML symbol type
