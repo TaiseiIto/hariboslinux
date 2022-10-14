@@ -396,6 +396,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(byte_data_char_array);
 		}
 		break;
+	case aml_byte_data:
 	case aml_byte_prefix:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -1985,6 +1986,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_byte_const_name = "ByteConst";
+	static char const * const aml_byte_data_name = "ByteData";
 	static char const * const aml_byte_prefix_name = "BytePrefix";
 	static char const * const aml_computational_data_name = "ComputationalData";
 	static char const * const aml_data_object_name = "DataObject";
@@ -2018,6 +2020,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_alias_op_name;
 	case aml_byte_const:
 		return aml_byte_const_name;
+	case aml_byte_data:
+		return aml_byte_data_name;
 	case aml_byte_prefix:
 		return aml_byte_prefix_name;
 	case aml_computational_data:
@@ -2100,8 +2104,21 @@ AMLSymbol *analyse_aml_byte_const(AMLSubstring aml)
 	byte_const->string.length += byte_const->component.byte_const.byte_prefix->string.length;
 	aml.initial += byte_const->component.byte_const.byte_prefix->string.length;
 	aml.length -= byte_const->component.byte_const.byte_prefix->string.length;
-	byte_const->component.byte_const.byte_data = NULL;
+	byte_const->component.byte_const.byte_data = analyse_aml_byte_prefix(aml);
+	byte_const->string.length += byte_const->component.byte_const.byte_data->string.length;
+	aml.initial += byte_const->component.byte_const.byte_data->string.length;
+	aml.length -= byte_const->component.byte_const.byte_data->string.length;
 	return byte_const;
+}
+
+// <byte_data> := 0x00 - 0xff
+AMLSymbol *analyse_aml_byte_data(AMLSubstring aml)
+{
+	AMLSymbol *byte_data = malloc(sizeof(*byte_data));
+	byte_data->string.initial = aml.initial;
+	byte_data->string.length = 1;
+	byte_data->type = aml_byte_data;
+	return byte_data;
 }
 
 // <byte_prefix> := AML_BYTE_BYTE_PREFIX
@@ -2698,6 +2715,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_byte_const:
 		if(aml_symbol->component.byte_const.byte_prefix)delete_aml_symbol(aml_symbol->component.byte_const.byte_prefix);
 		if(aml_symbol->component.byte_const.byte_data)delete_aml_symbol(aml_symbol->component.byte_const.byte_data);
+		break;
+	case aml_byte_data:
 		break;
 	case aml_byte_prefix:
 		break;
