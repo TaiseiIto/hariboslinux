@@ -174,6 +174,7 @@ typedef enum _AMLSymbolType
 	aml_multi_name_path,
 	aml_multi_name_prefix,
 	aml_name_char,
+	aml_name_op,
 	aml_name_path,
 	aml_name_seg,
 	aml_name_space_modifier_obj,
@@ -406,6 +407,8 @@ AMLSymbol *analyse_aml_multi_name_path(AMLSubstring aml);
 AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml);
 // <name_char> := <digit_char> | <lead_char>
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml);
+// <name_op> := AML_BYTE_NAME_OP
+AMLSymbol *analyse_aml_name_op(AMLSubstring aml);
 // <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
 AMLSymbol *analyse_aml_name_path(AMLSubstring aml);
 // <name_seg> := <lead_name_char> <name_char> <name_char> <name_char>
