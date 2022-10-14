@@ -147,6 +147,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
 	ChainString *alias_op_chain_string;
+	ChainString *data_object_chain_string;
 	ChainString *data_ref_object_chain_string;
 	ChainString *def_add_chain_string;
 	ChainString *def_alias_chain_string;
@@ -233,6 +234,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *named_obj_chain_string;
 	ChainString *null_name_chain_string;
 	ChainString *object_chain_string;
+	ChainString *object_reference_chain_string;
 	ChainString *output;
 	ChainString *parent_prefix_char_chain_string;
 	ChainString *prefix_path_chain_string;
@@ -245,6 +247,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char **name_segs_char_array;
 	char **name_strings_char_array;
 	char *alias_op_char_array;
+	char *data_object_char_array;
 	char *data_ref_object_char_array;
 	char *def_add_char_array;
 	char *def_alias_char_array;
@@ -331,6 +334,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *named_obj_char_array;
 	char *null_name_char_array;
 	char *object_char_array;
+	char *object_reference_char_array;
 	char *parent_prefix_char_char_array;
 	char *prefix_path_char_array;
 	char *root_char_char_array;
@@ -342,6 +346,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	{
 	case aml_alias_op:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
+	case aml_data_ref_object:
+		if(aml_symbol->component.data_ref_object.data_object)
+		{
+			data_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_ref_object.data_object);
+			insert_char_front(data_object_chain_string, data_object_chain_string->first_character, ' ');
+			replace_chain_string(data_object_chain_string, "\n", " \n");
+			data_object_char_array = create_char_array_from_chain_string(data_object_chain_string);
+		}
+		else data_object_char_array = "";
+		if(aml_symbol->component.data_ref_object.object_reference)
+		{
+			object_reference_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_ref_object.object_reference);
+			insert_char_front(object_reference_chain_string, object_reference_chain_string->first_character, ' ');
+			replace_chain_string(object_reference_chain_string, "\n", " \n");
+			object_reference_char_array = create_char_array_from_chain_string(object_reference_chain_string);
+		}
+		else object_reference_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), data_object_char_array, object_reference_char_array);
+		if(aml_symbol->component.data_ref_object.data_object)
+		{
+			delete_chain_string(data_object_chain_string);
+			free(data_object_char_array);
+		}
+		if(aml_symbol->component.data_ref_object.object_reference)
+		{
+			delete_chain_string(object_reference_chain_string);
+			free(object_reference_char_array);
+		}
 		break;
 	case aml_def_alias:
 		name_strings_chain_string = malloc(_countof(aml_symbol->component.def_alias.name_string) * sizeof(*name_strings_chain_string));
@@ -1750,6 +1783,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
+	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
@@ -1777,6 +1811,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	{
 	case aml_alias_op:
 		return aml_alias_op_name;
+	case aml_data_ref_object:
+		return aml_data_ref_object_name;
 	case aml_def_alias:
 		return aml_def_alias_name;
 	case aml_def_name:
@@ -1840,6 +1876,18 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 	return alias_op;
 }
 
+// <data_ref_object> := <data_object> | <object_reference>
+AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
+{
+	AMLSymbol *data_ref_object = malloc(sizeof(*data_ref_object));
+	data_ref_object->string.initial = aml.initial;
+	data_ref_object->string.length = 0;
+	data_ref_object->type = aml_data_ref_object;
+	data_ref_object->component.data_ref_object.data_object = NULL;
+	data_ref_object->component.data_ref_object.object_reference = NULL;
+	return data_ref_object;
+}
+
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 {
@@ -1881,8 +1929,11 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml)
 	def_name->string.length += def_name->component.def_name.name_op->string.length;
 	aml.initial += def_name->component.def_name.name_op->string.length;
 	aml.length -= def_name->component.def_name.name_op->string.length;
-	def_name->component.def_name.name_string = NULL;
-	def_name->component.def_name.data_ref_object = NULL;
+	def_name->component.def_name.name_string = analyse_aml_name_string(aml);;
+	def_name->string.length += def_name->component.def_name.name_string->string.length;
+	aml.initial += def_name->component.def_name.name_string->string.length;
+	aml.length -= def_name->component.def_name.name_string->string.length;
+	def_name->component.def_name.data_ref_object = analyse_aml_data_ref_object(aml);
 	return def_name;
 }
 
@@ -2352,6 +2403,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
+		break;
+	case aml_data_ref_object:
+		if(aml_symbol->component.data_ref_object.data_object)delete_aml_symbol(aml_symbol->component.data_ref_object.data_object);
+		if(aml_symbol->component.data_ref_object.object_reference)delete_aml_symbol(aml_symbol->component.data_ref_object.object_reference);
 		break;
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
