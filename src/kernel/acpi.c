@@ -148,6 +148,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **name_strings_chain_string;
 	ChainString *alias_op_chain_string;
 	ChainString *byte_const_chain_string;
+	ChainString *byte_data_chain_string;
+	ChainString *byte_prefix_chain_string;
 	ChainString *computational_data_chain_string;
 	ChainString *const_obj_chain_string;
 	ChainString *data_object_chain_string;
@@ -256,6 +258,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char **name_strings_char_array;
 	char *alias_op_char_array;
 	char *byte_const_char_array;
+	char *byte_data_char_array;
+	char *byte_prefix_char_array;
 	char *computational_data_char_array;
 	char *const_obj_char_array;
 	char *data_object_char_array;
@@ -362,6 +366,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	{
 	case aml_alias_op:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
+	case aml_byte_const:
+		if(aml_symbol->component.byte_const.byte_prefix)
+		{
+			byte_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.byte_const.byte_prefix);
+			insert_char_front(byte_prefix_chain_string, byte_prefix_chain_string->first_character, ' ');
+			replace_chain_string(byte_prefix_chain_string, "\n", " \n");
+			byte_prefix_char_array = create_char_array_from_chain_string(byte_prefix_chain_string);
+		}
+		else byte_data_char_array = "";
+		if(aml_symbol->component.byte_const.byte_data)
+		{
+			byte_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.byte_const.byte_data);
+			insert_char_front(byte_data_chain_string, byte_data_chain_string->first_character, ' ');
+			replace_chain_string(byte_data_chain_string, "\n", " \n");
+			byte_data_char_array = create_char_array_from_chain_string(byte_data_chain_string);
+		}
+		else byte_data_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), byte_prefix_char_array, byte_data_char_array);
+		if(aml_symbol->component.byte_const.byte_prefix)
+		{
+			delete_chain_string(byte_prefix_chain_string);
+			free(byte_prefix_char_array);
+		}
+		if(aml_symbol->component.byte_const.byte_data)
+		{
+			delete_chain_string(byte_data_chain_string);
+			free(byte_data_char_array);
+		}
 		break;
 	case aml_computational_data:
 		if(aml_symbol->component.computational_data.byte_const)
@@ -1948,6 +1981,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
+	static char const * const aml_byte_const_name = "ByteConst";
 	static char const * const aml_computational_data_name = "ComputationalData";
 	static char const * const aml_data_object_name = "DataObject";
 	static char const * const aml_data_ref_object_name = "DataRefObject";
@@ -1978,6 +2012,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	{
 	case aml_alias_op:
 		return aml_alias_op_name;
+	case aml_byte_const:
+		return aml_byte_const_name;
 	case aml_computational_data:
 		return aml_computational_data_name;
 	case aml_data_object:
@@ -2045,6 +2081,18 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 	alias_op->type = aml_alias_op;
 	if(*alias_op->string.initial != AML_BYTE_ALIAS_OP)ERROR(); // Incorrect alias_op
 	return alias_op;
+}
+
+// <byte_const> := <byte_prefix> <byte_data>
+AMLSymbol *analyse_aml_byte_const(AMLSubstring aml)
+{
+	AMLSymbol *byte_const = malloc(sizeof(*byte_const));
+	byte_const->string.initial = aml.initial;
+	byte_const->string.length = 0;
+	byte_const->type = aml_byte_const;
+	byte_const->component.byte_const.byte_prefix = NULL;
+	byte_const->component.byte_const.byte_data = NULL;
+	return byte_const;
 }
 
 // <computational_data> := <byte_const> | <word_const> | <dword_const> | <qword_const> | <string> | <const_obj> | <revision_op> | <def_buffer>
@@ -2605,6 +2653,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
+		break;
+	case aml_byte_const:
+		if(aml_symbol->component.byte_const.byte_prefix)delete_aml_symbol(aml_symbol->component.byte_const.byte_prefix);
+		if(aml_symbol->component.byte_const.byte_data)delete_aml_symbol(aml_symbol->component.byte_const.byte_data);
 		break;
 	case aml_computational_data:
 		if(aml_symbol->component.computational_data.byte_const)delete_aml_symbol(aml_symbol->component.computational_data.byte_const);
