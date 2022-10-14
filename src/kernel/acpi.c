@@ -147,7 +147,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
 	ChainString *alias_op_chain_string;
+	ChainString *byte_const_chain_string;
 	ChainString *computational_data_chain_string;
+	ChainString *const_obj_chain_string;
 	ChainString *data_object_chain_string;
 	ChainString *data_ref_object_chain_string;
 	ChainString *def_add_chain_string;
@@ -222,6 +224,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *digit_char_chain_string;
 	ChainString *dual_name_path_chain_string;
 	ChainString *dual_name_prefix_chain_string;
+	ChainString *dword_const_chain_string;
 	ChainString *expression_opcode_chain_string;
 	ChainString *lead_name_char_chain_string;
 	ChainString *method_invocation_chain_string;
@@ -239,16 +242,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *output;
 	ChainString *parent_prefix_char_chain_string;
 	ChainString *prefix_path_chain_string;
+	ChainString *qword_const_chain_string;
+	ChainString *revision_op_chain_string;
 	ChainString *root_char_chain_string;
 	ChainString *seg_count_chain_string;
 	ChainString *statement_opcode_chain_string;
+	ChainString *string_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
+	ChainString *word_const_chain_string;
 	char **name_chars_char_array;
 	char **name_segs_char_array;
 	char **name_strings_char_array;
 	char *alias_op_char_array;
+	char *byte_const_char_array;
 	char *computational_data_char_array;
+	char *const_obj_char_array;
 	char *data_object_char_array;
 	char *data_ref_object_char_array;
 	char *def_add_char_array;
@@ -323,6 +332,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *digit_char_char_array;
 	char *dual_name_path_char_array;
 	char *dual_name_prefix_char_array;
+	char *dword_const_char_array;
 	char *expression_opcode_char_array;
 	char *lead_name_char_char_array;
 	char *method_invocation_char_array;
@@ -339,15 +349,126 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *object_reference_char_array;
 	char *parent_prefix_char_char_array;
 	char *prefix_path_char_array;
+	char *qword_const_char_array;
+	char *revision_op_char_array;
 	char *root_char_char_array;
 	char *seg_count_char_array;
 	char *statement_opcode_char_array;
+	char *string_char_array;
 	char *term_list_char_array;
 	char *term_obj_char_array;
+	char *word_const_char_array;
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
+	case aml_computational_data:
+		if(aml_symbol->component.computational_data.byte_const)
+		{
+			byte_const_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.byte_const);
+			insert_char_front(byte_const_chain_string, byte_const_chain_string->first_character, ' ');
+			replace_chain_string(byte_const_chain_string, "\n", " \n");
+			byte_const_char_array = create_char_array_from_chain_string(byte_const_chain_string);
+		}
+		else byte_const_char_array = "";
+		if(aml_symbol->component.computational_data.word_const)
+		{
+			word_const_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.word_const);
+			insert_char_front(word_const_chain_string, word_const_chain_string->first_character, ' ');
+			replace_chain_string(word_const_chain_string, "\n", " \n");
+			word_const_char_array = create_char_array_from_chain_string(word_const_chain_string);
+		}
+		else word_const_char_array = "";
+		if(aml_symbol->component.computational_data.dword_const)
+		{
+			dword_const_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.dword_const);
+			insert_char_front(dword_const_chain_string, dword_const_chain_string->first_character, ' ');
+			replace_chain_string(dword_const_chain_string, "\n", " \n");
+			dword_const_char_array = create_char_array_from_chain_string(dword_const_chain_string);
+		}
+		else dword_const_char_array = "";
+		if(aml_symbol->component.computational_data.qword_const)
+		{
+			qword_const_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.qword_const);
+			insert_char_front(qword_const_chain_string, qword_const_chain_string->first_character, ' ');
+			replace_chain_string(qword_const_chain_string, "\n", " \n");
+			qword_const_char_array = create_char_array_from_chain_string(qword_const_chain_string);
+		}
+		else qword_const_char_array = "";
+		if(aml_symbol->component.computational_data.string)
+		{
+			string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.string);
+			insert_char_front(string_chain_string, string_chain_string->first_character, ' ');
+			replace_chain_string(string_chain_string, "\n", " \n");
+			string_char_array = create_char_array_from_chain_string(string_chain_string);
+		}
+		else string_char_array = "";
+		if(aml_symbol->component.computational_data.const_obj)
+		{
+			const_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.const_obj);
+			insert_char_front(const_obj_chain_string, const_obj_chain_string->first_character, ' ');
+			replace_chain_string(const_obj_chain_string, "\n", " \n");
+			const_obj_char_array = create_char_array_from_chain_string(const_obj_chain_string);
+		}
+		else const_obj_char_array = "";
+		if(aml_symbol->component.computational_data.revision_op)
+		{
+			revision_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.revision_op);
+			insert_char_front(revision_op_chain_string, revision_op_chain_string->first_character, ' ');
+			replace_chain_string(revision_op_chain_string, "\n", " \n");
+			revision_op_char_array = create_char_array_from_chain_string(revision_op_chain_string);
+		}
+		else revision_op_char_array = "";
+		if(aml_symbol->component.computational_data.def_buffer)
+		{
+			def_buffer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.def_buffer);
+			insert_char_front(def_buffer_chain_string, def_buffer_chain_string->first_character, ' ');
+			replace_chain_string(def_buffer_chain_string, "\n", " \n");
+			def_buffer_char_array = create_char_array_from_chain_string(def_buffer_chain_string);
+		}
+		else def_buffer_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), byte_const_char_array, word_const_char_array, dword_const_char_array, qword_const_char_array, string_char_array, const_obj_char_array, revision_op_char_array, def_buffer_char_array);
+		if(aml_symbol->component.computational_data.byte_const)
+		{
+			delete_chain_string(byte_const_chain_string);
+			free(byte_const_char_array);
+		}
+		if(aml_symbol->component.computational_data.word_const)
+		{
+			delete_chain_string(word_const_chain_string);
+			free(word_const_char_array);
+		}
+		if(aml_symbol->component.computational_data.dword_const)
+		{
+			delete_chain_string(dword_const_chain_string);
+			free(dword_const_char_array);
+		}
+		if(aml_symbol->component.computational_data.qword_const)
+		{
+			delete_chain_string(qword_const_chain_string);
+			free(qword_const_char_array);
+		}
+		if(aml_symbol->component.computational_data.string)
+		{
+			delete_chain_string(string_chain_string);
+			free(string_char_array);
+		}
+		if(aml_symbol->component.computational_data.const_obj)
+		{
+			delete_chain_string(const_obj_chain_string);
+			free(const_obj_char_array);
+		}
+		if(aml_symbol->component.computational_data.revision_op)
+		{
+			delete_chain_string(revision_op_chain_string);
+			free(revision_op_char_array);
+		}
+		if(aml_symbol->component.computational_data.def_buffer)
+		{
+			delete_chain_string(def_buffer_chain_string);
+			free(def_buffer_char_array);
+		}
 		break;
 	case aml_data_object:
 		if(aml_symbol->component.data_object.computational_data)
@@ -1827,6 +1948,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
+	static char const * const aml_computational_data_name = "ComputationalData";
 	static char const * const aml_data_object_name = "DataObject";
 	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_def_alias_name = "DefAlias";
@@ -1856,6 +1978,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	{
 	case aml_alias_op:
 		return aml_alias_op_name;
+	case aml_computational_data:
+		return aml_computational_data_name;
 	case aml_data_object:
 		return aml_data_object_name;
 	case aml_data_ref_object:
@@ -1921,6 +2045,24 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 	alias_op->type = aml_alias_op;
 	if(*alias_op->string.initial != AML_BYTE_ALIAS_OP)ERROR(); // Incorrect alias_op
 	return alias_op;
+}
+
+// <computational_data> := <byte_const> | <word_const> | <dword_const> | <qword_const> | <string> | <const_obj> | <revision_op> | <def_buffer>
+AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
+{
+	AMLSymbol *computational_data = malloc(sizeof(*computational_data));
+	computational_data->string.initial = aml.initial;
+	computational_data->string.length = 0;
+	computational_data->type = aml_computational_data;
+	computational_data->component.computational_data.byte_const = NULL;
+	computational_data->component.computational_data.word_const = NULL;
+	computational_data->component.computational_data.dword_const = NULL;
+	computational_data->component.computational_data.qword_const = NULL;
+	computational_data->component.computational_data.string = NULL;
+	computational_data->component.computational_data.const_obj = NULL;
+	computational_data->component.computational_data.revision_op = NULL;
+	computational_data->component.computational_data.def_buffer = NULL;
+	return computational_data;
 }
 
 // <data_object> := <computational_data> | <def_package> | <def_var_package>
@@ -2463,6 +2605,16 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
+		break;
+	case aml_computational_data:
+		if(aml_symbol->component.computational_data.byte_const)delete_aml_symbol(aml_symbol->component.computational_data.byte_const);
+		if(aml_symbol->component.computational_data.word_const)delete_aml_symbol(aml_symbol->component.computational_data.word_const);
+		if(aml_symbol->component.computational_data.dword_const)delete_aml_symbol(aml_symbol->component.computational_data.dword_const);
+		if(aml_symbol->component.computational_data.qword_const)delete_aml_symbol(aml_symbol->component.computational_data.qword_const);
+		if(aml_symbol->component.computational_data.string)delete_aml_symbol(aml_symbol->component.computational_data.string);
+		if(aml_symbol->component.computational_data.const_obj)delete_aml_symbol(aml_symbol->component.computational_data.const_obj);
+		if(aml_symbol->component.computational_data.revision_op)delete_aml_symbol(aml_symbol->component.computational_data.revision_op);
+		if(aml_symbol->component.computational_data.def_buffer)delete_aml_symbol(aml_symbol->component.computational_data.def_buffer);
 		break;
 	case aml_data_object:
 		if(aml_symbol->component.data_object.computational_data)delete_aml_symbol(aml_symbol->component.data_object.computational_data);
