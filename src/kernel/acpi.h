@@ -194,6 +194,7 @@ typedef enum _AMLSymbolType
 	aml_statement_opcode,
 	aml_term_list,
 	aml_term_obj,
+	aml_word_const,
 } AMLSymbolType;
 
 typedef struct _AMLSubstring
@@ -393,6 +394,12 @@ typedef struct _AMLTermObj
 	struct _AMLSymbol *expression_opcode;
 } AMLTermObj;
 
+typedef struct _AMLWordConst
+{
+	struct _AMLSymbol *word_prefix;
+	struct _AMLSymbol *word_data;
+} AMLWordConst;
+
 typedef union _AMLComponent
 {
 	AMLByteConst byte_const;
@@ -414,6 +421,7 @@ typedef union _AMLComponent
 	AMLStatementOpcode statement_opcode;
 	AMLTermList term_list;
 	AMLTermObj term_obj;
+	AMLWordConst word_const;
 } AMLComponent;
 
 typedef struct _AMLSymbol
@@ -488,6 +496,8 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
 AMLSymbol *analyse_aml_term_obj(AMLSubstring aml);
+// <word_const> := <word_prefix> <word_data>
+AMLSymbol *analyse_aml_word_const(AMLSubstring aml);
 AMLSymbol *create_dsdt_aml_syntax_tree(void);
 void delete_aml_symbol(AMLSymbol *aml_symbol);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);

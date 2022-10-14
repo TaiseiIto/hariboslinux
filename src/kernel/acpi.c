@@ -253,6 +253,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
 	ChainString *word_const_chain_string;
+	ChainString *word_data_chain_string;
+	ChainString *word_prefix_chain_string;
 	char **name_chars_char_array;
 	char **name_segs_char_array;
 	char **name_strings_char_array;
@@ -362,6 +364,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *term_list_char_array;
 	char *term_obj_char_array;
 	char *word_const_char_array;
+	char *word_data_char_array;
+	char *word_prefix_char_array;
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
@@ -1967,6 +1971,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(expression_opcode_char_array);
 		}
 		break;
+	case aml_word_const:
+		if(aml_symbol->component.word_const.word_prefix)
+		{
+			word_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.word_const.word_prefix);
+			insert_char_front(word_prefix_chain_string, word_prefix_chain_string->first_character, ' ');
+			replace_chain_string(word_prefix_chain_string, "\n", " \n");
+			word_prefix_char_array = create_char_array_from_chain_string(word_prefix_chain_string);
+		}
+		else word_prefix_char_array = "";
+		if(aml_symbol->component.word_const.word_data)
+		{
+			word_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.word_const.word_data);
+			insert_char_front(word_data_chain_string, word_data_chain_string->first_character, ' ');
+			replace_chain_string(word_data_chain_string, "\n", " \n");
+			word_data_char_array = create_char_array_from_chain_string(word_data_chain_string);
+		}
+		else word_data_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), word_prefix_char_array, word_data_char_array);
+		if(aml_symbol->component.word_const.word_prefix)
+		{
+			delete_chain_string(word_prefix_chain_string);
+			free(word_prefix_char_array);
+		}
+		if(aml_symbol->component.word_const.word_data)
+		{
+			delete_chain_string(word_data_chain_string);
+			free(word_data_char_array);
+		}
+		break;
 	default:
 		ERROR(); // Invalid AML symbol type
 		break;
@@ -2014,6 +2047,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
+	static char const * const aml_word_const_name = "WordConst";
 	switch(aml_symbol_type)
 	{
 	case aml_alias_op:
@@ -2076,6 +2110,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_term_list_name;
 	case aml_term_obj:
 		return aml_term_obj_name;
+	case aml_word_const:
+		return aml_word_const_name;
 	default:
 		ERROR(); // Invalid AML symbol type
 		return NULL;
@@ -2701,6 +2737,18 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	return term_obj;
 }
 
+// <word_const> := <word_prefix> <word_data>
+AMLSymbol *analyse_aml_word_const(AMLSubstring aml)
+{
+	AMLSymbol *word_const = malloc(sizeof(*word_const));
+	word_const->string.initial = aml.initial;
+	word_const->string.length = 0;
+	word_const->type = aml_word_const;
+	word_const->component.word_const.word_prefix = NULL;
+	word_const->component.word_const.word_data = NULL;
+	return word_const;
+}
+
 AMLSymbol *create_dsdt_aml_syntax_tree(void)
 {
 	return analyse_aml_term_list(get_dsdt_aml());
@@ -2882,6 +2930,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.term_obj.object)delete_aml_symbol(aml_symbol->component.term_obj.object);
 		if(aml_symbol->component.term_obj.statement_opcode)delete_aml_symbol(aml_symbol->component.term_obj.statement_opcode);
 		if(aml_symbol->component.term_obj.expression_opcode)delete_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
+		break;
+	case aml_word_const:
+		if(aml_symbol->component.word_const.word_prefix)delete_aml_symbol(aml_symbol->component.word_const.word_prefix);
+		if(aml_symbol->component.word_const.word_data)delete_aml_symbol(aml_symbol->component.word_const.word_data);
 		break;
 	default:
 		ERROR(); // Invalid AML symbol type
