@@ -164,6 +164,7 @@ struct _AMLSymbol;
 typedef enum _AMLSymbolType
 {
 	aml_alias_op,
+	aml_data_object,
 	aml_data_ref_object,
 	aml_def_alias,
 	aml_def_name,
@@ -197,17 +198,24 @@ typedef struct _AMLSubstring
 	size_t length;
 } AMLSubstring;
 
-typedef struct _AMLDefAlias
+typedef struct _AMLDataObject
 {
-	struct _AMLSymbol *alias_op;
-	struct _AMLSymbol *name_string[2];
-} AMLDefAlias;
+	struct _AMLSymbol *computational_data;
+	struct _AMLSymbol *def_package;
+	struct _AMLSymbol *def_var_package;
+} AMLDataObject;
 
 typedef struct _AMLDataRefObject
 {
 	struct _AMLSymbol *data_object;
 	struct _AMLSymbol *object_reference;
 } AMLDataRefObject;
+
+typedef struct _AMLDefAlias
+{
+	struct _AMLSymbol *alias_op;
+	struct _AMLSymbol *name_string[2];
+} AMLDefAlias;
 
 typedef struct _AMLDefName
 {
@@ -365,6 +373,7 @@ typedef struct _AMLTermObj
 
 typedef union _AMLComponent
 {
+	AMLDataObject data_object;
 	AMLDataRefObject data_ref_object;
 	AMLDefAlias def_alias;
 	AMLDefName def_name;
@@ -395,6 +404,8 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 // <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
+// <data_object> := <computational_data> | <def_package> | <def_var_package>
+AMLSymbol *analyse_aml_data_object(AMLSubstring aml);
 // <data_ref_object> := <data_object> | <object_reference>
 AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>

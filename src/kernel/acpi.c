@@ -147,6 +147,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
 	ChainString *alias_op_chain_string;
+	ChainString *computational_data_chain_string;
 	ChainString *data_object_chain_string;
 	ChainString *data_ref_object_chain_string;
 	ChainString *def_add_chain_string;
@@ -247,6 +248,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char **name_segs_char_array;
 	char **name_strings_char_array;
 	char *alias_op_char_array;
+	char *computational_data_char_array;
 	char *data_object_char_array;
 	char *data_ref_object_char_array;
 	char *def_add_char_array;
@@ -346,6 +348,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	{
 	case aml_alias_op:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
+	case aml_data_object:
+		if(aml_symbol->component.data_object.computational_data)
+		{
+			computational_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_object.computational_data);
+			insert_char_front(computational_data_chain_string, computational_data_chain_string->first_character, ' ');
+			replace_chain_string(computational_data_chain_string, "\n", " \n");
+			computational_data_char_array = create_char_array_from_chain_string(computational_data_chain_string);
+		}
+		else computational_data_char_array = "";
+		if(aml_symbol->component.data_object.def_package)
+		{
+			def_package_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_object.def_package);
+			insert_char_front(def_package_chain_string, def_package_chain_string->first_character, ' ');
+			replace_chain_string(def_package_chain_string, "\n", " \n");
+			def_package_char_array = create_char_array_from_chain_string(def_package_chain_string);
+		}
+		else def_package_char_array = "";
+		if(aml_symbol->component.data_object.def_var_package)
+		{
+			def_var_package_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_object.def_var_package);
+			insert_char_front(def_var_package_chain_string, def_var_package_chain_string->first_character, ' ');
+			replace_chain_string(def_var_package_chain_string, "\n", " \n");
+			def_var_package_char_array = create_char_array_from_chain_string(def_var_package_chain_string);
+		}
+		else def_var_package_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), computational_data_char_array, def_package_char_array, def_var_package_char_array);
+		if(aml_symbol->component.data_object.computational_data)
+		{
+			delete_chain_string(computational_data_chain_string);
+			free(computational_data_char_array);
+		}
+		if(aml_symbol->component.data_object.def_package)
+		{
+			delete_chain_string(def_package_chain_string);
+			free(def_package_char_array);
+		}
+		if(aml_symbol->component.data_object.def_var_package)
+		{
+			delete_chain_string(def_var_package_chain_string);
+			free(def_var_package_char_array);
+		}
 		break;
 	case aml_data_ref_object:
 		if(aml_symbol->component.data_ref_object.data_object)
@@ -1783,6 +1827,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
+	static char const * const aml_data_object_name = "DataObject";
 	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_name_name = "DefName";
@@ -1811,6 +1856,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	{
 	case aml_alias_op:
 		return aml_alias_op_name;
+	case aml_data_object:
+		return aml_data_object_name;
 	case aml_data_ref_object:
 		return aml_data_ref_object_name;
 	case aml_def_alias:
@@ -1874,6 +1921,19 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 	alias_op->type = aml_alias_op;
 	if(*alias_op->string.initial != AML_BYTE_ALIAS_OP)ERROR(); // Incorrect alias_op
 	return alias_op;
+}
+
+// <data_object> := <computational_data> | <def_package> | <def_var_package>
+AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
+{
+	AMLSymbol *data_object = malloc(sizeof(*data_object));
+	data_object->string.initial = aml.initial;
+	data_object->string.length = 0;
+	data_object->type = aml_data_object;
+	data_object->component.data_object.computational_data = NULL;
+	data_object->component.data_object.def_package = NULL;
+	data_object->component.data_object.def_var_package = NULL;
+	return data_object;
 }
 
 // <data_ref_object> := <data_object> | <object_reference>
@@ -2403,6 +2463,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
+		break;
+	case aml_data_object:
+		if(aml_symbol->component.data_object.computational_data)delete_aml_symbol(aml_symbol->component.data_object.computational_data);
+		if(aml_symbol->component.data_object.def_package)delete_aml_symbol(aml_symbol->component.data_object.def_package);
+		if(aml_symbol->component.data_object.def_var_package)delete_aml_symbol(aml_symbol->component.data_object.def_var_package);
 		break;
 	case aml_data_ref_object:
 		if(aml_symbol->component.data_ref_object.data_object)delete_aml_symbol(aml_symbol->component.data_ref_object.data_object);
