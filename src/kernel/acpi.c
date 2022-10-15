@@ -735,6 +735,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(dword_data_char_array);
 		}
 		break;
+	case aml_dword_prefix:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.def_add)
 		{
@@ -2091,6 +2094,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
 	static char const * const aml_dword_const_name = "DWordConst";
+	static char const * const aml_dword_prefix_name = "DWordPrefix";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
@@ -2140,6 +2144,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_dual_name_prefix_name;
 	case aml_dword_const:
 		return aml_dword_const_name;
+	case aml_dword_prefix:
+		return aml_dword_prefix_name;
 	case aml_expression_opcode:
 		return aml_expression_opcode_name;
 	case aml_lead_name_char:
@@ -2256,6 +2262,7 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
 		computational_data->component.computational_data.byte_const = analyse_aml_byte_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.byte_const->string.length;
@@ -2277,6 +2284,7 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
 		data_object->component.data_object.computational_data = analyse_aml_computational_data(aml);
 		data_object->string.length += data_object->component.data_object.computational_data->string.length;
@@ -2297,6 +2305,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
 		data_ref_object->component.data_ref_object.data_object = analyse_aml_data_object(aml);
 		data_ref_object->string.length += data_ref_object->component.data_ref_object.data_object->string.length;
@@ -2404,9 +2413,23 @@ AMLSymbol *analyse_aml_dword_const(AMLSubstring aml)
 	dword_const->string.initial = aml.initial;
 	dword_const->string.length = 0;
 	dword_const->type = aml_dword_const;
-	dword_const->component.dword_const.dword_prefix = NULL;
+	dword_const->component.dword_const.dword_prefix = analyse_aml_dword_prefix(aml);
+	dword_const->string.length += dword_const->component.dword_const.dword_prefix->string.length;
+	aml.initial += dword_const->component.dword_const.dword_prefix->string.length;
+	aml.length -= dword_const->component.dword_const.dword_prefix->string.length;
 	dword_const->component.dword_const.dword_data = NULL;
 	return dword_const;
+}
+
+// <dword_prefix> := AML_BYTE_DWORD_PREFIX
+AMLSymbol *analyse_aml_dword_prefix(AMLSubstring aml)
+{
+	AMLSymbol *dword_prefix = malloc(sizeof(dword_prefix));
+	dword_prefix->string.initial = aml.initial;
+	dword_prefix->string.length = 1;
+	dword_prefix->type = aml_dword_prefix;
+	if(*dword_prefix->string.initial != AML_BYTE_DWORD_PREFIX)ERROR(); // Incorrect dword prefix
+	return dword_prefix;
 }
 
 // <expression_opcode> := <def_aquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
@@ -2926,6 +2949,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_dword_const:
 		if(aml_symbol->component.dword_const.dword_prefix)delete_aml_symbol(aml_symbol->component.dword_const.dword_prefix);
 		if(aml_symbol->component.dword_const.dword_data)delete_aml_symbol(aml_symbol->component.dword_const.dword_data);
+		break;
+	case aml_dword_prefix:
 		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.def_add)delete_aml_symbol(aml_symbol->component.expression_opcode.def_add);
