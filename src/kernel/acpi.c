@@ -144,6 +144,7 @@ bool acpi_table_is_correct(ACPITableHeader const *header)
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 {
 	ChainString **bytes_data_chain_string;
+	ChainString **dwords_data_chain_string;
 	ChainString **name_chars_chain_string;
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
@@ -249,6 +250,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *parent_prefix_char_chain_string;
 	ChainString *prefix_path_chain_string;
 	ChainString *qword_const_chain_string;
+	ChainString *qword_data_chain_string;
+	ChainString *qword_prefix_chain_string;
 	ChainString *revision_op_chain_string;
 	ChainString *root_char_chain_string;
 	ChainString *seg_count_chain_string;
@@ -260,6 +263,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *word_data_chain_string;
 	ChainString *word_prefix_chain_string;
 	char **bytes_data_char_array;
+	char **dwords_data_char_array;
 	char **name_chars_char_array;
 	char **name_segs_char_array;
 	char **name_strings_char_array;
@@ -364,6 +368,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *parent_prefix_char_char_array;
 	char *prefix_path_char_array;
 	char *qword_const_char_array;
+	char *qword_data_char_array;
+	char *qword_prefix_char_array;
 	char *revision_op_char_array;
 	char *root_char_char_array;
 	char *seg_count_char_array;
@@ -1772,6 +1778,59 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(parent_prefix_char_char_array);
 		}
 		break;
+	case aml_qword_const:
+		if(aml_symbol->component.qword_const.qword_prefix)
+		{
+			qword_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.qword_const.qword_prefix);
+			insert_char_front(qword_prefix_chain_string, qword_prefix_chain_string->first_character, ' ');
+			replace_chain_string(qword_prefix_chain_string, "\n", " \n");
+			qword_prefix_char_array = create_char_array_from_chain_string(qword_prefix_chain_string);
+		}
+		else qword_prefix_char_array = "";
+		if(aml_symbol->component.qword_const.qword_data)
+		{
+			qword_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.qword_const.qword_data);
+			insert_char_front(qword_data_chain_string, qword_data_chain_string->first_character, ' ');
+			replace_chain_string(qword_data_chain_string, "\n", " \n");
+			qword_data_char_array = create_char_array_from_chain_string(qword_data_chain_string);
+		}
+		else qword_prefix_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), qword_prefix_char_array, qword_data_char_array);
+		if(aml_symbol->component.qword_const.qword_prefix)
+		{
+			delete_chain_string(qword_prefix_chain_string);
+			free(qword_prefix_char_array);
+		}
+		if(aml_symbol->component.qword_const.qword_data)
+		{
+			delete_chain_string(qword_data_chain_string);
+			free(qword_data_char_array);
+		}
+		break;
+	case aml_qword_data:
+		dwords_data_chain_string = malloc(_countof(aml_symbol->component.qword_data.dword_data) * sizeof(*dwords_data_chain_string));
+		dwords_data_char_array = malloc(_countof(aml_symbol->component.qword_data.dword_data) * sizeof(*dwords_data_char_array));
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.qword_data.dword_data); i++)if(aml_symbol->component.qword_data.dword_data)
+		{
+			dwords_data_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.qword_data.dword_data[i]);
+			insert_char_front(dwords_data_chain_string[i], dwords_data_chain_string[i]->first_character, ' ');
+			replace_chain_string(dwords_data_chain_string[i], "\n", " \n");
+			dwords_data_char_array[i] = create_char_array_from_chain_string(dwords_data_chain_string[i]);
+		}
+		else dwords_data_char_array[i] = "";
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.qword_data.dword_data); i++)insert_char_array_back(output, output->last_character, dwords_data_char_array[i]);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.qword_data.dword_data); i++)if(aml_symbol->component.qword_data.dword_data[i])
+		{
+			delete_chain_string(dwords_data_chain_string[i]);
+			free(dwords_data_char_array[i]);
+		}
+		free(dwords_data_chain_string);
+		free(dwords_data_char_array);
+		break;
+	case aml_qword_prefix:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_root_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2132,6 +2191,9 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_prefix_path_name = "PrefixPath";
+	static char const * const aml_qword_const_name = "QWordConst";
+	static char const * const aml_qword_data_name = "QWordData";
+	static char const * const aml_qword_prefix_name = "QWordPrefix";
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_seg_count_name = "SegCount";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
@@ -2198,6 +2260,12 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_parent_prefix_char_name;
 	case aml_prefix_path:
 		return aml_prefix_path_name;
+	case aml_qword_const:
+		return aml_qword_const_name;
+	case aml_qword_data:
+		return aml_qword_data_name;
+	case aml_qword_prefix:
+		return aml_qword_prefix_name;
 	case aml_root_char:
 		return aml_root_char_name;
 	case aml_seg_count:
@@ -2288,10 +2356,20 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_BYTE_PREFIX:
-	case AML_BYTE_DWORD_PREFIX:
-	case AML_BYTE_WORD_PREFIX:
 		computational_data->component.computational_data.byte_const = analyse_aml_byte_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.byte_const->string.length;
+		break;
+	case AML_BYTE_DWORD_PREFIX:
+		computational_data->component.computational_data.dword_const = analyse_aml_dword_const(aml);
+		computational_data->string.length += computational_data->component.computational_data.dword_const->string.length;
+		break;
+	case AML_BYTE_QWORD_PREFIX:
+		computational_data->component.computational_data.qword_const = analyse_aml_qword_const(aml);
+		computational_data->string.length += computational_data->component.computational_data.qword_const->string.length;
+		break;
+	case AML_BYTE_WORD_PREFIX:
+		computational_data->component.computational_data.word_const = analyse_aml_word_const(aml);
+		computational_data->string.length += computational_data->component.computational_data.word_const->string.length;
 		break;
 	}
 	return computational_data;
@@ -2311,6 +2389,7 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
 	{
 	case AML_BYTE_BYTE_PREFIX:
 	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_QWORD_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
 		data_object->component.data_object.computational_data = analyse_aml_computational_data(aml);
 		data_object->string.length += data_object->component.data_object.computational_data->string.length;
@@ -2332,6 +2411,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
 	{
 	case AML_BYTE_BYTE_PREFIX:
 	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_QWORD_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
 		data_ref_object->component.data_ref_object.data_object = analyse_aml_data_object(aml);
 		data_ref_object->string.length += data_ref_object->component.data_ref_object.data_object->string.length;
@@ -2799,6 +2879,52 @@ AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 	return prefix_path;
 }
 
+// <qword_const> := <qword_prefix> <qword_data>
+AMLSymbol *analyse_aml_qword_const(AMLSubstring aml)
+{
+	AMLSymbol *qword_const = malloc(sizeof(*qword_const));
+	qword_const->string.initial = aml.initial;
+	qword_const->string.length = 0;
+	qword_const->type = aml_qword_const;
+	qword_const->component.qword_const.qword_prefix = analyse_aml_qword_prefix(aml);
+	qword_const->string.length += qword_const->component.qword_const.qword_prefix->string.length;
+	aml.initial += qword_const->component.qword_const.qword_prefix->string.length;
+	aml.length -= qword_const->component.qword_const.qword_prefix->string.length;
+	qword_const->component.qword_const.qword_data = analyse_aml_qword_data(aml);
+	qword_const->string.length += qword_const->component.qword_const.qword_data->string.length;
+	aml.initial += qword_const->component.qword_const.qword_data->string.length;
+	aml.length -= qword_const->component.qword_const.qword_data->string.length;
+	return qword_const;
+}
+
+// <qword_data> := <dword_data> <dword_data>
+AMLSymbol *analyse_aml_qword_data(AMLSubstring aml)
+{
+	AMLSymbol *qword_data = malloc(sizeof(*qword_data));
+	qword_data->string.initial = aml.initial;
+	qword_data->string.length = 0;
+	qword_data->type = aml_qword_data;
+	for(AMLSymbol **dword_data = qword_data->component.qword_data.dword_data; dword_data != qword_data->component.qword_data.dword_data + _countof(qword_data->component.qword_data.dword_data); dword_data++)
+	{
+		*dword_data = analyse_aml_dword_data(aml);
+		qword_data->string.length += (*dword_data)->string.length;
+		aml.initial += (*dword_data)->string.length;
+		aml.length -= (*dword_data)->string.length;
+	}
+	return qword_data;
+}
+
+// <qword_prefix> := AML_BYTE_QWORD_PREFIX
+AMLSymbol *analyse_aml_qword_prefix(AMLSubstring aml)
+{
+	AMLSymbol *qword_prefix = malloc(sizeof(qword_prefix));
+	qword_prefix->string.initial = aml.initial;
+	qword_prefix->string.length = 1;
+	qword_prefix->type = aml_qword_prefix;
+	if(*qword_prefix->string.initial != AML_BYTE_QWORD_PREFIX)ERROR(); // Incorrect qword prefix
+	return qword_prefix;
+}
+
 // <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml)
 {
@@ -3099,6 +3225,16 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_prefix_path:
 		if(aml_symbol->component.prefix_path.parent_prefix_char)delete_aml_symbol(aml_symbol->component.prefix_path.parent_prefix_char);
 		if(aml_symbol->component.prefix_path.prefix_path)delete_aml_symbol(aml_symbol->component.prefix_path.prefix_path);
+		break;
+	case aml_qword_const:
+		if(aml_symbol->component.qword_const.qword_prefix)delete_aml_symbol(aml_symbol->component.qword_const.qword_prefix);
+		if(aml_symbol->component.qword_const.qword_data)delete_aml_symbol(aml_symbol->component.qword_const.qword_data);
+		break;
+	case aml_qword_data:
+		for(AMLSymbol **dword_data = aml_symbol->component.qword_data.dword_data; dword_data != aml_symbol->component.qword_data.dword_data + _countof(aml_symbol->component.qword_data.dword_data); dword_data++)if(*dword_data)delete_aml_symbol(*dword_data);
+		break;
+	case aml_qword_prefix:
+		break;
 	case aml_root_char:
 		break;
 	case aml_seg_count:

@@ -192,6 +192,9 @@ typedef enum _AMLSymbolType
 	aml_object,
 	aml_parent_prefix_char,
 	aml_prefix_path,
+	aml_qword_const,
+	aml_qword_data,
+	aml_qword_prefix,
 	aml_root_char,
 	aml_seg_count,
 	aml_statement_opcode,
@@ -379,6 +382,17 @@ typedef struct _AMLPrefixPath
 	struct _AMLSymbol *prefix_path;
 } AMLPrefixPath;
 
+typedef struct _AMLQWordConst
+{
+	struct _AMLSymbol *qword_prefix;
+	struct _AMLSymbol *qword_data;
+} AMLQWordConst;
+
+typedef struct _AMLQWordData
+{
+	struct _AMLSymbol *dword_data[2];
+} AMLQWordData;
+
 typedef struct _AMLStatementOpcode
 {
 	struct _AMLSymbol *def_break;
@@ -441,6 +455,8 @@ typedef union _AMLComponent
 	AMLNameString name_string;
 	AMLObject object;
 	AMLPrefixPath prefix_path;
+	AMLQWordConst qword_const;
+	AMLQWordData qword_data;
 	AMLStatementOpcode statement_opcode;
 	AMLTermList term_list;
 	AMLTermObj term_obj;
@@ -516,6 +532,12 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml);
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
 AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml);
+// <qword_const> := <qword_prefix> <qword_data>
+AMLSymbol *analyse_aml_qword_const(AMLSubstring aml);
+// <qword_data> := <dword_data> <dword_data>
+AMLSymbol *analyse_aml_qword_data(AMLSubstring aml);
+// <qword_prefix> := AML_BYTE_QWORD_PREFIX
+AMLSymbol *analyse_aml_qword_prefix(AMLSubstring aml);
 // <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
