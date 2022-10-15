@@ -175,6 +175,7 @@ typedef enum _AMLSymbolType
 	aml_digit_char,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
+	aml_dword_const,
 	aml_expression_opcode,
 	aml_lead_name_char,
 	aml_multi_name_path,
@@ -254,6 +255,12 @@ typedef struct _AMLDualNamePath
 	struct _AMLSymbol *dual_name_prefix;
 	struct _AMLSymbol *name_seg[2];
 } AMLDualNamePath;
+
+typedef struct _AMLDWordConst
+{
+	struct _AMLSymbol *dword_prefix;
+	struct _AMLSymbol *dword_data;
+} AMLDWordConst;
 
 typedef struct _AMLExpressionOpcode
 {
@@ -416,6 +423,7 @@ typedef union _AMLComponent
 	AMLDefAlias def_alias;
 	AMLDefName def_name;
 	AMLDualNamePath dual_name_path;
+	AMLDWordConst dword_const;
 	AMLExpressionOpcode expression_opcode;
 	AMLMultiNamePath multi_name_path;
 	AMLNameChar name_char;
@@ -466,6 +474,8 @@ AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_dual_name_path(AMLSubstring aml);
 // <dual_name_prefix> := AML_BYTE_DUAL_NAME_PREFIX
 AMLSymbol *analyse_aml_dual_name_prefix(AMLSubstring aml);
+// <dword_const> := <dword_prefix> <dword_data>
+AMLSymbol *analyse_aml_dword_const(AMLSubstring aml);
 // <expression_opcode> := <def_aquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 // <lead_char> := 'A' - 'Z' | '_'
