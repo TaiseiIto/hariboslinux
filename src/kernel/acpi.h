@@ -195,6 +195,7 @@ typedef enum _AMLSymbolType
 	aml_term_list,
 	aml_term_obj,
 	aml_word_const,
+	aml_word_data,
 	aml_word_prefix,
 } AMLSymbolType;
 
@@ -401,6 +402,11 @@ typedef struct _AMLWordConst
 	struct _AMLSymbol *word_data;
 } AMLWordConst;
 
+typedef struct _AMLWordData
+{
+	struct _AMLSymbol *byte_data[2];
+} AMLWordData;
+
 typedef union _AMLComponent
 {
 	AMLByteConst byte_const;
@@ -423,6 +429,7 @@ typedef union _AMLComponent
 	AMLTermList term_list;
 	AMLTermObj term_obj;
 	AMLWordConst word_const;
+	AMLWordData word_data;
 } AMLComponent;
 
 typedef struct _AMLSymbol
@@ -499,6 +506,8 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 AMLSymbol *analyse_aml_term_obj(AMLSubstring aml);
 // <word_const> := <word_prefix> <word_data>
 AMLSymbol *analyse_aml_word_const(AMLSubstring aml);
+// <word_data> := <byte_data> <byte_data>
+AMLSymbol *analyse_aml_word_data(AMLSubstring aml);
 // <word_prefix> := AML_BYTE_WORD_PREFIX
 AMLSymbol *analyse_aml_word_prefix(AMLSubstring aml);
 AMLSymbol *create_dsdt_aml_syntax_tree(void);

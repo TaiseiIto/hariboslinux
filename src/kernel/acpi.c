@@ -143,6 +143,7 @@ bool acpi_table_is_correct(ACPITableHeader const *header)
 
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 {
+	ChainString **bytes_data_chain_string;
 	ChainString **name_chars_chain_string;
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
@@ -255,6 +256,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *word_const_chain_string;
 	ChainString *word_data_chain_string;
 	ChainString *word_prefix_chain_string;
+	char **bytes_data_char_array;
 	char **name_chars_char_array;
 	char **name_segs_char_array;
 	char **name_strings_char_array;
@@ -2002,6 +2004,27 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(word_data_char_array);
 		}
 		break;
+	case aml_word_data:
+		bytes_data_chain_string = malloc(_countof(aml_symbol->component.word_data.byte_data) * sizeof(*bytes_data_chain_string));
+		bytes_data_char_array = malloc(_countof(aml_symbol->component.word_data.byte_data) * sizeof(*bytes_data_char_array));
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.word_data.byte_data); i++)if(aml_symbol->component.word_data.byte_data[i])
+		{
+			bytes_data_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.word_data.byte_data[i]);
+			insert_char_front(bytes_data_chain_string[i], bytes_data_chain_string[i]->first_character, ' ');
+			replace_chain_string(bytes_data_chain_string[i], "\n", " \n");
+			bytes_data_char_array[i] = create_char_array_from_chain_string(bytes_data_chain_string[i]);
+		}
+		else bytes_data_char_array[i] = "";
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.word_data.byte_data); i++)insert_char_array_back(output, output->last_character, bytes_data_char_array[i]);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.word_data.byte_data); i++)if(aml_symbol->component.word_data.byte_data[i])
+		{
+			delete_chain_string(bytes_data_chain_string[i]);
+			free(bytes_data_char_array[i]);
+		}
+		free(bytes_data_chain_string);
+		free(bytes_data_char_array);
+		break;
 	case aml_word_prefix:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2053,6 +2076,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
 	static char const * const aml_word_const_name = "WordConst";
+	static char const * const aml_word_data_name = "WordData";
 	static char const * const aml_word_prefix_name = "WordPrefix";
 	switch(aml_symbol_type)
 	{
@@ -2118,6 +2142,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_term_obj_name;
 	case aml_word_const:
 		return aml_word_const_name;
+	case aml_word_data:
+		return aml_word_data_name;
 	case aml_word_prefix:
 		return aml_word_prefix_name;
 	default:
@@ -2759,8 +2785,28 @@ AMLSymbol *analyse_aml_word_const(AMLSubstring aml)
 	word_const->string.length += word_const->component.word_const.word_prefix->string.length;
 	aml.initial += word_const->component.word_const.word_prefix->string.length;
 	aml.length -= word_const->component.word_const.word_prefix->string.length;
-	word_const->component.word_const.word_data = NULL;
+	word_const->component.word_const.word_data = analyse_aml_word_data(aml);
+	word_const->string.length += word_const->component.word_const.word_data->string.length;
+	aml.initial += word_const->component.word_const.word_data->string.length;
+	aml.length -= word_const->component.word_const.word_data->string.length;
 	return word_const;
+}
+
+// <word_data> := <byte_data> <byte_data>
+AMLSymbol *analyse_aml_word_data(AMLSubstring aml)
+{
+	AMLSymbol *word_data = malloc(sizeof(*word_data));
+	word_data->string.initial = aml.initial;
+	word_data->string.length = 0;
+	word_data->type = aml_word_data;
+	for(AMLSymbol **byte_data = word_data->component.word_data.byte_data; byte_data != word_data->component.word_data.byte_data + _countof(word_data->component.word_data.byte_data); byte_data++)
+	{
+		*byte_data = analyse_aml_byte_data(aml);
+		word_data->string.length += (*byte_data)->string.length;
+		aml.initial += (*byte_data)->string.length;
+		aml.length -= (*byte_data)->string.length;
+	}
+	return word_data;
 }
 
 // <word_prefix> := AML_BYTE_WORD_PREFIX
@@ -2959,6 +3005,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_word_const:
 		if(aml_symbol->component.word_const.word_prefix)delete_aml_symbol(aml_symbol->component.word_const.word_prefix);
 		if(aml_symbol->component.word_const.word_data)delete_aml_symbol(aml_symbol->component.word_const.word_data);
+		break;
+	case aml_word_data:
+		for(AMLSymbol **byte_data = aml_symbol->component.word_data.byte_data; byte_data != aml_symbol->component.word_data.byte_data + _countof(aml_symbol->component.word_data.byte_data); byte_data++)if(*byte_data)delete_aml_symbol(*byte_data);
 		break;
 	case aml_word_prefix:
 		break;
