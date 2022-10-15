@@ -147,6 +147,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **name_chars_chain_string;
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
+	ChainString **words_data_chain_string;
 	ChainString *alias_op_chain_string;
 	ChainString *byte_const_chain_string;
 	ChainString *byte_data_chain_string;
@@ -262,6 +263,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char **name_chars_char_array;
 	char **name_segs_char_array;
 	char **name_strings_char_array;
+	char **words_data_char_array;
 	char *alias_op_char_array;
 	char *byte_const_char_array;
 	char *byte_data_char_array;
@@ -734,6 +736,27 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(dword_data_chain_string);
 			free(dword_data_char_array);
 		}
+		break;
+	case aml_dword_data:
+		words_data_chain_string = malloc(_countof(aml_symbol->component.dword_data.word_data) * sizeof(*words_data_chain_string));
+		words_data_char_array = malloc(_countof(aml_symbol->component.dword_data.word_data) * sizeof(*words_data_char_array));
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.dword_data.word_data); i++)if(aml_symbol->component.dword_data.word_data)
+		{
+			words_data_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.dword_data.word_data[i]);
+			insert_char_front(words_data_chain_string[i], words_data_chain_string[i]->first_character, ' ');
+			replace_chain_string(words_data_chain_string[i], "\n", " \n");
+			words_data_char_array[i] = create_char_array_from_chain_string(words_data_chain_string[i]);
+		}
+		else words_data_char_array[i] = "";
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.dword_data.word_data); i++)insert_char_array_back(output, output->last_character, words_data_char_array[i]);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.dword_data.word_data); i++)if(aml_symbol->component.dword_data.word_data[i])
+		{
+			delete_chain_string(words_data_chain_string[i]);
+			free(words_data_char_array[i]);
+		}
+		free(words_data_chain_string);
+		free(words_data_char_array);
 		break;
 	case aml_dword_prefix:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
@@ -2094,6 +2117,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
 	static char const * const aml_dword_const_name = "DWordConst";
+	static char const * const aml_dword_data_name = "DWordData";
 	static char const * const aml_dword_prefix_name = "DWordPrefix";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
@@ -2144,6 +2168,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_dual_name_prefix_name;
 	case aml_dword_const:
 		return aml_dword_const_name;
+	case aml_dword_data:
+		return aml_dword_data_name;
 	case aml_dword_prefix:
 		return aml_dword_prefix_name;
 	case aml_expression_opcode:
@@ -2417,8 +2443,28 @@ AMLSymbol *analyse_aml_dword_const(AMLSubstring aml)
 	dword_const->string.length += dword_const->component.dword_const.dword_prefix->string.length;
 	aml.initial += dword_const->component.dword_const.dword_prefix->string.length;
 	aml.length -= dword_const->component.dword_const.dword_prefix->string.length;
-	dword_const->component.dword_const.dword_data = NULL;
+	dword_const->component.dword_const.dword_data = analyse_aml_dword_data(aml);
+	dword_const->string.length += dword_const->component.dword_const.dword_data->string.length;
+	aml.initial += dword_const->component.dword_const.dword_data->string.length;
+	aml.length -= dword_const->component.dword_const.dword_data->string.length;
 	return dword_const;
+}
+
+// <dword_data> := <word_data> <word_data>
+AMLSymbol *analyse_aml_dword_data(AMLSubstring aml)
+{
+	AMLSymbol *dword_data = malloc(sizeof(*dword_data));
+	dword_data->string.initial = aml.initial;
+	dword_data->string.length = 0;
+	dword_data->type = aml_dword_data;
+	for(AMLSymbol **word_data = dword_data->component.dword_data.word_data; word_data != dword_data->component.dword_data.word_data + _countof(dword_data->component.dword_data.word_data); word_data++)
+	{
+		*word_data = analyse_aml_word_data(aml);
+		dword_data->string.length += (*word_data)->string.length;
+		aml.initial += (*word_data)->string.length;
+		aml.length -= (*word_data)->string.length;
+	}
+	return dword_data;
 }
 
 // <dword_prefix> := AML_BYTE_DWORD_PREFIX
@@ -2949,6 +2995,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_dword_const:
 		if(aml_symbol->component.dword_const.dword_prefix)delete_aml_symbol(aml_symbol->component.dword_const.dword_prefix);
 		if(aml_symbol->component.dword_const.dword_data)delete_aml_symbol(aml_symbol->component.dword_const.dword_data);
+		break;
+	case aml_dword_data:
+		for(AMLSymbol **word_data = aml_symbol->component.dword_data.word_data; word_data != aml_symbol->component.dword_data.word_data + _countof(aml_symbol->component.dword_data.word_data); word_data++)if(*word_data)delete_aml_symbol(*word_data);
 		break;
 	case aml_dword_prefix:
 		break;
