@@ -198,6 +198,7 @@ typedef enum _AMLSymbolType
 	aml_root_char,
 	aml_seg_count,
 	aml_statement_opcode,
+	aml_string,
 	aml_term_list,
 	aml_term_obj,
 	aml_word_const,
@@ -411,6 +412,13 @@ typedef struct _AMLStatementOpcode
 	struct _AMLSymbol *def_while;
 } AMLStatementOpcode;
 
+typedef struct _AMLString
+{
+	struct _AMLSymbol *string_prefix;
+	struct _AMLSymbol *ascii_char_list;
+	struct _AMLSymbol *null_char;
+} AMLString;
+
 typedef struct _AMLTermList
 {
 	struct _AMLSymbol *term_list;
@@ -458,6 +466,7 @@ typedef union _AMLComponent
 	AMLQWordConst qword_const;
 	AMLQWordData qword_data;
 	AMLStatementOpcode statement_opcode;
+	AMLString string;
 	AMLTermList term_list;
 	AMLTermObj term_obj;
 	AMLWordConst word_const;
@@ -544,6 +553,8 @@ AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
+// <string> := <string_prefix> <ascii_char_list> <null_char>
+AMLSymbol *analyse_aml_string(AMLSubstring aml);
 // <term_list> := Nothing | <term_obj> <term_list>
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
