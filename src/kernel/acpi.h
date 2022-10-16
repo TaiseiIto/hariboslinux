@@ -166,6 +166,7 @@ typedef enum _AMLSymbolType
 	aml_alias_op,
 	aml_ascii_char,
 	aml_ascii_char_list,
+	aml_buffer_op,
 	aml_byte_const,
 	aml_byte_data,
 	aml_byte_prefix,
@@ -532,6 +533,8 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_ascii_char(AMLSubstring aml);
 // <ascii_char_list> := Nothing | <ascii_char> <ascii_char_list>
 AMLSymbol *analyse_aml_ascii_char_list(AMLSubstring aml);
+// <buffer_op> := AML_BYTE_BUFFER_OP
+AMLSymbol *analyse_aml_buffer_op(AMLSubstring aml);
 // <byte_const> := <byte_prefix> <byte_data>
 AMLSymbol *analyse_aml_byte_const(AMLSubstring aml);
 // <byte_data> := 0x00 - 0xff
