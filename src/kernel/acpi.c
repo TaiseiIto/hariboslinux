@@ -271,6 +271,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *statement_opcode_chain_string;
 	ChainString *string_chain_string;
 	ChainString *string_prefix_chain_string;
+	ChainString *term_arg_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
 	ChainString *word_const_chain_string;
@@ -403,6 +404,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *statement_opcode_char_array;
 	char *string_char_array;
 	char *string_prefix_char_array;
+	char *term_arg_char_array;
 	char *term_list_char_array;
 	char *term_obj_char_array;
 	char *word_const_char_array;
@@ -448,6 +450,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		break;
 	case aml_buffer_op:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
+	case aml_buffer_size:
+		if(aml_symbol->component.buffer_size.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.buffer_size.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", " \n");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.buffer_size.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
 		break;
 	case aml_byte_const:
 		if(aml_symbol->component.byte_const.byte_prefix)
@@ -2460,6 +2478,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_ascii_char_name = "AsciiChar";
 	static char const * const aml_ascii_char_list_name = "AsciiCharList";
 	static char const * const aml_buffer_op_name = "BufferOp";
+	static char const * const aml_buffer_size_name = "BufferSize";
 	static char const * const aml_byte_const_name = "ByteConst";
 	static char const * const aml_byte_data_name = "ByteData";
 	static char const * const aml_byte_prefix_name = "BytePrefix";
@@ -2521,6 +2540,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_ascii_char_list_name;
 	case aml_buffer_op:
 		return aml_buffer_op_name;
+	case aml_buffer_size:
+		return aml_buffer_size_name;
 	case aml_byte_const:
 		return aml_byte_const_name;
 	case aml_byte_data:
@@ -2686,6 +2707,17 @@ AMLSymbol *analyse_aml_buffer_op(AMLSubstring aml)
 	buffer_op->type = aml_buffer_op;
 	if(*buffer_op->string.initial != AML_BYTE_BUFFER_OP)ERROR(); // Incorrect buffer op
 	return buffer_op;
+}
+
+// <buffer_size> := <term_arg>
+AMLSymbol *analyse_aml_buffer_size(AMLSubstring aml)
+{
+	AMLSymbol *buffer_size = malloc(sizeof(*buffer_size));
+	buffer_size->string.initial = aml.initial;
+	buffer_size->string.length = 0;
+	buffer_size->type = aml_buffer_size;
+	buffer_size->component.buffer_size.term_arg = NULL;
+	return buffer_size;
 }
 
 // <byte_const> := <byte_prefix> <byte_data>
@@ -2918,7 +2950,10 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
 	def_buffer->string.length += def_buffer->component.def_buffer.pkg_length->string.length;
 	aml.initial += def_buffer->component.def_buffer.pkg_length->string.length;
 	aml.length -= def_buffer->component.def_buffer.pkg_length->string.length;
-	def_buffer->component.def_buffer.buffer_size = NULL;
+	def_buffer->component.def_buffer.buffer_size = analyse_aml_buffer_size(aml);
+	def_buffer->string.length += def_buffer->component.def_buffer.buffer_size->string.length;
+	aml.initial += def_buffer->component.def_buffer.buffer_size->string.length;
+	aml.length -= def_buffer->component.def_buffer.buffer_size->string.length;
 	def_buffer->component.def_buffer.byte_list = NULL;
 	return def_buffer;
 }
@@ -3717,6 +3752,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.ascii_char_list.ascii_char_list)delete_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char_list);
 		break;
 	case aml_buffer_op:
+		break;
+	case aml_buffer_size:
+		if(aml_symbol->component.buffer_size.term_arg)delete_aml_symbol(aml_symbol->component.buffer_size.term_arg);
 		break;
 	case aml_byte_const:
 		if(aml_symbol->component.byte_const.byte_prefix)delete_aml_symbol(aml_symbol->component.byte_const.byte_prefix);
