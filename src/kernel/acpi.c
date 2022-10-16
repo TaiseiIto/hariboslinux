@@ -1552,6 +1552,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(method_invocation_char_array);
 		}
 		break;
+	case aml_ext_op_prefix:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_lead_name_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2364,6 +2367,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_dword_data_name = "DWordData";
 	static char const * const aml_dword_prefix_name = "DWordPrefix";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
+	static char const * const aml_ext_op_prefix_name = "ExtOpPrefix";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
@@ -2434,6 +2438,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_dword_prefix_name;
 	case aml_expression_opcode:
 		return aml_expression_opcode_name;
+	case aml_ext_op_prefix:
+		return aml_ext_op_prefix_name;
 	case aml_lead_name_char:
 		return aml_lead_name_char_name;
 	case aml_multi_name_path:
@@ -2612,6 +2618,16 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 		computational_data->component.computational_data.dword_const = analyse_aml_dword_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.dword_const->string.length;
 		break;
+	case AML_BYTE_EXT_OP_PREFIX:
+		computational_data->component.computational_data.revision_op = analyse_aml_revision_op(aml);
+		computational_data->string.length += computational_data->component.computational_data.revision_op->string.length;
+		break;
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_ZERO_OP:
+		computational_data->component.computational_data.const_obj = analyse_aml_const_obj(aml);
+		computational_data->string.length += computational_data->component.computational_data.const_obj->string.length;
+		break;
 	case AML_BYTE_QWORD_PREFIX:
 		computational_data->component.computational_data.qword_const = analyse_aml_qword_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.qword_const->string.length;
@@ -2623,12 +2639,6 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 	case AML_BYTE_WORD_PREFIX:
 		computational_data->component.computational_data.word_const = analyse_aml_word_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.word_const->string.length;
-		break;
-	case AML_BYTE_ZERO_OP:
-	case AML_BYTE_ONE_OP:
-	case AML_BYTE_ONES_OP:
-		computational_data->component.computational_data.const_obj = analyse_aml_const_obj(aml);
-		computational_data->string.length += computational_data->component.computational_data.const_obj->string.length;
 		break;
 	}
 	return computational_data;
@@ -2682,6 +2692,7 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
 	{
 	case AML_BYTE_BYTE_PREFIX:
 	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_ONE_OP:
 	case AML_BYTE_ONES_OP:
 	case AML_BYTE_QWORD_PREFIX:
@@ -2708,6 +2719,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
 	{
 	case AML_BYTE_BYTE_PREFIX:
 	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_ONE_OP:
 	case AML_BYTE_ONES_OP:
 	case AML_BYTE_QWORD_PREFIX:
@@ -2920,6 +2932,17 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.def_xor = NULL;
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
 	return expression_opcode;
+}
+
+// <ext_op_prefix> := AML_BYTE_EXT_OP_PREFIX
+AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml)
+{
+	AMLSymbol *ext_op_prefix = malloc(sizeof(*ext_op_prefix));
+	ext_op_prefix->string.initial = aml.initial;
+	ext_op_prefix->string.length = 1;
+	ext_op_prefix->type = aml_ext_op_prefix;
+	if(*ext_op_prefix->string.initial != AML_BYTE_EXT_OP_PREFIX)ERROR(); // Incorrect ext op prefix
+	return ext_op_prefix;
 }
 
 // <lead_name_char> := 'A' - 'Z' | '_'
@@ -3266,7 +3289,10 @@ AMLSymbol *analyse_aml_revision_op(AMLSubstring aml)
 	revision_op->string.initial = aml.initial;
 	revision_op->string.length = 0;
 	revision_op->type = aml_revision_op;
-	revision_op->component.revision_op.ext_op_prefix = NULL;
+	revision_op->component.revision_op.ext_op_prefix = analyse_aml_ext_op_prefix(aml);
+	revision_op->string.length += revision_op->component.revision_op.ext_op_prefix->string.length;
+	aml.initial += revision_op->component.revision_op.ext_op_prefix->string.length;
+	aml.length -= revision_op->component.revision_op.ext_op_prefix->string.length;
 	revision_op->component.revision_op.revision_op_prefix = NULL;
 	return revision_op;
 }
@@ -3582,6 +3608,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.expression_opcode.def_wait)delete_aml_symbol(aml_symbol->component.expression_opcode.def_wait);
 		if(aml_symbol->component.expression_opcode.def_xor)delete_aml_symbol(aml_symbol->component.expression_opcode.def_xor);
 		if(aml_symbol->component.expression_opcode.method_invocation)delete_aml_symbol(aml_symbol->component.expression_opcode.method_invocation);
+		break;
+	case aml_ext_op_prefix:
 		break;
 	case aml_lead_name_char:
 		break;
