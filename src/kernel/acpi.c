@@ -258,6 +258,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *ones_op_chain_string;
 	ChainString *output;
 	ChainString *parent_prefix_char_chain_string;
+	ChainString *pkg_lead_byte_chain_string;
 	ChainString *pkg_length_chain_string;
 	ChainString *prefix_path_chain_string;
 	ChainString *qword_const_chain_string;
@@ -389,6 +390,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *one_op_char_array;
 	char *ones_op_char_array;
 	char *parent_prefix_char_char_array;
+	char *pkg_lead_byte_char_array;
 	char *pkg_length_char_array;
 	char *prefix_path_char_array;
 	char *qword_const_char_array;
@@ -1923,6 +1925,40 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_parent_prefix_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_pkg_length:
+		bytes_data_chain_string = malloc(_countof(aml_symbol->component.pkg_length.byte_data) * sizeof(*bytes_data_chain_string));
+		bytes_data_char_array = malloc(_countof(aml_symbol->component.pkg_length.byte_data) * sizeof(*bytes_data_char_array));
+		if(aml_symbol->component.pkg_length.pkg_lead_byte)
+		{
+			pkg_lead_byte_chain_string = aml_symbol_to_chain_string(aml_symbol->component.pkg_length.pkg_lead_byte);
+			insert_char_front(pkg_lead_byte_chain_string, pkg_lead_byte_chain_string->first_character, ' ');
+			replace_chain_string(pkg_lead_byte_chain_string, "\n", " \n");
+			pkg_lead_byte_char_array = create_char_array_from_chain_string(pkg_lead_byte_chain_string);
+		}
+		else pkg_lead_byte_char_array = "";
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.pkg_length.byte_data); i++)if(aml_symbol->component.pkg_length.byte_data[i])
+		{
+			bytes_data_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.pkg_length.byte_data[i]);
+			insert_char_front(bytes_data_chain_string[i], bytes_data_chain_string[i]->first_character, ' ');
+			replace_chain_string(bytes_data_chain_string[i], "\n", " \n");
+			bytes_data_char_array[i] = create_char_array_from_chain_string(bytes_data_chain_string[i]);
+		}
+		else bytes_data_char_array[i] = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), pkg_lead_byte_char_array);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.pkg_length.byte_data); i++)insert_char_array_back(output, output->last_character, bytes_data_char_array[i]);
+		if(aml_symbol->component.pkg_length.pkg_lead_byte)
+		{
+			delete_chain_string(pkg_lead_byte_chain_string);
+			free(pkg_lead_byte_char_array);
+		}
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.pkg_length.byte_data); i++)if(aml_symbol->component.pkg_length.byte_data[i])
+		{
+			delete_chain_string(bytes_data_chain_string[i]);
+			free(bytes_data_char_array[i]);
+		}
+		free(bytes_data_chain_string);
+		free(bytes_data_char_array);
+		break;
 	case aml_prefix_path:
 		if(aml_symbol->component.prefix_path.parent_prefix_char)
 		{
@@ -2453,6 +2489,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_one_op_name = "OneOp";
 	static char const * const aml_ones_op_name = "OnesOp";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
+	static char const * const aml_pkg_length_name = "PkgLength";
 	static char const * const aml_prefix_path_name = "PrefixPath";
 	static char const * const aml_qword_const_name = "QWordConst";
 	static char const * const aml_qword_data_name = "QWordData";
@@ -2544,6 +2581,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_ones_op_name;
 	case aml_parent_prefix_char:
 		return aml_parent_prefix_char_name;
+	case aml_pkg_length:
+		return aml_pkg_length_name;
 	case aml_prefix_path:
 		return aml_prefix_path_name;
 	case aml_qword_const:
@@ -2869,7 +2908,10 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
 	def_buffer->string.length += def_buffer->component.def_buffer.buffer_op->string.length;
 	aml.initial += def_buffer->component.def_buffer.buffer_op->string.length;
 	aml.length -= def_buffer->component.def_buffer.buffer_op->string.length;
-	def_buffer->component.def_buffer.pkg_length = NULL;
+	def_buffer->component.def_buffer.pkg_length = analyse_aml_pkg_length(aml);
+	def_buffer->string.length += def_buffer->component.def_buffer.pkg_length->string.length;
+	aml.initial += def_buffer->component.def_buffer.pkg_length->string.length;
+	aml.length -= def_buffer->component.def_buffer.pkg_length->string.length;
 	def_buffer->component.def_buffer.buffer_size = NULL;
 	def_buffer->component.def_buffer.byte_list = NULL;
 	return def_buffer;
@@ -3323,6 +3365,18 @@ AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml)
 	parent_prefix_char->type = aml_parent_prefix_char;
 	if(*parent_prefix_char->string.initial != AML_BYTE_PARENT_PREFIX_CHAR)ERROR(); // Incorrect parent prefix char
 	return parent_prefix_char;
+}
+
+// <pkg_length> := <pkg_lead_byte> | <pkg_lead_byte> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> <byte_data>
+AMLSymbol *analyse_aml_pkg_length(AMLSubstring aml)
+{
+	AMLSymbol *pkg_length = malloc(sizeof(*pkg_length));
+	pkg_length->string.initial = aml.initial;
+	pkg_length->string.length = 0;
+	pkg_length->type = aml_pkg_length;
+	pkg_length->component.pkg_length.pkg_lead_byte = NULL;
+	for(AMLSymbol **byte_data = pkg_length->component.pkg_length.byte_data; byte_data != pkg_length->component.pkg_length.byte_data + _countof(pkg_length->component.pkg_length.byte_data); byte_data++)*byte_data = NULL;
+	return pkg_length;
 }
 
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
@@ -3794,6 +3848,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_ones_op:
 		break;
 	case aml_parent_prefix_char:
+		break;
+	case aml_pkg_length:
+		if(aml_symbol->component.pkg_length.pkg_lead_byte)delete_aml_symbol(aml_symbol->component.pkg_length.pkg_lead_byte);
+		for(AMLSymbol **byte_data = aml_symbol->component.pkg_length.byte_data; byte_data != aml_symbol->component.pkg_length.byte_data + _countof(aml_symbol->component.pkg_length.byte_data); byte_data++)delete_aml_symbol(*byte_data);
 		break;
 	case aml_prefix_path:
 		if(aml_symbol->component.prefix_path.parent_prefix_char)delete_aml_symbol(aml_symbol->component.prefix_path.parent_prefix_char);
