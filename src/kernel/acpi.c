@@ -1925,6 +1925,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_parent_prefix_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_pkg_lead_byte:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_pkg_length:
 		bytes_data_chain_string = malloc(_countof(aml_symbol->component.pkg_length.byte_data) * sizeof(*bytes_data_chain_string));
 		bytes_data_char_array = malloc(_countof(aml_symbol->component.pkg_length.byte_data) * sizeof(*bytes_data_char_array));
@@ -2489,6 +2492,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_one_op_name = "OneOp";
 	static char const * const aml_ones_op_name = "OnesOp";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
+	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
 	static char const * const aml_pkg_length_name = "PkgLength";
 	static char const * const aml_prefix_path_name = "PrefixPath";
 	static char const * const aml_qword_const_name = "QWordConst";
@@ -2581,6 +2585,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_ones_op_name;
 	case aml_parent_prefix_char:
 		return aml_parent_prefix_char_name;
+	case aml_pkg_lead_byte:
+		return aml_pkg_lead_byte_name;
 	case aml_pkg_length:
 		return aml_pkg_length_name;
 	case aml_prefix_path:
@@ -3367,6 +3373,16 @@ AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml)
 	return parent_prefix_char;
 }
 
+// <pkg_lead_byte>
+AMLSymbol *analyse_aml_pkg_lead_byte(AMLSubstring aml)
+{
+	AMLSymbol *pkg_lead_byte = malloc(sizeof(*pkg_lead_byte));
+	pkg_lead_byte->string.initial = aml.initial;
+	pkg_lead_byte->string.length = 1;
+	pkg_lead_byte->type = aml_pkg_lead_byte;
+	return pkg_lead_byte;
+}
+
 // <pkg_length> := <pkg_lead_byte> | <pkg_lead_byte> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> <byte_data>
 AMLSymbol *analyse_aml_pkg_length(AMLSubstring aml)
 {
@@ -3376,6 +3392,10 @@ AMLSymbol *analyse_aml_pkg_length(AMLSubstring aml)
 	pkg_length->type = aml_pkg_length;
 	pkg_length->component.pkg_length.pkg_lead_byte = NULL;
 	for(AMLSymbol **byte_data = pkg_length->component.pkg_length.byte_data; byte_data != pkg_length->component.pkg_length.byte_data + _countof(pkg_length->component.pkg_length.byte_data); byte_data++)*byte_data = NULL;
+	pkg_length->component.pkg_length.pkg_lead_byte = analyse_aml_pkg_lead_byte(aml);
+	pkg_length->string.length += pkg_length->component.pkg_length.pkg_lead_byte->string.length;
+	aml.initial += pkg_length->component.pkg_length.pkg_lead_byte->string.length;
+	aml.length -= pkg_length->component.pkg_length.pkg_lead_byte->string.length;
 	return pkg_length;
 }
 
@@ -3848,6 +3868,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_ones_op:
 		break;
 	case aml_parent_prefix_char:
+		break;
+	case aml_pkg_lead_byte:
 		break;
 	case aml_pkg_length:
 		if(aml_symbol->component.pkg_length.pkg_lead_byte)delete_aml_symbol(aml_symbol->component.pkg_length.pkg_lead_byte);
