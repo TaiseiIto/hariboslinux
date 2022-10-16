@@ -5,6 +5,7 @@
 #include "stdlib.h"
 #include "string.h"
 
+#define AML_BYTE_NULL_CHAR		0x00
 #define AML_BYTE_NULL_NAME		0x00
 #define AML_BYTE_ZERO_OP		0x00
 #define AML_BYTE_ONE_OP			0x01
@@ -1757,6 +1758,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(root_char_char_array);
 		}
 		break;
+	case aml_null_char:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_null_name:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2274,6 +2278,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
+	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
@@ -2345,6 +2350,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_name_seg_name;
 	case aml_name_space_modifier_obj:
 		return aml_name_space_modifier_obj_name;
+	case aml_null_char:
+		return aml_null_char_name;
 	case aml_null_name:
 		return aml_null_name_name;
 	case aml_object:
@@ -2954,6 +2961,17 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	return name_string;
 }
 
+// <null_char> := AML_BYTE_NULL_CHAR
+AMLSymbol *analyse_aml_null_char(AMLSubstring aml)
+{
+	AMLSymbol *null_char = malloc(sizeof(*null_char));
+	null_char->string.initial = aml.initial;
+	null_char->string.length = 1;
+	null_char->type = aml_null_char;
+	if(*null_char->string.initial == AML_BYTE_NULL_CHAR)ERROR(); // Incorrect null char
+	return null_char;
+}
+
 // <null_name> := AML_BYTE_NULL_NAME
 AMLSymbol *analyse_aml_null_name(AMLSubstring aml)
 {
@@ -3122,8 +3140,14 @@ AMLSymbol *analyse_aml_string(AMLSubstring aml)
 	string->string.length += string->component.string.string_prefix->string.length;
 	aml.initial += string->component.string.string_prefix->string.length;
 	aml.length -= string->component.string.string_prefix->string.length;
-	string->component.string.ascii_char_list = NULL;
-	string->component.string.null_char = NULL;
+	string->component.string.ascii_char_list = analyse_aml_ascii_char_list(aml);
+	string->string.length += string->component.string.ascii_char_list->string.length;
+	aml.initial += string->component.string.ascii_char_list->string.length;
+	aml.length -= string->component.string.ascii_char_list->string.length;
+	string->component.string.null_char = analyse_aml_null_char(aml);
+	string->string.length += string->component.string.null_char->string.length;
+	aml.initial += string->component.string.null_char->string.length;
+	aml.length -= string->component.string.null_char->string.length;
 	return string;
 }
 
@@ -3390,6 +3414,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.name_string.name_path)delete_aml_symbol(aml_symbol->component.name_string.name_path);
 		if(aml_symbol->component.name_string.prefix_path)delete_aml_symbol(aml_symbol->component.name_string.prefix_path);
 		if(aml_symbol->component.name_string.root_char)delete_aml_symbol(aml_symbol->component.name_string.root_char);
+		break;
+	case aml_null_char:
+		break;
+	case aml_null_name:
 		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
