@@ -174,6 +174,7 @@ typedef enum _AMLSymbolType
 	aml_data_object,
 	aml_data_ref_object,
 	aml_def_alias,
+	aml_def_buffer,
 	aml_def_name,
 	aml_digit_char,
 	aml_dual_name_path,
@@ -272,6 +273,14 @@ typedef struct _AMLDefAlias
 	struct _AMLSymbol *alias_op;
 	struct _AMLSymbol *name_string[2];
 } AMLDefAlias;
+
+typedef struct _AMLDefBuffer
+{
+	struct _AMLSymbol *buffer_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *buffer_size;
+	struct _AMLSymbol *byte_list;
+} AMLDefBuffer;
 
 typedef struct _AMLDefName
 {
@@ -482,6 +491,7 @@ typedef union _AMLComponent
 	AMLDataObject data_object;
 	AMLDataRefObject data_ref_object;
 	AMLDefAlias def_alias;
+	AMLDefBuffer def_buffer;
 	AMLDefName def_name;
 	AMLDualNamePath dual_name_path;
 	AMLDWordConst dword_const;
@@ -538,6 +548,8 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml);
 AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
+// <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
+AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
 AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 // <digit_char> := '0' - '9'

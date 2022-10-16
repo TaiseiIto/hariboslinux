@@ -153,8 +153,11 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *alias_op_chain_string;
 	ChainString *ascii_char_chain_string;
 	ChainString *ascii_char_list_chain_string;
+	ChainString *buffer_op_chain_string;
+	ChainString *buffer_size_chain_string;
 	ChainString *byte_const_chain_string;
 	ChainString *byte_data_chain_string;
+	ChainString *byte_list_chain_string;
 	ChainString *byte_prefix_chain_string;
 	ChainString *computational_data_chain_string;
 	ChainString *const_obj_chain_string;
@@ -255,6 +258,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *ones_op_chain_string;
 	ChainString *output;
 	ChainString *parent_prefix_char_chain_string;
+	ChainString *pkg_length_chain_string;
 	ChainString *prefix_path_chain_string;
 	ChainString *qword_const_chain_string;
 	ChainString *qword_data_chain_string;
@@ -281,8 +285,11 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *alias_op_char_array;
 	char *ascii_char_char_array;
 	char *ascii_char_list_char_array;
+	char *buffer_op_char_array;
+	char *buffer_size_char_array;
 	char *byte_const_char_array;
 	char *byte_data_char_array;
+	char *byte_list_char_array;
 	char *byte_prefix_char_array;
 	char *computational_data_char_array;
 	char *const_obj_char_array;
@@ -382,6 +389,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *one_op_char_array;
 	char *ones_op_char_array;
 	char *parent_prefix_char_char_array;
+	char *pkg_length_char_array;
 	char *prefix_path_char_array;
 	char *qword_const_char_array;
 	char *qword_data_char_array;
@@ -724,6 +732,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		free(name_strings_chain_string);
 		free(name_strings_char_array);
+		break;
+	case aml_def_buffer:
+		if(aml_symbol->component.def_buffer.buffer_op)
+		{
+			buffer_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_buffer.buffer_op);
+			insert_char_front(buffer_op_chain_string, buffer_op_chain_string->first_character, ' ');
+			replace_chain_string(buffer_op_chain_string, "\n", " \n");
+			buffer_op_char_array = create_char_array_from_chain_string(buffer_op_chain_string);
+		}
+		else buffer_op_char_array = "";
+		if(aml_symbol->component.def_buffer.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_buffer.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", " \n");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_buffer.buffer_size)
+		{
+			buffer_size_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_buffer.buffer_size);
+			insert_char_front(buffer_size_chain_string, buffer_size_chain_string->first_character, ' ');
+			replace_chain_string(buffer_size_chain_string, "\n", " \n");
+			buffer_size_char_array = create_char_array_from_chain_string(buffer_size_chain_string);
+		}
+		else buffer_size_char_array = "";
+		if(aml_symbol->component.def_buffer.byte_list)
+		{
+			byte_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_buffer.byte_list);
+			insert_char_front(byte_list_chain_string, byte_list_chain_string->first_character, ' ');
+			replace_chain_string(byte_list_chain_string, "\n", " \n");
+			byte_list_char_array = create_char_array_from_chain_string(byte_list_chain_string);
+		}
+		else byte_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), buffer_op_char_array, pkg_length_char_array, buffer_size_char_array, byte_list_char_array);
+		if(aml_symbol->component.def_buffer.buffer_op)
+		{
+			delete_chain_string(buffer_op_chain_string);
+			free(buffer_op_char_array);
+		}
+		if(aml_symbol->component.def_buffer.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_buffer.buffer_size)
+		{
+			delete_chain_string(buffer_size_chain_string);
+			free(buffer_size_char_array);
+		}
+		if(aml_symbol->component.def_buffer.byte_list)
+		{
+			delete_chain_string(byte_list_chain_string);
+			free(byte_list_char_array);
+		}
 		break;
 	case aml_def_name:
 		if(aml_symbol->component.def_name.name_op)
@@ -2362,6 +2425,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_data_object_name = "DataObject";
 	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_def_alias_name = "DefAlias";
+	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
@@ -2426,6 +2490,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_data_ref_object_name;
 	case aml_def_alias:
 		return aml_def_alias_name;
+	case aml_def_buffer:
+		return aml_def_buffer_name;
 	case aml_def_name:
 		return aml_def_name_name;
 	case aml_digit_char:
@@ -2767,6 +2833,20 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 		aml.length -= (*name_string)->string.length;
 	}
 	return def_alias;
+}
+
+// <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
+AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
+{
+	AMLSymbol *def_buffer = malloc(sizeof(*def_buffer));
+	def_buffer->string.initial = aml.initial;
+	def_buffer->string.length = 0;
+	def_buffer->type = aml_def_buffer;
+	def_buffer->component.def_buffer.buffer_op = NULL;
+	def_buffer->component.def_buffer.pkg_length = NULL;
+	def_buffer->component.def_buffer.buffer_size = NULL;
+	def_buffer->component.def_buffer.byte_list = NULL;
+	return def_buffer;
 }
 
 // <def_name> := <name_op> <name_string> <data_ref_object>
@@ -3551,6 +3631,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
 		for(AMLSymbol **name_string = aml_symbol->component.def_alias.name_string; name_string != aml_symbol->component.def_alias.name_string + _countof(aml_symbol->component.def_alias.name_string); name_string++)if(*name_string)delete_aml_symbol(*name_string);
+		break;
+	case aml_def_buffer:
+		if(aml_symbol->component.def_buffer.buffer_op)delete_aml_symbol(aml_symbol->component.def_buffer.buffer_op);
+		if(aml_symbol->component.def_buffer.pkg_length)delete_aml_symbol(aml_symbol->component.def_buffer.pkg_length);
+		if(aml_symbol->component.def_buffer.buffer_size)delete_aml_symbol(aml_symbol->component.def_buffer.buffer_size);
+		if(aml_symbol->component.def_buffer.byte_list)delete_aml_symbol(aml_symbol->component.def_buffer.byte_list);
 		break;
 	case aml_def_name:
 		if(aml_symbol->component.def_name.name_op)delete_aml_symbol(aml_symbol->component.def_name.name_op);
