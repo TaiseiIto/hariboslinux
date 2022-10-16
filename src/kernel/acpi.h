@@ -203,6 +203,7 @@ typedef enum _AMLSymbolType
 	aml_qword_data,
 	aml_qword_prefix,
 	aml_revision_op,
+	aml_revision_op_prefix,
 	aml_root_char,
 	aml_seg_count,
 	aml_statement_opcode,
@@ -595,6 +596,8 @@ AMLSymbol *analyse_aml_qword_data(AMLSubstring aml);
 AMLSymbol *analyse_aml_qword_prefix(AMLSubstring aml);
 // <revision_op> := <ext_op_prefix> <revision_op_prefix>
 AMLSymbol *analyse_aml_revision_op(AMLSubstring aml);
+// <revision_op_prefix> := AML_BYTE_REVISION_OP
+AMLSymbol *analyse_aml_revision_op_prefix(AMLSubstring aml);
 // <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff

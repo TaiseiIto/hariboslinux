@@ -1968,6 +1968,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(revision_op_prefix_char_array);
 		}
 		break;
+	case aml_revision_op_prefix:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_root_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2387,6 +2390,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_qword_data_name = "QWordData";
 	static char const * const aml_qword_prefix_name = "QWordPrefix";
 	static char const * const aml_revision_op_name = "RevisionOp";
+	static char const * const aml_revision_op_prefix_name = "RevisionOpPrefix";
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_seg_count_name = "SegCount";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
@@ -2478,6 +2482,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_qword_prefix_name;
 	case aml_revision_op:
 		return aml_revision_op_name;
+	case aml_revision_op_prefix:
+		return aml_revision_op_prefix_name;
 	case aml_root_char:
 		return aml_root_char_name;
 	case aml_seg_count:
@@ -3293,8 +3299,22 @@ AMLSymbol *analyse_aml_revision_op(AMLSubstring aml)
 	revision_op->string.length += revision_op->component.revision_op.ext_op_prefix->string.length;
 	aml.initial += revision_op->component.revision_op.ext_op_prefix->string.length;
 	aml.length -= revision_op->component.revision_op.ext_op_prefix->string.length;
-	revision_op->component.revision_op.revision_op_prefix = NULL;
+	revision_op->component.revision_op.revision_op_prefix = analyse_aml_revision_op_prefix(aml);
+	revision_op->string.length += revision_op->component.revision_op.revision_op_prefix->string.length;
+	aml.initial += revision_op->component.revision_op.revision_op_prefix->string.length;
+	aml.length -= revision_op->component.revision_op.revision_op_prefix->string.length;
 	return revision_op;
+}
+
+// <revision_op_prefix> := AML_BYTE_REVISION_OP
+AMLSymbol *analyse_aml_revision_op_prefix(AMLSubstring aml)
+{
+	AMLSymbol *revision_op_prefix = malloc(sizeof(*revision_op_prefix));
+	revision_op_prefix->string.initial = aml.initial;
+	revision_op_prefix->string.length = 1;
+	revision_op_prefix->type = aml_revision_op_prefix;
+	if(*revision_op_prefix->string.initial != AML_BYTE_REVISION_OP)ERROR(); // Incorrect revision op prefix
+	return revision_op_prefix;
 }
 
 // <root_char> := AML_BYTE_ROOT_CHAR
