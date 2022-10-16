@@ -199,6 +199,7 @@ typedef enum _AMLSymbolType
 	aml_seg_count,
 	aml_statement_opcode,
 	aml_string,
+	aml_string_prefix,
 	aml_term_list,
 	aml_term_obj,
 	aml_word_const,
@@ -555,6 +556,8 @@ AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
 // <string> := <string_prefix> <ascii_char_list> <null_char>
 AMLSymbol *analyse_aml_string(AMLSubstring aml);
+// <string_prefix> := AML_BYTE_STRING_PREFIX
+AMLSymbol *analyse_aml_string_prefix(AMLSubstring aml);
 // <term_list> := Nothing | <term_obj> <term_list>
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>

@@ -2070,6 +2070,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(null_char_char_array);
 		}
 		break;
+	case aml_string_prefix:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_term_list:
 		if(aml_symbol->component.term_list.term_obj)
 		{
@@ -2246,6 +2249,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_seg_count_name = "SegCount";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_string_name = "String";
+	static char const * const aml_string_prefix_name = "StringPrefix";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
 	static char const * const aml_word_const_name = "WordConst";
@@ -2323,6 +2327,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_statement_opcode_name;
 	case aml_string:
 		return aml_string_name;
+	case aml_string_prefix:
+		return aml_string_prefix_name;
 	case aml_term_list:
 		return aml_term_list_name;
 	case aml_term_obj:
@@ -2418,6 +2424,10 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 		computational_data->component.computational_data.qword_const = analyse_aml_qword_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.qword_const->string.length;
 		break;
+	case AML_BYTE_STRING_PREFIX:
+		computational_data->component.computational_data.string = analyse_aml_string(aml);
+		computational_data->string.length += computational_data->component.computational_data.string->string.length;
+		break;
 	case AML_BYTE_WORD_PREFIX:
 		computational_data->component.computational_data.word_const = analyse_aml_word_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.word_const->string.length;
@@ -2441,6 +2451,7 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
 	case AML_BYTE_BYTE_PREFIX:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_STRING_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
 		data_object->component.data_object.computational_data = analyse_aml_computational_data(aml);
 		data_object->string.length += data_object->component.data_object.computational_data->string.length;
@@ -2463,6 +2474,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
 	case AML_BYTE_BYTE_PREFIX:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_STRING_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
 		data_ref_object->component.data_ref_object.data_object = analyse_aml_data_object(aml);
 		data_ref_object->string.length += data_ref_object->component.data_ref_object.data_object->string.length;
@@ -3029,10 +3041,24 @@ AMLSymbol *analyse_aml_string(AMLSubstring aml)
 	string->string.initial = aml.initial;
 	string->string.length = 0;
 	string->type = aml_string;
-	string->component.string.string_prefix = NULL;
+	string->component.string.string_prefix = analyse_aml_string_prefix(aml);
+	string->string.length += string->component.string.string_prefix->string.length;
+	aml.initial += string->component.string.string_prefix->string.length;
+	aml.length -= string->component.string.string_prefix->string.length;
 	string->component.string.ascii_char_list = NULL;
 	string->component.string.null_char = NULL;
 	return string;
+}
+
+// <string_prefix> := AML_BYTE_STRING_PREFIX
+AMLSymbol *analyse_aml_string_prefix(AMLSubstring aml)
+{
+	AMLSymbol *string_prefix = malloc(sizeof(*string_prefix));
+	string_prefix->string.initial = aml.initial;
+	string_prefix->string.length = 1;
+	string_prefix->type = aml_string_prefix;
+	if(*string_prefix->string.initial != AML_BYTE_STRING_PREFIX)ERROR(); // Incorrect string prefix
+	return string_prefix;
 }
 
 // <term_list> := Nothing | <term_obj> <term_list>
@@ -3323,6 +3349,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.string.string_prefix)delete_aml_symbol(aml_symbol->component.string.string_prefix);
 		if(aml_symbol->component.string.ascii_char_list)delete_aml_symbol(aml_symbol->component.string.ascii_char_list);
 		if(aml_symbol->component.string.null_char)delete_aml_symbol(aml_symbol->component.string.null_char);
+		break;
+	case aml_string_prefix:
 		break;
 	case aml_term_list:
 		if(aml_symbol->component.term_list.term_list)delete_aml_symbol(aml_symbol->component.term_list.term_list);
