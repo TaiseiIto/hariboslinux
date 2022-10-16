@@ -3396,6 +3396,26 @@ AMLSymbol *analyse_aml_pkg_length(AMLSubstring aml)
 	pkg_length->string.length += pkg_length->component.pkg_length.pkg_lead_byte->string.length;
 	aml.initial += pkg_length->component.pkg_length.pkg_lead_byte->string.length;
 	aml.length -= pkg_length->component.pkg_length.pkg_lead_byte->string.length;
+	pkg_length->component.pkg_length.num_of_byte_data = *pkg_length->component.pkg_length.pkg_lead_byte->string.initial >> 6 & 3;
+	for(AMLSymbol **byte_data = pkg_length->component.pkg_length.byte_data; byte_data != pkg_length->component.pkg_length.byte_data + pkg_length->component.pkg_length.num_of_byte_data; byte_data++)
+	{
+		*byte_data = analyse_aml_byte_data(aml);
+		pkg_length->string.length += (*byte_data)->string.length;
+		aml.initial += (*byte_data)->string.length;
+		aml.length -= (*byte_data)->string.length;
+	}
+	if(pkg_length->component.pkg_length.num_of_byte_data)
+	{
+		pkg_length->component.pkg_length.length = 0;
+		for(int i = pkg_length->component.pkg_length.num_of_byte_data - 1; 0 <= i; i--)
+		{
+			pkg_length->component.pkg_length.length <<= 8;
+			pkg_length->component.pkg_length.length += *pkg_length->component.pkg_length.byte_data[i]->string.initial;
+		}
+		pkg_length->component.pkg_length.length <<= 4;
+		pkg_length->component.pkg_length.length += *pkg_length->component.pkg_length.pkg_lead_byte->string.initial & 0x0f;
+	}
+	else pkg_length->component.pkg_length.length = *pkg_length->component.pkg_length.pkg_lead_byte->string.initial & 0x3f;
 	return pkg_length;
 }
 

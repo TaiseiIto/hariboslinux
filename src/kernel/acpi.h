@@ -417,6 +417,8 @@ typedef struct _AMLPkgLength
 {
 	struct _AMLSymbol *pkg_lead_byte;
 	struct _AMLSymbol *byte_data[3];
+	unsigned char num_of_byte_data;
+	unsigned int length;
 } AMLPkgLength;
 
 typedef struct _AMLPrefixPath
