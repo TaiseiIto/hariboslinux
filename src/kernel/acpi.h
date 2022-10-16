@@ -164,6 +164,7 @@ struct _AMLSymbol;
 typedef enum _AMLSymbolType
 {
 	aml_alias_op,
+	aml_ascii_char,
 	aml_ascii_char_list,
 	aml_byte_const,
 	aml_byte_data,
@@ -494,6 +495,8 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 // <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
+// <ascii_char> := 0x01 - 0x7f
+AMLSymbol *analyse_aml_ascii_char(AMLSubstring aml);
 // <ascii_char_list> := Nothing | <ascii_char> <ascii_char_list>
 AMLSymbol *analyse_aml_ascii_char_list(AMLSubstring aml);
 // <byte_const> := <byte_prefix> <byte_data>

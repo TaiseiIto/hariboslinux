@@ -393,6 +393,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_alias_op:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_ascii_char:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_ascii_char_list:
 		if(aml_symbol->component.ascii_char_list.ascii_char)
 		{
@@ -2246,6 +2249,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
+	static char const * const aml_ascii_char_name = "AsciiChar";
 	static char const * const aml_ascii_char_list_name = "AsciiCharList";
 	static char const * const aml_byte_const_name = "ByteConst";
 	static char const * const aml_byte_data_name = "ByteData";
@@ -2291,6 +2295,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	{
 	case aml_alias_op:
 		return aml_alias_op_name;
+	case aml_ascii_char:
+		return aml_ascii_char_name;
 	case aml_ascii_char_list:
 		return aml_ascii_char_list_name;
 	case aml_byte_const:
@@ -2390,6 +2396,17 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 	return alias_op;
 }
 
+// <ascii_char> := 0x01 - 0x7f
+AMLSymbol *analyse_aml_ascii_char(AMLSubstring aml)
+{
+	AMLSymbol *ascii_char = malloc(sizeof(*ascii_char));
+	ascii_char->string.initial = aml.initial;
+	ascii_char->string.length = 1;
+	ascii_char->type = aml_ascii_char;
+	if(!(0x01 <= *ascii_char->string.initial && *ascii_char->string.initial <= 0x7f))ERROR(); // Incorrect ascii char
+	return ascii_char;
+}
+
 // <ascii_char_list> := Nothing | <ascii_char> <ascii_char_list>
 AMLSymbol *analyse_aml_ascii_char_list(AMLSubstring aml)
 {
@@ -2397,8 +2414,22 @@ AMLSymbol *analyse_aml_ascii_char_list(AMLSubstring aml)
 	ascii_char_list->string.initial = aml.initial;
 	ascii_char_list->string.length = 0;
 	ascii_char_list->type = aml_ascii_char_list;
-	ascii_char_list->component.ascii_char_list.ascii_char = NULL;
-	ascii_char_list->component.ascii_char_list.ascii_char_list = NULL;
+	if(0x01 <= *ascii_char_list->string.initial && *ascii_char_list->string.initial <= 0x7f)
+	{
+		ascii_char_list->component.ascii_char_list.ascii_char = analyse_aml_ascii_char(aml);
+		ascii_char_list->string.length += ascii_char_list->component.ascii_char_list.ascii_char->string.length;
+		aml.initial += ascii_char_list->component.ascii_char_list.ascii_char->string.length;
+		aml.length -= ascii_char_list->component.ascii_char_list.ascii_char->string.length;
+		ascii_char_list->component.ascii_char_list.ascii_char_list = analyse_aml_ascii_char_list(aml);
+		ascii_char_list->string.length += ascii_char_list->component.ascii_char_list.ascii_char_list->string.length;
+		aml.initial += ascii_char_list->component.ascii_char_list.ascii_char_list->string.length;
+		aml.length -= ascii_char_list->component.ascii_char_list.ascii_char_list->string.length;
+	}
+	else
+	{
+		ascii_char_list->component.ascii_char_list.ascii_char = NULL;
+		ascii_char_list->component.ascii_char_list.ascii_char_list = NULL;
+	}
 	return ascii_char_list;
 }
 
@@ -3209,6 +3240,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
+		break;
+	case aml_ascii_char:
 		break;
 	case aml_ascii_char_list:
 		if(aml_symbol->component.ascii_char_list.ascii_char)delete_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char);
