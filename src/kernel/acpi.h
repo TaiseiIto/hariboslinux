@@ -194,6 +194,8 @@ typedef enum _AMLSymbolType
 	aml_null_char,
 	aml_null_name,
 	aml_object,
+	aml_one_op,
+	aml_ones_op,
 	aml_parent_prefix_char,
 	aml_prefix_path,
 	aml_qword_const,
@@ -566,6 +568,10 @@ AMLSymbol *analyse_aml_null_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_null_name(AMLSubstring aml);
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSubstring aml);
+// <one_op> := AML_BYTE_ONE_OP
+AMLSymbol *analyse_aml_one_op(AMLSubstring aml);
+// <ones_op> := AML_BYTE_ONES_OP
+AMLSymbol *analyse_aml_ones_op(AMLSubstring aml);
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
