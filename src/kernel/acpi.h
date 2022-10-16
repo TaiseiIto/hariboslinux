@@ -209,6 +209,7 @@ typedef enum _AMLSymbolType
 	aml_word_const,
 	aml_word_data,
 	aml_word_prefix,
+	aml_zero_op,
 } AMLSymbolType;
 
 typedef struct _AMLSubstring
@@ -595,6 +596,8 @@ AMLSymbol *analyse_aml_word_const(AMLSubstring aml);
 AMLSymbol *analyse_aml_word_data(AMLSubstring aml);
 // <word_prefix> := AML_BYTE_WORD_PREFIX
 AMLSymbol *analyse_aml_word_prefix(AMLSubstring aml);
+// <zero_op> := AML_BYTE_ZERO_OP
+AMLSymbol *analyse_aml_zero_op(AMLSubstring aml);
 AMLSymbol *create_dsdt_aml_syntax_tree(void);
 void delete_aml_symbol(AMLSymbol *aml_symbol);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);

@@ -2283,6 +2283,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_word_prefix:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_zero_op:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	default:
 		ERROR(); // Invalid AML symbol type
 		break;
@@ -2345,6 +2348,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_word_const_name = "WordConst";
 	static char const * const aml_word_data_name = "WordData";
 	static char const * const aml_word_prefix_name = "WordPrefix";
+	static char const * const aml_zero_op_name = "ZeroOp";
 	switch(aml_symbol_type)
 	{
 	case aml_alias_op:
@@ -2437,6 +2441,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_word_data_name;
 	case aml_word_prefix:
 		return aml_word_prefix_name;
+	case aml_zero_op:
+		return aml_zero_op_name;
 	default:
 		ERROR(); // Invalid AML symbol type
 		return NULL;
@@ -2567,6 +2573,12 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 		computational_data->component.computational_data.word_const = analyse_aml_word_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.word_const->string.length;
 		break;
+	case AML_BYTE_ZERO_OP:
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_ONES_OP:
+		computational_data->component.computational_data.const_obj = analyse_aml_const_obj(aml);
+		computational_data->string.length += computational_data->component.computational_data.const_obj->string.length;
+		break;
 	}
 	return computational_data;
 }
@@ -2581,6 +2593,15 @@ AMLSymbol *analyse_aml_const_obj(AMLSubstring aml)
 	const_obj->component.const_obj.zero_op = NULL;
 	const_obj->component.const_obj.one_op = NULL;
 	const_obj->component.const_obj.ones_op = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_ZERO_OP:
+		const_obj->component.const_obj.zero_op = analyse_aml_zero_op(aml);
+		const_obj->string.length += const_obj->component.const_obj.zero_op->string.length;
+		aml.initial += const_obj->component.const_obj.zero_op->string.length;
+		aml.length -= const_obj->component.const_obj.zero_op->string.length;
+		break;
+	}
 	return const_obj;
 }
 
@@ -3318,6 +3339,17 @@ AMLSymbol *analyse_aml_word_prefix(AMLSubstring aml)
 	return word_prefix;
 }
 
+// <zero_op> := AML_BYTE_ZERO_OP
+AMLSymbol *analyse_aml_zero_op(AMLSubstring aml)
+{
+	AMLSymbol *zero_op = malloc(sizeof(*zero_op));
+	zero_op->string.initial = aml.initial;
+	zero_op->string.length = 1;
+	zero_op->type = aml_zero_op;
+	if(*zero_op->string.initial != AML_BYTE_ZERO_OP)ERROR(); // Incorrect zero op
+	return zero_op;
+}
+
 AMLSymbol *create_dsdt_aml_syntax_tree(void)
 {
 	return analyse_aml_term_list(get_dsdt_aml());
@@ -3549,6 +3581,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		for(AMLSymbol **byte_data = aml_symbol->component.word_data.byte_data; byte_data != aml_symbol->component.word_data.byte_data + _countof(aml_symbol->component.word_data.byte_data); byte_data++)if(*byte_data)delete_aml_symbol(*byte_data);
 		break;
 	case aml_word_prefix:
+		break;
+	case aml_zero_op:
 		break;
 	default:
 		ERROR(); // Invalid AML symbol type
