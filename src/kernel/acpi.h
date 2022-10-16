@@ -164,6 +164,7 @@ struct _AMLSymbol;
 typedef enum _AMLSymbolType
 {
 	aml_alias_op,
+	aml_ascii_char_list,
 	aml_byte_const,
 	aml_byte_data,
 	aml_byte_prefix,
@@ -212,6 +213,12 @@ typedef struct _AMLSubstring
 	unsigned char const *initial;
 	size_t length;
 } AMLSubstring;
+
+typedef struct _AMLAsciiCharList
+{
+	struct _AMLSymbol *ascii_char;
+	struct _AMLSymbol *ascii_char_list;
+} AMLAsciiCharList;
 
 typedef struct _AMLByteConst
 {
@@ -446,6 +453,7 @@ typedef struct _AMLWordData
 
 typedef union _AMLComponent
 {
+	AMLAsciiCharList ascii_char_list;
 	AMLByteConst byte_const;
 	AMLComputationalData computational_data;
 	AMLDataObject data_object;
@@ -486,6 +494,8 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 // <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
+// <ascii_char_list> := Nothing | <ascii_char> <ascii_char_list>
+AMLSymbol *analyse_aml_ascii_char_list(AMLSubstring aml);
 // <byte_const> := <byte_prefix> <byte_data>
 AMLSymbol *analyse_aml_byte_const(AMLSubstring aml);
 // <byte_data> := 0x00 - 0xff
