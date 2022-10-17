@@ -4223,7 +4223,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		term_list->string.length += term_list->component.term_list.term_obj->string.length;
 		aml.initial += term_list->component.term_list.term_obj->string.length;
 		aml.length -= term_list->component.term_list.term_obj->string.length;
-		if(aml.length)switch(*aml.initial)
+		if(aml.length && term_list->component.term_list.term_obj->string.length)switch(*aml.initial)
 		{
 		case AML_BYTE_ALIAS_OP:
 		case AML_BYTE_EXT_OP_PREFIX:
@@ -4232,9 +4232,6 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 			term_list->string.length += term_list->component.term_list.term_list->string.length;
 			aml.initial += term_list->component.term_list.term_list->string.length;
 			aml.length -= term_list->component.term_list.term_list->string.length;
-			break;
-		default:
-			term_list->component.term_list.term_list = NULL;
 			break;
 		}
 	}
