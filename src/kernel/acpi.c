@@ -3532,6 +3532,7 @@ AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 {
 	AMLSymbol *name_char = malloc(sizeof(*name_char));
+	printf_shell(get_current_shell(), "analyse_aml_name_char begin\n");
 	name_char->string.initial = aml.initial;
 	name_char->string.length = 0;
 	name_char->type = aml_name_char;
@@ -3548,6 +3549,7 @@ AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 		name_char->string.length += name_char->component.name_char.lead_name_char->string.length;
 	}
 	else ERROR(); // Incorrect name char
+	printf_shell(get_current_shell(), "analyse_aml_name_char end\n");
 	return name_char;
 }
 
@@ -3604,6 +3606,7 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_seg(AMLSubstring aml)
 {
 	AMLSymbol *name_seg = malloc(sizeof(*name_seg));
+	printf_shell(get_current_shell(), "analyse_aml_name_seg begin\n");
 	name_seg->string.initial = aml.initial;
 	name_seg->string.length = 0;
 	name_seg->type = aml_name_seg;
@@ -3618,6 +3621,7 @@ AMLSymbol *analyse_aml_name_seg(AMLSubstring aml)
 		aml.initial += (*name_char)->string.length;
 		aml.length -= (*name_char)->string.length;
 	}
+	printf_shell(get_current_shell(), "analyse_aml_name_seg end\n");
 	return name_seg;
 }
 
