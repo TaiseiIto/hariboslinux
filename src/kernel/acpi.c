@@ -3298,7 +3298,6 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml)
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 {
 	AMLSymbol *def_op_region = malloc(sizeof(*def_op_region));
-	printf_shell(get_current_shell(), "analyse_aml_def_op_region begin\n");
 	def_op_region->string.initial = aml.initial;
 	def_op_region->string.length = 0;
 	def_op_region->type = aml_def_op_region;
@@ -3313,7 +3312,6 @@ AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 	def_op_region->component.def_op_region.region_space = NULL;
 	def_op_region->component.def_op_region.region_offset = NULL;
 	def_op_region->component.def_op_region.region_len = NULL;
-	printf_shell(get_current_shell(), "analyse_aml_def_op_region end\n");
 	return def_op_region;
 }
 
@@ -3532,7 +3530,6 @@ AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 {
 	AMLSymbol *name_char = malloc(sizeof(*name_char));
-	printf_shell(get_current_shell(), "analyse_aml_name_char begin\n");
 	name_char->string.initial = aml.initial;
 	name_char->string.length = 0;
 	name_char->type = aml_name_char;
@@ -3549,7 +3546,6 @@ AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 		name_char->string.length += name_char->component.name_char.lead_name_char->string.length;
 	}
 	else ERROR(); // Incorrect name char
-	printf_shell(get_current_shell(), "analyse_aml_name_char end\n");
 	return name_char;
 }
 
@@ -3568,7 +3564,6 @@ AMLSymbol *analyse_aml_name_op(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 {
 	AMLSymbol *name_path = malloc(sizeof(*name_path));
-	printf_shell(get_current_shell(), "analyse_aml_name_path begin\n");
 	name_path->string.initial = aml.initial;
 	name_path->string.length = 0;
 	name_path->type = aml_name_path;
@@ -3598,7 +3593,6 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 		}
 		break;
 	}
-	printf_shell(get_current_shell(), "analyse_aml_name_path end\n");
 	return name_path;
 }
 
@@ -3606,7 +3600,6 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_seg(AMLSubstring aml)
 {
 	AMLSymbol *name_seg = malloc(sizeof(*name_seg));
-	printf_shell(get_current_shell(), "analyse_aml_name_seg begin\n");
 	name_seg->string.initial = aml.initial;
 	name_seg->string.length = 0;
 	name_seg->type = aml_name_seg;
@@ -3616,15 +3609,11 @@ AMLSymbol *analyse_aml_name_seg(AMLSubstring aml)
 	name_seg->string.length += name_seg->component.name_seg.lead_name_char->string.length;
 	for(AMLSymbol **name_char = name_seg->component.name_seg.name_char; name_char != name_seg->component.name_seg.name_char + _countof(name_seg->component.name_seg.name_char); name_char++)
 	{
-		printf_shell(get_current_shell(), "name_seg->component.name_seg.name_char = %p\n", name_seg->component.name_seg.name_char);
-		printf_shell(get_current_shell(), "name_char = %p\n", name_char);
-		printf_shell(get_current_shell(), "name_seg->component.name_seg.name_char + _countof(name_seg->component.name_seg.name_char) = %p\n", name_seg->component.name_seg.name_char + _countof(name_seg->component.name_seg.name_char));
 		*name_char = analyse_aml_name_char(aml);
 		name_seg->string.length += (*name_char)->string.length;
 		aml.initial += (*name_char)->string.length;
 		aml.length -= (*name_char)->string.length;
 	}
-	printf_shell(get_current_shell(), "analyse_aml_name_seg end\n");
 	return name_seg;
 }
 
@@ -3656,7 +3645,6 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 {
 	AMLSymbol *name_string = malloc(sizeof(*name_string));
-	printf_shell(get_current_shell(), "analyse_aml_name_string begin\n");
 	name_string->string.initial = aml.initial;
 	name_string->string.length = 0;
 	name_string->type = aml_name_string;
@@ -3666,14 +3654,12 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_ROOT_CHAR:
-		printf_shell(get_current_shell(), "AML_BYTE_ROOT_CHAR\n");
 		name_string->component.name_string.root_char = analyse_aml_root_char(aml);
 		name_string->string.length += name_string->component.name_string.root_char->string.length;
 		aml.initial += name_string->component.name_string.root_char->string.length;
 		aml.length -= name_string->component.name_string.root_char->string.length;
 		break;
 	default:
-		printf_shell(get_current_shell(), "AML_BYTE_PARENT_PREFIX_CHAR\n");
 		name_string->component.name_string.prefix_path = analyse_aml_prefix_path(aml);
 		name_string->string.length += name_string->component.name_string.prefix_path->string.length;
 		aml.initial += name_string->component.name_string.prefix_path->string.length;
@@ -3682,7 +3668,6 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	}
 	name_string->component.name_string.name_path = analyse_aml_name_path(aml);
 	name_string->string.length += name_string->component.name_string.name_path->string.length;
-	printf_shell(get_current_shell(), "analyse_aml_name_string end\n");
 	return name_string;
 }
 

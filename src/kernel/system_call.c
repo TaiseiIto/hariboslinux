@@ -692,15 +692,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					for(unsigned int i = 0; i < dsdt_aml.length; i++)printf_shell(shell, "%2.2x%c", dsdt_aml.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
 					printf_shell(shell, "\n");
 					printf_shell(shell, "---------- DSDT AML SYNTAX TREE ----------\n");
-					printf_shell(shell, "before create_dsdt_aml_syntax_tree\n");
 					dsdt_aml_syntax_tree = create_dsdt_aml_syntax_tree();
-					printf_shell(shell, "after create_dsdt_aml_syntax_tree\n");
-					printf_shell(shell, "before print_aml_symbol\n");
 					print_aml_symbol(dsdt_aml_syntax_tree);
-					printf_shell(shell, "after print_aml_symbol\n");
-					printf_shell(shell, "before delete_aml_symbol\n");
 					delete_aml_symbol(dsdt_aml_syntax_tree);
-					printf_shell(shell, "after delete_aml_symbol\n");
 					break;
 				default:
 					ERROR(); // Invalid CPU command.
