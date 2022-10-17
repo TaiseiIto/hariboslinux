@@ -270,6 +270,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *object_reference_chain_string;
 	ChainString *one_op_chain_string;
 	ChainString *ones_op_chain_string;
+	ChainString *op_region_op_chain_string;
 	ChainString *output;
 	ChainString *parent_prefix_char_chain_string;
 	ChainString *pkg_lead_byte_chain_string;
@@ -278,6 +279,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *qword_const_chain_string;
 	ChainString *qword_data_chain_string;
 	ChainString *qword_prefix_chain_string;
+	ChainString *region_len_chain_string;
+	ChainString *region_offset_chain_string;
+	ChainString *region_space_chain_string;
 	ChainString *revision_op_chain_string;
 	ChainString *revision_op_prefix_chain_string;
 	ChainString *root_char_chain_string;
@@ -418,6 +422,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *object_reference_char_array;
 	char *one_op_char_array;
 	char *ones_op_char_array;
+	char *op_region_op_char_array;
 	char *parent_prefix_char_char_array;
 	char *pkg_lead_byte_char_array;
 	char *pkg_length_char_array;
@@ -425,6 +430,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *qword_const_char_array;
 	char *qword_data_char_array;
 	char *qword_prefix_char_array;
+	char *region_len_char_array;
+	char *region_offset_char_array;
+	char *region_space_char_array;
 	char *revision_op_char_array;
 	char *revision_op_prefix_char_array;
 	char *root_char_char_array;
@@ -879,6 +887,74 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(data_ref_object_chain_string);
 			free(data_ref_object_char_array);
+		}
+		break;
+	case aml_def_op_region:
+		if(aml_symbol->component.def_op_region.op_region_op)
+		{
+			op_region_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_op_region.op_region_op);
+			insert_char_front(op_region_op_chain_string, op_region_op_chain_string->first_character, ' ');
+			replace_chain_string(op_region_op_chain_string, "\n", "\n ");
+			op_region_op_char_array = create_char_array_from_chain_string(op_region_op_chain_string);
+		}
+		else op_region_op_char_array = "";
+		if(aml_symbol->component.def_op_region.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_op_region.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.def_op_region.region_space)
+		{
+			region_space_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_op_region.region_space);
+			insert_char_front(region_space_chain_string, region_space_chain_string->first_character, ' ');
+			replace_chain_string(region_space_chain_string, "\n", "\n ");
+			region_space_char_array = create_char_array_from_chain_string(region_space_chain_string);
+		}
+		else region_space_char_array = "";
+		if(aml_symbol->component.def_op_region.region_offset)
+		{
+			region_offset_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_op_region.region_offset);
+			insert_char_front(region_offset_chain_string, region_offset_chain_string->first_character, ' ');
+			replace_chain_string(region_offset_chain_string, "\n", "\n ");
+			region_offset_char_array = create_char_array_from_chain_string(region_offset_chain_string);
+		}
+		else region_offset_char_array = "";
+		if(aml_symbol->component.def_op_region.region_len)
+		{
+			region_len_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_op_region.region_len);
+			insert_char_front(region_len_chain_string, region_len_chain_string->first_character, ' ');
+			replace_chain_string(region_len_chain_string, "\n", "\n ");
+			region_len_char_array = create_char_array_from_chain_string(region_len_chain_string);
+		}
+		else region_len_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), op_region_op_char_array, name_string_char_array, region_space_char_array, region_offset_char_array, region_len_char_array);
+		if(aml_symbol->component.def_op_region.op_region_op)
+		{
+			delete_chain_string(op_region_op_chain_string);
+			free(op_region_op_char_array);
+		}
+		if(aml_symbol->component.def_op_region.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.def_op_region.region_space)
+		{
+			delete_chain_string(region_space_chain_string);
+			free(region_space_char_array);
+		}
+		if(aml_symbol->component.def_op_region.region_offset)
+		{
+			delete_chain_string(region_offset_chain_string);
+			free(region_offset_char_array);
+		}
+		if(aml_symbol->component.def_op_region.region_len)
+		{
+			delete_chain_string(region_len_chain_string);
+			free(region_len_char_array);
 		}
 		break;
 	case aml_digit_char:
@@ -2730,6 +2806,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_name_name = "DefName";
+	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
@@ -2805,6 +2882,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_buffer_name;
 	case aml_def_name:
 		return aml_def_name_name;
+	case aml_def_op_region:
+		return aml_def_op_region_name;
 	case aml_digit_char:
 		return aml_digit_char_name;
 	case aml_dual_name_path:
@@ -3225,6 +3304,21 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml)
 	return def_name;
 }
 
+// <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
+AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
+{
+	AMLSymbol *def_op_region = malloc(sizeof(*def_op_region));
+	def_op_region->string.initial = aml.initial;
+	def_op_region->string.length = 0;
+	def_op_region->type = aml_def_op_region;
+	def_op_region->component.def_op_region.op_region_op = NULL;
+	def_op_region->component.def_op_region.name_string = NULL;
+	def_op_region->component.def_op_region.region_space = NULL;
+	def_op_region->component.def_op_region.region_offset = NULL;
+	def_op_region->component.def_op_region.region_len = NULL;
+	return def_op_region;
+}
+
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml)
 {
@@ -3600,6 +3694,13 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 	named_obj->component.named_obj.def_op_region = NULL;
 	named_obj->component.named_obj.def_power_res = NULL;
 	named_obj->component.named_obj.def_thermal_zone = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_EXT_OP_PREFIX:
+		named_obj->component.named_obj.def_op_region = analyse_aml_def_op_region(aml);
+		named_obj->string.length += named_obj->component.named_obj.def_op_region->string.length;
+		break;
+	}
 	return named_obj;
 }
 
@@ -4091,6 +4192,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_name.name_op)delete_aml_symbol(aml_symbol->component.def_name.name_op);
 		if(aml_symbol->component.def_name.name_string)delete_aml_symbol(aml_symbol->component.def_name.name_string);
 		if(aml_symbol->component.def_name.data_ref_object)delete_aml_symbol(aml_symbol->component.def_name.data_ref_object);
+		break;
+	case aml_def_op_region:
+		if(aml_symbol->component.def_op_region.op_region_op)delete_aml_symbol(aml_symbol->component.def_op_region.op_region_op);
+		if(aml_symbol->component.def_op_region.name_string)delete_aml_symbol(aml_symbol->component.def_op_region.name_string);
+		if(aml_symbol->component.def_op_region.region_space)delete_aml_symbol(aml_symbol->component.def_op_region.region_space);
+		if(aml_symbol->component.def_op_region.region_offset)delete_aml_symbol(aml_symbol->component.def_op_region.region_offset);
+		if(aml_symbol->component.def_op_region.region_len)delete_aml_symbol(aml_symbol->component.def_op_region.region_len);
 		break;
 	case aml_digit_char:
 		break;

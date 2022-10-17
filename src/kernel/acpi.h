@@ -178,6 +178,7 @@ typedef enum _AMLSymbolType
 	aml_def_alias,
 	aml_def_buffer,
 	aml_def_name,
+	aml_def_op_region,
 	aml_digit_char,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
@@ -299,6 +300,15 @@ typedef struct _AMLDefName
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *data_ref_object;
 } AMLDefName;
+
+typedef struct _AMLDefOpRegion
+{
+	struct _AMLSymbol *op_region_op;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *region_space;
+	struct _AMLSymbol *region_offset;
+	struct _AMLSymbol *region_len;
+} AMLDefOpRegion;
 
 typedef struct _AMLDualNamePath
 {
@@ -537,6 +547,7 @@ typedef union _AMLComponent
 	AMLDefAlias def_alias;
 	AMLDefBuffer def_buffer;
 	AMLDefName def_name;
+	AMLDefOpRegion def_op_region;
 	AMLDualNamePath dual_name_path;
 	AMLDWordConst dword_const;
 	AMLDWordData dword_data;
@@ -603,6 +614,8 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
 AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
+// <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
+AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>
