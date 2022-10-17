@@ -471,6 +471,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_parent_prefix_char:
 	case aml_pkg_lead_byte:
 	case aml_qword_prefix:
+	case aml_region_space:
 	case aml_revision_op_prefix:
 	case aml_root_char:
 	case aml_seg_count:
@@ -2823,6 +2824,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_qword_const_name = "QWordConst";
 	static char const * const aml_qword_data_name = "QWordData";
 	static char const * const aml_qword_prefix_name = "QWordPrefix";
+	static char const * const aml_region_space_name = "RegionSpace";
 	static char const * const aml_revision_op_name = "RevisionOp";
 	static char const * const aml_revision_op_prefix_name = "RevisionOpPrefix";
 	static char const * const aml_root_char_name = "RootChar";
@@ -2935,6 +2937,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_qword_data_name;
 	case aml_qword_prefix:
 		return aml_qword_prefix_name;
+	case aml_region_space:
+		return aml_region_space_name;
 	case aml_revision_op:
 		return aml_revision_op_name;
 	case aml_revision_op_prefix:
@@ -3312,7 +3316,10 @@ AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 	def_op_region->string.length += def_op_region->component.def_op_region.name_string->string.length;
 	aml.initial += def_op_region->component.def_op_region.name_string->string.length;
 	aml.length -= def_op_region->component.def_op_region.name_string->string.length;
-	def_op_region->component.def_op_region.region_space = NULL;
+	def_op_region->component.def_op_region.region_space = analyse_aml_region_space(aml);
+	def_op_region->string.length += def_op_region->component.def_op_region.region_space->string.length;
+	aml.initial += def_op_region->component.def_op_region.region_space->string.length;
+	aml.length -= def_op_region->component.def_op_region.region_space->string.length;
 	def_op_region->component.def_op_region.region_offset = NULL;
 	def_op_region->component.def_op_region.region_len = NULL;
 	return def_op_region;
@@ -3931,6 +3938,16 @@ AMLSymbol *analyse_aml_qword_prefix(AMLSubstring aml)
 	return qword_prefix;
 }
 
+// <region_space>
+AMLSymbol *analyse_aml_region_space(AMLSubstring aml)
+{
+	AMLSymbol *region_space = malloc(sizeof(*region_space));
+	region_space->string.initial = aml.initial;
+	region_space->string.length = 1;
+	region_space->type = aml_region_space;
+	return region_space;
+}
+
 // <revision_op> := <ext_op_prefix> <revision_op_prefix>
 AMLSymbol *analyse_aml_revision_op(AMLSubstring aml)
 {
@@ -4395,6 +4412,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		for(AMLSymbol **dword_data = aml_symbol->component.qword_data.dword_data; dword_data != aml_symbol->component.qword_data.dword_data + _countof(aml_symbol->component.qword_data.dword_data); dword_data++)if(*dword_data)delete_aml_symbol(*dword_data);
 		break;
 	case aml_qword_prefix:
+		break;
+	case aml_region_space:
 		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.revision_op.ext_op_prefix);
