@@ -44,7 +44,7 @@
 #define AML_BYTE_DEBUG_OP		0x31
 #define AML_BYTE_FATAL_OP		0x32
 #define AML_BYTE_TIMER_OP		0x33
-#define AML_BYTE_OP_REFION_OP		0x80
+#define AML_BYTE_OP_REGION_OP		0x80
 #define AML_BYTE_FIELD_OP		0x81
 #define AML_BYTE_DEVICE_OP		0x82
 #define AML_BYTE_POWER_RES_OP		0x84
@@ -271,6 +271,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *one_op_chain_string;
 	ChainString *ones_op_chain_string;
 	ChainString *op_region_op_chain_string;
+	ChainString *op_region_op_prefix_chain_string;
 	ChainString *output;
 	ChainString *parent_prefix_char_chain_string;
 	ChainString *pkg_lead_byte_chain_string;
@@ -423,6 +424,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *one_op_char_array;
 	char *ones_op_char_array;
 	char *op_region_op_char_array;
+	char *op_region_op_prefix_char_array;
 	char *parent_prefix_char_char_array;
 	char *pkg_lead_byte_char_array;
 	char *pkg_length_char_array;
@@ -2203,6 +2205,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_ones_op:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_op_region_op:
+		if(aml_symbol->component.op_region_op.ext_op_prefix)
+		{
+			ext_op_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.op_region_op.ext_op_prefix);
+			insert_char_front(ext_op_prefix_chain_string, ext_op_prefix_chain_string->first_character, ' ');
+			replace_chain_string(ext_op_prefix_chain_string, "\n", "\n ");
+			ext_op_prefix_char_array = create_char_array_from_chain_string(ext_op_prefix_chain_string);
+		}
+		else ext_op_prefix_char_array = "";
+		if(aml_symbol->component.op_region_op.op_region_op_prefix)
+		{
+			op_region_op_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.op_region_op.op_region_op_prefix);
+			insert_char_front(op_region_op_prefix_chain_string, op_region_op_prefix_chain_string->first_character, ' ');
+			replace_chain_string(op_region_op_prefix_chain_string, "\n", "\n ");
+			op_region_op_prefix_char_array = create_char_array_from_chain_string(op_region_op_prefix_chain_string);
+		}
+		else op_region_op_prefix_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), ext_op_prefix_char_array, op_region_op_prefix_char_array);
+		if(aml_symbol->component.op_region_op.ext_op_prefix)
+		{
+			delete_chain_string(ext_op_prefix_chain_string);
+			free(ext_op_prefix_char_array);
+		}
+		if(aml_symbol->component.op_region_op.op_region_op_prefix)
+		{
+			delete_chain_string(op_region_op_prefix_chain_string);
+			free(op_region_op_prefix_char_array);
+		}
+		break;
 	case aml_parent_prefix_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2829,6 +2860,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_one_op_name = "OneOp";
 	static char const * const aml_ones_op_name = "OnesOp";
+	static char const * const aml_op_region_op_name = "OpRegionOp";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
 	static char const * const aml_pkg_length_name = "PkgLength";
@@ -2928,6 +2960,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_one_op_name;
 	case aml_ones_op:
 		return aml_ones_op_name;
+	case aml_op_region_op:
+		return aml_op_region_op_name;
 	case aml_parent_prefix_char:
 		return aml_parent_prefix_char_name;
 	case aml_pkg_lead_byte:
@@ -3311,7 +3345,10 @@ AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 	def_op_region->string.initial = aml.initial;
 	def_op_region->string.length = 0;
 	def_op_region->type = aml_def_op_region;
-	def_op_region->component.def_op_region.op_region_op = NULL;
+	def_op_region->component.def_op_region.op_region_op = analyse_aml_op_region_op(aml);
+	def_op_region->string.length += def_op_region->component.def_op_region.op_region_op->string.length;
+	aml.initial += def_op_region->component.def_op_region.op_region_op->string.length;
+	aml.length -= def_op_region->component.def_op_region.op_region_op->string.length;
 	def_op_region->component.def_op_region.name_string = NULL;
 	def_op_region->component.def_op_region.region_space = NULL;
 	def_op_region->component.def_op_region.region_offset = NULL;
@@ -3770,6 +3807,18 @@ AMLSymbol *analyse_aml_ones_op(AMLSubstring aml)
 	ones_op->type = aml_ones_op;
 	if(*ones_op->string.initial != AML_BYTE_ONES_OP)ERROR(); // Incorrect ones op
 	return ones_op;
+}
+
+// <op_region_op> := <ext_op_prefix> <op_region_op_prefix>
+AMLSymbol *analyse_aml_op_region_op(AMLSubstring aml)
+{
+	AMLSymbol *op_region_op = malloc(sizeof(*op_region_op));
+	op_region_op->string.initial = aml.initial;
+	op_region_op->string.length = 0;
+	op_region_op->type = aml_op_region_op;
+	op_region_op->component.op_region_op.ext_op_prefix = NULL;
+	op_region_op->component.op_region_op.op_region_op_prefix = NULL;
+	return op_region_op;
 }
 
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
@@ -4335,6 +4384,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_one_op:
 		break;
 	case aml_ones_op:
+		break;
+	case aml_op_region_op:
+		if(aml_symbol->component.op_region_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.op_region_op.ext_op_prefix);
+		if(aml_symbol->component.op_region_op.op_region_op_prefix)delete_aml_symbol(aml_symbol->component.op_region_op.op_region_op_prefix);
 		break;
 	case aml_parent_prefix_char:
 		break;
