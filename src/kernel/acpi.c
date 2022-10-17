@@ -3528,7 +3528,7 @@ AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml)
 	return multi_name_prefix;
 }
 
-// <name_char> := <digit_char> | <lead_char>
+// <name_char> := <digit_char> | <lead_name_char>
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 {
 	AMLSymbol *name_char = malloc(sizeof(*name_char));
@@ -3545,7 +3545,7 @@ AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 	}
 	else if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
 	{
-		name_char->component.name_char.lead_name_char = analyse_aml_name_char(aml);
+		name_char->component.name_char.lead_name_char = analyse_aml_lead_name_char(aml);
 		name_char->string.length += name_char->component.name_char.lead_name_char->string.length;
 	}
 	else ERROR(); // Incorrect name char
@@ -3616,6 +3616,9 @@ AMLSymbol *analyse_aml_name_seg(AMLSubstring aml)
 	name_seg->string.length += name_seg->component.name_seg.lead_name_char->string.length;
 	for(AMLSymbol **name_char = name_seg->component.name_seg.name_char; name_char != name_seg->component.name_seg.name_char + _countof(name_seg->component.name_seg.name_char); name_char++)
 	{
+		printf_shell(get_current_shell(), "name_seg->component.name_seg.name_char = %p\n", name_seg->component.name_seg.name_char);
+		printf_shell(get_current_shell(), "name_char = %p\n", name_char);
+		printf_shell(get_current_shell(), "name_seg->component.name_seg.name_char + _countof(name_seg->component.name_seg.name_char) = %p\n", name_seg->component.name_seg.name_char + _countof(name_seg->component.name_seg.name_char));
 		*name_char = analyse_aml_name_char(aml);
 		name_seg->string.length += (*name_char)->string.length;
 		aml.initial += (*name_char)->string.length;

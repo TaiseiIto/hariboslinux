@@ -647,7 +647,7 @@ AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_multi_name_path(AMLSubstring aml);
 // <mult_name_prefix> := AML_BYTE_MULTI_NAME_PREFIX
 AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml);
-// <name_char> := <digit_char> | <lead_char>
+// <name_char> := <digit_char> | <lead_name_char>
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml);
 // <name_op> := AML_BYTE_NAME_OP
 AMLSymbol *analyse_aml_name_op(AMLSubstring aml);
