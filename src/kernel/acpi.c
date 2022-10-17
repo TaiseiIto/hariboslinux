@@ -452,7 +452,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			ascii_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.ascii_char_list.ascii_char);
 			insert_char_front(ascii_char_chain_string, ascii_char_chain_string->first_character, ' ');
-			replace_chain_string(ascii_char_chain_string, "\n", " \n");
+			replace_chain_string(ascii_char_chain_string, "\n", "\n ");
 			ascii_char_char_array = create_char_array_from_chain_string(ascii_char_chain_string);
 		}
 		else ascii_char_char_array = "";
@@ -460,7 +460,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			ascii_char_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.ascii_char_list.ascii_char_list);
 			insert_char_front(ascii_char_list_chain_string, ascii_char_list_chain_string->first_character, ' ');
-			replace_chain_string(ascii_char_list_chain_string, "\n", " \n");
+			replace_chain_string(ascii_char_list_chain_string, "\n", "\n ");
 			ascii_char_list_char_array = create_char_array_from_chain_string(ascii_char_list_chain_string);
 		}
 		else ascii_char_list_char_array = "";
@@ -484,7 +484,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.buffer_size.term_arg);
 			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
-			replace_chain_string(term_arg_chain_string, "\n", " \n");
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
 			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
 		}
 		else term_arg_char_array = "";
@@ -500,7 +500,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			byte_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.byte_const.byte_prefix);
 			insert_char_front(byte_prefix_chain_string, byte_prefix_chain_string->first_character, ' ');
-			replace_chain_string(byte_prefix_chain_string, "\n", " \n");
+			replace_chain_string(byte_prefix_chain_string, "\n", "\n ");
 			byte_prefix_char_array = create_char_array_from_chain_string(byte_prefix_chain_string);
 		}
 		else byte_prefix_char_array = "";
@@ -508,7 +508,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			byte_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.byte_const.byte_data);
 			insert_char_front(byte_data_chain_string, byte_data_chain_string->first_character, ' ');
-			replace_chain_string(byte_data_chain_string, "\n", " \n");
+			replace_chain_string(byte_data_chain_string, "\n", "\n ");
 			byte_data_char_array = create_char_array_from_chain_string(byte_data_chain_string);
 		}
 		else byte_data_char_array = "";
@@ -535,7 +535,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			byte_const_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.byte_const);
 			insert_char_front(byte_const_chain_string, byte_const_chain_string->first_character, ' ');
-			replace_chain_string(byte_const_chain_string, "\n", " \n");
+			replace_chain_string(byte_const_chain_string, "\n", "\n ");
 			byte_const_char_array = create_char_array_from_chain_string(byte_const_chain_string);
 		}
 		else byte_const_char_array = "";
@@ -543,7 +543,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			word_const_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.word_const);
 			insert_char_front(word_const_chain_string, word_const_chain_string->first_character, ' ');
-			replace_chain_string(word_const_chain_string, "\n", " \n");
+			replace_chain_string(word_const_chain_string, "\n", "\n ");
 			word_const_char_array = create_char_array_from_chain_string(word_const_chain_string);
 		}
 		else word_const_char_array = "";
@@ -551,7 +551,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			dword_const_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.dword_const);
 			insert_char_front(dword_const_chain_string, dword_const_chain_string->first_character, ' ');
-			replace_chain_string(dword_const_chain_string, "\n", " \n");
+			replace_chain_string(dword_const_chain_string, "\n", "\n ");
 			dword_const_char_array = create_char_array_from_chain_string(dword_const_chain_string);
 		}
 		else dword_const_char_array = "";
@@ -559,7 +559,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			qword_const_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.qword_const);
 			insert_char_front(qword_const_chain_string, qword_const_chain_string->first_character, ' ');
-			replace_chain_string(qword_const_chain_string, "\n", " \n");
+			replace_chain_string(qword_const_chain_string, "\n", "\n ");
 			qword_const_char_array = create_char_array_from_chain_string(qword_const_chain_string);
 		}
 		else qword_const_char_array = "";
@@ -567,7 +567,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.string);
 			insert_char_front(string_chain_string, string_chain_string->first_character, ' ');
-			replace_chain_string(string_chain_string, "\n", " \n");
+			replace_chain_string(string_chain_string, "\n", "\n ");
 			string_char_array = create_char_array_from_chain_string(string_chain_string);
 		}
 		else string_char_array = "";
@@ -575,7 +575,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			const_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.const_obj);
 			insert_char_front(const_obj_chain_string, const_obj_chain_string->first_character, ' ');
-			replace_chain_string(const_obj_chain_string, "\n", " \n");
+			replace_chain_string(const_obj_chain_string, "\n", "\n ");
 			const_obj_char_array = create_char_array_from_chain_string(const_obj_chain_string);
 		}
 		else const_obj_char_array = "";
@@ -583,7 +583,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			revision_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.revision_op);
 			insert_char_front(revision_op_chain_string, revision_op_chain_string->first_character, ' ');
-			replace_chain_string(revision_op_chain_string, "\n", " \n");
+			replace_chain_string(revision_op_chain_string, "\n", "\n ");
 			revision_op_char_array = create_char_array_from_chain_string(revision_op_chain_string);
 		}
 		else revision_op_char_array = "";
@@ -591,7 +591,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_buffer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.computational_data.def_buffer);
 			insert_char_front(def_buffer_chain_string, def_buffer_chain_string->first_character, ' ');
-			replace_chain_string(def_buffer_chain_string, "\n", " \n");
+			replace_chain_string(def_buffer_chain_string, "\n", "\n ");
 			def_buffer_char_array = create_char_array_from_chain_string(def_buffer_chain_string);
 		}
 		else def_buffer_char_array = "";
@@ -642,7 +642,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			zero_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.const_obj.zero_op);
 			insert_char_front(zero_op_chain_string, zero_op_chain_string->first_character, ' ');
-			replace_chain_string(zero_op_chain_string, "\n", " \n");
+			replace_chain_string(zero_op_chain_string, "\n", "\n ");
 			zero_op_char_array = create_char_array_from_chain_string(zero_op_chain_string);
 		}
 		else zero_op_char_array = "";
@@ -650,7 +650,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			one_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.const_obj.one_op);
 			insert_char_front(one_op_chain_string, one_op_chain_string->first_character, ' ');
-			replace_chain_string(one_op_chain_string, "\n", " \n");
+			replace_chain_string(one_op_chain_string, "\n", "\n ");
 			one_op_char_array = create_char_array_from_chain_string(one_op_chain_string);
 		}
 		else one_op_char_array = "";
@@ -658,7 +658,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			ones_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.const_obj.ones_op);
 			insert_char_front(ones_op_chain_string, ones_op_chain_string->first_character, ' ');
-			replace_chain_string(ones_op_chain_string, "\n", " \n");
+			replace_chain_string(ones_op_chain_string, "\n", "\n ");
 			ones_op_char_array = create_char_array_from_chain_string(ones_op_chain_string);
 		}
 		else ones_op_char_array = "";
@@ -684,7 +684,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			computational_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_object.computational_data);
 			insert_char_front(computational_data_chain_string, computational_data_chain_string->first_character, ' ');
-			replace_chain_string(computational_data_chain_string, "\n", " \n");
+			replace_chain_string(computational_data_chain_string, "\n", "\n ");
 			computational_data_char_array = create_char_array_from_chain_string(computational_data_chain_string);
 		}
 		else computational_data_char_array = "";
@@ -692,7 +692,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_package_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_object.def_package);
 			insert_char_front(def_package_chain_string, def_package_chain_string->first_character, ' ');
-			replace_chain_string(def_package_chain_string, "\n", " \n");
+			replace_chain_string(def_package_chain_string, "\n", "\n ");
 			def_package_char_array = create_char_array_from_chain_string(def_package_chain_string);
 		}
 		else def_package_char_array = "";
@@ -700,7 +700,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_var_package_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_object.def_var_package);
 			insert_char_front(def_var_package_chain_string, def_var_package_chain_string->first_character, ' ');
-			replace_chain_string(def_var_package_chain_string, "\n", " \n");
+			replace_chain_string(def_var_package_chain_string, "\n", "\n ");
 			def_var_package_char_array = create_char_array_from_chain_string(def_var_package_chain_string);
 		}
 		else def_var_package_char_array = "";
@@ -726,7 +726,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			data_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_ref_object.data_object);
 			insert_char_front(data_object_chain_string, data_object_chain_string->first_character, ' ');
-			replace_chain_string(data_object_chain_string, "\n", " \n");
+			replace_chain_string(data_object_chain_string, "\n", "\n ");
 			data_object_char_array = create_char_array_from_chain_string(data_object_chain_string);
 		}
 		else data_object_char_array = "";
@@ -734,7 +734,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			object_reference_chain_string = aml_symbol_to_chain_string(aml_symbol->component.data_ref_object.object_reference);
 			insert_char_front(object_reference_chain_string, object_reference_chain_string->first_character, ' ');
-			replace_chain_string(object_reference_chain_string, "\n", " \n");
+			replace_chain_string(object_reference_chain_string, "\n", "\n ");
 			object_reference_char_array = create_char_array_from_chain_string(object_reference_chain_string);
 		}
 		else object_reference_char_array = "";
@@ -757,7 +757,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			alias_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_alias.alias_op);
 			insert_char_front(alias_op_chain_string, alias_op_chain_string->first_character, ' ');
-			replace_chain_string(alias_op_chain_string, "\n", " \n");
+			replace_chain_string(alias_op_chain_string, "\n", "\n ");
 			alias_op_char_array = create_char_array_from_chain_string(alias_op_chain_string);
 		}
 		else alias_op_char_array = "";
@@ -765,7 +765,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_strings_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.def_alias.name_string[i]);
 			insert_char_front(name_strings_chain_string[i], name_strings_chain_string[i]->first_character, ' ');
-			replace_chain_string(name_strings_chain_string[i], "\n", " \n");
+			replace_chain_string(name_strings_chain_string[i], "\n", "\n ");
 			name_strings_char_array[i] = create_char_array_from_chain_string(name_strings_chain_string[i]);
 		}
 		else name_strings_char_array[i] = "";
@@ -789,7 +789,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			buffer_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_buffer.buffer_op);
 			insert_char_front(buffer_op_chain_string, buffer_op_chain_string->first_character, ' ');
-			replace_chain_string(buffer_op_chain_string, "\n", " \n");
+			replace_chain_string(buffer_op_chain_string, "\n", "\n ");
 			buffer_op_char_array = create_char_array_from_chain_string(buffer_op_chain_string);
 		}
 		else buffer_op_char_array = "";
@@ -797,7 +797,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_buffer.pkg_length);
 			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
-			replace_chain_string(pkg_length_chain_string, "\n", " \n");
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
 			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
 		}
 		else pkg_length_char_array = "";
@@ -805,7 +805,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			buffer_size_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_buffer.buffer_size);
 			insert_char_front(buffer_size_chain_string, buffer_size_chain_string->first_character, ' ');
-			replace_chain_string(buffer_size_chain_string, "\n", " \n");
+			replace_chain_string(buffer_size_chain_string, "\n", "\n ");
 			buffer_size_char_array = create_char_array_from_chain_string(buffer_size_chain_string);
 		}
 		else buffer_size_char_array = "";
@@ -813,7 +813,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			byte_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_buffer.byte_list);
 			insert_char_front(byte_list_chain_string, byte_list_chain_string->first_character, ' ');
-			replace_chain_string(byte_list_chain_string, "\n", " \n");
+			replace_chain_string(byte_list_chain_string, "\n", "\n ");
 			byte_list_char_array = create_char_array_from_chain_string(byte_list_chain_string);
 		}
 		else byte_list_char_array = "";
@@ -844,7 +844,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_name.name_op);
 			insert_char_front(name_op_chain_string, name_op_chain_string->first_character, ' ');
-			replace_chain_string(name_op_chain_string, "\n", " \n");
+			replace_chain_string(name_op_chain_string, "\n", "\n ");
 			name_op_char_array = create_char_array_from_chain_string(name_op_chain_string);
 		}
 		else name_op_char_array = "";
@@ -852,7 +852,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_name.name_string);
 			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
-			replace_chain_string(name_string_chain_string, "\n", " \n");
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
 			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
 		}
 		else name_string_char_array = "";
@@ -860,7 +860,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			data_ref_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_name.data_ref_object);
 			insert_char_front(data_ref_object_chain_string, data_ref_object_chain_string->first_character, ' ');
-			replace_chain_string(data_ref_object_chain_string, "\n", " \n");
+			replace_chain_string(data_ref_object_chain_string, "\n", "\n ");
 			data_ref_object_char_array = create_char_array_from_chain_string(data_ref_object_chain_string);
 		}
 		else data_ref_object_char_array = "";
@@ -891,7 +891,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			dual_name_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.dual_name_path.dual_name_prefix);
 			insert_char_front(dual_name_prefix_chain_string, dual_name_prefix_chain_string->first_character, ' ');
-			replace_chain_string(dual_name_prefix_chain_string, "\n", " \n");
+			replace_chain_string(dual_name_prefix_chain_string, "\n", "\n ");
 			dual_name_prefix_char_array = create_char_array_from_chain_string(dual_name_prefix_chain_string);
 		}
 		else dual_name_prefix_char_array = "";
@@ -899,7 +899,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_segs_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.dual_name_path.name_seg[i]);
 			insert_char_front(name_segs_chain_string[i], name_segs_chain_string[i]->first_character, ' ');
-			replace_chain_string(name_segs_chain_string[i], "\n", " \n");
+			replace_chain_string(name_segs_chain_string[i], "\n", "\n ");
 			name_segs_char_array[i] = create_char_array_from_chain_string(name_segs_chain_string[i]);
 		}
 		else name_segs_char_array[i] = "";
@@ -926,7 +926,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			dword_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.dword_const.dword_prefix);
 			insert_char_front(dword_prefix_chain_string, dword_prefix_chain_string->first_character, ' ');
-			replace_chain_string(dword_prefix_chain_string, "\n", " \n");
+			replace_chain_string(dword_prefix_chain_string, "\n", "\n ");
 			dword_prefix_char_array = create_char_array_from_chain_string(dword_prefix_chain_string);
 		}
 		else dword_prefix_char_array = "";
@@ -934,7 +934,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			dword_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.dword_const.dword_data);
 			insert_char_front(dword_data_chain_string, dword_data_chain_string->first_character, ' ');
-			replace_chain_string(dword_data_chain_string, "\n", " \n");
+			replace_chain_string(dword_data_chain_string, "\n", "\n ");
 			dword_data_char_array = create_char_array_from_chain_string(dword_data_chain_string);
 		}
 		else dword_prefix_char_array = "";
@@ -957,7 +957,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			words_data_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.dword_data.word_data[i]);
 			insert_char_front(words_data_chain_string[i], words_data_chain_string[i]->first_character, ' ');
-			replace_chain_string(words_data_chain_string[i], "\n", " \n");
+			replace_chain_string(words_data_chain_string[i], "\n", "\n ");
 			words_data_char_array[i] = create_char_array_from_chain_string(words_data_chain_string[i]);
 		}
 		else words_data_char_array[i] = "";
@@ -979,7 +979,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_add_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_add);
 			insert_char_front(def_add_chain_string, def_add_chain_string->first_character, ' ');
-			replace_chain_string(def_add_chain_string, "\n", " \n");
+			replace_chain_string(def_add_chain_string, "\n", "\n ");
 			def_add_char_array = create_char_array_from_chain_string(def_add_chain_string);
 		}
 		else def_add_char_array = "";
@@ -987,7 +987,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_and_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_and);
 			insert_char_front(def_and_chain_string, def_and_chain_string->first_character, ' ');
-			replace_chain_string(def_and_chain_string, "\n", " \n");
+			replace_chain_string(def_and_chain_string, "\n", "\n ");
 			def_and_char_array = create_char_array_from_chain_string(def_and_chain_string);
 		}
 		else def_and_char_array = "";
@@ -995,7 +995,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_aquire_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_aquire);
 			insert_char_front(def_aquire_chain_string, def_aquire_chain_string->first_character, ' ');
-			replace_chain_string(def_aquire_chain_string, "\n", " \n");
+			replace_chain_string(def_aquire_chain_string, "\n", "\n ");
 			def_aquire_char_array = create_char_array_from_chain_string(def_aquire_chain_string);
 		}
 		else def_aquire_char_array = "";
@@ -1003,7 +1003,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_buffer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_buffer);
 			insert_char_front(def_buffer_chain_string, def_buffer_chain_string->first_character, ' ');
-			replace_chain_string(def_buffer_chain_string, "\n", " \n");
+			replace_chain_string(def_buffer_chain_string, "\n", "\n ");
 			def_buffer_char_array = create_char_array_from_chain_string(def_buffer_chain_string);
 		}
 		else def_buffer_char_array = "";
@@ -1011,7 +1011,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_concat_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_concat);
 			insert_char_front(def_concat_chain_string, def_concat_chain_string->first_character, ' ');
-			replace_chain_string(def_concat_chain_string, "\n", " \n");
+			replace_chain_string(def_concat_chain_string, "\n", "\n ");
 			def_concat_char_array = create_char_array_from_chain_string(def_concat_chain_string);
 		}
 		else def_concat_char_array = "";
@@ -1019,7 +1019,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_concat_res_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_concat_res);
 			insert_char_front(def_concat_res_chain_string, def_concat_res_chain_string->first_character, ' ');
-			replace_chain_string(def_concat_res_chain_string, "\n", " \n");
+			replace_chain_string(def_concat_res_chain_string, "\n", "\n ");
 			def_concat_res_char_array = create_char_array_from_chain_string(def_concat_res_chain_string);
 		}
 		else def_concat_res_char_array = "";
@@ -1027,7 +1027,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_cond_ref_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_cond_ref_of);
 			insert_char_front(def_cond_ref_of_chain_string, def_cond_ref_of_chain_string->first_character, ' ');
-			replace_chain_string(def_cond_ref_of_chain_string, "\n", " \n");
+			replace_chain_string(def_cond_ref_of_chain_string, "\n", "\n ");
 			def_cond_ref_of_char_array = create_char_array_from_chain_string(def_cond_ref_of_chain_string);
 		}
 		else def_cond_ref_of_char_array = "";
@@ -1035,7 +1035,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_copy_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_copy_object);
 			insert_char_front(def_copy_object_chain_string, def_copy_object_chain_string->first_character, ' ');
-			replace_chain_string(def_copy_object_chain_string, "\n", " \n");
+			replace_chain_string(def_copy_object_chain_string, "\n", "\n ");
 			def_copy_object_char_array = create_char_array_from_chain_string(def_copy_object_chain_string);
 		}
 		else def_copy_object_char_array = "";
@@ -1043,7 +1043,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_decrement_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_decrement);
 			insert_char_front(def_decrement_chain_string, def_decrement_chain_string->first_character, ' ');
-			replace_chain_string(def_decrement_chain_string, "\n", " \n");
+			replace_chain_string(def_decrement_chain_string, "\n", "\n ");
 			def_decrement_char_array = create_char_array_from_chain_string(def_decrement_chain_string);
 		}
 		else def_decrement_char_array = "";
@@ -1051,7 +1051,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_deref_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_deref_of);
 			insert_char_front(def_deref_of_chain_string, def_deref_of_chain_string->first_character, ' ');
-			replace_chain_string(def_deref_of_chain_string, "\n", " \n");
+			replace_chain_string(def_deref_of_chain_string, "\n", "\n ");
 			def_deref_of_char_array = create_char_array_from_chain_string(def_deref_of_chain_string);
 		}
 		else def_deref_of_char_array = "";
@@ -1059,7 +1059,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_divide_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_divide);
 			insert_char_front(def_divide_chain_string, def_divide_chain_string->first_character, ' ');
-			replace_chain_string(def_divide_chain_string, "\n", " \n");
+			replace_chain_string(def_divide_chain_string, "\n", "\n ");
 			def_divide_char_array = create_char_array_from_chain_string(def_divide_chain_string);
 		}
 		else def_divide_char_array = "";
@@ -1067,7 +1067,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_find_set_left_bit_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_find_set_left_bit);
 			insert_char_front(def_find_set_left_bit_chain_string, def_find_set_left_bit_chain_string->first_character, ' ');
-			replace_chain_string(def_find_set_left_bit_chain_string, "\n", " \n");
+			replace_chain_string(def_find_set_left_bit_chain_string, "\n", "\n ");
 			def_find_set_left_bit_char_array = create_char_array_from_chain_string(def_find_set_left_bit_chain_string);
 		}
 		else def_find_set_left_bit_char_array = "";
@@ -1075,7 +1075,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_find_set_right_bit_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_find_set_right_bit);
 			insert_char_front(def_find_set_right_bit_chain_string, def_find_set_right_bit_chain_string->first_character, ' ');
-			replace_chain_string(def_find_set_right_bit_chain_string, "\n", " \n");
+			replace_chain_string(def_find_set_right_bit_chain_string, "\n", "\n ");
 			def_find_set_right_bit_char_array = create_char_array_from_chain_string(def_find_set_right_bit_chain_string);
 		}
 		else def_find_set_right_bit_char_array = "";
@@ -1083,7 +1083,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_from_bcd_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_from_bcd);
 			insert_char_front(def_from_bcd_chain_string, def_from_bcd_chain_string->first_character, ' ');
-			replace_chain_string(def_from_bcd_chain_string, "\n", " \n");
+			replace_chain_string(def_from_bcd_chain_string, "\n", "\n ");
 			def_from_bcd_char_array = create_char_array_from_chain_string(def_from_bcd_chain_string);
 		}
 		else def_from_bcd_char_array = "";
@@ -1091,7 +1091,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_increment_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_increment);
 			insert_char_front(def_increment_chain_string, def_increment_chain_string->first_character, ' ');
-			replace_chain_string(def_increment_chain_string, "\n", " \n");
+			replace_chain_string(def_increment_chain_string, "\n", "\n ");
 			def_increment_char_array = create_char_array_from_chain_string(def_increment_chain_string);
 		}
 		else def_increment_char_array = "";
@@ -1099,7 +1099,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_index_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_index);
 			insert_char_front(def_index_chain_string, def_index_chain_string->first_character, ' ');
-			replace_chain_string(def_index_chain_string, "\n", " \n");
+			replace_chain_string(def_index_chain_string, "\n", "\n ");
 			def_index_char_array = create_char_array_from_chain_string(def_index_chain_string);
 		}
 		else def_index_char_array = "";
@@ -1107,7 +1107,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_and_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_and);
 			insert_char_front(def_l_and_chain_string, def_l_and_chain_string->first_character, ' ');
-			replace_chain_string(def_l_and_chain_string, "\n", " \n");
+			replace_chain_string(def_l_and_chain_string, "\n", "\n ");
 			def_l_and_char_array = create_char_array_from_chain_string(def_l_and_chain_string);
 		}
 		else def_l_and_char_array = "";
@@ -1115,7 +1115,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_equal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_equal);
 			insert_char_front(def_l_equal_chain_string, def_l_equal_chain_string->first_character, ' ');
-			replace_chain_string(def_l_equal_chain_string, "\n", " \n");
+			replace_chain_string(def_l_equal_chain_string, "\n", "\n ");
 			def_l_equal_char_array = create_char_array_from_chain_string(def_l_equal_chain_string);
 		}
 		else def_l_equal_char_array = "";
@@ -1123,7 +1123,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_greater_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_greater);
 			insert_char_front(def_l_greater_chain_string, def_l_greater_chain_string->first_character, ' ');
-			replace_chain_string(def_l_greater_chain_string, "\n", " \n");
+			replace_chain_string(def_l_greater_chain_string, "\n", "\n ");
 			def_l_greater_char_array = create_char_array_from_chain_string(def_l_greater_chain_string);
 		}
 		else def_l_greater_char_array = "";
@@ -1131,7 +1131,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_greater_equal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_greater_equal);
 			insert_char_front(def_l_greater_equal_chain_string, def_l_greater_equal_chain_string->first_character, ' ');
-			replace_chain_string(def_l_greater_equal_chain_string, "\n", " \n");
+			replace_chain_string(def_l_greater_equal_chain_string, "\n", "\n ");
 			def_l_greater_equal_char_array = create_char_array_from_chain_string(def_l_greater_equal_chain_string);
 		}
 		else def_l_greater_equal_char_array = "";
@@ -1139,7 +1139,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_less_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_less);
 			insert_char_front(def_l_less_chain_string, def_l_less_chain_string->first_character, ' ');
-			replace_chain_string(def_l_less_chain_string, "\n", " \n");
+			replace_chain_string(def_l_less_chain_string, "\n", "\n ");
 			def_l_less_char_array = create_char_array_from_chain_string(def_l_less_chain_string);
 		}
 		else def_l_less_char_array = "";
@@ -1147,7 +1147,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_less_equal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_less_equal);
 			insert_char_front(def_l_less_equal_chain_string, def_l_less_equal_chain_string->first_character, ' ');
-			replace_chain_string(def_l_less_equal_chain_string, "\n", " \n");
+			replace_chain_string(def_l_less_equal_chain_string, "\n", "\n ");
 			def_l_less_equal_char_array = create_char_array_from_chain_string(def_l_less_equal_chain_string);
 		}
 		else def_l_less_equal_char_array = "";
@@ -1155,7 +1155,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_not_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_not);
 			insert_char_front(def_l_not_chain_string, def_l_not_chain_string->first_character, ' ');
-			replace_chain_string(def_l_not_chain_string, "\n", " \n");
+			replace_chain_string(def_l_not_chain_string, "\n", "\n ");
 			def_l_not_char_array = create_char_array_from_chain_string(def_l_not_chain_string);
 		}
 		else def_l_not_char_array = "";
@@ -1163,7 +1163,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_not_equal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_not_equal);
 			insert_char_front(def_l_not_equal_chain_string, def_l_not_equal_chain_string->first_character, ' ');
-			replace_chain_string(def_l_not_equal_chain_string, "\n", " \n");
+			replace_chain_string(def_l_not_equal_chain_string, "\n", "\n ");
 			def_l_not_equal_char_array = create_char_array_from_chain_string(def_l_not_equal_chain_string);
 		}
 		else def_l_not_equal_char_array = "";
@@ -1171,7 +1171,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_l_or_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_l_or);
 			insert_char_front(def_l_or_chain_string, def_l_or_chain_string->first_character, ' ');
-			replace_chain_string(def_l_or_chain_string, "\n", " \n");
+			replace_chain_string(def_l_or_chain_string, "\n", "\n ");
 			def_l_or_char_array = create_char_array_from_chain_string(def_l_or_chain_string);
 		}
 		else def_l_or_char_array = "";
@@ -1179,7 +1179,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_load_table_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_load_table);
 			insert_char_front(def_load_table_chain_string, def_load_table_chain_string->first_character, ' ');
-			replace_chain_string(def_load_table_chain_string, "\n", " \n");
+			replace_chain_string(def_load_table_chain_string, "\n", "\n ");
 			def_load_table_char_array = create_char_array_from_chain_string(def_load_table_chain_string);
 		}
 		else def_load_table_char_array = "";
@@ -1187,7 +1187,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_match_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_match);
 			insert_char_front(def_match_chain_string, def_match_chain_string->first_character, ' ');
-			replace_chain_string(def_match_chain_string, "\n", " \n");
+			replace_chain_string(def_match_chain_string, "\n", "\n ");
 			def_match_char_array = create_char_array_from_chain_string(def_match_chain_string);
 		}
 		else def_match_char_array = "";
@@ -1195,7 +1195,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_mid_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_mid);
 			insert_char_front(def_mid_chain_string, def_mid_chain_string->first_character, ' ');
-			replace_chain_string(def_mid_chain_string, "\n", " \n");
+			replace_chain_string(def_mid_chain_string, "\n", "\n ");
 			def_mid_char_array = create_char_array_from_chain_string(def_mid_chain_string);
 		}
 		else def_mid_char_array = "";
@@ -1203,7 +1203,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_mod_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_mod);
 			insert_char_front(def_mod_chain_string, def_mod_chain_string->first_character, ' ');
-			replace_chain_string(def_mod_chain_string, "\n", " \n");
+			replace_chain_string(def_mod_chain_string, "\n", "\n ");
 			def_mod_char_array = create_char_array_from_chain_string(def_mod_chain_string);
 		}
 		else def_mod_char_array = "";
@@ -1211,7 +1211,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_multiply_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_multiply);
 			insert_char_front(def_multiply_chain_string, def_multiply_chain_string->first_character, ' ');
-			replace_chain_string(def_multiply_chain_string, "\n", " \n");
+			replace_chain_string(def_multiply_chain_string, "\n", "\n ");
 			def_multiply_char_array = create_char_array_from_chain_string(def_multiply_chain_string);
 		}
 		else def_multiply_char_array = "";
@@ -1219,7 +1219,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_nand_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_nand);
 			insert_char_front(def_nand_chain_string, def_nand_chain_string->first_character, ' ');
-			replace_chain_string(def_nand_chain_string, "\n", " \n");
+			replace_chain_string(def_nand_chain_string, "\n", "\n ");
 			def_nand_char_array = create_char_array_from_chain_string(def_nand_chain_string);
 		}
 		else def_nand_char_array = "";
@@ -1227,7 +1227,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_nor_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_nor);
 			insert_char_front(def_nor_chain_string, def_nor_chain_string->first_character, ' ');
-			replace_chain_string(def_nor_chain_string, "\n", " \n");
+			replace_chain_string(def_nor_chain_string, "\n", "\n ");
 			def_nor_char_array = create_char_array_from_chain_string(def_nor_chain_string);
 		}
 		else def_nor_char_array = "";
@@ -1235,7 +1235,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_not_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_not);
 			insert_char_front(def_not_chain_string, def_not_chain_string->first_character, ' ');
-			replace_chain_string(def_not_chain_string, "\n", " \n");
+			replace_chain_string(def_not_chain_string, "\n", "\n ");
 			def_not_char_array = create_char_array_from_chain_string(def_not_chain_string);
 		}
 		else def_not_char_array = "";
@@ -1243,7 +1243,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_object_type_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_object_type);
 			insert_char_front(def_object_type_chain_string, def_object_type_chain_string->first_character, ' ');
-			replace_chain_string(def_object_type_chain_string, "\n", " \n");
+			replace_chain_string(def_object_type_chain_string, "\n", "\n ");
 			def_object_type_char_array = create_char_array_from_chain_string(def_object_type_chain_string);
 		}
 		else def_object_type_char_array = "";
@@ -1251,7 +1251,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_or_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_or);
 			insert_char_front(def_or_chain_string, def_or_chain_string->first_character, ' ');
-			replace_chain_string(def_or_chain_string, "\n", " \n");
+			replace_chain_string(def_or_chain_string, "\n", "\n ");
 			def_or_char_array = create_char_array_from_chain_string(def_or_chain_string);
 		}
 		else def_or_char_array = "";
@@ -1259,7 +1259,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_package_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_package);
 			insert_char_front(def_package_chain_string, def_package_chain_string->first_character, ' ');
-			replace_chain_string(def_package_chain_string, "\n", " \n");
+			replace_chain_string(def_package_chain_string, "\n", "\n ");
 			def_package_char_array = create_char_array_from_chain_string(def_package_chain_string);
 		}
 		else def_package_char_array = "";
@@ -1267,7 +1267,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_ref_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_ref_of);
 			insert_char_front(def_ref_of_chain_string, def_ref_of_chain_string->first_character, ' ');
-			replace_chain_string(def_ref_of_chain_string, "\n", " \n");
+			replace_chain_string(def_ref_of_chain_string, "\n", "\n ");
 			def_ref_of_char_array = create_char_array_from_chain_string(def_ref_of_chain_string);
 		}
 		else def_ref_of_char_array = "";
@@ -1275,7 +1275,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_shift_left_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_shift_left);
 			insert_char_front(def_shift_left_chain_string, def_shift_left_chain_string->first_character, ' ');
-			replace_chain_string(def_shift_left_chain_string, "\n", " \n");
+			replace_chain_string(def_shift_left_chain_string, "\n", "\n ");
 			def_shift_left_char_array = create_char_array_from_chain_string(def_shift_left_chain_string);
 		}
 		else def_shift_left_char_array = "";
@@ -1283,7 +1283,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_shift_right_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_shift_right);
 			insert_char_front(def_shift_right_chain_string, def_shift_right_chain_string->first_character, ' ');
-			replace_chain_string(def_shift_right_chain_string, "\n", " \n");
+			replace_chain_string(def_shift_right_chain_string, "\n", "\n ");
 			def_shift_right_char_array = create_char_array_from_chain_string(def_shift_right_chain_string);
 		}
 		else def_shift_right_char_array = "";
@@ -1291,7 +1291,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_size_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_size_of);
 			insert_char_front(def_size_of_chain_string, def_size_of_chain_string->first_character, ' ');
-			replace_chain_string(def_size_of_chain_string, "\n", " \n");
+			replace_chain_string(def_size_of_chain_string, "\n", "\n ");
 			def_size_of_char_array = create_char_array_from_chain_string(def_size_of_chain_string);
 		}
 		else def_size_of_char_array = "";
@@ -1299,7 +1299,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_store_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_store);
 			insert_char_front(def_store_chain_string, def_store_chain_string->first_character, ' ');
-			replace_chain_string(def_store_chain_string, "\n", " \n");
+			replace_chain_string(def_store_chain_string, "\n", "\n ");
 			def_store_char_array = create_char_array_from_chain_string(def_store_chain_string);
 		}
 		else def_store_char_array = "";
@@ -1307,7 +1307,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_subtract_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_subtract);
 			insert_char_front(def_subtract_chain_string, def_subtract_chain_string->first_character, ' ');
-			replace_chain_string(def_subtract_chain_string, "\n", " \n");
+			replace_chain_string(def_subtract_chain_string, "\n", "\n ");
 			def_subtract_char_array = create_char_array_from_chain_string(def_subtract_chain_string);
 		}
 		else def_subtract_char_array = "";
@@ -1315,7 +1315,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_timer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_timer);
 			insert_char_front(def_timer_chain_string, def_timer_chain_string->first_character, ' ');
-			replace_chain_string(def_timer_chain_string, "\n", " \n");
+			replace_chain_string(def_timer_chain_string, "\n", "\n ");
 			def_timer_char_array = create_char_array_from_chain_string(def_timer_chain_string);
 		}
 		else def_timer_char_array = "";
@@ -1323,7 +1323,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_to_bcd_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_bcd);
 			insert_char_front(def_to_bcd_chain_string, def_to_bcd_chain_string->first_character, ' ');
-			replace_chain_string(def_to_bcd_chain_string, "\n", " \n");
+			replace_chain_string(def_to_bcd_chain_string, "\n", "\n ");
 			def_to_bcd_char_array = create_char_array_from_chain_string(def_to_bcd_chain_string);
 		}
 		else def_to_bcd_char_array = "";
@@ -1331,7 +1331,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_to_buffer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_buffer);
 			insert_char_front(def_to_buffer_chain_string, def_to_buffer_chain_string->first_character, ' ');
-			replace_chain_string(def_to_buffer_chain_string, "\n", " \n");
+			replace_chain_string(def_to_buffer_chain_string, "\n", "\n ");
 			def_to_buffer_char_array = create_char_array_from_chain_string(def_to_buffer_chain_string);
 		}
 		else def_to_buffer_char_array = "";
@@ -1339,7 +1339,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_to_decimal_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_decimal_string);
 			insert_char_front(def_to_decimal_string_chain_string, def_to_decimal_string_chain_string->first_character, ' ');
-			replace_chain_string(def_to_decimal_string_chain_string, "\n", " \n");
+			replace_chain_string(def_to_decimal_string_chain_string, "\n", "\n ");
 			def_to_decimal_string_char_array = create_char_array_from_chain_string(def_to_decimal_string_chain_string);
 		}
 		else def_to_decimal_string_char_array = "";
@@ -1347,7 +1347,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_to_hex_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_hex_string);
 			insert_char_front(def_to_hex_string_chain_string, def_to_hex_string_chain_string->first_character, ' ');
-			replace_chain_string(def_to_hex_string_chain_string, "\n", " \n");
+			replace_chain_string(def_to_hex_string_chain_string, "\n", "\n ");
 			def_to_hex_string_char_array = create_char_array_from_chain_string(def_to_hex_string_chain_string);
 		}
 		else def_to_hex_string_char_array = "";
@@ -1355,7 +1355,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_to_integer_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_integer);
 			insert_char_front(def_to_integer_chain_string, def_to_integer_chain_string->first_character, ' ');
-			replace_chain_string(def_to_integer_chain_string, "\n", " \n");
+			replace_chain_string(def_to_integer_chain_string, "\n", "\n ");
 			def_to_integer_char_array = create_char_array_from_chain_string(def_to_integer_chain_string);
 		}
 		else def_to_integer_char_array = "";
@@ -1363,7 +1363,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_to_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_to_string);
 			insert_char_front(def_to_string_chain_string, def_to_string_chain_string->first_character, ' ');
-			replace_chain_string(def_to_string_chain_string, "\n", " \n");
+			replace_chain_string(def_to_string_chain_string, "\n", "\n ");
 			def_to_string_char_array = create_char_array_from_chain_string(def_to_string_chain_string);
 		}
 		else def_to_string_char_array = "";
@@ -1371,7 +1371,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_var_package_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_var_package);
 			insert_char_front(def_var_package_chain_string, def_var_package_chain_string->first_character, ' ');
-			replace_chain_string(def_var_package_chain_string, "\n", " \n");
+			replace_chain_string(def_var_package_chain_string, "\n", "\n ");
 			def_var_package_char_array = create_char_array_from_chain_string(def_var_package_chain_string);
 		}
 		else def_var_package_char_array = "";
@@ -1379,7 +1379,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_wait_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_wait);
 			insert_char_front(def_wait_chain_string, def_wait_chain_string->first_character, ' ');
-			replace_chain_string(def_wait_chain_string, "\n", " \n");
+			replace_chain_string(def_wait_chain_string, "\n", "\n ");
 			def_wait_char_array = create_char_array_from_chain_string(def_wait_chain_string);
 		}
 		else def_wait_char_array = "";
@@ -1387,7 +1387,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_xor_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.def_xor);
 			insert_char_front(def_xor_chain_string, def_xor_chain_string->first_character, ' ');
-			replace_chain_string(def_xor_chain_string, "\n", " \n");
+			replace_chain_string(def_xor_chain_string, "\n", "\n ");
 			def_xor_char_array = create_char_array_from_chain_string(def_xor_chain_string);
 		}
 		else def_xor_char_array = "";
@@ -1395,7 +1395,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			method_invocation_chain_string = aml_symbol_to_chain_string(aml_symbol->component.expression_opcode.method_invocation);
 			insert_char_front(method_invocation_chain_string, method_invocation_chain_string->first_character, ' ');
-			replace_chain_string(method_invocation_chain_string, "\n", " \n");
+			replace_chain_string(method_invocation_chain_string, "\n", "\n ");
 			method_invocation_char_array = create_char_array_from_chain_string(method_invocation_chain_string);
 		}
 		else method_invocation_char_array = "";
@@ -1679,7 +1679,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			multi_name_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.multi_name_path.multi_name_prefix);
 			insert_char_front(multi_name_prefix_chain_string, multi_name_prefix_chain_string->first_character, ' ');
-			replace_chain_string(multi_name_prefix_chain_string, "\n", " \n");
+			replace_chain_string(multi_name_prefix_chain_string, "\n", "\n ");
 			multi_name_prefix_char_array = create_char_array_from_chain_string(multi_name_prefix_chain_string);
 		}
 		else multi_name_prefix_char_array = "";
@@ -1687,7 +1687,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			seg_count_chain_string = aml_symbol_to_chain_string(aml_symbol->component.multi_name_path.seg_count);
 			insert_char_front(seg_count_chain_string, seg_count_chain_string->first_character, ' ');
-			replace_chain_string(seg_count_chain_string, "\n", " \n");
+			replace_chain_string(seg_count_chain_string, "\n", "\n ");
 			seg_count_char_array = create_char_array_from_chain_string(seg_count_chain_string);
 		}
 		else seg_count_char_array = "";
@@ -1695,7 +1695,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_segs_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.multi_name_path.name_seg[i]);
 			insert_char_front(name_segs_chain_string[i], name_segs_chain_string[i]->first_character, ' ');
-			replace_chain_string(name_segs_chain_string[i], "\n", " \n");
+			replace_chain_string(name_segs_chain_string[i], "\n", "\n ");
 			name_segs_char_array[i] = create_char_array_from_chain_string(name_segs_chain_string[i]);
 		}
 		else name_segs_char_array[i] = "";
@@ -1727,7 +1727,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			digit_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_char.digit_char);
 			insert_char_front(digit_char_chain_string, digit_char_chain_string->first_character, ' ');
-			replace_chain_string(digit_char_chain_string, "\n", " \n");
+			replace_chain_string(digit_char_chain_string, "\n", "\n ");
 			digit_char_char_array = create_char_array_from_chain_string(digit_char_chain_string);
 		}
 		else digit_char_char_array = "";
@@ -1735,7 +1735,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			lead_name_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_char.lead_name_char);
 			insert_char_front(lead_name_char_chain_string, lead_name_char_chain_string->first_character, ' ');
-			replace_chain_string(lead_name_char_chain_string, "\n", " \n");
+			replace_chain_string(lead_name_char_chain_string, "\n", "\n ");
 			lead_name_char_char_array = create_char_array_from_chain_string(lead_name_char_chain_string);
 		}
 		else lead_name_char_char_array = "";
@@ -1759,7 +1759,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_seg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_path.name_seg);
 			insert_char_front(name_seg_chain_string, name_seg_chain_string->first_character, ' ');
-			replace_chain_string(name_seg_chain_string, "\n", " \n");
+			replace_chain_string(name_seg_chain_string, "\n", "\n ");
 			name_seg_char_array = create_char_array_from_chain_string(name_seg_chain_string);
 		}
 		else name_seg_char_array = "";
@@ -1767,7 +1767,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			dual_name_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_path.dual_name_path);
 			insert_char_front(dual_name_path_chain_string, dual_name_path_chain_string->first_character, ' ');
-			replace_chain_string(dual_name_path_chain_string, "\n", " \n");
+			replace_chain_string(dual_name_path_chain_string, "\n", "\n ");
 			dual_name_path_char_array = create_char_array_from_chain_string(dual_name_path_chain_string);
 		}
 		else dual_name_path_char_array = "";
@@ -1775,7 +1775,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			multi_name_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_path.multi_name_path);
 			insert_char_front(multi_name_path_chain_string, multi_name_path_chain_string->first_character, ' ');
-			replace_chain_string(multi_name_path_chain_string, "\n", " \n");
+			replace_chain_string(multi_name_path_chain_string, "\n", "\n ");
 			multi_name_path_char_array = create_char_array_from_chain_string(multi_name_path_chain_string);
 		}
 		else multi_name_path_char_array = "";
@@ -1783,7 +1783,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			null_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_path.null_name);
 			insert_char_front(null_name_chain_string, null_name_chain_string->first_character, ' ');
-			replace_chain_string(null_name_chain_string, "\n", " \n");
+			replace_chain_string(null_name_chain_string, "\n", "\n ");
 			null_name_char_array = create_char_array_from_chain_string(null_name_chain_string);
 		}
 		else null_name_char_array = "";
@@ -1816,7 +1816,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			lead_name_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_seg.lead_name_char);
 			insert_char_front(lead_name_char_chain_string, lead_name_char_chain_string->first_character, ' ');
-			replace_chain_string(lead_name_char_chain_string, "\n", " \n");
+			replace_chain_string(lead_name_char_chain_string, "\n", "\n ");
 			lead_name_char_char_array = create_char_array_from_chain_string(lead_name_char_chain_string);
 		}
 		else lead_name_char_char_array = "";
@@ -1824,7 +1824,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_chars_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.name_seg.name_char[i]);
 			insert_char_front(name_chars_chain_string[i], name_chars_chain_string[i]->first_character, ' ');
-			replace_chain_string(name_chars_chain_string[i], "\n", " \n");
+			replace_chain_string(name_chars_chain_string[i], "\n", "\n ");
 			name_chars_char_array[i] = create_char_array_from_chain_string(name_chars_chain_string[i]);
 		}
 		else name_chars_char_array[i] = "";
@@ -1848,7 +1848,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_alias_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_space_modifier_obj.def_alias);
 			insert_char_front(def_alias_chain_string, def_alias_chain_string->first_character, ' ');
-			replace_chain_string(def_alias_chain_string, "\n", " \n");
+			replace_chain_string(def_alias_chain_string, "\n", "\n ");
 			def_alias_char_array = create_char_array_from_chain_string(def_alias_chain_string);
 		}
 		else def_alias_char_array = "";
@@ -1856,7 +1856,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_space_modifier_obj.def_name);
 			insert_char_front(def_name_chain_string, def_name_chain_string->first_character, ' ');
-			replace_chain_string(def_name_chain_string, "\n", " \n");
+			replace_chain_string(def_name_chain_string, "\n", "\n ");
 			def_name_char_array = create_char_array_from_chain_string(def_name_chain_string);
 		}
 		else def_name_char_array = "";
@@ -1864,7 +1864,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_scope_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_space_modifier_obj.def_scope);
 			insert_char_front(def_scope_chain_string, def_scope_chain_string->first_character, ' ');
-			replace_chain_string(def_scope_chain_string, "\n", " \n");
+			replace_chain_string(def_scope_chain_string, "\n", "\n ");
 			def_scope_char_array = create_char_array_from_chain_string(def_scope_chain_string);
 		}
 		else def_scope_char_array = "";
@@ -1890,7 +1890,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_string.name_path);
 			insert_char_front(name_path_chain_string, name_path_chain_string->first_character, ' ');
-			replace_chain_string(name_path_chain_string, "\n", " \n");
+			replace_chain_string(name_path_chain_string, "\n", "\n ");
 			name_path_char_array = create_char_array_from_chain_string(name_path_chain_string);
 		}
 		else name_path_char_array = "";
@@ -1898,7 +1898,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			prefix_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_string.prefix_path);
 			insert_char_front(prefix_path_chain_string, prefix_path_chain_string->first_character, ' ');
-			replace_chain_string(prefix_path_chain_string, "\n", " \n");
+			replace_chain_string(prefix_path_chain_string, "\n", "\n ");
 			prefix_path_char_array = create_char_array_from_chain_string(prefix_path_chain_string);
 		}
 		else prefix_path_char_array = "";
@@ -1906,7 +1906,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			root_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.name_string.root_char);
 			insert_char_front(root_char_chain_string, root_char_chain_string->first_character, ' ');
-			replace_chain_string(root_char_chain_string, "\n", " \n");
+			replace_chain_string(root_char_chain_string, "\n", "\n ");
 			root_char_char_array = create_char_array_from_chain_string(root_char_chain_string);
 		}
 		else root_char_char_array = "";
@@ -1932,7 +1932,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_bank_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_bank_field);
 			insert_char_front(def_bank_field_chain_string, def_bank_field_chain_string->first_character, ' ');
-			replace_chain_string(def_bank_field_chain_string, "\n", " \n");
+			replace_chain_string(def_bank_field_chain_string, "\n", "\n ");
 			def_bank_field_char_array = create_char_array_from_chain_string(def_bank_field_chain_string);
 		}
 		else def_bank_field_char_array = "";
@@ -1940,7 +1940,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_create_bit_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_bit_field);
 			insert_char_front(def_create_bit_field_chain_string, def_create_bit_field_chain_string->first_character, ' ');
-			replace_chain_string(def_create_bit_field_chain_string, "\n", " \n");
+			replace_chain_string(def_create_bit_field_chain_string, "\n", "\n ");
 			def_create_bit_field_char_array = create_char_array_from_chain_string(def_create_bit_field_chain_string);
 		}
 		else def_create_bit_field_char_array = "";
@@ -1948,7 +1948,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_create_byte_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_byte_field);
 			insert_char_front(def_create_byte_field_chain_string, def_create_byte_field_chain_string->first_character, ' ');
-			replace_chain_string(def_create_byte_field_chain_string, "\n", " \n");
+			replace_chain_string(def_create_byte_field_chain_string, "\n", "\n ");
 			def_create_byte_field_char_array = create_char_array_from_chain_string(def_create_byte_field_chain_string);
 		}
 		else def_create_byte_field_char_array = "";
@@ -1956,7 +1956,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_create_dword_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_dword_field);
 			insert_char_front(def_create_dword_field_chain_string, def_create_dword_field_chain_string->first_character, ' ');
-			replace_chain_string(def_create_dword_field_chain_string, "\n", " \n");
+			replace_chain_string(def_create_dword_field_chain_string, "\n", "\n ");
 			def_create_dword_field_char_array = create_char_array_from_chain_string(def_create_dword_field_chain_string);
 		}
 		else def_create_dword_field_char_array = "";
@@ -1964,7 +1964,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_create_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_field);
 			insert_char_front(def_create_field_chain_string, def_create_field_chain_string->first_character, ' ');
-			replace_chain_string(def_create_field_chain_string, "\n", " \n");
+			replace_chain_string(def_create_field_chain_string, "\n", "\n ");
 			def_create_field_char_array = create_char_array_from_chain_string(def_create_field_chain_string);
 		}
 		else def_create_field_char_array = "";
@@ -1972,7 +1972,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_create_qword_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_qword_field);
 			insert_char_front(def_create_qword_field_chain_string, def_create_qword_field_chain_string->first_character, ' ');
-			replace_chain_string(def_create_qword_field_chain_string, "\n", " \n");
+			replace_chain_string(def_create_qword_field_chain_string, "\n", "\n ");
 			def_create_qword_field_char_array = create_char_array_from_chain_string(def_create_qword_field_chain_string);
 		}
 		else def_create_qword_field_char_array = "";
@@ -1980,7 +1980,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_create_word_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_word_field);
 			insert_char_front(def_create_word_field_chain_string, def_create_word_field_chain_string->first_character, ' ');
-			replace_chain_string(def_create_word_field_chain_string, "\n", " \n");
+			replace_chain_string(def_create_word_field_chain_string, "\n", "\n ");
 			def_create_word_field_char_array = create_char_array_from_chain_string(def_create_word_field_chain_string);
 		}
 		else def_create_word_field_char_array = "";
@@ -1988,7 +1988,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_data_region_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_data_region);
 			insert_char_front(def_data_region_chain_string, def_data_region_chain_string->first_character, ' ');
-			replace_chain_string(def_data_region_chain_string, "\n", " \n");
+			replace_chain_string(def_data_region_chain_string, "\n", "\n ");
 			def_data_region_char_array = create_char_array_from_chain_string(def_data_region_chain_string);
 		}
 		else def_data_region_char_array = "";
@@ -1996,7 +1996,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_external_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_external);
 			insert_char_front(def_external_chain_string, def_external_chain_string->first_character, ' ');
-			replace_chain_string(def_external_chain_string, "\n", " \n");
+			replace_chain_string(def_external_chain_string, "\n", "\n ");
 			def_external_char_array = create_char_array_from_chain_string(def_external_chain_string);
 		}
 		else def_external_char_array = "";
@@ -2004,7 +2004,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_op_region_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_op_region);
 			insert_char_front(def_op_region_chain_string, def_op_region_chain_string->first_character, ' ');
-			replace_chain_string(def_op_region_chain_string, "\n", " \n");
+			replace_chain_string(def_op_region_chain_string, "\n", "\n ");
 			def_op_region_char_array = create_char_array_from_chain_string(def_op_region_chain_string);
 		}
 		else def_op_region_char_array = "";
@@ -2012,7 +2012,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_power_res_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_power_res);
 			insert_char_front(def_power_res_chain_string, def_power_res_chain_string->first_character, ' ');
-			replace_chain_string(def_power_res_chain_string, "\n", " \n");
+			replace_chain_string(def_power_res_chain_string, "\n", "\n ");
 			def_power_res_char_array = create_char_array_from_chain_string(def_power_res_chain_string);
 		}
 		else def_power_res_char_array = "";
@@ -2020,7 +2020,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_thermal_zone_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_thermal_zone);
 			insert_char_front(def_thermal_zone_chain_string, def_thermal_zone_chain_string->first_character, ' ');
-			replace_chain_string(def_thermal_zone_chain_string, "\n", " \n");
+			replace_chain_string(def_thermal_zone_chain_string, "\n", "\n ");
 			def_thermal_zone_char_array = create_char_array_from_chain_string(def_thermal_zone_chain_string);
 		}
 		else def_thermal_zone_char_array = "";
@@ -2097,7 +2097,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			named_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.object.named_obj);
 			insert_char_front(named_obj_chain_string, named_obj_chain_string->first_character, ' ');
-			replace_chain_string(named_obj_chain_string, "\n", " \n");
+			replace_chain_string(named_obj_chain_string, "\n", "\n ");
 			named_obj_char_array = create_char_array_from_chain_string(named_obj_chain_string);
 		}
 		else named_obj_char_array = "";
@@ -2105,7 +2105,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			name_space_modifier_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.object.name_space_modifier_obj);
 			insert_char_front(name_space_modifier_obj_chain_string, name_space_modifier_obj_chain_string->first_character, ' ');
-			replace_chain_string(name_space_modifier_obj_chain_string, "\n", " \n");
+			replace_chain_string(name_space_modifier_obj_chain_string, "\n", "\n ");
 			name_space_modifier_obj_char_array = create_char_array_from_chain_string(name_space_modifier_obj_chain_string);
 		}
 		else name_space_modifier_obj_char_array = "";
@@ -2140,7 +2140,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			pkg_lead_byte_chain_string = aml_symbol_to_chain_string(aml_symbol->component.pkg_length.pkg_lead_byte);
 			insert_char_front(pkg_lead_byte_chain_string, pkg_lead_byte_chain_string->first_character, ' ');
-			replace_chain_string(pkg_lead_byte_chain_string, "\n", " \n");
+			replace_chain_string(pkg_lead_byte_chain_string, "\n", "\n ");
 			pkg_lead_byte_char_array = create_char_array_from_chain_string(pkg_lead_byte_chain_string);
 		}
 		else pkg_lead_byte_char_array = "";
@@ -2148,7 +2148,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			bytes_data_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.pkg_length.byte_data[i]);
 			insert_char_front(bytes_data_chain_string[i], bytes_data_chain_string[i]->first_character, ' ');
-			replace_chain_string(bytes_data_chain_string[i], "\n", " \n");
+			replace_chain_string(bytes_data_chain_string[i], "\n", "\n ");
 			bytes_data_char_array[i] = create_char_array_from_chain_string(bytes_data_chain_string[i]);
 		}
 		else bytes_data_char_array[i] = "";
@@ -2172,7 +2172,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			parent_prefix_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.prefix_path.parent_prefix_char);
 			insert_char_front(parent_prefix_char_chain_string, parent_prefix_char_chain_string->first_character, ' ');
-			replace_chain_string(parent_prefix_char_chain_string, "\n", " \n");
+			replace_chain_string(parent_prefix_char_chain_string, "\n", "\n ");
 			parent_prefix_char_char_array = create_char_array_from_chain_string(parent_prefix_char_chain_string);
 		}
 		else parent_prefix_char_char_array = "";
@@ -2180,7 +2180,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			prefix_path_chain_string = aml_symbol_to_chain_string(aml_symbol->component.prefix_path.prefix_path);
 			insert_char_front(prefix_path_chain_string, prefix_path_chain_string->first_character, ' ');
-			replace_chain_string(prefix_path_chain_string, "\n", " \n");
+			replace_chain_string(prefix_path_chain_string, "\n", "\n ");
 			prefix_path_char_array = create_char_array_from_chain_string(prefix_path_chain_string);
 		}
 		else prefix_path_char_array = "";
@@ -2201,7 +2201,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			qword_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.qword_const.qword_prefix);
 			insert_char_front(qword_prefix_chain_string, qword_prefix_chain_string->first_character, ' ');
-			replace_chain_string(qword_prefix_chain_string, "\n", " \n");
+			replace_chain_string(qword_prefix_chain_string, "\n", "\n ");
 			qword_prefix_char_array = create_char_array_from_chain_string(qword_prefix_chain_string);
 		}
 		else qword_prefix_char_array = "";
@@ -2209,7 +2209,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			qword_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.qword_const.qword_data);
 			insert_char_front(qword_data_chain_string, qword_data_chain_string->first_character, ' ');
-			replace_chain_string(qword_data_chain_string, "\n", " \n");
+			replace_chain_string(qword_data_chain_string, "\n", "\n ");
 			qword_data_char_array = create_char_array_from_chain_string(qword_data_chain_string);
 		}
 		else qword_prefix_char_array = "";
@@ -2232,7 +2232,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			dwords_data_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.qword_data.dword_data[i]);
 			insert_char_front(dwords_data_chain_string[i], dwords_data_chain_string[i]->first_character, ' ');
-			replace_chain_string(dwords_data_chain_string[i], "\n", " \n");
+			replace_chain_string(dwords_data_chain_string[i], "\n", "\n ");
 			dwords_data_char_array[i] = create_char_array_from_chain_string(dwords_data_chain_string[i]);
 		}
 		else dwords_data_char_array[i] = "";
@@ -2254,7 +2254,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			ext_op_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.revision_op.ext_op_prefix);
 			insert_char_front(ext_op_prefix_chain_string, ext_op_prefix_chain_string->first_character, ' ');
-			replace_chain_string(ext_op_prefix_chain_string, "\n", " \n");
+			replace_chain_string(ext_op_prefix_chain_string, "\n", "\n ");
 			ext_op_prefix_char_array = create_char_array_from_chain_string(ext_op_prefix_chain_string);
 		}
 		else ext_op_prefix_char_array = "";
@@ -2262,7 +2262,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			revision_op_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.revision_op.revision_op_prefix);
 			insert_char_front(revision_op_prefix_chain_string, revision_op_prefix_chain_string->first_character, ' ');
-			replace_chain_string(revision_op_prefix_chain_string, "\n", " \n");
+			replace_chain_string(revision_op_prefix_chain_string, "\n", "\n ");
 			revision_op_prefix_char_array = create_char_array_from_chain_string(revision_op_prefix_chain_string);
 		}
 		else revision_op_prefix_char_array = "";
@@ -2292,7 +2292,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_break_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_break);
 			insert_char_front(def_break_chain_string, def_break_chain_string->first_character, ' ');
-			replace_chain_string(def_break_chain_string, "\n", " \n");
+			replace_chain_string(def_break_chain_string, "\n", "\n ");
 			def_break_char_array = create_char_array_from_chain_string(def_break_chain_string);
 		}
 		else def_break_char_array = "";
@@ -2300,7 +2300,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_break_point_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_break_point);
 			insert_char_front(def_break_point_chain_string, def_break_point_chain_string->first_character, ' ');
-			replace_chain_string(def_break_point_chain_string, "\n", " \n");
+			replace_chain_string(def_break_point_chain_string, "\n", "\n ");
 			def_break_point_char_array = create_char_array_from_chain_string(def_break_point_chain_string);
 		}
 		else def_break_point_char_array = "";
@@ -2308,7 +2308,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_continue_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_continue);
 			insert_char_front(def_continue_chain_string, def_continue_chain_string->first_character, ' ');
-			replace_chain_string(def_continue_chain_string, "\n", " \n");
+			replace_chain_string(def_continue_chain_string, "\n", "\n ");
 			def_continue_char_array = create_char_array_from_chain_string(def_continue_chain_string);
 		}
 		else def_continue_char_array = "";
@@ -2316,7 +2316,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_fatal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_fatal);
 			insert_char_front(def_fatal_chain_string, def_fatal_chain_string->first_character, ' ');
-			replace_chain_string(def_fatal_chain_string, "\n", " \n");
+			replace_chain_string(def_fatal_chain_string, "\n", "\n ");
 			def_fatal_char_array = create_char_array_from_chain_string(def_fatal_chain_string);
 		}
 		else def_fatal_char_array = "";
@@ -2324,7 +2324,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_if_else_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_if_else);
 			insert_char_front(def_if_else_chain_string, def_if_else_chain_string->first_character, ' ');
-			replace_chain_string(def_if_else_chain_string, "\n", " \n");
+			replace_chain_string(def_if_else_chain_string, "\n", "\n ");
 			def_if_else_char_array = create_char_array_from_chain_string(def_if_else_chain_string);
 		}
 		else def_if_else_char_array = "";
@@ -2332,7 +2332,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_noop_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_noop);
 			insert_char_front(def_noop_chain_string, def_noop_chain_string->first_character, ' ');
-			replace_chain_string(def_noop_chain_string, "\n", " \n");
+			replace_chain_string(def_noop_chain_string, "\n", "\n ");
 			def_noop_char_array = create_char_array_from_chain_string(def_noop_chain_string);
 		}
 		else def_noop_char_array = "";
@@ -2340,7 +2340,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_notify_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_notify);
 			insert_char_front(def_notify_chain_string, def_notify_chain_string->first_character, ' ');
-			replace_chain_string(def_notify_chain_string, "\n", " \n");
+			replace_chain_string(def_notify_chain_string, "\n", "\n ");
 			def_notify_char_array = create_char_array_from_chain_string(def_notify_chain_string);
 		}
 		else def_notify_char_array = "";
@@ -2348,7 +2348,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_release_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_release);
 			insert_char_front(def_release_chain_string, def_release_chain_string->first_character, ' ');
-			replace_chain_string(def_release_chain_string, "\n", " \n");
+			replace_chain_string(def_release_chain_string, "\n", "\n ");
 			def_release_char_array = create_char_array_from_chain_string(def_release_chain_string);
 		}
 		else def_release_char_array = "";
@@ -2356,7 +2356,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_reset_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_reset);
 			insert_char_front(def_reset_chain_string, def_reset_chain_string->first_character, ' ');
-			replace_chain_string(def_reset_chain_string, "\n", " \n");
+			replace_chain_string(def_reset_chain_string, "\n", "\n ");
 			def_reset_char_array = create_char_array_from_chain_string(def_reset_chain_string);
 		}
 		else def_reset_char_array = "";
@@ -2364,7 +2364,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_return_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_return);
 			insert_char_front(def_return_chain_string, def_return_chain_string->first_character, ' ');
-			replace_chain_string(def_return_chain_string, "\n", " \n");
+			replace_chain_string(def_return_chain_string, "\n", "\n ");
 			def_return_char_array = create_char_array_from_chain_string(def_return_chain_string);
 		}
 		else def_return_char_array = "";
@@ -2372,7 +2372,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_signal_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_signal);
 			insert_char_front(def_signal_chain_string, def_signal_chain_string->first_character, ' ');
-			replace_chain_string(def_signal_chain_string, "\n", " \n");
+			replace_chain_string(def_signal_chain_string, "\n", "\n ");
 			def_signal_char_array = create_char_array_from_chain_string(def_signal_chain_string);
 		}
 		else def_signal_char_array = "";
@@ -2380,7 +2380,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_sleep_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_sleep);
 			insert_char_front(def_sleep_chain_string, def_sleep_chain_string->first_character, ' ');
-			replace_chain_string(def_sleep_chain_string, "\n", " \n");
+			replace_chain_string(def_sleep_chain_string, "\n", "\n ");
 			def_sleep_char_array = create_char_array_from_chain_string(def_sleep_chain_string);
 		}
 		else def_sleep_char_array = "";
@@ -2388,7 +2388,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_stall_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_stall);
 			insert_char_front(def_stall_chain_string, def_stall_chain_string->first_character, ' ');
-			replace_chain_string(def_stall_chain_string, "\n", " \n");
+			replace_chain_string(def_stall_chain_string, "\n", "\n ");
 			def_stall_char_array = create_char_array_from_chain_string(def_stall_chain_string);
 		}
 		else def_stall_char_array = "";
@@ -2396,7 +2396,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			def_while_chain_string = aml_symbol_to_chain_string(aml_symbol->component.statement_opcode.def_while);
 			insert_char_front(def_while_chain_string, def_while_chain_string->first_character, ' ');
-			replace_chain_string(def_while_chain_string, "\n", " \n");
+			replace_chain_string(def_while_chain_string, "\n", "\n ");
 			def_while_char_array = create_char_array_from_chain_string(def_while_chain_string);
 		}
 		else def_while_char_array = "";
@@ -2477,7 +2477,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			string_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.string.string_prefix);
 			insert_char_front(string_prefix_chain_string, string_prefix_chain_string->first_character, ' ');
-			replace_chain_string(string_prefix_chain_string, "\n", " \n");
+			replace_chain_string(string_prefix_chain_string, "\n", "\n ");
 			string_prefix_char_array = create_char_array_from_chain_string(string_prefix_chain_string);
 		}
 		else string_prefix_char_array = "";
@@ -2485,7 +2485,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			ascii_char_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.string.ascii_char_list);
 			insert_char_front(ascii_char_list_chain_string, ascii_char_list_chain_string->first_character, ' ');
-			replace_chain_string(ascii_char_list_chain_string, "\n", " \n");
+			replace_chain_string(ascii_char_list_chain_string, "\n", "\n ");
 			ascii_char_list_char_array = create_char_array_from_chain_string(ascii_char_list_chain_string);
 		}
 		else ascii_char_list_char_array = "";
@@ -2493,7 +2493,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			null_char_chain_string = aml_symbol_to_chain_string(aml_symbol->component.string.null_char);
 			insert_char_front(null_char_chain_string, null_char_chain_string->first_character, ' ');
-			replace_chain_string(null_char_chain_string, "\n", " \n");
+			replace_chain_string(null_char_chain_string, "\n", "\n ");
 			null_char_char_array = create_char_array_from_chain_string(null_char_chain_string);
 		}
 		else null_char_char_array = "";
@@ -2522,7 +2522,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			expression_opcode_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_arg.expression_opcode);
 			insert_char_front(expression_opcode_chain_string, expression_opcode_chain_string->first_character, ' ');
-			replace_chain_string(expression_opcode_chain_string, "\n", " \n");
+			replace_chain_string(expression_opcode_chain_string, "\n", "\n ");
 			expression_opcode_char_array = create_char_array_from_chain_string(expression_opcode_chain_string);
 		}
 		else expression_opcode_char_array = "";
@@ -2530,7 +2530,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			data_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_arg.data_object);
 			insert_char_front(data_object_chain_string, data_object_chain_string->first_character, ' ');
-			replace_chain_string(data_object_chain_string, "\n", " \n");
+			replace_chain_string(data_object_chain_string, "\n", "\n ");
 			data_object_char_array = create_char_array_from_chain_string(data_object_chain_string);
 		}
 		else data_object_char_array = "";
@@ -2538,7 +2538,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			arg_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_arg.arg_obj);
 			insert_char_front(arg_obj_chain_string, arg_obj_chain_string->first_character, ' ');
-			replace_chain_string(arg_obj_chain_string, "\n", " \n");
+			replace_chain_string(arg_obj_chain_string, "\n", "\n ");
 			arg_obj_char_array = create_char_array_from_chain_string(arg_obj_chain_string);
 		}
 		else arg_obj_char_array = "";
@@ -2546,7 +2546,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			local_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_arg.local_obj);
 			insert_char_front(local_obj_chain_string, local_obj_chain_string->first_character, ' ');
-			replace_chain_string(local_obj_chain_string, "\n", " \n");
+			replace_chain_string(local_obj_chain_string, "\n", "\n ");
 			local_obj_char_array = create_char_array_from_chain_string(local_obj_chain_string);
 		}
 		else local_obj_char_array = "";
@@ -2576,7 +2576,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			term_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_list.term_obj);
 			insert_char_front(term_obj_chain_string, term_obj_chain_string->first_character, ' ');
-			replace_chain_string(term_obj_chain_string, "\n", " \n");
+			replace_chain_string(term_obj_chain_string, "\n", "\n ");
 			term_obj_char_array = create_char_array_from_chain_string(term_obj_chain_string);
 		}
 		else term_obj_char_array = "";
@@ -2584,7 +2584,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			term_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_list.term_list);
 			insert_char_front(term_list_chain_string, term_list_chain_string->first_character, ' ');
-			replace_chain_string(term_list_chain_string, "\n", " \n");
+			replace_chain_string(term_list_chain_string, "\n", "\n ");
 			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
 		}
 		else term_list_char_array = "";
@@ -2605,7 +2605,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_obj.object);
 			insert_char_front(object_chain_string, object_chain_string->first_character, ' ');
-			replace_chain_string(object_chain_string, "\n", " \n");
+			replace_chain_string(object_chain_string, "\n", "\n ");
 			object_char_array = create_char_array_from_chain_string(object_chain_string);
 		}
 		else object_char_array = "";
@@ -2613,7 +2613,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			statement_opcode_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_obj.statement_opcode);
 			insert_char_front(statement_opcode_chain_string, statement_opcode_chain_string->first_character, ' ');
-			replace_chain_string(statement_opcode_chain_string, "\n", " \n");
+			replace_chain_string(statement_opcode_chain_string, "\n", "\n ");
 			statement_opcode_char_array = create_char_array_from_chain_string(statement_opcode_chain_string);
 		}
 		else statement_opcode_char_array = "";
@@ -2621,7 +2621,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			expression_opcode_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_obj.expression_opcode);
 			insert_char_front(expression_opcode_chain_string, expression_opcode_chain_string->first_character, ' ');
-			replace_chain_string(expression_opcode_chain_string, "\n", " \n");
+			replace_chain_string(expression_opcode_chain_string, "\n", "\n ");
 			expression_opcode_char_array = create_char_array_from_chain_string(expression_opcode_chain_string);
 		}
 		else expression_opcode_char_array = "";
@@ -2647,7 +2647,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			word_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.word_const.word_prefix);
 			insert_char_front(word_prefix_chain_string, word_prefix_chain_string->first_character, ' ');
-			replace_chain_string(word_prefix_chain_string, "\n", " \n");
+			replace_chain_string(word_prefix_chain_string, "\n", "\n ");
 			word_prefix_char_array = create_char_array_from_chain_string(word_prefix_chain_string);
 		}
 		else word_prefix_char_array = "";
@@ -2655,7 +2655,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			word_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.word_const.word_data);
 			insert_char_front(word_data_chain_string, word_data_chain_string->first_character, ' ');
-			replace_chain_string(word_data_chain_string, "\n", " \n");
+			replace_chain_string(word_data_chain_string, "\n", "\n ");
 			word_data_char_array = create_char_array_from_chain_string(word_data_chain_string);
 		}
 		else word_data_char_array = "";
@@ -2678,7 +2678,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			bytes_data_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.word_data.byte_data[i]);
 			insert_char_front(bytes_data_chain_string[i], bytes_data_chain_string[i]->first_character, ' ');
-			replace_chain_string(bytes_data_chain_string[i], "\n", " \n");
+			replace_chain_string(bytes_data_chain_string[i], "\n", "\n ");
 			bytes_data_char_array[i] = create_char_array_from_chain_string(bytes_data_chain_string[i]);
 		}
 		else bytes_data_char_array[i] = "";
@@ -2746,7 +2746,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
-	static char const * const aml_named_obj_name = "NamedObjName";
+	static char const * const aml_named_obj_name = "NamedObj";
 	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
 	static char const * const aml_object_name = "Object";
