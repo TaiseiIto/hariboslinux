@@ -3298,6 +3298,7 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml)
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 {
 	AMLSymbol *def_op_region = malloc(sizeof(*def_op_region));
+	printf_shell(get_current_shell(), "analyse_aml_def_op_region begin\n");
 	def_op_region->string.initial = aml.initial;
 	def_op_region->string.length = 0;
 	def_op_region->type = aml_def_op_region;
@@ -3312,6 +3313,7 @@ AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 	def_op_region->component.def_op_region.region_space = NULL;
 	def_op_region->component.def_op_region.region_offset = NULL;
 	def_op_region->component.def_op_region.region_len = NULL;
+	printf_shell(get_current_shell(), "analyse_aml_def_op_region end\n");
 	return def_op_region;
 }
 
@@ -3645,6 +3647,7 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 {
 	AMLSymbol *name_string = malloc(sizeof(*name_string));
+	printf_shell(get_current_shell(), "analyse_aml_name_string begin\n");
 	name_string->string.initial = aml.initial;
 	name_string->string.length = 0;
 	name_string->type = aml_name_string;
@@ -3654,20 +3657,26 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_PARENT_PREFIX_CHAR:
+		printf_shell(get_current_shell(), "AML_BYTE_PARENT_PREFIX_CHAR\n");
 		name_string->component.name_string.prefix_path = analyse_aml_prefix_path(aml);
 		name_string->string.length += name_string->component.name_string.prefix_path->string.length;
 		aml.initial += name_string->component.name_string.prefix_path->string.length;
 		aml.length -= name_string->component.name_string.prefix_path->string.length;
 		break;
 	case AML_BYTE_ROOT_CHAR:
+		printf_shell(get_current_shell(), "AML_BYTE_ROOT_CHAR\n");
 		name_string->component.name_string.root_char = analyse_aml_root_char(aml);
 		name_string->string.length += name_string->component.name_string.root_char->string.length;
 		aml.initial += name_string->component.name_string.root_char->string.length;
 		aml.length -= name_string->component.name_string.root_char->string.length;
 		break;
+	default:
+		printf_shell(get_current_shell(), "Incorrect name string\n");
+		break;
 	}
 	name_string->component.name_string.name_path = analyse_aml_name_path(aml);
 	name_string->string.length += name_string->component.name_string.name_path->string.length;
+	printf_shell(get_current_shell(), "analyse_aml_name_string end\n");
 	return name_string;
 }
 
