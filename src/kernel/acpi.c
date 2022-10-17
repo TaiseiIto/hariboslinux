@@ -168,6 +168,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_alias_chain_string;
 	ChainString *def_and_chain_string;
 	ChainString *def_aquire_chain_string;
+	ChainString *def_bank_field_chain_string;
 	ChainString *def_break_chain_string;
 	ChainString *def_break_point_chain_string;
 	ChainString *def_buffer_chain_string;
@@ -176,9 +177,17 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_cond_ref_of_chain_string;
 	ChainString *def_continue_chain_string;
 	ChainString *def_copy_object_chain_string;
+	ChainString *def_create_bit_field_chain_string;
+	ChainString *def_create_byte_field_chain_string;
+	ChainString *def_create_dword_field_chain_string;
+	ChainString *def_create_field_chain_string;
+	ChainString *def_create_qword_field_chain_string;
+	ChainString *def_create_word_field_chain_string;
+	ChainString *def_data_region_chain_string;
 	ChainString *def_decrement_chain_string;
 	ChainString *def_deref_of_chain_string;
 	ChainString *def_divide_chain_string;
+	ChainString *def_external_chain_string;
 	ChainString *def_fatal_chain_string;
 	ChainString *def_find_set_left_bit_chain_string;
 	ChainString *def_find_set_right_bit_chain_string;
@@ -207,8 +216,10 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_not_chain_string;
 	ChainString *def_notify_chain_string;
 	ChainString *def_object_type_chain_string;
+	ChainString *def_op_region_chain_string;
 	ChainString *def_or_chain_string;
 	ChainString *def_package_chain_string;
+	ChainString *def_power_res_chain_string;
 	ChainString *def_ref_of_chain_string;
 	ChainString *def_release_chain_string;
 	ChainString *def_reset_chain_string;
@@ -222,6 +233,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_stall_chain_string;
 	ChainString *def_store_chain_string;
 	ChainString *def_subtract_chain_string;
+	ChainString *def_thermal_zone_chain_string;
 	ChainString *def_timer_chain_string;
 	ChainString *def_to_bcd_chain_string;
 	ChainString *def_to_buffer_chain_string;
@@ -304,6 +316,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_alias_char_array;
 	char *def_and_char_array;
 	char *def_aquire_char_array;
+	char *def_bank_field_char_array;
 	char *def_break_char_array;
 	char *def_break_point_char_array;
 	char *def_buffer_char_array;
@@ -312,9 +325,17 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_cond_ref_of_char_array;
 	char *def_continue_char_array;
 	char *def_copy_object_char_array;
+	char *def_create_bit_field_char_array;
+	char *def_create_byte_field_char_array;
+	char *def_create_dword_field_char_array;
+	char *def_create_field_char_array;
+	char *def_create_qword_field_char_array;
+	char *def_create_word_field_char_array;
+	char *def_data_region_char_array;
 	char *def_decrement_char_array;
 	char *def_deref_of_char_array;
 	char *def_divide_char_array;
+	char *def_external_char_array;
 	char *def_fatal_char_array;
 	char *def_find_set_left_bit_char_array;
 	char *def_find_set_right_bit_char_array;
@@ -343,8 +364,10 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_not_char_array;
 	char *def_notify_char_array;
 	char *def_object_type_char_array;
+	char *def_op_region_char_array;
 	char *def_or_char_array;
 	char *def_package_char_array;
+	char *def_power_res_char_array;
 	char *def_ref_of_char_array;
 	char *def_release_char_array;
 	char *def_reset_char_array;
@@ -358,6 +381,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_stall_char_array;
 	char *def_store_char_array;
 	char *def_subtract_char_array;
+	char *def_thermal_zone_char_array;
 	char *def_timer_char_array;
 	char *def_to_bcd_char_array;
 	char *def_to_buffer_char_array;
@@ -1903,6 +1927,165 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(root_char_char_array);
 		}
 		break;
+	case aml_named_obj:
+		if(aml_symbol->component.named_obj.def_bank_field)
+		{
+			def_bank_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_bank_field);
+			insert_char_front(def_bank_field_chain_string, def_bank_field_chain_string->first_character, ' ');
+			replace_chain_string(def_bank_field_chain_string, "\n", " \n");
+			def_bank_field_char_array = create_char_array_from_chain_string(def_bank_field_chain_string);
+		}
+		else def_bank_field_char_array = "";
+		if(aml_symbol->component.named_obj.def_create_bit_field)
+		{
+			def_create_bit_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_bit_field);
+			insert_char_front(def_create_bit_field_chain_string, def_create_bit_field_chain_string->first_character, ' ');
+			replace_chain_string(def_create_bit_field_chain_string, "\n", " \n");
+			def_create_bit_field_char_array = create_char_array_from_chain_string(def_create_bit_field_chain_string);
+		}
+		else def_create_bit_field_char_array = "";
+		if(aml_symbol->component.named_obj.def_create_byte_field)
+		{
+			def_create_byte_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_byte_field);
+			insert_char_front(def_create_byte_field_chain_string, def_create_byte_field_chain_string->first_character, ' ');
+			replace_chain_string(def_create_byte_field_chain_string, "\n", " \n");
+			def_create_byte_field_char_array = create_char_array_from_chain_string(def_create_byte_field_chain_string);
+		}
+		else def_create_byte_field_char_array = "";
+		if(aml_symbol->component.named_obj.def_create_dword_field)
+		{
+			def_create_dword_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_dword_field);
+			insert_char_front(def_create_dword_field_chain_string, def_create_dword_field_chain_string->first_character, ' ');
+			replace_chain_string(def_create_dword_field_chain_string, "\n", " \n");
+			def_create_dword_field_char_array = create_char_array_from_chain_string(def_create_dword_field_chain_string);
+		}
+		else def_create_dword_field_char_array = "";
+		if(aml_symbol->component.named_obj.def_create_field)
+		{
+			def_create_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_field);
+			insert_char_front(def_create_field_chain_string, def_create_field_chain_string->first_character, ' ');
+			replace_chain_string(def_create_field_chain_string, "\n", " \n");
+			def_create_field_char_array = create_char_array_from_chain_string(def_create_field_chain_string);
+		}
+		else def_create_field_char_array = "";
+		if(aml_symbol->component.named_obj.def_create_qword_field)
+		{
+			def_create_qword_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_qword_field);
+			insert_char_front(def_create_qword_field_chain_string, def_create_qword_field_chain_string->first_character, ' ');
+			replace_chain_string(def_create_qword_field_chain_string, "\n", " \n");
+			def_create_qword_field_char_array = create_char_array_from_chain_string(def_create_qword_field_chain_string);
+		}
+		else def_create_qword_field_char_array = "";
+		if(aml_symbol->component.named_obj.def_create_word_field)
+		{
+			def_create_word_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_create_word_field);
+			insert_char_front(def_create_word_field_chain_string, def_create_word_field_chain_string->first_character, ' ');
+			replace_chain_string(def_create_word_field_chain_string, "\n", " \n");
+			def_create_word_field_char_array = create_char_array_from_chain_string(def_create_word_field_chain_string);
+		}
+		else def_create_word_field_char_array = "";
+		if(aml_symbol->component.named_obj.def_data_region)
+		{
+			def_data_region_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_data_region);
+			insert_char_front(def_data_region_chain_string, def_data_region_chain_string->first_character, ' ');
+			replace_chain_string(def_data_region_chain_string, "\n", " \n");
+			def_data_region_char_array = create_char_array_from_chain_string(def_data_region_chain_string);
+		}
+		else def_data_region_char_array = "";
+		if(aml_symbol->component.named_obj.def_external)
+		{
+			def_external_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_external);
+			insert_char_front(def_external_chain_string, def_external_chain_string->first_character, ' ');
+			replace_chain_string(def_external_chain_string, "\n", " \n");
+			def_external_char_array = create_char_array_from_chain_string(def_external_chain_string);
+		}
+		else def_external_char_array = "";
+		if(aml_symbol->component.named_obj.def_op_region)
+		{
+			def_op_region_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_op_region);
+			insert_char_front(def_op_region_chain_string, def_op_region_chain_string->first_character, ' ');
+			replace_chain_string(def_op_region_chain_string, "\n", " \n");
+			def_op_region_char_array = create_char_array_from_chain_string(def_op_region_chain_string);
+		}
+		else def_op_region_char_array = "";
+		if(aml_symbol->component.named_obj.def_power_res)
+		{
+			def_power_res_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_power_res);
+			insert_char_front(def_power_res_chain_string, def_power_res_chain_string->first_character, ' ');
+			replace_chain_string(def_power_res_chain_string, "\n", " \n");
+			def_power_res_char_array = create_char_array_from_chain_string(def_power_res_chain_string);
+		}
+		else def_power_res_char_array = "";
+		if(aml_symbol->component.named_obj.def_thermal_zone)
+		{
+			def_thermal_zone_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_thermal_zone);
+			insert_char_front(def_thermal_zone_chain_string, def_thermal_zone_chain_string->first_character, ' ');
+			replace_chain_string(def_thermal_zone_chain_string, "\n", " \n");
+			def_thermal_zone_char_array = create_char_array_from_chain_string(def_thermal_zone_chain_string);
+		}
+		else def_thermal_zone_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s%s%s%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), def_bank_field_char_array ,def_create_bit_field_char_array ,def_create_byte_field_char_array ,def_create_dword_field_char_array ,def_create_field_char_array ,def_create_qword_field_char_array ,def_create_word_field_char_array ,def_data_region_char_array ,def_external_char_array ,def_op_region_char_array ,def_power_res_char_array ,def_thermal_zone_char_array);
+		if(aml_symbol->component.named_obj.def_bank_field)
+		{
+			delete_chain_string(def_bank_field_chain_string);
+			free(def_bank_field_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_create_bit_field)
+		{
+			delete_chain_string(def_create_bit_field_chain_string);
+			free(def_create_bit_field_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_create_byte_field)
+		{
+			delete_chain_string(def_create_byte_field_chain_string);
+			free(def_create_byte_field_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_create_dword_field)
+		{
+			delete_chain_string(def_create_dword_field_chain_string);
+			free(def_create_dword_field_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_create_field)
+		{
+			delete_chain_string(def_create_field_chain_string);
+			free(def_create_field_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_create_qword_field)
+		{
+			delete_chain_string(def_create_qword_field_chain_string);
+			free(def_create_qword_field_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_create_word_field)
+		{
+			delete_chain_string(def_create_word_field_chain_string);
+			free(def_create_word_field_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_data_region)
+		{
+			delete_chain_string(def_data_region_chain_string);
+			free(def_data_region_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_external)
+		{
+			delete_chain_string(def_external_chain_string);
+			free(def_external_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_op_region)
+		{
+			delete_chain_string(def_op_region_chain_string);
+			free(def_op_region_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_power_res)
+		{
+			delete_chain_string(def_power_res_chain_string);
+			free(def_power_res_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_thermal_zone)
+		{
+			delete_chain_string(def_thermal_zone_chain_string);
+			free(def_thermal_zone_char_array);
+		}
+		break;
 	case aml_null_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2563,6 +2746,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
+	static char const * const aml_named_obj_name = "NamedObjName";
 	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
 	static char const * const aml_object_name = "Object";
@@ -2653,6 +2837,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_name_seg_name;
 	case aml_name_space_modifier_obj:
 		return aml_name_space_modifier_obj_name;
+	case aml_named_obj:
+		return aml_named_obj_name;
 	case aml_null_char:
 		return aml_null_char_name;
 	case aml_null_name:
@@ -3395,6 +3581,28 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	return name_string;
 }
 
+// <named_obj> := <def_bank_field> | <def_create_bit_field> | <def_create_byte_field> | <def_create_dword_field> | <def_create_field> | <def_create_qword_field> | <def_create_word_field> | <def_data_region> | <def_external> | <def_op_region> | <def_power_res> | <def_thermal_zone>
+AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
+{
+	AMLSymbol *named_obj = malloc(sizeof(*named_obj));
+	named_obj->string.initial = aml.initial;
+	named_obj->string.length = 0;
+	named_obj->type = aml_named_obj;
+	named_obj->component.named_obj.def_bank_field = NULL;
+	named_obj->component.named_obj.def_create_bit_field = NULL;
+	named_obj->component.named_obj.def_create_byte_field = NULL;
+	named_obj->component.named_obj.def_create_dword_field = NULL;
+	named_obj->component.named_obj.def_create_field = NULL;
+	named_obj->component.named_obj.def_create_qword_field = NULL;
+	named_obj->component.named_obj.def_create_word_field = NULL;
+	named_obj->component.named_obj.def_data_region = NULL;
+	named_obj->component.named_obj.def_external = NULL;
+	named_obj->component.named_obj.def_op_region = NULL;
+	named_obj->component.named_obj.def_power_res = NULL;
+	named_obj->component.named_obj.def_thermal_zone = NULL;
+	return named_obj;
+}
+
 // <null_char> := AML_BYTE_NULL_CHAR
 AMLSymbol *analyse_aml_null_char(AMLSubstring aml)
 {
@@ -3432,6 +3640,10 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	case AML_BYTE_NAME_OP:
 		object->component.object.name_space_modifier_obj = analyse_aml_name_space_modifier_obj(aml);
 		object->string.length += object->component.object.name_space_modifier_obj->string.length;
+		break;
+	case AML_BYTE_EXT_OP_PREFIX:
+		object->component.object.named_obj = analyse_aml_named_obj(aml);
+		object->string.length += object->component.object.named_obj->string.length;
 		break;
 	}
 	return object;
@@ -3745,6 +3957,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_ALIAS_OP:
+	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_NAME_OP:
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
@@ -3988,6 +4201,20 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.name_string.name_path)delete_aml_symbol(aml_symbol->component.name_string.name_path);
 		if(aml_symbol->component.name_string.prefix_path)delete_aml_symbol(aml_symbol->component.name_string.prefix_path);
 		if(aml_symbol->component.name_string.root_char)delete_aml_symbol(aml_symbol->component.name_string.root_char);
+		break;
+	case aml_named_obj:
+		if(aml_symbol->component.named_obj.def_bank_field)delete_aml_symbol(aml_symbol->component.named_obj.def_bank_field);
+		if(aml_symbol->component.named_obj.def_create_bit_field)delete_aml_symbol(aml_symbol->component.named_obj.def_create_bit_field);
+		if(aml_symbol->component.named_obj.def_create_byte_field)delete_aml_symbol(aml_symbol->component.named_obj.def_create_byte_field);
+		if(aml_symbol->component.named_obj.def_create_dword_field)delete_aml_symbol(aml_symbol->component.named_obj.def_create_dword_field);
+		if(aml_symbol->component.named_obj.def_create_field)delete_aml_symbol(aml_symbol->component.named_obj.def_create_field);
+		if(aml_symbol->component.named_obj.def_create_qword_field)delete_aml_symbol(aml_symbol->component.named_obj.def_create_qword_field);
+		if(aml_symbol->component.named_obj.def_create_word_field)delete_aml_symbol(aml_symbol->component.named_obj.def_create_word_field);
+		if(aml_symbol->component.named_obj.def_data_region)delete_aml_symbol(aml_symbol->component.named_obj.def_data_region);
+		if(aml_symbol->component.named_obj.def_external)delete_aml_symbol(aml_symbol->component.named_obj.def_external);
+		if(aml_symbol->component.named_obj.def_op_region)delete_aml_symbol(aml_symbol->component.named_obj.def_op_region);
+		if(aml_symbol->component.named_obj.def_power_res)delete_aml_symbol(aml_symbol->component.named_obj.def_power_res);
+		if(aml_symbol->component.named_obj.def_thermal_zone)delete_aml_symbol(aml_symbol->component.named_obj.def_thermal_zone);
 		break;
 	case aml_null_char:
 		break;
