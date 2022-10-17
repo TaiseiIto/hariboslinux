@@ -452,10 +452,32 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
 	case aml_ascii_char:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+	case aml_buffer_op:
+	case aml_byte_data:
+	case aml_byte_prefix:
+	case aml_digit_char:
+	case aml_dual_name_prefix:
+	case aml_dword_prefix:
+	case aml_ext_op_prefix:
+	case aml_lead_name_char:
+	case aml_multi_name_prefix:
+	case aml_name_op:
+	case aml_null_char:
+	case aml_null_name:
+	case aml_one_op:
+	case aml_ones_op:
+	case aml_op_region_op_prefix:
+	case aml_parent_prefix_char:
+	case aml_pkg_lead_byte:
+	case aml_qword_prefix:
+	case aml_revision_op_prefix:
+	case aml_root_char:
+	case aml_seg_count:
+	case aml_string_prefix:
+	case aml_word_prefix:
+	case aml_zero_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_ascii_char_list:
 		if(aml_symbol->component.ascii_char_list.ascii_char)
@@ -485,9 +507,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(ascii_char_list_chain_string);
 			free(ascii_char_char_array);
 		}
-		break;
-	case aml_buffer_op:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_buffer_size:
 		if(aml_symbol->component.buffer_size.term_arg)
@@ -533,12 +552,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(byte_data_chain_string);
 			free(byte_data_char_array);
 		}
-		break;
-	case aml_byte_data:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_byte_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_computational_data:
 		if(aml_symbol->component.computational_data.byte_const)
@@ -959,9 +972,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(region_len_char_array);
 		}
 		break;
-	case aml_digit_char:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
 	case aml_dual_name_path:
 		name_segs_chain_string = malloc(_countof(aml_symbol->component.dual_name_path.name_seg) * sizeof(*name_segs_chain_string));
 		name_segs_char_array = malloc(_countof(aml_symbol->component.dual_name_path.name_seg) * sizeof(*name_segs_char_array));
@@ -995,9 +1005,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		free(name_segs_chain_string);
 		free(name_segs_char_array);
-		break;
-	case aml_dual_name_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_dword_const:
 		if(aml_symbol->component.dword_const.dword_prefix)
@@ -1048,9 +1055,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		free(words_data_chain_string);
 		free(words_data_char_array);
-		break;
-	case aml_dword_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.def_add)
@@ -1744,12 +1748,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(method_invocation_char_array);
 		}
 		break;
-	case aml_ext_op_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_lead_name_char:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
 	case aml_multi_name_path:
 		name_segs_chain_string = malloc(*aml_symbol->component.multi_name_path.seg_count->string.initial * sizeof(*name_segs_chain_string));
 		name_segs_char_array = malloc(*aml_symbol->component.multi_name_path.seg_count->string.initial * sizeof(*name_segs_char_array));
@@ -1797,9 +1795,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		free(name_segs_chain_string);
 		free(name_segs_char_array);
 		break;
-	case aml_multi_name_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
 	case aml_name_char:
 		if(aml_symbol->component.name_char.digit_char)
 		{
@@ -1828,9 +1823,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(lead_name_char_chain_string);
 			free(lead_name_char_char_array);
 		}
-		break;
-	case aml_name_op:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_name_path:
 		if(aml_symbol->component.name_path.name_seg)
@@ -2164,12 +2156,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(def_thermal_zone_char_array);
 		}
 		break;
-	case aml_null_char:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_null_name:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)
 		{
@@ -2199,12 +2185,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(name_space_modifier_obj_char_array);
 		}
 		break;
-	case aml_one_op:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_ones_op:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
 	case aml_op_region_op:
 		if(aml_symbol->component.op_region_op.ext_op_prefix)
 		{
@@ -2233,15 +2213,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(op_region_op_prefix_chain_string);
 			free(op_region_op_prefix_char_array);
 		}
-		break;
-	case aml_op_region_op_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_parent_prefix_char:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_pkg_lead_byte:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_pkg_length:
 		bytes_data_chain_string = malloc(_countof(aml_symbol->component.pkg_length.byte_data) * sizeof(*bytes_data_chain_string));
@@ -2356,9 +2327,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		free(dwords_data_chain_string);
 		free(dwords_data_char_array);
 		break;
-	case aml_qword_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)
 		{
@@ -2387,15 +2355,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(revision_op_prefix_chain_string);
 			free(revision_op_prefix_char_array);
 		}
-		break;
-	case aml_revision_op_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_root_char:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_seg_count:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)
@@ -2624,9 +2583,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(null_char_char_array);
 		}
 		break;
-	case aml_string_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
 	case aml_term_arg:
 		if(aml_symbol->component.term_arg.expression_opcode)
 		{
@@ -2801,12 +2757,6 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		free(bytes_data_chain_string);
 		free(bytes_data_char_array);
-		break;
-	case aml_word_prefix:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
-		break;
-	case aml_zero_op:
-		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
 	default:
 		ERROR(); // Invalid AML symbol type
