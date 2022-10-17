@@ -3566,6 +3566,7 @@ AMLSymbol *analyse_aml_name_op(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 {
 	AMLSymbol *name_path = malloc(sizeof(*name_path));
+	printf_shell(get_current_shell(), "analyse_aml_name_path begin\n");
 	name_path->string.initial = aml.initial;
 	name_path->string.length = 0;
 	name_path->type = aml_name_path;
@@ -3595,6 +3596,7 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 		}
 		break;
 	}
+	printf_shell(get_current_shell(), "analyse_aml_name_path end\n");
 	return name_path;
 }
 
@@ -3656,13 +3658,6 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	name_string->component.name_string.name_path = NULL;
 	switch(*aml.initial)
 	{
-	case AML_BYTE_PARENT_PREFIX_CHAR:
-		printf_shell(get_current_shell(), "AML_BYTE_PARENT_PREFIX_CHAR\n");
-		name_string->component.name_string.prefix_path = analyse_aml_prefix_path(aml);
-		name_string->string.length += name_string->component.name_string.prefix_path->string.length;
-		aml.initial += name_string->component.name_string.prefix_path->string.length;
-		aml.length -= name_string->component.name_string.prefix_path->string.length;
-		break;
 	case AML_BYTE_ROOT_CHAR:
 		printf_shell(get_current_shell(), "AML_BYTE_ROOT_CHAR\n");
 		name_string->component.name_string.root_char = analyse_aml_root_char(aml);
@@ -3671,7 +3666,11 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 		aml.length -= name_string->component.name_string.root_char->string.length;
 		break;
 	default:
-		printf_shell(get_current_shell(), "Incorrect name string\n");
+		printf_shell(get_current_shell(), "AML_BYTE_PARENT_PREFIX_CHAR\n");
+		name_string->component.name_string.prefix_path = analyse_aml_prefix_path(aml);
+		name_string->string.length += name_string->component.name_string.prefix_path->string.length;
+		aml.initial += name_string->component.name_string.prefix_path->string.length;
+		aml.length -= name_string->component.name_string.prefix_path->string.length;
 		break;
 	}
 	name_string->component.name_string.name_path = analyse_aml_name_path(aml);
