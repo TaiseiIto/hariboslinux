@@ -203,6 +203,7 @@ typedef enum _AMLSymbolType
 	aml_one_op,
 	aml_ones_op,
 	aml_op_region_op,
+	aml_op_region_op_prefix,
 	aml_parent_prefix_char,
 	aml_pkg_lead_byte,
 	aml_pkg_length,
@@ -672,6 +673,8 @@ AMLSymbol *analyse_aml_one_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_ones_op(AMLSubstring aml);
 // <op_region_op> := <ext_op_prefix> <op_region_op_prefix>
 AMLSymbol *analyse_aml_op_region_op(AMLSubstring aml);
+// <op_region_op_prefix> := AML_BYTE_OP_REGION_OP
+AMLSymbol *analyse_aml_op_region_op_prefix(AMLSubstring aml);
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 // <pkg_lead_byte>

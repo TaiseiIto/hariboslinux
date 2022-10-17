@@ -2234,6 +2234,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(op_region_op_prefix_char_array);
 		}
 		break;
+	case aml_op_region_op_prefix:
+		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_parent_prefix_char:
 		output = create_chain_string(aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -2861,6 +2864,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_one_op_name = "OneOp";
 	static char const * const aml_ones_op_name = "OnesOp";
 	static char const * const aml_op_region_op_name = "OpRegionOp";
+	static char const * const aml_op_region_op_prefix_name = "OpRegionOpPrefix";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
 	static char const * const aml_pkg_length_name = "PkgLength";
@@ -2962,6 +2966,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_ones_op_name;
 	case aml_op_region_op:
 		return aml_op_region_op_name;
+	case aml_op_region_op_prefix:
+		return aml_op_region_op_prefix_name;
 	case aml_parent_prefix_char:
 		return aml_parent_prefix_char_name;
 	case aml_pkg_lead_byte:
@@ -3731,11 +3737,16 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 	named_obj->component.named_obj.def_op_region = NULL;
 	named_obj->component.named_obj.def_power_res = NULL;
 	named_obj->component.named_obj.def_thermal_zone = NULL;
-	switch(*aml.initial)
+	switch(aml.initial[0])
 	{
 	case AML_BYTE_EXT_OP_PREFIX:
-		named_obj->component.named_obj.def_op_region = analyse_aml_def_op_region(aml);
-		named_obj->string.length += named_obj->component.named_obj.def_op_region->string.length;
+		switch(aml.initial[1])
+		{
+		case AML_BYTE_OP_REGION_OP:
+			named_obj->component.named_obj.def_op_region = analyse_aml_def_op_region(aml);
+			named_obj->string.length += named_obj->component.named_obj.def_op_region->string.length;
+			break;
+		}
 		break;
 	}
 	return named_obj;
@@ -3816,9 +3827,26 @@ AMLSymbol *analyse_aml_op_region_op(AMLSubstring aml)
 	op_region_op->string.initial = aml.initial;
 	op_region_op->string.length = 0;
 	op_region_op->type = aml_op_region_op;
-	op_region_op->component.op_region_op.ext_op_prefix = NULL;
-	op_region_op->component.op_region_op.op_region_op_prefix = NULL;
+	op_region_op->component.op_region_op.ext_op_prefix = analyse_aml_ext_op_prefix(aml);
+	op_region_op->string.length += op_region_op->component.op_region_op.ext_op_prefix->string.length;
+	aml.initial += op_region_op->component.op_region_op.ext_op_prefix->string.length;
+	aml.length -= op_region_op->component.op_region_op.ext_op_prefix->string.length;
+	op_region_op->component.op_region_op.op_region_op_prefix = analyse_aml_op_region_op_prefix(aml);
+	op_region_op->string.length += op_region_op->component.op_region_op.op_region_op_prefix->string.length;
+	aml.initial += op_region_op->component.op_region_op.op_region_op_prefix->string.length;
+	aml.length -= op_region_op->component.op_region_op.op_region_op_prefix->string.length;
 	return op_region_op;
+}
+
+// <op_region_op_prefix> := AML_BYTE_OP_REGION_OP
+AMLSymbol *analyse_aml_op_region_op_prefix(AMLSubstring aml)
+{
+	AMLSymbol *op_region_op_prefix = malloc(sizeof(*op_region_op_prefix));
+	op_region_op_prefix->string.initial = aml.initial;
+	op_region_op_prefix->string.length = 1;
+	op_region_op_prefix->type = aml_op_region_op_prefix;
+	if(*aml.initial != AML_BYTE_OP_REGION_OP)ERROR();
+	return op_region_op_prefix;
 }
 
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
@@ -4388,6 +4416,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_op_region_op:
 		if(aml_symbol->component.op_region_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.op_region_op.ext_op_prefix);
 		if(aml_symbol->component.op_region_op.op_region_op_prefix)delete_aml_symbol(aml_symbol->component.op_region_op.op_region_op_prefix);
+		break;
+	case aml_op_region_op_prefix:
 		break;
 	case aml_parent_prefix_char:
 		break;
