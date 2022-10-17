@@ -4214,6 +4214,8 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 	term_list->string.initial = aml.initial;
 	term_list->string.length = 0;
 	term_list->type = aml_term_list;
+	term_list->component.term_list.term_list = NULL;
+	term_list->component.term_list.term_obj = NULL;
 	if(aml.length)
 	{
 		// <term_list> := <term_obj> <term_list>
@@ -4221,13 +4223,20 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		term_list->string.length += term_list->component.term_list.term_obj->string.length;
 		aml.initial += term_list->component.term_list.term_obj->string.length;
 		aml.length -= term_list->component.term_list.term_obj->string.length;
-		term_list->component.term_list.term_list = NULL;
-	}
-	else
-	{
-		// <term_list> := Nothing
-		term_list->component.term_list.term_list = NULL;
-		term_list->component.term_list.term_obj = NULL;
+		if(aml.length)switch(*aml.initial)
+		{
+		case AML_BYTE_ALIAS_OP:
+		case AML_BYTE_EXT_OP_PREFIX:
+		case AML_BYTE_NAME_OP:
+			term_list->component.term_list.term_list = analyse_aml_term_list(aml);
+			term_list->string.length += term_list->component.term_list.term_list->string.length;
+			aml.initial += term_list->component.term_list.term_list->string.length;
+			aml.length -= term_list->component.term_list.term_list->string.length;
+			break;
+		default:
+			term_list->component.term_list.term_list = NULL;
+			break;
+		}
 	}
 	return term_list;
 }
