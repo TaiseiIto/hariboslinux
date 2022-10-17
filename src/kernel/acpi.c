@@ -2679,6 +2679,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			local_obj_char_array = create_char_array_from_chain_string(local_obj_chain_string);
 		}
 		else local_obj_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), expression_opcode_char_array, data_object_char_array, arg_obj_char_array, local_obj_char_array);
 		if(aml_symbol->component.term_arg.expression_opcode)
 		{
 			delete_chain_string(expression_opcode_chain_string);
