@@ -4154,6 +4154,22 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	term_arg->component.term_arg.data_object = NULL;
 	term_arg->component.term_arg.arg_obj = NULL;
 	term_arg->component.term_arg.local_obj = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_BUFFER_OP:
+	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_EXT_OP_PREFIX:
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_STRING_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
+	case AML_BYTE_ZERO_OP:
+		term_arg->component.term_arg.data_object = analyse_aml_data_object(aml);
+		term_arg->string.length += term_arg->component.term_arg.data_object->string.length;
+		break;
+	}
 	return term_arg;
 }
 
