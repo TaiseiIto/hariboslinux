@@ -211,6 +211,7 @@ typedef enum _AMLSymbolType
 	aml_qword_const,
 	aml_qword_data,
 	aml_qword_prefix,
+	aml_region_offset,
 	aml_region_space,
 	aml_revision_op,
 	aml_revision_op_prefix,
@@ -481,6 +482,11 @@ typedef struct _AMLQWordData
 	struct _AMLSymbol *dword_data[2];
 } AMLQWordData;
 
+typedef struct _AMLRegionOffset
+{
+	struct _AMLSymbol *term_arg;
+} AMLRegionOffset;
+
 typedef struct _AMLRevisionOp
 {
 	struct _AMLSymbol *ext_op_prefix;
@@ -574,6 +580,7 @@ typedef union _AMLComponent
 	AMLPrefixPath prefix_path;
 	AMLQWordConst qword_const;
 	AMLQWordData qword_data;
+	AMLRegionOffset region_offset;
 	AMLRevisionOp revision_op;
 	AMLStatementOpcode statement_opcode;
 	AMLString string;
@@ -690,6 +697,8 @@ AMLSymbol *analyse_aml_qword_const(AMLSubstring aml);
 AMLSymbol *analyse_aml_qword_data(AMLSubstring aml);
 // <qword_prefix> := AML_BYTE_QWORD_PREFIX
 AMLSymbol *analyse_aml_qword_prefix(AMLSubstring aml);
+// <region_offset> := <term_arg>
+AMLSymbol *analyse_aml_region_offset(AMLSubstring aml);
 // <region_space>
 AMLSymbol *analyse_aml_region_space(AMLSubstring aml);
 // <revision_op> := <ext_op_prefix> <revision_op_prefix>
