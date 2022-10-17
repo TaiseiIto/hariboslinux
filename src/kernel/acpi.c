@@ -3305,7 +3305,10 @@ AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 	def_op_region->string.length += def_op_region->component.def_op_region.op_region_op->string.length;
 	aml.initial += def_op_region->component.def_op_region.op_region_op->string.length;
 	aml.length -= def_op_region->component.def_op_region.op_region_op->string.length;
-	def_op_region->component.def_op_region.name_string = NULL;
+	def_op_region->component.def_op_region.name_string = analyse_aml_name_string(aml);
+	def_op_region->string.length += def_op_region->component.def_op_region.name_string->string.length;
+	aml.initial += def_op_region->component.def_op_region.name_string->string.length;
+	aml.length -= def_op_region->component.def_op_region.name_string->string.length;
 	def_op_region->component.def_op_region.region_space = NULL;
 	def_op_region->component.def_op_region.region_offset = NULL;
 	def_op_region->component.def_op_region.region_len = NULL;
