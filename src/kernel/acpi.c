@@ -3396,7 +3396,7 @@ AMLSymbol *analyse_aml_dword_data(AMLSubstring aml)
 // <dword_prefix> := AML_BYTE_DWORD_PREFIX
 AMLSymbol *analyse_aml_dword_prefix(AMLSubstring aml)
 {
-	AMLSymbol *dword_prefix = malloc(sizeof(dword_prefix));
+	AMLSymbol *dword_prefix = malloc(sizeof(*dword_prefix));
 	dword_prefix->string.initial = aml.initial;
 	dword_prefix->string.length = 1;
 	dword_prefix->type = aml_dword_prefix;
