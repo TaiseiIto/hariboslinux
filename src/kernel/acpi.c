@@ -1980,7 +1980,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			root_char_char_array = create_char_array_from_chain_string(root_char_chain_string);
 		}
 		else root_char_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s", root_char_char_array, prefix_path_char_array, name_path_char_array);
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), root_char_char_array, prefix_path_char_array, name_path_char_array);
 		if(aml_symbol->component.name_string.name_path)
 		{
 			delete_chain_string(name_path_chain_string);
@@ -2807,6 +2807,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_name_path_name = "NamePath";
 	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
+	static char const * const aml_name_string_name = "NameString";
 	static char const * const aml_named_obj_name = "NamedObj";
 	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
@@ -2902,6 +2903,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_name_seg_name;
 	case aml_name_space_modifier_obj:
 		return aml_name_space_modifier_obj_name;
+	case aml_name_string:
+		return aml_name_string_name;
 	case aml_named_obj:
 		return aml_named_obj_name;
 	case aml_null_char:
