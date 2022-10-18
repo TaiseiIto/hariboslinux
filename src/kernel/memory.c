@@ -163,5 +163,18 @@ void print_bios_data_area(BIOSDataArea const *bios_data_area)
 {
 	for(unsigned int i = 0; i < _countof(bios_data_area->com_port_address); i++)printf_serial("bios_data_area->com_port_address[%d] = %#6.4x\n", i, bios_data_area->com_port_address[i]);
 	for(unsigned int i = 0; i < _countof(bios_data_area->lpt_port_address); i++)printf_serial("bios_data_area->lpt_port_address[%d] = %#6.4x\n", i, bios_data_area->lpt_port_address[i]);
+	printf_serial("bios_data_area->ebda_base_address = %#6.4x\n", bios_data_area->ebda_base_address);
+	printf_serial("bios_data_area->equipment_list_flags = %#6.4x\n", bios_data_area->equipment_list_flags);
+	printf_serial("bios_data_area->pcjr = %#4.2x\n", bios_data_area->pcjr);
+	printf_serial("bios_data_area->memory_size_before_ebda_kilobytes = %#6.4x\n", bios_data_area->memory_size_before_ebda_kilobytes);
+	printf_serial("bios_data_area->reserved = %#4.2x\n", bios_data_area->reserved);
+	printf_serial("bios_data_area->ps2_bios_control_flags = %#4.2x\n", bios_data_area->ps2_bios_control_flags);
+	printf_serial("bios_data_area->keyboard_flags = %#6.4x\n", bios_data_area->keyboard_flags);
+	printf_serial("bios_data_area->keypad_entry = %#4.2x\n", bios_data_area->keypad_entry);
+	printf_serial("bios_data_area->keyboard_buffer_head = %#6.4x\n", bios_data_area->keyboard_buffer_head);
+	printf_serial("bios_data_area->keyboard_buffer_tail = %#6.4x\n", bios_data_area->keyboard_buffer_tail);
+	for(unsigned i = 0; i < _countof(bios_data_area->keyboard_buffer); i++)printf_serial("bios_data_area->keyboard_buffer[%#04.2x] = %#4.2x\n", i, bios_data_area->keyboard_buffer[i]);
+	printf_serial("bios_data_area->drive_recalibration_status = %#4.2x\n", bios_data_area->drive_recalibration_status);
+	printf_serial("bios_data_area->diskette_motor_status = %#4.2x\n", bios_data_area->diskette_motor_status);
 }
 
