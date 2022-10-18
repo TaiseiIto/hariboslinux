@@ -2,6 +2,7 @@
 #define _MEMORY_H_
 
 #include "stddef.h"
+#define MEMORY_MAP_BIOS_DATA_AREA	((void*)0x00000400)
 #define MEMORY_MAP_VIDEO_INFORMATION	((void*)0x00000600)
 #define MEMORY_MAP_BOOT_INFORMATION	((void*)0x00000800)
 #define MEMORY_MAP_MEMORY_INFORMATION	((void*)0x00000900)
@@ -34,6 +35,12 @@
 #define MEMORY_MAP_KERNEL_STACK_END	((void*)0x00300000)
 #define MEMORY_MAP_KERNEL_HEAP_BEGIN	((void*)0x00400000)
 
+typedef struct _BIOSDataArea
+{
+	unsigned short com_port_address[4];
+	unsigned short lpt_port_address[4];
+} __attribute__((packed)) BIOSDataArea;
+
 typedef struct _MemorySection
 {
 	struct _MemorySection *previous;
@@ -43,7 +50,7 @@ typedef struct _MemorySection
 	#define MEMORY_SECTION_ALLOCATED 0x01
 } MemorySection;
 
-typedef struct
+typedef struct _MemoryRegionDescriptor
 {
 	unsigned long long base;
 	unsigned long long length;
@@ -54,6 +61,7 @@ typedef struct
 } MemoryRegionDescriptor;
 
 void free(void *address);
+BIOSDataArea const *get_bios_data_area(void);
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index);
 MemorySection const *get_root_memory_section(void);
 unsigned int get_free_memory_space_size(void);

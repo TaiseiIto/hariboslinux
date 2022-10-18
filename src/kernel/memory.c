@@ -4,6 +4,7 @@
 #include "serial.h"
 #include "task.h"
 
+BIOSDataArea const * const bios_data_area = MEMORY_MAP_BIOS_DATA_AREA;
 MemorySection *root_memory_section;
 void * const heap_base = MEMORY_MAP_KERNEL_HEAP_BEGIN;
 
@@ -34,6 +35,11 @@ void free(void *address)
 	else ERROR(); // double free error!
 	sti_task();
 	return;
+}
+
+BIOSDataArea const *get_bios_data_area(void)
+{
+	return bios_data_area;
 }
 
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index)
