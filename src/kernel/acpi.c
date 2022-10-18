@@ -1825,6 +1825,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_ext_op_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_field_flags:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_field_op:
 		if(aml_symbol->component.field_op.ext_op_prefix)
 		{
@@ -3009,6 +3012,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_dword_prefix_name = "DWordPrefix";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_ext_op_prefix_name = "ExtOpPrefix";
+	static char const * const aml_field_flags_name = "FieldFlags";
 	static char const * const aml_field_op_name = "FieldOp";
 	static char const * const aml_field_op_prefix_name = "FieldOpPrefix";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
@@ -3104,6 +3108,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_expression_opcode_name;
 	case aml_ext_op_prefix:
 		return aml_ext_op_prefix_name;
+	case aml_field_flags:
+		return aml_field_flags_name;
 	case aml_field_op:
 		return aml_field_op_name;
 	case aml_field_op_prefix:
@@ -3524,7 +3530,10 @@ AMLSymbol *analyse_aml_def_field(AMLSubstring aml)
 	def_field->string.length += def_field->component.def_field.name_string->string.length;
 	aml.initial += def_field->component.def_field.name_string->string.length;
 	aml.length -= def_field->component.def_field.name_string->string.length;
-	def_field->component.def_field.field_flags = NULL;
+	def_field->component.def_field.field_flags = analyse_aml_field_flags(aml);
+	def_field->string.length += def_field->component.def_field.field_flags->string.length;
+	aml.initial += def_field->component.def_field.field_flags->string.length;
+	aml.length -= def_field->component.def_field.field_flags->string.length;
 	def_field->component.def_field.field_list = NULL;
 	return def_field;
 }
@@ -3739,6 +3748,17 @@ AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml)
 	ext_op_prefix->type = aml_ext_op_prefix;
 	if(*ext_op_prefix->string.initial != AML_BYTE_EXT_OP_PREFIX)ERROR(); // Incorrect ext op prefix
 	return ext_op_prefix;
+}
+
+// <field_flags>
+AMLSymbol *analyse_aml_field_flags(AMLSubstring aml)
+{
+	AMLSymbol *field_flags = malloc(sizeof(*field_flags));
+	field_flags->string.initial = aml.initial;
+	field_flags->string.length = 1;
+	field_flags->type = aml_field_flags;
+	if(0x80 <= *field_flags->string.initial)ERROR(); // Incorrect field flags
+	return field_flags;
 }
 
 // <field_op> := <ext_op_prefix> <field_op_prefix>
@@ -4661,6 +4681,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.expression_opcode.method_invocation)delete_aml_symbol(aml_symbol->component.expression_opcode.method_invocation);
 		break;
 	case aml_ext_op_prefix:
+		break;
+	case aml_field_flags:
 		break;
 	case aml_field_op:
 		if(aml_symbol->component.field_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.field_op.ext_op_prefix);

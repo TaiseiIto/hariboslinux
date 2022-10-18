@@ -188,6 +188,7 @@ typedef enum _AMLSymbolType
 	aml_dword_prefix,
 	aml_expression_opcode,
 	aml_ext_op_prefix,
+	aml_field_flags,
 	aml_field_op,
 	aml_field_op_prefix,
 	aml_lead_name_char,
@@ -679,6 +680,8 @@ AMLSymbol *analyse_aml_dword_prefix(AMLSubstring aml);
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 // <ext_op_prefix> := AML_BYTE_EXT_OP_PREFIX
 AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml);
+// <field_flags>
+AMLSymbol *analyse_aml_field_flags(AMLSubstring aml);
 // <field_op> := <ext_op_prefix> <field_op_prefix>
 AMLSymbol *analyse_aml_field_op(AMLSubstring aml);
 // <field_op_prefix> := AML_BYTE_FIELD_OP_PREFIX
