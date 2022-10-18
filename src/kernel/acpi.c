@@ -2227,6 +2227,34 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_name_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_named_field:
+		if(aml_symbol->component.named_field.name_seg)
+		{
+			name_seg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_field.name_seg);
+			insert_char_front(name_seg_chain_string, name_seg_chain_string->first_character, ' ');
+			replace_chain_string(name_seg_chain_string, "\n", "\n ");
+			name_seg_char_array = create_char_array_from_chain_string(name_seg_chain_string);
+		}
+		else name_seg_char_array = "";
+		if(aml_symbol->component.named_field.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_field.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.named_field.name_seg)
+		{
+			delete_chain_string(name_seg_chain_string);
+			free(name_seg_char_array);
+		}
+		if(aml_symbol->component.named_field.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		break;
 	case aml_named_obj:
 		if(aml_symbol->component.named_obj.def_bank_field)
 		{
@@ -3135,6 +3163,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_name_seg_name = "NameSeg";
 	static char const * const aml_name_space_modifier_obj_name = "NameSpaceModifierObj";
 	static char const * const aml_name_string_name = "NameString";
+	static char const * const aml_named_field_name = "NamedField";
 	static char const * const aml_named_obj_name = "NamedObj";
 	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
@@ -3247,6 +3276,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_name_space_modifier_obj_name;
 	case aml_name_string:
 		return aml_name_string_name;
+	case aml_named_field:
+		return aml_named_field_name;
 	case aml_named_obj:
 		return aml_named_obj_name;
 	case aml_null_char:
@@ -3880,6 +3911,13 @@ AMLSymbol *analyse_aml_field_element(AMLSubstring aml)
 	field_element->component.field_element.access_field = NULL;
 	field_element->component.field_element.extended_access_field = NULL;
 	field_element->component.field_element.connect_field = NULL;
+	if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+	{
+		field_element->component.field_element.named_field = analyse_aml_named_field(aml);
+		field_element->string.length += field_element->component.field_element.named_field->string.length;
+		aml.initial += field_element->component.field_element.named_field->string.length;
+		aml.length -= field_element->component.field_element.named_field->string.length;
+	}
 	return field_element;
 }
 
@@ -3903,6 +3941,17 @@ AMLSymbol *analyse_aml_field_list(AMLSubstring aml)
 	field_list->type = aml_field_list;
 	field_list->component.field_list.field_element = NULL;
 	field_list->component.field_list.field_list = NULL;
+	if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+	{
+		field_list->component.field_list.field_element = analyse_aml_field_element(aml);
+		field_list->string.length += field_list->component.field_list.field_element->string.length;
+		aml.initial += field_list->component.field_list.field_element->string.length;
+		aml.length -= field_list->component.field_list.field_element->string.length;
+		field_list->component.field_list.field_list = analyse_aml_field_list(aml);
+		field_list->string.length += field_list->component.field_list.field_list->string.length;
+		aml.initial += field_list->component.field_list.field_list->string.length;
+		aml.length -= field_list->component.field_list.field_list->string.length;
+	}
 	return field_list;
 }
 
@@ -4126,6 +4175,24 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 	name_string->component.name_string.name_path = analyse_aml_name_path(aml);
 	name_string->string.length += name_string->component.name_string.name_path->string.length;
 	return name_string;
+}
+
+// <named_field> := <name_seg> <pkg_length>
+AMLSymbol *analyse_aml_named_field(AMLSubstring aml)
+{
+	AMLSymbol *named_field = malloc(sizeof(*named_field));
+	named_field->string.initial = aml.initial;
+	named_field->string.length = 0;
+	named_field->type = aml_named_field;
+	named_field->component.named_field.name_seg = analyse_aml_name_seg(aml);
+	named_field->string.length += named_field->component.named_field.name_seg->string.length;
+	aml.initial += named_field->component.named_field.name_seg->string.length;
+	aml.length -= named_field->component.named_field.name_seg->string.length;
+	named_field->component.named_field.pkg_length = analyse_aml_pkg_length(aml);
+	named_field->string.length += named_field->component.named_field.pkg_length->string.length;
+	aml.initial += named_field->component.named_field.pkg_length->string.length;
+	aml.length -= named_field->component.named_field.pkg_length->string.length;
+	return named_field;
 }
 
 // <named_obj> := <def_bank_field> | <def_create_bit_field> | <def_create_byte_field> | <def_create_dword_field> | <def_create_field> | <def_create_qword_field> | <def_create_word_field> | <def_data_region> | <def_external> | <def_op_region> | <def_power_res> | <def_thermal_zone>
@@ -4881,6 +4948,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.name_string.name_path)delete_aml_symbol(aml_symbol->component.name_string.name_path);
 		if(aml_symbol->component.name_string.prefix_path)delete_aml_symbol(aml_symbol->component.name_string.prefix_path);
 		if(aml_symbol->component.name_string.root_char)delete_aml_symbol(aml_symbol->component.name_string.root_char);
+		break;
+	case aml_named_field:
+		if(aml_symbol->component.named_field.name_seg)delete_aml_symbol(aml_symbol->component.named_field.name_seg);
+		if(aml_symbol->component.named_field.pkg_length)delete_aml_symbol(aml_symbol->component.named_field.pkg_length);
 		break;
 	case aml_named_obj:
 		if(aml_symbol->component.named_obj.def_bank_field)delete_aml_symbol(aml_symbol->component.named_obj.def_bank_field);

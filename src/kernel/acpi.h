@@ -202,6 +202,7 @@ typedef enum _AMLSymbolType
 	aml_name_seg,
 	aml_name_space_modifier_obj,
 	aml_name_string,
+	aml_named_field,
 	aml_named_obj,
 	aml_null_char,
 	aml_null_name,
@@ -438,6 +439,12 @@ typedef struct _AMLNameChar
 	struct _AMLSymbol *lead_name_char;
 } AMLNameChar;
 
+typedef struct _AMLNamedField
+{
+	struct _AMLSymbol *name_seg;
+	struct _AMLSymbol *pkg_length;
+} AMLNamedField;
+
 typedef struct _AMLNamedObj
 {
 	struct _AMLSymbol *def_bank_field;
@@ -616,6 +623,7 @@ typedef union _AMLComponent
 	AMLFieldOp field_op;
 	AMLMultiNamePath multi_name_path;
 	AMLNameChar name_char;
+	AMLNamedField named_field;
 	AMLNamedObj named_obj;
 	AMLNamePath name_path;
 	AMLNameSeg name_seg;
@@ -727,6 +735,8 @@ AMLSymbol *analyse_aml_name_seg(AMLSubstring aml);
 AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml);
 // <name_string> := <root_char> <name_path> | <prefix_path> <name_path>
 AMLSymbol *analyse_aml_name_string(AMLSubstring aml);
+// <named_field> := <name_seg> <pkg_length>
+AMLSymbol *analyse_aml_named_field(AMLSubstring aml);
 // <named_obj> := <def_bank_field> | <def_create_bit_field> | <def_create_byte_field> | <def_create_dword_field> | <def_create_field> | <def_create_qword_field> | <def_create_word_field> | <def_data_region> | <def_external> | <def_op_region> | <def_power_res> | <def_thermal_zone>
 AMLSymbol *analyse_aml_named_obj(AMLSubstring aml);
 // <null_char> := AML_BYTE_NULL_CHAR
