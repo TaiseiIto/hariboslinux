@@ -707,7 +707,7 @@ AMLSymbol *analyse_aml_dword_prefix(AMLSubstring aml);
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 // <ext_op_prefix> := AML_BYTE_EXT_OP_PREFIX
 AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml);
-// <field_element> := <named_field> <reserved_field> <access_field> <extended_access_field> <connect_field>
+// <field_element> := <named_field> | <reserved_field> | <access_field> | <extended_access_field> | <connect_field>
 AMLSymbol *analyse_aml_field_element(AMLSubstring aml);
 // <field_flags>
 AMLSymbol *analyse_aml_field_flags(AMLSubstring aml);

@@ -2244,6 +2244,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
 		}
 		else pkg_length_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), name_seg_char_array, pkg_length_char_array);
 		if(aml_symbol->component.named_field.name_seg)
 		{
 			delete_chain_string(name_seg_chain_string);
@@ -3899,7 +3900,7 @@ AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml)
 	return ext_op_prefix;
 }
 
-// <field_element> := <named_field> <reserved_field> <access_field> <extended_access_field> <connect_field>
+// <field_element> := <named_field> | <reserved_field> | <access_field> | <extended_access_field> | <connect_field>
 AMLSymbol *analyse_aml_field_element(AMLSubstring aml)
 {
 	AMLSymbol *field_element = malloc(sizeof(*field_element));
