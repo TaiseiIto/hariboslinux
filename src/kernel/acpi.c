@@ -4740,7 +4740,13 @@ AMLSymbol *analyse_aml_zero_op(AMLSubstring aml)
 
 AMLSymbol *create_dsdt_aml_syntax_tree(void)
 {
-	return analyse_aml_term_list(get_dsdt_aml());
+	AMLSubstring dsdt_aml = get_dsdt_aml();
+	if(dsdt_aml.initial)return analyse_aml_term_list(dsdt_aml);
+	else
+	{
+		ERROR(); // DSDT is not found.
+		return NULL;
+	}
 }
 
 void delete_aml_symbol(AMLSymbol *aml_symbol)
@@ -5098,9 +5104,19 @@ AMLSubstring get_dsdt_aml(void)
 {
 	AMLSubstring dsdt_aml;
 	ACPITableHeader const *dsdt_header = get_dsdt_header();
-	dsdt_aml.initial = (unsigned char const *)((unsigned int)dsdt_header + sizeof(*dsdt_header));
-	dsdt_aml.length = dsdt_header->length - sizeof(*dsdt_header);
-	return dsdt_aml;
+	if(dsdt_header)
+	{
+		dsdt_aml.initial = (unsigned char const *)((unsigned int)dsdt_header + sizeof(*dsdt_header));
+		dsdt_aml.length = dsdt_header->length - sizeof(*dsdt_header);
+		return dsdt_aml;
+	}
+	else
+	{
+		ERROR(); // DSDT is not found.
+		dsdt_aml.initial = NULL;
+		dsdt_aml.length = 0;
+		return dsdt_aml;
+	}
 }
 
 ACPITableHeader const *get_dsdt_header(void)
@@ -5122,16 +5138,29 @@ FADT const *get_fadt(void)
 unsigned int get_num_of_sdt_headers(void)
 {
 	ACPITableHeader const *rsdt_header = get_rsdt_header();
-	return (rsdt_header->length - sizeof(*rsdt_header)) / sizeof(ACPITableHeader*);
+	if(rsdt_header)return (rsdt_header->length - sizeof(*rsdt_header)) / sizeof(ACPITableHeader*);
+	else
+	{
+		ERROR(); // RSDT is not found.
+		return 0;
+	}
 }
 
 ACPITableHeader const *get_rsdt_header(void)
 {
 	ACPITableHeader const *rsdt_header = (ACPITableHeader const *)(unsigned int)get_acpi_memory_region_descriptor().base;
-	if(acpi_table_is_correct(rsdt_header))return rsdt_header;
+	if(rsdt_header)
+	{
+		if(acpi_table_is_correct(rsdt_header))return rsdt_header;
+		else
+		{
+			ERROR(); // RSDT is incorrect!
+			return NULL;
+		}
+	}
 	else
 	{
-		ERROR(); // RSDT is incorrect!
+		ERROR(); // RSDT is not found!
 		return NULL;
 	}
 }
@@ -5148,7 +5177,12 @@ ACPITableHeader const *get_sdt_header(char const *signature)
 ACPITableHeader const * const *get_sdt_headers(void)
 {
 	ACPITableHeader const *rsdt_header =  get_rsdt_header();
-	return (ACPITableHeader const * const *)((unsigned int)rsdt_header + sizeof(*rsdt_header));
+	if(rsdt_header)return (ACPITableHeader const * const *)((unsigned int)rsdt_header + sizeof(*rsdt_header));
+	else
+	{
+		ERROR(); // RSDT is not found.
+		return NULL;
+	}
 }
 
 void print_acpi_table_header(ACPITableHeader acpi_table_header, char const *name)
