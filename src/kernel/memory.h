@@ -35,10 +35,24 @@
 #define MEMORY_MAP_KERNEL_STACK_END	((void*)0x00300000)
 #define MEMORY_MAP_KERNEL_HEAP_BEGIN	((void*)0x00400000)
 
+// https://stanislavs.org/helppc/bios_data_area.html
 typedef struct _BIOSDataArea
 {
-	unsigned short com_port_address[4];
-	unsigned short lpt_port_address[4];
+	unsigned short com_port_address[0x04];
+	unsigned short lpt_port_address[0x03];
+	unsigned short ebda_base_address;
+	unsigned short equipment_list_flags;
+	unsigned char pcjr;
+	unsigned short memory_size_before_ebda_kilobytes;
+	unsigned char reserved;
+	unsigned char ps2_bios_control_flags;
+	unsigned short keyboard_flags;
+	unsigned char keypad_entry;
+	unsigned short keyboard_buffer_head;
+	unsigned short keyboard_buffer_tail;
+	unsigned char keyboard_buffer[0x20];
+	unsigned char drive_recalibration_status;
+	unsigned char diskette_motor_status;
 } __attribute__((packed)) BIOSDataArea;
 
 typedef struct _MemorySection
@@ -67,6 +81,7 @@ MemorySection const *get_root_memory_section(void);
 unsigned int get_free_memory_space_size(void);
 void init_memory(void);
 void *malloc(size_t size);
+void print_bios_data_area(BIOSDataArea const *bios_data_area);
 
 #endif
 

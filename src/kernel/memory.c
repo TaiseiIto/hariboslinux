@@ -2,6 +2,7 @@
 #include "io.h"
 #include "memory.h"
 #include "serial.h"
+#include "stdlib.h"
 #include "task.h"
 
 BIOSDataArea const * const bios_data_area = MEMORY_MAP_BIOS_DATA_AREA;
@@ -156,5 +157,11 @@ void *malloc(size_t size)
 	sti_task();
 	ERROR(); // Can't find enough size free memory section!
 	return NULL;
+}
+
+void print_bios_data_area(BIOSDataArea const *bios_data_area)
+{
+	for(unsigned int i = 0; i < _countof(bios_data_area->com_port_address); i++)printf_serial("bios_data_area->com_port_address[%d] = %#6.4x\n", i, bios_data_area->com_port_address[i]);
+	for(unsigned int i = 0; i < _countof(bios_data_area->lpt_port_address); i++)printf_serial("bios_data_area->lpt_port_address[%d] = %#6.4x\n", i, bios_data_area->lpt_port_address[i]);
 }
 

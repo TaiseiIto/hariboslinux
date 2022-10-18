@@ -5160,10 +5160,8 @@ ACPITableHeader const *get_rsdt_header(void)
 	}
 	else
 	{
-		BIOSDataArea const * bios_data_area = get_bios_data_area();
 		ERROR(); // RSDT is not found!
-		for(unsigned int i = 0; i < _countof(bios_data_area->com_port_address); i++)printf_serial("bios_data_area->com_port_address[%d] = %#6.4x\n", i, bios_data_area->com_port_address[i]);
-		for(unsigned int i = 0; i < _countof(bios_data_area->lpt_port_address); i++)printf_serial("bios_data_area->lpt_port_address[%d] = %#6.4x\n", i, bios_data_area->lpt_port_address[i]);
+		print_bios_data_area(get_bios_data_area());
 		return NULL;
 	}
 }
