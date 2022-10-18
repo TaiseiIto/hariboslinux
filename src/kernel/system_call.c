@@ -691,8 +691,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_shell(shell, "---------- DSDT AML SYNTAX TREE ----------\n");
 					dsdt_aml_syntax_tree = create_dsdt_aml_syntax_tree();
 					print_aml_symbol(dsdt_aml_syntax_tree);
-					printf_shell(shell, "dsdt_aml.length = %d\n", dsdt_aml.length);
-					printf_shell(shell, "length = %d\n", dsdt_aml_syntax_tree->string.length);
+					printf_shell(shell, "dsdt_aml.length = %#010.8x\n", dsdt_aml.length);
+					printf_shell(shell, "length = %#010.8x\n", dsdt_aml_syntax_tree->string.length);
 					printf_shell(shell, "next bytes =");
 					for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_shell(shell, " %02.2x", *aml_byte);
 					printf_shell(shell, "\n");

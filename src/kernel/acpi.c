@@ -2098,7 +2098,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			root_char_char_array = create_char_array_from_chain_string(root_char_chain_string);
 		}
 		else root_char_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), root_char_char_array, prefix_path_char_array, name_path_char_array);
+		output = create_format_chain_string("%s \"%.*s\"\n%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, aml_symbol->string.initial, root_char_char_array, prefix_path_char_array, name_path_char_array);
 		if(aml_symbol->component.name_string.name_path)
 		{
 			delete_chain_string(name_path_chain_string);
@@ -2388,7 +2388,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			bytes_data_char_array[i] = create_char_array_from_chain_string(bytes_data_chain_string[i]);
 		}
 		else bytes_data_char_array[i] = "";
-		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), pkg_lead_byte_char_array);
+		output = create_format_chain_string("%s %#010.8x\n%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.pkg_length.length, pkg_lead_byte_char_array);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.pkg_length.byte_data); i++)insert_char_array_back(output, output->last_character, bytes_data_char_array[i]);
 		if(aml_symbol->component.pkg_length.pkg_lead_byte)
 		{
