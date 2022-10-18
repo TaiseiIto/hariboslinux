@@ -150,6 +150,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
 	ChainString **words_data_chain_string;
+	ChainString *access_field_chain_string;
 	ChainString *alias_op_chain_string;
 	ChainString *arg_obj_chain_string;
 	ChainString *ascii_char_chain_string;
@@ -161,6 +162,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *byte_list_chain_string;
 	ChainString *byte_prefix_chain_string;
 	ChainString *computational_data_chain_string;
+	ChainString *connect_field_chain_string;
 	ChainString *const_obj_chain_string;
 	ChainString *data_object_chain_string;
 	ChainString *data_ref_object_chain_string;
@@ -254,6 +256,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *dword_prefix_chain_string;
 	ChainString *expression_opcode_chain_string;
 	ChainString *ext_op_prefix_chain_string;
+	ChainString *extended_access_field_chain_string;
 	ChainString *field_element_chain_string;
 	ChainString *field_flags_chain_string;
 	ChainString *field_list_chain_string;
@@ -269,6 +272,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *name_seg_chain_string;
 	ChainString *name_space_modifier_obj_chain_string;
 	ChainString *name_string_chain_string;
+	ChainString *named_field_chain_string;
 	ChainString *named_obj_chain_string;
 	ChainString *null_char_chain_string;
 	ChainString *null_name_chain_string;
@@ -289,6 +293,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *region_len_chain_string;
 	ChainString *region_offset_chain_string;
 	ChainString *region_space_chain_string;
+	ChainString *reserved_field_chain_string;
 	ChainString *revision_op_chain_string;
 	ChainString *revision_op_prefix_chain_string;
 	ChainString *root_char_chain_string;
@@ -309,6 +314,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char **name_segs_char_array;
 	char **name_strings_char_array;
 	char **words_data_char_array;
+	char *access_field_char_array;
 	char *alias_op_char_array;
 	char *arg_obj_char_array;
 	char *ascii_char_char_array;
@@ -320,6 +326,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *byte_list_char_array;
 	char *byte_prefix_char_array;
 	char *computational_data_char_array;
+	char *connect_field_char_array;
 	char *const_obj_char_array;
 	char *data_object_char_array;
 	char *data_ref_object_char_array;
@@ -413,6 +420,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *dword_prefix_char_array;
 	char *expression_opcode_char_array;
 	char *ext_op_prefix_char_array;
+	char *extended_access_field_char_array;
 	char *field_element_char_array;
 	char *field_flags_char_array;
 	char *field_list_char_array;
@@ -428,6 +436,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *name_seg_char_array;
 	char *name_space_modifier_obj_char_array;
 	char *name_string_char_array;
+	char *named_field_char_array;
 	char *named_obj_char_array;
 	char *null_char_char_array;
 	char *null_name_char_array;
@@ -447,6 +456,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *region_len_char_array;
 	char *region_offset_char_array;
 	char *region_space_char_array;
+	char *reserved_field_char_array;
 	char *revision_op_char_array;
 	char *revision_op_prefix_char_array;
 	char *root_char_char_array;
@@ -1827,6 +1837,74 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_ext_op_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_field_element:
+		if(aml_symbol->component.field_element.named_field)
+		{
+			named_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.field_element.named_field);
+			insert_char_front(named_field_chain_string, named_field_chain_string->first_character, ' ');
+			replace_chain_string(named_field_chain_string, "\n", "\n ");
+			named_field_char_array = create_char_array_from_chain_string(named_field_chain_string);
+		}
+		else named_field_char_array = "";
+		if(aml_symbol->component.field_element.reserved_field)
+		{
+			reserved_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.field_element.reserved_field);
+			insert_char_front(reserved_field_chain_string, reserved_field_chain_string->first_character, ' ');
+			replace_chain_string(reserved_field_chain_string, "\n", "\n ");
+			reserved_field_char_array = create_char_array_from_chain_string(reserved_field_chain_string);
+		}
+		else reserved_field_char_array = "";
+		if(aml_symbol->component.field_element.access_field)
+		{
+			access_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.field_element.access_field);
+			insert_char_front(access_field_chain_string, access_field_chain_string->first_character, ' ');
+			replace_chain_string(access_field_chain_string, "\n", "\n ");
+			access_field_char_array = create_char_array_from_chain_string(access_field_chain_string);
+		}
+		else access_field_char_array = "";
+		if(aml_symbol->component.field_element.extended_access_field)
+		{
+			extended_access_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.field_element.extended_access_field);
+			insert_char_front(extended_access_field_chain_string, extended_access_field_chain_string->first_character, ' ');
+			replace_chain_string(extended_access_field_chain_string, "\n", "\n ");
+			extended_access_field_char_array = create_char_array_from_chain_string(extended_access_field_chain_string);
+		}
+		else extended_access_field_char_array = "";
+		if(aml_symbol->component.field_element.connect_field)
+		{
+			connect_field_chain_string = aml_symbol_to_chain_string(aml_symbol->component.field_element.connect_field);
+			insert_char_front(connect_field_chain_string, connect_field_chain_string->first_character, ' ');
+			replace_chain_string(connect_field_chain_string, "\n", "\n ");
+			connect_field_char_array = create_char_array_from_chain_string(connect_field_chain_string);
+		}
+		else connect_field_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), named_field_char_array, reserved_field_char_array, access_field_char_array, extended_access_field_char_array, connect_field_char_array);
+		if(aml_symbol->component.field_element.named_field)
+		{
+			delete_chain_string(named_field_chain_string);
+			free(named_field_char_array);
+		}
+		if(aml_symbol->component.field_element.reserved_field)
+		{
+			delete_chain_string(reserved_field_chain_string);
+			free(reserved_field_char_array);
+		}
+		if(aml_symbol->component.field_element.access_field)
+		{
+			delete_chain_string(access_field_chain_string);
+			free(access_field_char_array);
+		}
+		if(aml_symbol->component.field_element.extended_access_field)
+		{
+			delete_chain_string(extended_access_field_chain_string);
+			free(extended_access_field_char_array);
+		}
+		if(aml_symbol->component.field_element.connect_field)
+		{
+			delete_chain_string(connect_field_chain_string);
+			free(connect_field_char_array);
+		}
+		break;
 	case aml_field_flags:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3043,6 +3121,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_dword_prefix_name = "DWordPrefix";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_ext_op_prefix_name = "ExtOpPrefix";
+	static char const * const aml_field_element_name = "FieldElement";
 	static char const * const aml_field_flags_name = "FieldFlags";
 	static char const * const aml_field_list_name = "FieldList";
 	static char const * const aml_field_op_name = "FieldOp";
@@ -3140,6 +3219,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_expression_opcode_name;
 	case aml_ext_op_prefix:
 		return aml_ext_op_prefix_name;
+	case aml_field_element:
+		return aml_field_element_name;
 	case aml_field_flags:
 		return aml_field_flags_name;
 	case aml_field_list:
@@ -3785,6 +3866,21 @@ AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml)
 	ext_op_prefix->type = aml_ext_op_prefix;
 	if(*ext_op_prefix->string.initial != AML_BYTE_EXT_OP_PREFIX)ERROR(); // Incorrect ext op prefix
 	return ext_op_prefix;
+}
+
+// <field_element> := <named_field> <reserved_field> <access_field> <extended_access_field> <connect_field>
+AMLSymbol *analyse_aml_field_element(AMLSubstring aml)
+{
+	AMLSymbol *field_element = malloc(sizeof(*field_element));
+	field_element->string.initial = aml.initial;
+	field_element->string.length = 0;
+	field_element->type = aml_field_element;
+	field_element->component.field_element.named_field = NULL;
+	field_element->component.field_element.reserved_field = NULL;
+	field_element->component.field_element.access_field = NULL;
+	field_element->component.field_element.extended_access_field = NULL;
+	field_element->component.field_element.connect_field = NULL;
+	return field_element;
 }
 
 // <field_flags>
@@ -4730,6 +4826,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.expression_opcode.method_invocation)delete_aml_symbol(aml_symbol->component.expression_opcode.method_invocation);
 		break;
 	case aml_ext_op_prefix:
+		break;
+	case aml_field_element:
+		if(aml_symbol->component.field_element.named_field)delete_aml_symbol(aml_symbol->component.field_element.named_field);
+		if(aml_symbol->component.field_element.reserved_field)delete_aml_symbol(aml_symbol->component.field_element.reserved_field);
+		if(aml_symbol->component.field_element.access_field)delete_aml_symbol(aml_symbol->component.field_element.access_field);
+		if(aml_symbol->component.field_element.extended_access_field)delete_aml_symbol(aml_symbol->component.field_element.extended_access_field);
+		if(aml_symbol->component.field_element.connect_field)delete_aml_symbol(aml_symbol->component.field_element.connect_field);
 		break;
 	case aml_field_flags:
 		break;
