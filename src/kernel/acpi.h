@@ -177,6 +177,7 @@ typedef enum _AMLSymbolType
 	aml_data_ref_object,
 	aml_def_alias,
 	aml_def_buffer,
+	aml_def_field,
 	aml_def_name,
 	aml_def_op_region,
 	aml_digit_char,
@@ -298,6 +299,15 @@ typedef struct _AMLDefBuffer
 	struct _AMLSymbol *buffer_size;
 	struct _AMLSymbol *byte_list;
 } AMLDefBuffer;
+
+typedef struct _AMLDefField
+{
+	struct _AMLSymbol *field_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *field_flags;
+	struct _AMLSymbol *field_list;
+} AMLDefField;
 
 typedef struct _AMLDefName
 {
@@ -567,6 +577,7 @@ typedef union _AMLComponent
 	AMLDataRefObject data_ref_object;
 	AMLDefAlias def_alias;
 	AMLDefBuffer def_buffer;
+	AMLDefField def_field;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
 	AMLDualNamePath dual_name_path;
@@ -636,6 +647,8 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
 AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
+// <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
+AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
 AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>

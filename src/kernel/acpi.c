@@ -253,6 +253,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *dword_prefix_chain_string;
 	ChainString *expression_opcode_chain_string;
 	ChainString *ext_op_prefix_chain_string;
+	ChainString *field_flags_chain_string;
+	ChainString *field_list_chain_string;
+	ChainString *field_op_chain_string;
 	ChainString *lead_name_char_chain_string;
 	ChainString *local_obj_chain_string;
 	ChainString *method_invocation_chain_string;
@@ -406,6 +409,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *dword_prefix_char_array;
 	char *expression_opcode_char_array;
 	char *ext_op_prefix_char_array;
+	char *field_flags_char_array;
+	char *field_list_char_array;
+	char *field_op_char_array;
 	char *lead_name_char_char_array;
 	char *local_obj_char_array;
 	char *method_invocation_char_array;
@@ -847,6 +853,74 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(byte_list_chain_string);
 			free(byte_list_char_array);
+		}
+		break;
+	case aml_def_field:
+		if(aml_symbol->component.def_field.field_op)
+		{
+			field_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_field.field_op);
+			insert_char_front(field_op_chain_string, field_op_chain_string->first_character, ' ');
+			replace_chain_string(field_op_chain_string, "\n", "\n ");
+			field_op_char_array = create_char_array_from_chain_string(field_op_chain_string);
+		}
+		else field_op_char_array = "";
+		if(aml_symbol->component.def_field.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_field.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_field.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_field.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.def_field.field_flags)
+		{
+			field_flags_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_field.field_flags);
+			insert_char_front(field_flags_chain_string, field_flags_chain_string->first_character, ' ');
+			replace_chain_string(field_flags_chain_string, "\n", "\n ");
+			field_flags_char_array = create_char_array_from_chain_string(field_flags_chain_string);
+		}
+		else field_flags_char_array = "";
+		if(aml_symbol->component.def_field.field_list)
+		{
+			field_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_field.field_list);
+			insert_char_front(field_list_chain_string, field_list_chain_string->first_character, ' ');
+			replace_chain_string(field_list_chain_string, "\n", "\n ");
+			field_list_char_array = create_char_array_from_chain_string(field_list_chain_string);
+		}
+		else field_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s", field_op_char_array, pkg_length_char_array, name_string_char_array, field_flags_char_array, field_list_char_array);
+		if(aml_symbol->component.def_field.field_op)
+		{
+			delete_chain_string(field_op_chain_string);
+			free(field_op_char_array);
+		}
+		if(aml_symbol->component.def_field.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_field.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.def_field.field_flags)
+		{
+			delete_chain_string(field_flags_chain_string);
+			free(field_flags_char_array);
+		}
+		if(aml_symbol->component.def_field.field_list)
+		{
+			delete_chain_string(field_list_chain_string);
+			free(field_list_char_array);
 		}
 		break;
 	case aml_def_name:
@@ -2875,6 +2949,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_buffer_name = "DefBuffer";
+	static char const * const aml_def_field_name = "DefField";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_digit_char_name = "DigitChar";
@@ -2956,6 +3031,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_alias_name;
 	case aml_def_buffer:
 		return aml_def_buffer_name;
+	case aml_def_field:
+		return aml_def_field_name;
 	case aml_def_name:
 		return aml_def_name_name;
 	case aml_def_op_region:
@@ -3371,6 +3448,21 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
 	aml.length -= def_buffer->component.def_buffer.buffer_size->string.length;
 	def_buffer->component.def_buffer.byte_list = NULL;
 	return def_buffer;
+}
+
+// <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
+AMLSymbol *analyse_aml_def_field(AMLSubstring aml)
+{
+	AMLSymbol *def_field = malloc(sizeof(*def_field));
+	def_field->string.initial = aml.initial;
+	def_field->string.length = 0;
+	def_field->type = aml_def_field;
+	def_field->component.def_field.field_op = NULL;
+	def_field->component.def_field.pkg_length = NULL;
+	def_field->component.def_field.name_string = NULL;
+	def_field->component.def_field.field_flags = NULL;
+	def_field->component.def_field.field_list = NULL;
+	return def_field;
 }
 
 // <def_name> := <name_op> <name_string> <data_ref_object>
@@ -4380,6 +4472,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_buffer.pkg_length)delete_aml_symbol(aml_symbol->component.def_buffer.pkg_length);
 		if(aml_symbol->component.def_buffer.buffer_size)delete_aml_symbol(aml_symbol->component.def_buffer.buffer_size);
 		if(aml_symbol->component.def_buffer.byte_list)delete_aml_symbol(aml_symbol->component.def_buffer.byte_list);
+		break;
+	case aml_def_field:
+		if(aml_symbol->component.def_field.field_op)delete_aml_symbol(aml_symbol->component.def_field.field_op);
+		if(aml_symbol->component.def_field.pkg_length)delete_aml_symbol(aml_symbol->component.def_field.pkg_length);
+		if(aml_symbol->component.def_field.name_string)delete_aml_symbol(aml_symbol->component.def_field.name_string);
+		if(aml_symbol->component.def_field.field_flags)delete_aml_symbol(aml_symbol->component.def_field.field_flags);
+		if(aml_symbol->component.def_field.field_list)delete_aml_symbol(aml_symbol->component.def_field.field_list);
 		break;
 	case aml_def_name:
 		if(aml_symbol->component.def_name.name_op)delete_aml_symbol(aml_symbol->component.def_name.name_op);
