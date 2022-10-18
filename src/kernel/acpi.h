@@ -189,6 +189,7 @@ typedef enum _AMLSymbolType
 	aml_expression_opcode,
 	aml_ext_op_prefix,
 	aml_field_flags,
+	aml_field_list,
 	aml_field_op,
 	aml_field_op_prefix,
 	aml_lead_name_char,
@@ -402,11 +403,17 @@ typedef struct _AMLExpressionOpcode
 	struct _AMLSymbol *method_invocation;
 } AMLExpressionOpcode;
 
+typedef struct _AMLFieldList
+{
+	struct _AMLSymbol *field_element;
+	struct _AMLSymbol *field_list;
+} AMLFieldList;
+
 typedef struct _AMLFieldOp
 {
 	struct _AMLSymbol *ext_op_prefix;
 	struct _AMLSymbol *field_op_prefix;
-} AMLFielfOp;
+} AMLFieldOp;
 
 typedef struct _AMLMultiNamePath
 {
@@ -594,7 +601,8 @@ typedef union _AMLComponent
 	AMLDWordConst dword_const;
 	AMLDWordData dword_data;
 	AMLExpressionOpcode expression_opcode;
-	AMLFielfOp field_op;
+	AMLFieldList field_list;
+	AMLFieldOp field_op;
 	AMLMultiNamePath multi_name_path;
 	AMLNameChar name_char;
 	AMLNamedObj named_obj;
@@ -682,6 +690,8 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml);
 // <field_flags>
 AMLSymbol *analyse_aml_field_flags(AMLSubstring aml);
+// <field_list> := Nothing | <field_element> <field_list>
+AMLSymbol *analyse_aml_field_list(AMLSubstring aml);
 // <field_op> := <ext_op_prefix> <field_op_prefix>
 AMLSymbol *analyse_aml_field_op(AMLSubstring aml);
 // <field_op_prefix> := AML_BYTE_FIELD_OP_PREFIX
