@@ -431,6 +431,7 @@ typedef struct _AMLNamedObj
 	struct _AMLSymbol *def_create_word_field;
 	struct _AMLSymbol *def_data_region;
 	struct _AMLSymbol *def_external;
+	struct _AMLSymbol *def_field;
 	struct _AMLSymbol *def_op_region;
 	struct _AMLSymbol *def_power_res;
 	struct _AMLSymbol *def_thermal_zone;
