@@ -4745,6 +4745,7 @@ AMLSymbol *create_dsdt_aml_syntax_tree(void)
 
 void delete_aml_symbol(AMLSymbol *aml_symbol)
 {
+	printf_shell(get_current_shell(), "delete %s\n", aml_symbol_type_name(aml_symbol->type));
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
@@ -4993,7 +4994,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_pkg_length:
 		if(aml_symbol->component.pkg_length.pkg_lead_byte)delete_aml_symbol(aml_symbol->component.pkg_length.pkg_lead_byte);
-		for(AMLSymbol **byte_data = aml_symbol->component.pkg_length.byte_data; byte_data != aml_symbol->component.pkg_length.byte_data + _countof(aml_symbol->component.pkg_length.byte_data); byte_data++)delete_aml_symbol(*byte_data);
+		for(AMLSymbol **byte_data = aml_symbol->component.pkg_length.byte_data; byte_data != aml_symbol->component.pkg_length.byte_data + _countof(aml_symbol->component.pkg_length.byte_data); byte_data++)if(*byte_data)delete_aml_symbol(*byte_data);
 		break;
 	case aml_prefix_path:
 		if(aml_symbol->component.prefix_path.parent_prefix_char)delete_aml_symbol(aml_symbol->component.prefix_path.parent_prefix_char);
@@ -5054,8 +5055,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.term_arg.local_obj)delete_aml_symbol(aml_symbol->component.term_arg.local_obj);
 		break;
 	case aml_term_list:
-		if(aml_symbol->component.term_list.term_list)delete_aml_symbol(aml_symbol->component.term_list.term_list);
 		if(aml_symbol->component.term_list.term_obj)delete_aml_symbol(aml_symbol->component.term_list.term_obj);
+		if(aml_symbol->component.term_list.term_list)delete_aml_symbol(aml_symbol->component.term_list.term_list);
 		break;
 	case aml_term_obj:
 		if(aml_symbol->component.term_obj.object)delete_aml_symbol(aml_symbol->component.term_obj.object);
