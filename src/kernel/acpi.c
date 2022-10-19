@@ -1,4 +1,5 @@
 #include "acpi.h"
+#include "bios.h"
 #include "serial.h"
 #include "shell.h"
 #include "stdbool.h"
