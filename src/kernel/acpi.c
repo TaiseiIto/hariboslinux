@@ -5171,10 +5171,12 @@ ACPITableHeader const *get_rsdt_header(void)
 	}
 	else
 	{
+		RSDP const *rsdp = get_rsdp();
 		ERROR(); // RSDT is not found!
 		print_bios_data_area(get_bios_data_area());
 		printf_serial("EBDA = %p\n", get_extended_bios_data_area());
-		printf_serial("RSDP = %p\n", get_rsdp());
+		printf_serial("RSDP = %p\n", rsdp);
+		PRINT_RSDP(rsdp);
 		return NULL;
 	}
 }
@@ -5242,5 +5244,18 @@ void print_generic_address_structure(GenericAddressStructure generic_address_str
 	printf_shell(shell, "%s.bit_offset = %#04.2x\n", name, generic_address_structure.bit_offset);
 	printf_shell(shell, "%s.access_size = %#04.2x\n", name, generic_address_structure.access_size);
 	printf_shell(shell, "%s.address = %#018.16x\n", name, generic_address_structure.address);
+}
+
+void print_rsdp(RSDP const *rsdp, char const *name)
+{
+	Shell *shell = get_current_shell();
+	printf_shell(shell, "%s->signature = %.*s\n", name, sizeof(rsdp->signature), rsdp->signature);
+	printf_shell(shell, "%s->checksum = %#04.2x\n", name, rsdp->checksum);
+	printf_shell(shell, "%s->oemid = %.*s\n", name, sizeof(rsdp->oemid), rsdp->oemid);
+	printf_shell(shell, "%s->revision = %#04.2x\n", name, rsdp->revision);
+	printf_shell(shell, "%s->rsdt = %p\n", name, rsdp->rsdt);
+	printf_shell(shell, "%s->length = %#010.8x\n", name, rsdp->length);
+	printf_shell(shell, "%s->xsdt_addr = %#018.16x\n", name, rsdp->xsdt_addr);
+	printf_shell(shell, "%s->extended_checksum = %#04.2x\n", name, rsdp->extended_checksum);
 }
 
