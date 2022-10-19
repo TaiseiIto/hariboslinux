@@ -5147,6 +5147,15 @@ unsigned int get_num_of_sdt_headers(void)
 	}
 }
 
+RSDP const *get_rsdp(void)
+{
+	static char const * const rsdp_signature = "RSD PTR ";
+	void const *extended_bios_data_area = get_extended_bios_data_area();
+	for(char const *rsdp_candidate = extended_bios_data_area; (unsigned int)rsdp_candidate < (unsigned int)extended_bios_data_area + 0x00000400; rsdp_candidate += 0x10)if(!strncmp(rsdp_candidate, rsdp_signature, strlen(rsdp_signature)))return (RSDP const *)rsdp_candidate;
+	ERROR(); // RSDP is not found.
+	return NULL;
+}
+
 ACPITableHeader const *get_rsdt_header(void)
 {
 	ACPITableHeader const *rsdt_header = (ACPITableHeader const *)(unsigned int)get_acpi_memory_region_descriptor().base;
@@ -5164,6 +5173,7 @@ ACPITableHeader const *get_rsdt_header(void)
 		ERROR(); // RSDT is not found!
 		print_bios_data_area(get_bios_data_area());
 		printf_serial("EBDA = %p\n", get_extended_bios_data_area());
+		printf_serial("RSDP = %p\n", get_rsdp());
 		return NULL;
 	}
 }

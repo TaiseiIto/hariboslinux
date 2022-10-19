@@ -157,6 +157,19 @@ typedef struct _FADT
 	unsigned long long hypervisor_vender_identity;
 } __attribute__((packed)) FADT;
 
+typedef struct _RSDP
+{
+	char signature[8];
+	unsigned char checksum;
+	char oemid[6];
+	unsigned char revision;
+	ACPITableHeader const *rsdt;
+	unsigned int length;
+	unsigned long long xsdt_addr;
+	unsigned char extended_checksum;
+	unsigned char reserved[3];
+} __attribute__((packed)) RSDP;
+
 // Structures related to AML
 
 struct _AMLSymbol;
@@ -808,6 +821,7 @@ AMLSubstring get_dsdt_aml(void);
 ACPITableHeader const *get_dsdt_header(void);
 FADT const *get_fadt(void);
 unsigned int get_num_of_sdt_headers(void);
+RSDP const *get_rsdp(void);
 ACPITableHeader const *get_rsdt_header(void);
 ACPITableHeader const *get_sdt_header(char const *signature);
 ACPITableHeader const * const *get_sdt_headers(void);
