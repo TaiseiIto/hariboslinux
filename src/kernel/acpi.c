@@ -5160,23 +5160,24 @@ RSDP const *get_rsdp(void)
 ACPITableHeader const *get_rsdt_header(void)
 {
 	ACPITableHeader const *rsdt_header = (ACPITableHeader const *)(unsigned int)get_acpi_memory_region_descriptor().base;
-	if(rsdt_header)
+	if(!rsdt_header)
 	{
-		if(acpi_table_is_correct(rsdt_header))return rsdt_header;
-		else
-		{
-			ERROR(); // RSDT is incorrect!
-			return NULL;
-		}
-	}
-	else
-	{
-		RSDP const *rsdp = get_rsdp();
-		ERROR(); // RSDT is not found!
 		print_bios_data_area(get_bios_data_area());
 		printf_serial("EBDA = %p\n", get_extended_bios_data_area());
+		RSDP const *rsdp = get_rsdp();
+		if(!rsdp)
+		{
+			ERROR(); // RSDT is not found!
+			return NULL;
+		}
 		printf_serial("RSDP = %p\n", rsdp);
 		PRINT_RSDP(rsdp);
+		rsdt_header = rsdp->rsdt;
+	}
+	if(acpi_table_is_correct(rsdt_header))return rsdt_header;
+	else
+	{
+		ERROR(); // RSDT is incorrect!
 		return NULL;
 	}
 }
