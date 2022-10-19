@@ -97,6 +97,7 @@ typedef struct _BIOSDataArea
 } __attribute__((packed)) BIOSDataArea;
 
 BIOSDataArea const *get_bios_data_area(void);
+void const *get_extended_bios_data_area(void);
 void print_bios_data_area(BIOSDataArea const *bios_data_area);
 
 #endif

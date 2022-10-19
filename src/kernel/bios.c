@@ -10,6 +10,11 @@ BIOSDataArea const *get_bios_data_area(void)
 	return bios_data_area;
 }
 
+void const *get_extended_bios_data_area(void)
+{
+	return (void const *)(get_bios_data_area()->ebda_base_address << 4);
+}
+
 void print_bios_data_area(BIOSDataArea const *bios_data_area)
 {
 	for(unsigned int i = 0; i < _countof(bios_data_area->com_port_address); i++)printf_serial("bios_data_area->com_port_address[%d] = %#06.4x\n", i, bios_data_area->com_port_address[i]);

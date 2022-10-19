@@ -5163,6 +5163,7 @@ ACPITableHeader const *get_rsdt_header(void)
 	{
 		ERROR(); // RSDT is not found!
 		print_bios_data_area(get_bios_data_area());
+		printf_serial("EBDA = %p\n", get_extended_bios_data_area());
 		return NULL;
 	}
 }
