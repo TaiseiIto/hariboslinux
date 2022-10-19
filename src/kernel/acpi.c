@@ -5152,6 +5152,7 @@ RSDP const *get_rsdp(void)
 	static char const * const rsdp_signature = "RSD PTR ";
 	void const *extended_bios_data_area = get_extended_bios_data_area();
 	for(char const *rsdp_candidate = extended_bios_data_area; (unsigned int)rsdp_candidate < (unsigned int)extended_bios_data_area + 0x00000400; rsdp_candidate += 0x10)if(!strncmp(rsdp_candidate, rsdp_signature, strlen(rsdp_signature)))return (RSDP const *)rsdp_candidate;
+	for(char const *rsdp_candidate = (char const *)0x000e0000; (unsigned int)rsdp_candidate < 0x00100000; rsdp_candidate += 0x10)if(!strncmp(rsdp_candidate, rsdp_signature, strlen(rsdp_signature)))return (RSDP const *)rsdp_candidate;
 	ERROR(); // RSDP is not found.
 	return NULL;
 }
