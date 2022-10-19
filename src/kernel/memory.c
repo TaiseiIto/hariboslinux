@@ -177,7 +177,7 @@ void print_bios_data_area(BIOSDataArea const *bios_data_area)
 	printf_serial("bios_data_area->diskette_motor_status = %#04.2x\n", bios_data_area->diskette_motor_status);
 	printf_serial("bios_data_area->motor_shutoff_counter = %#04.2x\n", bios_data_area->motor_shutoff_counter);
 	printf_serial("bios_data_area->status_of_last_diskette_operation = %#04.2x\n", bios_data_area->status_of_last_diskette_operation);
-	printf_serial("bios_data_area->nec_diskette_comtroller_status = %#04.2x\n", bios_data_area->nec_diskette_comtroller_status);
+	for(unsigned int i = 0; i < _countof(bios_data_area->nec_diskette_comtroller_status); i++)printf_serial("bios_data_area->nec_diskette_comtroller_status[%#04.2x] = %#04.2x\n", i, bios_data_area->nec_diskette_comtroller_status[i]);
 	printf_serial("bios_data_area->current_video_mode = %#04.2x\n", bios_data_area->current_video_mode);
 	printf_serial("bios_data_area->number_of_screen_columns = %#06.4x\n", bios_data_area->number_of_screen_columns);
 	printf_serial("bios_data_area->size_of_current_video_regen_buffer = %#06.4x\n", bios_data_area->size_of_current_video_regen_buffer);
@@ -233,7 +233,7 @@ void print_bios_data_area(BIOSDataArea const *bios_data_area)
 	printf_serial("bios_data_area->nmi_buffer_tail_pointer = %#04.2x\n", bios_data_area->nmi_buffer_tail_pointer);
 	for(unsigned int i = 0; i < _countof(bios_data_area->nmi_scan_code_buffer); i++)printf_serial("bios_data_area->nmi_scan_code_buffer[%#04.2x] = %#04.2x\n", i, bios_data_area->nmi_scan_code_buffer[i]);
 	printf_serial("bios_data_area->day_counter_1 = %#06.4x\n", bios_data_area->day_counter_1);
-	printf_serial("bios_data_area->intra_applications_communications_area = %#04.2x\n", bios_data_area->intra_applications_communications_area);
+	for(unsigned int i = 0; i < _countof(bios_data_area->intra_applications_communications_area); i++)printf_serial("bios_data_area->intra_applications_communications_area[%#04.2x] = %#04.2x\n", i, bios_data_area->intra_applications_communications_area[i]);
 	printf_serial("bios_data_area->print_screen_status_byte = %#04.2x\n", bios_data_area->print_screen_status_byte);
 	for(unsigned int i = 0; i < _countof(bios_data_area->used_by_basic); i++)printf_serial("bios_data_area->used_by_basic[%#04.2x] = %#04.2x\n", i, bios_data_area->used_by_basic[i]);
 	printf_serial("bios_data_area->dos_single_diskette_mode = %#04.2x\n", bios_data_area->dos_single_diskette_mode);
@@ -244,7 +244,7 @@ void print_bios_data_area(BIOSDataArea const *bios_data_area)
 	printf_serial("bios_data_area->basic_int_23_interrupt_handler = %p\n", bios_data_area->basic_int_23_interrupt_handler);
 	printf_serial("bios_data_area->basic_int_24_interrupt_handler = %p\n", bios_data_area->basic_int_24_interrupt_handler);
 	printf_serial("bios_data_area->dos_dynamic_storage = %#06.4x\n", bios_data_area->dos_dynamic_storage);
-	printf_serial("bios_data_area->dos_diskette_initialization_table = %#04.2x\n", bios_data_area->dos_diskette_initialization_table);
+	for(unsigned int i = 0; i < _countof(bios_data_area->dos_diskette_initialization_table); i++)printf_serial("bios_data_area->dos_diskette_initialization_table[%#04.2x] = %#04.2x\n", i, bios_data_area->dos_diskette_initialization_table[i]);
 	printf_serial("bios_data_area->mode_command = %#010.8x\n", bios_data_area->mode_command);
 }
 
