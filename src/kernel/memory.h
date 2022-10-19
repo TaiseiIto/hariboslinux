@@ -111,7 +111,9 @@ typedef struct _BIOSDataArea
 	unsigned char nmi_buffer_head_pointer;
 	unsigned char nmi_buffer_tail_pointer;
 	unsigned char nmi_scan_code_buffer[16];
+	unsigned char reserved_3;
 	unsigned short day_counter_1;
+	unsigned long long int reserved_4[4];
 	unsigned char intra_applications_communications_area[16];
 	unsigned char print_screen_status_byte;
 	unsigned char used_by_basic[3];
@@ -122,6 +124,7 @@ typedef struct _BIOSDataArea
 	void *basic_int_1c_interrupt_handler;
 	void *basic_int_23_interrupt_handler;
 	void *basic_int_24_interrupt_handler;
+	unsigned short reserved_5;
 	unsigned short dos_dynamic_storage;
 	unsigned char dos_diskette_initialization_table[14];
 	unsigned int mode_command;
