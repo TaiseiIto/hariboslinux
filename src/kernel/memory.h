@@ -102,7 +102,7 @@ typedef struct _BIOSDataArea
 	unsigned char lana_dma_channed_flags;
 	unsigned char status_of_lana[2];
 	unsigned int saved_hard_disk_interrupt_vector;
-	unsigned int bios_video_save_override_pointer_table_address;
+	void *bios_video_save_override_pointer_table;
 	unsigned long long int reserved_2;
 	unsigned char keyboard_nmi_control_flags;
 	unsigned int keyboard_break_pending_flags;
