@@ -5093,7 +5093,7 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 	MemoryRegionDescriptor acpi_memory_region_descriptor;
 	unsigned int acpi_memory_region_descriptor_index;
 	for(acpi_memory_region_descriptor = get_memory_region_descriptor(acpi_memory_region_descriptor_index = 0); acpi_memory_region_descriptor.base != 0 || acpi_memory_region_descriptor.length != 0 || acpi_memory_region_descriptor.type != 0 || acpi_memory_region_descriptor.attribute != 0; acpi_memory_region_descriptor = get_memory_region_descriptor(++acpi_memory_region_descriptor_index))if(acpi_memory_region_descriptor.type == MEMORY_REGION_ACPI)return acpi_memory_region_descriptor;
-	ERROR(); // ACPI is not found.
+	// ACPI is not found.
 	acpi_memory_region_descriptor.base = 0;
 	acpi_memory_region_descriptor.length = 0;
 	acpi_memory_region_descriptor.type = 0;
@@ -5162,16 +5162,12 @@ ACPITableHeader const *get_rsdt_header(void)
 	ACPITableHeader const *rsdt_header = (ACPITableHeader const *)(unsigned int)get_acpi_memory_region_descriptor().base;
 	if(!rsdt_header)
 	{
-		print_bios_data_area(get_bios_data_area());
-		printf_serial("EBDA = %p\n", get_extended_bios_data_area());
 		RSDP const *rsdp = get_rsdp();
 		if(!rsdp)
 		{
 			ERROR(); // RSDT is not found!
 			return NULL;
 		}
-		printf_serial("RSDP = %p\n", rsdp);
-		PRINT_RSDP(rsdp);
 		rsdt_header = rsdp->rsdt;
 	}
 	if(acpi_table_is_correct(rsdt_header))return rsdt_header;
