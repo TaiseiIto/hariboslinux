@@ -130,6 +130,7 @@
 #define AML_BYTE_ONES_OP		0xff
 
 bool acpi_table_is_correct(ACPITableHeader const *header);
+bool rsdp_is_correct(RSDP const *rsdp);
 
 bool acpi_table_is_correct(ACPITableHeader const *header)
 {
@@ -5149,10 +5150,9 @@ unsigned int get_num_of_sdt_headers(void)
 
 RSDP const *get_rsdp(void)
 {
-	static char const * const rsdp_signature = "RSD PTR ";
 	void const *extended_bios_data_area = get_extended_bios_data_area();
-	for(char const *rsdp_candidate = extended_bios_data_area; (unsigned int)rsdp_candidate < (unsigned int)extended_bios_data_area + 0x00000400; rsdp_candidate += 0x10)if(!strncmp(rsdp_candidate, rsdp_signature, strlen(rsdp_signature)))return (RSDP const *)rsdp_candidate;
-	for(char const *rsdp_candidate = (char const *)0x000e0000; (unsigned int)rsdp_candidate < 0x00100000; rsdp_candidate += 0x10)if(!strncmp(rsdp_candidate, rsdp_signature, strlen(rsdp_signature)))return (RSDP const *)rsdp_candidate;
+	for(char const *rsdp_candidate = extended_bios_data_area; (unsigned int)rsdp_candidate < (unsigned int)extended_bios_data_area + 0x00000400; rsdp_candidate += 0x10)if(rsdp_is_correct((RSDP const *)rsdp_candidate))return (RSDP const *)rsdp_candidate;
+	for(char const *rsdp_candidate = (char const *)0x000e0000; (unsigned int)rsdp_candidate < 0x00100000; rsdp_candidate += 0x10)if(rsdp_is_correct((RSDP const *)rsdp_candidate))return (RSDP const *)rsdp_candidate;
 	ERROR(); // RSDP is not found.
 	return NULL;
 }
@@ -5254,5 +5254,15 @@ void print_rsdp(RSDP const *rsdp, char const *name)
 	printf_shell(shell, "%s->length = %#010.8x\n", name, rsdp->length);
 	printf_shell(shell, "%s->xsdt_addr = %#018.16x\n", name, rsdp->xsdt_addr);
 	printf_shell(shell, "%s->extended_checksum = %#04.2x\n", name, rsdp->extended_checksum);
+}
+
+bool rsdp_is_correct(RSDP const *rsdp)
+{
+	static char const * const rsdp_signature = "RSD PTR ";
+	 unsigned char sum = 0;
+	if(strncmp(rsdp->signature, rsdp_signature, sizeof(rsdp->signature)))return false;
+	for(unsigned char const *byte = (unsigned char const *)rsdp; byte != (unsigned char const *)&rsdp->length; byte++)sum += *byte;
+	if(sum)return false;
+	return true;
 }
 
