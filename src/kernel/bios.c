@@ -12,7 +12,7 @@ BIOSDataArea const *get_bios_data_area(void)
 
 void const *get_extended_bios_data_area(void)
 {
-	return (void const *)(get_bios_data_area()->ebda_base_address << 4);
+	return (void const *)((unsigned int)get_bios_data_area()->ebda_base_address << 4);
 }
 
 void print_bios_data_area(BIOSDataArea const *bios_data_area)
