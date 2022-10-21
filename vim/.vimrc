@@ -1,9 +1,12 @@
-" indent for C
+" Indent for C
 set cindent
+
+" Inclemental search
+set incsearch
 
 " Inclement alphabet by Ctrl a
 set nf=alpha,hex
 
-" show command being entered
+" Show command being entered
 set showcmd
 
