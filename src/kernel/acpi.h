@@ -179,6 +179,7 @@ typedef enum _AMLSymbolType
 {
 	aml_alias_op,
 	aml_arg_obj,
+	aml_arg_op,
 	aml_ascii_char,
 	aml_ascii_char_list,
 	aml_buffer_op,
@@ -725,6 +726,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 // <arg_obj> := <arg_op>
 AMLSymbol *analyse_aml_arg_obj(AMLSubstring aml);
+// <arg_op> := 0x68 - 0x6e
+AMLSymbol *analyse_aml_arg_op(AMLSubstring aml);
 // <ascii_char> := 0x01 - 0x7f
 AMLSymbol *analyse_aml_ascii_char(AMLSubstring aml);
 // <ascii_char_list> := Nothing | <ascii_char> <ascii_char_list>

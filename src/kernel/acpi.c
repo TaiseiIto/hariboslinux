@@ -510,6 +510,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(arg_op_char_array);
 		}
 		break;
+	case aml_arg_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_ascii_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3367,6 +3370,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_arg_obj_name = "ArgObj";
+	static char const * const aml_arg_op_name = "ArgOp";
 	static char const * const aml_ascii_char_name = "AsciiChar";
 	static char const * const aml_ascii_char_list_name = "AsciiCharList";
 	static char const * const aml_buffer_op_name = "BufferOp";
@@ -3452,6 +3456,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_alias_op_name;
 	case aml_arg_obj:
 		return aml_arg_obj_name;
+	case aml_arg_op:
+		return aml_arg_op_name;
 	case aml_ascii_char:
 		return aml_ascii_char_name;
 	case aml_ascii_char_list:
@@ -3634,8 +3640,21 @@ AMLSymbol *analyse_aml_arg_obj(AMLSubstring aml)
 	arg_obj->string.initial = aml.initial;
 	arg_obj->string.length = 0;
 	arg_obj->type = aml_arg_obj;
-	arg_obj->component.arg_obj.arg_op = NULL;
+	arg_obj->component.arg_obj.arg_op = analyse_aml_arg_op(aml);
+	arg_obj->string.length += arg_obj->component.arg_obj.arg_op->string.length;
+	arg_obj->component.arg_obj.arg_op_number = *arg_obj->component.arg_obj.arg_op->string.initial - AML_BYTE_ARG_0_OP;
 	return arg_obj;
+}
+
+// <arg_op> := 0x68 - 0x6e
+AMLSymbol *analyse_aml_arg_op(AMLSubstring aml)
+{
+	AMLSymbol *arg_op = malloc(sizeof(*arg_op));
+	arg_op->string.initial = aml.initial;
+	arg_op->string.length = 1;
+	arg_op->type = aml_arg_op;
+	if(!(AML_BYTE_ARG_0_OP <= *arg_op->string.initial && *arg_op->string.initial <= AML_BYTE_ARG_6_OP))ERROR(); // Incorrect arg op
+	return arg_op;
 }
 
 // <ascii_char> := 0x01 - 0x7f
@@ -5027,6 +5046,16 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	term_arg->component.term_arg.local_obj = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+		term_arg->component.term_arg.arg_obj = analyse_aml_arg_obj(aml);
+		term_arg->string.length += term_arg->component.term_arg.arg_obj->string.length;
+		break;
 	case AML_BYTE_BUFFER_OP:
 	case AML_BYTE_BYTE_PREFIX:
 	case AML_BYTE_DWORD_PREFIX:
@@ -5191,6 +5220,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_arg_obj:
 		if(aml_symbol->component.arg_obj.arg_op)delete_aml_symbol(aml_symbol->component.arg_obj.arg_op);
+		break;
+	case aml_arg_op:
 		break;
 	case aml_ascii_char:
 		break;
