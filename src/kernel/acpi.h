@@ -230,6 +230,7 @@ typedef enum _AMLSymbolType
 	aml_ones_op,
 	aml_op_region_op,
 	aml_op_region_op_prefix,
+	aml_operand,
 	aml_parent_prefix_char,
 	aml_pkg_lead_byte,
 	aml_pkg_length,
@@ -542,6 +543,11 @@ typedef struct _AMLObject
 	struct _AMLSymbol *name_space_modifier_obj;
 } AMLObject;
 
+typedef struct _AMLOperand
+{
+	struct _AMLSymbol *term_arg;
+} AMLOperand;
+
 typedef struct _AMLOpRegionOp
 {
 	struct _AMLSymbol *ext_op_prefix;
@@ -679,6 +685,7 @@ typedef union _AMLComponent
 	AMLNameSpaceModifierObj name_space_modifier_obj;
 	AMLNameString name_string;
 	AMLObject object;
+	AMLOperand operand;
 	AMLOpRegionOp op_region_op;
 	AMLPkgLength pkg_length;
 	AMLPrefixPath prefix_path;
@@ -812,6 +819,8 @@ AMLSymbol *analyse_aml_ones_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_op_region_op(AMLSubstring aml);
 // <op_region_op_prefix> := AML_BYTE_OP_REGION_OP
 AMLSymbol *analyse_aml_op_region_op_prefix(AMLSubstring aml);
+// <operand> := <term_arg>
+AMLSymbol *analyse_aml_operand(AMLSubstring aml);
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 // <pkg_lead_byte>

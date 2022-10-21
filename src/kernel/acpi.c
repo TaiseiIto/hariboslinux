@@ -2701,6 +2701,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_op_region_op_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_operand:
+		if(aml_symbol->component.operand.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.operand.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.operand.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		break;
 	case aml_parent_prefix_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3384,6 +3400,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_ones_op_name = "OnesOp";
 	static char const * const aml_op_region_op_name = "OpRegionOp";
 	static char const * const aml_op_region_op_prefix_name = "OpRegionOpPrefix";
+	static char const * const aml_operand_name = "Operand";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
 	static char const * const aml_pkg_length_name = "PkgLength";
@@ -3518,6 +3535,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_op_region_op_name;
 	case aml_op_region_op_prefix:
 		return aml_op_region_op_prefix_name;
+	case aml_operand:
+		return aml_operand_name;
 	case aml_parent_prefix_char:
 		return aml_parent_prefix_char_name;
 	case aml_pkg_lead_byte:
@@ -4031,7 +4050,10 @@ AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml)
 	def_to_hex_string->string.length += def_to_hex_string->component.def_to_hex_string.to_hex_string_op->string.length;
 	aml.initial += def_to_hex_string->component.def_to_hex_string.to_hex_string_op->string.length;
 	aml.length -= def_to_hex_string->component.def_to_hex_string.to_hex_string_op->string.length;
-	def_to_hex_string->component.def_to_hex_string.operand = NULL;
+	def_to_hex_string->component.def_to_hex_string.operand = analyse_aml_operand(aml);
+	def_to_hex_string->string.length += def_to_hex_string->component.def_to_hex_string.operand->string.length;
+	aml.initial += def_to_hex_string->component.def_to_hex_string.operand->string.length;
+	aml.length -= def_to_hex_string->component.def_to_hex_string.operand->string.length;
 	def_to_hex_string->component.def_to_hex_string.target = NULL;
 	return def_to_hex_string;
 }
@@ -4667,6 +4689,18 @@ AMLSymbol *analyse_aml_op_region_op_prefix(AMLSubstring aml)
 	op_region_op_prefix->type = aml_op_region_op_prefix;
 	if(*aml.initial != AML_BYTE_OP_REGION_OP)ERROR();
 	return op_region_op_prefix;
+}
+
+// <operand> := <term_arg>
+AMLSymbol *analyse_aml_operand(AMLSubstring aml)
+{
+	AMLSymbol *operand = malloc(sizeof(*operand));
+	operand->string.initial = aml.initial;
+	operand->string.length = 0;
+	operand->type = aml_operand;
+	operand->component.operand.term_arg = analyse_aml_term_arg(aml);
+	operand->string.length += operand->component.operand.term_arg->string.length;
+	return operand;
 }
 
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
@@ -5382,6 +5416,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.op_region_op.op_region_op_prefix)delete_aml_symbol(aml_symbol->component.op_region_op.op_region_op_prefix);
 		break;
 	case aml_op_region_op_prefix:
+		break;
+	case aml_operand:
+		if(aml_symbol->component.operand.term_arg)delete_aml_symbol(aml_symbol->component.operand.term_arg);
 		break;
 	case aml_parent_prefix_char:
 		break;
