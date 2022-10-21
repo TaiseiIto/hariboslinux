@@ -214,6 +214,7 @@ typedef enum _AMLSymbolType
 	aml_field_op_prefix,
 	aml_lead_name_char,
 	aml_local_obj,
+	aml_local_op,
 	aml_method_flags,
 	aml_method_op,
 	aml_multi_name_path,
@@ -487,6 +488,7 @@ typedef struct _AMLFieldOp
 typedef struct _AMLLocalObj
 {
 	struct _AMLSymbol *local_op;
+	unsigned char local_op_number;
 } AMLLocalObj;
 
 typedef struct _AMLMultiNamePath
@@ -829,6 +831,8 @@ AMLSymbol *analyse_aml_field_op_prefix(AMLSubstring aml);
 AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
 // <local_obj> := <local_op>
 AMLSymbol *analyse_aml_local_obj(AMLSubstring aml);
+// <local_op> := 0x60 - 0x67
+AMLSymbol *analyse_aml_local_op(AMLSubstring aml);
 // <method_flags>
 AMLSymbol *analyse_aml_method_flags(AMLSubstring aml);
 // <method_op> := 0x14
