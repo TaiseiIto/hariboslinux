@@ -4862,7 +4862,6 @@ AMLSymbol *create_dsdt_aml_syntax_tree(void)
 
 void delete_aml_symbol(AMLSymbol *aml_symbol)
 {
-	printf_shell(get_current_shell(), "delete %s\n", aml_symbol_type_name(aml_symbol->type));
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
