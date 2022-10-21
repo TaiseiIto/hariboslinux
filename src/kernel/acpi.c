@@ -155,6 +155,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *access_field_chain_string;
 	ChainString *alias_op_chain_string;
 	ChainString *arg_obj_chain_string;
+	ChainString *arg_op_chain_string;
 	ChainString *ascii_char_chain_string;
 	ChainString *ascii_char_list_chain_string;
 	ChainString *buffer_op_chain_string;
@@ -326,6 +327,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *access_field_char_array;
 	char *alias_op_char_array;
 	char *arg_obj_char_array;
+	char *arg_op_char_array;
 	char *ascii_char_char_array;
 	char *ascii_char_list_char_array;
 	char *buffer_op_char_array;
@@ -491,6 +493,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	{
 	case aml_alias_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
+	case aml_arg_obj:
+		if(aml_symbol->component.arg_obj.arg_op)
+		{
+			arg_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.arg_obj.arg_op);
+			insert_char_front(arg_op_chain_string, arg_op_chain_string->first_character, ' ');
+			replace_chain_string(arg_op_chain_string, "\n", "\n ");
+			arg_op_char_array = create_char_array_from_chain_string(arg_op_chain_string);
+		}
+		else arg_op_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), arg_op_char_array);
+		if(aml_symbol->component.arg_obj.arg_op)
+		{
+			delete_chain_string(arg_op_chain_string);
+			free(arg_op_char_array);
+		}
 		break;
 	case aml_ascii_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
@@ -3348,6 +3366,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_alias_op_name = "AliasOp";
+	static char const * const aml_arg_obj_name = "ArgObj";
 	static char const * const aml_ascii_char_name = "AsciiChar";
 	static char const * const aml_ascii_char_list_name = "AsciiCharList";
 	static char const * const aml_buffer_op_name = "BufferOp";
@@ -3431,6 +3450,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	{
 	case aml_alias_op:
 		return aml_alias_op_name;
+	case aml_arg_obj:
+		return aml_arg_obj_name;
 	case aml_ascii_char:
 		return aml_ascii_char_name;
 	case aml_ascii_char_list:
@@ -3604,6 +3625,17 @@ AMLSymbol *analyse_aml_alias_op(AMLSubstring aml)
 	alias_op->type = aml_alias_op;
 	if(*alias_op->string.initial != AML_BYTE_ALIAS_OP)ERROR(); // Incorrect alias_op
 	return alias_op;
+}
+
+// <arg_obj> := <arg_op>
+AMLSymbol *analyse_aml_arg_obj(AMLSubstring aml)
+{
+	AMLSymbol *arg_obj = malloc(sizeof(*arg_obj));
+	arg_obj->string.initial = aml.initial;
+	arg_obj->string.length = 0;
+	arg_obj->type = aml_arg_obj;
+	arg_obj->component.arg_obj.arg_op = NULL;
+	return arg_obj;
 }
 
 // <ascii_char> := 0x01 - 0x7f
@@ -5156,6 +5188,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	switch(aml_symbol->type)
 	{
 	case aml_alias_op:
+		break;
+	case aml_arg_obj:
+		if(aml_symbol->component.arg_obj.arg_op)delete_aml_symbol(aml_symbol->component.arg_obj.arg_op);
 		break;
 	case aml_ascii_char:
 		break;
