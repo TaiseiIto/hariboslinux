@@ -210,6 +210,7 @@ typedef enum _AMLSymbolType
 	aml_field_op,
 	aml_field_op_prefix,
 	aml_lead_name_char,
+	aml_method_flags,
 	aml_method_op,
 	aml_multi_name_path,
 	aml_multi_name_prefix,
@@ -761,6 +762,8 @@ AMLSymbol *analyse_aml_field_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_field_op_prefix(AMLSubstring aml);
 // <lead_char> := 'A' - 'Z' | '_'
 AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
+// <method_flags>
+AMLSymbol *analyse_aml_method_flags(AMLSubstring aml);
 // <method_op> := 0x14
 AMLSymbol *analyse_aml_method_op(AMLSubstring aml);
 // <multi_name_path> := <multi_name_prefix> <seg_count> <name_seg>*

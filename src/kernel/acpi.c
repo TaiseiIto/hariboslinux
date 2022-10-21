@@ -2105,6 +2105,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_lead_name_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_method_flags:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_method_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3310,6 +3313,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_op_name = "FieldOp";
 	static char const * const aml_field_op_prefix_name = "FieldOpPrefix";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
+	static char const * const aml_method_flags_name = "MethodFlags";
 	static char const * const aml_method_op_name = "MethodOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
@@ -3421,6 +3425,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_field_op_prefix_name;
 	case aml_lead_name_char:
 		return aml_lead_name_char_name;
+	case aml_method_flags:
+		return aml_method_flags_name;
 	case aml_method_op:
 		return aml_method_op_name;
 	case aml_multi_name_path:
@@ -3871,8 +3877,14 @@ AMLSymbol *analyse_aml_def_method(AMLSubstring aml)
 	def_method->string.length += def_method->component.def_method.name_string->string.length;
 	aml.initial += def_method->component.def_method.name_string->string.length;
 	aml.length -= def_method->component.def_method.name_string->string.length;
-	def_method->component.def_method.method_flags = NULL;
-	def_method->component.def_method.term_list = NULL;
+	def_method->component.def_method.method_flags = analyse_aml_method_flags(aml);
+	def_method->string.length += def_method->component.def_method.method_flags->string.length;
+	aml.initial += def_method->component.def_method.method_flags->string.length;
+	aml.length -= def_method->component.def_method.method_flags->string.length;
+	def_method->component.def_method.term_list = analyse_aml_term_list(aml);
+	def_method->string.length += def_method->component.def_method.term_list->string.length;
+	aml.initial += def_method->component.def_method.term_list->string.length;
+	aml.length -= def_method->component.def_method.term_list->string.length;
 	return def_method;
 }
 
@@ -4208,6 +4220,16 @@ AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml)
 	lead_name_char->type = aml_lead_name_char;
 	if(!(('A' <= *lead_name_char->string.initial && *lead_name_char->string.initial <= 'Z') || *lead_name_char->string.initial == '_'))ERROR(); // Incorrect lead name char
 	return lead_name_char;
+}
+
+// <method_flags>
+AMLSymbol *analyse_aml_method_flags(AMLSubstring aml)
+{
+	AMLSymbol *method_flags = malloc(sizeof(*method_flags));
+	method_flags->string.initial = aml.initial;
+	method_flags->string.length = 1;
+	method_flags->type = aml_method_flags;
+	return method_flags;
 }
 
 // <method_op> := 0x14
@@ -5185,6 +5207,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_field_op_prefix:
 		break;
 	case aml_lead_name_char:
+		break;
+	case aml_method_flags:
 		break;
 	case aml_method_op:
 		break;
