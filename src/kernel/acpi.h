@@ -194,6 +194,7 @@ typedef enum _AMLSymbolType
 	aml_def_field,
 	aml_def_name,
 	aml_def_op_region,
+	aml_def_scope,
 	aml_digit_char,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
@@ -344,6 +345,14 @@ typedef struct _AMLDefOpRegion
 	struct _AMLSymbol *region_offset;
 	struct _AMLSymbol *region_len;
 } AMLDefOpRegion;
+
+typedef struct _AMLDefScope
+{
+	struct _AMLSymbol *scope_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *term_list;
+} AMLDefScope;
 
 typedef struct _AMLDualNamePath
 {
@@ -628,6 +637,7 @@ typedef union _AMLComponent
 	AMLDefField def_field;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
+	AMLDefScope def_scope;
 	AMLDualNamePath dual_name_path;
 	AMLDWordConst dword_const;
 	AMLDWordData dword_data;
@@ -705,6 +715,8 @@ AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
+// <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
+AMLSymbol *analyse_aml_def_scope(AMLSubstring aml);
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>

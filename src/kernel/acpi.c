@@ -299,6 +299,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *revision_op_chain_string;
 	ChainString *revision_op_prefix_chain_string;
 	ChainString *root_char_chain_string;
+	ChainString *scope_op_chain_string;
 	ChainString *seg_count_chain_string;
 	ChainString *statement_opcode_chain_string;
 	ChainString *string_chain_string;
@@ -462,6 +463,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *revision_op_char_array;
 	char *revision_op_prefix_char_array;
 	char *root_char_char_array;
+	char *scope_op_char_array;
 	char *seg_count_char_array;
 	char *statement_opcode_char_array;
 	char *string_char_array;
@@ -1049,6 +1051,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(region_len_chain_string);
 			free(region_len_char_array);
+		}
+		break;
+	case aml_def_scope:
+		if(aml_symbol->component.def_scope.scope_op)
+		{
+			scope_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_scope.scope_op);
+			insert_char_front(scope_op_chain_string, scope_op_chain_string->first_character, ' ');
+			replace_chain_string(scope_op_chain_string, "\n", "\n ");
+			scope_op_char_array = create_char_array_from_chain_string(scope_op_chain_string);
+		}
+		else scope_op_char_array = "";
+		if(aml_symbol->component.def_scope.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_scope.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_scope.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_scope.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.def_scope.term_list)
+		{
+			term_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_scope.term_list);
+			insert_char_front(term_list_chain_string, term_list_chain_string->first_character, ' ');
+			replace_chain_string(term_list_chain_string, "\n", "\n ");
+			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
+		}
+		else term_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), scope_op_char_array, pkg_length_char_array, name_string_char_array, term_list_char_array);
+		if(aml_symbol->component.def_scope.scope_op)
+		{
+			delete_chain_string(scope_op_chain_string);
+			free(scope_op_char_array);
+		}
+		if(aml_symbol->component.def_scope.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_scope.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.def_scope.term_list)
+		{
+			delete_chain_string(term_list_chain_string);
+			free(term_list_char_array);
 		}
 		break;
 	case aml_digit_char:
@@ -3144,6 +3201,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_field_name = "DefField";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
+	static char const * const aml_def_scope_name = "DefScope";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
@@ -3235,6 +3293,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_name_name;
 	case aml_def_op_region:
 		return aml_def_op_region_name;
+	case aml_def_scope:
+		return aml_def_scope_name;
 	case aml_digit_char:
 		return aml_digit_char_name;
 	case aml_dual_name_path:
@@ -3737,6 +3797,20 @@ AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 	aml.initial += def_op_region->component.def_op_region.region_len->string.length;
 	aml.length -= def_op_region->component.def_op_region.region_len->string.length;
 	return def_op_region;
+}
+
+// <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
+AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
+{
+	AMLSymbol *def_scope = malloc(sizeof(*def_scope));
+	def_scope->string.initial = aml.initial;
+	def_scope->string.length = 1;
+	def_scope->type = aml_def_scope;
+	def_scope->component.def_scope.scope_op = NULL;
+	def_scope->component.def_scope.pkg_length = NULL;
+	def_scope->component.def_scope.name_string = NULL;
+	def_scope->component.def_scope.term_list = NULL;
+	return def_scope;
 }
 
 // <digit_char> := '0' - '9'
@@ -4829,6 +4903,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_op_region.region_space)delete_aml_symbol(aml_symbol->component.def_op_region.region_space);
 		if(aml_symbol->component.def_op_region.region_offset)delete_aml_symbol(aml_symbol->component.def_op_region.region_offset);
 		if(aml_symbol->component.def_op_region.region_len)delete_aml_symbol(aml_symbol->component.def_op_region.region_len);
+		break;
+	case aml_def_scope:
+		if(aml_symbol->component.def_scope.scope_op)delete_aml_symbol(aml_symbol->component.def_scope.scope_op);
+		if(aml_symbol->component.def_scope.pkg_length)delete_aml_symbol(aml_symbol->component.def_scope.pkg_length);
+		if(aml_symbol->component.def_scope.name_string)delete_aml_symbol(aml_symbol->component.def_scope.name_string);
+		if(aml_symbol->component.def_scope.term_list)delete_aml_symbol(aml_symbol->component.def_scope.term_list);
 		break;
 	case aml_digit_char:
 		break;
