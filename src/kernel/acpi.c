@@ -916,7 +916,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			field_list_char_array = create_char_array_from_chain_string(field_list_chain_string);
 		}
 		else field_list_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), field_op_char_array, pkg_length_char_array, name_string_char_array, field_flags_char_array, field_list_char_array);
+		output = create_format_chain_string("%s %#010.8x\n%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, field_op_char_array, pkg_length_char_array, name_string_char_array, field_flags_char_array, field_list_char_array);
 		if(aml_symbol->component.def_field.field_op)
 		{
 			delete_chain_string(field_op_chain_string);
@@ -3060,7 +3060,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
 		}
 		else term_list_char_array = "";
-		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), term_obj_char_array, term_list_char_array);
+		output = create_format_chain_string("%s length = %#010.8x\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, term_obj_char_array, term_list_char_array);
 		if(aml_symbol->component.term_list.term_obj)
 		{
 			delete_chain_string(term_obj_chain_string);
