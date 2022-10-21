@@ -251,6 +251,7 @@ typedef enum _AMLSymbolType
 	aml_term_arg,
 	aml_term_list,
 	aml_term_obj,
+	aml_to_hex_string_op,
 	aml_word_const,
 	aml_word_data,
 	aml_word_prefix,
@@ -853,6 +854,8 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml);
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
 AMLSymbol *analyse_aml_term_obj(AMLSubstring aml);
+// <to_hex_string_op> := 0x98
+AMLSymbol *analyse_aml_to_hex_string_op(AMLSubstring aml);
 // <word_const> := <word_prefix> <word_data>
 AMLSymbol *analyse_aml_word_const(AMLSubstring aml);
 // <word_data> := <byte_data> <byte_data>

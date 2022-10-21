@@ -3255,6 +3255,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(expression_opcode_char_array);
 		}
 		break;
+	case aml_to_hex_string_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_word_const:
 		if(aml_symbol->component.word_const.word_prefix)
 		{
@@ -3402,6 +3405,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_term_arg_name = "TermArg";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
+	static char const * const aml_to_hex_string_op_name = "ToHexStrinOp";
 	static char const * const aml_word_const_name = "WordConst";
 	static char const * const aml_word_data_name = "WordData";
 	static char const * const aml_word_prefix_name = "WordPrefix";
@@ -3556,6 +3560,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_term_list_name;
 	case aml_term_obj:
 		return aml_term_obj_name;
+	case aml_to_hex_string_op:
+		return aml_to_hex_string_op_name;
 	case aml_word_const:
 		return aml_word_const_name;
 	case aml_word_data:
@@ -4021,7 +4027,10 @@ AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml)
 	def_to_hex_string->string.initial = aml.initial;
 	def_to_hex_string->string.length = 0;
 	def_to_hex_string->type = aml_def_to_hex_string;
-	def_to_hex_string->component.def_to_hex_string.to_hex_string_op = NULL;
+	def_to_hex_string->component.def_to_hex_string.to_hex_string_op = analyse_aml_to_hex_string_op(aml);
+	def_to_hex_string->string.length += def_to_hex_string->component.def_to_hex_string.to_hex_string_op->string.length;
+	aml.initial += def_to_hex_string->component.def_to_hex_string.to_hex_string_op->string.length;
+	aml.length -= def_to_hex_string->component.def_to_hex_string.to_hex_string_op->string.length;
 	def_to_hex_string->component.def_to_hex_string.operand = NULL;
 	def_to_hex_string->component.def_to_hex_string.target = NULL;
 	return def_to_hex_string;
@@ -4176,6 +4185,13 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.def_wait = NULL;
 	expression_opcode->component.expression_opcode.def_xor = NULL;
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_TO_HEX_STRING_OP:
+		expression_opcode->component.expression_opcode.def_to_hex_string = analyse_aml_def_to_hex_string(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_hex_string->string.length;
+		break;
+	}
 	return expression_opcode;
 }
 
@@ -5014,8 +5030,23 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
+	case AML_BYTE_TO_HEX_STRING_OP:
+		term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
+		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
+		break;
 	}
 	return term_obj;
+}
+
+// <to_hex_string_op> := 0x98
+AMLSymbol *analyse_aml_to_hex_string_op(AMLSubstring aml)
+{
+	AMLSymbol *to_hex_string_op = malloc(sizeof(*to_hex_string_op));
+	to_hex_string_op->string.initial = aml.initial;
+	to_hex_string_op->string.length = 1;
+	to_hex_string_op->type = aml_to_hex_string_op;
+	if(*to_hex_string_op->string.initial != AML_BYTE_TO_HEX_STRING_OP)ERROR();
+	return to_hex_string_op;
 }
 
 // <word_const> := <word_prefix> <word_data>
@@ -5428,6 +5459,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.term_obj.object)delete_aml_symbol(aml_symbol->component.term_obj.object);
 		if(aml_symbol->component.term_obj.statement_opcode)delete_aml_symbol(aml_symbol->component.term_obj.statement_opcode);
 		if(aml_symbol->component.term_obj.expression_opcode)delete_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
+		break;
+	case aml_to_hex_string_op:
 		break;
 	case aml_word_const:
 		if(aml_symbol->component.word_const.word_prefix)delete_aml_symbol(aml_symbol->component.word_const.word_prefix);
