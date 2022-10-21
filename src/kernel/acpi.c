@@ -287,6 +287,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *ones_op_chain_string;
 	ChainString *op_region_op_chain_string;
 	ChainString *op_region_op_prefix_chain_string;
+	ChainString *operand_chain_string;
 	ChainString *output;
 	ChainString *parent_prefix_char_chain_string;
 	ChainString *pkg_lead_byte_chain_string;
@@ -307,9 +308,11 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *statement_opcode_chain_string;
 	ChainString *string_chain_string;
 	ChainString *string_prefix_chain_string;
+	ChainString *target_chain_string;
 	ChainString *term_arg_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
+	ChainString *to_hex_string_op_chain_string;
 	ChainString *word_const_chain_string;
 	ChainString *word_data_chain_string;
 	ChainString *word_prefix_chain_string;
@@ -455,6 +458,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *ones_op_char_array;
 	char *op_region_op_char_array;
 	char *op_region_op_prefix_char_array;
+	char *operand_char_array;
 	char *parent_prefix_char_char_array;
 	char *pkg_lead_byte_char_array;
 	char *pkg_length_char_array;
@@ -474,9 +478,11 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *statement_opcode_char_array;
 	char *string_char_array;
 	char *string_prefix_char_array;
+	char *target_char_array;
 	char *term_arg_char_array;
 	char *term_list_char_array;
 	char *term_obj_char_array;
+	char *to_hex_string_op_char_array;
 	char *word_const_char_array;
 	char *word_data_char_array;
 	char *word_prefix_char_array;
@@ -1180,6 +1186,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(term_list_chain_string);
 			free(term_list_char_array);
+		}
+		break;
+	case aml_def_to_hex_string:
+		if(aml_symbol->component.def_to_hex_string.to_hex_string_op)
+		{
+			to_hex_string_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_to_hex_string.to_hex_string_op);
+			insert_char_front(to_hex_string_op_chain_string, to_hex_string_op_chain_string->first_character, ' ');
+			replace_chain_string(to_hex_string_op_chain_string, "\n", "\n ");
+			to_hex_string_op_char_array = create_char_array_from_chain_string(to_hex_string_op_chain_string);
+		}
+		else to_hex_string_op_char_array = "";
+		if(aml_symbol->component.def_to_hex_string.operand)
+		{
+			operand_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_to_hex_string.operand);
+			insert_char_front(operand_chain_string, operand_chain_string->first_character, ' ');
+			replace_chain_string(operand_chain_string, "\n", "\n ");
+			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
+		}
+		else operand_char_array = "";
+		if(aml_symbol->component.def_to_hex_string.target)
+		{
+			target_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_to_hex_string.target);
+			insert_char_front(target_chain_string, target_chain_string->first_character, ' ');
+			replace_chain_string(target_chain_string, "\n", "\n ");
+			target_char_array = create_char_array_from_chain_string(target_chain_string);
+		}
+		else target_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), to_hex_string_op_char_array, operand_char_array, target_char_array);
+		if(aml_symbol->component.def_to_hex_string.to_hex_string_op)
+		{
+			delete_chain_string(to_hex_string_op_chain_string);
+			free(to_hex_string_op_char_array);
+		}
+		if(aml_symbol->component.def_to_hex_string.operand)
+		{
+			delete_chain_string(operand_chain_string);
+			free(operand_char_array);
+		}
+		if(aml_symbol->component.def_to_hex_string.target)
+		{
+			delete_chain_string(target_chain_string);
+			free(target_char_array);
 		}
 		break;
 	case aml_digit_char:
@@ -3299,6 +3347,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_scope_name = "DefScope";
+	static char const * const aml_def_to_hex_string_name = "DefToHexString";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
@@ -3397,6 +3446,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_op_region_name;
 	case aml_def_scope:
 		return aml_def_scope_name;
+	case aml_def_to_hex_string:
+		return aml_def_to_hex_string_name;
 	case aml_digit_char:
 		return aml_digit_char_name;
 	case aml_dual_name_path:
@@ -3961,6 +4012,19 @@ AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
 	aml.initial += def_scope->component.def_scope.term_list->string.length;
 	aml.length -= def_scope->component.def_scope.term_list->string.length;
 	return def_scope;
+}
+
+// <def_to_hex_string> := <to_hex_string_op> <operand> <target>
+AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml)
+{
+	AMLSymbol *def_to_hex_string = malloc(sizeof(*def_to_hex_string));
+	def_to_hex_string->string.initial = aml.initial;
+	def_to_hex_string->string.length = 0;
+	def_to_hex_string->type = aml_def_to_hex_string;
+	def_to_hex_string->component.def_to_hex_string.to_hex_string_op = NULL;
+	def_to_hex_string->component.def_to_hex_string.operand = NULL;
+	def_to_hex_string->component.def_to_hex_string.target = NULL;
+	return def_to_hex_string;
 }
 
 // <digit_char> := '0' - '9'
@@ -5112,6 +5176,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_scope.pkg_length)delete_aml_symbol(aml_symbol->component.def_scope.pkg_length);
 		if(aml_symbol->component.def_scope.name_string)delete_aml_symbol(aml_symbol->component.def_scope.name_string);
 		if(aml_symbol->component.def_scope.term_list)delete_aml_symbol(aml_symbol->component.def_scope.term_list);
+		break;
+	case aml_def_to_hex_string:
+		if(aml_symbol->component.def_to_hex_string.to_hex_string_op)delete_aml_symbol(aml_symbol->component.def_to_hex_string.to_hex_string_op);
+		if(aml_symbol->component.def_to_hex_string.operand)delete_aml_symbol(aml_symbol->component.def_to_hex_string.operand);
+		if(aml_symbol->component.def_to_hex_string.target)delete_aml_symbol(aml_symbol->component.def_to_hex_string.target);
 		break;
 	case aml_digit_char:
 		break;
