@@ -2752,6 +2752,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_root_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_scope_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_seg_count:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3246,6 +3249,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_revision_op_name = "RevisionOp";
 	static char const * const aml_revision_op_prefix_name = "RevisionOpPrefix";
 	static char const * const aml_root_char_name = "RootChar";
+	static char const * const aml_scope_op_name = "ScopeOp";
 	static char const * const aml_seg_count_name = "SegCount";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_string_name = "String";
@@ -3383,6 +3387,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_revision_op_prefix_name;
 	case aml_root_char:
 		return aml_root_char_name;
+	case aml_scope_op:
+		return aml_scope_op_name;
 	case aml_seg_count:
 		return aml_seg_count_name;
 	case aml_statement_opcode:
@@ -3804,12 +3810,24 @@ AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
 {
 	AMLSymbol *def_scope = malloc(sizeof(*def_scope));
 	def_scope->string.initial = aml.initial;
-	def_scope->string.length = 1;
+	def_scope->string.length = 0;
 	def_scope->type = aml_def_scope;
-	def_scope->component.def_scope.scope_op = NULL;
-	def_scope->component.def_scope.pkg_length = NULL;
-	def_scope->component.def_scope.name_string = NULL;
-	def_scope->component.def_scope.term_list = NULL;
+	def_scope->component.def_scope.scope_op = analyse_aml_scope_op(aml);
+	def_scope->string.length += def_scope->component.def_scope.scope_op->string.length;
+	aml.initial += def_scope->component.def_scope.scope_op->string.length;
+	aml.length -= def_scope->component.def_scope.scope_op->string.length;
+	def_scope->component.def_scope.pkg_length = analyse_aml_pkg_length(aml);
+	def_scope->string.length += def_scope->component.def_scope.pkg_length->string.length;
+	aml.initial += def_scope->component.def_scope.pkg_length->string.length;
+	aml.length -= def_scope->component.def_scope.pkg_length->string.length;
+	def_scope->component.def_scope.name_string = analyse_aml_name_string(aml);
+	def_scope->string.length += def_scope->component.def_scope.name_string->string.length;
+	aml.initial += def_scope->component.def_scope.name_string->string.length;
+	aml.length -= def_scope->component.def_scope.name_string->string.length;
+	def_scope->component.def_scope.term_list = analyse_aml_term_list(aml);
+	def_scope->string.length += def_scope->component.def_scope.term_list->string.length;
+	aml.initial += def_scope->component.def_scope.term_list->string.length;
+	aml.length -= def_scope->component.def_scope.term_list->string.length;
 	return def_scope;
 }
 
@@ -4220,6 +4238,10 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 		name_space_modifier_obj->component.name_space_modifier_obj.def_name = analyse_aml_def_name(aml);
 		name_space_modifier_obj->string.length += name_space_modifier_obj->component.name_space_modifier_obj.def_name->string.length;
 		break;
+	case AML_BYTE_SCOPE_OP:
+		name_space_modifier_obj->component.name_space_modifier_obj.def_scope = analyse_aml_def_scope(aml);
+		name_space_modifier_obj->string.length += name_space_modifier_obj->component.name_space_modifier_obj.def_scope->string.length;
+		break;
 	}
 	return name_space_modifier_obj;
 }
@@ -4344,6 +4366,7 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	{
 	case AML_BYTE_ALIAS_OP:
 	case AML_BYTE_NAME_OP:
+	case AML_BYTE_SCOPE_OP:
 		object->component.object.name_space_modifier_obj = analyse_aml_name_space_modifier_obj(aml);
 		object->string.length += object->component.object.name_space_modifier_obj->string.length;
 		break;
@@ -4606,6 +4629,17 @@ AMLSymbol *analyse_aml_root_char(AMLSubstring aml)
 	return root_char;
 }
 
+// <scope_op> := 0x10
+AMLSymbol *analyse_aml_scope_op(AMLSubstring aml)
+{
+	AMLSymbol *scope_op = malloc(sizeof(*scope_op));
+	scope_op->string.initial = aml.initial;
+	scope_op->string.length = 1;
+	scope_op->type = aml_scope_op;
+	if(*scope_op->string.initial != AML_BYTE_SCOPE_OP)ERROR(); // Incorrect scope op
+	return scope_op;
+}
+
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml)
 {
@@ -4750,6 +4784,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	case AML_BYTE_ALIAS_OP:
 	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_NAME_OP:
+	case AML_BYTE_SCOPE_OP:
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
@@ -5110,6 +5145,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.revision_op.revision_op_prefix)delete_aml_symbol(aml_symbol->component.revision_op.revision_op_prefix);
 		break;
 	case aml_root_char:
+		break;
+	case aml_scope_op:
 		break;
 	case aml_seg_count:
 		break;

@@ -239,6 +239,7 @@ typedef enum _AMLSymbolType
 	aml_revision_op,
 	aml_revision_op_prefix,
 	aml_root_char,
+	aml_scope_op,
 	aml_seg_count,
 	aml_statement_opcode,
 	aml_string,
@@ -805,6 +806,8 @@ AMLSymbol *analyse_aml_revision_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_revision_op_prefix(AMLSubstring aml);
 // <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
+// <scope_op> := 0x10
+AMLSymbol *analyse_aml_scope_op(AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
