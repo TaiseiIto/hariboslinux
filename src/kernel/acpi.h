@@ -251,6 +251,7 @@ typedef enum _AMLSymbolType
 	aml_statement_opcode,
 	aml_string,
 	aml_string_prefix,
+	aml_target,
 	aml_term_arg,
 	aml_term_list,
 	aml_term_obj,
@@ -628,6 +629,12 @@ typedef struct _AMLString
 	struct _AMLSymbol *null_char;
 } AMLString;
 
+typedef struct _AMLTarget
+{
+	struct _AMLSymbol *super_name;
+	struct _AMLSymbol *null_name;
+} AMLTarget;
+
 typedef struct _AMLTermArg
 {
 	struct _AMLSymbol *expression_opcode;
@@ -705,6 +712,7 @@ typedef union _AMLComponent
 	AMLRevisionOp revision_op;
 	AMLStatementOpcode statement_opcode;
 	AMLString string;
+	AMLTarget target;
 	AMLTermArg term_arg;
 	AMLTermList term_list;
 	AMLTermObj term_obj;
@@ -870,6 +878,8 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
 AMLSymbol *analyse_aml_string(AMLSubstring aml);
 // <string_prefix> := AML_BYTE_STRING_PREFIX
 AMLSymbol *analyse_aml_string_prefix(AMLSubstring aml);
+// <target> := <super_name> | <null_name>
+AMLSymbol *analyse_aml_target(AMLSubstring aml);
 // <term_arg> := <expression_op_code> | <data_object> | <arg_obj> | <local_obj>
 AMLSymbol *analyse_aml_term_arg(AMLSubstring aml);
 // <term_list> := Nothing | <term_obj> <term_list>
