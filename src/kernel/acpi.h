@@ -248,6 +248,7 @@ typedef enum _AMLSymbolType
 	aml_root_char,
 	aml_scope_op,
 	aml_seg_count,
+	aml_simple_name,
 	aml_statement_opcode,
 	aml_string,
 	aml_string_prefix,
@@ -605,6 +606,13 @@ typedef struct _AMLRevisionOp
 	struct _AMLSymbol *revision_op_prefix;
 } AMLRevisionOp;
 
+typedef struct _AMLSimpleName
+{
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *arg_obj;
+	struct _AMLSymbol *local_obj;
+} AMLSimpleName;
+
 typedef struct _AMLStatementOpcode
 {
 	struct _AMLSymbol *def_break;
@@ -718,6 +726,7 @@ typedef union _AMLComponent
 	AMLRegionLen region_len;
 	AMLRegionOffset region_offset;
 	AMLRevisionOp revision_op;
+	AMLSimpleName simple_name;
 	AMLStatementOpcode statement_opcode;
 	AMLString string;
 	AMLSuperName super_name;
@@ -881,6 +890,8 @@ AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_scope_op(AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
+// <simple_name> := <name_string> | <arg_obj> | <local_obj>
+AMLSymbol *analyse_aml_simple_name(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
 // <string> := <string_prefix> <ascii_char_list> <null_char>

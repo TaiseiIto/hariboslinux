@@ -2944,6 +2944,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_seg_count:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_simple_name:
+		if(aml_symbol->component.simple_name.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.simple_name.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.simple_name.arg_obj)
+		{
+			arg_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.simple_name.arg_obj);
+			insert_char_front(arg_obj_chain_string, arg_obj_chain_string->first_character, ' ');
+			replace_chain_string(arg_obj_chain_string, "\n", "\n ");
+			arg_obj_char_array = create_char_array_from_chain_string(arg_obj_chain_string);
+		}
+		else arg_obj_char_array = "";
+		if(aml_symbol->component.simple_name.local_obj)
+		{
+			local_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.simple_name.local_obj);
+			insert_char_front(local_obj_chain_string, local_obj_chain_string->first_character, ' ');
+			replace_chain_string(local_obj_chain_string, "\n", "\n ");
+			local_obj_char_array = create_char_array_from_chain_string(local_obj_chain_string);
+		}
+		else local_obj_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), name_string_char_array, arg_obj_char_array, local_obj_char_array);
+		if(aml_symbol->component.simple_name.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.simple_name.arg_obj)
+		{
+			delete_chain_string(arg_obj_chain_string);
+			free(arg_obj_char_array);
+		}
+		if(aml_symbol->component.simple_name.local_obj)
+		{
+			delete_chain_string(local_obj_chain_string);
+			free(local_obj_char_array);
+		}
+		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)
 		{
@@ -3518,6 +3560,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_scope_op_name = "ScopeOp";
 	static char const * const aml_seg_count_name = "SegCount";
+	static char const * const aml_simple_name_name = "SimpleName";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_string_name = "String";
 	static char const * const aml_string_prefix_name = "StringPrefix";
@@ -3675,6 +3718,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_scope_op_name;
 	case aml_seg_count:
 		return aml_seg_count_name;
+	case aml_simple_name:
+		return aml_simple_name_name;
 	case aml_statement_opcode:
 		return aml_statement_opcode_name;
 	case aml_string:
@@ -5064,6 +5109,41 @@ AMLSymbol *analyse_aml_seg_count(AMLSubstring aml)
 	return seg_count;
 }
 
+// <simple_name> := <name_string> | <arg_obj> | <local_obj>
+AMLSymbol *analyse_aml_simple_name(AMLSubstring aml)
+{
+	AMLSymbol *simple_name = malloc(sizeof(*simple_name));
+	simple_name->string.initial = aml.initial;
+	simple_name->string.length = 0;
+	simple_name->type = aml_simple_name;
+	simple_name->component.simple_name.name_string = NULL;
+	simple_name->component.simple_name.arg_obj = NULL;
+	simple_name->component.simple_name.local_obj = NULL;
+	switch(*simple_name->string.initial)
+	{
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+		simple_name->component.simple_name.arg_obj = analyse_aml_simple_name(aml);
+		simple_name->string.length += simple_name->component.simple_name.arg_obj->string.length;
+		aml.initial += simple_name->component.simple_name.arg_obj->string.length;
+		aml.length -= simple_name->component.simple_name.arg_obj->string.length;
+		break;
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_ROOT_CHAR:
+		simple_name->component.simple_name.name_string = analyse_aml_simple_name(aml);
+		simple_name->string.length += simple_name->component.simple_name.name_string->string.length;
+		aml.initial += simple_name->component.simple_name.name_string->string.length;
+		aml.length -= simple_name->component.simple_name.name_string->string.length;
+		break;
+	}
+	return simple_name;
+}
+
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 {
@@ -5131,6 +5211,23 @@ AMLSymbol *analyse_aml_super_name(AMLSubstring aml)
 	super_name->component.super_name.debug_obj = NULL;
 	super_name->component.super_name.reference_type_opcode = NULL;
 	super_name->component.super_name.simple_name = NULL;
+	switch(*super_name->string.initial)
+	{
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_ROOT_CHAR:
+		super_name->component.super_name.simple_name = analyse_aml_simple_name(aml);
+		super_name->string.length += super_name->component.super_name.simple_name->string.length;
+		aml.initial += super_name->component.super_name.simple_name->string.length;
+		aml.length -= super_name->component.super_name.simple_name->string.length;
+		break;
+	}
 	return super_name;
 }
 
@@ -5148,6 +5245,22 @@ AMLSymbol *analyse_aml_target(AMLSubstring aml)
 	case AML_BYTE_NULL_NAME:
 		target->component.target.null_name = analyse_aml_null_name(aml);
 		target->string.length += target->component.target.null_name->string.length;
+		aml.initial += target->component.target.null_name->string.length;
+		aml.length -= target->component.target.null_name->string.length;
+		break;
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_ROOT_CHAR:
+		target->component.target.super_name = analyse_aml_super_name(aml);
+		target->string.length += target->component.target.super_name->string.length;
+		aml.initial += target->component.target.super_name->string.length;
+		aml.length -= target->component.target.super_name->string.length;
 		break;
 	}
 	return target;
@@ -5644,6 +5757,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_scope_op:
 		break;
 	case aml_seg_count:
+		break;
+	case aml_simple_name:
+		if(aml_symbol->component.simple_name.name_string)delete_aml_symbol(aml_symbol->component.simple_name.name_string);
+		if(aml_symbol->component.simple_name.arg_obj)delete_aml_symbol(aml_symbol->component.simple_name.arg_obj);
+		if(aml_symbol->component.simple_name.local_obj)delete_aml_symbol(aml_symbol->component.simple_name.local_obj);
 		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break);
