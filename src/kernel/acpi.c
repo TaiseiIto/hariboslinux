@@ -1987,8 +1987,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), field_element_char_array, field_list_char_array);
 		if(aml_symbol->component.field_list.field_element)
 		{
-			delete_chain_string(field_list_chain_string);
-			free(field_list_char_array);
+			delete_chain_string(field_element_chain_string);
+			free(field_element_char_array);
 		}
 		if(aml_symbol->component.field_list.field_list)
 		{
