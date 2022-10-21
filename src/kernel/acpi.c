@@ -211,6 +211,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_l_or_chain_string;
 	ChainString *def_load_table_chain_string;
 	ChainString *def_match_chain_string;
+	ChainString *def_method_chain_string;
 	ChainString *def_mid_chain_string;
 	ChainString *def_mod_chain_string;
 	ChainString *def_multiply_chain_string;
@@ -378,6 +379,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_l_or_char_array;
 	char *def_load_table_char_array;
 	char *def_match_char_array;
+	char *def_method_char_array;
 	char *def_mid_char_array;
 	char *def_mod_char_array;
 	char *def_multiply_char_array;
@@ -2103,6 +2105,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_lead_name_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_method_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_multi_name_path:
 		name_segs_chain_string = malloc(*aml_symbol->component.multi_name_path.seg_count->string.initial * sizeof(*name_segs_chain_string));
 		name_segs_char_array = malloc(*aml_symbol->component.multi_name_path.seg_count->string.initial * sizeof(*name_segs_char_array));
@@ -2468,6 +2473,14 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			def_field_char_array = create_char_array_from_chain_string(def_field_chain_string);
 		}
 		else def_field_char_array = "";
+		if(aml_symbol->component.named_obj.def_method)
+		{
+			def_method_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_method);
+			insert_char_front(def_method_chain_string, def_method_chain_string->first_character, ' ');
+			replace_chain_string(def_method_chain_string, "\n", "\n ");
+			def_method_char_array = create_char_array_from_chain_string(def_method_chain_string);
+		}
+		else def_method_char_array = "";
 		if(aml_symbol->component.named_obj.def_op_region)
 		{
 			def_op_region_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_op_region);
@@ -2492,7 +2505,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			def_thermal_zone_char_array = create_char_array_from_chain_string(def_thermal_zone_chain_string);
 		}
 		else def_thermal_zone_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s%s%s%s%s%s%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), def_bank_field_char_array ,def_create_bit_field_char_array ,def_create_byte_field_char_array ,def_create_dword_field_char_array ,def_create_field_char_array ,def_create_qword_field_char_array ,def_create_word_field_char_array ,def_data_region_char_array ,def_external_char_array , def_field_char_array,def_op_region_char_array ,def_power_res_char_array ,def_thermal_zone_char_array);
+		output = create_format_chain_string("%s\n%s%s%s%s%s%s%s%s%s%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), def_bank_field_char_array ,def_create_bit_field_char_array ,def_create_byte_field_char_array ,def_create_dword_field_char_array ,def_create_field_char_array ,def_create_qword_field_char_array ,def_create_word_field_char_array ,def_data_region_char_array ,def_external_char_array , def_field_char_array, def_method_char_array, def_op_region_char_array ,def_power_res_char_array ,def_thermal_zone_char_array);
 		if(aml_symbol->component.named_obj.def_bank_field)
 		{
 			delete_chain_string(def_bank_field_chain_string);
@@ -2542,6 +2555,11 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(def_field_chain_string);
 			free(def_field_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_method)
+		{
+			delete_chain_string(def_method_chain_string);
+			free(def_method_char_array);
 		}
 		if(aml_symbol->component.named_obj.def_op_region)
 		{
@@ -3292,6 +3310,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_op_name = "FieldOp";
 	static char const * const aml_field_op_prefix_name = "FieldOpPrefix";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
+	static char const * const aml_method_op_name = "MethodOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
 	static char const * const aml_name_char_name = "NameChar";
@@ -3402,6 +3421,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_field_op_prefix_name;
 	case aml_lead_name_char:
 		return aml_lead_name_char_name;
+	case aml_method_op:
+		return aml_method_op_name;
 	case aml_multi_name_path:
 		return aml_multi_name_path_name;
 	case aml_multi_name_prefix:
@@ -3838,9 +3859,18 @@ AMLSymbol *analyse_aml_def_method(AMLSubstring aml)
 	def_method->string.initial = aml.initial;
 	def_method->string.length = 0;
 	def_method->type = aml_def_method;
-	def_method->component.def_method.method_op = NULL;
-	def_method->component.def_method.pkg_length = NULL;
-	def_method->component.def_method.name_string = NULL;
+	def_method->component.def_method.method_op = analyse_aml_method_op(aml);
+	def_method->string.length += def_method->component.def_method.method_op->string.length;
+	aml.initial += def_method->component.def_method.method_op->string.length;
+	aml.length -= def_method->component.def_method.method_op->string.length;
+	def_method->component.def_method.pkg_length = analyse_aml_pkg_length(aml);
+	def_method->string.length += def_method->component.def_method.pkg_length->string.length;
+	aml.initial += def_method->component.def_method.pkg_length->string.length;
+	aml.length -= def_method->component.def_method.pkg_length->string.length;
+	def_method->component.def_method.name_string = analyse_aml_name_string(aml);
+	def_method->string.length += def_method->component.def_method.name_string->string.length;
+	aml.initial += def_method->component.def_method.name_string->string.length;
+	aml.length -= def_method->component.def_method.name_string->string.length;
 	def_method->component.def_method.method_flags = NULL;
 	def_method->component.def_method.term_list = NULL;
 	return def_method;
@@ -4180,6 +4210,17 @@ AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml)
 	return lead_name_char;
 }
 
+// <method_op> := 0x14
+AMLSymbol *analyse_aml_method_op(AMLSubstring aml)
+{
+	AMLSymbol *method_op = malloc(sizeof(*method_op));
+	method_op->string.initial = aml.initial;
+	method_op->string.length = 1;
+	method_op->type = aml_method_op;
+	if(*method_op->string.initial != AML_BYTE_METHOD_OP)ERROR(); // Incorrect method op
+	return method_op;
+}
+
 // <multi_name_path> := <multi_name_prefix> <seg_count> <name_seg>*
 AMLSymbol *analyse_aml_multi_name_path(AMLSubstring aml)
 {
@@ -4400,6 +4441,8 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 	named_obj->component.named_obj.def_create_word_field = NULL;
 	named_obj->component.named_obj.def_data_region = NULL;
 	named_obj->component.named_obj.def_external = NULL;
+	named_obj->component.named_obj.def_field = NULL;
+	named_obj->component.named_obj.def_method = NULL;
 	named_obj->component.named_obj.def_op_region = NULL;
 	named_obj->component.named_obj.def_power_res = NULL;
 	named_obj->component.named_obj.def_thermal_zone = NULL;
@@ -4416,6 +4459,10 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 			named_obj->component.named_obj.def_field = analyse_aml_def_field(aml);
 			named_obj->string.length += named_obj->component.named_obj.def_field->string.length;
 		}
+		break;
+	case AML_BYTE_METHOD_OP:
+		named_obj->component.named_obj.def_method = analyse_aml_def_method(aml);
+		named_obj->string.length += named_obj->component.named_obj.def_method->string.length;
 		break;
 	}
 	return named_obj;
@@ -4461,6 +4508,7 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 		object->string.length += object->component.object.name_space_modifier_obj->string.length;
 		break;
 	case AML_BYTE_EXT_OP_PREFIX:
+	case AML_BYTE_METHOD_OP:
 		object->component.object.named_obj = analyse_aml_named_obj(aml);
 		object->string.length += object->component.object.named_obj->string.length;
 		break;
@@ -4848,6 +4896,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		{
 		case AML_BYTE_ALIAS_OP:
 		case AML_BYTE_EXT_OP_PREFIX:
+		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
 			term_list->component.term_list.term_list = analyse_aml_term_list(aml);
 			term_list->string.length += term_list->component.term_list.term_list->string.length;
@@ -4873,6 +4922,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	{
 	case AML_BYTE_ALIAS_OP:
 	case AML_BYTE_EXT_OP_PREFIX:
+	case AML_BYTE_METHOD_OP:
 	case AML_BYTE_NAME_OP:
 	case AML_BYTE_SCOPE_OP:
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
@@ -5135,6 +5185,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_field_op_prefix:
 		break;
 	case aml_lead_name_char:
+		break;
+	case aml_method_op:
 		break;
 	case aml_multi_name_path:
 		for(unsigned int i = 0; i < *aml_symbol->component.multi_name_path.seg_count->string.initial; i++)if(aml_symbol->component.multi_name_path.name_seg[i])delete_aml_symbol(aml_symbol->component.multi_name_path.name_seg[i]);
