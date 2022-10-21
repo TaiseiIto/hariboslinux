@@ -266,7 +266,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *field_op_prefix_chain_string;
 	ChainString *lead_name_char_chain_string;
 	ChainString *local_obj_chain_string;
+	ChainString *method_flags_chain_string;
 	ChainString *method_invocation_chain_string;
+	ChainString *method_op_chain_string;
 	ChainString *multi_name_path_chain_string;
 	ChainString *multi_name_prefix_chain_string;
 	ChainString *name_op_chain_string;
@@ -431,7 +433,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *field_op_prefix_char_array;
 	char *lead_name_char_char_array;
 	char *local_obj_char_array;
+	char *method_flags_char_array;
 	char *method_invocation_char_array;
+	char *method_op_char_array;
 	char *multi_name_path_char_array;
 	char *multi_name_prefix_char_array;
 	char *name_op_char_array;
@@ -941,6 +945,74 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(field_list_chain_string);
 			free(field_list_char_array);
+		}
+		break;
+	case aml_def_method:
+		if(aml_symbol->component.def_method.method_op)
+		{
+			method_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_method.method_op);
+			insert_char_front(method_op_chain_string, method_op_chain_string->first_character, ' ');
+			replace_chain_string(method_op_chain_string, "\n", "\n ");
+			method_op_char_array = create_char_array_from_chain_string(method_op_chain_string);
+		}
+		else method_op_char_array = "";
+		if(aml_symbol->component.def_method.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_method.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_method.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_method.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.def_method.method_flags)
+		{
+			method_flags_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_method.method_flags);
+			insert_char_front(method_flags_chain_string, method_flags_chain_string->first_character, ' ');
+			replace_chain_string(method_flags_chain_string, "\n", "\n ");
+			method_flags_char_array = create_char_array_from_chain_string(method_flags_chain_string);
+		}
+		else method_flags_char_array = "";
+		if(aml_symbol->component.def_method.term_list)
+		{
+			term_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_method.term_list);
+			insert_char_front(term_list_chain_string, term_list_chain_string->first_character, ' ');
+			replace_chain_string(term_list_chain_string, "\n", "\n ");
+			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
+		}
+		else term_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), method_op_char_array, pkg_length_char_array, name_string_char_array, method_flags_char_array, term_list_char_array);
+		if(aml_symbol->component.def_method.method_op)
+		{
+			delete_chain_string(method_op_chain_string);
+			free(method_op_char_array);
+		}
+		if(aml_symbol->component.def_method.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_method.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.def_method.method_flags)
+		{
+			delete_chain_string(method_flags_chain_string);
+			free(method_flags_char_array);
+		}
+		if(aml_symbol->component.def_method.term_list)
+		{
+			delete_chain_string(term_list_chain_string);
+			free(term_list_char_array);
 		}
 		break;
 	case aml_def_name:
@@ -3202,6 +3274,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_field_name = "DefField";
+	static char const * const aml_def_method_name = "DefMethod";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_scope_name = "DefScope";
@@ -3293,6 +3366,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_buffer_name;
 	case aml_def_field:
 		return aml_def_field_name;
+	case aml_def_method:
+		return aml_def_method_name;
 	case aml_def_name:
 		return aml_def_name_name;
 	case aml_def_op_region:
@@ -3754,6 +3829,21 @@ AMLSymbol *analyse_aml_def_field(AMLSubstring aml)
 	aml.initial += def_field->component.def_field.field_list->string.length;
 	aml.length -= def_field->component.def_field.field_list->string.length;
 	return def_field;
+}
+
+// <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
+AMLSymbol *analyse_aml_def_method(AMLSubstring aml)
+{
+	AMLSymbol *def_method = malloc(sizeof(*def_method));
+	def_method->string.initial = aml.initial;
+	def_method->string.length = 0;
+	def_method->type = aml_def_method;
+	def_method->component.def_method.method_op = NULL;
+	def_method->component.def_method.pkg_length = NULL;
+	def_method->component.def_method.name_string = NULL;
+	def_method->component.def_method.method_flags = NULL;
+	def_method->component.def_method.term_list = NULL;
+	return def_method;
 }
 
 // <def_name> := <name_op> <name_string> <data_ref_object>
@@ -4925,6 +5015,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_field.name_string)delete_aml_symbol(aml_symbol->component.def_field.name_string);
 		if(aml_symbol->component.def_field.field_flags)delete_aml_symbol(aml_symbol->component.def_field.field_flags);
 		if(aml_symbol->component.def_field.field_list)delete_aml_symbol(aml_symbol->component.def_field.field_list);
+		break;
+	case aml_def_method:
+		if(aml_symbol->component.def_method.method_op)delete_aml_symbol(aml_symbol->component.def_method.method_op);
+		if(aml_symbol->component.def_method.pkg_length)delete_aml_symbol(aml_symbol->component.def_method.pkg_length);
+		if(aml_symbol->component.def_method.name_string)delete_aml_symbol(aml_symbol->component.def_method.name_string);
+		if(aml_symbol->component.def_method.method_flags)delete_aml_symbol(aml_symbol->component.def_method.method_flags);
+		if(aml_symbol->component.def_method.term_list)delete_aml_symbol(aml_symbol->component.def_method.term_list);
 		break;
 	case aml_def_name:
 		if(aml_symbol->component.def_name.name_op)delete_aml_symbol(aml_symbol->component.def_name.name_op);
