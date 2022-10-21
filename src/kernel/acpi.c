@@ -169,6 +169,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *const_obj_chain_string;
 	ChainString *data_object_chain_string;
 	ChainString *data_ref_object_chain_string;
+	ChainString *debug_obj_chain_string;
 	ChainString *def_add_chain_string;
 	ChainString *def_alias_chain_string;
 	ChainString *def_and_chain_string;
@@ -297,6 +298,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *qword_const_chain_string;
 	ChainString *qword_data_chain_string;
 	ChainString *qword_prefix_chain_string;
+	ChainString *reference_type_opcode_chain_string;
 	ChainString *region_len_chain_string;
 	ChainString *region_offset_chain_string;
 	ChainString *region_space_chain_string;
@@ -306,6 +308,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *root_char_chain_string;
 	ChainString *scope_op_chain_string;
 	ChainString *seg_count_chain_string;
+	ChainString *simple_name_chain_string;
 	ChainString *statement_opcode_chain_string;
 	ChainString *string_chain_string;
 	ChainString *string_prefix_chain_string;
@@ -342,6 +345,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *const_obj_char_array;
 	char *data_object_char_array;
 	char *data_ref_object_char_array;
+	char *debug_obj_char_array;
 	char *def_add_char_array;
 	char *def_alias_char_array;
 	char *def_and_char_array;
@@ -469,6 +473,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *qword_const_char_array;
 	char *qword_data_char_array;
 	char *qword_prefix_char_array;
+	char *reference_type_opcode_char_array;
 	char *region_len_char_array;
 	char *region_offset_char_array;
 	char *region_space_char_array;
@@ -478,6 +483,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *root_char_char_array;
 	char *scope_op_char_array;
 	char *seg_count_char_array;
+	char *simple_name_char_array;
 	char *statement_opcode_char_array;
 	char *string_char_array;
 	char *string_prefix_char_array;
@@ -3168,6 +3174,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_string_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_super_name:
+		if(aml_symbol->component.super_name.debug_obj)
+		{
+			debug_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.super_name.debug_obj);
+			insert_char_front(debug_obj_chain_string, debug_obj_chain_string->first_character, ' ');
+			replace_chain_string(debug_obj_chain_string, "\n", "\n ");
+			debug_obj_char_array = create_char_array_from_chain_string(debug_obj_chain_string);
+		}
+		else debug_obj_char_array = "";
+		if(aml_symbol->component.super_name.reference_type_opcode)
+		{
+			reference_type_opcode_chain_string = aml_symbol_to_chain_string(aml_symbol->component.super_name.reference_type_opcode);
+			insert_char_front(reference_type_opcode_chain_string, reference_type_opcode_chain_string->first_character, ' ');
+			replace_chain_string(reference_type_opcode_chain_string, "\n", "\n ");
+			reference_type_opcode_char_array = create_char_array_from_chain_string(reference_type_opcode_chain_string);
+		}
+		else reference_type_opcode_char_array = "";
+		if(aml_symbol->component.super_name.simple_name)
+		{
+			simple_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.super_name.simple_name);
+			insert_char_front(simple_name_chain_string, simple_name_chain_string->first_character, ' ');
+			replace_chain_string(simple_name_chain_string, "\n", "\n ");
+			simple_name_char_array = create_char_array_from_chain_string(simple_name_chain_string);
+		}
+		else simple_name_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), debug_obj_char_array, reference_type_opcode_char_array, simple_name_char_array);
+		if(aml_symbol->component.super_name.debug_obj)
+		{
+			delete_chain_string(debug_obj_chain_string);
+			free(debug_obj_char_array);
+		}
+		if(aml_symbol->component.super_name.reference_type_opcode)
+		{
+			delete_chain_string(reference_type_opcode_chain_string);
+			free(reference_type_opcode_char_array);
+		}
+		if(aml_symbol->component.super_name.simple_name)
+		{
+			delete_chain_string(simple_name_chain_string);
+			free(simple_name_char_array);
+		}
+		break;
 	case aml_target:
 		if(aml_symbol->component.target.super_name)
 		{
@@ -3473,6 +3521,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_string_name = "String";
 	static char const * const aml_string_prefix_name = "StringPrefix";
+	static char const * const aml_super_name_name = "SuperName";
 	static char const * const aml_target_name = "Target";
 	static char const * const aml_term_arg_name = "TermArg";
 	static char const * const aml_term_list_name = "TermList";
@@ -3632,6 +3681,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_string_name;
 	case aml_string_prefix:
 		return aml_string_prefix_name;
+	case aml_super_name:
+		return aml_super_name_name;
 	case aml_target:
 		return aml_target_name;
 	case aml_term_arg:
@@ -5070,6 +5121,19 @@ AMLSymbol *analyse_aml_string_prefix(AMLSubstring aml)
 	return string_prefix;
 }
 
+// <super_name> := <simple_name> | <debug_obj> | <reference_type_opcode>
+AMLSymbol *analyse_aml_super_name(AMLSubstring aml)
+{
+	AMLSymbol *super_name = malloc(sizeof(*super_name));
+	super_name->string.initial = aml.initial;
+	super_name->string.length = 0;
+	super_name->type = aml_super_name;
+	super_name->component.super_name.debug_obj = NULL;
+	super_name->component.super_name.reference_type_opcode = NULL;
+	super_name->component.super_name.simple_name = NULL;
+	return super_name;
+}
+
 // <target> := <super_name> | <null_name>
 AMLSymbol *analyse_aml_target(AMLSubstring aml)
 {
@@ -5603,6 +5667,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.string.null_char)delete_aml_symbol(aml_symbol->component.string.null_char);
 		break;
 	case aml_string_prefix:
+		break;
+	case aml_super_name:
+		if(aml_symbol->component.super_name.debug_obj)delete_aml_symbol(aml_symbol->component.super_name.debug_obj);
+		if(aml_symbol->component.super_name.reference_type_opcode)delete_aml_symbol(aml_symbol->component.super_name.reference_type_opcode);
+		if(aml_symbol->component.super_name.simple_name)delete_aml_symbol(aml_symbol->component.super_name.simple_name);
 		break;
 	case aml_target:
 		if(aml_symbol->component.target.null_name)delete_aml_symbol(aml_symbol->component.target.null_name);
