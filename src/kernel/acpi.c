@@ -269,6 +269,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *field_op_prefix_chain_string;
 	ChainString *lead_name_char_chain_string;
 	ChainString *local_obj_chain_string;
+	ChainString *local_op_chain_string;
 	ChainString *method_flags_chain_string;
 	ChainString *method_invocation_chain_string;
 	ChainString *method_op_chain_string;
@@ -445,6 +446,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *field_op_prefix_char_array;
 	char *lead_name_char_char_array;
 	char *local_obj_char_array;
+	char *local_op_char_array;
 	char *method_flags_char_array;
 	char *method_invocation_char_array;
 	char *method_op_char_array;
@@ -2182,6 +2184,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_lead_name_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_local_obj:
+		if(aml_symbol->component.local_obj.local_op)
+		{
+			local_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.local_obj.local_op);
+			insert_char_front(local_op_chain_string, local_op_chain_string->first_character, ' ');
+			replace_chain_string(local_op_chain_string, "\n", "\n ");
+			local_op_char_array = create_char_array_from_chain_string(local_op_chain_string);
+		}
+		else local_op_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), local_op_char_array);
+		if(aml_symbol->component.local_obj.local_op)
+		{
+			delete_chain_string(local_op_chain_string);
+			free(local_op_char_array);
+		}
+		break;
 	case aml_method_flags:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3525,6 +3543,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_op_name = "FieldOp";
 	static char const * const aml_field_op_prefix_name = "FieldOpPrefix";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
+	static char const * const aml_local_obj_name = "LocalObj";
 	static char const * const aml_method_flags_name = "MethodFlags";
 	static char const * const aml_method_op_name = "MethodOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
@@ -3648,6 +3667,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_field_op_prefix_name;
 	case aml_lead_name_char:
 		return aml_lead_name_char_name;
+	case aml_local_obj:
+		return aml_local_obj_name;
 	case aml_method_flags:
 		return aml_method_flags_name;
 	case aml_method_op:
@@ -4506,6 +4527,17 @@ AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml)
 	lead_name_char->type = aml_lead_name_char;
 	if(!(('A' <= *lead_name_char->string.initial && *lead_name_char->string.initial <= 'Z') || *lead_name_char->string.initial == '_'))ERROR(); // Incorrect lead name char
 	return lead_name_char;
+}
+
+// <local_obj> := <local_op>
+AMLSymbol *analyse_aml_local_obj(AMLSubstring aml)
+{
+	AMLSymbol *local_obj = malloc(sizeof(*local_obj));
+	local_obj->string.initial = aml.initial;
+	local_obj->string.length = 0;
+	local_obj->type = aml_local_obj;
+	local_obj->component.local_obj.local_op = NULL;
+	return local_obj;
 }
 
 // <method_flags>
@@ -5640,6 +5672,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_field_op_prefix:
 		break;
 	case aml_lead_name_char:
+		break;
+	case aml_local_obj:
+		if(aml_symbol->component.local_obj.local_op)delete_aml_symbol(aml_symbol->component.local_obj.local_op);
 		break;
 	case aml_method_flags:
 		break;
