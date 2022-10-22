@@ -3679,6 +3679,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_to_hex_string_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_while_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_word_const:
 		if(aml_symbol->component.word_const.word_prefix)
 		{
@@ -3844,6 +3847,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_term_obj_name = "TermObj";
 	static char const * const aml_to_buffer_op_name = "ToBufferOp";
 	static char const * const aml_to_hex_string_op_name = "ToHexStringOp";
+	static char const * const aml_while_op_name = "WhileOp";
 	static char const * const aml_word_const_name = "WordConst";
 	static char const * const aml_word_data_name = "WordData";
 	static char const * const aml_word_prefix_name = "WordPrefix";
@@ -4034,6 +4038,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_to_buffer_op_name;
 	case aml_to_hex_string_op:
 		return aml_to_hex_string_op_name;
+	case aml_while_op:
+		return aml_while_op_name;
 	case aml_word_const:
 		return aml_word_const_name;
 	case aml_word_data:
@@ -4664,10 +4670,18 @@ AMLSymbol *analyse_aml_def_while(AMLSubstring aml)
 	def_while->string.initial = aml.initial;
 	def_while->string.length = 0;
 	def_while->type = aml_def_while;
-	def_while->component.def_while.while_op = NULL;
-	def_while->component.def_while.pkg_length = NULL;
+	def_while->component.def_while.while_op = analyse_aml_while_op(aml);
+	def_while->string.length += def_while->component.def_while.while_op->string.length;
+	aml.initial += def_while->component.def_while.while_op->string.length;
+	aml.length -= def_while->component.def_while.while_op->string.length;
+	def_while->component.def_while.pkg_length = analyse_aml_pkg_length(aml);
+	def_while->string.length += def_while->component.def_while.pkg_length->string.length;
+	aml.initial += def_while->component.def_while.pkg_length->string.length;
+	aml.length -= def_while->component.def_while.pkg_length->string.length;
 	def_while->component.def_while.predicate = NULL;
 	def_while->component.def_while.term_list = NULL;
+	ERROR(); // predicate is unimplemented.
+	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	return def_while;
 }
 
@@ -5701,7 +5715,17 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 	statement_opcode->component.statement_opcode.def_sleep = NULL;
 	statement_opcode->component.statement_opcode.def_stall = NULL;
 	statement_opcode->component.statement_opcode.def_while = NULL;
-	ERROR(); // unimplemented
+	switch(*aml.initial)
+	{
+	case AML_BYTE_WHILE_OP:
+		statement_opcode->component.statement_opcode.def_while = analyse_aml_def_while(aml);
+		statement_opcode->string.length += statement_opcode->component.statement_opcode.def_while->string.length;
+		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		break;
+	}
 	return statement_opcode;
 }
 
@@ -5939,6 +5963,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_SUBTRACT_OP:
 		case AML_BYTE_TO_BUFFER_OP:
 		case AML_BYTE_TO_HEX_STRING_OP:
+		case AML_BYTE_WHILE_OP:
 			term_list->component.term_list.term_list = analyse_aml_term_list(aml);
 			term_list->string.length += term_list->component.term_list.term_list->string.length;
 			aml.initial += term_list->component.term_list.term_list->string.length;
@@ -5965,6 +5990,14 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	term_obj->component.term_obj.expression_opcode = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_SIZE_OF_OP:
+	case AML_BYTE_STORE_OP:
+	case AML_BYTE_SUBTRACT_OP:
+	case AML_BYTE_TO_BUFFER_OP:
+	case AML_BYTE_TO_HEX_STRING_OP:
+		term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
+		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
+		break;
 	case AML_BYTE_ALIAS_OP:
 	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_METHOD_OP:
@@ -5973,13 +6006,9 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
-	case AML_BYTE_SIZE_OF_OP:
-	case AML_BYTE_STORE_OP:
-	case AML_BYTE_SUBTRACT_OP:
-	case AML_BYTE_TO_BUFFER_OP:
-	case AML_BYTE_TO_HEX_STRING_OP:
-		term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
-		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
+	case AML_BYTE_WHILE_OP:
+		term_obj->component.term_obj.statement_opcode = analyse_aml_statement_opcode(aml);
+		term_obj->string.length += term_obj->component.term_obj.statement_opcode->string.length;
 		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
@@ -6009,6 +6038,17 @@ AMLSymbol *analyse_aml_to_hex_string_op(AMLSubstring aml)
 	to_hex_string_op->type = aml_to_hex_string_op;
 	if(*to_hex_string_op->string.initial != AML_BYTE_TO_HEX_STRING_OP)ERROR();
 	return to_hex_string_op;
+}
+
+// <while_op> := AML_BYTE_WHILE_OP
+AMLSymbol *analyse_aml_while_op(AMLSubstring aml)
+{
+	AMLSymbol *while_op = malloc(sizeof(*while_op));
+	while_op->string.initial = aml.initial;
+	while_op->string.length = 1;
+	while_op->type = aml_while_op;
+	if(*while_op->string.initial != AML_BYTE_WHILE_OP)ERROR(); // Incorrect while op
+	return while_op;
 }
 
 // <word_const> := <word_prefix> <word_data>
@@ -6483,6 +6523,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_to_buffer_op:
 		break;
 	case aml_to_hex_string_op:
+		break;
+	case aml_while_op:
 		break;
 	case aml_word_const:
 		if(aml_symbol->component.word_const.word_prefix)delete_aml_symbol(aml_symbol->component.word_const.word_prefix);

@@ -269,6 +269,7 @@ typedef enum _AMLSymbolType
 	aml_term_obj,
 	aml_to_buffer_op,
 	aml_to_hex_string_op,
+	aml_while_op,
 	aml_word_const,
 	aml_word_data,
 	aml_word_prefix,
@@ -990,6 +991,8 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml);
 AMLSymbol *analyse_aml_to_buffer_op(AMLSubstring aml);
 // <to_hex_string_op> := AML_BYTE_TO_HEX_STRING_OP
 AMLSymbol *analyse_aml_to_hex_string_op(AMLSubstring aml);
+// <while_op> := AML_BYTE_WHILE_OP
+AMLSymbol *analyse_aml_while_op(AMLSubstring aml);
 // <word_const> := <word_prefix> <word_data>
 AMLSymbol *analyse_aml_word_const(AMLSubstring aml);
 // <word_data> := <byte_data> <byte_data>
