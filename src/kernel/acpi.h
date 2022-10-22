@@ -256,6 +256,7 @@ typedef enum _AMLSymbolType
 	aml_statement_opcode,
 	aml_string,
 	aml_string_prefix,
+	aml_subtract_op,
 	aml_super_name,
 	aml_target,
 	aml_term_arg,
@@ -934,6 +935,8 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
 AMLSymbol *analyse_aml_string(AMLSubstring aml);
 // <string_prefix> := AML_BYTE_STRING_PREFIX
 AMLSymbol *analyse_aml_string_prefix(AMLSubstring aml);
+// <subtract_op> := AML_BYTE_SUBTRACT_OP
+AMLSymbol *analyse_aml_subtract_op(AMLSubstring aml);
 // <super_name> := <simple_name> | <debug_obj> | <reference_type_opcode>
 AMLSymbol *analyse_aml_super_name(AMLSubstring aml);
 // <target> := <super_name> | <null_name>

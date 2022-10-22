@@ -3333,6 +3333,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_string_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_subtract_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_super_name:
 		if(aml_symbol->component.super_name.debug_obj)
 		{
@@ -3688,6 +3691,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_string_name = "String";
 	static char const * const aml_string_prefix_name = "StringPrefix";
+	static char const * const aml_subtract_op_name = "SubtractOp";
 	static char const * const aml_super_name_name = "SuperName";
 	static char const * const aml_target_name = "Target";
 	static char const * const aml_term_arg_name = "TermArg";
@@ -3859,6 +3863,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_string_name;
 	case aml_string_prefix:
 		return aml_string_prefix_name;
+	case aml_subtract_op:
+		return aml_subtract_op_name;
 	case aml_super_name:
 		return aml_super_name_name;
 	case aml_target:
@@ -4394,9 +4400,21 @@ AMLSymbol *analyse_aml_def_subtract(AMLSubstring aml)
 	def_subtract->string.initial = aml.initial;
 	def_subtract->string.length = 0;
 	def_subtract->type = aml_def_subtract;
-	def_subtract->component.def_subtract.subtract_op = NULL;
-	for(unsigned int i = 0; i < _countof(def_subtract->component.def_subtract.operand); i++)def_subtract->component.def_subtract.operand[i] = NULL;
-	def_subtract->component.def_subtract.target = NULL;
+	def_subtract->component.def_subtract.subtract_op = analyse_aml_subtract_op(aml);
+	def_subtract->string.length += def_subtract->component.def_subtract.subtract_op->string.length;
+	aml.initial += def_subtract->component.def_subtract.subtract_op->string.length;
+	aml.length -= def_subtract->component.def_subtract.subtract_op->string.length;
+	for(unsigned int i = 0; i < _countof(def_subtract->component.def_subtract.operand); i++)
+	{
+		def_subtract->component.def_subtract.operand[i] = analyse_aml_operand(aml);
+		def_subtract->string.length += def_subtract->component.def_subtract.operand[i]->string.length;
+		aml.initial += def_subtract->component.def_subtract.operand[i]->string.length;
+		aml.length -= def_subtract->component.def_subtract.operand[i]->string.length;
+	}
+	def_subtract->component.def_subtract.target = analyse_aml_target(aml);
+	def_subtract->string.length += def_subtract->component.def_subtract.target->string.length;
+	aml.initial += def_subtract->component.def_subtract.target->string.length;
+	aml.length -= def_subtract->component.def_subtract.target->string.length;
 	return def_subtract;
 }
 
@@ -4595,6 +4613,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_SUBTRACT_OP:
+		expression_opcode->component.expression_opcode.def_subtract = analyse_aml_def_subtract(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_subtract->string.length;
+		break;
 	case AML_BYTE_TO_BUFFER_OP:
 		expression_opcode->component.expression_opcode.def_to_buffer = analyse_aml_def_to_buffer(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_buffer->string.length;
@@ -5488,6 +5510,17 @@ AMLSymbol *analyse_aml_string_prefix(AMLSubstring aml)
 	return string_prefix;
 }
 
+// <subtract_op> := AML_BYTE_SUBTRACT_OP
+AMLSymbol *analyse_aml_subtract_op(AMLSubstring aml)
+{
+	AMLSymbol *subtract_op = malloc(sizeof(*subtract_op));
+	subtract_op->string.initial = aml.initial;
+	subtract_op->string.length = 1;
+	subtract_op->type = aml_subtract_op;
+	if(*subtract_op->string.initial != AML_BYTE_SUBTRACT_OP)ERROR(); // Incorrect subtract op
+	return subtract_op;
+}
+
 // <super_name> := <simple_name> | <debug_obj> | <reference_type_opcode>
 AMLSymbol *analyse_aml_super_name(AMLSubstring aml)
 {
@@ -5655,6 +5688,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_EXT_OP_PREFIX:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
+		case AML_BYTE_SUBTRACT_OP:
 		case AML_BYTE_TO_BUFFER_OP:
 		case AML_BYTE_TO_HEX_STRING_OP:
 			term_list->component.term_list.term_list = analyse_aml_term_list(aml);
@@ -5691,6 +5725,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
+	case AML_BYTE_SUBTRACT_OP:
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
 		term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
@@ -6149,6 +6184,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.string.null_char)delete_aml_symbol(aml_symbol->component.string.null_char);
 		break;
 	case aml_string_prefix:
+		break;
+	case aml_subtract_op:
 		break;
 	case aml_super_name:
 		if(aml_symbol->component.super_name.debug_obj)delete_aml_symbol(aml_symbol->component.super_name.debug_obj);
