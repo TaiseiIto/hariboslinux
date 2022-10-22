@@ -5545,6 +5545,17 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 		term_arg->component.term_arg.data_object = analyse_aml_data_object(aml);
 		term_arg->string.length += term_arg->component.term_arg.data_object->string.length;
 		break;
+	case AML_BYTE_LOCAL_0_OP:
+	case AML_BYTE_LOCAL_1_OP:
+	case AML_BYTE_LOCAL_2_OP:
+	case AML_BYTE_LOCAL_3_OP:
+	case AML_BYTE_LOCAL_4_OP:
+	case AML_BYTE_LOCAL_5_OP:
+	case AML_BYTE_LOCAL_6_OP:
+	case AML_BYTE_LOCAL_7_OP:
+		term_arg->component.term_arg.local_obj = analyse_aml_local_obj(aml);
+		term_arg->string.length += term_arg->component.term_arg.local_obj->string.length;
+		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
 		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
