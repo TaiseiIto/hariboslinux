@@ -238,6 +238,7 @@ typedef enum _AMLSymbolType
 	aml_named_obj,
 	aml_null_char,
 	aml_null_name,
+	aml_obj_reference,
 	aml_object,
 	aml_one_op,
 	aml_ones_op,
@@ -624,6 +625,11 @@ typedef struct _AMLObject
 	struct _AMLSymbol *name_space_modifier_obj;
 } AMLObject;
 
+typedef struct _AMLObjReference
+{
+	struct _AMLSymbol *term_arg;
+} AMLObjReference;
+
 typedef struct _AMLOperand
 {
 	struct _AMLSymbol *term_arg;
@@ -800,6 +806,7 @@ typedef union _AMLComponent
 	AMLNameSpaceModifierObj name_space_modifier_obj;
 	AMLNameString name_string;
 	AMLObject object;
+	AMLObjReference obj_reference;
 	AMLOperand operand;
 	AMLOpRegionOp op_region_op;
 	AMLPkgLength pkg_length;
@@ -954,6 +961,8 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml);
 AMLSymbol *analyse_aml_null_char(AMLSubstring aml);
 // <null_name> := AML_BYTE_NULL_NAME
 AMLSymbol *analyse_aml_null_name(AMLSubstring aml);
+// <obj_reference> := <term_arg>
+AMLSymbol *analyse_aml_obj_reference(AMLSubstring aml);
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSubstring aml);
 // <one_op> := AML_BYTE_ONE_OP

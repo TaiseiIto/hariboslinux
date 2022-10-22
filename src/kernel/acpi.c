@@ -2989,6 +2989,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_null_name:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_obj_reference:
+		if(aml_symbol->component.obj_reference.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.obj_reference.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.obj_reference.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)
 		{
@@ -3907,6 +3923,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_named_obj_name = "NamedObj";
 	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
+	static char const * const aml_obj_reference_name = "ObjReference";
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_one_op_name = "OneOp";
 	static char const * const aml_ones_op_name = "OnesOp";
@@ -4072,6 +4089,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_null_char_name;
 	case aml_null_name:
 		return aml_null_name_name;
+	case aml_obj_reference:
+		return aml_obj_reference_name;
 	case aml_object:
 		return aml_object_name;
 	case aml_one_op:
@@ -4536,8 +4555,10 @@ AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml)
 	def_deref_of->string.length += def_deref_of->component.def_deref_of.deref_of_op->string.length;
 	aml.initial += def_deref_of->component.def_deref_of.deref_of_op->string.length;
 	aml.length -= def_deref_of->component.def_deref_of.deref_of_op->string.length;
-	def_deref_of->component.def_deref_of.obj_reference = NULL;
-	ERROR(); // unimplemented
+	def_deref_of->component.def_deref_of.obj_reference = analyse_aml_obj_reference(aml);
+	def_deref_of->string.length += def_deref_of->component.def_deref_of.obj_reference->string.length;
+	aml.initial += def_deref_of->component.def_deref_of.obj_reference->string.length;
+	aml.length -= def_deref_of->component.def_deref_of.obj_reference->string.length;
 	return def_deref_of;
 }
 
@@ -5491,6 +5512,20 @@ AMLSymbol *analyse_aml_null_name(AMLSubstring aml)
 	null_name->type = aml_null_name;
 	if(*null_name->string.initial != AML_BYTE_NULL_NAME)ERROR(); // Incorrect null name
 	return null_name;
+}
+
+// <obj_reference> := <term_arg>
+AMLSymbol *analyse_aml_obj_reference(AMLSubstring aml)
+{
+	AMLSymbol *obj_reference = malloc(sizeof(*obj_reference));
+	obj_reference->string.initial = aml.initial;
+	obj_reference->string.length = 0;
+	obj_reference->type = aml_obj_reference;
+	obj_reference->component.obj_reference.term_arg = analyse_aml_term_arg(aml);
+	obj_reference->string.length += obj_reference->component.obj_reference.term_arg->string.length;
+	aml.initial += obj_reference->component.obj_reference.term_arg->string.length;
+	aml.length -= obj_reference->component.obj_reference.term_arg->string.length;
+	return obj_reference;
 }
 
 // <object> := <name_space_modifier_obj> | <named_obj>
@@ -6612,6 +6647,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_null_char:
 		break;
 	case aml_null_name:
+		break;
+	case aml_obj_reference:
+		if(aml_symbol->component.obj_reference.term_arg)delete_aml_symbol(aml_symbol->component.obj_reference.term_arg);
 		break;
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
