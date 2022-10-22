@@ -203,6 +203,7 @@ typedef enum _AMLSymbolType
 	aml_def_subtract,
 	aml_def_to_buffer,
 	aml_def_to_hex_string,
+	aml_def_while,
 	aml_digit_char,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
@@ -424,6 +425,14 @@ typedef struct _AMLDefToHexString
 	struct _AMLSymbol *operand;
 	struct _AMLSymbol *target;
 } AMLDefToHexString;
+
+typedef struct _AMLDefWhile
+{
+	struct _AMLSymbol *while_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *predicate;
+	struct _AMLSymbol *term_list;
+} AMLDefWhile;
 
 typedef struct _AMLDualNamePath
 {
@@ -748,6 +757,7 @@ typedef union _AMLComponent
 	AMLDefSubtract def_subtract;
 	AMLDefToBuffer def_to_buffer;
 	AMLDefToHexString def_to_hex_string;
+	AMLDefWhile def_while;
 	AMLDualNamePath dual_name_path;
 	AMLDWordConst dword_const;
 	AMLDWordData dword_data;
@@ -848,6 +858,8 @@ AMLSymbol *analyse_aml_def_subtract(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_to_buffer(AMLSubstring aml);
 // <def_to_hex_string> := <to_hex_string_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml);
+// <def_while> := <while_op> <pkg_length> <predicate> <term_list>
+AMLSymbol *analyse_aml_def_while(AMLSubstring aml);
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>

@@ -296,6 +296,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *parent_prefix_char_chain_string;
 	ChainString *pkg_lead_byte_chain_string;
 	ChainString *pkg_length_chain_string;
+	ChainString *predicate_chain_string;
 	ChainString *prefix_path_chain_string;
 	ChainString *qword_const_chain_string;
 	ChainString *qword_data_chain_string;
@@ -324,6 +325,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *term_obj_chain_string;
 	ChainString *to_buffer_op_chain_string;
 	ChainString *to_hex_string_op_chain_string;
+	ChainString *while_op_chain_string;
 	ChainString *word_const_chain_string;
 	ChainString *word_data_chain_string;
 	ChainString *word_prefix_chain_string;
@@ -477,6 +479,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *parent_prefix_char_char_array;
 	char *pkg_lead_byte_char_array;
 	char *pkg_length_char_array;
+	char *predicate_char_array;
 	char *prefix_path_char_array;
 	char *qword_const_char_array;
 	char *qword_data_char_array;
@@ -505,6 +508,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *term_obj_char_array;
 	char *to_buffer_op_char_array;
 	char *to_hex_string_op_char_array;
+	char *while_op_char_array;
 	char *word_const_char_array;
 	char *word_data_char_array;
 	char *word_prefix_char_array;
@@ -1430,6 +1434,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(target_chain_string);
 			free(target_char_array);
+		}
+		break;
+	case aml_def_while:
+		if(aml_symbol->component.def_while.while_op)
+		{
+			while_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_while.while_op);
+			insert_char_front(while_op_chain_string, while_op_chain_string->first_character, ' ');
+			replace_chain_string(while_op_chain_string, "\n", "\n ");
+			while_op_char_array = create_char_array_from_chain_string(while_op_chain_string);
+		}
+		else while_op_char_array = "";
+		if(aml_symbol->component.def_while.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_while.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_while.predicate)
+		{
+			predicate_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_while.predicate);
+			insert_char_front(predicate_chain_string, predicate_chain_string->first_character, ' ');
+			replace_chain_string(predicate_chain_string, "\n", "\n ");
+			predicate_char_array = create_char_array_from_chain_string(predicate_chain_string);
+		}
+		else predicate_char_array = "";
+		if(aml_symbol->component.def_while.term_list)
+		{
+			term_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_while.term_list);
+			insert_char_front(term_list_chain_string, term_list_chain_string->first_character, ' ');
+			replace_chain_string(term_list_chain_string, "\n", "\n ");
+			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
+		}
+		else term_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), while_op_char_array, pkg_length_char_array, predicate_char_array, term_list_char_array);
+		if(aml_symbol->component.def_while.while_op)
+		{
+			delete_chain_string(while_op_chain_string);
+			free(while_op_char_array);
+		}
+		if(aml_symbol->component.def_while.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_while.predicate)
+		{
+			delete_chain_string(predicate_chain_string);
+			free(predicate_char_array);
+		}
+		if(aml_symbol->component.def_while.term_list)
+		{
+			delete_chain_string(term_list_chain_string);
+			free(term_list_char_array);
 		}
 		break;
 	case aml_digit_char:
@@ -3719,6 +3778,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_subtract_name = "DefSubtract";
 	static char const * const aml_def_to_buffer_name = "DefToBuffer";
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
+	static char const * const aml_def_while_name = "DefWhile";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
@@ -3842,6 +3902,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_to_buffer_name;
 	case aml_def_to_hex_string:
 		return aml_def_to_hex_string_name;
+	case aml_def_while:
+		return aml_def_while_name;
 	case aml_digit_char:
 		return aml_digit_char_name;
 	case aml_dual_name_path:
@@ -4593,6 +4655,20 @@ AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml)
 	aml.initial += def_to_hex_string->component.def_to_hex_string.target->string.length;
 	aml.length -= def_to_hex_string->component.def_to_hex_string.target->string.length;
 	return def_to_hex_string;
+}
+
+// <def_while> := <while_op> <pkg_length> <predicate> <term_list>
+AMLSymbol *analyse_aml_def_while(AMLSubstring aml)
+{
+	AMLSymbol *def_while = malloc(sizeof(*def_while));
+	def_while->string.initial = aml.initial;
+	def_while->string.length = 0;
+	def_while->type = aml_def_while;
+	def_while->component.def_while.while_op = NULL;
+	def_while->component.def_while.pkg_length = NULL;
+	def_while->component.def_while.predicate = NULL;
+	def_while->component.def_while.term_list = NULL;
+	return def_while;
 }
 
 // <digit_char> := '0' - '9'
@@ -6122,6 +6198,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_to_hex_string.to_hex_string_op)delete_aml_symbol(aml_symbol->component.def_to_hex_string.to_hex_string_op);
 		if(aml_symbol->component.def_to_hex_string.operand)delete_aml_symbol(aml_symbol->component.def_to_hex_string.operand);
 		if(aml_symbol->component.def_to_hex_string.target)delete_aml_symbol(aml_symbol->component.def_to_hex_string.target);
+		break;
+	case aml_def_while:
+		if(aml_symbol->component.def_while.while_op)delete_aml_symbol(aml_symbol->component.def_while.while_op);
+		if(aml_symbol->component.def_while.pkg_length)delete_aml_symbol(aml_symbol->component.def_while.pkg_length);
+		if(aml_symbol->component.def_while.predicate)delete_aml_symbol(aml_symbol->component.def_while.predicate);
+		if(aml_symbol->component.def_while.term_list)delete_aml_symbol(aml_symbol->component.def_while.term_list);
 		break;
 	case aml_digit_char:
 		break;
