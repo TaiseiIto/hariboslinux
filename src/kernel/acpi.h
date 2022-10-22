@@ -195,6 +195,7 @@ typedef enum _AMLSymbolType
 	aml_def_buffer,
 	aml_def_deref_of,
 	aml_def_field,
+	aml_def_index,
 	aml_def_l_less,
 	aml_def_method,
 	aml_def_name,
@@ -371,6 +372,14 @@ typedef struct _AMLDefField
 	struct _AMLSymbol *field_flags;
 	struct _AMLSymbol *field_list;
 } AMLDefField;
+
+typedef struct _AMLDefIndex
+{
+	struct _AMLSymbol *index_op;
+	struct _AMLSymbol *buff_pkg_str_obj;
+	struct _AMLSymbol *index_value;
+	struct _AMLSymbol *target;
+} AMLDefIndex;
 
 typedef struct _AMLDefLLess
 {
@@ -778,6 +787,7 @@ typedef union _AMLComponent
 	AMLDefBuffer def_buffer;
 	AMLDefDerefOf def_deref_of;
 	AMLDefField def_field;
+	AMLDefIndex def_index;
 	AMLDefLLess def_l_less;
 	AMLDefMethod def_method;
 	AMLDefName def_name;
@@ -875,6 +885,8 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
+// <def_index> := <index_op> <buff_pkf_str_obj> <index_value> <target>
+AMLSymbol *analyse_aml_def_index(AMLSubstring aml);
 // <def_l_less> := <l_less_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_less(AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
