@@ -311,6 +311,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *scope_op_chain_string;
 	ChainString *seg_count_chain_string;
 	ChainString *simple_name_chain_string;
+	ChainString *size_of_op_chain_string;
 	ChainString *statement_opcode_chain_string;
 	ChainString *string_chain_string;
 	ChainString *string_prefix_chain_string;
@@ -490,6 +491,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *scope_op_char_array;
 	char *seg_count_char_array;
 	char *simple_name_char_array;
+	char *size_of_op_char_array;
 	char *statement_opcode_char_array;
 	char *string_char_array;
 	char *string_prefix_char_array;
@@ -1223,6 +1225,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(term_list_chain_string);
 			free(term_list_char_array);
+		}
+		break;
+	case aml_def_size_of:
+		if(aml_symbol->component.def_size_of.size_of_op)
+		{
+			size_of_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_size_of.size_of_op);
+			insert_char_front(size_of_op_chain_string, size_of_op_chain_string->first_character, ' ');
+			replace_chain_string(size_of_op_chain_string, "\n", "\n ");
+			size_of_op_char_array = create_char_array_from_chain_string(size_of_op_chain_string);
+		}
+		else size_of_op_char_array = "";
+		if(aml_symbol->component.def_size_of.super_name)
+		{
+			super_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_size_of.super_name);
+			insert_char_front(super_name_chain_string, super_name_chain_string->first_character, ' ');
+			replace_chain_string(super_name_chain_string, "\n", "\n ");
+			super_name_char_array = create_char_array_from_chain_string(super_name_chain_string);
+		}
+		else super_name_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), size_of_op_char_array, super_name_char_array);
+		if(aml_symbol->component.def_size_of.size_of_op)
+		{
+			delete_chain_string(size_of_op_chain_string);
+			free(size_of_op_char_array);
+		}
+		if(aml_symbol->component.def_size_of.super_name)
+		{
+			delete_chain_string(super_name_chain_string);
+			free(super_name_char_array);
 		}
 		break;
 	case aml_def_subtract:
@@ -3633,6 +3664,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_scope_name = "DefScope";
+	static char const * const aml_def_size_of_name = "DefSizeOf";
 	static char const * const aml_def_subtract_name = "DefSubtract";
 	static char const * const aml_def_to_buffer_name = "DefToBuffer";
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
@@ -3747,6 +3779,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_op_region_name;
 	case aml_def_scope:
 		return aml_def_scope_name;
+	case aml_def_size_of:
+		return aml_def_size_of_name;
 	case aml_def_subtract:
 		return aml_def_subtract_name;
 	case aml_def_to_buffer:
@@ -4391,6 +4425,18 @@ AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
 	aml.initial += def_scope->component.def_scope.term_list->string.length;
 	aml.length -= def_scope->component.def_scope.term_list->string.length;
 	return def_scope;
+}
+
+// <def_size_of> := <size_of_op> <super_name>
+AMLSymbol *analyse_aml_def_size_of(AMLSubstring aml)
+{
+	AMLSymbol *def_size_of = malloc(sizeof(*def_size_of));
+	def_size_of->string.initial = aml.initial;
+	def_size_of->string.length = 0;
+	def_size_of->type = aml_def_size_of;
+	def_size_of->component.def_size_of.size_of_op = NULL;
+	def_size_of->component.def_size_of.super_name = NULL;
+	return def_size_of;
 }
 
 // <def_subtract> := <subtract_op> <operand> <operand> <target>
@@ -5660,7 +5706,6 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
 		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return term_arg;
@@ -5924,6 +5969,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_scope.pkg_length)delete_aml_symbol(aml_symbol->component.def_scope.pkg_length);
 		if(aml_symbol->component.def_scope.name_string)delete_aml_symbol(aml_symbol->component.def_scope.name_string);
 		if(aml_symbol->component.def_scope.term_list)delete_aml_symbol(aml_symbol->component.def_scope.term_list);
+		break;
+	case aml_def_size_of:
+		if(aml_symbol->component.def_size_of.size_of_op)delete_aml_symbol(aml_symbol->component.def_size_of.size_of_op);
+		if(aml_symbol->component.def_size_of.super_name)delete_aml_symbol(aml_symbol->component.def_size_of.super_name);
 		break;
 	case aml_def_subtract:
 		if(aml_symbol->component.def_subtract.subtract_op)delete_aml_symbol(aml_symbol->component.def_subtract.subtract_op);
