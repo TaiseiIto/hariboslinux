@@ -5719,6 +5719,13 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 		term_arg->component.term_arg.data_object = analyse_aml_data_object(aml);
 		term_arg->string.length += term_arg->component.term_arg.data_object->string.length;
 		break;
+	case AML_BYTE_SIZE_OF_OP:
+	case AML_BYTE_SUBTRACT_OP:
+	case AML_BYTE_TO_BUFFER_OP:
+	case AML_BYTE_TO_HEX_STRING_OP:
+		term_arg->component.term_arg.expression_opcode = analyse_aml_expression_opcode(aml);
+		term_arg->string.length += term_arg->component.term_arg.expression_opcode->string.length;
+		break;
 	case AML_BYTE_LOCAL_0_OP:
 	case AML_BYTE_LOCAL_1_OP:
 	case AML_BYTE_LOCAL_2_OP:
