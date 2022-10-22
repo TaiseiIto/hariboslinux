@@ -318,6 +318,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *term_arg_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
+	ChainString *to_buffer_op_chain_string;
 	ChainString *to_hex_string_op_chain_string;
 	ChainString *word_const_chain_string;
 	ChainString *word_data_chain_string;
@@ -494,6 +495,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *term_arg_char_array;
 	char *term_list_char_array;
 	char *term_obj_char_array;
+	char *to_buffer_op_char_array;
 	char *to_hex_string_op_char_array;
 	char *word_const_char_array;
 	char *word_data_char_array;
@@ -1217,6 +1219,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(term_list_chain_string);
 			free(term_list_char_array);
+		}
+		break;
+	case aml_def_to_buffer:
+		if(aml_symbol->component.def_to_buffer.to_buffer_op)
+		{
+			to_buffer_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_to_buffer.to_buffer_op);
+			insert_char_front(to_buffer_op_chain_string, to_buffer_op_chain_string->first_character, ' ');
+			replace_chain_string(to_buffer_op_chain_string, "\n", "\n ");
+			to_buffer_op_char_array = create_char_array_from_chain_string(to_buffer_op_chain_string);
+		}
+		else to_buffer_op_char_array = "";
+		if(aml_symbol->component.def_to_buffer.operand)
+		{
+			operand_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_to_buffer.operand);
+			insert_char_front(operand_chain_string, operand_chain_string->first_character, ' ');
+			replace_chain_string(operand_chain_string, "\n", "\n ");
+			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
+		}
+		else operand_char_array = "";
+		if(aml_symbol->component.def_to_buffer.target)
+		{
+			target_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_to_buffer.target);
+			insert_char_front(target_chain_string, target_chain_string->first_character, ' ');
+			replace_chain_string(target_chain_string, "\n", "\n ");
+			target_char_array = create_char_array_from_chain_string(target_chain_string);
+		}
+		else target_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), to_buffer_op_char_array, operand_char_array, target_char_array);
+		if(aml_symbol->component.def_to_buffer.to_buffer_op)
+		{
+			delete_chain_string(to_buffer_op_chain_string);
+			free(to_buffer_op_char_array);
+		}
+		if(aml_symbol->component.def_to_buffer.operand)
+		{
+			delete_chain_string(operand_chain_string);
+			free(operand_char_array);
+		}
+		if(aml_symbol->component.def_to_buffer.target)
+		{
+			delete_chain_string(target_chain_string);
+			free(target_char_array);
 		}
 		break;
 	case aml_def_to_hex_string:
@@ -3434,6 +3478,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(expression_opcode_char_array);
 		}
 		break;
+	case aml_to_buffer_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_to_hex_string_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3531,6 +3578,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_scope_name = "DefScope";
+	static char const * const aml_def_to_buffer_name = "DefToBuffer";
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
@@ -3592,7 +3640,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_term_arg_name = "TermArg";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
-	static char const * const aml_to_hex_string_op_name = "ToHexStrinOp";
+	static char const * const aml_to_buffer_op_name = "ToBufferOp";
+	static char const * const aml_to_hex_string_op_name = "ToHexStringOp";
 	static char const * const aml_word_const_name = "WordConst";
 	static char const * const aml_word_data_name = "WordData";
 	static char const * const aml_word_prefix_name = "WordPrefix";
@@ -3641,6 +3690,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_op_region_name;
 	case aml_def_scope:
 		return aml_def_scope_name;
+	case aml_def_to_buffer:
+		return aml_def_to_buffer_name;
 	case aml_def_to_hex_string:
 		return aml_def_to_hex_string_name;
 	case aml_digit_char:
@@ -3763,6 +3814,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_term_list_name;
 	case aml_term_obj:
 		return aml_term_obj_name;
+	case aml_to_buffer_op:
+		return aml_to_buffer_op_name;
 	case aml_to_hex_string_op:
 		return aml_to_hex_string_op_name;
 	case aml_word_const:
@@ -4260,6 +4313,28 @@ AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
 	return def_scope;
 }
 
+// <def_to_buffer> := <to_buffer_op> <operand> <target>
+AMLSymbol *analyse_aml_def_to_buffer(AMLSubstring aml)
+{
+	AMLSymbol *def_to_buffer = malloc(sizeof(*def_to_buffer));
+	def_to_buffer->string.initial = aml.initial;
+	def_to_buffer->string.length = 0;
+	def_to_buffer->type = aml_def_to_buffer;
+	def_to_buffer->component.def_to_buffer.to_buffer_op = analyse_aml_to_buffer_op(aml);
+	def_to_buffer->string.length += def_to_buffer->component.def_to_buffer.to_buffer_op->string.length;
+	aml.initial += def_to_buffer->component.def_to_buffer.to_buffer_op->string.length;
+	aml.length -= def_to_buffer->component.def_to_buffer.to_buffer_op->string.length;
+	def_to_buffer->component.def_to_buffer.operand = analyse_aml_operand(aml);
+	def_to_buffer->string.length += def_to_buffer->component.def_to_buffer.operand->string.length;
+	aml.initial += def_to_buffer->component.def_to_buffer.operand->string.length;
+	aml.length -= def_to_buffer->component.def_to_buffer.operand->string.length;
+	def_to_buffer->component.def_to_buffer.target = analyse_aml_target(aml);
+	def_to_buffer->string.length += def_to_buffer->component.def_to_buffer.target->string.length;
+	aml.initial += def_to_buffer->component.def_to_buffer.target->string.length;
+	aml.length -= def_to_buffer->component.def_to_buffer.target->string.length;
+	return def_to_buffer;
+}
+
 // <def_to_hex_string> := <to_hex_string_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml)
 {
@@ -4433,6 +4508,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_TO_BUFFER_OP:
+		expression_opcode->component.expression_opcode.def_to_buffer = analyse_aml_def_to_buffer(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_buffer->string.length;
+		break;
 	case AML_BYTE_TO_HEX_STRING_OP:
 		expression_opcode->component.expression_opcode.def_to_hex_string = analyse_aml_def_to_hex_string(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_hex_string->string.length;
@@ -5437,6 +5516,8 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_EXT_OP_PREFIX:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
+		case AML_BYTE_TO_BUFFER_OP:
+		case AML_BYTE_TO_HEX_STRING_OP:
 			term_list->component.term_list.term_list = analyse_aml_term_list(aml);
 			term_list->string.length += term_list->component.term_list.term_list->string.length;
 			aml.initial += term_list->component.term_list.term_list->string.length;
@@ -5467,6 +5548,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
+	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
 		term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
 		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
@@ -5475,7 +5557,18 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	return term_obj;
 }
 
-// <to_hex_string_op> := 0x98
+// <to_buffer_op> := AML_BYTE_TO_BUFFER_OP
+AMLSymbol *analyse_aml_to_buffer_op(AMLSubstring aml)
+{
+	AMLSymbol *to_buffer_op = malloc(sizeof(*to_buffer_op));
+	to_buffer_op->string.initial = aml.initial;
+	to_buffer_op->string.length = 1;
+	to_buffer_op->type = aml_to_buffer_op;
+	if(*to_buffer_op->string.initial != AML_BYTE_TO_BUFFER_OP)ERROR();
+	return to_buffer_op;
+}
+
+// <to_hex_string_op> := AML_BYTE_TO_HEX_STRING_OP
 AMLSymbol *analyse_aml_to_hex_string_op(AMLSubstring aml)
 {
 	AMLSymbol *to_hex_string_op = malloc(sizeof(*to_hex_string_op));
@@ -5649,6 +5742,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_scope.pkg_length)delete_aml_symbol(aml_symbol->component.def_scope.pkg_length);
 		if(aml_symbol->component.def_scope.name_string)delete_aml_symbol(aml_symbol->component.def_scope.name_string);
 		if(aml_symbol->component.def_scope.term_list)delete_aml_symbol(aml_symbol->component.def_scope.term_list);
+		break;
+	case aml_def_to_buffer:
+		if(aml_symbol->component.def_to_buffer.to_buffer_op)delete_aml_symbol(aml_symbol->component.def_to_buffer.to_buffer_op);
+		if(aml_symbol->component.def_to_buffer.operand)delete_aml_symbol(aml_symbol->component.def_to_buffer.operand);
+		if(aml_symbol->component.def_to_buffer.target)delete_aml_symbol(aml_symbol->component.def_to_buffer.target);
 		break;
 	case aml_def_to_hex_string:
 		if(aml_symbol->component.def_to_hex_string.to_hex_string_op)delete_aml_symbol(aml_symbol->component.def_to_hex_string.to_hex_string_op);
@@ -5923,6 +6021,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.term_obj.object)delete_aml_symbol(aml_symbol->component.term_obj.object);
 		if(aml_symbol->component.term_obj.statement_opcode)delete_aml_symbol(aml_symbol->component.term_obj.statement_opcode);
 		if(aml_symbol->component.term_obj.expression_opcode)delete_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
+		break;
+	case aml_to_buffer_op:
 		break;
 	case aml_to_hex_string_op:
 		break;

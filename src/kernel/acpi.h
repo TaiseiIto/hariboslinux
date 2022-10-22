@@ -198,6 +198,7 @@ typedef enum _AMLSymbolType
 	aml_def_name,
 	aml_def_op_region,
 	aml_def_scope,
+	aml_def_to_buffer,
 	aml_def_to_hex_string,
 	aml_digit_char,
 	aml_dual_name_path,
@@ -259,6 +260,7 @@ typedef enum _AMLSymbolType
 	aml_term_arg,
 	aml_term_list,
 	aml_term_obj,
+	aml_to_buffer_op,
 	aml_to_hex_string_op,
 	aml_word_const,
 	aml_word_data,
@@ -382,6 +384,13 @@ typedef struct _AMLDefScope
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *term_list;
 } AMLDefScope;
+
+typedef struct _AMLDefToBuffer
+{
+	struct _AMLSymbol *to_buffer_op;
+	struct _AMLSymbol *operand;
+	struct _AMLSymbol *target;
+} AMLDefToBuffer;
 
 typedef struct _AMLDefToHexString
 {
@@ -708,6 +717,7 @@ typedef union _AMLComponent
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
 	AMLDefScope def_scope;
+	AMLDefToBuffer def_to_buffer;
 	AMLDefToHexString def_to_hex_string;
 	AMLDualNamePath dual_name_path;
 	AMLDWordConst dword_const;
@@ -799,6 +809,8 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
 AMLSymbol *analyse_aml_def_scope(AMLSubstring aml);
+// <def_to_buffer> := <to_buffer_op> <operand> <target>
+AMLSymbol *analyse_aml_def_to_buffer(AMLSubstring aml);
 // <def_to_hex_string> := <to_hex_string_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml);
 // <digit_char> := '0' - '9'
@@ -921,7 +933,9 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml);
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
 AMLSymbol *analyse_aml_term_obj(AMLSubstring aml);
-// <to_hex_string_op> := 0x98
+// <to_buffer_op> := AML_BYTE_TO_BUFFER_OP
+AMLSymbol *analyse_aml_to_buffer_op(AMLSubstring aml);
+// <to_hex_string_op> := AML_BYTE_TO_HEX_STRING_OP
 AMLSymbol *analyse_aml_to_hex_string_op(AMLSubstring aml);
 // <word_const> := <word_prefix> <word_data>
 AMLSymbol *analyse_aml_word_const(AMLSubstring aml);
