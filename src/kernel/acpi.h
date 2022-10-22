@@ -254,6 +254,7 @@ typedef enum _AMLSymbolType
 	aml_scope_op,
 	aml_seg_count,
 	aml_simple_name,
+	aml_size_of_op,
 	aml_statement_opcode,
 	aml_string,
 	aml_string_prefix,
@@ -939,6 +940,8 @@ AMLSymbol *analyse_aml_scope_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
 // <simple_name> := <name_string> | <arg_obj> | <local_obj>
 AMLSymbol *analyse_aml_simple_name(AMLSubstring aml);
+// <size_of_op> := AML_BYTE_SIZE_OF_OP
+AMLSymbol *analyse_aml_size_of_op(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
 // <string> := <string_prefix> <ascii_char_list> <null_char>
