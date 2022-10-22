@@ -313,6 +313,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *simple_name_chain_string;
 	ChainString *size_of_op_chain_string;
 	ChainString *statement_opcode_chain_string;
+	ChainString *store_op_chain_string;
 	ChainString *string_chain_string;
 	ChainString *string_prefix_chain_string;
 	ChainString *subtract_op_chain_string;
@@ -493,6 +494,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *simple_name_char_array;
 	char *size_of_op_char_array;
 	char *statement_opcode_char_array;
+	char *store_op_char_array;
 	char *string_char_array;
 	char *string_prefix_char_array;
 	char *subtract_op_char_array;
@@ -1251,6 +1253,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(size_of_op_char_array);
 		}
 		if(aml_symbol->component.def_size_of.super_name)
+		{
+			delete_chain_string(super_name_chain_string);
+			free(super_name_char_array);
+		}
+		break;
+	case aml_def_store:
+		if(aml_symbol->component.def_store.store_op)
+		{
+			store_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_store.store_op);
+			insert_char_front(store_op_chain_string, store_op_chain_string->first_character, ' ');
+			replace_chain_string(store_op_chain_string, "\n", "\n ");
+			store_op_char_array = create_char_array_from_chain_string(store_op_chain_string);
+		}
+		else store_op_char_array = "";
+		if(aml_symbol->component.def_store.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_store.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		if(aml_symbol->component.def_store.super_name)
+		{
+			super_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_store.super_name);
+			insert_char_front(super_name_chain_string, super_name_chain_string->first_character, ' ');
+			replace_chain_string(super_name_chain_string, "\n", "\n ");
+			super_name_char_array = create_char_array_from_chain_string(super_name_chain_string);
+		}
+		else super_name_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), store_op_char_array, term_arg_char_array, super_name_char_array);
+		if(aml_symbol->component.def_store.store_op)
+		{
+			delete_chain_string(store_op_chain_string);
+			free(store_op_char_array);
+		}
+		if(aml_symbol->component.def_store.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		if(aml_symbol->component.def_store.super_name)
 		{
 			delete_chain_string(super_name_chain_string);
 			free(super_name_char_array);
@@ -3668,6 +3712,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_scope_name = "DefScope";
 	static char const * const aml_def_size_of_name = "DefSizeOf";
+	static char const * const aml_def_store_name = "DefStore";
 	static char const * const aml_def_subtract_name = "DefSubtract";
 	static char const * const aml_def_to_buffer_name = "DefToBuffer";
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
@@ -3785,6 +3830,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_scope_name;
 	case aml_def_size_of:
 		return aml_def_size_of_name;
+	case aml_def_store:
+		return aml_def_store_name;
 	case aml_def_subtract:
 		return aml_def_subtract_name;
 	case aml_def_to_buffer:
@@ -4449,6 +4496,19 @@ AMLSymbol *analyse_aml_def_size_of(AMLSubstring aml)
 	aml.initial += def_size_of->component.def_size_of.super_name->string.length;
 	aml.length -= def_size_of->component.def_size_of.super_name->string.length;
 	return def_size_of;
+}
+
+// <def_store> := <store_op> <term_arg> <super_name>
+AMLSymbol *analyse_aml_def_store(AMLSubstring aml)
+{
+	AMLSymbol *def_store = malloc(sizeof(*def_store));
+	def_store->string.initial = aml.initial;
+	def_store->string.length = 0;
+	def_store->type = aml_def_store;
+	def_store->component.def_store.store_op = NULL;
+	def_store->component.def_store.term_arg = NULL;
+	def_store->component.def_store.super_name = NULL;
+	return def_store;
 }
 
 // <def_subtract> := <subtract_op> <operand> <operand> <target>
@@ -6009,6 +6069,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_def_size_of:
 		if(aml_symbol->component.def_size_of.size_of_op)delete_aml_symbol(aml_symbol->component.def_size_of.size_of_op);
 		if(aml_symbol->component.def_size_of.super_name)delete_aml_symbol(aml_symbol->component.def_size_of.super_name);
+		break;
+	case aml_def_store:
+		if(aml_symbol->component.def_store.store_op)delete_aml_symbol(aml_symbol->component.def_store.store_op);
+		if(aml_symbol->component.def_store.term_arg)delete_aml_symbol(aml_symbol->component.def_store.term_arg);
+		if(aml_symbol->component.def_store.super_name)delete_aml_symbol(aml_symbol->component.def_store.super_name);
 		break;
 	case aml_def_subtract:
 		if(aml_symbol->component.def_subtract.subtract_op)delete_aml_symbol(aml_symbol->component.def_subtract.subtract_op);
