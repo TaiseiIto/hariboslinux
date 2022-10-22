@@ -221,6 +221,7 @@ typedef enum _AMLSymbolType
 	aml_field_list,
 	aml_field_op,
 	aml_field_op_prefix,
+	aml_index_op,
 	aml_lead_name_char,
 	aml_l_less_op,
 	aml_local_obj,
@@ -937,6 +938,8 @@ AMLSymbol *analyse_aml_field_list(AMLSubstring aml);
 AMLSymbol *analyse_aml_field_op(AMLSubstring aml);
 // <field_op_prefix> := AML_BYTE_FIELD_OP_PREFIX
 AMLSymbol *analyse_aml_field_op_prefix(AMLSubstring aml);
+// <index_op> := AML_BYTE_INDEX_OP
+AMLSymbol *analyse_aml_index_op(AMLSubstring aml);
 // <lead_char> := 'A' - 'Z' | '_'
 AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
 // <l_less_op> := AML_BYTE_L_LESS_OP

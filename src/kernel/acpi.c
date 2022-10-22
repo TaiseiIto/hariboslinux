@@ -2544,6 +2544,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_field_op_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_index_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_lead_name_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3967,6 +3970,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_list_name = "FieldList";
 	static char const * const aml_field_op_name = "FieldOp";
 	static char const * const aml_field_op_prefix_name = "FieldOpPrefix";
+	static char const * const aml_index_op_name = "IndexOp";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_l_less_op_name = "LLessOp";
 	static char const * const aml_local_obj_name = "LocalObj";
@@ -4117,6 +4121,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_field_op_name;
 	case aml_field_op_prefix:
 		return aml_field_op_prefix_name;
+	case aml_index_op:
+		return aml_index_op_name;
 	case aml_lead_name_char:
 		return aml_lead_name_char_name;
 	case aml_l_less_op:
@@ -4663,7 +4669,10 @@ AMLSymbol *analyse_aml_def_index(AMLSubstring aml)
 	def_index->string.initial = aml.initial;
 	def_index->string.length = 0;
 	def_index->type = aml_def_index;
-	def_index->component.def_index.index_op = NULL;
+	def_index->component.def_index.index_op = analyse_aml_index_op(aml);
+	def_index->string.length += def_index->component.def_index.index_op->string.length;
+	aml.initial += def_index->component.def_index.index_op->string.length;
+	aml.length -= def_index->component.def_index.index_op->string.length;
 	def_index->component.def_index.buff_pkg_str_obj = NULL;
 	def_index->component.def_index.index_value = NULL;
 	def_index->component.def_index.target = NULL;
@@ -5098,6 +5107,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_deref_of = analyse_aml_def_deref_of(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_deref_of->string.length;
 		break;
+	case AML_BYTE_INDEX_OP:
+		expression_opcode->component.expression_opcode.def_index = analyse_aml_def_index(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_index->string.length;
+		break;
 	case AML_BYTE_L_LESS_OP:
 		expression_opcode->component.expression_opcode.def_l_less = analyse_aml_def_l_less(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_less->string.length;
@@ -5225,6 +5238,17 @@ AMLSymbol *analyse_aml_field_op_prefix(AMLSubstring aml)
 	field_op_prefix->type = aml_field_op_prefix;
 	if(*aml.initial != AML_BYTE_FIELD_OP)ERROR(); // Incorrect field op prefix
 	return field_op_prefix;
+}
+
+// <index_op> := AML_BYTE_INDEX_OP
+AMLSymbol *analyse_aml_index_op(AMLSubstring aml)
+{
+	AMLSymbol *index_op = malloc(sizeof(*index_op));
+	index_op->string.initial = aml.initial;
+	index_op->string.length = 1;
+	index_op->type = aml_index_op;
+	if(*index_op->string.initial != AML_BYTE_INDEX_OP)ERROR(); // Incorrect index op
+	return index_op;
 }
 
 // <lead_name_char> := 'A' - 'Z' | '_'
@@ -6213,6 +6237,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 		term_arg->string.length += term_arg->component.term_arg.data_object->string.length;
 		break;
 	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -6262,6 +6287,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_ALIAS_OP:
 		case AML_BYTE_DEREF_OF_OP:
 		case AML_BYTE_EXT_OP_PREFIX:
+		case AML_BYTE_INDEX_OP:
 		case AML_BYTE_L_LESS_OP:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
@@ -6298,6 +6324,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -6663,6 +6690,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_field_op_prefix:
 		break;
+	case aml_index_op:
 	case aml_lead_name_char:
 		break;
 	case aml_l_less_op:
