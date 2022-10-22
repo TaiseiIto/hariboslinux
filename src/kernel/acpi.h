@@ -194,7 +194,7 @@ typedef enum _AMLSymbolType
 	aml_def_alias,
 	aml_def_buffer,
 	aml_def_field,
-	aml_def_lless,
+	aml_def_l_less,
 	aml_def_method,
 	aml_def_name,
 	aml_def_op_region,
@@ -219,6 +219,7 @@ typedef enum _AMLSymbolType
 	aml_field_op,
 	aml_field_op_prefix,
 	aml_lead_name_char,
+	aml_l_less_op,
 	aml_local_obj,
 	aml_local_op,
 	aml_method_flags,
@@ -364,7 +365,7 @@ typedef struct _AMLDefField
 
 typedef struct _AMLDefLLess
 {
-	struct _AMLSymbol *lless_op;
+	struct _AMLSymbol *l_less_op;
 	struct _AMLSymbol *operand[2];
 } AMLDefLLess;
 
@@ -762,7 +763,7 @@ typedef union _AMLComponent
 	AMLDefAlias def_alias;
 	AMLDefBuffer def_buffer;
 	AMLDefField def_field;
-	AMLDefLLess def_lless;
+	AMLDefLLess def_l_less;
 	AMLDefMethod def_method;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
@@ -856,8 +857,8 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
-// <def_lless> := <lless_op> <operand> <operand>
-AMLSymbol *analyse_aml_def_lless(AMLSubstring aml);
+// <def_l_less> := <l_less_op> <operand> <operand>
+AMLSymbol *analyse_aml_def_l_less(AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
@@ -906,6 +907,8 @@ AMLSymbol *analyse_aml_field_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_field_op_prefix(AMLSubstring aml);
 // <lead_char> := 'A' - 'Z' | '_'
 AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
+// <l_less_op> := AML_BYTE_L_LESS_OP
+AMLSymbol *analyse_aml_l_less_op(AMLSubstring aml);
 // <local_obj> := <local_op>
 AMLSymbol *analyse_aml_local_obj(AMLSubstring aml);
 // <local_op> := 0x60 - 0x67
