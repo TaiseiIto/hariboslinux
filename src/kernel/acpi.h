@@ -194,6 +194,7 @@ typedef enum _AMLSymbolType
 	aml_def_alias,
 	aml_def_buffer,
 	aml_def_field,
+	aml_def_lless,
 	aml_def_method,
 	aml_def_name,
 	aml_def_op_region,
@@ -360,6 +361,12 @@ typedef struct _AMLDefField
 	struct _AMLSymbol *field_flags;
 	struct _AMLSymbol *field_list;
 } AMLDefField;
+
+typedef struct _AMLDefLLess
+{
+	struct _AMLSymbol *lless_op;
+	struct _AMLSymbol *operand[2];
+} AMLDefLLess;
 
 typedef struct _AMLDefMethod
 {
@@ -755,6 +762,7 @@ typedef union _AMLComponent
 	AMLDefAlias def_alias;
 	AMLDefBuffer def_buffer;
 	AMLDefField def_field;
+	AMLDefLLess def_lless;
 	AMLDefMethod def_method;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
@@ -848,6 +856,8 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
+// <def_lless> := <lless_op> <operand> <operand>
+AMLSymbol *analyse_aml_def_lless(AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>

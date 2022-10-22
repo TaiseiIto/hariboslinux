@@ -269,6 +269,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *field_op_chain_string;
 	ChainString *field_op_prefix_chain_string;
 	ChainString *lead_name_char_chain_string;
+	ChainString *lless_op_chain_string;
 	ChainString *local_obj_chain_string;
 	ChainString *local_op_chain_string;
 	ChainString *method_flags_chain_string;
@@ -453,6 +454,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *field_op_char_array;
 	char *field_op_prefix_char_array;
 	char *lead_name_char_char_array;
+	char *lless_op_char_array;
 	char *local_obj_char_array;
 	char *local_op_char_array;
 	char *method_flags_char_array;
@@ -999,6 +1001,40 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(field_list_chain_string);
 			free(field_list_char_array);
 		}
+		break;
+	case aml_def_lless:
+		operands_chain_string = malloc(_countof(aml_symbol->component.def_lless.operand) * sizeof(*operands_chain_string));
+		operands_char_array = malloc(_countof(aml_symbol->component.def_lless.operand) * sizeof(*operands_char_array));
+		if(aml_symbol->component.def_lless.lless_op)
+		{
+			lless_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_lless.lless_op);
+			insert_char_front(lless_op_chain_string, lless_op_chain_string->first_character, ' ');
+			replace_chain_string(lless_op_chain_string, "\n", "\n ");
+			lless_op_char_array = create_char_array_from_chain_string(lless_op_chain_string);
+		}
+		else lless_op_char_array = "";
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_lless.operand); i++)if(aml_symbol->component.def_lless.operand[i])
+		{
+			operands_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.def_lless.operand[i]);
+			insert_char_front(operands_chain_string[i], operands_chain_string[i]->first_character, ' ');
+			replace_chain_string(operands_chain_string[i], "\n", "\n ");
+			operands_char_array[i] = create_char_array_from_chain_string(operands_chain_string[i]);
+		}
+		else operands_char_array[i] = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), lless_op_char_array);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_lless.operand); i++)insert_char_array_back(output, output->last_character, operands_char_array[i]);
+		if(aml_symbol->component.def_lless.lless_op)
+		{
+			delete_chain_string(lless_op_chain_string);
+			free(lless_op_char_array);
+		}
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_lless.operand); i++)if(aml_symbol->component.def_lless.operand[i])
+		{
+			delete_chain_string(operands_chain_string[i]);
+			free(operands_char_array[i]);
+		}
+		free(operands_chain_string);
+		free(operands_char_array);
 		break;
 	case aml_def_method:
 		if(aml_symbol->component.def_method.method_op)
@@ -3788,6 +3824,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_field_name = "DefField";
+	static char const * const aml_def_lless_name = "DefLLess";
 	static char const * const aml_def_method_name = "DefMethod";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
@@ -3905,6 +3942,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_buffer_name;
 	case aml_def_field:
 		return aml_def_field_name;
+	case aml_def_lless:
+		return aml_def_lless_name;
 	case aml_def_method:
 		return aml_def_method_name;
 	case aml_def_name:
@@ -4466,6 +4505,25 @@ AMLSymbol *analyse_aml_def_field(AMLSubstring aml)
 	aml.initial += def_field->component.def_field.field_list->string.length;
 	aml.length -= def_field->component.def_field.field_list->string.length;
 	return def_field;
+}
+
+// <def_lless> := <lless_op> <operand> <operand>
+AMLSymbol *analyse_aml_def_lless(AMLSubstring aml)
+{
+	AMLSymbol *def_lless = malloc(sizeof(*def_lless));
+	def_lless->string.initial = aml.initial;
+	def_lless->string.length = 0;
+	def_lless->type = aml_def_lless;
+	def_lless->component.def_lless.lless_op = NULL;
+	ERROR(); // lless_op is unimplemented
+	for(unsigned int i = 0; i < _countof(def_lless->component.def_lless.operand); i++)
+	{
+		def_lless->component.def_lless.operand[i] = analyse_aml_operand(aml);
+		def_lless->string.length += def_lless->component.def_lless.operand[i]->string.length;
+		aml.initial += def_lless->component.def_lless.operand[i]->string.length;
+		aml.length -= def_lless->component.def_lless.operand[i]->string.length;
+	}
+	return def_lless;
 }
 
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
@@ -6224,6 +6282,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_field.name_string)delete_aml_symbol(aml_symbol->component.def_field.name_string);
 		if(aml_symbol->component.def_field.field_flags)delete_aml_symbol(aml_symbol->component.def_field.field_flags);
 		if(aml_symbol->component.def_field.field_list)delete_aml_symbol(aml_symbol->component.def_field.field_list);
+		break;
+	case aml_def_lless:
+		if(aml_symbol->component.def_lless.lless_op)delete_aml_symbol(aml_symbol->component.def_lless.lless_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_lless.operand); i++)if(aml_symbol->component.def_lless.operand[i])delete_aml_symbol(aml_symbol->component.def_lless.operand[i]);
 		break;
 	case aml_def_method:
 		if(aml_symbol->component.def_method.method_op)delete_aml_symbol(aml_symbol->component.def_method.method_op);
