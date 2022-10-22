@@ -14,9 +14,9 @@
 #define AML_BYTE_NAME_OP		0x08
 #define AML_BYTE_BYTE_PREFIX		0x0a
 #define AML_BYTE_WORD_PREFIX		0x0b
-#define AML_BYTE_DWORD_PREFIX		0xc
-#define AML_BYTE_STRING_PREFIX		0xd
-#define AML_BYTE_QWORD_PREFIX		0xe
+#define AML_BYTE_DWORD_PREFIX		0x0c
+#define AML_BYTE_STRING_PREFIX		0x0d
+#define AML_BYTE_QWORD_PREFIX		0x0e
 #define AML_BYTE_SCOPE_OP		0x10
 #define AML_BYTE_BUFFER_OP		0x11
 #define AML_BYTE_PACKAGE_OP		0x12
@@ -579,6 +579,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(ascii_char_list_chain_string);
 			free(ascii_char_char_array);
+		}
+		break;
+	case aml_buff_pkg_str_obj:
+		if(aml_symbol->component.buff_pkg_str_obj.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.buff_pkg_str_obj.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.buff_pkg_str_obj.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
 		}
 		break;
 	case aml_buffer_op:
@@ -3931,6 +3947,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_arg_op_name = "ArgOp";
 	static char const * const aml_ascii_char_name = "AsciiChar";
 	static char const * const aml_ascii_char_list_name = "AsciiCharList";
+	static char const * const aml_buff_pkg_str_obj_name = "BuffPkgStrObj";
 	static char const * const aml_buffer_op_name = "BufferOp";
 	static char const * const aml_buffer_size_name = "BufferSize";
 	static char const * const aml_byte_const_name = "ByteConst";
@@ -4043,6 +4060,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_ascii_char_name;
 	case aml_ascii_char_list:
 		return aml_ascii_char_list_name;
+	case aml_buff_pkg_str_obj:
+		return aml_buff_pkg_str_obj_name;
 	case aml_buffer_op:
 		return aml_buffer_op_name;
 	case aml_buffer_size:
@@ -4333,6 +4352,20 @@ AMLSymbol *analyse_aml_ascii_char_list(AMLSubstring aml)
 		ascii_char_list->component.ascii_char_list.ascii_char_list = NULL;
 	}
 	return ascii_char_list;
+}
+
+// <buff_pkg_str_obj> := <term_arg>
+AMLSymbol *analyse_aml_buff_pkg_str_obj(AMLSubstring aml)
+{
+	AMLSymbol *buff_pkg_str_obj = malloc(sizeof(*buff_pkg_str_obj));
+	buff_pkg_str_obj->string.initial = aml.initial;
+	buff_pkg_str_obj->string.length = 0;
+	buff_pkg_str_obj->type = aml_buff_pkg_str_obj;
+	buff_pkg_str_obj->component.buff_pkg_str_obj.term_arg = analyse_aml_term_arg(aml);
+	buff_pkg_str_obj->string.length += buff_pkg_str_obj->component.buff_pkg_str_obj.term_arg->string.length;
+	aml.initial += buff_pkg_str_obj->component.buff_pkg_str_obj.term_arg->string.length;
+	aml.length -= buff_pkg_str_obj->component.buff_pkg_str_obj.term_arg->string.length;
+	return buff_pkg_str_obj;
 }
 
 // <buffer_op> := AML_BYTE_BUFFER_OP
@@ -4673,10 +4706,14 @@ AMLSymbol *analyse_aml_def_index(AMLSubstring aml)
 	def_index->string.length += def_index->component.def_index.index_op->string.length;
 	aml.initial += def_index->component.def_index.index_op->string.length;
 	aml.length -= def_index->component.def_index.index_op->string.length;
-	def_index->component.def_index.buff_pkg_str_obj = NULL;
-	def_index->component.def_index.index_value = NULL;
-	def_index->component.def_index.target = NULL;
-	ERROR(); // unimplemented
+	def_index->component.def_index.buff_pkg_str_obj = analyse_aml_buff_pkg_str_obj(aml);
+	def_index->string.length += def_index->component.def_index.buff_pkg_str_obj->string.length;
+	aml.initial += def_index->component.def_index.buff_pkg_str_obj->string.length;
+	aml.length -= def_index->component.def_index.buff_pkg_str_obj->string.length;
+	def_index->component.def_index.target = analyse_aml_target(aml);
+	def_index->string.length += def_index->component.def_index.target->string.length;
+	aml.initial += def_index->component.def_index.target->string.length;
+	aml.length -= def_index->component.def_index.target->string.length;
 	return def_index;
 }
 
@@ -6471,6 +6508,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_ascii_char_list:
 		if(aml_symbol->component.ascii_char_list.ascii_char)delete_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char);
 		if(aml_symbol->component.ascii_char_list.ascii_char_list)delete_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char_list);
+		break;
+	case aml_buff_pkg_str_obj:
+		if(aml_symbol->component.buff_pkg_str_obj.term_arg)delete_aml_symbol(aml_symbol->component.buff_pkg_str_obj.term_arg);
 		break;
 	case aml_buffer_op:
 		break;
