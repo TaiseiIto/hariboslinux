@@ -193,6 +193,7 @@ typedef enum _AMLSymbolType
 	aml_data_ref_object,
 	aml_def_alias,
 	aml_def_buffer,
+	aml_def_deref_of,
 	aml_def_field,
 	aml_def_l_less,
 	aml_def_method,
@@ -353,6 +354,12 @@ typedef struct _AMLDefBuffer
 	struct _AMLSymbol *buffer_size;
 	struct _AMLSymbol *byte_list;
 } AMLDefBuffer;
+
+typedef struct _AMLDefDerefOf
+{
+	struct _AMLSymbol *deref_of_op;
+	struct _AMLSymbol *obj_reference;
+} AMLDefDerefOf;
 
 typedef struct _AMLDefField
 {
@@ -762,6 +769,7 @@ typedef union _AMLComponent
 	AMLDataRefObject data_ref_object;
 	AMLDefAlias def_alias;
 	AMLDefBuffer def_buffer;
+	AMLDefDerefOf def_deref_of;
 	AMLDefField def_field;
 	AMLDefLLess def_l_less;
 	AMLDefMethod def_method;
@@ -855,6 +863,8 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
 AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
+// <def_deref_of> := <deref_of_op> <obj_reference>
+AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
 // <def_l_less> := <l_less_op> <operand> <operand>

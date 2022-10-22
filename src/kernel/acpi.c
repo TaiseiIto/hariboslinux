@@ -254,6 +254,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_wait_chain_string;
 	ChainString *def_while_chain_string;
 	ChainString *def_xor_chain_string;
+	ChainString *deref_of_op_chain_string;
 	ChainString *digit_char_chain_string;
 	ChainString *dual_name_path_chain_string;
 	ChainString *dual_name_prefix_chain_string;
@@ -268,8 +269,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *field_list_chain_string;
 	ChainString *field_op_chain_string;
 	ChainString *field_op_prefix_chain_string;
-	ChainString *lead_name_char_chain_string;
 	ChainString *l_less_op_chain_string;
+	ChainString *lead_name_char_chain_string;
 	ChainString *local_obj_chain_string;
 	ChainString *local_op_chain_string;
 	ChainString *method_flags_chain_string;
@@ -286,6 +287,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *named_obj_chain_string;
 	ChainString *null_char_chain_string;
 	ChainString *null_name_chain_string;
+	ChainString *obj_reference_chain_string;
 	ChainString *object_chain_string;
 	ChainString *object_reference_chain_string;
 	ChainString *one_op_chain_string;
@@ -439,6 +441,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_wait_char_array;
 	char *def_while_char_array;
 	char *def_xor_char_array;
+	char *deref_of_op_char_array;
 	char *digit_char_char_array;
 	char *dual_name_path_char_array;
 	char *dual_name_prefix_char_array;
@@ -453,8 +456,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *field_list_char_array;
 	char *field_op_char_array;
 	char *field_op_prefix_char_array;
-	char *lead_name_char_char_array;
 	char *l_less_op_char_array;
+	char *lead_name_char_char_array;
 	char *local_obj_char_array;
 	char *local_op_char_array;
 	char *method_flags_char_array;
@@ -471,6 +474,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *named_obj_char_array;
 	char *null_char_char_array;
 	char *null_name_char_array;
+	char *obj_reference_char_array;
 	char *object_char_array;
 	char *object_reference_char_array;
 	char *one_op_char_array;
@@ -932,6 +936,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(byte_list_chain_string);
 			free(byte_list_char_array);
+		}
+		break;
+	case aml_def_deref_of:
+		if(aml_symbol->component.def_deref_of.deref_of_op)
+		{
+			deref_of_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_deref_of.deref_of_op);
+			insert_char_front(deref_of_op_chain_string, deref_of_op_chain_string->first_character, ' ');
+			replace_chain_string(deref_of_op_chain_string, "\n", "\n ");
+			deref_of_op_char_array = create_char_array_from_chain_string(deref_of_op_chain_string);
+		}
+		else deref_of_op_char_array = "";
+		if(aml_symbol->component.def_deref_of.obj_reference)
+		{
+			obj_reference_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_deref_of.obj_reference);
+			insert_char_front(obj_reference_chain_string, obj_reference_chain_string->first_character, ' ');
+			replace_chain_string(obj_reference_chain_string, "\n", "\n ");
+			obj_reference_char_array = create_char_array_from_chain_string(obj_reference_chain_string);
+		}
+		else obj_reference_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), deref_of_op_char_array, obj_reference_char_array);
+		if(aml_symbol->component.def_deref_of.deref_of_op)
+		{
+			delete_chain_string(deref_of_op_chain_string);
+			free(deref_of_op_char_array);
+		}
+		if(aml_symbol->component.def_deref_of.obj_reference)
+		{
+			delete_chain_string(obj_reference_chain_string);
+			free(obj_reference_char_array);
 		}
 		break;
 	case aml_def_field:
@@ -3826,6 +3859,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_buffer_name = "DefBuffer";
+	static char const * const aml_def_deref_of_name = "DefDerefOf";
 	static char const * const aml_def_field_name = "DefField";
 	static char const * const aml_def_l_less_name = "DefLLess";
 	static char const * const aml_def_method_name = "DefMethod";
@@ -3944,6 +3978,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_alias_name;
 	case aml_def_buffer:
 		return aml_def_buffer_name;
+	case aml_def_deref_of:
+		return aml_def_deref_of_name;
 	case aml_def_field:
 		return aml_def_field_name;
 	case aml_def_l_less:
@@ -4481,6 +4517,19 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
 	def_buffer->component.def_buffer.byte_list = NULL;
 	ERROR(); // byte_list is unimplemented
 	return def_buffer;
+}
+
+// <def_deref_of> := <deref_of_op> <obj_reference>
+AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml)
+{
+	AMLSymbol *def_deref_of = malloc(sizeof(*def_deref_of));
+	def_deref_of->string.initial = aml.initial;
+	def_deref_of->string.length = 0;
+	def_deref_of->type = aml_def_deref_of;
+	def_deref_of->component.def_deref_of.deref_of_op = NULL;
+	def_deref_of->component.def_deref_of.obj_reference = NULL;
+	ERROR(); // unimplemented
+	return def_deref_of;
 }
 
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
@@ -6301,6 +6350,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_buffer.pkg_length)delete_aml_symbol(aml_symbol->component.def_buffer.pkg_length);
 		if(aml_symbol->component.def_buffer.buffer_size)delete_aml_symbol(aml_symbol->component.def_buffer.buffer_size);
 		if(aml_symbol->component.def_buffer.byte_list)delete_aml_symbol(aml_symbol->component.def_buffer.byte_list);
+		break;
+	case aml_def_deref_of:
+		if(aml_symbol->component.def_deref_of.deref_of_op)delete_aml_symbol(aml_symbol->component.def_deref_of.deref_of_op);
+		if(aml_symbol->component.def_deref_of.obj_reference)delete_aml_symbol(aml_symbol->component.def_deref_of.obj_reference);
 		break;
 	case aml_def_field:
 		if(aml_symbol->component.def_field.field_op)delete_aml_symbol(aml_symbol->component.def_field.field_op);
