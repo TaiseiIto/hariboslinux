@@ -151,6 +151,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **name_chars_chain_string;
 	ChainString **name_segs_chain_string;
 	ChainString **name_strings_chain_string;
+	ChainString **operands_chain_string;
 	ChainString **words_data_chain_string;
 	ChainString *access_field_chain_string;
 	ChainString *alias_op_chain_string;
@@ -313,6 +314,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *statement_opcode_chain_string;
 	ChainString *string_chain_string;
 	ChainString *string_prefix_chain_string;
+	ChainString *subtract_op_chain_string;
 	ChainString *super_name_chain_string;
 	ChainString *target_chain_string;
 	ChainString *term_arg_chain_string;
@@ -329,6 +331,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char **name_chars_char_array;
 	char **name_segs_char_array;
 	char **name_strings_char_array;
+	char **operands_char_array;
 	char **words_data_char_array;
 	char *access_field_char_array;
 	char *alias_op_char_array;
@@ -490,6 +493,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *statement_opcode_char_array;
 	char *string_char_array;
 	char *string_prefix_char_array;
+	char *subtract_op_char_array;
 	char *super_name_char_array;
 	char *target_char_array;
 	char *term_arg_char_array;
@@ -1220,6 +1224,54 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(term_list_chain_string);
 			free(term_list_char_array);
 		}
+		break;
+	case aml_def_subtract:
+		operands_chain_string = malloc(_countof(aml_symbol->component.def_subtract.operand) * sizeof(*operands_chain_string));
+		operands_char_array = malloc(_countof(aml_symbol->component.def_subtract.operand) * sizeof(*operands_char_array));
+		if(aml_symbol->component.def_subtract.subtract_op)
+		{
+			subtract_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_subtract.subtract_op);
+			insert_char_front(subtract_op_chain_string, subtract_op_chain_string->first_character, ' ');
+			replace_chain_string(subtract_op_chain_string, "\n", "\n ");
+			subtract_op_char_array = create_char_array_from_chain_string(subtract_op_chain_string);
+		}
+		else subtract_op_char_array = "";
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_subtract.operand); i++)if(aml_symbol->component.def_subtract.operand[i])
+		{
+			operands_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.def_subtract.operand[i]);
+			insert_char_front(operands_chain_string[i], operands_chain_string[i]->first_character, ' ');
+			replace_chain_string(operands_chain_string[i], "\n", "\n ");
+			operands_char_array[i] = create_char_array_from_chain_string(operands_chain_string[i]);
+		}
+		else operands_char_array[i] = "";
+		if(aml_symbol->component.def_subtract.target)
+		{
+			target_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_subtract.target);
+			insert_char_front(target_chain_string, target_chain_string->first_character, ' ');
+			replace_chain_string(target_chain_string, "\n", "\n ");
+			target_char_array = create_char_array_from_chain_string(target_chain_string);
+		}
+		else target_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), subtract_op_char_array);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_subtract.operand); i++)insert_char_array_back(output, output->last_character, operands_char_array[i]);
+		insert_char_array_back(output, output->last_character, target_char_array);
+		if(aml_symbol->component.def_subtract.subtract_op)
+		{
+			delete_chain_string(subtract_op_chain_string);
+			free(subtract_op_char_array);
+		}
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_subtract.operand); i++)if(aml_symbol->component.def_subtract.operand[i])
+		{
+			delete_chain_string(operands_chain_string[i]);
+			free(operands_char_array[i]);
+		}
+		if(aml_symbol->component.def_subtract.target)
+		{
+			delete_chain_string(target_chain_string);
+			free(target_char_array);
+		}
+		free(operands_chain_string);
+		free(operands_char_array);
 		break;
 	case aml_def_to_buffer:
 		if(aml_symbol->component.def_to_buffer.to_buffer_op)
@@ -3578,6 +3630,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_scope_name = "DefScope";
+	static char const * const aml_def_subtract_name = "DefSubtract";
 	static char const * const aml_def_to_buffer_name = "DefToBuffer";
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
 	static char const * const aml_digit_char_name = "DigitChar";
@@ -3690,6 +3743,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_op_region_name;
 	case aml_def_scope:
 		return aml_def_scope_name;
+	case aml_def_subtract:
+		return aml_def_subtract_name;
 	case aml_def_to_buffer:
 		return aml_def_to_buffer_name;
 	case aml_def_to_hex_string:
@@ -4330,6 +4385,19 @@ AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
 	aml.initial += def_scope->component.def_scope.term_list->string.length;
 	aml.length -= def_scope->component.def_scope.term_list->string.length;
 	return def_scope;
+}
+
+// <def_subtract> := <subtract_op> <operand> <operand> <target>
+AMLSymbol *analyse_aml_def_subtract(AMLSubstring aml)
+{
+	AMLSymbol *def_subtract = malloc(sizeof(*def_subtract));
+	def_subtract->string.initial = aml.initial;
+	def_subtract->string.length = 0;
+	def_subtract->type = aml_def_subtract;
+	def_subtract->component.def_subtract.subtract_op = NULL;
+	for(unsigned int i = 0; i < _countof(def_subtract->component.def_subtract.operand); i++)def_subtract->component.def_subtract.operand[i] = NULL;
+	def_subtract->component.def_subtract.target = NULL;
+	return def_subtract;
 }
 
 // <def_to_buffer> := <to_buffer_op> <operand> <target>
@@ -5821,6 +5889,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_scope.pkg_length)delete_aml_symbol(aml_symbol->component.def_scope.pkg_length);
 		if(aml_symbol->component.def_scope.name_string)delete_aml_symbol(aml_symbol->component.def_scope.name_string);
 		if(aml_symbol->component.def_scope.term_list)delete_aml_symbol(aml_symbol->component.def_scope.term_list);
+		break;
+	case aml_def_subtract:
+		if(aml_symbol->component.def_subtract.subtract_op)delete_aml_symbol(aml_symbol->component.def_subtract.subtract_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_subtract.operand); i++)if(aml_symbol->component.def_subtract.operand[i])delete_aml_symbol(aml_symbol->component.def_subtract.operand[i]);
+		if(aml_symbol->component.def_subtract.target)delete_aml_symbol(aml_symbol->component.def_subtract.target);
 		break;
 	case aml_def_to_buffer:
 		if(aml_symbol->component.def_to_buffer.to_buffer_op)delete_aml_symbol(aml_symbol->component.def_to_buffer.to_buffer_op);

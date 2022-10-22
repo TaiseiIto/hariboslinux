@@ -198,6 +198,7 @@ typedef enum _AMLSymbolType
 	aml_def_name,
 	aml_def_op_region,
 	aml_def_scope,
+	aml_def_subtract,
 	aml_def_to_buffer,
 	aml_def_to_hex_string,
 	aml_digit_char,
@@ -384,6 +385,13 @@ typedef struct _AMLDefScope
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *term_list;
 } AMLDefScope;
+
+typedef struct _AMLDefSubtract
+{
+	struct _AMLSymbol *subtract_op;
+	struct _AMLSymbol *operand[2];
+	struct _AMLSymbol *target;
+} AMLDefSubtract;
 
 typedef struct _AMLDefToBuffer
 {
@@ -717,6 +725,7 @@ typedef union _AMLComponent
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
 	AMLDefScope def_scope;
+	AMLDefSubtract def_subtract;
 	AMLDefToBuffer def_to_buffer;
 	AMLDefToHexString def_to_hex_string;
 	AMLDualNamePath dual_name_path;
@@ -809,6 +818,8 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
 AMLSymbol *analyse_aml_def_scope(AMLSubstring aml);
+// <def_subtract> := <subtract_op> <operand> <operand> <target>
+AMLSymbol *analyse_aml_def_subtract(AMLSubstring aml);
 // <def_to_buffer> := <to_buffer_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_buffer(AMLSubstring aml);
 // <def_to_hex_string> := <to_hex_string_op> <operand> <target>
