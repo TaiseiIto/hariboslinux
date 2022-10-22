@@ -243,6 +243,7 @@ typedef enum _AMLSymbolType
 	aml_parent_prefix_char,
 	aml_pkg_lead_byte,
 	aml_pkg_length,
+	aml_predicate,
 	aml_prefix_path,
 	aml_qword_const,
 	aml_qword_data,
@@ -626,6 +627,11 @@ typedef struct _AMLPkgLength
 	unsigned int length;
 } AMLPkgLength;
 
+typedef struct _AMLPredicate
+{
+	struct _AMLSymbol *term_arg;
+} AMLPredicate;
+
 typedef struct _AMLPrefixPath
 {
 	struct _AMLSymbol *parent_prefix_char;
@@ -779,6 +785,7 @@ typedef union _AMLComponent
 	AMLOperand operand;
 	AMLOpRegionOp op_region_op;
 	AMLPkgLength pkg_length;
+	AMLPredicate predicate;
 	AMLPrefixPath prefix_path;
 	AMLQWordConst qword_const;
 	AMLQWordData qword_data;
@@ -939,6 +946,8 @@ AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_pkg_lead_byte(AMLSubstring aml);
 // <pkg_length> := <pkg_lead_byte> | <pkg_lead_byte> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> <byte_data>
 AMLSymbol *analyse_aml_pkg_length(AMLSubstring aml);
+// <predicate> := <term_arg>
+AMLSymbol *analyse_aml_predicate(AMLSubstring aml);
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
 AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml);
 // <qword_const> := <qword_prefix> <qword_data>

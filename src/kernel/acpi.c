@@ -3037,6 +3037,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		free(bytes_data_chain_string);
 		free(bytes_data_char_array);
 		break;
+	case aml_predicate:
+		if(aml_symbol->component.predicate.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.predicate.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.predicate.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		break;
 	case aml_prefix_path:
 		if(aml_symbol->component.prefix_path.parent_prefix_char)
 		{
@@ -3821,6 +3837,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
 	static char const * const aml_pkg_length_name = "PkgLength";
+	static char const * const aml_predicate_name = "Predicate";
 	static char const * const aml_prefix_path_name = "PrefixPath";
 	static char const * const aml_qword_const_name = "QWordConst";
 	static char const * const aml_qword_data_name = "QWordData";
@@ -3986,6 +4003,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_pkg_lead_byte_name;
 	case aml_pkg_length:
 		return aml_pkg_length_name;
+	case aml_predicate:
+		return aml_predicate_name;
 	case aml_prefix_path:
 		return aml_prefix_path_name;
 	case aml_qword_const:
@@ -4678,10 +4697,14 @@ AMLSymbol *analyse_aml_def_while(AMLSubstring aml)
 	def_while->string.length += def_while->component.def_while.pkg_length->string.length;
 	aml.initial += def_while->component.def_while.pkg_length->string.length;
 	aml.length -= def_while->component.def_while.pkg_length->string.length;
-	def_while->component.def_while.predicate = NULL;
-	def_while->component.def_while.term_list = NULL;
-	ERROR(); // predicate is unimplemented.
-	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	def_while->component.def_while.predicate = analyse_aml_predicate(aml);
+	def_while->string.length += def_while->component.def_while.predicate->string.length;
+	aml.initial += def_while->component.def_while.predicate->string.length;
+	aml.length -= def_while->component.def_while.predicate->string.length;
+	def_while->component.def_while.term_list = analyse_aml_term_list(aml);
+	def_while->string.length += def_while->component.def_while.term_list->string.length;
+	aml.initial += def_while->component.def_while.term_list->string.length;
+	aml.length -= def_while->component.def_while.term_list->string.length;
 	return def_while;
 }
 
@@ -5464,6 +5487,18 @@ AMLSymbol *analyse_aml_pkg_length(AMLSubstring aml)
 	}
 	else pkg_length->component.pkg_length.length = *pkg_length->component.pkg_length.pkg_lead_byte->string.initial & 0x3f;
 	return pkg_length;
+}
+
+// <predicate> := <term_arg>
+AMLSymbol *analyse_aml_predicate(AMLSubstring aml)
+{
+	AMLSymbol *predicate = malloc(sizeof(*predicate));
+	predicate->string.initial = aml.initial;
+	predicate->string.length = 0;
+	predicate->type = aml_predicate;
+	predicate->component.predicate.term_arg = analyse_aml_term_arg(aml);
+	predicate->string.length += predicate->component.predicate.term_arg->string.length;
+	return predicate;
 }
 
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
@@ -6430,6 +6465,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_pkg_length:
 		if(aml_symbol->component.pkg_length.pkg_lead_byte)delete_aml_symbol(aml_symbol->component.pkg_length.pkg_lead_byte);
 		for(AMLSymbol **byte_data = aml_symbol->component.pkg_length.byte_data; byte_data != aml_symbol->component.pkg_length.byte_data + _countof(aml_symbol->component.pkg_length.byte_data); byte_data++)if(*byte_data)delete_aml_symbol(*byte_data);
+		break;
+	case aml_predicate:
+		if(aml_symbol->component.predicate.term_arg)delete_aml_symbol(aml_symbol->component.predicate.term_arg);
 		break;
 	case aml_prefix_path:
 		if(aml_symbol->component.prefix_path.parent_prefix_char)delete_aml_symbol(aml_symbol->component.prefix_path.parent_prefix_char);
