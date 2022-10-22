@@ -6032,9 +6032,10 @@ AMLSymbol *analyse_aml_simple_name(AMLSubstring aml)
 		aml.initial += simple_name->component.simple_name.local_obj->string.length;
 		aml.length -= simple_name->component.simple_name.local_obj->string.length;
 		break;
+	case AML_BYTE_NULL_NAME:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
 	case AML_BYTE_ROOT_CHAR:
-		simple_name->component.simple_name.name_string = analyse_aml_simple_name(aml);
+		simple_name->component.simple_name.name_string = analyse_aml_name_string(aml);
 		simple_name->string.length += simple_name->component.simple_name.name_string->string.length;
 		aml.initial += simple_name->component.simple_name.name_string->string.length;
 		aml.length -= simple_name->component.simple_name.name_string->string.length;
@@ -6175,6 +6176,7 @@ AMLSymbol *analyse_aml_super_name(AMLSubstring aml)
 	case AML_BYTE_LOCAL_5_OP:
 	case AML_BYTE_LOCAL_6_OP:
 	case AML_BYTE_LOCAL_7_OP:
+	case AML_BYTE_NULL_NAME:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
 	case AML_BYTE_ROOT_CHAR:
 		super_name->component.super_name.simple_name = analyse_aml_simple_name(aml);
