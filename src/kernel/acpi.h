@@ -911,7 +911,7 @@ AMLSymbol *analyse_aml_revision_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_revision_op_prefix(AMLSubstring aml);
 // <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
-// <scope_op> := 0x10
+// <scope_op> := AML_TYPE_SCOPE_OP
 AMLSymbol *analyse_aml_scope_op(AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);

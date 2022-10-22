@@ -4030,6 +4030,9 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 		computational_data->component.computational_data.word_const = analyse_aml_word_const(aml);
 		computational_data->string.length += computational_data->component.computational_data.word_const->string.length;
 		break;
+	default:
+		ERROR(); // Incorrect computational data
+		break;
 	}
 	return computational_data;
 }
@@ -4064,6 +4067,9 @@ AMLSymbol *analyse_aml_const_obj(AMLSubstring aml)
 		aml.initial += const_obj->component.const_obj.zero_op->string.length;
 		aml.length -= const_obj->component.const_obj.zero_op->string.length;
 		break;
+	default:
+		ERROR(); // Incorrect const obj
+		break;
 	}
 	return const_obj;
 }
@@ -4093,6 +4099,9 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
 		data_object->component.data_object.computational_data = analyse_aml_computational_data(aml);
 		data_object->string.length += data_object->component.data_object.computational_data->string.length;
 		break;
+	default:
+		ERROR(); // Incorrect data object
+		break;
 	}
 	return data_object;
 }
@@ -4120,6 +4129,9 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
 	case AML_BYTE_ZERO_OP:
 		data_ref_object->component.data_ref_object.data_object = analyse_aml_data_object(aml);
 		data_ref_object->string.length += data_ref_object->component.data_ref_object.data_object->string.length;
+		break;
+	default:
+		ERROR(); // Incorrect data ref object
 		break;
 	}
 	return data_ref_object;
@@ -4175,6 +4187,7 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
 	aml.initial += def_buffer->component.def_buffer.buffer_size->string.length;
 	aml.length -= def_buffer->component.def_buffer.buffer_size->string.length;
 	def_buffer->component.def_buffer.byte_list = NULL;
+	ERROR(); // byte_list is unimplemented
 	return def_buffer;
 }
 
@@ -4516,6 +4529,9 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_to_hex_string = analyse_aml_def_to_hex_string(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_hex_string->string.length;
 		break;
+	default:
+		ERROR(); // Syntax error
+		break;
 	}
 	return expression_opcode;
 }
@@ -4550,6 +4566,7 @@ AMLSymbol *analyse_aml_field_element(AMLSubstring aml)
 		aml.initial += field_element->component.field_element.named_field->string.length;
 		aml.length -= field_element->component.field_element.named_field->string.length;
 	}
+	else ERROR(); // Syntax error or unimplemented pattern
 	return field_element;
 }
 
@@ -4790,6 +4807,7 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 			name_path->component.name_path.name_seg = analyse_aml_name_seg(aml);
 			name_path->string.length += name_path->component.name_path.name_seg->string.length;
 		}
+		else ERROR(); // Syntax error
 		break;
 	}
 	return name_path;
@@ -4839,6 +4857,9 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 	case AML_BYTE_SCOPE_OP:
 		name_space_modifier_obj->component.name_space_modifier_obj.def_scope = analyse_aml_def_scope(aml);
 		name_space_modifier_obj->string.length += name_space_modifier_obj->component.name_space_modifier_obj.def_scope->string.length;
+		break;
+	default:
+		ERROR(); // Syntax error
 		break;
 	}
 	return name_space_modifier_obj;
@@ -4931,6 +4952,9 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 		named_obj->component.named_obj.def_method = analyse_aml_def_method(aml);
 		named_obj->string.length += named_obj->component.named_obj.def_method->string.length;
 		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
+		break;
 	}
 	return named_obj;
 }
@@ -4978,6 +5002,9 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 	case AML_BYTE_METHOD_OP:
 		object->component.object.named_obj = analyse_aml_named_obj(aml);
 		object->string.length += object->component.object.named_obj->string.length;
+		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
 		break;
 	}
 	return object;
@@ -5122,6 +5149,9 @@ AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 		prefix_path->component.prefix_path.prefix_path = analyse_aml_prefix_path(aml);
 		prefix_path->string.length += prefix_path->component.prefix_path.prefix_path->string.length;
 		break;
+	default:
+		ERROR(); // Syntax error
+		break;
 	}
 	return prefix_path;
 }
@@ -5246,7 +5276,7 @@ AMLSymbol *analyse_aml_root_char(AMLSubstring aml)
 	return root_char;
 }
 
-// <scope_op> := 0x10
+// <scope_op> := AML_BYTE_SCOPE_OP
 AMLSymbol *analyse_aml_scope_op(AMLSubstring aml)
 {
 	AMLSymbol *scope_op = malloc(sizeof(*scope_op));
@@ -5312,6 +5342,9 @@ AMLSymbol *analyse_aml_simple_name(AMLSubstring aml)
 		aml.initial += simple_name->component.simple_name.name_string->string.length;
 		aml.length -= simple_name->component.simple_name.name_string->string.length;
 		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
+		break;
 	}
 	return simple_name;
 }
@@ -5337,6 +5370,7 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 	statement_opcode->component.statement_opcode.def_sleep = NULL;
 	statement_opcode->component.statement_opcode.def_stall = NULL;
 	statement_opcode->component.statement_opcode.def_while = NULL;
+	ERROR(); // unimplemented
 	return statement_opcode;
 }
 
@@ -5407,6 +5441,9 @@ AMLSymbol *analyse_aml_super_name(AMLSubstring aml)
 		aml.initial += super_name->component.super_name.simple_name->string.length;
 		aml.length -= super_name->component.super_name.simple_name->string.length;
 		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
+		break;
 	}
 	return super_name;
 }
@@ -5450,6 +5487,9 @@ AMLSymbol *analyse_aml_target(AMLSubstring aml)
 		aml.initial += target->component.target.super_name->string.length;
 		aml.length -= target->component.target.super_name->string.length;
 		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
+		break;
 	}
 	return target;
 }
@@ -5490,6 +5530,9 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 		term_arg->component.term_arg.data_object = analyse_aml_data_object(aml);
 		term_arg->string.length += term_arg->component.term_arg.data_object->string.length;
 		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
+		break;
 	}
 	return term_arg;
 }
@@ -5523,6 +5566,9 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 			aml.initial += term_list->component.term_list.term_list->string.length;
 			aml.length -= term_list->component.term_list.term_list->string.length;
 			break;
+		default:
+			ERROR(); // Syntax error or unimplemented pattern
+			break;
 		}
 	}
 	return term_list;
@@ -5552,6 +5598,9 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	case AML_BYTE_TO_HEX_STRING_OP:
 		term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
 		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
+		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
 		break;
 	}
 	return term_obj;
