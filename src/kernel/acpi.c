@@ -3875,6 +3875,7 @@ AMLSymbol *analyse_aml_arg_op(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Incorrect arg op
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return arg_op;
@@ -4032,6 +4033,7 @@ AMLSymbol *analyse_aml_computational_data(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Incorrect computational data
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return computational_data;
@@ -4069,6 +4071,7 @@ AMLSymbol *analyse_aml_const_obj(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Incorrect const obj
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return const_obj;
@@ -4101,6 +4104,7 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Incorrect data object
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return data_object;
@@ -4132,6 +4136,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Incorrect data ref object
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return data_ref_object;
@@ -4157,6 +4162,7 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml)
 			break;
 		default:
 			ERROR(); // Syntax error
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 			break;
 		}
 		*name_string = analyse_aml_name_string(aml);
@@ -4531,6 +4537,7 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return expression_opcode;
@@ -4679,6 +4686,7 @@ AMLSymbol *analyse_aml_local_op(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Incorrect local op
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return local_op;
@@ -4807,7 +4815,11 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 			name_path->component.name_path.name_seg = analyse_aml_name_seg(aml);
 			name_path->string.length += name_path->component.name_path.name_seg->string.length;
 		}
-		else ERROR(); // Syntax error
+		else
+		{
+			ERROR(); // Syntax error
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		}
 		break;
 	}
 	return name_path;
@@ -4860,6 +4872,7 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return name_space_modifier_obj;
@@ -4954,6 +4967,7 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return named_obj;
@@ -5005,6 +5019,7 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return object;
@@ -5148,9 +5163,6 @@ AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 		aml.length = aml.length - prefix_path->component.prefix_path.parent_prefix_char->string.length;
 		prefix_path->component.prefix_path.prefix_path = analyse_aml_prefix_path(aml);
 		prefix_path->string.length += prefix_path->component.prefix_path.prefix_path->string.length;
-		break;
-	default:
-		ERROR(); // Syntax error
 		break;
 	}
 	return prefix_path;
@@ -5344,6 +5356,7 @@ AMLSymbol *analyse_aml_simple_name(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return simple_name;
@@ -5443,6 +5456,7 @@ AMLSymbol *analyse_aml_super_name(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return super_name;
@@ -5489,6 +5503,7 @@ AMLSymbol *analyse_aml_target(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return target;
@@ -5532,6 +5547,8 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return term_arg;
@@ -5568,6 +5585,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 			break;
 		default:
 			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 			break;
 		}
 	}
@@ -5601,6 +5619,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		break;
 	default:
 		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return term_obj;
