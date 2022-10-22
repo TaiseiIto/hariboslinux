@@ -257,6 +257,7 @@ typedef enum _AMLSymbolType
 	aml_simple_name,
 	aml_size_of_op,
 	aml_statement_opcode,
+	aml_store_op,
 	aml_string,
 	aml_string_prefix,
 	aml_subtract_op,
@@ -955,6 +956,8 @@ AMLSymbol *analyse_aml_simple_name(AMLSubstring aml);
 AMLSymbol *analyse_aml_size_of_op(AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
+// <store_op> := AML_BYTE_STORE_OP
+AMLSymbol *analyse_aml_store_op(AMLSubstring aml);
 // <string> := <string_prefix> <ascii_char_list> <null_char>
 AMLSymbol *analyse_aml_string(AMLSubstring aml);
 // <string_prefix> := AML_BYTE_STRING_PREFIX

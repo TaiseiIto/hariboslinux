@@ -3366,6 +3366,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(def_while_char_array);
 		}
 		break;
+	case aml_store_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_string:
 		if(aml_symbol->component.string.string_prefix)
 		{
@@ -3770,6 +3773,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_simple_name_name = "SimpleName";
 	static char const * const aml_size_of_op_name = "SizeOfOp";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
+	static char const * const aml_store_op_name = "StoreOp";
 	static char const * const aml_string_name = "String";
 	static char const * const aml_string_prefix_name = "StringPrefix";
 	static char const * const aml_subtract_op_name = "SubtractOp";
@@ -3946,6 +3950,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_size_of_op_name;
 	case aml_statement_opcode:
 		return aml_statement_opcode_name;
+	case aml_store_op:
+		return aml_store_op_name;
 	case aml_string:
 		return aml_string_name;
 	case aml_string_prefix:
@@ -4505,9 +4511,18 @@ AMLSymbol *analyse_aml_def_store(AMLSubstring aml)
 	def_store->string.initial = aml.initial;
 	def_store->string.length = 0;
 	def_store->type = aml_def_store;
-	def_store->component.def_store.store_op = NULL;
-	def_store->component.def_store.term_arg = NULL;
-	def_store->component.def_store.super_name = NULL;
+	def_store->component.def_store.store_op = analyse_aml_store_op(aml);
+	def_store->string.length += def_store->component.def_store.store_op->string.length;
+	aml.initial += def_store->component.def_store.store_op->string.length;
+	aml.length -= def_store->component.def_store.store_op->string.length;
+	def_store->component.def_store.term_arg = analyse_aml_term_arg(aml);
+	def_store->string.length += def_store->component.def_store.term_arg->string.length;
+	aml.initial += def_store->component.def_store.term_arg->string.length;
+	aml.length -= def_store->component.def_store.term_arg->string.length;
+	def_store->component.def_store.super_name = analyse_aml_super_name(aml);
+	def_store->string.length += def_store->component.def_store.super_name->string.length;
+	aml.initial += def_store->component.def_store.super_name->string.length;
+	aml.length -= def_store->component.def_store.super_name->string.length;
 	return def_store;
 }
 
@@ -4734,6 +4749,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	case AML_BYTE_SIZE_OF_OP:
 		expression_opcode->component.expression_opcode.def_size_of = analyse_aml_def_size_of(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_size_of->string.length;
+		break;
+	case AML_BYTE_STORE_OP:
+		expression_opcode->component.expression_opcode.def_store = analyse_aml_def_store(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_store->string.length;
 		break;
 	case AML_BYTE_SUBTRACT_OP:
 		expression_opcode->component.expression_opcode.def_subtract = analyse_aml_def_subtract(aml);
@@ -5610,6 +5629,17 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 	return statement_opcode;
 }
 
+// <store_op> := AML_BYTE_STORE_OP
+AMLSymbol *analyse_aml_store_op(AMLSubstring aml)
+{
+	AMLSymbol *store_op = malloc(sizeof(*store_op));
+	store_op->string.initial = aml.initial;
+	store_op->string.length = 1;
+	store_op->type = aml_store_op;
+	if(*store_op->string.initial != AML_BYTE_STORE_OP)ERROR(); // Incorrect store op
+	return store_op;
+}
+
 // <string> := <string_prefix> <ascii_char_list> <null_char>
 AMLSymbol *analyse_aml_string(AMLSubstring aml)
 {
@@ -5780,6 +5810,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 		term_arg->string.length += term_arg->component.term_arg.data_object->string.length;
 		break;
 	case AML_BYTE_SIZE_OF_OP:
+	case AML_BYTE_STORE_OP:
 	case AML_BYTE_SUBTRACT_OP:
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
@@ -5828,6 +5859,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
 		case AML_BYTE_SIZE_OF_OP:
+		case AML_BYTE_STORE_OP:
 		case AML_BYTE_SUBTRACT_OP:
 		case AML_BYTE_TO_BUFFER_OP:
 		case AML_BYTE_TO_HEX_STRING_OP:
@@ -5866,6 +5898,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
 	case AML_BYTE_SIZE_OF_OP:
+	case AML_BYTE_STORE_OP:
 	case AML_BYTE_SUBTRACT_OP:
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
@@ -6336,6 +6369,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.string.null_char)delete_aml_symbol(aml_symbol->component.string.null_char);
 		break;
 	case aml_string_prefix:
+		break;
+	case aml_store_op:
 		break;
 	case aml_subtract_op:
 		break;
