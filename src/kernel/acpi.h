@@ -206,6 +206,7 @@ typedef enum _AMLSymbolType
 	aml_def_to_buffer,
 	aml_def_to_hex_string,
 	aml_def_while,
+	aml_deref_of_op,
 	aml_digit_char,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
@@ -889,6 +890,8 @@ AMLSymbol *analyse_aml_def_to_buffer(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml);
 // <def_while> := <while_op> <pkg_length> <predicate> <term_list>
 AMLSymbol *analyse_aml_def_while(AMLSubstring aml);
+// <deref_of_op> := AML_BYTE_DEREF_OF_OP
+AMLSymbol *analyse_aml_deref_of_op(AMLSubstring aml);
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>

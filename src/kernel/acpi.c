@@ -1560,6 +1560,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(term_list_char_array);
 		}
 		break;
+	case aml_deref_of_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_digit_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3872,6 +3875,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_to_buffer_name = "DefToBuffer";
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
 	static char const * const aml_def_while_name = "DefWhile";
+	static char const * const aml_deref_of_op_name = "DerefOfOp";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
@@ -4004,6 +4008,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_to_hex_string_name;
 	case aml_def_while:
 		return aml_def_while_name;
+	case aml_deref_of_op:
+		return aml_deref_of_op_name;
 	case aml_digit_char:
 		return aml_digit_char_name;
 	case aml_dual_name_path:
@@ -4526,7 +4532,10 @@ AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml)
 	def_deref_of->string.initial = aml.initial;
 	def_deref_of->string.length = 0;
 	def_deref_of->type = aml_def_deref_of;
-	def_deref_of->component.def_deref_of.deref_of_op = NULL;
+	def_deref_of->component.def_deref_of.deref_of_op = analyse_aml_deref_of_op(aml);
+	def_deref_of->string.length += def_deref_of->component.def_deref_of.deref_of_op->string.length;
+	aml.initial += def_deref_of->component.def_deref_of.deref_of_op->string.length;
+	aml.length -= def_deref_of->component.def_deref_of.deref_of_op->string.length;
 	def_deref_of->component.def_deref_of.obj_reference = NULL;
 	ERROR(); // unimplemented
 	return def_deref_of;
@@ -4823,6 +4832,17 @@ AMLSymbol *analyse_aml_def_while(AMLSubstring aml)
 	return def_while;
 }
 
+// <deref_of_op> := AML_BYTE_DEREF_OF_OP
+AMLSymbol *analyse_aml_deref_of_op(AMLSubstring aml)
+{
+	AMLSymbol *deref_of_op = malloc(sizeof(*deref_of_op));
+	deref_of_op->string.initial = aml.initial;
+	deref_of_op->string.length = 1;
+	deref_of_op->type = aml_deref_of_op;
+	if(*deref_of_op->string.initial != AML_BYTE_DEREF_OF_OP)ERROR(); // Incorrect deref of op
+	return deref_of_op;
+}
+
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml)
 {
@@ -4974,6 +4994,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	expression_opcode->component.expression_opcode.method_invocation = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_DEREF_OF_OP:
+		expression_opcode->component.expression_opcode.def_deref_of = analyse_aml_def_deref_of(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_deref_of->string.length;
+		break;
 	case AML_BYTE_L_LESS_OP:
 		expression_opcode->component.expression_opcode.def_l_less = analyse_aml_def_l_less(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_less->string.length;
@@ -6074,6 +6098,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 		term_arg->component.term_arg.data_object = analyse_aml_data_object(aml);
 		term_arg->string.length += term_arg->component.term_arg.data_object->string.length;
 		break;
+	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -6121,6 +6146,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		if(aml.length && term_list->component.term_list.term_obj->string.length)switch(*aml.initial)
 		{
 		case AML_BYTE_ALIAS_OP:
+		case AML_BYTE_DEREF_OF_OP:
 		case AML_BYTE_EXT_OP_PREFIX:
 		case AML_BYTE_L_LESS_OP:
 		case AML_BYTE_METHOD_OP:
@@ -6157,6 +6183,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	term_obj->component.term_obj.expression_opcode = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -6420,6 +6447,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_while.pkg_length)delete_aml_symbol(aml_symbol->component.def_while.pkg_length);
 		if(aml_symbol->component.def_while.predicate)delete_aml_symbol(aml_symbol->component.def_while.predicate);
 		if(aml_symbol->component.def_while.term_list)delete_aml_symbol(aml_symbol->component.def_while.term_list);
+		break;
+	case aml_deref_of_op:
 		break;
 	case aml_digit_char:
 		break;
