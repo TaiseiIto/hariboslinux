@@ -4743,7 +4743,7 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
 	def_buffer->component.def_buffer.pkg_length = analyse_aml_pkg_length(aml);
 	def_buffer->string.length += def_buffer->component.def_buffer.pkg_length->string.length;
 	aml.initial += def_buffer->component.def_buffer.pkg_length->string.length;
-	aml.length -= def_buffer->component.def_buffer.pkg_length->string.length;
+	aml.length = def_buffer->component.def_buffer.pkg_length->component.pkg_length.length - def_buffer->component.def_buffer.pkg_length->string.length;
 	def_buffer->component.def_buffer.buffer_size = analyse_aml_buffer_size(aml);
 	def_buffer->string.length += def_buffer->component.def_buffer.buffer_size->string.length;
 	aml.initial += def_buffer->component.def_buffer.buffer_size->string.length;
@@ -4785,7 +4785,7 @@ AMLSymbol *analyse_aml_def_field(AMLSubstring aml)
 	def_field->component.def_field.pkg_length = analyse_aml_pkg_length(aml);
 	def_field->string.length += def_field->component.def_field.pkg_length->string.length;
 	aml.initial += def_field->component.def_field.pkg_length->string.length;
-	aml.length -= def_field->component.def_field.pkg_length->string.length;
+	aml.length = def_field->component.def_field.pkg_length->component.pkg_length.length - def_field->component.def_field.pkg_length->string.length;
 	def_field->component.def_field.name_string = analyse_aml_name_string(aml);
 	def_field->string.length += def_field->component.def_field.name_string->string.length;
 	aml.initial += def_field->component.def_field.name_string->string.length;
@@ -4876,7 +4876,7 @@ AMLSymbol *analyse_aml_def_method(AMLSubstring aml)
 	def_method->component.def_method.pkg_length = analyse_aml_pkg_length(aml);
 	def_method->string.length += def_method->component.def_method.pkg_length->string.length;
 	aml.initial += def_method->component.def_method.pkg_length->string.length;
-	aml.length -= def_method->component.def_method.pkg_length->string.length;
+	aml.length = def_method->component.def_method.pkg_length->component.pkg_length.length - def_method->component.def_method.pkg_length->string.length;
 	def_method->component.def_method.name_string = analyse_aml_name_string(aml);
 	def_method->string.length += def_method->component.def_method.name_string->string.length;
 	aml.initial += def_method->component.def_method.name_string->string.length;
@@ -4955,7 +4955,7 @@ AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
 	def_scope->component.def_scope.pkg_length = analyse_aml_pkg_length(aml);
 	def_scope->string.length += def_scope->component.def_scope.pkg_length->string.length;
 	aml.initial += def_scope->component.def_scope.pkg_length->string.length;
-	aml.length -= def_scope->component.def_scope.pkg_length->string.length;
+	aml.length = def_scope->component.def_scope.pkg_length->component.pkg_length.length - def_scope->component.def_scope.pkg_length->string.length;
 	def_scope->component.def_scope.name_string = analyse_aml_name_string(aml);
 	def_scope->string.length += def_scope->component.def_scope.name_string->string.length;
 	aml.initial += def_scope->component.def_scope.name_string->string.length;
@@ -5090,7 +5090,7 @@ AMLSymbol *analyse_aml_def_while(AMLSubstring aml)
 	def_while->component.def_while.pkg_length = analyse_aml_pkg_length(aml);
 	def_while->string.length += def_while->component.def_while.pkg_length->string.length;
 	aml.initial += def_while->component.def_while.pkg_length->string.length;
-	aml.length -= def_while->component.def_while.pkg_length->string.length;
+	aml.length = def_while->component.def_while.pkg_length->component.pkg_length.length - def_while->component.def_while.pkg_length->string.length;
 	def_while->component.def_while.predicate = analyse_aml_predicate(aml);
 	def_while->string.length += def_while->component.def_while.predicate->string.length;
 	aml.initial += def_while->component.def_while.predicate->string.length;
@@ -5370,7 +5370,7 @@ AMLSymbol *analyse_aml_field_list(AMLSubstring aml)
 	field_list->type = aml_field_list;
 	field_list->component.field_list.field_element = NULL;
 	field_list->component.field_list.field_list = NULL;
-	if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+	if(aml.length && (('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_'))
 	{
 		field_list->component.field_list.field_element = analyse_aml_field_element(aml);
 		field_list->string.length += field_list->component.field_list.field_element->string.length;
@@ -5746,7 +5746,7 @@ AMLSymbol *analyse_aml_named_field(AMLSubstring aml)
 	named_field->component.named_field.pkg_length = analyse_aml_pkg_length(aml);
 	named_field->string.length += named_field->component.named_field.pkg_length->string.length;
 	aml.initial += named_field->component.named_field.pkg_length->string.length;
-	aml.length -= named_field->component.named_field.pkg_length->string.length;
+	aml.length = named_field->component.named_field.pkg_length->component.pkg_length.length - named_field->component.named_field.pkg_length->string.length;
 	return named_field;
 }
 
