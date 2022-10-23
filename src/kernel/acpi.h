@@ -272,6 +272,7 @@ typedef enum _AMLSymbolType
 	aml_root_char,
 	aml_scope_op,
 	aml_seg_count,
+	aml_shift_right_op,
 	aml_simple_name,
 	aml_size_of_op,
 	aml_statement_opcode,
@@ -1109,6 +1110,8 @@ AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_scope_op(AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
+// <shift_right_op> := AML_BYTE_SHIFT_RIGHT
+AMLSymbol *analyse_aml_shift_right_op(AMLSubstring aml);
 // <simple_name> := <name_string> | <arg_obj> | <local_obj>
 AMLSymbol *analyse_aml_simple_name(AMLSubstring aml);
 // <size_of_op> := AML_BYTE_SIZE_OF_OP

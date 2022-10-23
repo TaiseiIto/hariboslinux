@@ -3628,6 +3628,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_seg_count:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_shift_right_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_simple_name:
 		if(aml_symbol->component.simple_name.name_string)
 		{
@@ -4312,6 +4315,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_scope_op_name = "ScopeOp";
 	static char const * const aml_seg_count_name = "SegCount";
+	static char const * const aml_shift_right_op_name = "ShiftRightOp";
 	static char const * const aml_simple_name_name = "SimpleName";
 	static char const * const aml_size_of_op_name = "SizeOfOp";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
@@ -4524,6 +4528,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_scope_op_name;
 	case aml_seg_count:
 		return aml_seg_count_name;
+	case aml_shift_right_op:
+		return aml_shift_right_op_name;
 	case aml_simple_name:
 		return aml_simple_name_name;
 	case aml_size_of_op:
@@ -5203,8 +5209,14 @@ AMLSymbol *analyse_aml_def_shift_right(AMLSubstring aml)
 	def_shift_right->string.initial = aml.initial;
 	def_shift_right->string.length = 0;
 	def_shift_right->type = aml_def_shift_right;
-	def_shift_right->component.def_shift_right.shift_right_op = NULL;
-	def_shift_right->component.def_shift_right.operand = NULL;
+	def_shift_right->component.def_shift_right.shift_right_op = analyse_aml_shift_right_op(aml);
+	def_shift_right->string.length += def_shift_right->component.def_shift_right.shift_right_op->string.length;
+	aml.initial += def_shift_right->component.def_shift_right.shift_right_op->string.length;
+	aml.length -= def_shift_right->component.def_shift_right.shift_right_op->string.length;
+	def_shift_right->component.def_shift_right.operand = analyse_aml_operand(aml);
+	def_shift_right->string.length += def_shift_right->component.def_shift_right.operand->string.length;
+	aml.initial += def_shift_right->component.def_shift_right.operand->string.length;
+	aml.length -= def_shift_right->component.def_shift_right.operand->string.length;
 	def_shift_right->component.def_shift_right.shift_count = NULL;
 	def_shift_right->component.def_shift_right.target = NULL;
 	ERROR(); // unimplemented
@@ -5555,6 +5567,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 		expression_opcode->component.expression_opcode.def_l_less = analyse_aml_def_l_less(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_less->string.length;
+		break;
+	case AML_BYTE_SHIFT_RIGHT_OP:
+		expression_opcode->component.expression_opcode.def_shift_right = analyse_aml_def_shift_right(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_shift_right->string.length;
 		break;
 	case AML_BYTE_SIZE_OF_OP:
 		expression_opcode->component.expression_opcode.def_size_of = analyse_aml_def_size_of(aml);
@@ -6459,6 +6475,17 @@ AMLSymbol *analyse_aml_seg_count(AMLSubstring aml)
 	return seg_count;
 }
 
+// <shift_right_op> := AML_BYTE_SHIFT_RIGHT
+AMLSymbol *analyse_aml_shift_right_op(AMLSubstring aml)
+{
+	AMLSymbol *shift_right_op = malloc(sizeof(*shift_right_op));
+	shift_right_op->string.initial = aml.initial;
+	shift_right_op->string.length = 1;
+	shift_right_op->type = aml_shift_right_op;
+	if(*shift_right_op->string.initial == AML_BYTE_SHIFT_RIGHT_OP)ERROR(); // Incorrect shift_right_op
+	return shift_right_op;
+}
+
 // <simple_name> := <name_string> | <arg_obj> | <local_obj>
 AMLSymbol *analyse_aml_simple_name(AMLSubstring aml)
 {
@@ -6763,6 +6790,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_L_LESS_OP:
+	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
 	case AML_BYTE_SUBTRACT_OP:
@@ -6887,6 +6915,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
 		case AML_BYTE_SCOPE_OP:
+		case AML_BYTE_SHIFT_RIGHT_OP:
 		case AML_BYTE_SIZE_OF_OP:
 		case AML_BYTE_STORE_OP:
 		case AML_BYTE_SUBTRACT_OP:
@@ -6933,6 +6962,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_L_LESS_OP:
+	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
 	case AML_BYTE_SUBTRACT_OP:
@@ -7473,6 +7503,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_scope_op:
 		break;
 	case aml_seg_count:
+		break;
+	case aml_shift_right_op:
 		break;
 	case aml_simple_name:
 		if(aml_symbol->component.simple_name.name_string)delete_aml_symbol(aml_symbol->component.simple_name.name_string);
