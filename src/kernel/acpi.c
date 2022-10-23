@@ -1032,7 +1032,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
 		}
 		else term_list_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), device_op_char_array, pkg_length_char_array, name_string_char_array, term_list_char_array);
+		output = create_format_chain_string("%s length = %#010.8x\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, device_op_char_array, pkg_length_char_array, name_string_char_array, term_list_char_array);
 		if(aml_symbol->component.def_device.device_op)
 		{
 			delete_chain_string(device_op_chain_string);
@@ -5295,7 +5295,6 @@ AMLSymbol *analyse_aml_device_op(AMLSubstring aml)
 	device_op->string.length += device_op->component.device_op.device_op_suffix->string.length;
 	aml.initial += device_op->component.device_op.device_op_suffix->string.length;
 	aml.length -= device_op->component.device_op.device_op_suffix->string.length;
-	ERROR(); // device_op is umimplemented
 	return device_op;
 }
 
