@@ -195,6 +195,7 @@ typedef enum _AMLSymbolType
 	aml_def_alias,
 	aml_def_buffer,
 	aml_def_deref_of,
+	aml_def_device,
 	aml_def_field,
 	aml_def_increment,
 	aml_def_index,
@@ -375,6 +376,14 @@ typedef struct _AMLDefDerefOf
 	struct _AMLSymbol *deref_of_op;
 	struct _AMLSymbol *obj_reference;
 } AMLDefDerefOf;
+
+typedef struct _AMLDefDevice
+{
+	struct _AMLSymbol *device_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *term_list;
+} AMLDefDevice;
 
 typedef struct _AMLDefField
 {
@@ -822,6 +831,7 @@ typedef union _AMLComponent
 	AMLDefAlias def_alias;
 	AMLDefBuffer def_buffer;
 	AMLDefDerefOf def_deref_of;
+	AMLDefDevice def_device;
 	AMLDefField def_field;
 	AMLDefIncrement def_increment;
 	AMLDefIndex def_index;
@@ -925,6 +935,8 @@ AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
 // <def_deref_of> := <deref_of_op> <obj_reference>
 AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml);
+// <def_device> := <device_op> <pkg_length> <name_string> <term_list>
+AMLSymbol *analyse_aml_def_device(AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
 // <def_increment> := <increment_op> <super_name>

@@ -256,6 +256,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_while_chain_string;
 	ChainString *def_xor_chain_string;
 	ChainString *deref_of_op_chain_string;
+	ChainString *device_op_chain_string;
 	ChainString *digit_char_chain_string;
 	ChainString *dual_name_path_chain_string;
 	ChainString *dual_name_prefix_chain_string;
@@ -448,6 +449,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_while_char_array;
 	char *def_xor_char_array;
 	char *deref_of_op_char_array;
+	char *device_op_char_array;
 	char *digit_char_char_array;
 	char *dual_name_path_char_array;
 	char *dual_name_prefix_char_array;
@@ -991,6 +993,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(obj_reference_chain_string);
 			free(obj_reference_char_array);
+		}
+		break;
+	case aml_def_device:
+		if(aml_symbol->component.def_device.device_op)
+		{
+			device_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_device.device_op);
+			insert_char_front(device_op_chain_string, device_op_chain_string->first_character, ' ');
+			replace_chain_string(device_op_chain_string, "\n", "\n ");
+			device_op_char_array = create_char_array_from_chain_string(device_op_chain_string);
+		}
+		else device_op_char_array = "";
+		if(aml_symbol->component.def_device.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_device.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_device.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_device.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.def_device.term_list)
+		{
+			term_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_device.term_list);
+			insert_char_front(term_list_chain_string, term_list_chain_string->first_character, ' ');
+			replace_chain_string(term_list_chain_string, "\n", "\n ");
+			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
+		}
+		else term_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), device_op_char_array, pkg_length_char_array, name_string_char_array, term_list_char_array);
+		if(aml_symbol->component.def_device.device_op)
+		{
+			delete_chain_string(device_op_chain_string);
+			free(device_op_char_array);
+		}
+		if(aml_symbol->component.def_device.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_device.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.def_device.term_list)
+		{
+			delete_chain_string(term_list_chain_string);
+			free(term_list_char_array);
 		}
 		break;
 	case aml_def_field:
@@ -4070,6 +4127,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
+	static char const * const aml_def_device_name = "DefDevice";
 	static char const * const aml_def_field_name = "DefField";
 	static char const * const aml_def_increment_name = "DefIncrement";
 	static char const * const aml_def_index_name = "DefIndex";
@@ -4201,6 +4259,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_buffer_name;
 	case aml_def_deref_of:
 		return aml_def_deref_of_name;
+	case aml_def_device:
+		return aml_def_device_name;
 	case aml_def_field:
 		return aml_def_field_name;
 	case aml_def_increment:
@@ -4788,6 +4848,21 @@ AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml)
 	aml.initial += def_deref_of->component.def_deref_of.obj_reference->string.length;
 	aml.length -= def_deref_of->component.def_deref_of.obj_reference->string.length;
 	return def_deref_of;
+}
+
+// <def_device> := <device_op> <pkg_length> <name_string> <term_list>
+AMLSymbol *analyse_aml_def_device(AMLSubstring aml)
+{
+	AMLSymbol *def_device = malloc(sizeof(*def_device));
+	def_device->string.initial = aml.initial;
+	def_device->string.length = 0;
+	def_device->type = aml_def_device;
+	def_device->component.def_device.device_op = NULL;
+	def_device->component.def_device.pkg_length = NULL;
+	def_device->component.def_device.name_string = NULL;
+	def_device->component.def_device.term_list = NULL;
+	ERROR(); // device_op is unimplemented
+	return def_device;
 }
 
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
@@ -5821,6 +5896,12 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 		case AML_BYTE_FIELD_OP:
 			named_obj->component.named_obj.def_field = analyse_aml_def_field(aml);
 			named_obj->string.length += named_obj->component.named_obj.def_field->string.length;
+			break;
+		default:
+			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
+			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
+			break;
 		}
 		break;
 	case AML_BYTE_METHOD_OP:
@@ -6871,6 +6952,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_def_deref_of:
 		if(aml_symbol->component.def_deref_of.deref_of_op)delete_aml_symbol(aml_symbol->component.def_deref_of.deref_of_op);
 		if(aml_symbol->component.def_deref_of.obj_reference)delete_aml_symbol(aml_symbol->component.def_deref_of.obj_reference);
+		break;
+	case aml_def_device:
+		if(aml_symbol->component.def_device.device_op)delete_aml_symbol(aml_symbol->component.def_device.device_op);
+		if(aml_symbol->component.def_device.pkg_length)delete_aml_symbol(aml_symbol->component.def_device.pkg_length);
+		if(aml_symbol->component.def_device.name_string)delete_aml_symbol(aml_symbol->component.def_device.name_string);
+		if(aml_symbol->component.def_device.term_list)delete_aml_symbol(aml_symbol->component.def_device.term_list);
 		break;
 	case aml_def_field:
 		if(aml_symbol->component.def_field.field_op)delete_aml_symbol(aml_symbol->component.def_field.field_op);
