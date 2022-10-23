@@ -5091,14 +5091,17 @@ AMLSymbol *analyse_aml_def_while(AMLSubstring aml)
 	def_while->string.length += def_while->component.def_while.pkg_length->string.length;
 	aml.initial += def_while->component.def_while.pkg_length->string.length;
 	aml.length = def_while->component.def_while.pkg_length->component.pkg_length.length - def_while->component.def_while.pkg_length->string.length;
+	printf_serial("def_while aml.length = %#010.8x\n", aml.length);
 	def_while->component.def_while.predicate = analyse_aml_predicate(aml);
 	def_while->string.length += def_while->component.def_while.predicate->string.length;
 	aml.initial += def_while->component.def_while.predicate->string.length;
 	aml.length -= def_while->component.def_while.predicate->string.length;
+	printf_serial("def_while aml.length = %#010.8x\n", aml.length);
 	def_while->component.def_while.term_list = analyse_aml_term_list(aml);
 	def_while->string.length += def_while->component.def_while.term_list->string.length;
 	aml.initial += def_while->component.def_while.term_list->string.length;
 	aml.length -= def_while->component.def_while.term_list->string.length;
+	printf_serial("def_while aml.length = %#010.8x\n", aml.length);
 	return def_while;
 }
 
