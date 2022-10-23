@@ -2817,6 +2817,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_field_op_suffix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_if_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_increment_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4359,6 +4362,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_list_name = "FieldList";
 	static char const * const aml_field_op_name = "FieldOp";
 	static char const * const aml_field_op_suffix_name = "FieldOpSuffix";
+	static char const * const aml_if_op_name = "IfOp";
 	static char const * const aml_increment_op_name = "IncrementOp";
 	static char const * const aml_index_op_name = "IndexOp";
 	static char const * const aml_index_value_name = "IndexValue";
@@ -4530,6 +4534,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_field_op_name;
 	case aml_field_op_suffix:
 		return aml_field_op_suffix_name;
+	case aml_if_op:
+		return aml_if_op_name;
 	case aml_increment_op:
 		return aml_increment_op_name;
 	case aml_index_op:
@@ -5130,11 +5136,24 @@ AMLSymbol *analyse_aml_def_if_else(AMLSubstring aml)
 	def_if_else->string.initial = aml.initial;
 	def_if_else->string.length = 0;
 	def_if_else->type = aml_def_if_else;
-	def_if_else->component.def_if_else.if_op = NULL;
-	def_if_else->component.def_if_else.pkg_length = NULL;
-	def_if_else->component.def_if_else.predicate = NULL;
-	def_if_else->component.def_if_else.term_list = NULL;
+	def_if_else->component.def_if_else.if_op = analyse_aml_if_op(aml);
+	def_if_else->string.length += def_if_else->component.def_if_else.if_op->string.length;
+	aml.initial += def_if_else->component.def_if_else.if_op->string.length;
+	aml.length -= def_if_else->component.def_if_else.if_op->string.length;
+	def_if_else->component.def_if_else.pkg_length = analyse_aml_pkg_length(aml);
+	def_if_else->string.length += def_if_else->component.def_if_else.pkg_length->string.length;
+	aml.initial += def_if_else->component.def_if_else.pkg_length->string.length;
+	aml.length = def_if_else->component.def_if_else.pkg_length->component.pkg_length.length - def_if_else->component.def_if_else.pkg_length->string.length;
+	def_if_else->component.def_if_else.predicate = analyse_aml_predicate(aml);
+	def_if_else->string.length += def_if_else->component.def_if_else.predicate->string.length;
+	aml.initial += def_if_else->component.def_if_else.predicate->string.length;
+	aml.length -= def_if_else->component.def_if_else.predicate->string.length;
+	def_if_else->component.def_if_else.term_list = analyse_aml_term_list(aml);
+	def_if_else->string.length += def_if_else->component.def_if_else.term_list->string.length;
+	aml.initial += def_if_else->component.def_if_else.term_list->string.length;
+	aml.length -= def_if_else->component.def_if_else.term_list->string.length;
 	def_if_else->component.def_if_else.def_else = NULL;
+	ERROR(); // def_else is unimplemented
 	return def_if_else;
 }
 
@@ -5814,6 +5833,17 @@ AMLSymbol *analyse_aml_field_op_suffix(AMLSubstring aml)
 	field_op_suffix->type = aml_field_op_suffix;
 	if(*aml.initial != AML_BYTE_FIELD_OP)ERROR(); // Incorrect field op prefix
 	return field_op_suffix;
+}
+
+// <if_op> := AML_BYTE_IF_OP
+AMLSymbol *analyse_aml_if_op(AMLSubstring aml)
+{
+	AMLSymbol *if_op = malloc(sizeof(*if_op));
+	if_op->string.initial = aml.initial;
+	if_op->string.length = 1;
+	if_op->type = aml_if_op;
+	if(*aml.initial != AML_BYTE_IF_OP)ERROR(); // Incorrect if_op
+	return if_op;
 }
 
 // <increment_op> := AML_BYTE_INCREMENT_OP
@@ -6708,6 +6738,10 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 	statement_opcode->component.statement_opcode.def_while = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_IF_OP:
+		statement_opcode->component.statement_opcode.def_if_else = analyse_aml_def_if_else(aml);
+		statement_opcode->string.length += statement_opcode->component.statement_opcode.def_if_else->string.length;
+		break;
 	case AML_BYTE_WHILE_OP:
 		statement_opcode->component.statement_opcode.def_while = analyse_aml_def_while(aml);
 		statement_opcode->string.length += statement_opcode->component.statement_opcode.def_while->string.length;
@@ -7035,6 +7069,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_ALIAS_OP:
 		case AML_BYTE_DEREF_OF_OP:
 		case AML_BYTE_EXT_OP_PREFIX:
+		case AML_BYTE_IF_OP:
 		case AML_BYTE_INCREMENT_OP:
 		case AML_BYTE_INDEX_OP:
 		case AML_BYTE_L_LESS_OP:
@@ -7105,6 +7140,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->component.term_obj.object = analyse_aml_object(aml);
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
+	case AML_BYTE_IF_OP:
 	case AML_BYTE_WHILE_OP:
 		term_obj->component.term_obj.statement_opcode = analyse_aml_statement_opcode(aml);
 		term_obj->string.length += term_obj->component.term_obj.statement_opcode->string.length;
@@ -7492,6 +7528,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.field_op.field_op_suffix)delete_aml_symbol(aml_symbol->component.field_op.field_op_suffix);
 		break;
 	case aml_field_op_suffix:
+		break;
+	case aml_if_op:
 		break;
 	case aml_increment_op:
 		break;
