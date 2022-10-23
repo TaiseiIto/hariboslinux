@@ -211,6 +211,7 @@ typedef enum _AMLSymbolType
 	aml_def_to_hex_string,
 	aml_def_while,
 	aml_deref_of_op,
+	aml_device_op,
 	aml_digit_char,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
@@ -223,7 +224,7 @@ typedef enum _AMLSymbolType
 	aml_field_flags,
 	aml_field_list,
 	aml_field_op,
-	aml_field_op_prefix,
+	aml_field_op_suffix,
 	aml_increment_op,
 	aml_index_op,
 	aml_index_value,
@@ -251,7 +252,7 @@ typedef enum _AMLSymbolType
 	aml_one_op,
 	aml_ones_op,
 	aml_op_region_op,
-	aml_op_region_op_prefix,
+	aml_op_region_op_suffix,
 	aml_operand,
 	aml_parent_prefix_char,
 	aml_pkg_lead_byte,
@@ -265,7 +266,7 @@ typedef enum _AMLSymbolType
 	aml_region_offset,
 	aml_region_space,
 	aml_revision_op,
-	aml_revision_op_prefix,
+	aml_revision_op_suffix,
 	aml_root_char,
 	aml_scope_op,
 	aml_seg_count,
@@ -489,6 +490,12 @@ typedef struct _AMLDefWhile
 	struct _AMLSymbol *term_list;
 } AMLDefWhile;
 
+typedef struct _AMLDeviceOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *device_op_suffix;
+} AMLDeviceOp;
+
 typedef struct _AMLDualNamePath
 {
 	struct _AMLSymbol *dual_name_prefix;
@@ -581,7 +588,7 @@ typedef struct _AMLFieldList
 typedef struct _AMLFieldOp
 {
 	struct _AMLSymbol *ext_op_prefix;
-	struct _AMLSymbol *field_op_prefix;
+	struct _AMLSymbol *field_op_suffix;
 } AMLFieldOp;
 
 typedef struct _AMLIndexValue
@@ -685,7 +692,7 @@ typedef struct _AMLOperand
 typedef struct _AMLOpRegionOp
 {
 	struct _AMLSymbol *ext_op_prefix;
-	struct _AMLSymbol *op_region_op_prefix;
+	struct _AMLSymbol *op_region_op_suffix;
 } AMLOpRegionOp;
 
 typedef struct _AMLPkgLength
@@ -731,7 +738,7 @@ typedef struct _AMLRegionOffset
 typedef struct _AMLRevisionOp
 {
 	struct _AMLSymbol *ext_op_prefix;
-	struct _AMLSymbol *revision_op_prefix;
+	struct _AMLSymbol *revision_op_suffix;
 } AMLRevisionOp;
 
 typedef struct _AMLSimpleName
@@ -846,6 +853,7 @@ typedef union _AMLComponent
 	AMLDefToBuffer def_to_buffer;
 	AMLDefToHexString def_to_hex_string;
 	AMLDefWhile def_while;
+	AMLDeviceOp device_op;
 	AMLDualNamePath dual_name_path;
 	AMLDWordConst dword_const;
 	AMLDWordData dword_data;
@@ -967,6 +975,8 @@ AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_while(AMLSubstring aml);
 // <deref_of_op> := AML_BYTE_DEREF_OF_OP
 AMLSymbol *analyse_aml_deref_of_op(AMLSubstring aml);
+// <device_op> := <ext_op_prefix> <device_op_suffix>
+AMLSymbol *analyse_aml_device_op(AMLSubstring aml);
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>
@@ -989,10 +999,10 @@ AMLSymbol *analyse_aml_field_element(AMLSubstring aml);
 AMLSymbol *analyse_aml_field_flags(AMLSubstring aml);
 // <field_list> := Nothing | <field_element> <field_list>
 AMLSymbol *analyse_aml_field_list(AMLSubstring aml);
-// <field_op> := <ext_op_prefix> <field_op_prefix>
+// <field_op> := <ext_op_prefix> <field_op_suffix>
 AMLSymbol *analyse_aml_field_op(AMLSubstring aml);
-// <field_op_prefix> := AML_BYTE_FIELD_OP_PREFIX
-AMLSymbol *analyse_aml_field_op_prefix(AMLSubstring aml);
+// <field_op_suffix> := AML_BYTE_FIELD_OP_PREFIX
+AMLSymbol *analyse_aml_field_op_suffix(AMLSubstring aml);
 // <increment_op> := AML_BYTE_INCREMENT_OP
 AMLSymbol *analyse_aml_increment_op(AMLSubstring aml);
 // <index_op> := AML_BYTE_INDEX_OP
@@ -1045,10 +1055,10 @@ AMLSymbol *analyse_aml_object(AMLSubstring aml);
 AMLSymbol *analyse_aml_one_op(AMLSubstring aml);
 // <ones_op> := AML_BYTE_ONES_OP
 AMLSymbol *analyse_aml_ones_op(AMLSubstring aml);
-// <op_region_op> := <ext_op_prefix> <op_region_op_prefix>
+// <op_region_op> := <ext_op_prefix> <op_region_op_suffix>
 AMLSymbol *analyse_aml_op_region_op(AMLSubstring aml);
-// <op_region_op_prefix> := AML_BYTE_OP_REGION_OP
-AMLSymbol *analyse_aml_op_region_op_prefix(AMLSubstring aml);
+// <op_region_op_suffix> := AML_BYTE_OP_REGION_OP
+AMLSymbol *analyse_aml_op_region_op_suffix(AMLSubstring aml);
 // <operand> := <term_arg>
 AMLSymbol *analyse_aml_operand(AMLSubstring aml);
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
@@ -1073,10 +1083,10 @@ AMLSymbol *analyse_aml_region_len(AMLSubstring aml);
 AMLSymbol *analyse_aml_region_offset(AMLSubstring aml);
 // <region_space>
 AMLSymbol *analyse_aml_region_space(AMLSubstring aml);
-// <revision_op> := <ext_op_prefix> <revision_op_prefix>
+// <revision_op> := <ext_op_prefix> <revision_op_suffix>
 AMLSymbol *analyse_aml_revision_op(AMLSubstring aml);
-// <revision_op_prefix> := AML_BYTE_REVISION_OP
-AMLSymbol *analyse_aml_revision_op_prefix(AMLSubstring aml);
+// <revision_op_suffix> := AML_BYTE_REVISION_OP
+AMLSymbol *analyse_aml_revision_op_suffix(AMLSubstring aml);
 // <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 // <scope_op> := AML_TYPE_SCOPE_OP
