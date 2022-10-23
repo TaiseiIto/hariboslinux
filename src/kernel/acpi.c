@@ -3628,6 +3628,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_seg_count:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_shift_count:
+		if(aml_symbol->component.shift_count.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.shift_count.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.shift_count.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		break;
 	case aml_shift_right_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4315,6 +4331,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_scope_op_name = "ScopeOp";
 	static char const * const aml_seg_count_name = "SegCount";
+	static char const * const aml_shift_count_name = "ShiftCount";
 	static char const * const aml_shift_right_op_name = "ShiftRightOp";
 	static char const * const aml_simple_name_name = "SimpleName";
 	static char const * const aml_size_of_op_name = "SizeOfOp";
@@ -4528,6 +4545,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_scope_op_name;
 	case aml_seg_count:
 		return aml_seg_count_name;
+	case aml_shift_count:
+		return aml_shift_count_name;
 	case aml_shift_right_op:
 		return aml_shift_right_op_name;
 	case aml_simple_name:
@@ -5217,10 +5236,14 @@ AMLSymbol *analyse_aml_def_shift_right(AMLSubstring aml)
 	def_shift_right->string.length += def_shift_right->component.def_shift_right.operand->string.length;
 	aml.initial += def_shift_right->component.def_shift_right.operand->string.length;
 	aml.length -= def_shift_right->component.def_shift_right.operand->string.length;
-	def_shift_right->component.def_shift_right.shift_count = NULL;
-	def_shift_right->component.def_shift_right.target = NULL;
-	ERROR(); // unimplemented
-	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	def_shift_right->component.def_shift_right.shift_count = analyse_aml_shift_count(aml);
+	def_shift_right->string.length += def_shift_right->component.def_shift_right.shift_count->string.length;
+	aml.initial += def_shift_right->component.def_shift_right.shift_count->string.length;
+	aml.length -= def_shift_right->component.def_shift_right.shift_count->string.length;
+	def_shift_right->component.def_shift_right.target = analyse_aml_target(aml);
+	def_shift_right->string.length += def_shift_right->component.def_shift_right.target->string.length;
+	aml.initial += def_shift_right->component.def_shift_right.target->string.length;
+	aml.length -= def_shift_right->component.def_shift_right.target->string.length;
 	return def_shift_right;
 }
 
@@ -6473,6 +6496,20 @@ AMLSymbol *analyse_aml_seg_count(AMLSubstring aml)
 	return seg_count;
 }
 
+// <shift_count> := <term_arg>
+AMLSymbol *analyse_aml_shift_count(AMLSubstring aml)
+{
+	AMLSymbol *shift_count = malloc(sizeof(*shift_count));
+	shift_count->string.initial = aml.initial;
+	shift_count->string.length = 0;
+	shift_count->type = aml_shift_count;
+	shift_count->component.shift_count.term_arg = analyse_aml_term_arg(aml);
+	shift_count->string.length += shift_count->component.shift_count.term_arg->string.length;
+	aml.initial += shift_count->component.shift_count.term_arg->string.length;
+	aml.length -= shift_count->component.shift_count.term_arg->string.length;
+	return shift_count;
+}
+
 // <shift_right_op> := AML_BYTE_SHIFT_RIGHT
 AMLSymbol *analyse_aml_shift_right_op(AMLSubstring aml)
 {
@@ -7502,6 +7539,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_scope_op:
 		break;
 	case aml_seg_count:
+		break;
+	case aml_shift_count:
+		if(aml_symbol->component.shift_count.term_arg)delete_aml_symbol(aml_symbol->component.shift_count.term_arg);
 		break;
 	case aml_shift_right_op:
 		break;

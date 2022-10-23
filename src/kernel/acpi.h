@@ -272,6 +272,7 @@ typedef enum _AMLSymbolType
 	aml_root_char,
 	aml_scope_op,
 	aml_seg_count,
+	aml_shift_count,
 	aml_shift_right_op,
 	aml_simple_name,
 	aml_size_of_op,
@@ -753,6 +754,11 @@ typedef struct _AMLRevisionOp
 	struct _AMLSymbol *revision_op_suffix;
 } AMLRevisionOp;
 
+typedef struct _AMLShiftCount
+{
+	struct _AMLSymbol *term_arg;
+} AMLShiftCount;
+
 typedef struct _AMLSimpleName
 {
 	struct _AMLSymbol *name_string;
@@ -897,6 +903,7 @@ typedef union _AMLComponent
 	AMLRegionLen region_len;
 	AMLRegionOffset region_offset;
 	AMLRevisionOp revision_op;
+	AMLShiftCount shift_count;
 	AMLSimpleName simple_name;
 	AMLStatementOpcode statement_opcode;
 	AMLString string;
@@ -1110,6 +1117,8 @@ AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
 AMLSymbol *analyse_aml_scope_op(AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
+// <shift_count> := <term_arg>
+AMLSymbol *analyse_aml_shift_count(AMLSubstring aml);
 // <shift_right_op> := AML_BYTE_SHIFT_RIGHT
 AMLSymbol *analyse_aml_shift_right_op(AMLSubstring aml);
 // <simple_name> := <name_string> | <arg_obj> | <local_obj>
