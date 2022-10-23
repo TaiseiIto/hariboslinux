@@ -3820,6 +3820,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(local_obj_char_array);
 		}
 		break;
+	case aml_term_arg_list:
+		if(aml_symbol->component.term_arg_list.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_arg_list.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		if(aml_symbol->component.term_arg_list.term_arg_list)
+		{
+			term_arg_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.term_arg_list.term_arg_list);
+			insert_char_front(term_arg_list_chain_string, term_arg_list_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_list_chain_string, "\n", "\n ");
+			term_arg_list_char_array = create_char_array_from_chain_string(term_arg_list_chain_string);
+		}
+		else term_arg_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array, term_arg_list_char_array);
+		if(aml_symbol->component.term_arg_list.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		if(aml_symbol->component.term_arg_list.term_arg_list)
+		{
+			delete_chain_string(term_arg_list_chain_string);
+			free(term_arg_list_char_array);
+		}
+		break;
 	case aml_term_list:
 		if(aml_symbol->component.term_list.term_obj)
 		{
@@ -4071,6 +4100,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_super_name_name = "SuperName";
 	static char const * const aml_target_name = "Target";
 	static char const * const aml_term_arg_name = "TermArg";
+	static char const * const aml_term_arg_list_name = "TermArgList";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
 	static char const * const aml_to_buffer_op_name = "ToBufferOp";
@@ -4278,6 +4308,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_target_name;
 	case aml_term_arg:
 		return aml_term_arg_name;
+	case aml_term_arg_list:
+		return aml_term_arg_list_name;
 	case aml_term_list:
 		return aml_term_list_name;
 	case aml_term_obj:
@@ -5414,9 +5446,10 @@ AMLSymbol *analyse_aml_method_invocation(AMLSubstring aml)
 	method_invocation->string.length += method_invocation->component.method_invocation.name_string->string.length;
 	aml.initial += method_invocation->component.method_invocation.name_string->string.length;
 	aml.length -= method_invocation->component.method_invocation.name_string->string.length;
-	method_invocation->component.method_invocation.term_arg_list = NULL;
-	ERROR(); // term_arg_list is unimplemented
-	printf_serial("*aml.initial = %#04.2x", *aml.initial);
+	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(aml);
+	method_invocation->string.length += method_invocation->component.method_invocation.term_arg_list->string.length;
+	aml.initial += method_invocation->component.method_invocation.term_arg_list->string.length;
+	aml.length -= method_invocation->component.method_invocation.term_arg_list->string.length;
 	return method_invocation;
 }
 
@@ -6364,6 +6397,67 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	return term_arg;
 }
 
+// <term_arg_list> := Nothing | <term_arg> <term_arg_list>
+AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml)
+{
+	AMLSymbol *term_arg_list = malloc(sizeof(*term_arg_list));
+	term_arg_list->string.initial = aml.initial;
+	term_arg_list->string.length = 0;
+	term_arg_list->type = aml_term_arg_list;
+	term_arg_list->component.term_arg_list.term_arg = NULL;
+	term_arg_list->component.term_arg_list.term_arg_list = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_BUFFER_OP:
+	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_EXT_OP_PREFIX:
+	case AML_BYTE_INDEX_OP:
+	case AML_BYTE_LOCAL_0_OP:
+	case AML_BYTE_LOCAL_1_OP:
+	case AML_BYTE_LOCAL_2_OP:
+	case AML_BYTE_LOCAL_3_OP:
+	case AML_BYTE_LOCAL_4_OP:
+	case AML_BYTE_LOCAL_5_OP:
+	case AML_BYTE_LOCAL_6_OP:
+	case AML_BYTE_LOCAL_7_OP:
+	case AML_BYTE_L_LESS_OP:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_SIZE_OF_OP:
+	case AML_BYTE_STORE_OP:
+	case AML_BYTE_STRING_PREFIX:
+	case AML_BYTE_SUBTRACT_OP:
+	case AML_BYTE_TO_BUFFER_OP:
+	case AML_BYTE_TO_HEX_STRING_OP:
+	case AML_BYTE_WORD_PREFIX:
+	case AML_BYTE_ZERO_OP:
+		term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(aml);
+		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg->string.length;
+		aml.initial += term_arg_list->component.term_arg_list.term_arg->string.length;
+		aml.length -= term_arg_list->component.term_arg_list.term_arg->string.length;
+		term_arg_list->component.term_arg_list.term_arg_list = analyse_aml_term_arg_list(aml);
+		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg_list->string.length;
+		aml.initial += term_arg_list->component.term_arg_list.term_arg_list->string.length;
+		aml.length -= term_arg_list->component.term_arg_list.term_arg_list->string.length;
+		break;
+	default:
+		ERROR(); // Syntax error or unimplemented pattern
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		break;
+	}
+	return term_arg_list;
+}
+
 // <term_list> := Nothing | <term_obj> <term_list>
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 {
@@ -6994,6 +7088,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.term_arg.data_object)delete_aml_symbol(aml_symbol->component.term_arg.data_object);
 		if(aml_symbol->component.term_arg.arg_obj)delete_aml_symbol(aml_symbol->component.term_arg.arg_obj);
 		if(aml_symbol->component.term_arg.local_obj)delete_aml_symbol(aml_symbol->component.term_arg.local_obj);
+		break;
+	case aml_term_arg_list:
+		if(aml_symbol->component.term_arg_list.term_arg)delete_aml_symbol(aml_symbol->component.term_arg_list.term_arg);
+		if(aml_symbol->component.term_arg_list.term_arg_list)delete_aml_symbol(aml_symbol->component.term_arg_list.term_arg_list);
 		break;
 	case aml_term_list:
 		if(aml_symbol->component.term_list.term_obj)delete_aml_symbol(aml_symbol->component.term_list.term_obj);
