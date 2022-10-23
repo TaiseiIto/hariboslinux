@@ -6617,6 +6617,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_L_LESS_OP:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
+		case AML_BYTE_SCOPE_OP:
 		case AML_BYTE_SIZE_OF_OP:
 		case AML_BYTE_STORE_OP:
 		case AML_BYTE_SUBTRACT_OP:
