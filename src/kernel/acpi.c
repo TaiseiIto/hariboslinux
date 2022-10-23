@@ -7041,8 +7041,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml)
 		aml.length -= term_arg_list->component.term_arg_list.term_arg_list->string.length;
 		break;
 	default:
-		ERROR(); // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		// term_arg_list can be nothing.
 		break;
 	}
 	return term_arg_list;
