@@ -196,6 +196,7 @@ typedef enum _AMLSymbolType
 	aml_def_buffer,
 	aml_def_deref_of,
 	aml_def_field,
+	aml_def_increment,
 	aml_def_index,
 	aml_def_l_less,
 	aml_def_method,
@@ -381,6 +382,12 @@ typedef struct _AMLDefField
 	struct _AMLSymbol *field_flags;
 	struct _AMLSymbol *field_list;
 } AMLDefField;
+
+typedef struct _AMLDefIncrement
+{
+	struct _AMLSymbol *increment_op;
+	struct _AMLSymbol *super_name;
+} AMLDefIncrement;
 
 typedef struct _AMLDefIndex
 {
@@ -809,6 +816,7 @@ typedef union _AMLComponent
 	AMLDefBuffer def_buffer;
 	AMLDefDerefOf def_deref_of;
 	AMLDefField def_field;
+	AMLDefIncrement def_increment;
 	AMLDefIndex def_index;
 	AMLDefLLess def_l_less;
 	AMLDefMethod def_method;
@@ -911,6 +919,8 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
+// <def_increment> := <increment_op> <super_name>
+AMLSymbol *analyse_aml_def_increment(AMLSubstring aml);
 // <def_index> := <index_op> <buff_pkf_str_obj> <index_value> <target>
 AMLSymbol *analyse_aml_def_index(AMLSubstring aml);
 // <def_l_less> := <l_less_op> <operand> <operand>

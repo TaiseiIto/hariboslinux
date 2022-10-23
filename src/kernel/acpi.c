@@ -270,6 +270,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *field_list_chain_string;
 	ChainString *field_op_chain_string;
 	ChainString *field_op_prefix_chain_string;
+	ChainString *increment_op_chain_string;
 	ChainString *index_op_chain_string;
 	ChainString *index_value_chain_string;
 	ChainString *l_less_op_chain_string;
@@ -461,6 +462,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *field_list_char_array;
 	char *field_op_char_array;
 	char *field_op_prefix_char_array;
+	char *increment_op_char_array;
 	char *index_op_char_array;
 	char *index_value_char_array;
 	char *l_less_op_char_array;
@@ -1057,6 +1059,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(field_list_chain_string);
 			free(field_list_char_array);
+		}
+		break;
+	case aml_def_increment:
+		if(aml_symbol->component.def_increment.increment_op)
+		{
+			increment_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_increment.increment_op);
+			insert_char_front(increment_op_chain_string, increment_op_chain_string->first_character, ' ');
+			replace_chain_string(increment_op_chain_string, "\n", "\n ");
+			increment_op_char_array = create_char_array_from_chain_string(increment_op_chain_string);
+		}
+		else increment_op_char_array = "";
+		if(aml_symbol->component.def_increment.super_name)
+		{
+			super_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_increment.super_name);
+			insert_char_front(super_name_chain_string, super_name_chain_string->first_character, ' ');
+			replace_chain_string(super_name_chain_string, "\n", "\n ");
+			super_name_char_array = create_char_array_from_chain_string(super_name_chain_string);
+		}
+		else super_name_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), increment_op_char_array, super_name_char_array);
+		if(aml_symbol->component.def_increment.increment_op)
+		{
+			delete_chain_string(increment_op_chain_string);
+			free(increment_op_char_array);
+		}
+		if(aml_symbol->component.def_increment.super_name)
+		{
+			delete_chain_string(super_name_chain_string);
+			free(super_name_char_array);
 		}
 		break;
 	case aml_def_index:
@@ -4021,6 +4052,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
 	static char const * const aml_def_field_name = "DefField";
+	static char const * const aml_def_increment_name = "DefIncrement";
 	static char const * const aml_def_index_name = "DefIndex";
 	static char const * const aml_def_l_less_name = "DefLLess";
 	static char const * const aml_def_method_name = "DefMethod";
@@ -4150,6 +4182,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_deref_of_name;
 	case aml_def_field:
 		return aml_def_field_name;
+	case aml_def_increment:
+		return aml_def_increment_name;
 	case aml_def_index:
 		return aml_def_index_name;
 	case aml_def_l_less:
@@ -4759,6 +4793,18 @@ AMLSymbol *analyse_aml_def_field(AMLSubstring aml)
 	aml.initial += def_field->component.def_field.field_list->string.length;
 	aml.length -= def_field->component.def_field.field_list->string.length;
 	return def_field;
+}
+
+// <def_increment> := <increment_op> <super_name>
+AMLSymbol *analyse_aml_def_increment(AMLSubstring aml)
+{
+	AMLSymbol *def_increment = malloc(sizeof(*def_increment));
+	def_increment->string.initial = aml.initial;
+	def_increment->string.length = 0;
+	def_increment->type = aml_def_increment;
+	def_increment->component.def_increment.increment_op = NULL;
+	def_increment->component.def_increment.super_name = NULL;
+	return def_increment;
 }
 
 // <def_index> := <index_op> <buff_pkf_str_obj> <index_value> <target>
@@ -6742,6 +6788,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_field.name_string)delete_aml_symbol(aml_symbol->component.def_field.name_string);
 		if(aml_symbol->component.def_field.field_flags)delete_aml_symbol(aml_symbol->component.def_field.field_flags);
 		if(aml_symbol->component.def_field.field_list)delete_aml_symbol(aml_symbol->component.def_field.field_list);
+		break;
+	case aml_def_increment:
+		if(aml_symbol->component.def_increment.increment_op)delete_aml_symbol(aml_symbol->component.def_increment.increment_op);
+		if(aml_symbol->component.def_increment.super_name)delete_aml_symbol(aml_symbol->component.def_increment.super_name);
 		break;
 	case aml_def_index:
 		if(aml_symbol->component.def_index.index_op)delete_aml_symbol(aml_symbol->component.def_index.index_op);
