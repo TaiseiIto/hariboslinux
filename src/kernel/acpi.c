@@ -321,6 +321,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *root_char_chain_string;
 	ChainString *scope_op_chain_string;
 	ChainString *seg_count_chain_string;
+	ChainString *shift_count_chain_string;
+	ChainString *shift_right_op_chain_string;
 	ChainString *simple_name_chain_string;
 	ChainString *size_of_op_chain_string;
 	ChainString *statement_opcode_chain_string;
@@ -515,6 +517,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *root_char_char_array;
 	char *scope_op_char_array;
 	char *seg_count_char_array;
+	char *shift_count_char_array;
+	char *shift_right_op_char_array;
 	char *simple_name_char_array;
 	char *size_of_op_char_array;
 	char *statement_opcode_char_array;
@@ -1471,6 +1475,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(term_list_chain_string);
 			free(term_list_char_array);
+		}
+		break;
+	case aml_def_shift_right:
+		if(aml_symbol->component.def_shift_right.shift_right_op)
+		{
+			shift_right_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_shift_right.shift_right_op);
+			insert_char_front(shift_right_op_chain_string, shift_right_op_chain_string->first_character, ' ');
+			replace_chain_string(shift_right_op_chain_string, "\n", "\n ");
+			shift_right_op_char_array = create_char_array_from_chain_string(shift_right_op_chain_string);
+		}
+		else shift_right_op_char_array = "";
+		if(aml_symbol->component.def_shift_right.operand)
+		{
+			operand_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_shift_right.operand);
+			insert_char_front(operand_chain_string, operand_chain_string->first_character, ' ');
+			replace_chain_string(operand_chain_string, "\n", "\n ");
+			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
+		}
+		else operand_char_array = "";
+		if(aml_symbol->component.def_shift_right.shift_count)
+		{
+			shift_count_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_shift_right.shift_count);
+			insert_char_front(shift_count_chain_string, shift_count_chain_string->first_character, ' ');
+			replace_chain_string(shift_count_chain_string, "\n", "\n ");
+			shift_count_char_array = create_char_array_from_chain_string(shift_count_chain_string);
+		}
+		else shift_count_char_array = "";
+		if(aml_symbol->component.def_shift_right.target)
+		{
+			target_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_shift_right.target);
+			insert_char_front(target_chain_string, target_chain_string->first_character, ' ');
+			replace_chain_string(target_chain_string, "\n", "\n ");
+			target_char_array = create_char_array_from_chain_string(target_chain_string);
+		}
+		else target_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), shift_right_op_char_array, operand_char_array, shift_count_char_array, target_char_array);
+		if(aml_symbol->component.def_shift_right.shift_right_op)
+		{
+			delete_chain_string(shift_right_op_chain_string);
+			free(shift_right_op_char_array);
+		}
+		if(aml_symbol->component.def_shift_right.operand)
+		{
+			delete_chain_string(operand_chain_string);
+			free(operand_char_array);
+		}
+		if(aml_symbol->component.def_shift_right.shift_count)
+		{
+			delete_chain_string(shift_count_chain_string);
+			free(shift_count_char_array);
+		}
+		if(aml_symbol->component.def_shift_right.target)
+		{
+			delete_chain_string(target_chain_string);
+			free(target_char_array);
 		}
 		break;
 	case aml_def_size_of:
@@ -4185,6 +4244,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_scope_name = "DefScope";
+	static char const * const aml_def_shift_right_name = "DefShiftRight";
 	static char const * const aml_def_size_of_name = "DefSizeOf";
 	static char const * const aml_def_store_name = "DefStore";
 	static char const * const aml_def_subtract_name = "DefSubtract";
@@ -4328,6 +4388,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_op_region_name;
 	case aml_def_scope:
 		return aml_def_scope_name;
+	case aml_def_shift_right:
+		return aml_def_shift_right_name;
 	case aml_def_size_of:
 		return aml_def_size_of_name;
 	case aml_def_store:
@@ -5132,6 +5194,21 @@ AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
 	aml.initial += def_scope->component.def_scope.term_list->string.length;
 	aml.length -= def_scope->component.def_scope.term_list->string.length;
 	return def_scope;
+}
+
+// <def_shift_right> := <shift_right_op> <operand> <shift_count> <target>
+AMLSymbol *analyse_aml_def_shift_right(AMLSubstring aml)
+{
+	AMLSymbol *def_shift_right = malloc(sizeof(*def_shift_right));
+	def_shift_right->string.initial = aml.initial;
+	def_shift_right->string.length = 0;
+	def_shift_right->type = aml_def_shift_right;
+	def_shift_right->component.def_shift_right.shift_right_op = NULL;
+	def_shift_right->component.def_shift_right.operand = NULL;
+	def_shift_right->component.def_shift_right.shift_count = NULL;
+	def_shift_right->component.def_shift_right.target = NULL;
+	ERROR(); // unimplemented
+	return def_shift_right;
 }
 
 // <def_size_of> := <size_of_op> <super_name>
@@ -7115,6 +7192,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_scope.pkg_length)delete_aml_symbol(aml_symbol->component.def_scope.pkg_length);
 		if(aml_symbol->component.def_scope.name_string)delete_aml_symbol(aml_symbol->component.def_scope.name_string);
 		if(aml_symbol->component.def_scope.term_list)delete_aml_symbol(aml_symbol->component.def_scope.term_list);
+		break;
+	case aml_def_shift_right:
+		if(aml_symbol->component.def_shift_right.shift_right_op)delete_aml_symbol(aml_symbol->component.def_shift_right.shift_right_op);
+		if(aml_symbol->component.def_shift_right.operand)delete_aml_symbol(aml_symbol->component.def_shift_right.operand);
+		if(aml_symbol->component.def_shift_right.shift_count)delete_aml_symbol(aml_symbol->component.def_shift_right.shift_count);
+		if(aml_symbol->component.def_shift_right.target)delete_aml_symbol(aml_symbol->component.def_shift_right.target);
 		break;
 	case aml_def_size_of:
 		if(aml_symbol->component.def_size_of.size_of_op)delete_aml_symbol(aml_symbol->component.def_size_of.size_of_op);

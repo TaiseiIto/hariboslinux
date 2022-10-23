@@ -204,6 +204,7 @@ typedef enum _AMLSymbolType
 	aml_def_name,
 	aml_def_op_region,
 	aml_def_scope,
+	aml_def_shift_right,
 	aml_def_size_of,
 	aml_def_store,
 	aml_def_subtract,
@@ -448,6 +449,14 @@ typedef struct _AMLDefScope
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *term_list;
 } AMLDefScope;
+
+typedef struct _AMLDefShiftRight
+{
+	struct _AMLSymbol *shift_right_op;
+	struct _AMLSymbol *operand;
+	struct _AMLSymbol *shift_count;
+	struct _AMLSymbol *target;
+} AMLDefShiftRight;
 
 typedef struct _AMLDefSizeOf
 {
@@ -849,6 +858,7 @@ typedef union _AMLComponent
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
 	AMLDefScope def_scope;
+	AMLDefShiftRight def_shift_right;
 	AMLDefSizeOf def_size_of;
 	AMLDefStore def_store;
 	AMLDefSubtract def_subtract;
@@ -963,6 +973,8 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
 AMLSymbol *analyse_aml_def_scope(AMLSubstring aml);
+// <def_shift_right> := <shift_right_op> <operand> <shift_count> <target>
+AMLSymbol *analyse_aml_def_shift_right(AMLSubstring aml);
 // <def_size_of> := <size_of_op> <super_name>
 AMLSymbol *analyse_aml_def_size_of(AMLSubstring aml);
 // <def_store> := <store_op> <term_arg> <super_name>
