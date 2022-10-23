@@ -5220,6 +5220,7 @@ AMLSymbol *analyse_aml_def_shift_right(AMLSubstring aml)
 	def_shift_right->component.def_shift_right.shift_count = NULL;
 	def_shift_right->component.def_shift_right.target = NULL;
 	ERROR(); // unimplemented
+	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	return def_shift_right;
 }
 
@@ -5347,17 +5348,14 @@ AMLSymbol *analyse_aml_def_while(AMLSubstring aml)
 	def_while->string.length += def_while->component.def_while.pkg_length->string.length;
 	aml.initial += def_while->component.def_while.pkg_length->string.length;
 	aml.length = def_while->component.def_while.pkg_length->component.pkg_length.length - def_while->component.def_while.pkg_length->string.length;
-	printf_serial("def_while aml.length = %#010.8x\n", aml.length);
 	def_while->component.def_while.predicate = analyse_aml_predicate(aml);
 	def_while->string.length += def_while->component.def_while.predicate->string.length;
 	aml.initial += def_while->component.def_while.predicate->string.length;
 	aml.length -= def_while->component.def_while.predicate->string.length;
-	printf_serial("def_while aml.length = %#010.8x\n", aml.length);
 	def_while->component.def_while.term_list = analyse_aml_term_list(aml);
 	def_while->string.length += def_while->component.def_while.term_list->string.length;
 	aml.initial += def_while->component.def_while.term_list->string.length;
 	aml.length -= def_while->component.def_while.term_list->string.length;
-	printf_serial("def_while aml.length = %#010.8x\n", aml.length);
 	return def_while;
 }
 
@@ -6482,7 +6480,7 @@ AMLSymbol *analyse_aml_shift_right_op(AMLSubstring aml)
 	shift_right_op->string.initial = aml.initial;
 	shift_right_op->string.length = 1;
 	shift_right_op->type = aml_shift_right_op;
-	if(*shift_right_op->string.initial == AML_BYTE_SHIFT_RIGHT_OP)ERROR(); // Incorrect shift_right_op
+	if(*shift_right_op->string.initial != AML_BYTE_SHIFT_RIGHT_OP)ERROR(); // Incorrect shift_right_op
 	return shift_right_op;
 }
 
@@ -6863,6 +6861,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml)
 	case AML_BYTE_ONES_OP:
 	case AML_BYTE_ONE_OP:
 	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
 	case AML_BYTE_STRING_PREFIX:
