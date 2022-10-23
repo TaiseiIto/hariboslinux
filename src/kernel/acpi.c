@@ -5071,7 +5071,10 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml)
 	def_name->string.length += def_name->component.def_name.name_string->string.length;
 	aml.initial += def_name->component.def_name.name_string->string.length;
 	aml.length -= def_name->component.def_name.name_string->string.length;
-	def_name->component.def_name.data_ref_object = analyse_aml_data_ref_object(aml);
+	def_name->component.def_name.data_ref_object = analyse_aml_data_ref_object(aml);;
+	def_name->string.length += def_name->component.def_name.data_ref_object->string.length;
+	aml.initial += def_name->component.def_name.data_ref_object->string.length;
+	aml.length -= def_name->component.def_name.data_ref_object->string.length;
 	return def_name;
 }
 
