@@ -196,6 +196,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_deref_of_chain_string;
 	ChainString *def_device_chain_string;
 	ChainString *def_divide_chain_string;
+	ChainString *def_else_chain_string;
 	ChainString *def_external_chain_string;
 	ChainString *def_fatal_chain_string;
 	ChainString *def_field_chain_string;
@@ -273,6 +274,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *field_list_chain_string;
 	ChainString *field_op_chain_string;
 	ChainString *field_op_suffix_chain_string;
+	ChainString *if_op_chain_string;
 	ChainString *increment_op_chain_string;
 	ChainString *index_op_chain_string;
 	ChainString *index_value_chain_string;
@@ -393,6 +395,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_deref_of_char_array;
 	char *def_device_char_array;
 	char *def_divide_char_array;
+	char *def_else_char_array;
 	char *def_external_char_array;
 	char *def_fatal_char_array;
 	char *def_field_char_array;
@@ -470,6 +473,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *field_list_char_array;
 	char *field_op_char_array;
 	char *field_op_suffix_char_array;
+	char *if_op_char_array;
 	char *increment_op_char_array;
 	char *index_op_char_array;
 	char *index_value_char_array;
@@ -1124,6 +1128,74 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(field_list_chain_string);
 			free(field_list_char_array);
+		}
+		break;
+	case aml_def_if_else:
+		if(aml_symbol->component.def_if_else.if_op)
+		{
+			if_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_if_else.if_op);
+			insert_char_front(if_op_chain_string, if_op_chain_string->first_character, ' ');
+			replace_chain_string(if_op_chain_string, "\n", "\n ");
+			if_op_char_array = create_char_array_from_chain_string(if_op_chain_string);
+		}
+		else if_op_char_array = "";
+		if(aml_symbol->component.def_if_else.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_if_else.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_if_else.predicate)
+		{
+			predicate_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_if_else.predicate);
+			insert_char_front(predicate_chain_string, predicate_chain_string->first_character, ' ');
+			replace_chain_string(predicate_chain_string, "\n", "\n ");
+			predicate_char_array = create_char_array_from_chain_string(predicate_chain_string);
+		}
+		else predicate_char_array = "";
+		if(aml_symbol->component.def_if_else.term_list)
+		{
+			term_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_if_else.term_list);
+			insert_char_front(term_list_chain_string, term_list_chain_string->first_character, ' ');
+			replace_chain_string(term_list_chain_string, "\n", "\n ");
+			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
+		}
+		else term_list_char_array = "";
+		if(aml_symbol->component.def_if_else.def_else)
+		{
+			def_else_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_if_else.def_else);
+			insert_char_front(def_else_chain_string, def_else_chain_string->first_character, ' ');
+			replace_chain_string(def_else_chain_string, "\n", "\n ");
+			def_else_char_array = create_char_array_from_chain_string(def_else_chain_string);
+		}
+		else def_else_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), if_op_char_array, pkg_length_char_array, predicate_char_array, term_list_char_array, def_else_char_array);
+		if(aml_symbol->component.def_if_else.if_op)
+		{
+			delete_chain_string(if_op_chain_string);
+			free(if_op_char_array);
+		}
+		if(aml_symbol->component.def_if_else.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_if_else.predicate)
+		{
+			delete_chain_string(predicate_chain_string);
+			free(predicate_char_array);
+		}
+		if(aml_symbol->component.def_if_else.term_list)
+		{
+			delete_chain_string(term_list_chain_string);
+			free(term_list_char_array);
+		}
+		if(aml_symbol->component.def_if_else.def_else)
+		{
+			delete_chain_string(def_else_chain_string);
+			free(def_else_char_array);
 		}
 		break;
 	case aml_def_increment:
@@ -4256,6 +4328,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
 	static char const * const aml_def_device_name = "DefDevice";
 	static char const * const aml_def_field_name = "DefField";
+	static char const * const aml_def_if_else_name = "DefIfElse";
 	static char const * const aml_def_increment_name = "DefIncrement";
 	static char const * const aml_def_index_name = "DefIndex";
 	static char const * const aml_def_l_less_name = "DefLLess";
@@ -4395,6 +4468,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_device_name;
 	case aml_def_field:
 		return aml_def_field_name;
+	case aml_def_if_else:
+		return aml_def_if_else_name;
 	case aml_def_increment:
 		return aml_def_increment_name;
 	case aml_def_index:
@@ -5046,6 +5121,21 @@ AMLSymbol *analyse_aml_def_field(AMLSubstring aml)
 	aml.initial += def_field->component.def_field.field_list->string.length;
 	aml.length -= def_field->component.def_field.field_list->string.length;
 	return def_field;
+}
+
+// <def_if_else> := <if_op> <pkg_length> <predicate> <term_list> <def_else>
+AMLSymbol *analyse_aml_def_if_else(AMLSubstring aml)
+{
+	AMLSymbol *def_if_else = malloc(sizeof(*def_if_else));
+	def_if_else->string.initial = aml.initial;
+	def_if_else->string.length = 0;
+	def_if_else->type = aml_def_if_else;
+	def_if_else->component.def_if_else.if_op = NULL;
+	def_if_else->component.def_if_else.pkg_length = NULL;
+	def_if_else->component.def_if_else.predicate = NULL;
+	def_if_else->component.def_if_else.term_list = NULL;
+	def_if_else->component.def_if_else.def_else = NULL;
+	return def_if_else;
 }
 
 // <def_increment> := <increment_op> <super_name>
@@ -7219,6 +7309,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_field.name_string)delete_aml_symbol(aml_symbol->component.def_field.name_string);
 		if(aml_symbol->component.def_field.field_flags)delete_aml_symbol(aml_symbol->component.def_field.field_flags);
 		if(aml_symbol->component.def_field.field_list)delete_aml_symbol(aml_symbol->component.def_field.field_list);
+		break;
+	case aml_def_if_else:
+		if(aml_symbol->component.def_if_else.if_op)delete_aml_symbol(aml_symbol->component.def_if_else.if_op);
+		if(aml_symbol->component.def_if_else.pkg_length)delete_aml_symbol(aml_symbol->component.def_if_else.pkg_length);
+		if(aml_symbol->component.def_if_else.predicate)delete_aml_symbol(aml_symbol->component.def_if_else.predicate);
+		if(aml_symbol->component.def_if_else.term_list)delete_aml_symbol(aml_symbol->component.def_if_else.term_list);
+		if(aml_symbol->component.def_if_else.def_else)delete_aml_symbol(aml_symbol->component.def_if_else.def_else);
 		break;
 	case aml_def_increment:
 		if(aml_symbol->component.def_increment.increment_op)delete_aml_symbol(aml_symbol->component.def_increment.increment_op);

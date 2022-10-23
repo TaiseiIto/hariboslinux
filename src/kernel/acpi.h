@@ -197,6 +197,7 @@ typedef enum _AMLSymbolType
 	aml_def_deref_of,
 	aml_def_device,
 	aml_def_field,
+	aml_def_if_else,
 	aml_def_increment,
 	aml_def_index,
 	aml_def_l_less,
@@ -398,6 +399,15 @@ typedef struct _AMLDefField
 	struct _AMLSymbol *field_flags;
 	struct _AMLSymbol *field_list;
 } AMLDefField;
+
+typedef struct _AMLDefIfElse
+{
+	struct _AMLSymbol *if_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *predicate;
+	struct _AMLSymbol *term_list;
+	struct _AMLSymbol *def_else;
+} AMLDefIfElse;
 
 typedef struct _AMLDefIncrement
 {
@@ -858,6 +868,7 @@ typedef union _AMLComponent
 	AMLDefDerefOf def_deref_of;
 	AMLDefDevice def_device;
 	AMLDefField def_field;
+	AMLDefIfElse def_if_else;
 	AMLDefIncrement def_increment;
 	AMLDefIndex def_index;
 	AMLDefLLess def_l_less;
@@ -967,6 +978,8 @@ AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_device(AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
+// <def_if_else> := <if_op> <pkg_length> <predicate> <term_list> <def_else>
+AMLSymbol *analyse_aml_def_if_else(AMLSubstring aml);
 // <def_increment> := <increment_op> <super_name>
 AMLSymbol *analyse_aml_def_increment(AMLSubstring aml);
 // <def_index> := <index_op> <buff_pkf_str_obj> <index_value> <target>
