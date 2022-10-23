@@ -6706,8 +6706,16 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 		term_arg->string.length += term_arg->component.term_arg.local_obj->string.length;
 		break;
 	default:
-		ERROR(); // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			term_arg->component.term_arg.expression_opcode = analyse_aml_expression_opcode(aml);
+			term_arg->string.length += term_arg->component.term_arg.expression_opcode->string.length;
+		}
+		else
+		{
+			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		}
 		break;
 	}
 	return term_arg;
