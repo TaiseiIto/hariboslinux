@@ -327,6 +327,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *super_name_chain_string;
 	ChainString *target_chain_string;
 	ChainString *term_arg_chain_string;
+	ChainString *term_arg_list_chain_string;
 	ChainString *term_list_chain_string;
 	ChainString *term_obj_chain_string;
 	ChainString *to_buffer_op_chain_string;
@@ -516,6 +517,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *super_name_char_array;
 	char *target_char_array;
 	char *term_arg_char_array;
+	char *term_arg_list_char_array;
 	char *term_list_char_array;
 	char *term_obj_char_array;
 	char *to_buffer_op_char_array;
@@ -2591,6 +2593,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_method_flags:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_method_invocation:
+		if(aml_symbol->component.method_invocation.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.method_invocation.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.method_invocation.term_arg_list)
+		{
+			term_arg_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.method_invocation.term_arg_list);
+			insert_char_front(term_arg_list_chain_string, term_arg_list_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_list_chain_string, "\n", "\n ");
+			term_arg_list_char_array = create_char_array_from_chain_string(term_arg_list_chain_string);
+		}
+		else term_arg_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), name_string_char_array, term_arg_list_char_array);
+		if(aml_symbol->component.method_invocation.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.method_invocation.term_arg_list)
+		{
+			delete_chain_string(term_arg_list_chain_string);
+			free(term_arg_list_char_array);
+		}
+		break;
 	case aml_method_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3993,6 +4024,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_local_obj_name = "LocalObj";
 	static char const * const aml_local_op_name = "LocalOp";
 	static char const * const aml_method_flags_name = "MethodFlags";
+	static char const * const aml_method_invocation_name = "MethodInvocation";
 	static char const * const aml_method_op_name = "MethodOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
@@ -4152,6 +4184,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_local_op_name;
 	case aml_method_flags:
 		return aml_method_flags_name;
+	case aml_method_invocation:
+		return aml_method_invocation_name;
 	case aml_method_op:
 		return aml_method_op_name;
 	case aml_multi_name_path:
@@ -5173,9 +5207,17 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_hex_string->string.length;
 		break;
 	default:
-		ERROR(); // Syntax error
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		break;
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			expression_opcode->component.expression_opcode.method_invocation = analyse_aml_method_invocation(aml);
+			expression_opcode->string.length += expression_opcode->component.expression_opcode.method_invocation->string.length;
+		}
+		else
+		{
+			ERROR(); // Syntax error
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+			break;
+		}
 	}
 	return expression_opcode;
 }
@@ -5359,6 +5401,23 @@ AMLSymbol *analyse_aml_method_flags(AMLSubstring aml)
 	method_flags->string.length = 1;
 	method_flags->type = aml_method_flags;
 	return method_flags;
+}
+
+// <method_invocation> := <name_string> | <term_arg_list>
+AMLSymbol *analyse_aml_method_invocation(AMLSubstring aml)
+{
+	AMLSymbol *method_invocation = malloc(sizeof(*method_invocation));
+	method_invocation->string.initial = aml.initial;
+	method_invocation->string.length = 0;
+	method_invocation->type = aml_method_invocation;
+	method_invocation->component.method_invocation.name_string = analyse_aml_name_string(aml);
+	method_invocation->string.length += method_invocation->component.method_invocation.name_string->string.length;
+	aml.initial += method_invocation->component.method_invocation.name_string->string.length;
+	aml.length -= method_invocation->component.method_invocation.name_string->string.length;
+	method_invocation->component.method_invocation.term_arg_list = NULL;
+	ERROR(); // term_arg_list is unimplemented
+	printf_serial("*aml.initial = %#04.2x", *aml.initial);
+	return method_invocation;
 }
 
 // <method_op> := 0x14
@@ -6342,8 +6401,18 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 			aml.length -= term_list->component.term_list.term_list->string.length;
 			break;
 		default:
-			ERROR(); // Syntax error or unimplemented pattern
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+			if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+			{
+				term_list->component.term_list.term_list = analyse_aml_term_list(aml);
+				term_list->string.length += term_list->component.term_list.term_list->string.length;
+				aml.initial += term_list->component.term_list.term_list->string.length;
+				aml.length -= term_list->component.term_list.term_list->string.length;
+			}
+			else
+			{
+				ERROR(); // Syntax error or unimplemented pattern
+				printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+			}
 			break;
 		}
 	}
@@ -6386,8 +6455,16 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->string.length += term_obj->component.term_obj.statement_opcode->string.length;
 		break;
 	default:
-		ERROR(); // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
+			term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
+		}
+		else 
+		{
+			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		}
 		break;
 	}
 	return term_obj;
@@ -6743,6 +6820,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_local_op:
 		break;
 	case aml_method_flags:
+		break;
+	case aml_method_invocation:
+		if(aml_symbol->component.method_invocation.name_string)delete_aml_symbol(aml_symbol->component.method_invocation.name_string);
+		if(aml_symbol->component.method_invocation.term_arg_list)delete_aml_symbol(aml_symbol->component.method_invocation.term_arg_list);
 		break;
 	case aml_method_op:
 		break;
