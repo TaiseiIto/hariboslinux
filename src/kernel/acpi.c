@@ -4834,6 +4834,10 @@ AMLSymbol *analyse_aml_def_index(AMLSubstring aml)
 	def_index->string.length += def_index->component.def_index.buff_pkg_str_obj->string.length;
 	aml.initial += def_index->component.def_index.buff_pkg_str_obj->string.length;
 	aml.length -= def_index->component.def_index.buff_pkg_str_obj->string.length;
+	def_index->component.def_index.index_value = analyse_aml_index_value(aml);
+	def_index->string.length += def_index->component.def_index.index_value->string.length;
+	aml.initial += def_index->component.def_index.index_value->string.length;
+	aml.length -= def_index->component.def_index.index_value->string.length;
 	def_index->component.def_index.target = analyse_aml_target(aml);
 	def_index->string.length += def_index->component.def_index.target->string.length;
 	aml.initial += def_index->component.def_index.target->string.length;
