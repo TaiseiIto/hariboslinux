@@ -6244,8 +6244,18 @@ AMLSymbol *analyse_aml_simple_name(AMLSubstring aml)
 		aml.length -= simple_name->component.simple_name.name_string->string.length;
 		break;
 	default:
-		ERROR(); // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			simple_name->component.simple_name.name_string = analyse_aml_name_string(aml);
+			simple_name->string.length += simple_name->component.simple_name.name_string->string.length;
+			aml.initial += simple_name->component.simple_name.name_string->string.length;
+			aml.length -= simple_name->component.simple_name.name_string->string.length;
+		}
+		else
+		{
+			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		}
 		break;
 	}
 	return simple_name;
@@ -6388,8 +6398,18 @@ AMLSymbol *analyse_aml_super_name(AMLSubstring aml)
 		aml.length -= super_name->component.super_name.simple_name->string.length;
 		break;
 	default:
-		ERROR(); // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			super_name->component.super_name.simple_name = analyse_aml_simple_name(aml);
+			super_name->string.length += super_name->component.super_name.simple_name->string.length;
+			aml.initial += super_name->component.super_name.simple_name->string.length;
+			aml.length -= super_name->component.super_name.simple_name->string.length;
+		}
+		else
+		{
+			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		}
 		break;
 	}
 	return super_name;
