@@ -212,6 +212,7 @@ typedef enum _AMLSymbolType
 	aml_def_while,
 	aml_deref_of_op,
 	aml_device_op,
+	aml_device_op_suffix,
 	aml_digit_char,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
@@ -637,6 +638,7 @@ typedef struct _AMLNamedObj
 	struct _AMLSymbol *def_create_qword_field;
 	struct _AMLSymbol *def_create_word_field;
 	struct _AMLSymbol *def_data_region;
+	struct _AMLSymbol *def_device;
 	struct _AMLSymbol *def_external;
 	struct _AMLSymbol *def_field;
 	struct _AMLSymbol *def_method;
@@ -977,6 +979,8 @@ AMLSymbol *analyse_aml_def_while(AMLSubstring aml);
 AMLSymbol *analyse_aml_deref_of_op(AMLSubstring aml);
 // <device_op> := <ext_op_prefix> <device_op_suffix>
 AMLSymbol *analyse_aml_device_op(AMLSubstring aml);
+// <device_op_suffix> := AML_BYTE_DEVICE_OP
+AMLSymbol *analyse_aml_device_op_suffix(AMLSubstring aml);
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>

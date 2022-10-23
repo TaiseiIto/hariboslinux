@@ -194,6 +194,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *def_data_region_chain_string;
 	ChainString *def_decrement_chain_string;
 	ChainString *def_deref_of_chain_string;
+	ChainString *def_device_chain_string;
 	ChainString *def_divide_chain_string;
 	ChainString *def_external_chain_string;
 	ChainString *def_fatal_chain_string;
@@ -388,6 +389,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *def_data_region_char_array;
 	char *def_decrement_char_array;
 	char *def_deref_of_char_array;
+	char *def_device_char_array;
 	char *def_divide_char_array;
 	char *def_external_char_array;
 	char *def_fatal_char_array;
@@ -1761,6 +1763,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(device_op_suffix_char_array);
 		}
 		break;
+	case aml_device_op_suffix:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_digit_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -3112,6 +3117,14 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			def_data_region_char_array = create_char_array_from_chain_string(def_data_region_chain_string);
 		}
 		else def_data_region_char_array = "";
+		if(aml_symbol->component.named_obj.def_device)
+		{
+			def_device_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_device);
+			insert_char_front(def_device_chain_string, def_device_chain_string->first_character, ' ');
+			replace_chain_string(def_device_chain_string, "\n", "\n ");
+			def_device_char_array = create_char_array_from_chain_string(def_device_chain_string);
+		}
+		else def_device_char_array = "";
 		if(aml_symbol->component.named_obj.def_external)
 		{
 			def_external_chain_string = aml_symbol_to_chain_string(aml_symbol->component.named_obj.def_external);
@@ -3160,7 +3173,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			def_thermal_zone_char_array = create_char_array_from_chain_string(def_thermal_zone_chain_string);
 		}
 		else def_thermal_zone_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s%s%s%s%s%s%s%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), def_bank_field_char_array ,def_create_bit_field_char_array ,def_create_byte_field_char_array ,def_create_dword_field_char_array ,def_create_field_char_array ,def_create_qword_field_char_array ,def_create_word_field_char_array ,def_data_region_char_array ,def_external_char_array , def_field_char_array, def_method_char_array, def_op_region_char_array ,def_power_res_char_array ,def_thermal_zone_char_array);
+		output = create_format_chain_string("%s\n%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), def_bank_field_char_array, def_create_bit_field_char_array, def_create_byte_field_char_array, def_create_dword_field_char_array, def_create_field_char_array, def_create_qword_field_char_array, def_create_word_field_char_array, def_data_region_char_array, def_device_char_array, def_external_char_array,  def_field_char_array, def_method_char_array, def_op_region_char_array, def_power_res_char_array, def_thermal_zone_char_array);
 		if(aml_symbol->component.named_obj.def_bank_field)
 		{
 			delete_chain_string(def_bank_field_chain_string);
@@ -3200,6 +3213,11 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(def_data_region_chain_string);
 			free(def_data_region_char_array);
+		}
+		if(aml_symbol->component.named_obj.def_device)
+		{
+			delete_chain_string(def_device_chain_string);
+			free(def_device_char_array);
 		}
 		if(aml_symbol->component.named_obj.def_external)
 		{
@@ -4175,6 +4193,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_while_name = "DefWhile";
 	static char const * const aml_deref_of_op_name = "DerefOfOp";
 	static char const * const aml_device_op_name = "DeviceOp";
+	static char const * const aml_device_op_suffix_name = "DeviceOpSuffix";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
@@ -4187,7 +4206,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_flags_name = "FieldFlags";
 	static char const * const aml_field_list_name = "FieldList";
 	static char const * const aml_field_op_name = "FieldOp";
-	static char const * const aml_field_op_suffix_name = "FieldOpPrefix";
+	static char const * const aml_field_op_suffix_name = "FieldOpSuffix";
 	static char const * const aml_increment_op_name = "IncrementOp";
 	static char const * const aml_index_op_name = "IndexOp";
 	static char const * const aml_index_value_name = "IndexValue";
@@ -4215,7 +4234,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_one_op_name = "OneOp";
 	static char const * const aml_ones_op_name = "OnesOp";
 	static char const * const aml_op_region_op_name = "OpRegionOp";
-	static char const * const aml_op_region_op_suffix_name = "OpRegionOpPrefix";
+	static char const * const aml_op_region_op_suffix_name = "OpRegionOpSuffix";
 	static char const * const aml_operand_name = "Operand";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
@@ -4229,7 +4248,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_region_offset_name = "RegionOffset";
 	static char const * const aml_region_space_name = "RegionSpace";
 	static char const * const aml_revision_op_name = "RevisionOp";
-	static char const * const aml_revision_op_suffix_name = "RevisionOpPrefix";
+	static char const * const aml_revision_op_suffix_name = "RevisionOpSuffix";
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_scope_op_name = "ScopeOp";
 	static char const * const aml_seg_count_name = "SegCount";
@@ -4325,6 +4344,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_deref_of_op_name;
 	case aml_device_op:
 		return aml_device_op_name;
+	case aml_device_op_suffix:
+		return aml_device_op_suffix_name;
 	case aml_digit_char:
 		return aml_digit_char_name;
 	case aml_dual_name_path:
@@ -5270,9 +5291,23 @@ AMLSymbol *analyse_aml_device_op(AMLSubstring aml)
 	device_op->string.length += device_op->component.device_op.ext_op_prefix->string.length;
 	aml.initial += device_op->component.device_op.ext_op_prefix->string.length;
 	aml.length -= device_op->component.device_op.ext_op_prefix->string.length;
-	device_op->component.device_op.device_op_suffix = NULL;
+	device_op->component.device_op.device_op_suffix = analyse_aml_device_op_suffix(aml);
+	device_op->string.length += device_op->component.device_op.device_op_suffix->string.length;
+	aml.initial += device_op->component.device_op.device_op_suffix->string.length;
+	aml.length -= device_op->component.device_op.device_op_suffix->string.length;
 	ERROR(); // device_op is umimplemented
 	return device_op;
+}
+
+// <device_op_suffix> := AML_BYTE_DEVICE_OP
+AMLSymbol *analyse_aml_device_op_suffix(AMLSubstring aml)
+{
+	AMLSymbol *device_op_suffix = malloc(sizeof(*device_op_suffix));
+	device_op_suffix->string.initial = aml.initial;
+	device_op_suffix->string.length = 1;
+	device_op_suffix->type = aml_device_op_suffix;
+	if(*aml.initial != AML_BYTE_DEVICE_OP)ERROR(); // Incorrect device op
+	return device_op_suffix;
 }
 
 // <digit_char> := '0' - '9'
@@ -5939,6 +5974,7 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 	named_obj->component.named_obj.def_create_qword_field = NULL;
 	named_obj->component.named_obj.def_create_word_field = NULL;
 	named_obj->component.named_obj.def_data_region = NULL;
+	named_obj->component.named_obj.def_device = NULL;
 	named_obj->component.named_obj.def_external = NULL;
 	named_obj->component.named_obj.def_field = NULL;
 	named_obj->component.named_obj.def_method = NULL;
@@ -5950,6 +5986,10 @@ AMLSymbol *analyse_aml_named_obj(AMLSubstring aml)
 	case AML_BYTE_EXT_OP_PREFIX:
 		switch(aml.initial[1])
 		{
+		case AML_BYTE_DEVICE_OP:
+			named_obj->component.named_obj.def_device = analyse_aml_def_device(aml);
+			named_obj->string.length += named_obj->component.named_obj.def_device->string.length;
+			break;
 		case AML_BYTE_OP_REGION_OP:
 			named_obj->component.named_obj.def_op_region = analyse_aml_def_op_region(aml);
 			named_obj->string.length += named_obj->component.named_obj.def_op_region->string.length;
@@ -7102,6 +7142,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.device_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.device_op.ext_op_prefix);
 		if(aml_symbol->component.device_op.device_op_suffix)delete_aml_symbol(aml_symbol->component.device_op.device_op_suffix);
 		break;
+	case aml_device_op_suffix:
+		break;
 	case aml_digit_char:
 		break;
 	case aml_dual_name_path:
@@ -7266,6 +7308,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.named_obj.def_create_qword_field)delete_aml_symbol(aml_symbol->component.named_obj.def_create_qword_field);
 		if(aml_symbol->component.named_obj.def_create_word_field)delete_aml_symbol(aml_symbol->component.named_obj.def_create_word_field);
 		if(aml_symbol->component.named_obj.def_data_region)delete_aml_symbol(aml_symbol->component.named_obj.def_data_region);
+		if(aml_symbol->component.named_obj.def_device)delete_aml_symbol(aml_symbol->component.named_obj.def_device);
 		if(aml_symbol->component.named_obj.def_external)delete_aml_symbol(aml_symbol->component.named_obj.def_external);
 		if(aml_symbol->component.named_obj.def_field)delete_aml_symbol(aml_symbol->component.named_obj.def_field);
 		if(aml_symbol->component.named_obj.def_op_region)delete_aml_symbol(aml_symbol->component.named_obj.def_op_region);
