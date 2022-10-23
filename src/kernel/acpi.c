@@ -2599,6 +2599,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_index_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_index_value:
+		if(aml_symbol->component.index_value.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.index_value.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.index_value.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		break;
 	case aml_lead_name_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4084,6 +4100,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_op_prefix_name = "FieldOpPrefix";
 	static char const * const aml_increment_op_name = "IncrementOp";
 	static char const * const aml_index_op_name = "IndexOp";
+	static char const * const aml_index_value_name = "IndexValue";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_l_less_op_name = "LLessOp";
 	static char const * const aml_local_obj_name = "LocalObj";
@@ -4244,6 +4261,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_increment_op_name;
 	case aml_index_op:
 		return aml_index_op_name;
+	case aml_index_value:
+		return aml_index_value_name;
 	case aml_lead_name_char:
 		return aml_lead_name_char_name;
 	case aml_l_less_op:
@@ -5440,6 +5459,18 @@ AMLSymbol *analyse_aml_index_op(AMLSubstring aml)
 	index_op->type = aml_index_op;
 	if(*index_op->string.initial != AML_BYTE_INDEX_OP)ERROR(); // Incorrect index op
 	return index_op;
+}
+
+// <index_value> := <term_arg>
+AMLSymbol *analyse_aml_index_value(AMLSubstring aml)
+{
+	AMLSymbol *index_value = malloc(sizeof(*index_value));
+	index_value->string.initial = aml.initial;
+	index_value->string.length = 0;
+	index_value->type = aml_index_value;
+	index_value->component.index_value.term_arg = analyse_aml_term_arg(aml);
+	index_value->string.length += index_value->component.index_value.term_arg->string.length;
+	return index_value;
 }
 
 // <lead_name_char> := 'A' - 'Z' | '_'
@@ -6994,6 +7025,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_increment_op:
 		break;
 	case aml_index_op:
+		break;
+	case aml_index_value:
+		if(aml_symbol->component.index_value.term_arg)delete_aml_symbol(aml_symbol->component.index_value.term_arg);
 		break;
 	case aml_lead_name_char:
 		break;
