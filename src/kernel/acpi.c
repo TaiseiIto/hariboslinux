@@ -3055,7 +3055,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			name_chars_char_array[i] = create_char_array_from_chain_string(name_chars_chain_string[i]);
 		}
 		else name_chars_char_array[i] = "";
-		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), lead_name_char_char_array);
+		output = create_format_chain_string("%s \"%.*s\"\n%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, aml_symbol->string.initial, lead_name_char_char_array);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.name_seg.name_char); i++)insert_char_array_back(output, output->last_character, name_chars_char_array[i]);
 		if(aml_symbol->component.name_seg.lead_name_char)
 		{
