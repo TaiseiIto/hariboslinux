@@ -331,6 +331,7 @@ typedef struct _AMLByteConst
 {
 	struct _AMLSymbol *byte_prefix;
 	struct _AMLSymbol *byte_data;
+	unsigned char value;
 } AMLByteConst;
 
 typedef struct _AMLComputationalData
@@ -530,11 +531,13 @@ typedef struct _AMLDWordConst
 {
 	struct _AMLSymbol *dword_prefix;
 	struct _AMLSymbol *dword_data;
+	unsigned int value;
 } AMLDWordConst;
 
 typedef struct _AMLDWordData
 {
 	struct _AMLSymbol *word_data[2];
+	unsigned int value;
 } AMLDWordData;
 
 typedef struct _AMLExpressionOpcode
@@ -750,11 +753,13 @@ typedef struct _AMLQWordConst
 {
 	struct _AMLSymbol *qword_prefix;
 	struct _AMLSymbol *qword_data;
+	unsigned long long int value;
 } AMLQWordConst;
 
 typedef struct _AMLQWordData
 {
 	struct _AMLSymbol *dword_data[2];
+	unsigned long long int value;
 } AMLQWordData;
 
 typedef struct _AMLRegionLen
@@ -854,11 +859,13 @@ typedef struct _AMLWordConst
 {
 	struct _AMLSymbol *word_prefix;
 	struct _AMLSymbol *word_data;
+	unsigned short value;
 } AMLWordConst;
 
 typedef struct _AMLWordData
 {
 	struct _AMLSymbol *byte_data[2];
+	unsigned short value;
 } AMLWordData;
 
 typedef union _AMLComponent

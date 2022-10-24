@@ -651,7 +651,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			byte_data_char_array = create_char_array_from_chain_string(byte_data_chain_string);
 		}
 		else byte_data_char_array = "";
-		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), byte_prefix_char_array, byte_data_char_array);
+		output = create_format_chain_string("%s %#04.2x\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.byte_const.value, byte_prefix_char_array, byte_data_char_array);
 		if(aml_symbol->component.byte_const.byte_prefix)
 		{
 			delete_chain_string(byte_prefix_chain_string);
@@ -1954,7 +1954,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			dword_data_char_array = create_char_array_from_chain_string(dword_data_chain_string);
 		}
 		else dword_prefix_char_array = "";
-		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), dword_prefix_char_array, dword_data_char_array);
+		output = create_format_chain_string("%s %#010.8x\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.word_const.value, dword_prefix_char_array, dword_data_char_array);
 		if(aml_symbol->component.dword_const.dword_prefix)
 		{
 			delete_chain_string(dword_prefix_chain_string);
@@ -1977,7 +1977,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			words_data_char_array[i] = create_char_array_from_chain_string(words_data_chain_string[i]);
 		}
 		else words_data_char_array[i] = "";
-		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		output = create_format_chain_string("%s %#010.8x\n", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.dword_data.value);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.dword_data.word_data); i++)insert_char_array_back(output, output->last_character, words_data_char_array[i]);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.dword_data.word_data); i++)if(aml_symbol->component.dword_data.word_data[i])
 		{
@@ -3591,7 +3591,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			qword_data_char_array = create_char_array_from_chain_string(qword_data_chain_string);
 		}
 		else qword_prefix_char_array = "";
-		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), qword_prefix_char_array, qword_data_char_array);
+		output = create_format_chain_string("%s %#018.16x\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.qword_const.value, qword_prefix_char_array, qword_data_char_array);
 		if(aml_symbol->component.qword_const.qword_prefix)
 		{
 			delete_chain_string(qword_prefix_chain_string);
@@ -3614,7 +3614,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			dwords_data_char_array[i] = create_char_array_from_chain_string(dwords_data_chain_string[i]);
 		}
 		else dwords_data_char_array[i] = "";
-		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		output = create_format_chain_string("%s %#018.16x\n", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.qword_data.value);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.qword_data.dword_data); i++)insert_char_array_back(output, output->last_character, dwords_data_char_array[i]);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.qword_data.dword_data); i++)if(aml_symbol->component.qword_data.dword_data[i])
 		{
@@ -4255,7 +4255,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			word_data_char_array = create_char_array_from_chain_string(word_data_chain_string);
 		}
 		else word_data_char_array = "";
-		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), word_prefix_char_array, word_data_char_array);
+		output = create_format_chain_string("%s %#06.4x\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.word_const.value, word_prefix_char_array, word_data_char_array);
 		if(aml_symbol->component.word_const.word_prefix)
 		{
 			delete_chain_string(word_prefix_chain_string);
@@ -4278,7 +4278,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			bytes_data_char_array[i] = create_char_array_from_chain_string(bytes_data_chain_string[i]);
 		}
 		else bytes_data_char_array[i] = "";
-		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		output = create_format_chain_string("%s %#06.4x\n", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.word_data.value);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.word_data.byte_data); i++)insert_char_array_back(output, output->last_character, bytes_data_char_array[i]);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.word_data.byte_data); i++)if(aml_symbol->component.word_data.byte_data[i])
 		{
@@ -4814,6 +4814,7 @@ AMLSymbol *analyse_aml_byte_const(AMLSubstring aml)
 	byte_const->string.length += byte_const->component.byte_const.byte_data->string.length;
 	aml.initial += byte_const->component.byte_const.byte_data->string.length;
 	aml.length -= byte_const->component.byte_const.byte_data->string.length;
+	byte_const->component.byte_const.value = *byte_const->component.byte_const.byte_data->string.initial;
 	return byte_const;
 }
 
@@ -5589,6 +5590,7 @@ AMLSymbol *analyse_aml_dword_const(AMLSubstring aml)
 	dword_const->string.length += dword_const->component.dword_const.dword_data->string.length;
 	aml.initial += dword_const->component.dword_const.dword_data->string.length;
 	aml.length -= dword_const->component.dword_const.dword_data->string.length;
+	dword_const->component.dword_const.value = dword_const->component.dword_const.dword_data->component.dword_data.value;
 	return dword_const;
 }
 
@@ -5606,6 +5608,7 @@ AMLSymbol *analyse_aml_dword_data(AMLSubstring aml)
 		aml.initial += (*word_data)->string.length;
 		aml.length -= (*word_data)->string.length;
 	}
+	dword_data->component.dword_data.value = *(unsigned int const *)dword_data->component.dword_data.word_data[0]->string.initial;
 	return dword_data;
 }
 
@@ -6492,6 +6495,7 @@ AMLSymbol *analyse_aml_qword_const(AMLSubstring aml)
 	qword_const->string.length += qword_const->component.qword_const.qword_data->string.length;
 	aml.initial += qword_const->component.qword_const.qword_data->string.length;
 	aml.length -= qword_const->component.qword_const.qword_data->string.length;
+	qword_const->component.qword_const.value = qword_const->component.qword_const.qword_data->component.qword_data.value;
 	return qword_const;
 }
 
@@ -6509,6 +6513,7 @@ AMLSymbol *analyse_aml_qword_data(AMLSubstring aml)
 		aml.initial += (*dword_data)->string.length;
 		aml.length -= (*dword_data)->string.length;
 	}
+	qword_data->component.qword_data.value = qword_data->component.qword_data.value;
 	return qword_data;
 }
 
@@ -7211,6 +7216,7 @@ AMLSymbol *analyse_aml_word_const(AMLSubstring aml)
 	word_const->string.length += word_const->component.word_const.word_data->string.length;
 	aml.initial += word_const->component.word_const.word_data->string.length;
 	aml.length -= word_const->component.word_const.word_data->string.length;
+	word_const->component.word_const.value = word_const->component.word_const.word_data->component.word_data.value;
 	return word_const;
 }
 
@@ -7228,6 +7234,7 @@ AMLSymbol *analyse_aml_word_data(AMLSubstring aml)
 		aml.initial += (*byte_data)->string.length;
 		aml.length -= (*byte_data)->string.length;
 	}
+	word_data->component.word_data.value = *(unsigned short const *)word_data->component.word_data.byte_data[0]->string.initial;
 	return word_data;
 }
 
