@@ -7954,6 +7954,13 @@ void print_rsdp(RSDP const *rsdp, char const *name)
 	printf_shell(shell, "%s->extended_checksum = %#04.2x\n", name, rsdp->extended_checksum);
 }
 
+void print_sdts(void)
+{
+	ACPITableHeader const * const *sdt_headers = get_sdt_headers();
+	unsigned int num_of_sdt_headers = get_num_of_sdt_headers();
+	for(ACPITableHeader const * const *sdt_header = sdt_headers; sdt_header != sdt_headers + num_of_sdt_headers; sdt_header++)PRINT_ACPI_TABLE_HEADER_P(*sdt_header);
+}
+
 char const *region_space_type_name(unsigned char region_space_byte_data)
 {
 	switch(region_space_byte_data)
