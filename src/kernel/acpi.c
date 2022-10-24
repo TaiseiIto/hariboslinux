@@ -664,7 +664,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		break;
 	case aml_byte_data:
-		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		output = create_format_chain_string("%s %#04.2x\n", aml_symbol_type_name(aml_symbol->type), *aml_symbol->string.initial);
 		break;
 	case aml_byte_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
