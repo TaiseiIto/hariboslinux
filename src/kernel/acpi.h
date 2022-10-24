@@ -1209,6 +1209,7 @@ void print_acpi_table_header_p(ACPITableHeader const *acpi_table_header, char co
 void print_aml_symbol(AMLSymbol const *aml_symbol);
 void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name);
 void print_rsdp(RSDP const *rsdp, char const *name);
+char const *region_space_type_name(unsigned char region_space_byte_data);
 
 #endif
 

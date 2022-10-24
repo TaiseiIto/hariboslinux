@@ -129,6 +129,18 @@
 #define AML_BYTE_BREAK_POINT_OP		0xcc
 #define AML_BYTE_ONES_OP		0xff
 
+#define AML_REGION_SPACE_SYSTEM_MEMORY		0x00
+#define AML_REGION_SPACE_SYSTEM_IO		0x01
+#define AML_REGION_SPACE_PCI_CONFIG		0x02
+#define AML_REGION_SPACE_EMBEDDED_CONTROL	0x03
+#define AML_REGION_SPACE_SM_BUS			0x04
+#define AML_REGION_SPACE_SYSTEM_CMOS		0x05
+#define AML_REGION_SPACE_PCI_BAR_TARGET		0x06
+#define AML_REGION_SPACE_IPMI			0x07
+#define AML_REGION_SPACE_GENERAL_PURPOSE_IO	0x08
+#define AML_REGION_SPACE_GENERIC_SERIAL_BUS	0x09
+#define AML_REGION_SPACE_PCC			0x0a
+
 bool acpi_table_is_correct(ACPITableHeader const *header);
 bool rsdp_is_correct(RSDP const *rsdp);
 
@@ -3660,7 +3672,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		break;
 	case aml_region_space:
-		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		output = create_format_chain_string("%s %#04.2x %s\n", aml_symbol_type_name(aml_symbol->type), *aml_symbol->string.initial, region_space_type_name(*aml_symbol->string.initial));
 		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)
@@ -7940,6 +7952,42 @@ void print_rsdp(RSDP const *rsdp, char const *name)
 	printf_shell(shell, "%s->length = %#010.8x\n", name, rsdp->length);
 	printf_shell(shell, "%s->xsdt_addr = %#018.16x\n", name, rsdp->xsdt_addr);
 	printf_shell(shell, "%s->extended_checksum = %#04.2x\n", name, rsdp->extended_checksum);
+}
+
+char const *region_space_type_name(unsigned char region_space_byte_data)
+{
+	switch(region_space_byte_data)
+	{
+	case AML_REGION_SPACE_SYSTEM_MEMORY:
+		return "SystemMerory";
+	case AML_REGION_SPACE_SYSTEM_IO:
+		return "SystemIO";
+	case AML_REGION_SPACE_PCI_CONFIG:
+		return "PCI_Config";
+	case AML_REGION_SPACE_EMBEDDED_CONTROL:
+		return "EmbeddedControl";
+	case AML_REGION_SPACE_SM_BUS:
+		return "SMBus";
+	case AML_REGION_SPACE_SYSTEM_CMOS:
+		return "SystemCMOS";
+	case AML_REGION_SPACE_PCI_BAR_TARGET:
+		return "PciBarTarget";
+	case AML_REGION_SPACE_IPMI:
+		return "IPMI";
+	case AML_REGION_SPACE_GENERAL_PURPOSE_IO:
+		return "GeneralPurposeIO";
+	case AML_REGION_SPACE_GENERIC_SERIAL_BUS:
+		return "GenericSerialBus";
+	case AML_REGION_SPACE_PCC:
+		return "PCC";
+	default:
+		if(0x80 <= region_space_byte_data)return "OEM Defined";
+		else
+		{
+			ERROR(); // Incorrect region_space_byte_data
+			return "ERROR";
+		}
+	}
 }
 
 bool rsdp_is_correct(RSDP const *rsdp)
