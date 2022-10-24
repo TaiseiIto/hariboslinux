@@ -1954,7 +1954,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			dword_data_char_array = create_char_array_from_chain_string(dword_data_chain_string);
 		}
 		else dword_prefix_char_array = "";
-		output = create_format_chain_string("%s %#010.8x\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.word_const.value, dword_prefix_char_array, dword_data_char_array);
+		output = create_format_chain_string("%s %#010.8x\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.dword_const.value, dword_prefix_char_array, dword_data_char_array);
 		if(aml_symbol->component.dword_const.dword_prefix)
 		{
 			delete_chain_string(dword_prefix_chain_string);
