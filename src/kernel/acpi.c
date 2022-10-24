@@ -5971,7 +5971,7 @@ AMLSymbol *analyse_aml_method_flags(AMLSubstring aml)
 	return method_flags;
 }
 
-// <method_invocation> := <name_string> | <term_arg_list>
+// <method_invocation> := <name_string> <term_arg_list>
 AMLSymbol *analyse_aml_method_invocation(AMLSubstring aml)
 {
 	AMLSymbol *method_invocation = malloc(sizeof(*method_invocation));
@@ -5982,7 +5982,7 @@ AMLSymbol *analyse_aml_method_invocation(AMLSubstring aml)
 	method_invocation->string.length += method_invocation->component.method_invocation.name_string->string.length;
 	aml.initial += method_invocation->component.method_invocation.name_string->string.length;
 	aml.length -= method_invocation->component.method_invocation.name_string->string.length;
-	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(aml);
+	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(aml, 0);
 	method_invocation->string.length += method_invocation->component.method_invocation.term_arg_list->string.length;
 	aml.initial += method_invocation->component.method_invocation.term_arg_list->string.length;
 	aml.length -= method_invocation->component.method_invocation.term_arg_list->string.length;
@@ -7006,7 +7006,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 }
 
 // <term_arg_list> := Nothing | <term_arg> <term_arg_list>
-AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml)
+AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml, unsigned int num_of_term_args)
 {
 	AMLSymbol *term_arg_list = malloc(sizeof(*term_arg_list));
 	term_arg_list->string.initial = aml.initial;
@@ -7014,7 +7014,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml)
 	term_arg_list->type = aml_term_arg_list;
 	term_arg_list->component.term_arg_list.term_arg = NULL;
 	term_arg_list->component.term_arg_list.term_arg_list = NULL;
-	switch(*aml.initial)
+	if(num_of_term_args)switch(*aml.initial)
 	{
 	case AML_BYTE_ARG_0_OP:
 	case AML_BYTE_ARG_1_OP:
@@ -7055,7 +7055,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml)
 		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg->string.length;
 		aml.initial += term_arg_list->component.term_arg_list.term_arg->string.length;
 		aml.length -= term_arg_list->component.term_arg_list.term_arg->string.length;
-		term_arg_list->component.term_arg_list.term_arg_list = analyse_aml_term_arg_list(aml);
+		term_arg_list->component.term_arg_list.term_arg_list = analyse_aml_term_arg_list(aml, num_of_term_args - 1);
 		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg_list->string.length;
 		aml.initial += term_arg_list->component.term_arg_list.term_arg_list->string.length;
 		aml.length -= term_arg_list->component.term_arg_list.term_arg_list->string.length;

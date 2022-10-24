@@ -1075,7 +1075,7 @@ AMLSymbol *analyse_aml_local_obj(AMLSubstring aml);
 AMLSymbol *analyse_aml_local_op(AMLSubstring aml);
 // <method_flags>
 AMLSymbol *analyse_aml_method_flags(AMLSubstring aml);
-// <method_invocation> := <name_string> | <term_arg_list>
+// <method_invocation> := <name_string> <term_arg_list>
 AMLSymbol *analyse_aml_method_invocation(AMLSubstring aml);
 // <method_op> := 0x14
 AMLSymbol *analyse_aml_method_op(AMLSubstring aml);
@@ -1174,7 +1174,7 @@ AMLSymbol *analyse_aml_target(AMLSubstring aml);
 // <term_arg> := <expression_op_code> | <data_object> | <arg_obj> | <local_obj>
 AMLSymbol *analyse_aml_term_arg(AMLSubstring aml);
 // <term_arg_list> := Nothing | <term_arg> <term_arg_list>
-AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml);
+AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml, unsigned int num_of_term_args);
 // <term_list> := Nothing | <term_obj> <term_list>
 AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
