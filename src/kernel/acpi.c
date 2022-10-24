@@ -2868,7 +2868,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_method_flags:
-		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		output = create_format_chain_string("%s ArgCount = %01.1x, %s, SyncLevel = %01.1x\n", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.method_flags.arg_count, aml_symbol->component.method_flags.serialize_flag ? "Serialized" : "Not Serialized", aml_symbol->component.method_flags.sync_level);
 		break;
 	case aml_method_invocation:
 		if(aml_symbol->component.method_invocation.name_string)
@@ -5950,6 +5950,9 @@ AMLSymbol *analyse_aml_method_flags(AMLSubstring aml)
 	method_flags->string.initial = aml.initial;
 	method_flags->string.length = 1;
 	method_flags->type = aml_method_flags;
+	method_flags->component.method_flags.arg_count = *aml.initial & 0x07;
+	method_flags->component.method_flags.serialize_flag = *aml.initial & 0x08 ? true : false;
+	method_flags->component.method_flags.sync_level = *aml.initial >> 4;
 	return method_flags;
 }
 

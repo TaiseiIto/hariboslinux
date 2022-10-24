@@ -7,6 +7,7 @@
 
 #include "chain_string.h"
 #include "memory.h"
+#include "stdbool.h"
 
 #define PRINT_ACPI_TABLE_HEADER(x) print_acpi_table_header((x), _STRING(x))
 #define PRINT_ACPI_TABLE_HEADER_P(x) print_acpi_table_header_p((x), _STRING(x))
@@ -625,6 +626,13 @@ typedef struct _AMLLocalObj
 	unsigned char local_op_number;
 } AMLLocalObj;
 
+typedef struct _AMLMethodFlags
+{
+	unsigned char arg_count;
+	bool serialize_flag;
+	unsigned char sync_level;
+} AMLMethodFlags;
+
 typedef struct _AMLMethodInvocation
 {
 	struct _AMLSymbol *name_string;
@@ -894,6 +902,7 @@ typedef union _AMLComponent
 	AMLFieldOp field_op;
 	AMLIndexValue index_value;
 	AMLLocalObj local_obj;
+	AMLMethodFlags method_flags;
 	AMLMethodInvocation method_invocation;
 	AMLMultiNamePath multi_name_path;
 	AMLNameChar name_char;
