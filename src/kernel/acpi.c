@@ -7913,6 +7913,7 @@ void print_acpi_table_header(ACPITableHeader acpi_table_header, char const *name
 void print_acpi_table_header_p(ACPITableHeader const *acpi_table_header, char const *name)
 {
 	Shell *shell = get_current_shell();
+	printf_shell(shell, "%s = %p\n", name, acpi_table_header);
 	printf_shell(shell, "%s->signature = %.*s\n", name, sizeof(acpi_table_header->signature), acpi_table_header->signature);
 	printf_shell(shell, "%s->length = %#010.8x\n", name, acpi_table_header->length);
 	printf_shell(shell, "%s->revision = %#04.2x\n", name, acpi_table_header->revision);
@@ -7956,9 +7957,15 @@ void print_rsdp(RSDP const *rsdp, char const *name)
 
 void print_sdts(void)
 {
+	Shell *shell = get_current_shell();
 	ACPITableHeader const * const *sdt_headers = get_sdt_headers();
 	unsigned int num_of_sdt_headers = get_num_of_sdt_headers();
-	for(ACPITableHeader const * const *sdt_header = sdt_headers; sdt_header != sdt_headers + num_of_sdt_headers; sdt_header++)PRINT_ACPI_TABLE_HEADER_P(*sdt_header);
+	for(ACPITableHeader const * const *sdt_header = sdt_headers; sdt_header != sdt_headers + num_of_sdt_headers; sdt_header++)
+	{
+		PRINT_ACPI_TABLE_HEADER_P(*sdt_header);
+		for(unsigned int i = 0; i < (*sdt_header)->length; i++)printf_shell(shell, "%02.2x%c", *((unsigned char *)(*sdt_header) + sizeof(**sdt_header) + i), (i + 1) % 0x10 ? ' ' : '\n');
+		printf_shell(shell, "\n");
+	}
 }
 
 char const *region_space_type_name(unsigned char region_space_byte_data)

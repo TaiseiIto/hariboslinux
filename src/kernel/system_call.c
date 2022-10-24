@@ -626,7 +626,6 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_shell(shell, "acpi_memory_region_descriptor.type = %#010.8llx\n", acpi_memory_region_descriptor.type);
 					printf_shell(shell, "acpi_memory_region_descriptor.attribute = %#010.8llx\n", acpi_memory_region_descriptor.attribute);
 					rsdt_header = get_rsdt_header();
-					printf_shell(shell, "rsdt_header = %p\n", rsdt_header);
 					PRINT_ACPI_TABLE_HEADER_P(rsdt_header);
 					printf_shell(shell, "num_of_sdt_headers = %#010.8x\n", get_num_of_sdt_headers());
 					print_sdts();
