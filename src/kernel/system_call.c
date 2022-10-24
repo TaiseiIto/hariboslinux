@@ -696,7 +696,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						print_aml_symbol(dsdt_aml_syntax_tree);
 						printf_shell(shell, "dsdt_aml.length = %#010.8x\n", dsdt_aml.length);
 						printf_shell(shell, "number of read bytes = %#010.8x\n", dsdt_aml_syntax_tree->string.length);
-						printf_shell(shell, "next bytes =");
+						printf_shell(shell, "---------- read bytes ----------\n");
+						for(unsigned int i = 0; i < dsdt_aml_syntax_tree->string.length; i++)printf_shell(shell, "%02.2x%c", dsdt_aml_syntax_tree->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+						printf_shell(shell, "\nnext bytes =");
 						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_shell(shell, " %02.2x", *aml_byte);
 						printf_shell(shell, "\n");
 						delete_aml_symbol(dsdt_aml_syntax_tree);
