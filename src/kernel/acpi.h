@@ -202,6 +202,7 @@ typedef enum _AMLSymbolType
 	aml_def_increment,
 	aml_def_index,
 	aml_def_l_less,
+	aml_def_l_or,
 	aml_def_method,
 	aml_def_name,
 	aml_def_op_region,
@@ -235,6 +236,7 @@ typedef enum _AMLSymbolType
 	aml_index_value,
 	aml_lead_name_char,
 	aml_l_less_op,
+	aml_l_or_op,
 	aml_local_obj,
 	aml_local_op,
 	aml_method_flags,
@@ -431,6 +433,12 @@ typedef struct _AMLDefLLess
 	struct _AMLSymbol *l_less_op;
 	struct _AMLSymbol *operand[2];
 } AMLDefLLess;
+
+typedef struct _AMLDefLOr
+{
+	struct _AMLSymbol *l_or_op;
+	struct _AMLSymbol *operand[2];
+} AMLDefLOr;
 
 typedef struct _AMLDefMethod
 {
@@ -888,6 +896,7 @@ typedef union _AMLComponent
 	AMLDefIncrement def_increment;
 	AMLDefIndex def_index;
 	AMLDefLLess def_l_less;
+	AMLDefLOr def_l_or;
 	AMLDefMethod def_method;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
@@ -1003,6 +1012,8 @@ AMLSymbol *analyse_aml_def_increment(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_index(AMLSubstring aml);
 // <def_l_less> := <l_less_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_less(AMLSubstring aml);
+// <def_l_or> := <l_or_op> <operand> <operand>
+AMLSymbol *analyse_aml_def_l_or(AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
@@ -1069,6 +1080,8 @@ AMLSymbol *analyse_aml_index_value(AMLSubstring aml);
 AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
 // <l_less_op> := AML_BYTE_L_LESS_OP
 AMLSymbol *analyse_aml_l_less_op(AMLSubstring aml);
+// <l_or_op> := AML_BYTE_L_OR_OP
+AMLSymbol *analyse_aml_l_or_op(AMLSubstring aml);
 // <local_obj> := <local_op>
 AMLSymbol *analyse_aml_local_obj(AMLSubstring aml);
 // <local_op> := 0x60 - 0x67

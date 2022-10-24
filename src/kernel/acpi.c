@@ -291,6 +291,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *index_op_chain_string;
 	ChainString *index_value_chain_string;
 	ChainString *l_less_op_chain_string;
+	ChainString *l_or_op_chain_string;
 	ChainString *lead_name_char_chain_string;
 	ChainString *local_obj_chain_string;
 	ChainString *local_op_chain_string;
@@ -490,6 +491,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *index_op_char_array;
 	char *index_value_char_array;
 	char *l_less_op_char_array;
+	char *l_or_op_char_array;
 	char *lead_name_char_char_array;
 	char *local_obj_char_array;
 	char *local_op_char_array;
@@ -1321,6 +1323,40 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(l_less_op_char_array);
 		}
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_less.operand); i++)if(aml_symbol->component.def_l_less.operand[i])
+		{
+			delete_chain_string(operands_chain_string[i]);
+			free(operands_char_array[i]);
+		}
+		free(operands_chain_string);
+		free(operands_char_array);
+		break;
+	case aml_def_l_or:
+		operands_chain_string = malloc(_countof(aml_symbol->component.def_l_or.operand) * sizeof(*operands_chain_string));
+		operands_char_array = malloc(_countof(aml_symbol->component.def_l_or.operand) * sizeof(*operands_char_array));
+		if(aml_symbol->component.def_l_or.l_or_op)
+		{
+			l_or_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_l_or.l_or_op);
+			insert_char_front(l_or_op_chain_string, l_or_op_chain_string->first_character, ' ');
+			replace_chain_string(l_or_op_chain_string, "\n", "\n ");
+			l_or_op_char_array = create_char_array_from_chain_string(l_or_op_chain_string);
+		}
+		else l_or_op_char_array = "";
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_or.operand); i++)if(aml_symbol->component.def_l_or.operand[i])
+		{
+			operands_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.def_l_or.operand[i]);
+			insert_char_front(operands_chain_string[i], operands_chain_string[i]->first_character, ' ');
+			replace_chain_string(operands_chain_string[i], "\n", "\n ");
+			operands_char_array[i] = create_char_array_from_chain_string(operands_chain_string[i]);
+		}
+		else operands_char_array[i] = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), l_or_op_char_array);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_or.operand); i++)insert_char_array_back(output, output->last_character, operands_char_array[i]);
+		if(aml_symbol->component.def_l_or.l_or_op)
+		{
+			delete_chain_string(l_or_op_chain_string);
+			free(l_or_op_char_array);
+		}
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_or.operand); i++)if(aml_symbol->component.def_l_or.operand[i])
 		{
 			delete_chain_string(operands_chain_string[i]);
 			free(operands_char_array[i]);
@@ -2860,6 +2896,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_l_less_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_l_or_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_local_obj:
 		if(aml_symbol->component.local_obj.local_op)
 		{
@@ -4347,6 +4386,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_increment_name = "DefIncrement";
 	static char const * const aml_def_index_name = "DefIndex";
 	static char const * const aml_def_l_less_name = "DefLLess";
+	static char const * const aml_def_l_or_name = "DefLOr";
 	static char const * const aml_def_method_name = "DefMethod";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
@@ -4380,6 +4420,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_index_value_name = "IndexValue";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_l_less_op_name = "LLessOp";
+	static char const * const aml_l_or_op_name = "LOrOp";
 	static char const * const aml_local_obj_name = "LocalObj";
 	static char const * const aml_local_op_name = "LocalOp";
 	static char const * const aml_method_flags_name = "MethodFlags";
@@ -4492,6 +4533,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_index_name;
 	case aml_def_l_less:
 		return aml_def_l_less_name;
+	case aml_def_l_or:
+		return aml_def_l_or_name;
 	case aml_def_method:
 		return aml_def_method_name;
 	case aml_def_name:
@@ -4558,6 +4601,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_lead_name_char_name;
 	case aml_l_less_op:
 		return aml_l_less_op_name;
+	case aml_l_or_op:
+		return aml_l_or_op_name;
 	case aml_local_obj:
 		return aml_local_obj_name;
 	case aml_local_op:
@@ -5235,6 +5280,27 @@ AMLSymbol *analyse_aml_def_l_less(AMLSubstring aml)
 	return def_l_less;
 }
 
+// <def_l_or> := <l_or_op> <operand> <operand>
+AMLSymbol *analyse_aml_def_l_or(AMLSubstring aml)
+{
+	AMLSymbol *def_l_or = malloc(sizeof(*def_l_or));
+	def_l_or->string.initial = aml.initial;
+	def_l_or->string.length = 0;
+	def_l_or->type = aml_def_l_or;
+	def_l_or->component.def_l_or.l_or_op = analyse_aml_l_or_op(aml);
+	def_l_or->string.length += def_l_or->component.def_l_or.l_or_op->string.length;
+	aml.initial += def_l_or->component.def_l_or.l_or_op->string.length;
+	aml.length -= def_l_or->component.def_l_or.l_or_op->string.length;
+	for(unsigned int i = 0; i < _countof(def_l_or->component.def_l_or.operand); i++)
+	{
+		def_l_or->component.def_l_or.operand[i] = analyse_aml_operand(aml);
+		def_l_or->string.length += def_l_or->component.def_l_or.operand[i]->string.length;
+		aml.initial += def_l_or->component.def_l_or.operand[i]->string.length;
+		aml.length -= def_l_or->component.def_l_or.operand[i]->string.length;
+	}
+	return def_l_or;
+}
+
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSubstring aml)
 {
@@ -5713,6 +5779,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_l_less = analyse_aml_def_l_less(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_less->string.length;
 		break;
+	case AML_BYTE_L_OR_OP:
+		expression_opcode->component.expression_opcode.def_l_or = analyse_aml_def_l_or(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_or->string.length;
+		break;
 	case AML_BYTE_SHIFT_RIGHT_OP:
 		expression_opcode->component.expression_opcode.def_shift_right = analyse_aml_def_shift_right(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_shift_right->string.length;
@@ -5913,8 +5983,19 @@ AMLSymbol *analyse_aml_l_less_op(AMLSubstring aml)
 	l_less_op->string.initial = aml.initial;
 	l_less_op->string.length = 1;
 	l_less_op->type = aml_l_less_op;
-	if(*l_less_op->string.initial != AML_BYTE_L_LESS_OP)ERROR(); // Incorrect l_less op
+	if(*l_less_op->string.initial != AML_BYTE_L_LESS_OP)ERROR(); // Incorrect l_less_op
 	return l_less_op;
+}
+
+// <l_or_op> := AML_BYTE_L_OR_OP
+AMLSymbol *analyse_aml_l_or_op(AMLSubstring aml)
+{
+	AMLSymbol *l_or_op = malloc(sizeof(*l_or_op));
+	l_or_op->string.initial = aml.initial;
+	l_or_op->string.length = 1;
+	l_or_op->type = aml_l_or_op;
+	if(*l_or_op->string.initial != AML_BYTE_L_OR_OP)ERROR(); // Incorrect l_or_op
+	return l_or_op;
 }
 
 // <local_obj> := <local_op>
@@ -6969,6 +7050,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_L_LESS_OP:
+	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -7092,6 +7174,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_INCREMENT_OP:
 		case AML_BYTE_INDEX_OP:
 		case AML_BYTE_L_LESS_OP:
+		case AML_BYTE_L_OR_OP:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
 		case AML_BYTE_SCOPE_OP:
@@ -7142,6 +7225,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_L_LESS_OP:
+	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -7387,6 +7471,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_def_l_less:
 		if(aml_symbol->component.def_l_less.l_less_op)delete_aml_symbol(aml_symbol->component.def_l_less.l_less_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_less.operand); i++)if(aml_symbol->component.def_l_less.operand[i])delete_aml_symbol(aml_symbol->component.def_l_less.operand[i]);
+		break;
+	case aml_def_l_or:
+		if(aml_symbol->component.def_l_or.l_or_op)delete_aml_symbol(aml_symbol->component.def_l_or.l_or_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_or.operand); i++)if(aml_symbol->component.def_l_or.operand[i])delete_aml_symbol(aml_symbol->component.def_l_or.operand[i]);
 		break;
 	case aml_def_method:
 		if(aml_symbol->component.def_method.method_op)delete_aml_symbol(aml_symbol->component.def_method.method_op);
