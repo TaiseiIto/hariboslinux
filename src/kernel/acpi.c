@@ -312,6 +312,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *named_obj_chain_string;
 	ChainString *null_char_chain_string;
 	ChainString *null_name_chain_string;
+	ChainString *num_elements_chain_string;
 	ChainString *obj_reference_chain_string;
 	ChainString *object_chain_string;
 	ChainString *object_reference_chain_string;
@@ -321,6 +322,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *op_region_op_suffix_chain_string;
 	ChainString *operand_chain_string;
 	ChainString *output;
+	ChainString *package_element_list_chain_string;
+	ChainString *package_op_chain_string;
 	ChainString *parent_prefix_char_chain_string;
 	ChainString *pkg_lead_byte_chain_string;
 	ChainString *pkg_length_chain_string;
@@ -516,6 +519,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *named_obj_char_array;
 	char *null_char_char_array;
 	char *null_name_char_array;
+	char *num_elements_char_array;
 	char *obj_reference_char_array;
 	char *object_char_array;
 	char *object_reference_char_array;
@@ -524,6 +528,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *op_region_op_char_array;
 	char *op_region_op_suffix_char_array;
 	char *operand_char_array;
+	char *package_element_list_char_array;
+	char *package_op_char_array;
 	char *parent_prefix_char_char_array;
 	char *pkg_lead_byte_char_array;
 	char *pkg_length_char_array;
@@ -1661,6 +1667,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(region_len_chain_string);
 			free(region_len_char_array);
+		}
+		break;
+	case aml_def_package:
+		if(aml_symbol->component.def_package.package_op)
+		{
+			package_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_package.package_op);
+			insert_char_front(package_op_chain_string, package_op_chain_string->first_character, ' ');
+			replace_chain_string(package_op_chain_string, "\n", "\n ");
+			package_op_char_array = create_char_array_from_chain_string(package_op_chain_string);
+		}
+		else package_op_char_array = "";
+		if(aml_symbol->component.def_package.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_package.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_package.num_elements)
+		{
+			num_elements_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_package.num_elements);
+			insert_char_front(num_elements_chain_string, num_elements_chain_string->first_character, ' ');
+			replace_chain_string(num_elements_chain_string, "\n", "\n ");
+			num_elements_char_array = create_char_array_from_chain_string(num_elements_chain_string);
+		}
+		else num_elements_char_array = "";
+		if(aml_symbol->component.def_package.package_element_list)
+		{
+			package_element_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_package.package_element_list);
+			insert_char_front(package_element_list_chain_string, package_element_list_chain_string->first_character, ' ');
+			replace_chain_string(package_element_list_chain_string, "\n", "\n ");
+			package_element_list_char_array = create_char_array_from_chain_string(package_element_list_chain_string);
+		}
+		else package_element_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), package_op_char_array, pkg_length_char_array, num_elements_char_array, package_element_list_char_array);
+		if(aml_symbol->component.def_package.package_op)
+		{
+			delete_chain_string(package_op_chain_string);
+			free(package_op_char_array);
+		}
+		if(aml_symbol->component.def_package.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_package.num_elements)
+		{
+			delete_chain_string(num_elements_chain_string);
+			free(num_elements_char_array);
+		}
+		if(aml_symbol->component.def_package.package_element_list)
+		{
+			delete_chain_string(package_element_list_chain_string);
+			free(package_element_list_char_array);
 		}
 		break;
 	case aml_def_return:
@@ -4552,6 +4613,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_method_name = "DefMethod";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
+	static char const * const aml_def_package_name = "DefPackage";
 	static char const * const aml_def_return_name = "DefReturn";
 	static char const * const aml_def_scope_name = "DefScope";
 	static char const * const aml_def_shift_right_name = "DefShiftRight";
@@ -4713,6 +4775,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_name_name;
 	case aml_def_op_region:
 		return aml_def_op_region_name;
+	case aml_def_package:
+		return aml_def_package_name;
 	case aml_def_return:
 		return aml_def_return_name;
 	case aml_def_scope:
@@ -5644,6 +5708,22 @@ AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 	aml.initial += def_op_region->component.def_op_region.region_len->string.length;
 	aml.length -= def_op_region->component.def_op_region.region_len->string.length;
 	return def_op_region;
+}
+
+// <def_package> := <package_op> <pkg_length> <num_elements> <package_element_list>
+AMLSymbol *analyse_aml_def_package(AMLSubstring aml)
+{
+	AMLSymbol *def_package = malloc(sizeof(*def_package));
+	def_package->string.initial = aml.initial;
+	def_package->string.length = 0;
+	def_package->type = aml_def_package;
+	def_package->component.def_package.package_op = NULL;
+	def_package->component.def_package.pkg_length = NULL;
+	def_package->component.def_package.num_elements = NULL;
+	def_package->component.def_package.package_element_list = NULL;
+	ERROR(); // unimplemented
+	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	return def_package;
 }
 
 // <def_return> := <return_op> <arg_object>
@@ -7846,6 +7926,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_op_region.region_space)delete_aml_symbol(aml_symbol->component.def_op_region.region_space);
 		if(aml_symbol->component.def_op_region.region_offset)delete_aml_symbol(aml_symbol->component.def_op_region.region_offset);
 		if(aml_symbol->component.def_op_region.region_len)delete_aml_symbol(aml_symbol->component.def_op_region.region_len);
+		break;
+	case aml_def_package:
+		if(aml_symbol->component.def_package.package_op)delete_aml_symbol(aml_symbol->component.def_package.package_op);
+		if(aml_symbol->component.def_package.pkg_length)delete_aml_symbol(aml_symbol->component.def_package.pkg_length);
+		if(aml_symbol->component.def_package.num_elements)delete_aml_symbol(aml_symbol->component.def_package.num_elements);
+		if(aml_symbol->component.def_package.package_element_list)delete_aml_symbol(aml_symbol->component.def_package.package_element_list);
 		break;
 	case aml_def_return:
 		if(aml_symbol->component.def_return.return_op)delete_aml_symbol(aml_symbol->component.def_return.return_op);

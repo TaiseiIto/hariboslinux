@@ -210,6 +210,7 @@ typedef enum _AMLSymbolType
 	aml_def_method,
 	aml_def_name,
 	aml_def_op_region,
+	aml_def_package,
 	aml_def_return,
 	aml_def_scope,
 	aml_def_shift_right,
@@ -495,6 +496,14 @@ typedef struct _AMLDefOpRegion
 	struct _AMLSymbol *region_offset;
 	struct _AMLSymbol *region_len;
 } AMLDefOpRegion;
+
+typedef struct _AMLDefPackage
+{
+	struct _AMLSymbol *package_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *num_elements;
+	struct _AMLSymbol *package_element_list;
+} AMLDefPackage;
 
 typedef struct _AMLDefReturn
 {
@@ -941,6 +950,7 @@ typedef union _AMLComponent
 	AMLDefMethod def_method;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
+	AMLDefPackage def_package;
 	AMLDefReturn def_return;
 	AMLDefScope def_scope;
 	AMLDefShiftRight def_shift_right;
@@ -1070,6 +1080,8 @@ AMLSymbol *analyse_aml_def_method(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
+// <def_package> := <package_op> <pkg_length> <num_elements> <package_element_list>
+AMLSymbol *analyse_aml_def_package(AMLSubstring aml);
 // <def_return> := <return_op> <arg_object>
 AMLSymbol *analyse_aml_def_return(AMLSubstring aml);
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
