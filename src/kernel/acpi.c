@@ -5530,11 +5530,11 @@ AMLSymbol *analyse_aml_def_return(AMLSubstring aml)
 	def_return->string.length = 0;
 	def_return->type = aml_def_return;
 	def_return->component.def_return.return_op = analyse_aml_return_op(aml);
-	def_return->string.length = def_return->component.def_return.return_op->string.length;
+	def_return->string.length += def_return->component.def_return.return_op->string.length;
 	aml.initial += def_return->component.def_return.return_op->string.length;
 	aml.length -= def_return->component.def_return.return_op->string.length;
 	def_return->component.def_return.arg_object = analyse_aml_arg_object(aml);
-	def_return->string.length = def_return->component.def_return.arg_object->string.length;
+	def_return->string.length += def_return->component.def_return.arg_object->string.length;
 	aml.initial += def_return->component.def_return.arg_object->string.length;
 	aml.length -= def_return->component.def_return.arg_object->string.length;
 	return def_return;
