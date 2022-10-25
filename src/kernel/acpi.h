@@ -178,6 +178,7 @@ struct _AMLSymbol;
 
 typedef enum _AMLSymbolType
 {
+	aml_acquire_op,
 	aml_alias_op,
 	aml_arg_obj,
 	aml_arg_object,
@@ -324,6 +325,12 @@ typedef struct _AMLSubstring
 	unsigned char const *initial;
 	size_t length;
 } AMLSubstring;
+
+typedef struct _AMLAcquireOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *acquire_op_suffix;
+} AMLAcquireOp;
 
 typedef struct _AMLArgObj
 {
@@ -971,6 +978,7 @@ typedef struct _AMLWordData
 
 typedef union _AMLComponent
 {
+	AMLAcquireOp acquire_op;
 	AMLArgObj arg_obj;
 	AMLArgObject arg_object;
 	AMLAsciiCharList ascii_char_list;
@@ -1069,6 +1077,8 @@ typedef struct _AMLSymbol
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol);
 char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
+// <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
+AMLSymbol *analyse_aml_acquire_op(AMLSubstring aml);
 // <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 // <arg_obj> := <arg_op>

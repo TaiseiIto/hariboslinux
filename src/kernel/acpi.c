@@ -167,6 +167,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString **words_data_chain_string;
 	ChainString *access_field_chain_string;
 	ChainString *acquire_op_chain_string;
+	ChainString *acquire_op_suffix_chain_string;
 	ChainString *alias_op_chain_string;
 	ChainString *arg_obj_chain_string;
 	ChainString *arg_object_chain_string;
@@ -186,10 +187,10 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *data_object_chain_string;
 	ChainString *data_ref_object_chain_string;
 	ChainString *debug_obj_chain_string;
+	ChainString *def_acquire_chain_string;
 	ChainString *def_add_chain_string;
 	ChainString *def_alias_chain_string;
 	ChainString *def_and_chain_string;
-	ChainString *def_acquire_chain_string;
 	ChainString *def_bank_field_chain_string;
 	ChainString *def_break_chain_string;
 	ChainString *def_break_point_chain_string;
@@ -382,6 +383,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char **words_data_char_array;
 	char *access_field_char_array;
 	char *acquire_op_char_array;
+	char *acquire_op_suffix_char_array;
 	char *alias_op_char_array;
 	char *arg_obj_char_array;
 	char *arg_object_char_array;
@@ -401,10 +403,10 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *data_object_char_array;
 	char *data_ref_object_char_array;
 	char *debug_obj_char_array;
+	char *def_acquire_char_array;
 	char *def_add_char_array;
 	char *def_alias_char_array;
 	char *def_and_char_array;
-	char *def_acquire_char_array;
 	char *def_bank_field_char_array;
 	char *def_break_char_array;
 	char *def_break_point_char_array;
@@ -589,6 +591,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *zero_op_char_array;
 	switch(aml_symbol->type)
 	{
+	case aml_acquire_op:
+		if(aml_symbol->component.acquire_op.ext_op_prefix)
+		{
+			ext_op_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.acquire_op.ext_op_prefix);
+			insert_char_front(ext_op_prefix_chain_string, ext_op_prefix_chain_string->first_character, ' ');
+			replace_chain_string(ext_op_prefix_chain_string, "\n", "\n ");
+			ext_op_prefix_char_array = create_char_array_from_chain_string(ext_op_prefix_chain_string);
+		}
+		else ext_op_prefix_char_array = "";
+		if(aml_symbol->component.acquire_op.acquire_op_suffix)
+		{
+			acquire_op_suffix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.acquire_op.acquire_op_suffix);
+			insert_char_front(acquire_op_suffix_chain_string, acquire_op_suffix_chain_string->first_character, ' ');
+			replace_chain_string(acquire_op_suffix_chain_string, "\n", "\n ");
+			acquire_op_suffix_char_array = create_char_array_from_chain_string(acquire_op_suffix_chain_string);
+		}
+		else acquire_op_suffix_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), ext_op_prefix_char_array, acquire_op_suffix_char_array);
+		if(aml_symbol->component.acquire_op.ext_op_prefix)
+		{
+			delete_chain_string(ext_op_prefix_chain_string);
+			free(ext_op_prefix_char_array);
+		}
+		if(aml_symbol->component.acquire_op.acquire_op_suffix)
+		{
+			delete_chain_string(acquire_op_suffix_chain_string);
+			free(acquire_op_suffix_char_array);
+		}
+		break;
 	case aml_alias_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4807,6 +4838,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
+	static char const * const aml_acquire_op_name = "AcquireOp";
 	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_arg_obj_name = "ArgObj";
 	static char const * const aml_arg_object_name = "ArgObject";
@@ -4948,6 +4980,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_zero_op_name = "ZeroOp";
 	switch(aml_symbol_type)
 	{
+	case aml_acquire_op:
+		return aml_acquire_op_name;
 	case aml_alias_op:
 		return aml_alias_op_name;
 	case aml_arg_obj:
@@ -5231,6 +5265,22 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		printf_serial("aml_symbol_type = %#010.8x\n", aml_symbol_type);
 		return NULL;
 	}
+}
+
+// <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
+AMLSymbol *analyse_aml_acquire_op(AMLSubstring aml)
+{
+	AMLSymbol *acquire_op = malloc(sizeof(*acquire_op));
+	acquire_op->string.initial = aml.initial;
+	acquire_op->string.length = 0;
+	acquire_op->type = aml_acquire_op;
+	acquire_op->component.acquire_op.ext_op_prefix = analyse_aml_ext_op_prefix(aml);
+	acquire_op->string.length += acquire_op->component.acquire_op.ext_op_prefix->string.length;
+	aml.initial += acquire_op->component.acquire_op.ext_op_prefix->string.length;
+	aml.length -= acquire_op->component.acquire_op.ext_op_prefix->string.length;
+	acquire_op->component.acquire_op.acquire_op_suffix = NULL;
+	ERROR(); // Unimplemented
+	return acquire_op;
 }
 
 // <alias_op> := AML_BYTE_ALIAS_OP
@@ -5636,7 +5686,10 @@ AMLSymbol *analyse_aml_def_acquire(AMLSubstring aml)
 	def_acquire->string.initial = aml.initial;
 	def_acquire->string.length = 0;
 	def_acquire->type = aml_def_acquire;
-	def_acquire->component.def_acquire.acquire_op = NULL;
+	def_acquire->component.def_acquire.acquire_op = analyse_aml_acquire_op(aml);
+	def_acquire->string.length += def_acquire->component.def_acquire.acquire_op->string.length;
+	aml.initial += def_acquire->component.def_acquire.acquire_op->string.length;
+	aml.length -= def_acquire->component.def_acquire.acquire_op->string.length;
 	def_acquire->component.def_acquire.mutex_object = NULL;
 	def_acquire->component.def_acquire.time_out = NULL;
 	ERROR(); // Unimplemented
@@ -8287,6 +8340,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 {
 	switch(aml_symbol->type)
 	{
+	case aml_acquire_op:
+		if(aml_symbol->component.acquire_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.acquire_op.ext_op_prefix);
+		if(aml_symbol->component.acquire_op.acquire_op_suffix)delete_aml_symbol(aml_symbol->component.acquire_op.acquire_op_suffix);
+		break;
 	case aml_alias_op:
 		break;
 	case aml_arg_obj:
