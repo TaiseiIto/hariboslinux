@@ -254,6 +254,7 @@ typedef enum _AMLSymbolType
 	aml_multi_name_path,
 	aml_multi_name_prefix,
 	aml_mutex_op,
+	aml_mutex_op_suffix,
 	aml_name_char,
 	aml_name_op,
 	aml_name_path,
@@ -748,6 +749,7 @@ typedef struct _AMLNamedObj
 	struct _AMLSymbol *def_external;
 	struct _AMLSymbol *def_field;
 	struct _AMLSymbol *def_method;
+	struct _AMLSymbol *def_mutex;
 	struct _AMLSymbol *def_op_region;
 	struct _AMLSymbol *def_power_res;
 	struct _AMLSymbol *def_thermal_zone;
@@ -1209,6 +1211,8 @@ AMLSymbol *analyse_aml_multi_name_path(AMLSubstring aml);
 AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml);
 // <mutex_op> := <ext_op_prefix> <mutex_op_suffix>
 AMLSymbol *analyse_aml_mutex_op(AMLSubstring aml);
+// <mutex_op_suffix> := AML_BYTE_MUTEX_OP
+AMLSymbol *analyse_aml_mutex_op_suffix(AMLSubstring aml);
 // <name_char> := <digit_char> | <lead_name_char>
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml);
 // <name_op> := AML_BYTE_NAME_OP
