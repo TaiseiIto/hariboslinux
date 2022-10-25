@@ -180,6 +180,7 @@ typedef enum _AMLSymbolType
 {
 	aml_alias_op,
 	aml_arg_obj,
+	aml_arg_object,
 	aml_arg_op,
 	aml_ascii_char,
 	aml_ascii_char_list,
@@ -316,6 +317,11 @@ typedef struct _AMLArgObj
 	struct _AMLSymbol *arg_op;
 	unsigned char arg_op_number;
 } AMLArgObj;
+
+typedef struct _AMLArgObject
+{
+	struct _AMLSymbol *term_arg;
+} AMLArgObject;
 
 typedef struct _AMLAsciiCharList
 {
@@ -895,6 +901,7 @@ typedef struct _AMLWordData
 typedef union _AMLComponent
 {
 	AMLArgObj arg_obj;
+	AMLArgObject arg_object;
 	AMLAsciiCharList ascii_char_list;
 	AMLBufferSize buffer_size;
 	AMLBuffPkgStrObj buff_pkg_str_obj;
@@ -986,6 +993,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 // <arg_obj> := <arg_op>
 AMLSymbol *analyse_aml_arg_obj(AMLSubstring aml);
+// <arg_object> := <term_arg>
+AMLSymbol *analyse_aml_arg_object(AMLSubstring aml);
 // <arg_op> := 0x68 - 0x6e
 AMLSymbol *analyse_aml_arg_op(AMLSubstring aml);
 // <ascii_char> := 0x01 - 0x7f
