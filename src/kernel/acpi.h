@@ -189,6 +189,7 @@ typedef enum _AMLSymbolType
 	aml_buffer_size,
 	aml_byte_const,
 	aml_byte_data,
+	aml_byte_list,
 	aml_byte_prefix,
 	aml_computational_data,
 	aml_const_obj,
@@ -347,6 +348,12 @@ typedef struct _AMLByteConst
 	struct _AMLSymbol *byte_data;
 	unsigned char value;
 } AMLByteConst;
+
+typedef struct _AMLByteList
+{
+	struct _AMLSymbol *byte_data;
+	struct _AMLSymbol *byte_list;
+} AMLByteList;
 
 typedef struct _AMLComputationalData
 {
@@ -914,6 +921,7 @@ typedef union _AMLComponent
 	AMLBufferSize buffer_size;
 	AMLBuffPkgStrObj buff_pkg_str_obj;
 	AMLByteConst byte_const;
+	AMLByteList byte_list;
 	AMLComputationalData computational_data;
 	AMLConstObj const_obj;
 	AMLDataObject data_object;
@@ -1020,6 +1028,8 @@ AMLSymbol *analyse_aml_buffer_size(AMLSubstring aml);
 AMLSymbol *analyse_aml_byte_const(AMLSubstring aml);
 // <byte_data> := 0x00 - 0xff
 AMLSymbol *analyse_aml_byte_data(AMLSubstring aml);
+// <byte_list> := Nothing | <byte_data> <byte_list>
+AMLSymbol *analyse_aml_byte_list(AMLSubstring aml);
 // <byte_prefix> := AML_BYTE_BYTE_PREFIX
 AMLSymbol *analyse_aml_byte_prefix(AMLSubstring aml);
 // <computational_data> := <byte_const> | <word_const> | <dword_const> | <qword_const> | <string> | <const_obj> | <revision_op> | <def_buffer>

@@ -704,6 +704,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_byte_data:
 		output = create_format_chain_string("%s %#04.2x\n", aml_symbol_type_name(aml_symbol->type), *aml_symbol->string.initial);
 		break;
+	case aml_byte_list:
+		if(aml_symbol->component.byte_list.byte_data)
+		{
+			byte_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.byte_list.byte_data);
+			insert_char_front(byte_data_chain_string, byte_data_chain_string->first_character, ' ');
+			replace_chain_string(byte_data_chain_string, "\n", "\n ");
+			byte_data_char_array = create_char_array_from_chain_string(byte_data_chain_string);
+		}
+		else byte_data_char_array = "";
+		if(aml_symbol->component.byte_list.byte_list)
+		{
+			byte_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.byte_list.byte_list);
+			insert_char_front(byte_list_chain_string, byte_list_chain_string->first_character, ' ');
+			replace_chain_string(byte_list_chain_string, "\n", "\n ");
+			byte_list_char_array = create_char_array_from_chain_string(byte_list_chain_string);
+		}
+		else byte_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), byte_data_char_array, byte_list_char_array);
+		if(aml_symbol->component.byte_list.byte_data)
+		{
+			delete_chain_string(byte_data_chain_string);
+			free(byte_data_char_array);
+		}
+		if(aml_symbol->component.byte_list.byte_list)
+		{
+			delete_chain_string(byte_list_chain_string);
+			free(byte_list_char_array);
+		}
+		break;
 	case aml_byte_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4503,6 +4532,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_buffer_size_name = "BufferSize";
 	static char const * const aml_byte_const_name = "ByteConst";
 	static char const * const aml_byte_data_name = "ByteData";
+	static char const * const aml_byte_list_name = "ByteList";
 	static char const * const aml_byte_prefix_name = "BytePrefix";
 	static char const * const aml_computational_data_name = "ComputationalData";
 	static char const * const aml_const_obj_name = "ConstObj";
@@ -4643,6 +4673,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_byte_const_name;
 	case aml_byte_data:
 		return aml_byte_data_name;
+	case aml_byte_list:
+		return aml_byte_list_name;
 	case aml_byte_prefix:
 		return aml_byte_prefix_name;
 	case aml_computational_data:
@@ -5045,6 +5077,29 @@ AMLSymbol *analyse_aml_byte_data(AMLSubstring aml)
 	return byte_data;
 }
 
+// <byte_list> := Nothing | <byte_data> <byte_list>
+AMLSymbol *analyse_aml_byte_list(AMLSubstring aml)
+{
+	AMLSymbol *byte_list = malloc(sizeof(*byte_list));
+	byte_list->string.initial = aml.initial;
+	byte_list->string.length = 0;
+	byte_list->type = aml_byte_list;
+	byte_list->component.byte_list.byte_data = NULL;
+	byte_list->component.byte_list.byte_list = NULL;
+	if(aml.length)
+	{
+		byte_list->component.byte_list.byte_data = analyse_aml_byte_data(aml);
+		byte_list->string.length += byte_list->component.byte_list.byte_data->string.length;
+		aml.initial += byte_list->component.byte_list.byte_data->string.length;
+		aml.length -= byte_list->component.byte_list.byte_data->string.length;
+		byte_list->component.byte_list.byte_list = analyse_aml_byte_list(aml);
+		byte_list->string.length += byte_list->component.byte_list.byte_list->string.length;
+		aml.initial += byte_list->component.byte_list.byte_list->string.length;
+		aml.length -= byte_list->component.byte_list.byte_list->string.length;
+	}
+	return byte_list;
+}
+
 // <byte_prefix> := AML_BYTE_BYTE_PREFIX
 AMLSymbol *analyse_aml_byte_prefix(AMLSubstring aml)
 {
@@ -5268,9 +5323,10 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
 	def_buffer->string.length += def_buffer->component.def_buffer.buffer_size->string.length;
 	aml.initial += def_buffer->component.def_buffer.buffer_size->string.length;
 	aml.length -= def_buffer->component.def_buffer.buffer_size->string.length;
-	def_buffer->component.def_buffer.byte_list = NULL;
-	ERROR(); // byte_list is unimplemented
-	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	def_buffer->component.def_buffer.byte_list = analyse_aml_byte_list(aml);
+	def_buffer->string.length += def_buffer->component.def_buffer.byte_list->string.length;
+	aml.initial += def_buffer->component.def_buffer.byte_list->string.length;
+	aml.length -= def_buffer->component.def_buffer.byte_list->string.length;
 	return def_buffer;
 }
 
@@ -7681,6 +7737,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.byte_const.byte_data)delete_aml_symbol(aml_symbol->component.byte_const.byte_data);
 		break;
 	case aml_byte_data:
+		break;
+	case aml_byte_list:
+		if(aml_symbol->component.byte_list.byte_data)delete_aml_symbol(aml_symbol->component.byte_list.byte_data);
+		if(aml_symbol->component.byte_list.byte_list)delete_aml_symbol(aml_symbol->component.byte_list.byte_list);
 		break;
 	case aml_byte_prefix:
 		break;
