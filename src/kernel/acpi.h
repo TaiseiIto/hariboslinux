@@ -208,6 +208,7 @@ typedef enum _AMLSymbolType
 	aml_def_l_less,
 	aml_def_l_or,
 	aml_def_method,
+	aml_def_mutex,
 	aml_def_name,
 	aml_def_op_region,
 	aml_def_package,
@@ -484,6 +485,13 @@ typedef struct _AMLDefMethod
 	struct _AMLSymbol *method_flags;
 	struct _AMLSymbol *term_list;
 } AMLDefMethod;
+
+typedef struct _AMLDefMutex
+{
+	struct _AMLSymbol *mutex_op;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *sync_flags;
+} AMLDefMutex;
 
 typedef struct _AMLDefName
 {
@@ -969,6 +977,7 @@ typedef union _AMLComponent
 	AMLDefLLess def_l_less;
 	AMLDefLOr def_l_or;
 	AMLDefMethod def_method;
+	AMLDefMutex def_mutex;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
 	AMLDefPackage def_package;
@@ -1100,6 +1109,8 @@ AMLSymbol *analyse_aml_def_l_less(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_l_or(AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSubstring aml);
+// <def_mutex> := <mutex_op> <name_string> <sync_flags>
+AMLSymbol *analyse_aml_def_mutex(AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
 AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>

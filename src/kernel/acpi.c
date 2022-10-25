@@ -303,6 +303,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *method_op_chain_string;
 	ChainString *multi_name_path_chain_string;
 	ChainString *multi_name_prefix_chain_string;
+	ChainString *mutex_op_chain_string;
 	ChainString *name_op_chain_string;
 	ChainString *name_path_chain_string;
 	ChainString *name_seg_chain_string;
@@ -354,6 +355,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *string_prefix_chain_string;
 	ChainString *subtract_op_chain_string;
 	ChainString *super_name_chain_string;
+	ChainString *sync_flags_chain_string;
 	ChainString *target_chain_string;
 	ChainString *term_arg_chain_string;
 	ChainString *term_arg_list_chain_string;
@@ -511,6 +513,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *method_op_char_array;
 	char *multi_name_path_char_array;
 	char *multi_name_prefix_char_array;
+	char *mutex_op_char_array;
 	char *name_op_char_array;
 	char *name_path_char_array;
 	char *name_seg_char_array;
@@ -561,6 +564,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *string_prefix_char_array;
 	char *subtract_op_char_array;
 	char *super_name_char_array;
+	char *sync_flags_char_array;
 	char *target_char_array;
 	char *term_arg_char_array;
 	char *term_arg_list_char_array;
@@ -1559,6 +1563,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(term_list_chain_string);
 			free(term_list_char_array);
+		}
+		break;
+	case aml_def_mutex:
+		if(aml_symbol->component.def_mutex.mutex_op)
+		{
+			mutex_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_mutex.mutex_op);
+			insert_char_front(mutex_op_chain_string, mutex_op_chain_string->first_character, ' ');
+			replace_chain_string(mutex_op_chain_string, "\n", "\n ");
+			mutex_op_char_array = create_char_array_from_chain_string(mutex_op_chain_string);
+		}
+		else mutex_op_char_array = "";
+		if(aml_symbol->component.def_mutex.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_mutex.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		if(aml_symbol->component.def_mutex.sync_flags)
+		{
+			sync_flags_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_mutex.sync_flags);
+			insert_char_front(sync_flags_chain_string, sync_flags_chain_string->first_character, ' ');
+			replace_chain_string(sync_flags_chain_string, "\n", "\n ");
+			sync_flags_char_array = create_char_array_from_chain_string(sync_flags_chain_string);
+		}
+		else sync_flags_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), mutex_op_char_array, name_string_char_array, sync_flags_char_array);
+		if(aml_symbol->component.def_mutex.mutex_op)
+		{
+			delete_chain_string(mutex_op_chain_string);
+			free(mutex_op_char_array);
+		}
+		if(aml_symbol->component.def_mutex.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		if(aml_symbol->component.def_mutex.sync_flags)
+		{
+			delete_chain_string(sync_flags_chain_string);
+			free(sync_flags_char_array);
 		}
 		break;
 	case aml_def_name:
@@ -4691,6 +4737,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_l_less_name = "DefLLess";
 	static char const * const aml_def_l_or_name = "DefLOr";
 	static char const * const aml_def_method_name = "DefMethod";
+	static char const * const aml_def_mutex_name = "DefMutex";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_package_name = "DefPackage";
@@ -4857,6 +4904,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_l_or_name;
 	case aml_def_method:
 		return aml_def_method_name;
+	case aml_def_mutex:
+		return aml_def_mutex_name;
 	case aml_def_name:
 		return aml_def_name_name;
 	case aml_def_op_region:
@@ -5756,6 +5805,20 @@ AMLSymbol *analyse_aml_def_method(AMLSubstring aml)
 	aml.initial += def_method->component.def_method.term_list->string.length;
 	aml.length -= def_method->component.def_method.term_list->string.length;
 	return def_method;
+}
+
+// <def_mutex> := <mutex_op> <name_string> <sync_flags>
+AMLSymbol *analyse_aml_def_mutex(AMLSubstring aml)
+{
+	AMLSymbol *def_mutex = malloc(sizeof(*def_mutex));
+	def_mutex->string.initial = aml.initial;
+	def_mutex->string.length = 0;
+	def_mutex->type = aml_def_mutex;
+	def_mutex->component.def_mutex.mutex_op = NULL;
+	def_mutex->component.def_mutex.name_string = NULL;
+	def_mutex->component.def_mutex.sync_flags = NULL;
+	ERROR(); // Unimplemented
+	return def_mutex;
 }
 
 // <def_name> := <name_op> <name_string> <data_ref_object>
@@ -8170,6 +8233,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_method.name_string)delete_aml_symbol(aml_symbol->component.def_method.name_string);
 		if(aml_symbol->component.def_method.method_flags)delete_aml_symbol(aml_symbol->component.def_method.method_flags);
 		if(aml_symbol->component.def_method.term_list)delete_aml_symbol(aml_symbol->component.def_method.term_list);
+		break;
+	case aml_def_mutex:
+		if(aml_symbol->component.def_mutex.mutex_op)delete_aml_symbol(aml_symbol->component.def_mutex.mutex_op);
+		if(aml_symbol->component.def_mutex.name_string)delete_aml_symbol(aml_symbol->component.def_mutex.name_string);
+		if(aml_symbol->component.def_mutex.sync_flags)delete_aml_symbol(aml_symbol->component.def_mutex.sync_flags);
 		break;
 	case aml_def_name:
 		if(aml_symbol->component.def_name.name_op)delete_aml_symbol(aml_symbol->component.def_name.name_op);
