@@ -168,6 +168,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *access_field_chain_string;
 	ChainString *alias_op_chain_string;
 	ChainString *arg_obj_chain_string;
+	ChainString *arg_object_chain_string;
 	ChainString *arg_op_chain_string;
 	ChainString *ascii_char_chain_string;
 	ChainString *ascii_char_list_chain_string;
@@ -332,6 +333,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *region_offset_chain_string;
 	ChainString *region_space_chain_string;
 	ChainString *reserved_field_chain_string;
+	ChainString *return_op_chain_string;
 	ChainString *revision_op_chain_string;
 	ChainString *revision_op_suffix_chain_string;
 	ChainString *root_char_chain_string;
@@ -369,6 +371,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *access_field_char_array;
 	char *alias_op_char_array;
 	char *arg_obj_char_array;
+	char *arg_object_char_array;
 	char *arg_op_char_array;
 	char *ascii_char_char_array;
 	char *ascii_char_list_char_array;
@@ -532,6 +535,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *region_offset_char_array;
 	char *region_space_char_array;
 	char *reserved_field_char_array;
+	char *return_op_char_array;
 	char *revision_op_char_array;
 	char *revision_op_suffix_char_array;
 	char *root_char_char_array;
@@ -1576,6 +1580,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(region_len_chain_string);
 			free(region_len_char_array);
+		}
+		break;
+	case aml_def_return:
+		if(aml_symbol->component.def_return.return_op)
+		{
+			return_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_return.return_op);
+			insert_char_front(return_op_chain_string, return_op_chain_string->first_character, ' ');
+			replace_chain_string(return_op_chain_string, "\n", "\n ");
+			return_op_char_array = create_char_array_from_chain_string(return_op_chain_string);
+		}
+		else return_op_char_array = "";
+		if(aml_symbol->component.def_return.arg_object)
+		{
+			arg_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_return.arg_object);
+			insert_char_front(arg_object_chain_string, arg_object_chain_string->first_character, ' ');
+			replace_chain_string(arg_object_chain_string, "\n", "\n ");
+			arg_object_char_array = create_char_array_from_chain_string(arg_object_chain_string);
+		}
+		else arg_object_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), return_op_char_array, arg_object_char_array);
+		if(aml_symbol->component.def_return.return_op)
+		{
+			delete_chain_string(return_op_chain_string);
+			free(return_op_char_array);
+		}
+		if(aml_symbol->component.def_return.arg_object)
+		{
+			delete_chain_string(arg_object_chain_string);
+			free(arg_object_char_array);
 		}
 		break;
 	case aml_def_scope:
@@ -4430,6 +4463,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_method_name = "DefMethod";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
+	static char const * const aml_def_return_name = "DefReturn";
 	static char const * const aml_def_scope_name = "DefScope";
 	static char const * const aml_def_shift_right_name = "DefShiftRight";
 	static char const * const aml_def_size_of_name = "DefSizeOf";
@@ -4584,6 +4618,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_name_name;
 	case aml_def_op_region:
 		return aml_def_op_region_name;
+	case aml_def_return:
+		return aml_def_return_name;
 	case aml_def_scope:
 		return aml_def_scope_name;
 	case aml_def_shift_right:
@@ -5447,6 +5483,19 @@ AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml)
 	aml.initial += def_op_region->component.def_op_region.region_len->string.length;
 	aml.length -= def_op_region->component.def_op_region.region_len->string.length;
 	return def_op_region;
+}
+
+// <def_return> := <return_op> <arg_object>
+AMLSymbol *analyse_aml_def_return(AMLSubstring aml)
+{
+	AMLSymbol *def_return = malloc(sizeof(*def_return));
+	def_return->string.initial = aml.initial;
+	def_return->string.length = 0;
+	def_return->type = aml_def_return;
+	def_return->component.def_return.return_op = NULL;
+	def_return->component.def_return.arg_object = NULL;
+	ERROR(); // unimplemented
+	return def_return;
 }
 
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
@@ -7584,6 +7633,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_op_region.region_space)delete_aml_symbol(aml_symbol->component.def_op_region.region_space);
 		if(aml_symbol->component.def_op_region.region_offset)delete_aml_symbol(aml_symbol->component.def_op_region.region_offset);
 		if(aml_symbol->component.def_op_region.region_len)delete_aml_symbol(aml_symbol->component.def_op_region.region_len);
+		break;
+	case aml_def_return:
+		if(aml_symbol->component.def_return.return_op)delete_aml_symbol(aml_symbol->component.def_return.return_op);
+		if(aml_symbol->component.def_return.arg_object)delete_aml_symbol(aml_symbol->component.def_return.arg_object);
 		break;
 	case aml_def_scope:
 		if(aml_symbol->component.def_scope.scope_op)delete_aml_symbol(aml_symbol->component.def_scope.scope_op);

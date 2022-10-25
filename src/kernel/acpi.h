@@ -207,6 +207,7 @@ typedef enum _AMLSymbolType
 	aml_def_method,
 	aml_def_name,
 	aml_def_op_region,
+	aml_def_return,
 	aml_def_scope,
 	aml_def_shift_right,
 	aml_def_size_of,
@@ -472,6 +473,12 @@ typedef struct _AMLDefOpRegion
 	struct _AMLSymbol *region_offset;
 	struct _AMLSymbol *region_len;
 } AMLDefOpRegion;
+
+typedef struct _AMLDefReturn
+{
+	struct _AMLSymbol *return_op;
+	struct _AMLSymbol *arg_object;
+} AMLDefReturn;
 
 typedef struct _AMLDefScope
 {
@@ -909,6 +916,7 @@ typedef union _AMLComponent
 	AMLDefMethod def_method;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
+	AMLDefReturn def_return;
 	AMLDefScope def_scope;
 	AMLDefShiftRight def_shift_right;
 	AMLDefSizeOf def_size_of;
@@ -1031,6 +1039,8 @@ AMLSymbol *analyse_aml_def_method(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
+// <def_return> := <return_op> <arg_object>
+AMLSymbol *analyse_aml_def_return(AMLSubstring aml);
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
 AMLSymbol *analyse_aml_def_scope(AMLSubstring aml);
 // <def_shift_right> := <shift_right_op> <operand> <shift_count> <target>
