@@ -1207,7 +1207,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			def_else_char_array = create_char_array_from_chain_string(def_else_chain_string);
 		}
 		else def_else_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), if_op_char_array, pkg_length_char_array, predicate_char_array, term_list_char_array, def_else_char_array);
+		output = create_format_chain_string("%s length = %#010.8x\n%s%s%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, if_op_char_array, pkg_length_char_array, predicate_char_array, term_list_char_array, def_else_char_array);
 		if(aml_symbol->component.def_if_else.if_op)
 		{
 			delete_chain_string(if_op_chain_string);
