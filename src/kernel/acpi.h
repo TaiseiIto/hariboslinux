@@ -253,6 +253,7 @@ typedef enum _AMLSymbolType
 	aml_method_op,
 	aml_multi_name_path,
 	aml_multi_name_prefix,
+	aml_mutex_op,
 	aml_name_char,
 	aml_name_op,
 	aml_name_path,
@@ -715,6 +716,12 @@ typedef struct _AMLMultiNamePath
 	struct _AMLSymbol **name_seg;
 } AMLMultiNamePath;
 
+typedef struct _AMLMutexOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *mutex_op_suffix;
+} AMLMutexOp;
+
 typedef struct _AMLNameChar
 {
 	struct _AMLSymbol *digit_char;
@@ -1003,6 +1010,7 @@ typedef union _AMLComponent
 	AMLMethodFlags method_flags;
 	AMLMethodInvocation method_invocation;
 	AMLMultiNamePath multi_name_path;
+	AMLMutexOp mutex_op;
 	AMLNameChar name_char;
 	AMLNamedField named_field;
 	AMLNamedObj named_obj;
@@ -1199,6 +1207,8 @@ AMLSymbol *analyse_aml_method_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_multi_name_path(AMLSubstring aml);
 // <mult_name_prefix> := AML_BYTE_MULTI_NAME_PREFIX
 AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml);
+// <mutex_op> := <ext_op_prefix> <mutex_op_suffix>
+AMLSymbol *analyse_aml_mutex_op(AMLSubstring aml);
 // <name_char> := <digit_char> | <lead_name_char>
 AMLSymbol *analyse_aml_name_char(AMLSubstring aml);
 // <name_op> := AML_BYTE_NAME_OP

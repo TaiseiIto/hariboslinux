@@ -304,6 +304,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *multi_name_path_chain_string;
 	ChainString *multi_name_prefix_chain_string;
 	ChainString *mutex_op_chain_string;
+	ChainString *mutex_op_suffix_chain_string;
 	ChainString *name_op_chain_string;
 	ChainString *name_path_chain_string;
 	ChainString *name_seg_chain_string;
@@ -514,6 +515,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *multi_name_path_char_array;
 	char *multi_name_prefix_char_array;
 	char *mutex_op_char_array;
+	char *mutex_op_suffix_char_array;
 	char *name_op_char_array;
 	char *name_path_char_array;
 	char *name_seg_char_array;
@@ -3265,6 +3267,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		free(name_segs_chain_string);
 		free(name_segs_char_array);
 		break;
+	case aml_mutex_op:
+		if(aml_symbol->component.mutex_op.ext_op_prefix)
+		{
+			ext_op_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.mutex_op.ext_op_prefix);
+			insert_char_front(ext_op_prefix_chain_string, ext_op_prefix_chain_string->first_character, ' ');
+			replace_chain_string(ext_op_prefix_chain_string, "\n", "\n ");
+			ext_op_prefix_char_array = create_char_array_from_chain_string(ext_op_prefix_chain_string);
+		}
+		else ext_op_prefix_char_array = "";
+		if(aml_symbol->component.mutex_op.mutex_op_suffix)
+		{
+			mutex_op_suffix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.mutex_op.mutex_op_suffix);
+			insert_char_front(mutex_op_suffix_chain_string, mutex_op_suffix_chain_string->first_character, ' ');
+			replace_chain_string(mutex_op_suffix_chain_string, "\n", "\n ");
+			mutex_op_suffix_char_array = create_char_array_from_chain_string(mutex_op_suffix_chain_string);
+		}
+		else mutex_op_suffix_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), ext_op_prefix_char_array, mutex_op_suffix_char_array);
+		if(aml_symbol->component.mutex_op.ext_op_prefix)
+		{
+			delete_chain_string(ext_op_prefix_chain_string);
+			free(ext_op_prefix_char_array);
+		}
+		if(aml_symbol->component.mutex_op.mutex_op_suffix)
+		{
+			delete_chain_string(mutex_op_suffix_chain_string);
+			free(mutex_op_suffix_char_array);
+		}
+		break;
 	case aml_multi_name_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4782,6 +4813,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_method_op_name = "MethodOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
+	static char const * const aml_mutex_op_name = "MutexOp";
 	static char const * const aml_name_char_name = "NameChar";
 	static char const * const aml_name_op_name = "NameOp";
 	static char const * const aml_name_path_name = "NamePath";
@@ -4994,6 +5026,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_multi_name_path_name;
 	case aml_multi_name_prefix:
 		return aml_multi_name_prefix_name;
+	case aml_mutex_op:
+		return aml_mutex_op_name;
 	case aml_name_char:
 		return aml_name_char_name;
 	case aml_name_op:
@@ -5814,7 +5848,11 @@ AMLSymbol *analyse_aml_def_mutex(AMLSubstring aml)
 	def_mutex->string.initial = aml.initial;
 	def_mutex->string.length = 0;
 	def_mutex->type = aml_def_mutex;
-	def_mutex->component.def_mutex.mutex_op = NULL;
+	def_mutex->component.def_mutex.mutex_op = analyse_aml_mutex_op(aml);
+	def_mutex->string.length += def_mutex->component.def_mutex.mutex_op->string.length;
+	def_mutex->string.length += def_mutex->component.def_mutex.mutex_op->string.length;
+	aml.initial += def_mutex->component.def_mutex.mutex_op->string.length;
+	aml.length -= def_mutex->component.def_mutex.mutex_op->string.length;
 	def_mutex->component.def_mutex.name_string = NULL;
 	def_mutex->component.def_mutex.sync_flags = NULL;
 	ERROR(); // Unimplemented
@@ -6686,6 +6724,22 @@ AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml)
 	multi_name_prefix->type = aml_multi_name_prefix;
 	if(*multi_name_prefix->string.initial != AML_BYTE_MULTI_NAME_PREFIX)ERROR(); // Incorrect munti name prefix
 	return multi_name_prefix;
+}
+
+// <mutex_op> := <ext_op_prefix> <mutex_op_suffix>
+AMLSymbol *analyse_aml_mutex_op(AMLSubstring aml)
+{
+	AMLSymbol *mutex_op = malloc(sizeof(*mutex_op));
+	mutex_op->string.initial = aml.initial;
+	mutex_op->string.length = 0;
+	mutex_op->type = aml_mutex_op;
+	mutex_op->component.mutex_op.ext_op_prefix = analyse_aml_ext_op_prefix(aml);
+	mutex_op->string.length += mutex_op->component.mutex_op.ext_op_prefix->string.length;
+	aml.initial += mutex_op->component.mutex_op.ext_op_prefix->string.length;
+	aml.length -= mutex_op->component.mutex_op.ext_op_prefix->string.length;
+	mutex_op->component.mutex_op.mutex_op_suffix = NULL;
+	ERROR(); // Unimplemented
+	return mutex_op;
 }
 
 // <name_char> := <digit_char> | <lead_name_char>
@@ -8443,6 +8497,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.multi_name_path.seg_count)delete_aml_symbol(aml_symbol->component.multi_name_path.seg_count);
 		break;
 	case aml_multi_name_prefix:
+		break;
+	case aml_mutex_op:
+		if(aml_symbol->component.mutex_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.mutex_op.ext_op_prefix);
+		if(aml_symbol->component.mutex_op.mutex_op_suffix)delete_aml_symbol(aml_symbol->component.mutex_op.mutex_op_suffix);
 		break;
 	case aml_name_char:
 		if(aml_symbol->component.name_char.digit_char)delete_aml_symbol(aml_symbol->component.name_char.digit_char);
