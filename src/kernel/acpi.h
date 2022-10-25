@@ -275,6 +275,7 @@ typedef enum _AMLSymbolType
 	aml_region_len,
 	aml_region_offset,
 	aml_region_space,
+	aml_return_op,
 	aml_revision_op,
 	aml_revision_op_suffix,
 	aml_root_char,
@@ -1175,6 +1176,8 @@ AMLSymbol *analyse_aml_region_len(AMLSubstring aml);
 AMLSymbol *analyse_aml_region_offset(AMLSubstring aml);
 // <region_space>
 AMLSymbol *analyse_aml_region_space(AMLSubstring aml);
+// <return_op> := AML_BYTE_RETURN_OP
+AMLSymbol *analyse_aml_return_op(AMLSubstring aml);
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
 AMLSymbol *analyse_aml_revision_op(AMLSubstring aml);
 // <revision_op_suffix> := AML_BYTE_REVISION_OP

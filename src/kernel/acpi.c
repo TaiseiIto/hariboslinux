@@ -3785,6 +3785,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_region_space:
 		output = create_format_chain_string("%s %#04.2x %s\n", aml_symbol_type_name(aml_symbol->type), *aml_symbol->string.initial, region_space_type_name(*aml_symbol->string.initial));
 		break;
+	case aml_return_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)
 		{
@@ -4531,6 +4534,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_region_len_name = "RegionLen";
 	static char const * const aml_region_offset_name = "RegionOffset";
 	static char const * const aml_region_space_name = "RegionSpace";
+	static char const * const aml_return_op_name = "ReturnOp";
 	static char const * const aml_revision_op_name = "RevisionOp";
 	static char const * const aml_revision_op_suffix_name = "RevisionOpSuffix";
 	static char const * const aml_root_char_name = "RootChar";
@@ -4754,6 +4758,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_region_offset_name;
 	case aml_region_space:
 		return aml_region_space_name;
+	case aml_return_op:
+		return aml_return_op_name;
 	case aml_revision_op:
 		return aml_revision_op_name;
 	case aml_revision_op_suffix:
@@ -5492,7 +5498,10 @@ AMLSymbol *analyse_aml_def_return(AMLSubstring aml)
 	def_return->string.initial = aml.initial;
 	def_return->string.length = 0;
 	def_return->type = aml_def_return;
-	def_return->component.def_return.return_op = NULL;
+	def_return->component.def_return.return_op = analyse_aml_return_op(aml);
+	def_return->string.length = def_return->component.def_return.return_op->string.length;
+	aml.initial += def_return->component.def_return.return_op->string.length;
+	aml.length -= def_return->component.def_return.return_op->string.length;
 	def_return->component.def_return.arg_object = NULL;
 	ERROR(); // unimplemented
 	return def_return;
@@ -6785,6 +6794,17 @@ AMLSymbol *analyse_aml_region_space(AMLSubstring aml)
 	return region_space;
 }
 
+// <return_op> := AML_BYTE_RETURN_OP
+AMLSymbol *analyse_aml_return_op(AMLSubstring aml)
+{
+	AMLSymbol *return_op = malloc(sizeof(*return_op));
+	return_op->string.initial = aml.initial;
+	return_op->string.length = 1;
+	return_op->type = aml_return_op;
+	if(*aml.initial != AML_BYTE_RETURN_OP)ERROR(); // Incorrect return_op
+	return return_op;
+}
+
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
 AMLSymbol *analyse_aml_revision_op(AMLSubstring aml)
 {
@@ -6972,6 +6992,10 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 	case AML_BYTE_IF_OP:
 		statement_opcode->component.statement_opcode.def_if_else = analyse_aml_def_if_else(aml);
 		statement_opcode->string.length += statement_opcode->component.statement_opcode.def_if_else->string.length;
+		break;
+	case AML_BYTE_RETURN_OP:
+		statement_opcode->component.statement_opcode.def_return = analyse_aml_def_return(aml);
+		statement_opcode->string.length += statement_opcode->component.statement_opcode.def_return->string.length;
 		break;
 	case AML_BYTE_WHILE_OP:
 		statement_opcode->component.statement_opcode.def_while = analyse_aml_def_while(aml);
@@ -7311,6 +7335,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_L_OR_OP:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
+		case AML_BYTE_RETURN_OP:
 		case AML_BYTE_SCOPE_OP:
 		case AML_BYTE_SHIFT_RIGHT_OP:
 		case AML_BYTE_SIZE_OF_OP:
@@ -7379,6 +7404,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
 	case AML_BYTE_IF_OP:
+	case AML_BYTE_RETURN_OP:
 	case AML_BYTE_WHILE_OP:
 		term_obj->component.term_obj.statement_opcode = analyse_aml_statement_opcode(aml);
 		term_obj->string.length += term_obj->component.term_obj.statement_opcode->string.length;
@@ -7920,6 +7946,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.region_offset.term_arg)delete_aml_symbol(aml_symbol->component.region_offset.term_arg);
 		break;
 	case aml_region_space:
+		break;
+	case aml_return_op:
 		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.revision_op.ext_op_prefix);
