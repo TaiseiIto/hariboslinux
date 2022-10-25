@@ -994,7 +994,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			byte_list_char_array = create_char_array_from_chain_string(byte_list_chain_string);
 		}
 		else byte_list_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), buffer_op_char_array, pkg_length_char_array, buffer_size_char_array, byte_list_char_array);
+		output = create_format_chain_string("%s length = %#010.8x\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, buffer_op_char_array, pkg_length_char_array, buffer_size_char_array, byte_list_char_array);
 		if(aml_symbol->component.def_buffer.buffer_op)
 		{
 			delete_chain_string(buffer_op_chain_string);
@@ -5270,6 +5270,7 @@ AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml)
 	aml.length -= def_buffer->component.def_buffer.buffer_size->string.length;
 	def_buffer->component.def_buffer.byte_list = NULL;
 	ERROR(); // byte_list is unimplemented
+	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	return def_buffer;
 }
 
@@ -6226,7 +6227,7 @@ AMLSymbol *analyse_aml_l_greater_op(AMLSubstring aml)
 	l_greater_op->string.initial = aml.initial;
 	l_greater_op->string.length = 1;
 	l_greater_op->type = aml_l_greater_op;
-	if(*l_greater_op->string.initial != AML_BYTE_L_EQUAL_OP)ERROR(); // Incorrect l_greater_op
+	if(*l_greater_op->string.initial != AML_BYTE_L_GREATER_OP)ERROR(); // Incorrect l_greater_op
 	return l_greater_op;
 }
 
