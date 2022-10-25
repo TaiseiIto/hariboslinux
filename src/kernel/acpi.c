@@ -5888,7 +5888,6 @@ AMLSymbol *analyse_aml_def_mutex(AMLSubstring aml)
 	def_mutex->string.length += def_mutex->component.def_mutex.sync_flags->string.length;
 	def_mutex->string.length += def_mutex->component.def_mutex.sync_flags->string.length;
 	aml.initial += def_mutex->component.def_mutex.sync_flags->string.length;
-	ERROR(); // Unimplemented
 	return def_mutex;
 }
 
