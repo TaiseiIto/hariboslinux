@@ -3757,6 +3757,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(term_arg_char_array);
 		}
 		break;
+	case aml_package_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_parent_prefix_char:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4672,6 +4675,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_op_region_op_name = "OpRegionOp";
 	static char const * const aml_op_region_op_suffix_name = "OpRegionOpSuffix";
 	static char const * const aml_operand_name = "Operand";
+	static char const * const aml_package_op_name = "PackageOp";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
 	static char const * const aml_pkg_length_name = "PkgLength";
@@ -4893,6 +4897,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_op_region_op_suffix_name;
 	case aml_operand:
 		return aml_operand_name;
+	case aml_package_op:
+		return aml_package_op_name;
 	case aml_parent_prefix_char:
 		return aml_parent_prefix_char_name;
 	case aml_pkg_lead_byte:
@@ -5296,6 +5302,10 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml)
 	case AML_BYTE_ZERO_OP:
 		data_object->component.data_object.computational_data = analyse_aml_computational_data(aml);
 		data_object->string.length += data_object->component.data_object.computational_data->string.length;
+		break;
+	case AML_BYTE_PACKAGE_OP:
+		data_object->component.data_object.def_package = analyse_aml_def_package(aml);
+		data_object->string.length += data_object->component.data_object.def_package->string.length;
 		break;
 	default:
 		ERROR(); // Incorrect data object
@@ -5717,8 +5727,14 @@ AMLSymbol *analyse_aml_def_package(AMLSubstring aml)
 	def_package->string.initial = aml.initial;
 	def_package->string.length = 0;
 	def_package->type = aml_def_package;
-	def_package->component.def_package.package_op = NULL;
-	def_package->component.def_package.pkg_length = NULL;
+	def_package->component.def_package.package_op = analyse_aml_package_op(aml);
+	def_package->string.length += def_package->component.def_package.package_op->string.length;
+	aml.initial += def_package->component.def_package.package_op->string.length;
+	aml.length -= def_package->component.def_package.package_op->string.length;
+	def_package->component.def_package.pkg_length = analyse_aml_pkg_length(aml);
+	def_package->string.length += def_package->component.def_package.pkg_length->string.length;
+	aml.initial += def_package->component.def_package.pkg_length->string.length;
+	aml.length -= def_package->component.def_package.pkg_length->string.length;
 	def_package->component.def_package.num_elements = NULL;
 	def_package->component.def_package.package_element_list = NULL;
 	ERROR(); // unimplemented
@@ -6151,6 +6167,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	case AML_BYTE_L_OR_OP:
 		expression_opcode->component.expression_opcode.def_l_or = analyse_aml_def_l_or(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_or->string.length;
+		break;
+	case AML_BYTE_PACKAGE_OP:
+		expression_opcode->component.expression_opcode.def_package = analyse_aml_def_package(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_package->string.length;
 		break;
 	case AML_BYTE_SHIFT_RIGHT_OP:
 		expression_opcode->component.expression_opcode.def_shift_right = analyse_aml_def_shift_right(aml);
@@ -6872,6 +6892,17 @@ AMLSymbol *analyse_aml_operand(AMLSubstring aml)
 	return operand;
 }
 
+// <package_op> := AML_BYTE_PACKAGE_OP
+AMLSymbol *analyse_aml_package_op(AMLSubstring aml)
+{
+	AMLSymbol *package_op = malloc(sizeof(*package_op));
+	package_op->string.initial = aml.initial;
+	package_op->string.length = 1;
+	package_op->type = aml_package_op;
+	if(*aml.initial != AML_BYTE_PACKAGE_OP)ERROR(); // Incorrect package_op
+	return package_op;
+}
+
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml)
 {
@@ -7459,6 +7490,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	case AML_BYTE_L_GREATER_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -7534,6 +7566,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml, unsigned int num_of_term_
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_ONES_OP:
 	case AML_BYTE_ONE_OP:
+	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_QWORD_PREFIX:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
@@ -7590,6 +7623,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_L_OR_OP:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
+		case AML_BYTE_PACKAGE_OP:
 		case AML_BYTE_RETURN_OP:
 		case AML_BYTE_SCOPE_OP:
 		case AML_BYTE_SHIFT_RIGHT_OP:
@@ -7642,6 +7676,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	case AML_BYTE_L_GREATER_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -8189,6 +8224,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_operand:
 		if(aml_symbol->component.operand.term_arg)delete_aml_symbol(aml_symbol->component.operand.term_arg);
+		break;
+	case aml_package_op:
 		break;
 	case aml_parent_prefix_char:
 		break;

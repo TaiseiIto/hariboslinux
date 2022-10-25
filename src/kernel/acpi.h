@@ -269,6 +269,7 @@ typedef enum _AMLSymbolType
 	aml_op_region_op,
 	aml_op_region_op_suffix,
 	aml_operand,
+	aml_package_op,
 	aml_parent_prefix_char,
 	aml_pkg_lead_byte,
 	aml_pkg_length,
@@ -1198,6 +1199,8 @@ AMLSymbol *analyse_aml_op_region_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_op_region_op_suffix(AMLSubstring aml);
 // <operand> := <term_arg>
 AMLSymbol *analyse_aml_operand(AMLSubstring aml);
+// <package_op> := AML_BYTE_PACKAGE_OP
+AMLSymbol *analyse_aml_package_op(AMLSubstring aml);
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
 // <pkg_lead_byte>
