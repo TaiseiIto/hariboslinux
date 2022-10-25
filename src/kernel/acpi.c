@@ -4490,6 +4490,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(simple_name_char_array);
 		}
 		break;
+	case aml_sync_flags:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_target:
 		if(aml_symbol->component.target.super_name)
 		{
@@ -4881,6 +4884,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_string_prefix_name = "StringPrefix";
 	static char const * const aml_subtract_op_name = "SubtractOp";
 	static char const * const aml_super_name_name = "SuperName";
+	static char const * const aml_sync_flags_name = "SyncFlags";
 	static char const * const aml_target_name = "Target";
 	static char const * const aml_term_arg_name = "TermArg";
 	static char const * const aml_term_arg_list_name = "TermArgList";
@@ -5145,6 +5149,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_subtract_op_name;
 	case aml_super_name:
 		return aml_super_name_name;
+	case aml_sync_flags:
+		return aml_sync_flags_name;
 	case aml_target:
 		return aml_target_name;
 	case aml_term_arg:
@@ -5878,7 +5884,10 @@ AMLSymbol *analyse_aml_def_mutex(AMLSubstring aml)
 	def_mutex->string.length += def_mutex->component.def_mutex.name_string->string.length;
 	def_mutex->string.length += def_mutex->component.def_mutex.name_string->string.length;
 	aml.initial += def_mutex->component.def_mutex.name_string->string.length;
-	def_mutex->component.def_mutex.sync_flags = NULL;
+	def_mutex->component.def_mutex.sync_flags = analyse_aml_sync_flags(aml);
+	def_mutex->string.length += def_mutex->component.def_mutex.sync_flags->string.length;
+	def_mutex->string.length += def_mutex->component.def_mutex.sync_flags->string.length;
+	aml.initial += def_mutex->component.def_mutex.sync_flags->string.length;
 	ERROR(); // Unimplemented
 	return def_mutex;
 }
@@ -7780,6 +7789,17 @@ AMLSymbol *analyse_aml_super_name(AMLSubstring aml)
 	return super_name;
 }
 
+// <sync_flags>
+AMLSymbol *analyse_aml_sync_flags(AMLSubstring aml)
+{
+	AMLSymbol *sync_flags = malloc(sizeof(*sync_flags));
+	sync_flags->string.initial = aml.initial;
+	sync_flags->string.length = 1;
+	sync_flags->type = aml_sync_flags;
+	if(0x10 <= *aml.initial)ERROR(); // Incorrect sync flags
+	return sync_flags;
+}
+
 // <target> := <super_name> | <null_name>
 AMLSymbol *analyse_aml_target(AMLSubstring aml)
 {
@@ -8718,6 +8738,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.super_name.debug_obj)delete_aml_symbol(aml_symbol->component.super_name.debug_obj);
 		if(aml_symbol->component.super_name.reference_type_opcode)delete_aml_symbol(aml_symbol->component.super_name.reference_type_opcode);
 		if(aml_symbol->component.super_name.simple_name)delete_aml_symbol(aml_symbol->component.super_name.simple_name);
+		break;
+	case aml_sync_flags:
 		break;
 	case aml_target:
 		if(aml_symbol->component.target.null_name)delete_aml_symbol(aml_symbol->component.target.null_name);

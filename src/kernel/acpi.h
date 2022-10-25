@@ -303,6 +303,7 @@ typedef enum _AMLSymbolType
 	aml_string_prefix,
 	aml_subtract_op,
 	aml_super_name,
+	aml_sync_flags,
 	aml_target,
 	aml_term_arg,
 	aml_term_arg_list,
@@ -1309,6 +1310,8 @@ AMLSymbol *analyse_aml_string_prefix(AMLSubstring aml);
 AMLSymbol *analyse_aml_subtract_op(AMLSubstring aml);
 // <super_name> := <simple_name> | <debug_obj> | <reference_type_opcode>
 AMLSymbol *analyse_aml_super_name(AMLSubstring aml);
+// <sync_flags>
+AMLSymbol *analyse_aml_sync_flags(AMLSubstring aml);
 // <target> := <super_name> | <null_name>
 AMLSymbol *analyse_aml_target(AMLSubstring aml);
 // <term_arg> := <expression_op_code> | <data_object> | <arg_obj> | <local_obj>
