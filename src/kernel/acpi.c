@@ -322,6 +322,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *op_region_op_suffix_chain_string;
 	ChainString *operand_chain_string;
 	ChainString *output;
+	ChainString *package_element_chain_string;
 	ChainString *package_element_list_chain_string;
 	ChainString *package_op_chain_string;
 	ChainString *parent_prefix_char_chain_string;
@@ -528,6 +529,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *op_region_op_char_array;
 	char *op_region_op_suffix_char_array;
 	char *operand_char_array;
+	char *package_element_char_array;
 	char *package_element_list_char_array;
 	char *package_op_char_array;
 	char *parent_prefix_char_char_array;
@@ -3773,6 +3775,64 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(term_arg_char_array);
 		}
 		break;
+	case aml_package_element:
+		if(aml_symbol->component.package_element.data_ref_object)
+		{
+			data_ref_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.package_element.data_ref_object);
+			insert_char_front(data_ref_object_chain_string, data_ref_object_chain_string->first_character, ' ');
+			replace_chain_string(data_ref_object_chain_string, "\n", "\n ");
+			data_ref_object_char_array = create_char_array_from_chain_string(data_ref_object_chain_string);
+		}
+		else data_ref_object_char_array = "";
+		if(aml_symbol->component.package_element.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.package_element.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), data_ref_object_char_array, name_string_char_array);
+		if(aml_symbol->component.package_element.data_ref_object)
+		{
+			delete_chain_string(data_ref_object_chain_string);
+			free(data_ref_object_char_array);
+		}
+		if(aml_symbol->component.package_element.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
+		}
+		break;
+	case aml_package_element_list:
+		if(aml_symbol->component.package_element_list.package_element)
+		{
+			package_element_chain_string = aml_symbol_to_chain_string(aml_symbol->component.package_element_list.package_element);
+			insert_char_front(package_element_chain_string, package_element_chain_string->first_character, ' ');
+			replace_chain_string(package_element_chain_string, "\n", "\n ");
+			package_element_char_array = create_char_array_from_chain_string(package_element_chain_string);
+		}
+		else package_element_char_array = "";
+		if(aml_symbol->component.package_element_list.package_element_list)
+		{
+			package_element_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.package_element_list.package_element_list);
+			insert_char_front(package_element_list_chain_string, package_element_list_chain_string->first_character, ' ');
+			replace_chain_string(package_element_list_chain_string, "\n", "\n ");
+			package_element_list_char_array = create_char_array_from_chain_string(package_element_list_chain_string);
+		}
+		else package_element_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), package_element_char_array, package_element_list_char_array);
+		if(aml_symbol->component.package_element_list.package_element)
+		{
+			delete_chain_string(package_element_chain_string);
+			free(package_element_char_array);
+		}
+		if(aml_symbol->component.package_element_list.package_element_list)
+		{
+			delete_chain_string(package_element_list_chain_string);
+			free(package_element_char_array);
+		}
+		break;
 	case aml_package_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4692,6 +4752,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_op_region_op_name = "OpRegionOp";
 	static char const * const aml_op_region_op_suffix_name = "OpRegionOpSuffix";
 	static char const * const aml_operand_name = "Operand";
+	static char const * const aml_package_element_name = "PackageElement";
+	static char const * const aml_package_element_list_name = "PackageElementList";
 	static char const * const aml_package_op_name = "PackageOp";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
@@ -4916,6 +4978,10 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_op_region_op_suffix_name;
 	case aml_operand:
 		return aml_operand_name;
+	case aml_package_element:
+		return aml_package_element_name;
+	case aml_package_element_list:
+		return aml_package_element_list_name;
 	case aml_package_op:
 		return aml_package_op_name;
 	case aml_parent_prefix_char:
@@ -5759,9 +5825,10 @@ AMLSymbol *analyse_aml_def_package(AMLSubstring aml)
 	def_package->string.length += def_package->component.def_package.num_elements->string.length;
 	aml.initial += def_package->component.def_package.num_elements->string.length;
 	aml.length -= def_package->component.def_package.num_elements->string.length;
-	def_package->component.def_package.package_element_list = NULL;
-	ERROR(); // unimplemented
-	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	def_package->component.def_package.package_element_list = analyse_aml_package_element_list(aml);
+	def_package->string.length += def_package->component.def_package.package_element_list->string.length;
+	aml.initial += def_package->component.def_package.package_element_list->string.length;
+	aml.length -= def_package->component.def_package.package_element_list->string.length;
 	return def_package;
 }
 
@@ -6927,6 +6994,117 @@ AMLSymbol *analyse_aml_operand(AMLSubstring aml)
 	operand->component.operand.term_arg = analyse_aml_term_arg(aml);
 	operand->string.length += operand->component.operand.term_arg->string.length;
 	return operand;
+}
+
+// <package_element> := <data_ref_object> | <name_string>
+AMLSymbol *analyse_aml_package_element(AMLSubstring aml)
+{
+	AMLSymbol *package_element = malloc(sizeof(*package_element));
+	package_element->string.initial = aml.initial;
+	package_element->string.length = 0;
+	package_element->type = aml_package_element;
+	package_element->component.package_element.data_ref_object = NULL;
+	package_element->component.package_element.name_string = NULL;
+	switch(*aml.initial)
+	{
+	case AML_BYTE_BUFFER_OP:
+	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_EXT_OP_PREFIX:
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_PACKAGE_OP:
+	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_STRING_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
+		package_element->component.package_element.data_ref_object = analyse_aml_data_ref_object(aml);
+		package_element->string.length += package_element->component.package_element.data_ref_object->string.length;
+		aml.initial += package_element->component.package_element.data_ref_object->string.length;
+		aml.length -= package_element->component.package_element.data_ref_object->string.length;
+		break;
+	case AML_BYTE_DUAL_NAME_PREFIX:
+	case AML_BYTE_MULTI_NAME_PREFIX:
+	case AML_BYTE_NULL_NAME:
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_ROOT_CHAR:
+		package_element->component.package_element.name_string = analyse_aml_name_string(aml);
+		package_element->string.length += package_element->component.package_element.name_string->string.length;
+		aml.initial += package_element->component.package_element.name_string->string.length;
+		aml.length -= package_element->component.package_element.name_string->string.length;
+		break;
+	default:
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			package_element->component.package_element.name_string = analyse_aml_name_string(aml);
+			package_element->string.length += package_element->component.package_element.name_string->string.length;
+			aml.initial += package_element->component.package_element.name_string->string.length;
+			aml.length -= package_element->component.package_element.name_string->string.length;
+		}
+		else
+		{
+			ERROR(); // Syntax error
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		}
+		break;
+	}
+	return package_element;
+}
+
+// <package_element_list> := Nothing | <package_element> <package_element_list>
+AMLSymbol *analyse_aml_package_element_list(AMLSubstring aml)
+{
+	AMLSymbol *package_element_list = malloc(sizeof(*package_element_list));
+	package_element_list->string.initial = aml.initial;
+	package_element_list->string.length = 0;
+	package_element_list->type = aml_package_element_list;
+	package_element_list->component.package_element_list.package_element = NULL;
+	package_element_list->component.package_element_list.package_element_list = NULL;
+	if(aml.length)switch(*aml.initial)
+	{
+	case AML_BYTE_BUFFER_OP:
+	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DUAL_NAME_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_EXT_OP_PREFIX:
+	case AML_BYTE_MULTI_NAME_PREFIX:
+	case AML_BYTE_NULL_NAME:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_PACKAGE_OP:
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_ROOT_CHAR:
+	case AML_BYTE_STRING_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
+		package_element_list->component.package_element_list.package_element = analyse_aml_package_element(aml);
+		package_element_list->string.length += package_element_list->component.package_element_list.package_element->string.length;
+		aml.initial += package_element_list->component.package_element_list.package_element->string.length;
+		aml.length -= package_element_list->component.package_element_list.package_element->string.length;
+		package_element_list->component.package_element_list.package_element_list = analyse_aml_package_element_list(aml);
+		package_element_list->string.length += package_element_list->component.package_element_list.package_element_list->string.length;
+		aml.initial += package_element_list->component.package_element_list.package_element_list->string.length;
+		aml.length -= package_element_list->component.package_element_list.package_element_list->string.length;
+		break;
+	default:
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			package_element_list->component.package_element_list.package_element = analyse_aml_package_element(aml);
+			package_element_list->string.length += package_element_list->component.package_element_list.package_element->string.length;
+			aml.initial += package_element_list->component.package_element_list.package_element->string.length;
+			aml.length -= package_element_list->component.package_element_list.package_element->string.length;
+			package_element_list->component.package_element_list.package_element_list = analyse_aml_package_element_list(aml);
+			package_element_list->string.length += package_element_list->component.package_element_list.package_element_list->string.length;
+			aml.initial += package_element_list->component.package_element_list.package_element_list->string.length;
+			aml.length -= package_element_list->component.package_element_list.package_element_list->string.length;
+		}
+		else
+		{
+			ERROR(); // Syntax error
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		}
+		break;
+	}
+	return package_element_list;
 }
 
 // <package_op> := AML_BYTE_PACKAGE_OP
@@ -8264,6 +8442,14 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_operand:
 		if(aml_symbol->component.operand.term_arg)delete_aml_symbol(aml_symbol->component.operand.term_arg);
+		break;
+	case aml_package_element:
+		if(aml_symbol->component.package_element.data_ref_object)delete_aml_symbol(aml_symbol->component.package_element.data_ref_object);
+		if(aml_symbol->component.package_element.name_string)delete_aml_symbol(aml_symbol->component.package_element.name_string);
+		break;
+	case aml_package_element_list:
+		if(aml_symbol->component.package_element_list.package_element)delete_aml_symbol(aml_symbol->component.package_element_list.package_element);
+		if(aml_symbol->component.package_element_list.package_element_list)delete_aml_symbol(aml_symbol->component.package_element_list.package_element_list);
 		break;
 	case aml_package_op:
 		break;

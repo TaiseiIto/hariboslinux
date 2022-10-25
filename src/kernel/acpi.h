@@ -270,6 +270,8 @@ typedef enum _AMLSymbolType
 	aml_op_region_op,
 	aml_op_region_op_suffix,
 	aml_operand,
+	aml_package_element,
+	aml_package_element_list,
 	aml_package_op,
 	aml_parent_prefix_char,
 	aml_pkg_lead_byte,
@@ -791,6 +793,18 @@ typedef struct _AMLOpRegionOp
 	struct _AMLSymbol *op_region_op_suffix;
 } AMLOpRegionOp;
 
+typedef struct _AMLPackageElement
+{
+	struct _AMLSymbol *data_ref_object;
+	struct _AMLSymbol *name_string;
+} AMLPackageElement;
+
+typedef struct _AMLPackageElementList
+{
+	struct _AMLSymbol *package_element;
+	struct _AMLSymbol *package_element_list;
+} AMLPackageElementList;
+
 typedef struct _AMLPkgLength
 {
 	struct _AMLSymbol *pkg_lead_byte;
@@ -992,6 +1006,8 @@ typedef union _AMLComponent
 	AMLObjReference obj_reference;
 	AMLOperand operand;
 	AMLOpRegionOp op_region_op;
+	AMLPackageElement package_element;
+	AMLPackageElementList package_element_list;
 	AMLPkgLength pkg_length;
 	AMLPredicate predicate;
 	AMLPrefixPath prefix_path;
@@ -1208,6 +1224,10 @@ AMLSymbol *analyse_aml_op_region_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_op_region_op_suffix(AMLSubstring aml);
 // <operand> := <term_arg>
 AMLSymbol *analyse_aml_operand(AMLSubstring aml);
+// <package_element> := <data_ref_object> | <name_string>
+AMLSymbol *analyse_aml_package_element(AMLSubstring aml);
+// <package_element_list> := Nothing | <package_element> <package_element_list>
+AMLSymbol *analyse_aml_package_element_list(AMLSubstring aml);
 // <package_op> := AML_BYTE_PACKAGE_OP
 AMLSymbol *analyse_aml_package_op(AMLSubstring aml);
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
