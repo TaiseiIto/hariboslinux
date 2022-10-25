@@ -196,6 +196,7 @@ typedef enum _AMLSymbolType
 	aml_data_object,
 	aml_data_ref_object,
 	aml_def_alias,
+	aml_def_acquire,
 	aml_def_buffer,
 	aml_def_deref_of,
 	aml_def_device,
@@ -401,6 +402,13 @@ typedef struct _AMLDefAlias
 	struct _AMLSymbol *alias_op;
 	struct _AMLSymbol *name_string[2];
 } AMLDefAlias;
+
+typedef struct _AMLDefAcquire
+{
+	struct _AMLSymbol *acquire_op;
+	struct _AMLSymbol *mutex_object;
+	struct _AMLSymbol *time_out;
+} AMLDefAcquire;
 
 typedef struct _AMLDefBuffer
 {
@@ -613,7 +621,7 @@ typedef struct _AMLExpressionOpcode
 {
 	struct _AMLSymbol *def_add;
 	struct _AMLSymbol *def_and;
-	struct _AMLSymbol *def_aquire;
+	struct _AMLSymbol *def_acquire;
 	struct _AMLSymbol *def_buffer;
 	struct _AMLSymbol *def_concat;
 	struct _AMLSymbol *def_concat_res;
@@ -975,6 +983,7 @@ typedef union _AMLComponent
 	AMLDataObject data_object;
 	AMLDataRefObject data_ref_object;
 	AMLDefAlias def_alias;
+	AMLDefAcquire def_acquire;
 	AMLDefBuffer def_buffer;
 	AMLDefDerefOf def_deref_of;
 	AMLDefDevice def_device;
@@ -1096,6 +1105,8 @@ AMLSymbol *analyse_aml_data_object(AMLSubstring aml);
 AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
+// <def_acquire> := <acquire_op> <mutex_object> <time_out>
+AMLSymbol *analyse_aml_def_acquire(AMLSubstring aml);
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
 AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
 // <def_deref_of> := <deref_of_op> <obj_reference>
@@ -1164,7 +1175,7 @@ AMLSymbol *analyse_aml_dword_const(AMLSubstring aml);
 AMLSymbol *analyse_aml_dword_data(AMLSubstring aml);
 // <dword_prefix> := AML_BYTE_DWORD_PREFIX
 AMLSymbol *analyse_aml_dword_prefix(AMLSubstring aml);
-// <expression_opcode> := <def_aquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
+// <expression_opcode> := <def_acquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
 AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
 // <ext_op_prefix> := AML_BYTE_EXT_OP_PREFIX
 AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml);
