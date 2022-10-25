@@ -203,6 +203,7 @@ typedef enum _AMLSymbolType
 	aml_def_increment,
 	aml_def_index,
 	aml_def_l_equal,
+	aml_def_l_greater,
 	aml_def_l_less,
 	aml_def_l_or,
 	aml_def_method,
@@ -239,6 +240,7 @@ typedef enum _AMLSymbolType
 	aml_index_value,
 	aml_lead_name_char,
 	aml_l_equal_op,
+	aml_l_greater_op,
 	aml_l_less_op,
 	aml_l_or_op,
 	aml_local_obj,
@@ -443,6 +445,12 @@ typedef struct _AMLDefLEqual
 	struct _AMLSymbol *l_equal_op;
 	struct _AMLSymbol *operand[2];
 } AMLDefLEqual;
+
+typedef struct _AMLDefLGreater
+{
+	struct _AMLSymbol *l_greater_op;
+	struct _AMLSymbol *operand[2];
+} AMLDefLGreater;
 
 typedef struct _AMLDefLLess
 {
@@ -919,6 +927,7 @@ typedef union _AMLComponent
 	AMLDefIncrement def_increment;
 	AMLDefIndex def_index;
 	AMLDefLEqual def_l_equal;
+	AMLDefLGreater def_l_greater;
 	AMLDefLLess def_l_less;
 	AMLDefLOr def_l_or;
 	AMLDefMethod def_method;
@@ -1039,6 +1048,8 @@ AMLSymbol *analyse_aml_def_increment(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_index(AMLSubstring aml);
 // <def_l_equal> := <l_equal_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_equal(AMLSubstring aml);
+// <def_l_greater> := <l_greater_op> <operand> <operand>
+AMLSymbol *analyse_aml_def_l_greater(AMLSubstring aml);
 // <def_l_less> := <l_less_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_less(AMLSubstring aml);
 // <def_l_or> := <l_or_op> <operand> <operand>
@@ -1111,6 +1122,8 @@ AMLSymbol *analyse_aml_index_value(AMLSubstring aml);
 AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
 // <l_equal_op> := AML_BYTE_L_EQUAL_OP
 AMLSymbol *analyse_aml_l_equal_op(AMLSubstring aml);
+// <l_greater_op> := AML_BYTE_L_GREATER_OP
+AMLSymbol *analyse_aml_l_greater_op(AMLSubstring aml);
 // <l_less_op> := AML_BYTE_L_LESS_OP
 AMLSymbol *analyse_aml_l_less_op(AMLSubstring aml);
 // <l_or_op> := AML_BYTE_L_OR_OP

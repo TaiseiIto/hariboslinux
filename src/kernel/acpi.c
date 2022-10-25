@@ -292,6 +292,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *index_op_chain_string;
 	ChainString *index_value_chain_string;
 	ChainString *l_equal_op_chain_string;
+	ChainString *l_greater_op_chain_string;
 	ChainString *l_less_op_chain_string;
 	ChainString *l_or_op_chain_string;
 	ChainString *lead_name_char_chain_string;
@@ -495,6 +496,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *index_op_char_array;
 	char *index_value_char_array;
 	char *l_equal_op_char_array;
+	char *l_greater_op_char_array;
 	char *l_less_op_char_array;
 	char *l_or_op_char_array;
 	char *lead_name_char_char_array;
@@ -1345,6 +1347,40 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(l_equal_op_char_array);
 		}
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_equal.operand); i++)if(aml_symbol->component.def_l_equal.operand[i])
+		{
+			delete_chain_string(operands_chain_string[i]);
+			free(operands_char_array[i]);
+		}
+		free(operands_chain_string);
+		free(operands_char_array);
+		break;
+	case aml_def_l_greater:
+		operands_chain_string = malloc(_countof(aml_symbol->component.def_l_greater.operand) * sizeof(*operands_chain_string));
+		operands_char_array = malloc(_countof(aml_symbol->component.def_l_greater.operand) * sizeof(*operands_char_array));
+		if(aml_symbol->component.def_l_greater.l_greater_op)
+		{
+			l_greater_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_l_greater.l_greater_op);
+			insert_char_front(l_greater_op_chain_string, l_greater_op_chain_string->first_character, ' ');
+			replace_chain_string(l_greater_op_chain_string, "\n", "\n ");
+			l_greater_op_char_array = create_char_array_from_chain_string(l_greater_op_chain_string);
+		}
+		else l_greater_op_char_array = "";
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_greater.operand); i++)if(aml_symbol->component.def_l_greater.operand[i])
+		{
+			operands_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.def_l_greater.operand[i]);
+			insert_char_front(operands_chain_string[i], operands_chain_string[i]->first_character, ' ');
+			replace_chain_string(operands_chain_string[i], "\n", "\n ");
+			operands_char_array[i] = create_char_array_from_chain_string(operands_chain_string[i]);
+		}
+		else operands_char_array[i] = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), l_greater_op_char_array);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_greater.operand); i++)insert_char_array_back(output, output->last_character, operands_char_array[i]);
+		if(aml_symbol->component.def_l_greater.l_greater_op)
+		{
+			delete_chain_string(l_greater_op_chain_string);
+			free(l_greater_op_char_array);
+		}
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_greater.operand); i++)if(aml_symbol->component.def_l_greater.operand[i])
 		{
 			delete_chain_string(operands_chain_string[i]);
 			free(operands_char_array[i]);
@@ -2981,6 +3017,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_l_equal_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_l_greater_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_l_less_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4514,6 +4553,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_index_value_name = "IndexValue";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
 	static char const * const aml_l_equal_op_name = "LEqualOp";
+	static char const * const aml_l_greater_op_name = "LGreaterOp";
 	static char const * const aml_l_less_op_name = "LLessOp";
 	static char const * const aml_l_or_op_name = "LOrOp";
 	static char const * const aml_local_obj_name = "LocalObj";
@@ -4703,6 +4743,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_lead_name_char_name;
 	case aml_l_equal_op:
 		return aml_l_equal_op_name;
+	case aml_l_greater_op:
+		return aml_l_greater_op_name;
 	case aml_l_less_op:
 		return aml_l_less_op_name;
 	case aml_l_or_op:
@@ -5312,6 +5354,11 @@ AMLSymbol *analyse_aml_def_if_else(AMLSubstring aml)
 	def_if_else->string.initial = aml.initial;
 	def_if_else->string.length = 0;
 	def_if_else->type = aml_def_if_else;
+	def_if_else->component.def_if_else.if_op = NULL;
+	def_if_else->component.def_if_else.pkg_length = NULL;
+	def_if_else->component.def_if_else.predicate = NULL;
+	def_if_else->component.def_if_else.term_list = NULL;
+	def_if_else->component.def_if_else.def_else = NULL;
 	def_if_else->component.def_if_else.if_op = analyse_aml_if_op(aml);
 	def_if_else->string.length += def_if_else->component.def_if_else.if_op->string.length;
 	aml.initial += def_if_else->component.def_if_else.if_op->string.length;
@@ -5328,8 +5375,7 @@ AMLSymbol *analyse_aml_def_if_else(AMLSubstring aml)
 	def_if_else->string.length += def_if_else->component.def_if_else.term_list->string.length;
 	aml.initial += def_if_else->component.def_if_else.term_list->string.length;
 	aml.length -= def_if_else->component.def_if_else.term_list->string.length;
-	def_if_else->component.def_if_else.def_else = NULL;
-	ERROR(); // def_else is unimplemented
+	if(aml.length)ERROR(); // def_else is unimplemented
 	return def_if_else;
 }
 
@@ -5396,6 +5442,27 @@ AMLSymbol *analyse_aml_def_l_equal(AMLSubstring aml)
 		aml.length -= def_l_equal->component.def_l_equal.operand[i]->string.length;
 	}
 	return def_l_equal;
+}
+
+// <def_l_greater> := <l_greater_op> <operand> <operand>
+AMLSymbol *analyse_aml_def_l_greater(AMLSubstring aml)
+{
+	AMLSymbol *def_l_greater = malloc(sizeof(*def_l_greater));
+	def_l_greater->string.initial = aml.initial;
+	def_l_greater->string.length = 0;
+	def_l_greater->type = aml_def_l_greater;
+	def_l_greater->component.def_l_greater.l_greater_op = analyse_aml_l_greater_op(aml);
+	def_l_greater->string.length += def_l_greater->component.def_l_greater.l_greater_op->string.length;
+	aml.initial += def_l_greater->component.def_l_greater.l_greater_op->string.length;
+	aml.length -= def_l_greater->component.def_l_greater.l_greater_op->string.length;
+	for(unsigned int i = 0; i < _countof(def_l_greater->component.def_l_greater.operand); i++)
+	{
+		def_l_greater->component.def_l_greater.operand[i] = analyse_aml_operand(aml);
+		def_l_greater->string.length += def_l_greater->component.def_l_greater.operand[i]->string.length;
+		aml.initial += def_l_greater->component.def_l_greater.operand[i]->string.length;
+		aml.length -= def_l_greater->component.def_l_greater.operand[i]->string.length;
+	}
+	return def_l_greater;
 }
 
 // <def_l_less> := <l_less_op> <operand> <operand>
@@ -5936,6 +6003,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_l_equal = analyse_aml_def_l_equal(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_equal->string.length;
 		break;
+	case AML_BYTE_L_GREATER_OP:
+		expression_opcode->component.expression_opcode.def_l_greater = analyse_aml_def_l_greater(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_greater->string.length;
+		break;
 	case AML_BYTE_L_LESS_OP:
 		expression_opcode->component.expression_opcode.def_l_less = analyse_aml_def_l_less(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_less->string.length;
@@ -6146,6 +6217,17 @@ AMLSymbol *analyse_aml_l_equal_op(AMLSubstring aml)
 	l_equal_op->type = aml_l_equal_op;
 	if(*l_equal_op->string.initial != AML_BYTE_L_EQUAL_OP)ERROR(); // Incorrect l_equal_op
 	return l_equal_op;
+}
+
+// <l_greater_op> := AML_BYTE_L_EQUAL_OP
+AMLSymbol *analyse_aml_l_greater_op(AMLSubstring aml)
+{
+	AMLSymbol *l_greater_op = malloc(sizeof(*l_greater_op));
+	l_greater_op->string.initial = aml.initial;
+	l_greater_op->string.length = 1;
+	l_greater_op->type = aml_l_greater_op;
+	if(*l_greater_op->string.initial != AML_BYTE_L_EQUAL_OP)ERROR(); // Incorrect l_greater_op
+	return l_greater_op;
 }
 
 // <l_less_op> := AML_BYTE_L_LESS_OP
@@ -7237,6 +7319,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_L_EQUAL_OP:
+	case AML_BYTE_L_GREATER_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
@@ -7309,6 +7392,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml, unsigned int num_of_term_
 	case AML_BYTE_LOCAL_6_OP:
 	case AML_BYTE_LOCAL_7_OP:
 	case AML_BYTE_L_EQUAL_OP:
+	case AML_BYTE_L_GREATER_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_ONES_OP:
@@ -7364,6 +7448,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_INCREMENT_OP:
 		case AML_BYTE_INDEX_OP:
 		case AML_BYTE_L_EQUAL_OP:
+		case AML_BYTE_L_GREATER_OP:
 		case AML_BYTE_L_LESS_OP:
 		case AML_BYTE_L_OR_OP:
 		case AML_BYTE_METHOD_OP:
@@ -7417,6 +7502,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_L_EQUAL_OP:
+	case AML_BYTE_L_GREATER_OP:
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
@@ -7669,6 +7755,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_l_equal.l_equal_op)delete_aml_symbol(aml_symbol->component.def_l_equal.l_equal_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_equal.operand); i++)if(aml_symbol->component.def_l_equal.operand[i])delete_aml_symbol(aml_symbol->component.def_l_equal.operand[i]);
 		break;
+	case aml_def_l_greater:
+		if(aml_symbol->component.def_l_greater.l_greater_op)delete_aml_symbol(aml_symbol->component.def_l_greater.l_greater_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_greater.operand); i++)if(aml_symbol->component.def_l_greater.operand[i])delete_aml_symbol(aml_symbol->component.def_l_greater.operand[i]);
+		break;
 	case aml_def_l_less:
 		if(aml_symbol->component.def_l_less.l_less_op)delete_aml_symbol(aml_symbol->component.def_l_less.l_less_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_less.operand); i++)if(aml_symbol->component.def_l_less.operand[i])delete_aml_symbol(aml_symbol->component.def_l_less.operand[i]);
@@ -7855,6 +7945,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_lead_name_char:
 		break;
 	case aml_l_equal_op:
+		break;
+	case aml_l_greater_op:
 		break;
 	case aml_l_less_op:
 		break;
