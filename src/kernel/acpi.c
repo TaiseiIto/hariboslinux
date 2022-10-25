@@ -3658,6 +3658,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_null_name:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_num_elements:
+		if(aml_symbol->component.num_elements.byte_data)
+		{
+			byte_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.num_elements.byte_data);
+			insert_char_front(byte_data_chain_string, byte_data_chain_string->first_character, ' ');
+			replace_chain_string(byte_data_chain_string, "\n", "\n ");
+			byte_data_char_array = create_char_array_from_chain_string(byte_data_chain_string);
+		}
+		else byte_data_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), byte_data_char_array);
+		if(aml_symbol->component.num_elements.byte_data)
+		{
+			delete_chain_string(byte_data_chain_string);
+			free(byte_data_char_array);
+		}
+		break;
 	case aml_obj_reference:
 		if(aml_symbol->component.obj_reference.term_arg)
 		{
@@ -4668,6 +4684,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_named_obj_name = "NamedObj";
 	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
+	static char const * const aml_num_elements_name = "NumElements";
 	static char const * const aml_obj_reference_name = "ObjReference";
 	static char const * const aml_object_name = "Object";
 	static char const * const aml_one_op_name = "OneOp";
@@ -4883,6 +4900,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_null_char_name;
 	case aml_null_name:
 		return aml_null_name_name;
+	case aml_num_elements:
+		return aml_num_elements_name;
 	case aml_obj_reference:
 		return aml_obj_reference_name;
 	case aml_object:
@@ -5332,6 +5351,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml)
 	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_ONE_OP:
 	case AML_BYTE_ONES_OP:
+	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_QWORD_PREFIX:
 	case AML_BYTE_STRING_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
@@ -5735,7 +5755,10 @@ AMLSymbol *analyse_aml_def_package(AMLSubstring aml)
 	def_package->string.length += def_package->component.def_package.pkg_length->string.length;
 	aml.initial += def_package->component.def_package.pkg_length->string.length;
 	aml.length -= def_package->component.def_package.pkg_length->string.length;
-	def_package->component.def_package.num_elements = NULL;
+	def_package->component.def_package.num_elements = analyse_aml_num_elements(aml);
+	def_package->string.length += def_package->component.def_package.num_elements->string.length;
+	aml.initial += def_package->component.def_package.num_elements->string.length;
+	aml.length -= def_package->component.def_package.num_elements->string.length;
 	def_package->component.def_package.package_element_list = NULL;
 	ERROR(); // unimplemented
 	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
@@ -6783,6 +6806,20 @@ AMLSymbol *analyse_aml_null_name(AMLSubstring aml)
 	null_name->type = aml_null_name;
 	if(*null_name->string.initial != AML_BYTE_NULL_NAME)ERROR(); // Incorrect null name
 	return null_name;
+}
+
+// <num_elements> := <byte_data>
+AMLSymbol *analyse_aml_num_elements(AMLSubstring aml)
+{
+	AMLSymbol *num_elements = malloc(sizeof(*num_elements));
+	num_elements->string.initial = aml.initial;
+	num_elements->string.length = 0;
+	num_elements->type = aml_num_elements;
+	num_elements->component.num_elements.byte_data = analyse_aml_byte_data(aml);
+	num_elements->string.length += num_elements->component.num_elements.byte_data->string.length;
+	aml.initial += num_elements->component.num_elements.byte_data->string.length;
+	aml.length -= num_elements->component.num_elements.byte_data->string.length;
+	return num_elements;
 }
 
 // <obj_reference> := <term_arg>
@@ -8204,6 +8241,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_null_char:
 		break;
 	case aml_null_name:
+		break;
+	case aml_num_elements:
+		if(aml_symbol->component.num_elements.byte_data)delete_aml_symbol(aml_symbol->component.num_elements.byte_data);
 		break;
 	case aml_obj_reference:
 		if(aml_symbol->component.obj_reference.term_arg)delete_aml_symbol(aml_symbol->component.obj_reference.term_arg);
