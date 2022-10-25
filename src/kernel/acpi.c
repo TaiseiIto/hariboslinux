@@ -1704,7 +1704,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			package_element_list_char_array = create_char_array_from_chain_string(package_element_list_chain_string);
 		}
 		else package_element_list_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), package_op_char_array, pkg_length_char_array, num_elements_char_array, package_element_list_char_array);
+		output = create_format_chain_string("%s length = %#010.8x\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, package_op_char_array, pkg_length_char_array, num_elements_char_array, package_element_list_char_array);
 		if(aml_symbol->component.def_package.package_op)
 		{
 			delete_chain_string(package_op_chain_string);
@@ -4687,6 +4687,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_increment_name = "DefIncrement";
 	static char const * const aml_def_index_name = "DefIndex";
 	static char const * const aml_def_l_equal_name = "DefLEqual";
+	static char const * const aml_def_l_greater_name = "DefLGreater";
 	static char const * const aml_def_l_less_name = "DefLLess";
 	static char const * const aml_def_l_or_name = "DefLOr";
 	static char const * const aml_def_method_name = "DefMethod";
@@ -4848,6 +4849,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_index_name;
 	case aml_def_l_equal:
 		return aml_def_l_equal_name;
+	case aml_def_l_greater:
+		return aml_def_l_greater_name;
 	case aml_def_l_less:
 		return aml_def_l_less_name;
 	case aml_def_l_or:
@@ -5064,6 +5067,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_zero_op_name;
 	default:
 		ERROR(); // Invalid AML symbol type
+		printf_serial("aml_symbol_type = %#010.8x\n", aml_symbol_type);
 		return NULL;
 	}
 }
@@ -6565,6 +6569,8 @@ AMLSymbol *analyse_aml_method_invocation(AMLSubstring aml)
 	aml.initial += method_invocation->component.method_invocation.name_string->string.length;
 	aml.length -= method_invocation->component.method_invocation.name_string->string.length;
 	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(aml, 0);
+	WARNING(); // Number of arguments is pseudo
+	printf_serial("Method name = \"%.*s\"\n", method_invocation->component.method_invocation.name_string->string.length, method_invocation->component.method_invocation.name_string->string.initial);
 	method_invocation->string.length += method_invocation->component.method_invocation.term_arg_list->string.length;
 	aml.initial += method_invocation->component.method_invocation.term_arg_list->string.length;
 	aml.length -= method_invocation->component.method_invocation.term_arg_list->string.length;
