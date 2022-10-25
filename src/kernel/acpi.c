@@ -3830,7 +3830,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.package_element_list.package_element_list)
 		{
 			delete_chain_string(package_element_list_chain_string);
-			free(package_element_char_array);
+			free(package_element_list_char_array);
 		}
 		break;
 	case aml_package_op:
