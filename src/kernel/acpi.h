@@ -829,6 +829,7 @@ typedef struct _AMLNameString
 	struct _AMLSymbol *name_path;
 	struct _AMLSymbol *prefix_path;
 	struct _AMLSymbol *root_char;
+	char *string;
 } AMLNameString;
 
 typedef struct _AMLNumElements

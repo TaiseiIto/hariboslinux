@@ -3677,7 +3677,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			root_char_char_array = create_char_array_from_chain_string(root_char_chain_string);
 		}
 		else root_char_char_array = "";
-		output = create_format_chain_string("%s \"%.*s\"\n%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, aml_symbol->string.initial, root_char_char_array, prefix_path_char_array, name_path_char_array);
+		output = create_format_chain_string("%s \"%s\"\n%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.name_string.string, root_char_char_array, prefix_path_char_array, name_path_char_array);
 		if(aml_symbol->component.name_string.name_path)
 		{
 			delete_chain_string(name_path_chain_string);
@@ -7332,6 +7332,8 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 {
 	AMLSymbol *name_string = malloc(sizeof(*name_string));
+	unsigned int string_length;
+	char *string_writer;
 	name_string->string.initial = aml.initial;
 	name_string->string.length = 0;
 	name_string->type = aml_name_string;
@@ -7345,16 +7347,27 @@ AMLSymbol *analyse_aml_name_string(AMLSubstring aml)
 		name_string->string.length += name_string->component.name_string.root_char->string.length;
 		aml.initial += name_string->component.name_string.root_char->string.length;
 		aml.length -= name_string->component.name_string.root_char->string.length;
+		string_length = 1;
 		break;
 	default:
 		name_string->component.name_string.prefix_path = analyse_aml_prefix_path(aml);
 		name_string->string.length += name_string->component.name_string.prefix_path->string.length;
 		aml.initial += name_string->component.name_string.prefix_path->string.length;
 		aml.length -= name_string->component.name_string.prefix_path->string.length;
+		string_length = strlen(name_string->component.name_string.prefix_path->component.prefix_path.string);
 		break;
 	}
 	name_string->component.name_string.name_path = analyse_aml_name_path(aml);
 	name_string->string.length += name_string->component.name_string.name_path->string.length;
+	string_length += strlen(name_string->component.name_string.name_path->component.name_path.string);
+	string_writer = name_string->component.name_string.string = malloc(string_length + 1);
+	if(name_string->component.name_string.root_char)*string_writer++ = AML_BYTE_ROOT_CHAR;
+	if(name_string->component.name_string.prefix_path)
+	{
+		strcpy(string_writer, name_string->component.name_string.prefix_path->component.prefix_path.string);
+		string_writer += strlen(name_string->component.name_string.prefix_path->component.prefix_path.string);
+	}
+	strcpy(string_writer, name_string->component.name_string.name_path->component.name_path.string);
 	return name_string;
 }
 
@@ -9123,6 +9136,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.name_string.name_path)delete_aml_symbol(aml_symbol->component.name_string.name_path);
 		if(aml_symbol->component.name_string.prefix_path)delete_aml_symbol(aml_symbol->component.name_string.prefix_path);
 		if(aml_symbol->component.name_string.root_char)delete_aml_symbol(aml_symbol->component.name_string.root_char);
+		free(aml_symbol->component.name_string.string);
 		break;
 	case aml_named_field:
 		if(aml_symbol->component.named_field.name_seg)delete_aml_symbol(aml_symbol->component.named_field.name_seg);
