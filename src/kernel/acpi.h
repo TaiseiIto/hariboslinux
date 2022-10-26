@@ -770,6 +770,7 @@ typedef struct _AMLNameChar
 {
 	struct _AMLSymbol *digit_char;
 	struct _AMLSymbol *lead_name_char;
+	char character;
 } AMLNameChar;
 
 typedef struct _AMLNamedField

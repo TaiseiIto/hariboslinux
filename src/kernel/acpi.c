@@ -3509,7 +3509,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			lead_name_char_char_array = create_char_array_from_chain_string(lead_name_char_chain_string);
 		}
 		else lead_name_char_char_array = "";
-		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), digit_char_char_array, lead_name_char_char_array);
+		output = create_format_chain_string("%s '%c'\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.name_char.character, digit_char_char_array, lead_name_char_char_array);
 		if(aml_symbol->component.name_char.digit_char)
 		{
 			delete_chain_string(digit_char_chain_string);
@@ -7201,6 +7201,7 @@ AMLSymbol *analyse_aml_name_char(AMLSubstring aml)
 		name_char->string.length += name_char->component.name_char.lead_name_char->string.length;
 	}
 	else ERROR(); // Incorrect name char
+	name_char->component.name_char.character = *aml.initial;
 	return name_char;
 }
 
