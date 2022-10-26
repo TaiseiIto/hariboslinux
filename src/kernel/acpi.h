@@ -217,6 +217,7 @@ typedef enum _AMLSymbolType
 	aml_def_package,
 	aml_def_return,
 	aml_def_scope,
+	aml_def_shift_left,
 	aml_def_shift_right,
 	aml_def_size_of,
 	aml_def_store,
@@ -298,6 +299,7 @@ typedef enum _AMLSymbolType
 	aml_scope_op,
 	aml_seg_count,
 	aml_shift_count,
+	aml_shift_left_op,
 	aml_shift_right_op,
 	aml_simple_name,
 	aml_size_of_op,
@@ -551,6 +553,14 @@ typedef struct _AMLDefScope
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *term_list;
 } AMLDefScope;
+
+typedef struct _AMLDefShiftLeft
+{
+	struct _AMLSymbol *shift_left_op;
+	struct _AMLSymbol *operand;
+	struct _AMLSymbol *shift_count;
+	struct _AMLSymbol *target;
+} AMLDefShiftLeft;
 
 typedef struct _AMLDefShiftRight
 {
@@ -1023,6 +1033,7 @@ typedef union _AMLComponent
 	AMLDefPackage def_package;
 	AMLDefReturn def_return;
 	AMLDefScope def_scope;
+	AMLDefShiftLeft def_shift_left;
 	AMLDefShiftRight def_shift_right;
 	AMLDefSizeOf def_size_of;
 	AMLDefStore def_store;
@@ -1170,6 +1181,8 @@ AMLSymbol *analyse_aml_def_package(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_return(AMLSubstring aml);
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
 AMLSymbol *analyse_aml_def_scope(AMLSubstring aml);
+// <def_shift_left> := <shift_left_op> <operand> <shift_count> <target>
+AMLSymbol *analyse_aml_def_shift_left(AMLSubstring aml);
 // <def_shift_right> := <shift_right_op> <operand> <shift_count> <target>
 AMLSymbol *analyse_aml_def_shift_right(AMLSubstring aml);
 // <def_size_of> := <size_of_op> <super_name>
@@ -1332,6 +1345,8 @@ AMLSymbol *analyse_aml_scope_op(AMLSubstring aml);
 AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
 // <shift_count> := <term_arg>
 AMLSymbol *analyse_aml_shift_count(AMLSubstring aml);
+// <shift_left_op> := AML_BYTE_SHIFT_LEFT
+AMLSymbol *analyse_aml_shift_left_op(AMLSubstring aml);
 // <shift_right_op> := AML_BYTE_SHIFT_RIGHT
 AMLSymbol *analyse_aml_shift_right_op(AMLSubstring aml);
 // <simple_name> := <name_string> | <arg_obj> | <local_obj>

@@ -351,6 +351,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *scope_op_chain_string;
 	ChainString *seg_count_chain_string;
 	ChainString *shift_count_chain_string;
+	ChainString *shift_left_op_chain_string;
 	ChainString *shift_right_op_chain_string;
 	ChainString *simple_name_chain_string;
 	ChainString *size_of_op_chain_string;
@@ -566,6 +567,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *scope_op_char_array;
 	char *seg_count_char_array;
 	char *shift_count_char_array;
+	char *shift_left_op_char_array;
 	char *shift_right_op_char_array;
 	char *simple_name_char_array;
 	char *size_of_op_char_array;
@@ -1940,6 +1942,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(term_list_chain_string);
 			free(term_list_char_array);
+		}
+		break;
+	case aml_def_shift_left:
+		if(aml_symbol->component.def_shift_left.shift_left_op)
+		{
+			shift_left_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_shift_left.shift_left_op);
+			insert_char_front(shift_left_op_chain_string, shift_left_op_chain_string->first_character, ' ');
+			replace_chain_string(shift_left_op_chain_string, "\n", "\n ");
+			shift_left_op_char_array = create_char_array_from_chain_string(shift_left_op_chain_string);
+		}
+		else shift_left_op_char_array = "";
+		if(aml_symbol->component.def_shift_left.operand)
+		{
+			operand_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_shift_left.operand);
+			insert_char_front(operand_chain_string, operand_chain_string->first_character, ' ');
+			replace_chain_string(operand_chain_string, "\n", "\n ");
+			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
+		}
+		else operand_char_array = "";
+		if(aml_symbol->component.def_shift_left.shift_count)
+		{
+			shift_count_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_shift_left.shift_count);
+			insert_char_front(shift_count_chain_string, shift_count_chain_string->first_character, ' ');
+			replace_chain_string(shift_count_chain_string, "\n", "\n ");
+			shift_count_char_array = create_char_array_from_chain_string(shift_count_chain_string);
+		}
+		else shift_count_char_array = "";
+		if(aml_symbol->component.def_shift_left.target)
+		{
+			target_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_shift_left.target);
+			insert_char_front(target_chain_string, target_chain_string->first_character, ' ');
+			replace_chain_string(target_chain_string, "\n", "\n ");
+			target_char_array = create_char_array_from_chain_string(target_chain_string);
+		}
+		else target_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), shift_left_op_char_array, operand_char_array, shift_count_char_array, target_char_array);
+		if(aml_symbol->component.def_shift_left.shift_left_op)
+		{
+			delete_chain_string(shift_left_op_chain_string);
+			free(shift_left_op_char_array);
+		}
+		if(aml_symbol->component.def_shift_left.operand)
+		{
+			delete_chain_string(operand_chain_string);
+			free(operand_char_array);
+		}
+		if(aml_symbol->component.def_shift_left.shift_count)
+		{
+			delete_chain_string(shift_count_chain_string);
+			free(shift_count_char_array);
+		}
+		if(aml_symbol->component.def_shift_left.target)
+		{
+			delete_chain_string(target_chain_string);
+			free(target_char_array);
 		}
 		break;
 	case aml_def_shift_right:
@@ -4262,6 +4319,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(term_arg_char_array);
 		}
 		break;
+	case aml_shift_left_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_shift_right_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4912,6 +4972,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_package_name = "DefPackage";
 	static char const * const aml_def_return_name = "DefReturn";
 	static char const * const aml_def_scope_name = "DefScope";
+	static char const * const aml_def_shift_left_name = "DefShiftLeft";
 	static char const * const aml_def_shift_right_name = "DefShiftRight";
 	static char const * const aml_def_size_of_name = "DefSizeOf";
 	static char const * const aml_def_store_name = "DefStore";
@@ -4993,6 +5054,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_scope_op_name = "ScopeOp";
 	static char const * const aml_seg_count_name = "SegCount";
 	static char const * const aml_shift_count_name = "ShiftCount";
+	static char const * const aml_shift_left_op_name = "ShiftLeftOp";
 	static char const * const aml_shift_right_op_name = "ShiftRightOp";
 	static char const * const aml_simple_name_name = "SimpleName";
 	static char const * const aml_size_of_op_name = "SizeOfOp";
@@ -5096,6 +5158,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_return_name;
 	case aml_def_scope:
 		return aml_def_scope_name;
+	case aml_def_shift_left:
+		return aml_def_shift_left_name;
 	case aml_def_shift_right:
 		return aml_def_shift_right_name;
 	case aml_def_size_of:
@@ -5258,6 +5322,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_seg_count_name;
 	case aml_shift_count:
 		return aml_shift_count_name;
+	case aml_shift_left_op:
+		return aml_shift_left_op_name;
 	case aml_shift_right_op:
 		return aml_shift_right_op_name;
 	case aml_simple_name:
@@ -6193,6 +6259,32 @@ AMLSymbol *analyse_aml_def_scope(AMLSubstring aml)
 	return def_scope;
 }
 
+// <def_shift_left> := <shift_left_op> <operand> <shift_count> <target>
+AMLSymbol *analyse_aml_def_shift_left(AMLSubstring aml)
+{
+	AMLSymbol *def_shift_left = malloc(sizeof(*def_shift_left));
+	def_shift_left->string.initial = aml.initial;
+	def_shift_left->string.length = 0;
+	def_shift_left->type = aml_def_shift_left;
+	def_shift_left->component.def_shift_left.shift_left_op = analyse_aml_shift_left_op(aml);
+	def_shift_left->string.length += def_shift_left->component.def_shift_left.shift_left_op->string.length;
+	aml.initial += def_shift_left->component.def_shift_left.shift_left_op->string.length;
+	aml.length -= def_shift_left->component.def_shift_left.shift_left_op->string.length;
+	def_shift_left->component.def_shift_left.operand = analyse_aml_operand(aml);
+	def_shift_left->string.length += def_shift_left->component.def_shift_left.operand->string.length;
+	aml.initial += def_shift_left->component.def_shift_left.operand->string.length;
+	aml.length -= def_shift_left->component.def_shift_left.operand->string.length;
+	def_shift_left->component.def_shift_left.shift_count = analyse_aml_shift_count(aml);
+	def_shift_left->string.length += def_shift_left->component.def_shift_left.shift_count->string.length;
+	aml.initial += def_shift_left->component.def_shift_left.shift_count->string.length;
+	aml.length -= def_shift_left->component.def_shift_left.shift_count->string.length;
+	def_shift_left->component.def_shift_left.target = analyse_aml_target(aml);
+	def_shift_left->string.length += def_shift_left->component.def_shift_left.target->string.length;
+	aml.initial += def_shift_left->component.def_shift_left.target->string.length;
+	aml.length -= def_shift_left->component.def_shift_left.target->string.length;
+	return def_shift_left;
+}
+
 // <def_shift_right> := <shift_right_op> <operand> <shift_count> <target>
 AMLSymbol *analyse_aml_def_shift_right(AMLSubstring aml)
 {
@@ -6592,6 +6684,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	case AML_BYTE_PACKAGE_OP:
 		expression_opcode->component.expression_opcode.def_package = analyse_aml_def_package(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_package->string.length;
+		break;
+	case AML_BYTE_SHIFT_LEFT_OP:
+		expression_opcode->component.expression_opcode.def_shift_left = analyse_aml_def_shift_left(aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_shift_left->string.length;
 		break;
 	case AML_BYTE_SHIFT_RIGHT_OP:
 		expression_opcode->component.expression_opcode.def_shift_right = analyse_aml_def_shift_right(aml);
@@ -7758,6 +7854,17 @@ AMLSymbol *analyse_aml_shift_count(AMLSubstring aml)
 	return shift_count;
 }
 
+// <shift_left_op> := AML_BYTE_SHIFT_LEFT
+AMLSymbol *analyse_aml_shift_left_op(AMLSubstring aml)
+{
+	AMLSymbol *shift_left_op = malloc(sizeof(*shift_left_op));
+	shift_left_op->string.initial = aml.initial;
+	shift_left_op->string.length = 1;
+	shift_left_op->type = aml_shift_left_op;
+	if(*shift_left_op->string.initial != AML_BYTE_SHIFT_LEFT_OP)ERROR(); // Incorrect shift_left_op
+	return shift_left_op;
+}
+
 // <shift_right_op> := AML_BYTE_SHIFT_RIGHT
 AMLSymbol *analyse_aml_shift_right_op(AMLSubstring aml)
 {
@@ -8096,6 +8203,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
+	case AML_BYTE_SHIFT_LEFT_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -8173,6 +8281,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml, unsigned int num_of_term_
 	case AML_BYTE_ONE_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_SHIFT_LEFT_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -8231,6 +8340,7 @@ AMLSymbol *analyse_aml_term_list(AMLSubstring aml)
 		case AML_BYTE_PACKAGE_OP:
 		case AML_BYTE_RETURN_OP:
 		case AML_BYTE_SCOPE_OP:
+		case AML_BYTE_SHIFT_LEFT_OP:
 		case AML_BYTE_SHIFT_RIGHT_OP:
 		case AML_BYTE_SIZE_OF_OP:
 		case AML_BYTE_STORE_OP:
@@ -8282,6 +8392,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
+	case AML_BYTE_SHIFT_LEFT_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
@@ -8623,6 +8734,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_scope.name_string)delete_aml_symbol(aml_symbol->component.def_scope.name_string);
 		if(aml_symbol->component.def_scope.term_list)delete_aml_symbol(aml_symbol->component.def_scope.term_list);
 		break;
+	case aml_def_shift_left:
+		if(aml_symbol->component.def_shift_left.shift_left_op)delete_aml_symbol(aml_symbol->component.def_shift_left.shift_left_op);
+		if(aml_symbol->component.def_shift_left.operand)delete_aml_symbol(aml_symbol->component.def_shift_left.operand);
+		if(aml_symbol->component.def_shift_left.shift_count)delete_aml_symbol(aml_symbol->component.def_shift_left.shift_count);
+		if(aml_symbol->component.def_shift_left.target)delete_aml_symbol(aml_symbol->component.def_shift_left.target);
+		break;
 	case aml_def_shift_right:
 		if(aml_symbol->component.def_shift_right.shift_right_op)delete_aml_symbol(aml_symbol->component.def_shift_right.shift_right_op);
 		if(aml_symbol->component.def_shift_right.operand)delete_aml_symbol(aml_symbol->component.def_shift_right.operand);
@@ -8940,6 +9057,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_shift_count:
 		if(aml_symbol->component.shift_count.term_arg)delete_aml_symbol(aml_symbol->component.shift_count.term_arg);
+		break;
+	case aml_shift_left_op:
 		break;
 	case aml_shift_right_op:
 		break;
