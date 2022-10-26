@@ -4192,7 +4192,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			prefix_path_char_array = create_char_array_from_chain_string(prefix_path_chain_string);
 		}
 		else prefix_path_char_array = "";
-		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), parent_prefix_char_char_array, prefix_path_char_array);
+		output = create_format_chain_string("%s \"%s\"\n%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.prefix_path.string, parent_prefix_char_char_array, prefix_path_char_array);
 		if(aml_symbol->component.prefix_path.parent_prefix_char)
 		{
 			delete_chain_string(parent_prefix_char_chain_string);
@@ -7777,6 +7777,7 @@ AMLSymbol *analyse_aml_predicate(AMLSubstring aml)
 AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 {
 	AMLSymbol *prefix_path = malloc(sizeof(*prefix_path));
+	char *string_writer;
 	prefix_path->string.initial = aml.initial;
 	prefix_path->string.length = 0;
 	prefix_path->type = aml_prefix_path;
@@ -7791,6 +7792,14 @@ AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml)
 		aml.length = aml.length - prefix_path->component.prefix_path.parent_prefix_char->string.length;
 		prefix_path->component.prefix_path.prefix_path = analyse_aml_prefix_path(aml);
 		prefix_path->string.length += prefix_path->component.prefix_path.prefix_path->string.length;
+		prefix_path->component.prefix_path.string = malloc(strlen(prefix_path->component.prefix_path.prefix_path->component.prefix_path.string) + 2);
+		string_writer = prefix_path->component.prefix_path.string;
+		*string_writer++ = AML_BYTE_PARENT_PREFIX_CHAR;
+		strcpy(string_writer, prefix_path->component.prefix_path.prefix_path->component.prefix_path.string);
+		break;
+	default:
+		prefix_path->component.prefix_path.string = malloc(sizeof(*prefix_path->component.prefix_path.string));
+		*prefix_path->component.prefix_path.string = '\0';
 		break;
 	}
 	return prefix_path;
@@ -9188,6 +9197,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_prefix_path:
 		if(aml_symbol->component.prefix_path.parent_prefix_char)delete_aml_symbol(aml_symbol->component.prefix_path.parent_prefix_char);
 		if(aml_symbol->component.prefix_path.prefix_path)delete_aml_symbol(aml_symbol->component.prefix_path.prefix_path);
+		free(aml_symbol->component.prefix_path.string);
 		break;
 	case aml_qword_const:
 		if(aml_symbol->component.qword_const.qword_prefix)delete_aml_symbol(aml_symbol->component.qword_const.qword_prefix);

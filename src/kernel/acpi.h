@@ -887,6 +887,7 @@ typedef struct _AMLPrefixPath
 {
 	struct _AMLSymbol *parent_prefix_char;
 	struct _AMLSymbol *prefix_path;
+	char *string;
 } AMLPrefixPath;
 
 typedef struct _AMLQWordConst
