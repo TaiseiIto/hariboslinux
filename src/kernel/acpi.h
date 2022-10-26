@@ -294,6 +294,7 @@ typedef enum _AMLSymbolType
 	aml_region_offset,
 	aml_region_space,
 	aml_release_op,
+	aml_release_op_suffix,
 	aml_return_op,
 	aml_revision_op,
 	aml_revision_op_suffix,
@@ -1351,6 +1352,8 @@ AMLSymbol *analyse_aml_region_offset(AMLSubstring aml);
 AMLSymbol *analyse_aml_region_space(AMLSubstring aml);
 // <release_op> := <ext_op_prefix> <release_op_suffix>
 AMLSymbol *analyse_aml_release_op(AMLSubstring aml);
+// <release_op_suffix> := AML_BYTE_RELEASE_OP
+AMLSymbol *analyse_aml_release_op_suffix(AMLSubstring aml);
 // <return_op> := AML_BYTE_RETURN_OP
 AMLSymbol *analyse_aml_return_op(AMLSubstring aml);
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>

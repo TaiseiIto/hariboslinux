@@ -4321,6 +4321,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(release_op_suffix_char_array);
 		}
 		break;
+	case aml_release_op_suffix:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_return_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -5111,6 +5114,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_region_offset_name = "RegionOffset";
 	static char const * const aml_region_space_name = "RegionSpace";
 	static char const * const aml_release_op_name = "ReleaseOp";
+	static char const * const aml_release_op_suffix_name = "ReleaseOpSuffix";
 	static char const * const aml_return_op_name = "ReturnOp";
 	static char const * const aml_revision_op_name = "RevisionOp";
 	static char const * const aml_revision_op_suffix_name = "RevisionOpSuffix";
@@ -5376,6 +5380,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_region_space_name;
 	case aml_release_op:
 		return aml_release_op_name;
+	case aml_release_op_suffix:
+		return aml_release_op_suffix_name;
 	case aml_return_op:
 		return aml_return_op_name;
 	case aml_revision_op:
@@ -7864,8 +7870,21 @@ AMLSymbol *analyse_aml_release_op(AMLSubstring aml)
 	release_op->string.length += release_op->component.release_op.ext_op_prefix->string.length;
 	aml.initial += release_op->component.release_op.ext_op_prefix->string.length;
 	aml.length -= release_op->component.release_op.ext_op_prefix->string.length;
-	release_op->component.release_op.release_op_suffix = NULL;
-	ERROR(); // Unimplemented
+	release_op->component.release_op.release_op_suffix = analyse_aml_release_op_suffix(aml);
+	release_op->string.length += release_op->component.release_op.release_op_suffix->string.length;
+	aml.initial += release_op->component.release_op.release_op_suffix->string.length;
+	aml.length -= release_op->component.release_op.release_op_suffix->string.length;
+	return release_op;
+}
+
+// <release_op_suffix> := AML_BYTE_RELEASE_OP
+AMLSymbol *analyse_aml_release_op_suffix(AMLSubstring aml)
+{
+	AMLSymbol *release_op = malloc(sizeof(*release_op));
+	release_op->string.initial = aml.initial;
+	release_op->string.length = 1;
+	release_op->type = aml_release_op;
+	if(*aml.initial != AML_BYTE_RELEASE_OP)ERROR(); // Incorrect release_op
 	return release_op;
 }
 
@@ -8075,6 +8094,20 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml)
 	statement_opcode->component.statement_opcode.def_while = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_EXT_OP_PREFIX:
+		switch(aml.initial[1])
+		{
+		case AML_BYTE_RELEASE_OP:
+			statement_opcode->component.statement_opcode.def_release = analyse_aml_def_release(aml);
+			statement_opcode->string.length += statement_opcode->component.statement_opcode.def_release->string.length;
+			break;
+		default:
+			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
+			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
+			break;
+		}
+		break;
 	case AML_BYTE_IF_OP:
 		statement_opcode->component.statement_opcode.def_if_else = analyse_aml_def_if_else(aml);
 		statement_opcode->string.length += statement_opcode->component.statement_opcode.def_if_else->string.length;
@@ -8523,6 +8556,10 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		case AML_BYTE_ACQUIRE_OP:
 			term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
 			term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
+			break;
+		case AML_BYTE_RELEASE_OP:
+			term_obj->component.term_obj.statement_opcode = analyse_aml_statement_opcode(aml);
+			term_obj->string.length += term_obj->component.term_obj.statement_opcode->string.length;
 			break;
 		default:
 			term_obj->component.term_obj.object = analyse_aml_object(aml);
@@ -9152,6 +9189,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_release_op:
 		if(aml_symbol->component.release_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.release_op.ext_op_prefix);
 		if(aml_symbol->component.release_op.release_op_suffix)delete_aml_symbol(aml_symbol->component.release_op.release_op_suffix);
+		break;
+	case aml_release_op_suffix:
 		break;
 	case aml_return_op:
 		break;
