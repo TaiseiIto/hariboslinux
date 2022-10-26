@@ -3326,7 +3326,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		break;
 	case aml_lead_name_char:
-		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		output = create_format_chain_string("%s '%c'\n", aml_symbol_type_name(aml_symbol->type), *aml_symbol->string.initial);
 		break;
 	case aml_l_equal_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
@@ -3595,7 +3595,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			name_chars_char_array[i] = create_char_array_from_chain_string(name_chars_chain_string[i]);
 		}
 		else name_chars_char_array[i] = "";
-		output = create_format_chain_string("%s \"%.*s\"\n%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->string.length, aml_symbol->string.initial, lead_name_char_char_array);
+		output = create_format_chain_string("%s \"%s\"\n%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.name_seg.name, lead_name_char_char_array);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.name_seg.name_char); i++)insert_char_array_back(output, output->last_character, name_chars_char_array[i]);
 		if(aml_symbol->component.name_seg.lead_name_char)
 		{
@@ -7261,6 +7261,7 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 AMLSymbol *analyse_aml_name_seg(AMLSubstring aml)
 {
 	AMLSymbol *name_seg = malloc(sizeof(*name_seg));
+	char *name_writer = name_seg->component.name_seg.name;
 	name_seg->string.initial = aml.initial;
 	name_seg->string.length = 0;
 	name_seg->type = aml_name_seg;
@@ -7268,13 +7269,16 @@ AMLSymbol *analyse_aml_name_seg(AMLSubstring aml)
 	aml.initial += name_seg->component.name_seg.lead_name_char->string.length;
 	aml.length -= name_seg->component.name_seg.lead_name_char->string.length;
 	name_seg->string.length += name_seg->component.name_seg.lead_name_char->string.length;
+	*name_writer++ = *name_seg->component.name_seg.lead_name_char->string.initial;
 	for(AMLSymbol **name_char = name_seg->component.name_seg.name_char; name_char != name_seg->component.name_seg.name_char + _countof(name_seg->component.name_seg.name_char); name_char++)
 	{
 		*name_char = analyse_aml_name_char(aml);
 		name_seg->string.length += (*name_char)->string.length;
 		aml.initial += (*name_char)->string.length;
 		aml.length -= (*name_char)->string.length;
+		*name_writer++ = (*name_char)->component.name_char.character;
 	}
+	*name_writer = '\0';
 	return name_seg;
 }
 

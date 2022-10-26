@@ -811,6 +811,7 @@ typedef struct _AMLNameSeg
 {
 	struct _AMLSymbol *lead_name_char;
 	struct _AMLSymbol *name_char[3];
+	char name[5];
 } AMLNameSeg;
 
 typedef struct _AMLNameSpaceModifierObj
