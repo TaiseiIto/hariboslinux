@@ -631,7 +631,7 @@ typedef struct _AMLDualNamePath
 {
 	struct _AMLSymbol *dual_name_prefix;
 	struct _AMLSymbol *name_seg[2];
-	char name[9];
+	char string[9];
 } AMLDualNamePath;
 
 typedef struct _AMLDWordConst
@@ -754,7 +754,7 @@ typedef struct _AMLMultiNamePath
 	struct _AMLSymbol *multi_name_prefix;
 	struct _AMLSymbol *seg_count;
 	struct _AMLSymbol **name_seg;
-	char *name;
+	char *string;
 } AMLMultiNamePath;
 
 typedef struct _AMLMutexObject
@@ -807,14 +807,14 @@ typedef struct _AMLNamePath
 	struct _AMLSymbol *dual_name_path;
 	struct _AMLSymbol *multi_name_path;
 	struct _AMLSymbol *null_name;
-	char *name;
+	char *string;
 } AMLNamePath;
 
 typedef struct _AMLNameSeg
 {
 	struct _AMLSymbol *lead_name_char;
 	struct _AMLSymbol *name_char[3];
-	char name[5];
+	char string[5];
 } AMLNameSeg;
 
 typedef struct _AMLNameSpaceModifierObj
