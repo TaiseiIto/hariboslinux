@@ -8016,7 +8016,7 @@ AMLSymbol *analyse_aml_simple_name(AMLSubstring aml)
 	case AML_BYTE_ARG_4_OP:
 	case AML_BYTE_ARG_5_OP:
 	case AML_BYTE_ARG_6_OP:
-		simple_name->component.simple_name.arg_obj = analyse_aml_simple_name(aml);
+		simple_name->component.simple_name.arg_obj = analyse_aml_arg_obj(aml);
 		simple_name->string.length += simple_name->component.simple_name.arg_obj->string.length;
 		aml.initial += simple_name->component.simple_name.arg_obj->string.length;
 		aml.length -= simple_name->component.simple_name.arg_obj->string.length;
