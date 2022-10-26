@@ -343,6 +343,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *region_len_chain_string;
 	ChainString *region_offset_chain_string;
 	ChainString *region_space_chain_string;
+	ChainString *release_op_chain_string;
 	ChainString *reserved_field_chain_string;
 	ChainString *return_op_chain_string;
 	ChainString *revision_op_chain_string;
@@ -559,6 +560,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *region_len_char_array;
 	char *region_offset_char_array;
 	char *region_space_char_array;
+	char *release_op_char_array;
 	char *reserved_field_char_array;
 	char *return_op_char_array;
 	char *revision_op_char_array;
@@ -1858,6 +1860,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(package_element_list_chain_string);
 			free(package_element_list_char_array);
+		}
+		break;
+	case aml_def_release:
+		if(aml_symbol->component.def_release.release_op)
+		{
+			release_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_release.release_op);
+			insert_char_front(release_op_chain_string, release_op_chain_string->first_character, ' ');
+			replace_chain_string(release_op_chain_string, "\n", "\n ");
+			release_op_char_array = create_char_array_from_chain_string(release_op_chain_string);
+		}
+		else release_op_char_array = "";
+		if(aml_symbol->component.def_release.mutex_object)
+		{
+			mutex_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_release.mutex_object);
+			insert_char_front(mutex_object_chain_string, mutex_object_chain_string->first_character, ' ');
+			replace_chain_string(mutex_object_chain_string, "\n", "\n ");
+			mutex_object_char_array = create_char_array_from_chain_string(mutex_object_chain_string);
+		}
+		else mutex_object_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), release_op_char_array, mutex_object_char_array);
+		if(aml_symbol->component.def_release.release_op)
+		{
+			delete_chain_string(release_op_chain_string);
+			free(release_op_char_array);
+		}
+		if(aml_symbol->component.def_release.mutex_object)
+		{
+			delete_chain_string(mutex_object_chain_string);
+			free(mutex_object_char_array);
 		}
 		break;
 	case aml_def_return:
@@ -4970,6 +5001,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_package_name = "DefPackage";
+	static char const * const aml_def_release_name = "DefRelease";
 	static char const * const aml_def_return_name = "DefReturn";
 	static char const * const aml_def_scope_name = "DefScope";
 	static char const * const aml_def_shift_left_name = "DefShiftLeft";
@@ -5154,6 +5186,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_op_region_name;
 	case aml_def_package:
 		return aml_def_package_name;
+	case aml_def_release:
+		return aml_def_release_name;
 	case aml_def_return:
 		return aml_def_return_name;
 	case aml_def_scope:
@@ -6213,6 +6247,19 @@ AMLSymbol *analyse_aml_def_package(AMLSubstring aml)
 	aml.initial += def_package->component.def_package.package_element_list->string.length;
 	aml.length -= def_package->component.def_package.package_element_list->string.length;
 	return def_package;
+}
+
+// <def_release> := <release_op> <mutex_object>
+AMLSymbol *analyse_aml_def_release(AMLSubstring aml)
+{
+	AMLSymbol *def_release = malloc(sizeof(*def_release));
+	def_release->string.initial = aml.initial;
+	def_release->string.length = 0;
+	def_release->type = aml_def_release;
+	def_release->component.def_release.release_op = NULL;
+	def_release->component.def_release.mutex_object = NULL;
+	ERROR(); // Unimplemented
+	return def_release;
 }
 
 // <def_return> := <return_op> <arg_object>
@@ -8723,6 +8770,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_package.pkg_length)delete_aml_symbol(aml_symbol->component.def_package.pkg_length);
 		if(aml_symbol->component.def_package.num_elements)delete_aml_symbol(aml_symbol->component.def_package.num_elements);
 		if(aml_symbol->component.def_package.package_element_list)delete_aml_symbol(aml_symbol->component.def_package.package_element_list);
+		break;
+	case aml_def_release:
+		if(aml_symbol->component.def_release.release_op)delete_aml_symbol(aml_symbol->component.def_release.release_op);
+		if(aml_symbol->component.def_release.mutex_object)delete_aml_symbol(aml_symbol->component.def_release.mutex_object);
 		break;
 	case aml_def_return:
 		if(aml_symbol->component.def_return.return_op)delete_aml_symbol(aml_symbol->component.def_return.return_op);

@@ -215,6 +215,7 @@ typedef enum _AMLSymbolType
 	aml_def_name,
 	aml_def_op_region,
 	aml_def_package,
+	aml_def_release,
 	aml_def_return,
 	aml_def_scope,
 	aml_def_shift_left,
@@ -539,6 +540,12 @@ typedef struct _AMLDefPackage
 	struct _AMLSymbol *num_elements;
 	struct _AMLSymbol *package_element_list;
 } AMLDefPackage;
+
+typedef struct _AMLDefRelease
+{
+	struct _AMLSymbol *release_op;
+	struct _AMLSymbol *mutex_object;
+} AMLDefRelease;
 
 typedef struct _AMLDefReturn
 {
@@ -1031,6 +1038,7 @@ typedef union _AMLComponent
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
 	AMLDefPackage def_package;
+	AMLDefRelease def_release;
 	AMLDefReturn def_return;
 	AMLDefScope def_scope;
 	AMLDefShiftLeft def_shift_left;
@@ -1177,6 +1185,8 @@ AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
 AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
 // <def_package> := <package_op> <pkg_length> <num_elements> <package_element_list>
 AMLSymbol *analyse_aml_def_package(AMLSubstring aml);
+// <def_release> := <release_op> <mutex_object>
+AMLSymbol *analyse_aml_def_release(AMLSubstring aml);
 // <def_return> := <return_op> <arg_object>
 AMLSymbol *analyse_aml_def_return(AMLSubstring aml);
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
