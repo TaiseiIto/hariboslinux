@@ -4775,6 +4775,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(expression_opcode_char_array);
 		}
 		break;
+	case aml_time_out:
+		if(aml_symbol->component.time_out.word_data)
+		{
+			word_data_chain_string = aml_symbol_to_chain_string(aml_symbol->component.time_out.word_data);
+			insert_char_front(word_data_chain_string, word_data_chain_string->first_character, ' ');
+			replace_chain_string(word_data_chain_string, "\n", "\n ");
+			word_data_char_array = create_char_array_from_chain_string(word_data_chain_string);
+		}
+		else word_data_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), word_data_char_array);
+		if(aml_symbol->component.time_out.word_data)
+		{
+			delete_chain_string(word_data_chain_string);
+			free(word_data_char_array);
+		}
+		break;
 	case aml_to_buffer_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4992,6 +5008,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_term_arg_list_name = "TermArgList";
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
+	static char const * const aml_time_out_name = "TimeOut";
 	static char const * const aml_to_buffer_op_name = "ToBufferOp";
 	static char const * const aml_to_hex_string_op_name = "ToHexStringOp";
 	static char const * const aml_while_op_name = "WhileOp";
@@ -5271,6 +5288,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_term_list_name;
 	case aml_term_obj:
 		return aml_term_obj_name;
+	case aml_time_out:
+		return aml_time_out_name;
 	case aml_to_buffer_op:
 		return aml_to_buffer_op_name;
 	case aml_to_hex_string_op:
@@ -5732,9 +5751,10 @@ AMLSymbol *analyse_aml_def_acquire(AMLSubstring aml)
 	def_acquire->string.length += def_acquire->component.def_acquire.mutex_object->string.length;
 	aml.initial += def_acquire->component.def_acquire.mutex_object->string.length;
 	aml.length -= def_acquire->component.def_acquire.mutex_object->string.length;
-	def_acquire->component.def_acquire.time_out = NULL;
-	ERROR(); // Unimplemented
-	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	def_acquire->component.def_acquire.time_out = analyse_aml_time_out(aml);
+	def_acquire->string.length += def_acquire->component.def_acquire.time_out->string.length;
+	aml.initial += def_acquire->component.def_acquire.time_out->string.length;
+	aml.length -= def_acquire->component.def_acquire.time_out->string.length;
 	return def_acquire;
 }
 
@@ -8313,6 +8333,18 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	return term_obj;
 }
 
+// <time_out> := <word_data>
+AMLSymbol *analyse_aml_time_out(AMLSubstring aml)
+{
+	AMLSymbol *time_out = malloc(sizeof(*time_out));
+	time_out->string.initial = aml.initial;
+	time_out->string.length = 0;
+	time_out->type = aml_time_out;
+	time_out->component.time_out.word_data = analyse_aml_word_data(aml);
+	time_out->string.length += time_out->component.time_out.word_data->string.length;
+	return time_out;
+}
+
 // <to_buffer_op> := AML_BYTE_TO_BUFFER_OP
 AMLSymbol *analyse_aml_to_buffer_op(AMLSubstring aml)
 {
@@ -8974,6 +9006,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.term_obj.object)delete_aml_symbol(aml_symbol->component.term_obj.object);
 		if(aml_symbol->component.term_obj.statement_opcode)delete_aml_symbol(aml_symbol->component.term_obj.statement_opcode);
 		if(aml_symbol->component.term_obj.expression_opcode)delete_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
+		break;
+	case aml_time_out:
+		if(aml_symbol->component.time_out.word_data)delete_aml_symbol(aml_symbol->component.time_out.word_data);
 		break;
 	case aml_to_buffer_op:
 		break;
