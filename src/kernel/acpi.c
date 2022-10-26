@@ -620,6 +620,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(acquire_op_suffix_char_array);
 		}
 		break;
+	case aml_acquire_op_suffix:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_alias_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -4839,6 +4842,7 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol)
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_acquire_op_name = "AcquireOp";
+	static char const * const aml_acquire_op_suffix_name = "AcquireOpSuffix";
 	static char const * const aml_alias_op_name = "AliasOp";
 	static char const * const aml_arg_obj_name = "ArgObj";
 	static char const * const aml_arg_object_name = "ArgObject";
@@ -4982,6 +4986,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	{
 	case aml_acquire_op:
 		return aml_acquire_op_name;
+	case aml_acquire_op_suffix:
+		return aml_acquire_op_suffix_name;
 	case aml_alias_op:
 		return aml_alias_op_name;
 	case aml_arg_obj:
@@ -5278,9 +5284,22 @@ AMLSymbol *analyse_aml_acquire_op(AMLSubstring aml)
 	acquire_op->string.length += acquire_op->component.acquire_op.ext_op_prefix->string.length;
 	aml.initial += acquire_op->component.acquire_op.ext_op_prefix->string.length;
 	aml.length -= acquire_op->component.acquire_op.ext_op_prefix->string.length;
-	acquire_op->component.acquire_op.acquire_op_suffix = NULL;
-	ERROR(); // Unimplemented
+	acquire_op->component.acquire_op.acquire_op_suffix = analyse_aml_acquire_op_suffix(aml);
+	acquire_op->string.length += acquire_op->component.acquire_op.acquire_op_suffix->string.length;
+	aml.initial += acquire_op->component.acquire_op.acquire_op_suffix->string.length;
+	aml.length -= acquire_op->component.acquire_op.acquire_op_suffix->string.length;
 	return acquire_op;
+}
+
+// <acquire_op_suffix> := AML_BYTE_ACQUIRE_OP
+AMLSymbol *analyse_aml_acquire_op_suffix(AMLSubstring aml)
+{
+	AMLSymbol *acquire_op_suffix = malloc(sizeof(*acquire_op_suffix));
+	acquire_op_suffix->string.initial = aml.initial;
+	acquire_op_suffix->string.length = 1;
+	acquire_op_suffix->type = aml_acquire_op_suffix;
+	if(*aml.initial != AML_BYTE_ACQUIRE_OP)ERROR(); // Incorrect acquire_op_suffix
+	return acquire_op_suffix;
 }
 
 // <alias_op> := AML_BYTE_ALIAS_OP
@@ -6488,6 +6507,20 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml)
 	case AML_BYTE_DEREF_OF_OP:
 		expression_opcode->component.expression_opcode.def_deref_of = analyse_aml_def_deref_of(aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_deref_of->string.length;
+		break;
+	case AML_BYTE_EXT_OP_PREFIX:
+		switch(aml.initial[1])
+		{
+		case AML_BYTE_ACQUIRE_OP:
+			expression_opcode->component.expression_opcode.def_acquire = analyse_aml_def_acquire(aml);
+			expression_opcode->string.length += expression_opcode->component.expression_opcode.def_acquire->string.length;
+			break;
+		default:
+			ERROR(); // Syntax error
+			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
+			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
+			break;
+		}
 		break;
 	case AML_BYTE_INCREMENT_OP:
 		expression_opcode->component.expression_opcode.def_increment = analyse_aml_def_increment(aml);
@@ -8204,7 +8237,6 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
 		break;
 	case AML_BYTE_ALIAS_OP:
-	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_METHOD_OP:
 	case AML_BYTE_NAME_OP:
 	case AML_BYTE_SCOPE_OP:
@@ -8216,6 +8248,19 @@ AMLSymbol *analyse_aml_term_obj(AMLSubstring aml)
 	case AML_BYTE_WHILE_OP:
 		term_obj->component.term_obj.statement_opcode = analyse_aml_statement_opcode(aml);
 		term_obj->string.length += term_obj->component.term_obj.statement_opcode->string.length;
+		break;
+	case AML_BYTE_EXT_OP_PREFIX:
+		switch(aml.initial[1])
+		{
+		case AML_BYTE_ACQUIRE_OP:
+			term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(aml);
+			term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
+			break;
+		default:
+			term_obj->component.term_obj.object = analyse_aml_object(aml);
+			term_obj->string.length += term_obj->component.term_obj.object->string.length;
+			break;
+		}
 		break;
 	default:
 		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
@@ -8343,6 +8388,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_acquire_op:
 		if(aml_symbol->component.acquire_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.acquire_op.ext_op_prefix);
 		if(aml_symbol->component.acquire_op.acquire_op_suffix)delete_aml_symbol(aml_symbol->component.acquire_op.acquire_op_suffix);
+		break;
+	case aml_acquire_op_suffix:
 		break;
 	case aml_alias_op:
 		break;

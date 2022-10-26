@@ -179,6 +179,7 @@ struct _AMLSymbol;
 typedef enum _AMLSymbolType
 {
 	aml_acquire_op,
+	aml_acquire_op_suffix,
 	aml_alias_op,
 	aml_arg_obj,
 	aml_arg_object,
@@ -1079,6 +1080,8 @@ char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 // <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
 AMLSymbol *analyse_aml_acquire_op(AMLSubstring aml);
+// <acquire_op_suffix> := AML_BYTE_ACQUIRE_OP
+AMLSymbol *analyse_aml_acquire_op_suffix(AMLSubstring aml);
 // <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
 // <arg_obj> := <arg_op>
