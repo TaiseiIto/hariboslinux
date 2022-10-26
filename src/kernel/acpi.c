@@ -3554,7 +3554,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			null_name_char_array = create_char_array_from_chain_string(null_name_chain_string);
 		}
 		else null_name_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), name_seg_char_array, dual_name_path_char_array, multi_name_path_char_array, null_name_char_array);
+		output = create_format_chain_string("%s \"%s\"\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.name_path.name, name_seg_char_array, dual_name_path_char_array, multi_name_path_char_array, null_name_char_array);
 		if(aml_symbol->component.name_path.name_seg)
 		{
 			delete_chain_string(name_seg_chain_string);
@@ -7242,20 +7242,24 @@ AMLSymbol *analyse_aml_name_path(AMLSubstring aml)
 	case AML_BYTE_DUAL_NAME_PREFIX:
 		name_path->component.name_path.dual_name_path = analyse_aml_dual_name_path(aml);
 		name_path->string.length += name_path->component.name_path.dual_name_path->string.length;
+		name_path->component.name_path.name = name_path->component.name_path.dual_name_path->component.dual_name_path.name;
 		break;
 	case AML_BYTE_MULTI_NAME_PREFIX:
 		name_path->component.name_path.multi_name_path = analyse_aml_multi_name_path(aml);
 		name_path->string.length += name_path->component.name_path.multi_name_path->string.length;
+		name_path->component.name_path.name = name_path->component.name_path.multi_name_path->component.multi_name_path.name;
 		break;
 	case AML_BYTE_NULL_NAME:
 		name_path->component.name_path.null_name = analyse_aml_null_name(aml);
 		name_path->string.length += name_path->component.name_path.null_name->string.length;
+		name_path->component.name_path.name = "";
 		break;
 	default:
 		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
 		{
 			name_path->component.name_path.name_seg = analyse_aml_name_seg(aml);
 			name_path->string.length += name_path->component.name_path.name_seg->string.length;
+			name_path->component.name_path.name = name_path->component.name_path.name_seg->component.name_seg.name;
 		}
 		else
 		{

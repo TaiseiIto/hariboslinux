@@ -807,6 +807,7 @@ typedef struct _AMLNamePath
 	struct _AMLSymbol *dual_name_path;
 	struct _AMLSymbol *multi_name_path;
 	struct _AMLSymbol *null_name;
+	char *name;
 } AMLNamePath;
 
 typedef struct _AMLNameSeg
