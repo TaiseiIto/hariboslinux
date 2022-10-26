@@ -3354,6 +3354,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_multi_name_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_mutex_object:
+		if(aml_symbol->component.mutex_object.super_name)
+		{
+			super_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.mutex_object.super_name);
+			insert_char_front(super_name_chain_string, super_name_chain_string->first_character, ' ');
+			replace_chain_string(super_name_chain_string, "\n", "\n ");
+			super_name_char_array = create_char_array_from_chain_string(super_name_chain_string);
+		}
+		else super_name_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), super_name_char_array);
+		if(aml_symbol->component.mutex_object.super_name)
+		{
+			delete_chain_string(super_name_chain_string);
+			free(super_name_char_array);
+		}
+		break;
 	case aml_mutex_op:
 		if(aml_symbol->component.mutex_op.ext_op_prefix)
 		{
@@ -4919,6 +4935,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_method_op_name = "MethodOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
+	static char const * const aml_mutex_object_name = "MutexObject";
 	static char const * const aml_mutex_op_name = "MutexOp";
 	static char const * const aml_mutex_op_suffix_name = "MutexOpSuffix";
 	static char const * const aml_name_char_name = "NameChar";
@@ -5140,6 +5157,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_multi_name_path_name;
 	case aml_multi_name_prefix:
 		return aml_multi_name_prefix_name;
+	case aml_mutex_object:
+		return aml_mutex_object_name;
 	case aml_mutex_op:
 		return aml_mutex_op_name;
 	case aml_mutex_op_suffix:
@@ -5709,9 +5728,13 @@ AMLSymbol *analyse_aml_def_acquire(AMLSubstring aml)
 	def_acquire->string.length += def_acquire->component.def_acquire.acquire_op->string.length;
 	aml.initial += def_acquire->component.def_acquire.acquire_op->string.length;
 	aml.length -= def_acquire->component.def_acquire.acquire_op->string.length;
-	def_acquire->component.def_acquire.mutex_object = NULL;
+	def_acquire->component.def_acquire.mutex_object = analyse_aml_mutex_object(aml);
+	def_acquire->string.length += def_acquire->component.def_acquire.mutex_object->string.length;
+	aml.initial += def_acquire->component.def_acquire.mutex_object->string.length;
+	aml.length -= def_acquire->component.def_acquire.mutex_object->string.length;
 	def_acquire->component.def_acquire.time_out = NULL;
 	ERROR(); // Unimplemented
+	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	return def_acquire;
 }
 
@@ -6907,6 +6930,18 @@ AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml)
 	multi_name_prefix->type = aml_multi_name_prefix;
 	if(*multi_name_prefix->string.initial != AML_BYTE_MULTI_NAME_PREFIX)ERROR(); // Incorrect munti name prefix
 	return multi_name_prefix;
+}
+
+// <mutex_object> := <super_name>
+AMLSymbol *analyse_aml_mutex_object(AMLSubstring aml)
+{
+	AMLSymbol *mutex_object = malloc(sizeof(*mutex_object));
+	mutex_object->string.initial = aml.initial;
+	mutex_object->string.length = 0;
+	mutex_object->type = aml_mutex_object;
+	mutex_object->component.mutex_object.super_name = analyse_aml_super_name(aml);
+	mutex_object->string.length += mutex_object->component.mutex_object.super_name->string.length;
+	return mutex_object;
 }
 
 // <mutex_op> := <ext_op_prefix> <mutex_op_suffix>
@@ -8732,6 +8767,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.multi_name_path.seg_count)delete_aml_symbol(aml_symbol->component.multi_name_path.seg_count);
 		break;
 	case aml_multi_name_prefix:
+		break;
+	case aml_mutex_object:
+		if(aml_symbol->component.mutex_object.super_name)delete_aml_symbol(aml_symbol->component.mutex_object.super_name);
 		break;
 	case aml_mutex_op:
 		if(aml_symbol->component.mutex_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.mutex_op.ext_op_prefix);
