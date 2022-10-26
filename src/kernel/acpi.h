@@ -1122,307 +1122,308 @@ typedef struct _AMLSymbol
 	AMLSubstring string;
 	AMLSymbolType type;
 	AMLComponent component;
+	struct _AMLSymbol *parent;
 } AMLSymbol;
 
 ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol);
 char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 // <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
-AMLSymbol *analyse_aml_acquire_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_acquire_op(AMLSymbol *parent, AMLSubstring aml);
 // <acquire_op_suffix> := AML_BYTE_ACQUIRE_OP
-AMLSymbol *analyse_aml_acquire_op_suffix(AMLSubstring aml);
+AMLSymbol *analyse_aml_acquire_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <alias_op> := AML_BYTE_ALIAS_OP
-AMLSymbol *analyse_aml_alias_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_alias_op(AMLSymbol *parent, AMLSubstring aml);
 // <arg_obj> := <arg_op>
-AMLSymbol *analyse_aml_arg_obj(AMLSubstring aml);
+AMLSymbol *analyse_aml_arg_obj(AMLSymbol *parent, AMLSubstring aml);
 // <arg_object> := <term_arg>
-AMLSymbol *analyse_aml_arg_object(AMLSubstring aml);
+AMLSymbol *analyse_aml_arg_object(AMLSymbol *parent, AMLSubstring aml);
 // <arg_op> := 0x68 - 0x6e
-AMLSymbol *analyse_aml_arg_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_arg_op(AMLSymbol *parent, AMLSubstring aml);
 // <ascii_char> := 0x01 - 0x7f
-AMLSymbol *analyse_aml_ascii_char(AMLSubstring aml);
+AMLSymbol *analyse_aml_ascii_char(AMLSymbol *parent, AMLSubstring aml);
 // <ascii_char_list> := Nothing | <ascii_char> <ascii_char_list>
-AMLSymbol *analyse_aml_ascii_char_list(AMLSubstring aml);
+AMLSymbol *analyse_aml_ascii_char_list(AMLSymbol *parent, AMLSubstring aml);
 // <buff_pkg_str_obj> := <term_arg>
-AMLSymbol *analyse_aml_buff_pkg_str_obj(AMLSubstring aml);
+AMLSymbol *analyse_aml_buff_pkg_str_obj(AMLSymbol *parent, AMLSubstring aml);
 // <buffer_op> := AML_BYTE_BUFFER_OP
-AMLSymbol *analyse_aml_buffer_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_buffer_op(AMLSymbol *parent, AMLSubstring aml);
 // <buffer_size> := <term_arg>
-AMLSymbol *analyse_aml_buffer_size(AMLSubstring aml);
+AMLSymbol *analyse_aml_buffer_size(AMLSymbol *parent, AMLSubstring aml);
 // <byte_const> := <byte_prefix> <byte_data>
-AMLSymbol *analyse_aml_byte_const(AMLSubstring aml);
+AMLSymbol *analyse_aml_byte_const(AMLSymbol *parent, AMLSubstring aml);
 // <byte_data> := 0x00 - 0xff
-AMLSymbol *analyse_aml_byte_data(AMLSubstring aml);
+AMLSymbol *analyse_aml_byte_data(AMLSymbol *parent, AMLSubstring aml);
 // <byte_list> := Nothing | <byte_data> <byte_list>
-AMLSymbol *analyse_aml_byte_list(AMLSubstring aml);
+AMLSymbol *analyse_aml_byte_list(AMLSymbol *parent, AMLSubstring aml);
 // <byte_prefix> := AML_BYTE_BYTE_PREFIX
-AMLSymbol *analyse_aml_byte_prefix(AMLSubstring aml);
+AMLSymbol *analyse_aml_byte_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <computational_data> := <byte_const> | <word_const> | <dword_const> | <qword_const> | <string> | <const_obj> | <revision_op> | <def_buffer>
-AMLSymbol *analyse_aml_computatinoal_data(AMLSubstring aml);
+AMLSymbol *analyse_aml_computatinoal_data(AMLSymbol *parent, AMLSubstring aml);
 // <const_obj> := <zero_op> | <one_op> | <ones_op>
-AMLSymbol *analyse_aml_const_obj(AMLSubstring aml);
+AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml);
 // <data_object> := <computational_data> | <def_package> | <def_var_package>
-AMLSymbol *analyse_aml_data_object(AMLSubstring aml);
+AMLSymbol *analyse_aml_data_object(AMLSymbol *parent, AMLSubstring aml);
 // <data_ref_object> := <data_object> | <object_reference>
-AMLSymbol *analyse_aml_data_ref_object(AMLSubstring aml);
+AMLSymbol *analyse_aml_data_ref_object(AMLSymbol *parent, AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
-AMLSymbol *analyse_aml_def_alias(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml);
 // <def_acquire> := <acquire_op> <mutex_object> <time_out>
-AMLSymbol *analyse_aml_def_acquire(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_acquire(AMLSymbol *parent, AMLSubstring aml);
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
-AMLSymbol *analyse_aml_def_buffer(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml);
 // <def_deref_of> := <deref_of_op> <obj_reference>
-AMLSymbol *analyse_aml_def_deref_of(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_deref_of(AMLSymbol *parent, AMLSubstring aml);
 // <def_device> := <device_op> <pkg_length> <name_string> <term_list>
-AMLSymbol *analyse_aml_def_device(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
-AMLSymbol *analyse_aml_def_field(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml);
 // <def_if_else> := <if_op> <pkg_length> <predicate> <term_list> <def_else>
-AMLSymbol *analyse_aml_def_if_else(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml);
 // <def_increment> := <increment_op> <super_name>
-AMLSymbol *analyse_aml_def_increment(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_increment(AMLSymbol *parent, AMLSubstring aml);
 // <def_index> := <index_op> <buff_pkf_str_obj> <index_value> <target>
-AMLSymbol *analyse_aml_def_index(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_index(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_equal> := <l_equal_op> <operand> <operand>
-AMLSymbol *analyse_aml_def_l_equal(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_l_equal(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_greater> := <l_greater_op> <operand> <operand>
-AMLSymbol *analyse_aml_def_l_greater(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_l_greater(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_less> := <l_less_op> <operand> <operand>
-AMLSymbol *analyse_aml_def_l_less(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_l_less(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_or> := <l_or_op> <operand> <operand>
-AMLSymbol *analyse_aml_def_l_or(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_l_or(AMLSymbol *parent, AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
-AMLSymbol *analyse_aml_def_method(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml);
 // <def_mutex> := <mutex_op> <name_string> <sync_flags>
-AMLSymbol *analyse_aml_def_mutex(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_mutex(AMLSymbol *parent, AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
-AMLSymbol *analyse_aml_def_name(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_name(AMLSymbol *parent, AMLSubstring aml);
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
-AMLSymbol *analyse_aml_def_op_region(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_op_region(AMLSymbol *parent, AMLSubstring aml);
 // <def_package> := <package_op> <pkg_length> <num_elements> <package_element_list>
-AMLSymbol *analyse_aml_def_package(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml);
 // <def_release> := <release_op> <mutex_object>
-AMLSymbol *analyse_aml_def_release(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_release(AMLSymbol *parent, AMLSubstring aml);
 // <def_return> := <return_op> <arg_object>
-AMLSymbol *analyse_aml_def_return(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_return(AMLSymbol *parent, AMLSubstring aml);
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
-AMLSymbol *analyse_aml_def_scope(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_scope(AMLSymbol *parent, AMLSubstring aml);
 // <def_shift_left> := <shift_left_op> <operand> <shift_count> <target>
-AMLSymbol *analyse_aml_def_shift_left(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_shift_left(AMLSymbol *parent, AMLSubstring aml);
 // <def_shift_right> := <shift_right_op> <operand> <shift_count> <target>
-AMLSymbol *analyse_aml_def_shift_right(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_shift_right(AMLSymbol *parent, AMLSubstring aml);
 // <def_size_of> := <size_of_op> <super_name>
-AMLSymbol *analyse_aml_def_size_of(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_size_of(AMLSymbol *parent, AMLSubstring aml);
 // <def_store> := <store_op> <term_arg> <super_name>
-AMLSymbol *analyse_aml_def_store(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_store(AMLSymbol *parent, AMLSubstring aml);
 // <def_subtract> := <subtract_op> <operand> <operand> <target>
-AMLSymbol *analyse_aml_def_subtract(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_subtract(AMLSymbol *parent, AMLSubstring aml);
 // <def_to_buffer> := <to_buffer_op> <operand> <target>
-AMLSymbol *analyse_aml_def_to_buffer(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_to_buffer(AMLSymbol *parent, AMLSubstring aml);
 // <def_to_hex_string> := <to_hex_string_op> <operand> <target>
-AMLSymbol *analyse_aml_def_to_hex_string(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_to_hex_string(AMLSymbol *parent, AMLSubstring aml);
 // <def_while> := <while_op> <pkg_length> <predicate> <term_list>
-AMLSymbol *analyse_aml_def_while(AMLSubstring aml);
+AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml);
 // <deref_of_op> := AML_BYTE_DEREF_OF_OP
-AMLSymbol *analyse_aml_deref_of_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_deref_of_op(AMLSymbol *parent, AMLSubstring aml);
 // <device_op> := <ext_op_prefix> <device_op_suffix>
-AMLSymbol *analyse_aml_device_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_device_op(AMLSymbol *parent, AMLSubstring aml);
 // <device_op_suffix> := AML_BYTE_DEVICE_OP
-AMLSymbol *analyse_aml_device_op_suffix(AMLSubstring aml);
+AMLSymbol *analyse_aml_device_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <digit_char> := '0' - '9'
-AMLSymbol *analyse_aml_digit_char(AMLSubstring aml);
+AMLSymbol *analyse_aml_digit_char(AMLSymbol *parent, AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>
-AMLSymbol *analyse_aml_dual_name_path(AMLSubstring aml);
+AMLSymbol *analyse_aml_dual_name_path(AMLSymbol *parent, AMLSubstring aml);
 // <dual_name_prefix> := AML_BYTE_DUAL_NAME_PREFIX
-AMLSymbol *analyse_aml_dual_name_prefix(AMLSubstring aml);
+AMLSymbol *analyse_aml_dual_name_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <dword_const> := <dword_prefix> <dword_data>
-AMLSymbol *analyse_aml_dword_const(AMLSubstring aml);
+AMLSymbol *analyse_aml_dword_const(AMLSymbol *parent, AMLSubstring aml);
 // <dword_data> := <word_data> <word_data>
-AMLSymbol *analyse_aml_dword_data(AMLSubstring aml);
+AMLSymbol *analyse_aml_dword_data(AMLSymbol *parent, AMLSubstring aml);
 // <dword_prefix> := AML_BYTE_DWORD_PREFIX
-AMLSymbol *analyse_aml_dword_prefix(AMLSubstring aml);
+AMLSymbol *analyse_aml_dword_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <expression_opcode> := <def_acquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
-AMLSymbol *analyse_aml_expression_opcode(AMLSubstring aml);
+AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <ext_op_prefix> := AML_BYTE_EXT_OP_PREFIX
-AMLSymbol *analyse_aml_ext_op_prefix(AMLSubstring aml);
+AMLSymbol *analyse_aml_ext_op_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <field_element> := <named_field> | <reserved_field> | <access_field> | <extended_access_field> | <connect_field>
-AMLSymbol *analyse_aml_field_element(AMLSubstring aml);
+AMLSymbol *analyse_aml_field_element(AMLSymbol *parent, AMLSubstring aml);
 // <field_flags>
-AMLSymbol *analyse_aml_field_flags(AMLSubstring aml);
+AMLSymbol *analyse_aml_field_flags(AMLSymbol *parent, AMLSubstring aml);
 // <field_list> := Nothing | <field_element> <field_list>
-AMLSymbol *analyse_aml_field_list(AMLSubstring aml);
+AMLSymbol *analyse_aml_field_list(AMLSymbol *parent, AMLSubstring aml);
 // <field_op> := <ext_op_prefix> <field_op_suffix>
-AMLSymbol *analyse_aml_field_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <field_op_suffix> := AML_BYTE_FIELD_OP_PREFIX
-AMLSymbol *analyse_aml_field_op_suffix(AMLSubstring aml);
+AMLSymbol *analyse_aml_field_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <if_op> := AML_BYTE_IF_OP
-AMLSymbol *analyse_aml_if_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_if_op(AMLSymbol *parent, AMLSubstring aml);
 // <increment_op> := AML_BYTE_INCREMENT_OP
-AMLSymbol *analyse_aml_increment_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_increment_op(AMLSymbol *parent, AMLSubstring aml);
 // <index_op> := AML_BYTE_INDEX_OP
-AMLSymbol *analyse_aml_index_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_index_op(AMLSymbol *parent, AMLSubstring aml);
 // <index_value> := <term_arg>
-AMLSymbol *analyse_aml_index_value(AMLSubstring aml);
+AMLSymbol *analyse_aml_index_value(AMLSymbol *parent, AMLSubstring aml);
 // <lead_char> := 'A' - 'Z' | '_'
-AMLSymbol *analyse_aml_lead_name_char(AMLSubstring aml);
+AMLSymbol *analyse_aml_lead_name_char(AMLSymbol *parent, AMLSubstring aml);
 // <l_equal_op> := AML_BYTE_L_EQUAL_OP
-AMLSymbol *analyse_aml_l_equal_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_l_equal_op(AMLSymbol *parent, AMLSubstring aml);
 // <l_greater_op> := AML_BYTE_L_GREATER_OP
-AMLSymbol *analyse_aml_l_greater_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_l_greater_op(AMLSymbol *parent, AMLSubstring aml);
 // <l_less_op> := AML_BYTE_L_LESS_OP
-AMLSymbol *analyse_aml_l_less_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_l_less_op(AMLSymbol *parent, AMLSubstring aml);
 // <l_or_op> := AML_BYTE_L_OR_OP
-AMLSymbol *analyse_aml_l_or_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_l_or_op(AMLSymbol *parent, AMLSubstring aml);
 // <local_obj> := <local_op>
-AMLSymbol *analyse_aml_local_obj(AMLSubstring aml);
+AMLSymbol *analyse_aml_local_obj(AMLSymbol *parent, AMLSubstring aml);
 // <local_op> := 0x60 - 0x67
-AMLSymbol *analyse_aml_local_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_local_op(AMLSymbol *parent, AMLSubstring aml);
 // <method_flags>
-AMLSymbol *analyse_aml_method_flags(AMLSubstring aml);
+AMLSymbol *analyse_aml_method_flags(AMLSymbol *parent, AMLSubstring aml);
 // <method_invocation> := <name_string> <term_arg_list>
-AMLSymbol *analyse_aml_method_invocation(AMLSubstring aml);
+AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml);
 // <method_op> := 0x14
-AMLSymbol *analyse_aml_method_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_method_op(AMLSymbol *parent, AMLSubstring aml);
 // <multi_name_path> := <multi_name_prefix> <seg_count> <name_seg>*
-AMLSymbol *analyse_aml_multi_name_path(AMLSubstring aml);
+AMLSymbol *analyse_aml_multi_name_path(AMLSymbol *parent, AMLSubstring aml);
 // <mult_name_prefix> := AML_BYTE_MULTI_NAME_PREFIX
-AMLSymbol *analyse_aml_multi_name_prefix(AMLSubstring aml);
+AMLSymbol *analyse_aml_multi_name_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <mutex_object> := <super_name>
-AMLSymbol *analyse_aml_mutex_object(AMLSubstring aml);
+AMLSymbol *analyse_aml_mutex_object(AMLSymbol *parent, AMLSubstring aml);
 // <mutex_op> := <ext_op_prefix> <mutex_op_suffix>
-AMLSymbol *analyse_aml_mutex_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_mutex_op(AMLSymbol *parent, AMLSubstring aml);
 // <mutex_op_suffix> := AML_BYTE_MUTEX_OP
-AMLSymbol *analyse_aml_mutex_op_suffix(AMLSubstring aml);
+AMLSymbol *analyse_aml_mutex_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <name_char> := <digit_char> | <lead_name_char>
-AMLSymbol *analyse_aml_name_char(AMLSubstring aml);
+AMLSymbol *analyse_aml_name_char(AMLSymbol *parent, AMLSubstring aml);
 // <name_op> := AML_BYTE_NAME_OP
-AMLSymbol *analyse_aml_name_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_name_op(AMLSymbol *parent, AMLSubstring aml);
 // <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
-AMLSymbol *analyse_aml_name_path(AMLSubstring aml);
+AMLSymbol *analyse_aml_name_path(AMLSymbol *parent, AMLSubstring aml);
 // <name_seg> := <lead_name_char> <name_char> <name_char> <name_char>
-AMLSymbol *analyse_aml_name_seg(AMLSubstring aml);
+AMLSymbol *analyse_aml_name_seg(AMLSymbol *parent, AMLSubstring aml);
 // <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
-AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSubstring aml);
+AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSymbol *parent, AMLSubstring aml);
 // <name_string> := <root_char> <name_path> | <prefix_path> <name_path>
-AMLSymbol *analyse_aml_name_string(AMLSubstring aml);
+AMLSymbol *analyse_aml_name_string(AMLSymbol *parent, AMLSubstring aml);
 // <named_field> := <name_seg> <pkg_length>
-AMLSymbol *analyse_aml_named_field(AMLSubstring aml);
+AMLSymbol *analyse_aml_named_field(AMLSymbol *parent, AMLSubstring aml);
 // <named_obj> := <def_bank_field> | <def_create_bit_field> | <def_create_byte_field> | <def_create_dword_field> | <def_create_field> | <def_create_qword_field> | <def_create_word_field> | <def_data_region> | <def_external> | <def_op_region> | <def_power_res> | <def_thermal_zone>
-AMLSymbol *analyse_aml_named_obj(AMLSubstring aml);
+AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml);
 // <null_char> := AML_BYTE_NULL_CHAR
-AMLSymbol *analyse_aml_null_char(AMLSubstring aml);
+AMLSymbol *analyse_aml_null_char(AMLSymbol *parent, AMLSubstring aml);
 // <null_name> := AML_BYTE_NULL_NAME
-AMLSymbol *analyse_aml_null_name(AMLSubstring aml);
+AMLSymbol *analyse_aml_null_name(AMLSymbol *parent, AMLSubstring aml);
 // <num_elements> := <byte_data>
-AMLSymbol *analyse_aml_num_elements(AMLSubstring aml);
+AMLSymbol *analyse_aml_num_elements(AMLSymbol *parent, AMLSubstring aml);
 // <obj_reference> := <term_arg>
-AMLSymbol *analyse_aml_obj_reference(AMLSubstring aml);
+AMLSymbol *analyse_aml_obj_reference(AMLSymbol *parent, AMLSubstring aml);
 // <object> := <name_space_modifier_obj> | <named_obj>
-AMLSymbol *analyse_aml_object(AMLSubstring aml);
+AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml);
 // <one_op> := AML_BYTE_ONE_OP
-AMLSymbol *analyse_aml_one_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_one_op(AMLSymbol *parent, AMLSubstring aml);
 // <ones_op> := AML_BYTE_ONES_OP
-AMLSymbol *analyse_aml_ones_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_ones_op(AMLSymbol *parent, AMLSubstring aml);
 // <op_region_op> := <ext_op_prefix> <op_region_op_suffix>
-AMLSymbol *analyse_aml_op_region_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_op_region_op(AMLSymbol *parent, AMLSubstring aml);
 // <op_region_op_suffix> := AML_BYTE_OP_REGION_OP
-AMLSymbol *analyse_aml_op_region_op_suffix(AMLSubstring aml);
+AMLSymbol *analyse_aml_op_region_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <operand> := <term_arg>
-AMLSymbol *analyse_aml_operand(AMLSubstring aml);
+AMLSymbol *analyse_aml_operand(AMLSymbol *parent, AMLSubstring aml);
 // <package_element> := <data_ref_object> | <name_string>
-AMLSymbol *analyse_aml_package_element(AMLSubstring aml);
+AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml);
 // <package_element_list> := Nothing | <package_element> <package_element_list>
-AMLSymbol *analyse_aml_package_element_list(AMLSubstring aml);
+AMLSymbol *analyse_aml_package_element_list(AMLSymbol *parent, AMLSubstring aml);
 // <package_op> := AML_BYTE_PACKAGE_OP
-AMLSymbol *analyse_aml_package_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_package_op(AMLSymbol *parent, AMLSubstring aml);
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
-AMLSymbol *analyse_aml_parent_prefix_char(AMLSubstring aml);
+AMLSymbol *analyse_aml_parent_prefix_char(AMLSymbol *parent, AMLSubstring aml);
 // <pkg_lead_byte>
-AMLSymbol *analyse_aml_pkg_lead_byte(AMLSubstring aml);
+AMLSymbol *analyse_aml_pkg_lead_byte(AMLSymbol *parent, AMLSubstring aml);
 // <pkg_length> := <pkg_lead_byte> | <pkg_lead_byte> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> <byte_data>
-AMLSymbol *analyse_aml_pkg_length(AMLSubstring aml);
+AMLSymbol *analyse_aml_pkg_length(AMLSymbol *parent, AMLSubstring aml);
 // <predicate> := <term_arg>
-AMLSymbol *analyse_aml_predicate(AMLSubstring aml);
+AMLSymbol *analyse_aml_predicate(AMLSymbol *parent, AMLSubstring aml);
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
-AMLSymbol *analyse_aml_prefix_path(AMLSubstring aml);
+AMLSymbol *analyse_aml_prefix_path(AMLSymbol *parent, AMLSubstring aml);
 // <qword_const> := <qword_prefix> <qword_data>
-AMLSymbol *analyse_aml_qword_const(AMLSubstring aml);
+AMLSymbol *analyse_aml_qword_const(AMLSymbol *parent, AMLSubstring aml);
 // <qword_data> := <dword_data> <dword_data>
-AMLSymbol *analyse_aml_qword_data(AMLSubstring aml);
+AMLSymbol *analyse_aml_qword_data(AMLSymbol *parent, AMLSubstring aml);
 // <qword_prefix> := AML_BYTE_QWORD_PREFIX
-AMLSymbol *analyse_aml_qword_prefix(AMLSubstring aml);
+AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <region_len> := <term_arg>
-AMLSymbol *analyse_aml_region_len(AMLSubstring aml);
+AMLSymbol *analyse_aml_region_len(AMLSymbol *parent, AMLSubstring aml);
 // <region_offset> := <term_arg>
-AMLSymbol *analyse_aml_region_offset(AMLSubstring aml);
+AMLSymbol *analyse_aml_region_offset(AMLSymbol *parent, AMLSubstring aml);
 // <region_space>
-AMLSymbol *analyse_aml_region_space(AMLSubstring aml);
+AMLSymbol *analyse_aml_region_space(AMLSymbol *parent, AMLSubstring aml);
 // <release_op> := <ext_op_prefix> <release_op_suffix>
-AMLSymbol *analyse_aml_release_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_release_op(AMLSymbol *parent, AMLSubstring aml);
 // <release_op_suffix> := AML_BYTE_RELEASE_OP
-AMLSymbol *analyse_aml_release_op_suffix(AMLSubstring aml);
+AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <return_op> := AML_BYTE_RETURN_OP
-AMLSymbol *analyse_aml_return_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml);
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
-AMLSymbol *analyse_aml_revision_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_revision_op(AMLSymbol *parent, AMLSubstring aml);
 // <revision_op_suffix> := AML_BYTE_REVISION_OP
-AMLSymbol *analyse_aml_revision_op_suffix(AMLSubstring aml);
+AMLSymbol *analyse_aml_revision_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <root_char> := AML_BYTE_ROOT_CHAR
-AMLSymbol *analyse_aml_root_char(AMLSubstring aml);
+AMLSymbol *analyse_aml_root_char(AMLSymbol *parent, AMLSubstring aml);
 // <scope_op> := AML_TYPE_SCOPE_OP
-AMLSymbol *analyse_aml_scope_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_scope_op(AMLSymbol *parent, AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
-AMLSymbol *analyse_aml_seg_count(AMLSubstring aml);
+AMLSymbol *analyse_aml_seg_count(AMLSymbol *parent, AMLSubstring aml);
 // <shift_count> := <term_arg>
-AMLSymbol *analyse_aml_shift_count(AMLSubstring aml);
+AMLSymbol *analyse_aml_shift_count(AMLSymbol *parent, AMLSubstring aml);
 // <shift_left_op> := AML_BYTE_SHIFT_LEFT
-AMLSymbol *analyse_aml_shift_left_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_shift_left_op(AMLSymbol *parent, AMLSubstring aml);
 // <shift_right_op> := AML_BYTE_SHIFT_RIGHT
-AMLSymbol *analyse_aml_shift_right_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_shift_right_op(AMLSymbol *parent, AMLSubstring aml);
 // <simple_name> := <name_string> | <arg_obj> | <local_obj>
-AMLSymbol *analyse_aml_simple_name(AMLSubstring aml);
+AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml);
 // <size_of_op> := AML_BYTE_SIZE_OF_OP
-AMLSymbol *analyse_aml_size_of_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
-AMLSymbol *analyse_aml_statement_opcode(AMLSubstring aml);
+AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <store_op> := AML_BYTE_STORE_OP
-AMLSymbol *analyse_aml_store_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_store_op(AMLSymbol *parent, AMLSubstring aml);
 // <string> := <string_prefix> <ascii_char_list> <null_char>
-AMLSymbol *analyse_aml_string(AMLSubstring aml);
+AMLSymbol *analyse_aml_string(AMLSymbol *parent, AMLSubstring aml);
 // <string_prefix> := AML_BYTE_STRING_PREFIX
-AMLSymbol *analyse_aml_string_prefix(AMLSubstring aml);
+AMLSymbol *analyse_aml_string_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <subtract_op> := AML_BYTE_SUBTRACT_OP
-AMLSymbol *analyse_aml_subtract_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_subtract_op(AMLSymbol *parent, AMLSubstring aml);
 // <super_name> := <simple_name> | <debug_obj> | <reference_type_opcode>
-AMLSymbol *analyse_aml_super_name(AMLSubstring aml);
+AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml);
 // <sync_flags>
-AMLSymbol *analyse_aml_sync_flags(AMLSubstring aml);
+AMLSymbol *analyse_aml_sync_flags(AMLSymbol *parent, AMLSubstring aml);
 // <target> := <super_name> | <null_name>
-AMLSymbol *analyse_aml_target(AMLSubstring aml);
+AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml);
 // <term_arg> := <expression_op_code> | <data_object> | <arg_obj> | <local_obj>
-AMLSymbol *analyse_aml_term_arg(AMLSubstring aml);
+AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml);
 // <term_arg_list> := Nothing | <term_arg> <term_arg_list>
-AMLSymbol *analyse_aml_term_arg_list(AMLSubstring aml, unsigned int num_of_term_args);
+AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, unsigned int num_of_term_args);
 // <term_list> := Nothing | <term_obj> <term_list>
-AMLSymbol *analyse_aml_term_list(AMLSubstring aml);
+AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
-AMLSymbol *analyse_aml_term_obj(AMLSubstring aml);
+AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml);
 // <time_out> := <word_data>
-AMLSymbol *analyse_aml_time_out(AMLSubstring aml);
+AMLSymbol *analyse_aml_time_out(AMLSymbol *parent, AMLSubstring aml);
 // <to_buffer_op> := AML_BYTE_TO_BUFFER_OP
-AMLSymbol *analyse_aml_to_buffer_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_to_buffer_op(AMLSymbol *parent, AMLSubstring aml);
 // <to_hex_string_op> := AML_BYTE_TO_HEX_STRING_OP
-AMLSymbol *analyse_aml_to_hex_string_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_to_hex_string_op(AMLSymbol *parent, AMLSubstring aml);
 // <while_op> := AML_BYTE_WHILE_OP
-AMLSymbol *analyse_aml_while_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_while_op(AMLSymbol *parent, AMLSubstring aml);
 // <word_const> := <word_prefix> <word_data>
-AMLSymbol *analyse_aml_word_const(AMLSubstring aml);
+AMLSymbol *analyse_aml_word_const(AMLSymbol *parent, AMLSubstring aml);
 // <word_data> := <byte_data> <byte_data>
-AMLSymbol *analyse_aml_word_data(AMLSubstring aml);
+AMLSymbol *analyse_aml_word_data(AMLSymbol *parent, AMLSubstring aml);
 // <word_prefix> := AML_BYTE_WORD_PREFIX
-AMLSymbol *analyse_aml_word_prefix(AMLSubstring aml);
+AMLSymbol *analyse_aml_word_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <zero_op> := AML_BYTE_ZERO_OP
-AMLSymbol *analyse_aml_zero_op(AMLSubstring aml);
+AMLSymbol *analyse_aml_zero_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *create_dsdt_aml_syntax_tree(void);
 void delete_aml_symbol(AMLSymbol *aml_symbol);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
