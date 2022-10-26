@@ -631,6 +631,7 @@ typedef struct _AMLDualNamePath
 {
 	struct _AMLSymbol *dual_name_prefix;
 	struct _AMLSymbol *name_seg[2];
+	char name[9];
 } AMLDualNamePath;
 
 typedef struct _AMLDWordConst

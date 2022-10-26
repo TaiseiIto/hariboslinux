@@ -2402,7 +2402,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			name_segs_char_array[i] = create_char_array_from_chain_string(name_segs_chain_string[i]);
 		}
 		else name_segs_char_array[i] = "";
-		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), dual_name_prefix_char_array);
+		output = create_format_chain_string("%s \"%s\"\n%s", aml_symbol_type_name(aml_symbol->type), aml_symbol->component.dual_name_path.name, dual_name_prefix_char_array);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.dual_name_path.name_seg); i++)if(aml_symbol->component.dual_name_path.name_seg[i])insert_char_array_back(output, output->last_character, name_segs_char_array[i]);
 		if(aml_symbol->component.dual_name_path.dual_name_prefix)
 		{
@@ -6593,6 +6593,7 @@ AMLSymbol *analyse_aml_digit_char(AMLSubstring aml)
 AMLSymbol *analyse_aml_dual_name_path(AMLSubstring aml)
 {
 	AMLSymbol *dual_name_path = malloc(sizeof(*dual_name_path));
+	char *name = dual_name_path->component.dual_name_path.name;
 	dual_name_path->string.initial = aml.initial;
 	dual_name_path->string.length = 0;
 	dual_name_path->type = aml_dual_name_path;
@@ -6606,7 +6607,10 @@ AMLSymbol *analyse_aml_dual_name_path(AMLSubstring aml)
 		dual_name_path->string.length += (*name_seg)->string.length;
 		aml.initial += (*name_seg)->string.length;
 		aml.length -= (*name_seg)->string.length;
+		strcpy(name, (*name_seg)->component.name_seg.name);
+		name += strlen(name);
 	}
+	*name = '\0';
 	return dual_name_path;
 }
 
