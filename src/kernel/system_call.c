@@ -700,6 +700,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_shell(shell, " %02.2x", *aml_byte);
 					printf_shell(shell, "\n");
 					delete_aml_symbol(dsdt_aml_syntax_tree);
+					printf_shell(shell, "DSDT AML syntax tree is deleted.\n");
 					break;
 				default:
 					ERROR(); // Invalid CPU command.
