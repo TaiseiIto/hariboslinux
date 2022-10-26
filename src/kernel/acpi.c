@@ -344,6 +344,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *region_offset_chain_string;
 	ChainString *region_space_chain_string;
 	ChainString *release_op_chain_string;
+	ChainString *release_op_suffix_chain_string;
 	ChainString *reserved_field_chain_string;
 	ChainString *return_op_chain_string;
 	ChainString *revision_op_chain_string;
@@ -561,6 +562,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *region_offset_char_array;
 	char *region_space_char_array;
 	char *release_op_char_array;
+	char *release_op_suffix_char_array;
 	char *reserved_field_char_array;
 	char *return_op_char_array;
 	char *revision_op_char_array;
@@ -4290,6 +4292,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_region_space:
 		output = create_format_chain_string("%s %#04.2x %s\n", aml_symbol_type_name(aml_symbol->type), *aml_symbol->string.initial, region_space_type_name(*aml_symbol->string.initial));
 		break;
+	case aml_release_op:
+		if(aml_symbol->component.release_op.ext_op_prefix)
+		{
+			ext_op_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.release_op.ext_op_prefix);
+			insert_char_front(ext_op_prefix_chain_string, ext_op_prefix_chain_string->first_character, ' ');
+			replace_chain_string(ext_op_prefix_chain_string, "\n", "\n ");
+			ext_op_prefix_char_array = create_char_array_from_chain_string(ext_op_prefix_chain_string);
+		}
+		else ext_op_prefix_char_array = "";
+		if(aml_symbol->component.release_op.release_op_suffix)
+		{
+			release_op_suffix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.release_op.release_op_suffix);
+			insert_char_front(release_op_suffix_chain_string, release_op_suffix_chain_string->first_character, ' ');
+			replace_chain_string(release_op_suffix_chain_string, "\n", "\n ");
+			release_op_suffix_char_array = create_char_array_from_chain_string(release_op_suffix_chain_string);
+		}
+		else release_op_suffix_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), ext_op_prefix_char_array, release_op_suffix_char_array);
+		if(aml_symbol->component.release_op.ext_op_prefix)
+		{
+			delete_chain_string(ext_op_prefix_chain_string);
+			free(ext_op_prefix_char_array);
+		}
+		if(aml_symbol->component.release_op.release_op_suffix)
+		{
+			delete_chain_string(release_op_suffix_chain_string);
+			free(release_op_suffix_char_array);
+		}
+		break;
 	case aml_return_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -5079,6 +5110,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_region_len_name = "RegionLen";
 	static char const * const aml_region_offset_name = "RegionOffset";
 	static char const * const aml_region_space_name = "RegionSpace";
+	static char const * const aml_release_op_name = "ReleaseOp";
 	static char const * const aml_return_op_name = "ReturnOp";
 	static char const * const aml_revision_op_name = "RevisionOp";
 	static char const * const aml_revision_op_suffix_name = "RevisionOpSuffix";
@@ -5342,6 +5374,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_region_offset_name;
 	case aml_region_space:
 		return aml_region_space_name;
+	case aml_release_op:
+		return aml_release_op_name;
 	case aml_return_op:
 		return aml_return_op_name;
 	case aml_revision_op:
@@ -6256,9 +6290,14 @@ AMLSymbol *analyse_aml_def_release(AMLSubstring aml)
 	def_release->string.initial = aml.initial;
 	def_release->string.length = 0;
 	def_release->type = aml_def_release;
-	def_release->component.def_release.release_op = NULL;
-	def_release->component.def_release.mutex_object = NULL;
-	ERROR(); // Unimplemented
+	def_release->component.def_release.release_op = analyse_aml_release_op(aml);
+	def_release->string.length += def_release->component.def_release.release_op->string.length;
+	aml.initial += def_release->component.def_release.release_op->string.length;
+	aml.length -= def_release->component.def_release.release_op->string.length;
+	def_release->component.def_release.mutex_object = analyse_aml_mutex_object(aml);
+	def_release->string.length += def_release->component.def_release.mutex_object->string.length;
+	aml.initial += def_release->component.def_release.mutex_object->string.length;
+	aml.length -= def_release->component.def_release.mutex_object->string.length;
 	return def_release;
 }
 
@@ -7814,6 +7853,22 @@ AMLSymbol *analyse_aml_region_space(AMLSubstring aml)
 	return region_space;
 }
 
+// <release_op> := <ext_op_prefix> <release_op_suffix>
+AMLSymbol *analyse_aml_release_op(AMLSubstring aml)
+{
+	AMLSymbol *release_op = malloc(sizeof(*release_op));
+	release_op->string.initial = aml.initial;
+	release_op->string.length = 0;
+	release_op->type = aml_release_op;
+	release_op->component.release_op.ext_op_prefix = analyse_aml_ext_op_prefix(aml);
+	release_op->string.length += release_op->component.release_op.ext_op_prefix->string.length;
+	aml.initial += release_op->component.release_op.ext_op_prefix->string.length;
+	aml.length -= release_op->component.release_op.ext_op_prefix->string.length;
+	release_op->component.release_op.release_op_suffix = NULL;
+	ERROR(); // Unimplemented
+	return release_op;
+}
+
 // <return_op> := AML_BYTE_RETURN_OP
 AMLSymbol *analyse_aml_return_op(AMLSubstring aml)
 {
@@ -9093,6 +9148,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.region_offset.term_arg)delete_aml_symbol(aml_symbol->component.region_offset.term_arg);
 		break;
 	case aml_region_space:
+		break;
+	case aml_release_op:
+		if(aml_symbol->component.release_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.release_op.ext_op_prefix);
+		if(aml_symbol->component.release_op.release_op_suffix)delete_aml_symbol(aml_symbol->component.release_op.release_op_suffix);
 		break;
 	case aml_return_op:
 		break;

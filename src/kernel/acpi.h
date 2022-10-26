@@ -293,6 +293,7 @@ typedef enum _AMLSymbolType
 	aml_region_len,
 	aml_region_offset,
 	aml_region_space,
+	aml_release_op,
 	aml_return_op,
 	aml_revision_op,
 	aml_revision_op_suffix,
@@ -905,6 +906,12 @@ typedef struct _AMLRegionOffset
 	struct _AMLSymbol *term_arg;
 } AMLRegionOffset;
 
+typedef struct _AMLReleaseOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *release_op_suffix;
+} AMLReleaseOp;
+
 typedef struct _AMLRevisionOp
 {
 	struct _AMLSymbol *ext_op_prefix;
@@ -1085,6 +1092,7 @@ typedef union _AMLComponent
 	AMLQWordData qword_data;
 	AMLRegionLen region_len;
 	AMLRegionOffset region_offset;
+	AMLReleaseOp release_op;
 	AMLRevisionOp revision_op;
 	AMLShiftCount shift_count;
 	AMLSimpleName simple_name;
@@ -1341,6 +1349,8 @@ AMLSymbol *analyse_aml_region_len(AMLSubstring aml);
 AMLSymbol *analyse_aml_region_offset(AMLSubstring aml);
 // <region_space>
 AMLSymbol *analyse_aml_region_space(AMLSubstring aml);
+// <release_op> := <ext_op_prefix> <release_op_suffix>
+AMLSymbol *analyse_aml_release_op(AMLSubstring aml);
 // <return_op> := AML_BYTE_RETURN_OP
 AMLSymbol *analyse_aml_return_op(AMLSubstring aml);
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
