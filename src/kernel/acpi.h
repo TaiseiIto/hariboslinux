@@ -754,6 +754,7 @@ typedef struct _AMLMultiNamePath
 	struct _AMLSymbol *multi_name_prefix;
 	struct _AMLSymbol *seg_count;
 	struct _AMLSymbol **name_seg;
+	char *name;
 } AMLMultiNamePath;
 
 typedef struct _AMLMutexObject
