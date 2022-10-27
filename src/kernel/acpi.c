@@ -7166,7 +7166,7 @@ AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 	aml.length -= method_invocation->component.method_invocation.name_string->string.length;
 	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(method_invocation, aml, 0);
 	WARNING(); // Number of arguments is pseudo
-	printf_serial("def_method = %p\n", get_aml_method(method_invocation->component.method_invocation.name_string->component.name_string.string, method_invocation));
+	printf_serial("def_method = %p\n", get_aml_method(method_invocation->component.method_invocation.name_string->component.name_string.string, method_invocation, NULL));
 	printf_serial("Method name = \"%.*s\"\n", method_invocation->component.method_invocation.name_string->string.length, method_invocation->component.method_invocation.name_string->string.initial);
 	method_invocation->string.length += method_invocation->component.method_invocation.term_arg_list->string.length;
 	aml.initial += method_invocation->component.method_invocation.term_arg_list->string.length;
@@ -9510,7 +9510,7 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 	return acpi_memory_region_descriptor;
 }
 
-AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_symbol)
+AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_symbol, AMLSymbol const *searched)
 {
 	AMLSymbol const *def_method = NULL;
 	AMLSymbol const *def_method_in_def_device = NULL;
@@ -9525,54 +9525,55 @@ AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_sy
 	switch(aml_symbol->type)
 	{
 	case aml_def_device:
-		def_method = get_aml_method(method_name, aml_symbol->component.def_device.term_list);
+		if(aml_symbol->component.def_device.term_list != searched)def_method = get_aml_method(method_name, aml_symbol->component.def_device.term_list, aml_symbol);
 		break;
 	case aml_def_if_else:
-		def_method = get_aml_method(method_name, aml_symbol->component.def_if_else.term_list);
+		if(aml_symbol->component.def_if_else.term_list != searched)def_method = get_aml_method(method_name, aml_symbol->component.def_if_else.term_list, aml_symbol);
 		break;
 	case aml_def_method:
 		if(!strcmp(method_name, aml_symbol->component.def_method.name_string->component.name_string.string))return aml_symbol;
 		break;
 	case aml_def_scope:
-		def_method = get_aml_method(method_name, aml_symbol->component.def_scope.term_list);
+		if(aml_symbol->component.def_scope.term_list != searched)def_method = get_aml_method(method_name, aml_symbol->component.def_scope.term_list, aml_symbol);
 		break;
 	case aml_def_while:
-		def_method = get_aml_method(method_name, aml_symbol->component.def_while.term_list);
+		if(aml_symbol->component.def_while.term_list != searched)def_method = get_aml_method(method_name, aml_symbol->component.def_while.term_list, aml_symbol);
 		break;
 	case aml_name_space_modifier_obj:
-		def_method = get_aml_method(method_name, aml_symbol->component.name_space_modifier_obj.def_scope);
+		if(aml_symbol->component.name_space_modifier_obj.def_scope != searched)def_method = get_aml_method(method_name, aml_symbol->component.name_space_modifier_obj.def_scope, aml_symbol);
 		break;
 	case aml_named_obj:
-		def_method = get_aml_method(method_name, aml_symbol->component.named_obj.def_method);
-		def_method_in_def_device = get_aml_method(method_name, aml_symbol->component.named_obj.def_device);
+		if(aml_symbol->component.named_obj.def_method != searched)def_method = get_aml_method(method_name, aml_symbol->component.named_obj.def_method, aml_symbol);
+		if(aml_symbol->component.named_obj.def_device != searched)def_method_in_def_device = get_aml_method(method_name, aml_symbol->component.named_obj.def_device, aml_symbol);
 		break;
 	case aml_object:
-		def_method = get_aml_method(method_name, aml_symbol->component.object.named_obj);
+		if(aml_symbol->component.object.named_obj != searched)def_method = get_aml_method(method_name, aml_symbol->component.object.named_obj, aml_symbol);
 		break;
 	case aml_statement_opcode:
-		def_method_in_def_if_else = get_aml_method(method_name, aml_symbol->component.statement_opcode.def_if_else);
-		def_method_in_def_while = get_aml_method(method_name, aml_symbol->component.statement_opcode.def_while);
+		if(aml_symbol->component.statement_opcode.def_if_else != searched)def_method_in_def_if_else = get_aml_method(method_name, aml_symbol->component.statement_opcode.def_if_else, aml_symbol);
+		if(aml_symbol->component.statement_opcode.def_while != searched)def_method_in_def_while = get_aml_method(method_name, aml_symbol->component.statement_opcode.def_while, aml_symbol);
 		break;
 	case aml_term_list:
-		def_method_in_term_list = get_aml_method(method_name, aml_symbol->component.term_list.term_list);
-		def_method_in_term_obj = get_aml_method(method_name, aml_symbol->component.term_list.term_obj);
+		if(aml_symbol->component.term_list.term_list != searched)def_method_in_term_list = get_aml_method(method_name, aml_symbol->component.term_list.term_list, aml_symbol);
+		if(aml_symbol->component.term_list.term_obj != searched)def_method_in_term_obj = get_aml_method(method_name, aml_symbol->component.term_list.term_obj, aml_symbol);
 		break;
 	case aml_term_obj:
-		def_method_in_object = get_aml_method(method_name, aml_symbol->component.term_obj.object);
-		def_method_in_statement_opcode = get_aml_method(method_name, aml_symbol->component.term_obj.statement_opcode);
+		if(aml_symbol->component.term_obj.object != searched)def_method_in_object = get_aml_method(method_name, aml_symbol->component.term_obj.object, aml_symbol);
+		if(aml_symbol->component.term_obj.statement_opcode != searched)def_method_in_statement_opcode = get_aml_method(method_name, aml_symbol->component.term_obj.statement_opcode, aml_symbol);
 		break;
 	default:
 		break;
 	}
 	if(def_method)return def_method;
-	if(def_method_in_def_device)return def_method_in_def_device;
-	if(def_method_in_def_if_else)return def_method_in_def_if_else;
-	if(def_method_in_def_while)return def_method_in_def_while;
-	if(def_method_in_term_list)return def_method_in_term_list;
-	if(def_method_in_term_obj)return def_method_in_term_obj;
-	if(def_method_in_object)return def_method_in_object;
-	if(def_method_in_statement_opcode)return def_method_in_statement_opcode;
-	return get_aml_method(method_name, aml_symbol->parent);
+	else if(def_method_in_def_device)return def_method_in_def_device;
+	else if(def_method_in_def_if_else)return def_method_in_def_if_else;
+	else if(def_method_in_def_while)return def_method_in_def_while;
+	else if(def_method_in_term_list)return def_method_in_term_list;
+	else if(def_method_in_term_obj)return def_method_in_term_obj;
+	else if(def_method_in_object)return def_method_in_object;
+	else if(def_method_in_statement_opcode)return def_method_in_statement_opcode;
+	else if(aml_symbol->parent != searched)return get_aml_method(method_name, aml_symbol->parent, aml_symbol);
+	else return NULL;
 }
 
 AMLSubstring get_dsdt_aml(void)
