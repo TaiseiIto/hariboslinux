@@ -3368,6 +3368,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_l_less_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_l_not_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_l_or_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -5102,6 +5105,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_l_equal_op_name = "LEqualOp";
 	static char const * const aml_l_greater_op_name = "LGreaterOp";
 	static char const * const aml_l_less_op_name = "LLessOp";
+	static char const * const aml_l_not_op_name = "LNotOp";
 	static char const * const aml_l_or_op_name = "LOrOp";
 	static char const * const aml_local_obj_name = "LocalObj";
 	static char const * const aml_local_op_name = "LocalOp";
@@ -5326,6 +5330,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_l_greater_op_name;
 	case aml_l_less_op:
 		return aml_l_less_op_name;
+	case aml_l_not_op:
+		return aml_l_not_op_name;
 	case aml_l_or_op:
 		return aml_l_or_op_name;
 	case aml_local_obj:
@@ -6210,8 +6216,14 @@ AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml)
 	def_l_not->string.initial = aml.initial;
 	def_l_not->string.length = 0;
 	def_l_not->type = aml_def_l_not;
-	def_l_not->component.def_l_not.l_not_op = NULL;
-	def_l_not->component.def_l_not.operand = NULL;
+	def_l_not->component.def_l_not.l_not_op = analyse_aml_l_not_op(def_l_not, aml);
+	def_l_not->string.length = def_l_not->component.def_l_not.l_not_op->string.length;
+	aml.initial += def_l_not->component.def_l_not.l_not_op->string.length;
+	aml.length -= def_l_not->component.def_l_not.l_not_op->string.length;
+	def_l_not->component.def_l_not.operand = analyse_aml_operand(def_l_not, aml);
+	def_l_not->string.length = def_l_not->component.def_l_not.operand->string.length;
+	aml.initial += def_l_not->component.def_l_not.operand->string.length;
+	aml.length -= def_l_not->component.def_l_not.operand->string.length;
 	ERROR(); // Unimplemented
 	return def_l_not;
 }
@@ -6879,6 +6891,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_l_less = analyse_aml_def_l_less(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_less->string.length;
 		break;
+	case AML_BYTE_L_NOT_OP:
+		expression_opcode->component.expression_opcode.def_l_not = analyse_aml_def_l_not(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_not->string.length;
+		break;
 	case AML_BYTE_L_OR_OP:
 		expression_opcode->component.expression_opcode.def_l_or = analyse_aml_def_l_or(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_or->string.length;
@@ -7129,6 +7145,18 @@ AMLSymbol *analyse_aml_l_less_op(AMLSymbol *parent, AMLSubstring aml)
 	l_less_op->type = aml_l_less_op;
 	if(*l_less_op->string.initial != AML_BYTE_L_LESS_OP)ERROR(); // Incorrect l_less_op
 	return l_less_op;
+}
+
+// <l_not_op> := AML_BYTE_L_NOT_OP
+AMLSymbol *analyse_aml_l_not_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *l_not_op = malloc(sizeof(*l_not_op));
+	l_not_op->parent = parent;
+	l_not_op->string.initial = aml.initial;
+	l_not_op->string.length = 1;
+	l_not_op->type = aml_l_not_op;
+	if(*l_not_op->string.initial != AML_BYTE_L_NOT_OP)ERROR(); // Incorrect l_not_op
+	return l_not_op;
 }
 
 // <l_or_op> := AML_BYTE_L_OR_OP
@@ -8570,6 +8598,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_EQUAL_OP:
 	case AML_BYTE_L_GREATER_OP:
 	case AML_BYTE_L_LESS_OP:
+	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_SHIFT_LEFT_OP:
@@ -8646,6 +8675,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, unsign
 	case AML_BYTE_L_EQUAL_OP:
 	case AML_BYTE_L_GREATER_OP:
 	case AML_BYTE_L_LESS_OP:
+	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_ONES_OP:
 	case AML_BYTE_ONE_OP:
@@ -8705,6 +8735,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 		case AML_BYTE_L_EQUAL_OP:
 		case AML_BYTE_L_GREATER_OP:
 		case AML_BYTE_L_LESS_OP:
+		case AML_BYTE_L_NOT_OP:
 		case AML_BYTE_L_OR_OP:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
@@ -8762,6 +8793,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_EQUAL_OP:
 	case AML_BYTE_L_GREATER_OP:
 	case AML_BYTE_L_LESS_OP:
+	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_SHIFT_LEFT_OP:
@@ -9286,6 +9318,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_l_greater_op:
 		break;
 	case aml_l_less_op:
+		break;
+	case aml_l_not_op:
 		break;
 	case aml_l_or_op:
 		break;

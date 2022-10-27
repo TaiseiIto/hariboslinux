@@ -251,6 +251,7 @@ typedef enum _AMLSymbolType
 	aml_l_equal_op,
 	aml_l_greater_op,
 	aml_l_less_op,
+	aml_l_not_op,
 	aml_l_or_op,
 	aml_local_obj,
 	aml_local_op,
@@ -1282,6 +1283,8 @@ AMLSymbol *analyse_aml_l_equal_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_l_greater_op(AMLSymbol *parent, AMLSubstring aml);
 // <l_less_op> := AML_BYTE_L_LESS_OP
 AMLSymbol *analyse_aml_l_less_op(AMLSymbol *parent, AMLSubstring aml);
+// <l_not_op> := AML_BYTE_L_NOT_OP
+AMLSymbol *analyse_aml_l_not_op(AMLSymbol *parent, AMLSubstring aml);
 // <l_or_op> := AML_BYTE_L_OR_OP
 AMLSymbol *analyse_aml_l_or_op(AMLSymbol *parent, AMLSubstring aml);
 // <local_obj> := <local_op>
