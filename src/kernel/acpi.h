@@ -1433,6 +1433,7 @@ FADT const *get_fadt(void);
 unsigned int get_num_of_sdt_headers(void);
 RSDP const *get_rsdp(void);
 ACPITableHeader const *get_rsdt_header(void);
+AMLSymbol const *get_root_aml_symbol(AMLSymbol const *aml_symbol);
 ACPITableHeader const *get_sdt_header(char const *signature);
 ACPITableHeader const * const *get_sdt_headers(void);
 void print_acpi_table_header(ACPITableHeader acpi_table_header, char const *name);

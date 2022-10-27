@@ -7166,6 +7166,7 @@ AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 	aml.length -= method_invocation->component.method_invocation.name_string->string.length;
 	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(method_invocation, aml, 0);
 	WARNING(); // Number of arguments is pseudo
+	printf_serial("root_aml_symbol = %p\n", get_root_aml_symbol(method_invocation));
 	printf_serial("Method name = \"%.*s\"\n", method_invocation->component.method_invocation.name_string->string.length, method_invocation->component.method_invocation.name_string->string.initial);
 	method_invocation->string.length += method_invocation->component.method_invocation.term_arg_list->string.length;
 	aml.initial += method_invocation->component.method_invocation.term_arg_list->string.length;
@@ -8684,6 +8685,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 			break;
 		}
 	}
+	if(!parent)printf_serial("Root TermList = %p\n", term_list);
 	return term_list;
 }
 
@@ -9582,6 +9584,11 @@ ACPITableHeader const *get_rsdt_header(void)
 		ERROR(); // RSDT is incorrect!
 		return NULL;
 	}
+}
+
+AMLSymbol const *get_root_aml_symbol(AMLSymbol const *aml_symbol)
+{
+	return aml_symbol->parent ? get_root_aml_symbol(aml_symbol->parent) : aml_symbol;
 }
 
 ACPITableHeader const *get_sdt_header(char const *signature)
