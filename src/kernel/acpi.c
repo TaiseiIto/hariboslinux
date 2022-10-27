@@ -4142,6 +4142,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(term_arg_char_array);
 		}
 		break;
+	case aml_or_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_package_element:
 		if(aml_symbol->component.package_element.data_ref_object)
 		{
@@ -5186,6 +5189,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_op_region_op_name = "OpRegionOp";
 	static char const * const aml_op_region_op_suffix_name = "OpRegionOpSuffix";
 	static char const * const aml_operand_name = "Operand";
+	static char const * const aml_or_op_name = "OrOp";
 	static char const * const aml_package_element_name = "PackageElement";
 	static char const * const aml_package_element_list_name = "PackageElementList";
 	static char const * const aml_package_op_name = "PackageOp";
@@ -5443,6 +5447,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_op_region_op_suffix_name;
 	case aml_operand:
 		return aml_operand_name;
+	case aml_or_op:
+		return aml_or_op_name;
 	case aml_package_element:
 		return aml_package_element_name;
 	case aml_package_element_list:
@@ -6420,13 +6426,21 @@ AMLSymbol *analyse_aml_def_or(AMLSymbol *parent, AMLSubstring aml)
 	def_or->string.initial = aml.initial;
 	def_or->string.length = 0;
 	def_or->type = aml_def_or;
-	def_or->component.def_or.or_op = NULL;
+	def_or->component.def_or.or_op = analyse_aml_or_op(def_or, aml);
+	def_or->string.length += def_or->component.def_or.or_op->string.length;
+	aml.initial += def_or->component.def_or.or_op->string.length;
+	aml.length -= def_or->component.def_or.or_op->string.length;
 	for(AMLSymbol **operand = def_or->component.def_or.operand; operand != def_or->component.def_or.operand + _countof(def_or->component.def_or.operand); operand++)
 	{
-		*operand = NULL;
+		*operand = analyse_aml_operand(def_or, aml);
+		def_or->string.length += (*operand)->string.length;
+		aml.initial += (*operand)->string.length;
+		aml.length -= (*operand)->string.length;
 	}
-	def_or->component.def_or.target = NULL;
-	ERROR(); // Unimplemented
+	def_or->component.def_or.target = analyse_aml_target(def_or, aml);
+	def_or->string.length += def_or->component.def_or.target->string.length;
+	aml.initial += def_or->component.def_or.target->string.length;
+	aml.length -= def_or->component.def_or.target->string.length;
 	return def_or;
 }
 
@@ -6969,6 +6983,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_OR_OP:
 		expression_opcode->component.expression_opcode.def_l_or = analyse_aml_def_l_or(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_or->string.length;
+		break;
+	case AML_BYTE_OR_OP:
+		expression_opcode->component.expression_opcode.def_or = analyse_aml_def_or(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_or->string.length;
 		break;
 	case AML_BYTE_PACKAGE_OP:
 		expression_opcode->component.expression_opcode.def_package = analyse_aml_def_package(expression_opcode, aml);
@@ -7851,6 +7869,18 @@ AMLSymbol *analyse_aml_operand(AMLSymbol *parent, AMLSubstring aml)
 	return operand;
 }
 
+// <or_op> := AML_BYTE_OR_OP
+AMLSymbol *analyse_aml_or_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *or_op = malloc(sizeof(*or_op));
+	or_op->parent = parent;
+	or_op->string.initial = aml.initial;
+	or_op->string.length = 1;
+	or_op->type = aml_or_op;
+	if(*or_op->string.initial != AML_BYTE_OR_OP)ERROR(); // Incorrect or_op
+	return or_op;
+}
+
 // <package_element> := <data_ref_object> | <name_string>
 AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -8671,6 +8701,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_SHIFT_LEFT_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
@@ -8748,6 +8779,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, unsign
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_OR_OP:
 	case AML_BYTE_ONES_OP:
 	case AML_BYTE_ONE_OP:
 	case AML_BYTE_PACKAGE_OP:
@@ -8808,6 +8840,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 		case AML_BYTE_L_LESS_OP:
 		case AML_BYTE_L_NOT_OP:
 		case AML_BYTE_L_OR_OP:
+		case AML_BYTE_OR_OP:
 		case AML_BYTE_METHOD_OP:
 		case AML_BYTE_NAME_OP:
 		case AML_BYTE_PACKAGE_OP:
@@ -8866,6 +8899,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_SHIFT_LEFT_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
@@ -9505,6 +9539,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_operand:
 		if(aml_symbol->component.operand.term_arg)delete_aml_symbol(aml_symbol->component.operand.term_arg);
+		break;
+	case aml_or_op:
 		break;
 	case aml_package_element:
 		if(aml_symbol->component.package_element.data_ref_object)delete_aml_symbol(aml_symbol->component.package_element.data_ref_object);

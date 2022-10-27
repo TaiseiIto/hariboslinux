@@ -282,6 +282,7 @@ typedef enum _AMLSymbolType
 	aml_op_region_op,
 	aml_op_region_op_suffix,
 	aml_operand,
+	aml_or_op,
 	aml_package_element,
 	aml_package_element_list,
 	aml_package_op,
@@ -1354,6 +1355,8 @@ AMLSymbol *analyse_aml_op_region_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_op_region_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <operand> := <term_arg>
 AMLSymbol *analyse_aml_operand(AMLSymbol *parent, AMLSubstring aml);
+// <or_op> := AML_BYTE_OR_OP
+AMLSymbol *analyse_aml_or_op(AMLSymbol *parent, AMLSubstring aml);
 // <package_element> := <data_ref_object> | <name_string>
 AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml);
 // <package_element_list> := Nothing | <package_element> <package_element_list>
