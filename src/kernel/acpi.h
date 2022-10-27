@@ -1427,6 +1427,7 @@ AMLSymbol *analyse_aml_zero_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *create_dsdt_aml_syntax_tree(void);
 void delete_aml_symbol(AMLSymbol *aml_symbol);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
+AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_symbol);
 AMLSubstring get_dsdt_aml(void);
 ACPITableHeader const *get_dsdt_header(void);
 FADT const *get_fadt(void);
