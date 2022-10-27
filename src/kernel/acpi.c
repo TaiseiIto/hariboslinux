@@ -7156,6 +7156,8 @@ AMLSymbol *analyse_aml_method_flags(AMLSymbol *parent, AMLSubstring aml)
 AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 {
 	AMLSymbol *method_invocation = malloc(sizeof(*method_invocation));
+	AMLSymbol const *def_method;
+	unsigned char num_of_args;
 	method_invocation->parent = parent;
 	method_invocation->string.initial = aml.initial;
 	method_invocation->string.length = 0;
@@ -7164,10 +7166,15 @@ AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 	method_invocation->string.length += method_invocation->component.method_invocation.name_string->string.length;
 	aml.initial += method_invocation->component.method_invocation.name_string->string.length;
 	aml.length -= method_invocation->component.method_invocation.name_string->string.length;
-	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(method_invocation, aml, 0);
-	WARNING(); // Number of arguments is pseudo
-	printf_serial("def_method = %p\n", get_aml_method(method_invocation->component.method_invocation.name_string->component.name_string.string, method_invocation, NULL));
-	printf_serial("Method name = \"%.*s\"\n", method_invocation->component.method_invocation.name_string->string.length, method_invocation->component.method_invocation.name_string->string.initial);
+	def_method = get_aml_method(method_invocation->component.method_invocation.name_string->component.name_string.string, method_invocation, NULL);
+	if(def_method)num_of_args = def_method->component.def_method.method_flags->component.method_flags.arg_count;
+	else
+	{
+		WARNING();
+		printf_serial("Undefined method \"%s\" is called.\n", method_invocation->component.method_invocation.name_string->component.name_string.string);
+		num_of_args = 0;
+	}
+	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(method_invocation, aml, num_of_args);
 	method_invocation->string.length += method_invocation->component.method_invocation.term_arg_list->string.length;
 	aml.initial += method_invocation->component.method_invocation.term_arg_list->string.length;
 	aml.length -= method_invocation->component.method_invocation.term_arg_list->string.length;
