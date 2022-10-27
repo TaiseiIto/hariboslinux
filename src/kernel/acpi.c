@@ -6283,7 +6283,6 @@ AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml)
 	def_l_not->string.length = def_l_not->component.def_l_not.operand->string.length;
 	aml.initial += def_l_not->component.def_l_not.operand->string.length;
 	aml.length -= def_l_not->component.def_l_not.operand->string.length;
-	ERROR(); // Unimplemented
 	return def_l_not;
 }
 
