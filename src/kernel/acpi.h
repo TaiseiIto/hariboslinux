@@ -215,6 +215,7 @@ typedef enum _AMLSymbolType
 	aml_def_mutex,
 	aml_def_name,
 	aml_def_op_region,
+	aml_def_or,
 	aml_def_package,
 	aml_def_release,
 	aml_def_return,
@@ -542,6 +543,13 @@ typedef struct _AMLDefOpRegion
 	struct _AMLSymbol *region_offset;
 	struct _AMLSymbol *region_len;
 } AMLDefOpRegion;
+
+typedef struct _AMLDefOp
+{
+	struct _AMLSymbol *or_op;
+	struct _AMLSymbol *operand[2];
+	struct _AMLSymbol *target;
+} AMLDefOr;
 
 typedef struct _AMLDefPackage
 {
@@ -1061,6 +1069,7 @@ typedef union _AMLComponent
 	AMLDefMutex def_mutex;
 	AMLDefName def_name;
 	AMLDefOpRegion def_op_region;
+	AMLDefOr def_or;
 	AMLDefPackage def_package;
 	AMLDefRelease def_release;
 	AMLDefReturn def_return;
@@ -1211,6 +1220,8 @@ AMLSymbol *analyse_aml_def_mutex(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_name(AMLSymbol *parent, AMLSubstring aml);
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
 AMLSymbol *analyse_aml_def_op_region(AMLSymbol *parent, AMLSubstring aml);
+// <def_or> := <or_op> <operand> <operand> <target>
+AMLSymbol *analyse_aml_def_or(AMLSymbol *parent, AMLSubstring aml);
 // <def_package> := <package_op> <pkg_length> <num_elements> <package_element_list>
 AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml);
 // <def_release> := <release_op> <mutex_object>

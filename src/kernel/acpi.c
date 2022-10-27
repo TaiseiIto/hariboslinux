@@ -328,6 +328,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *op_region_op_chain_string;
 	ChainString *op_region_op_suffix_chain_string;
 	ChainString *operand_chain_string;
+	ChainString *or_op_chain_string;
 	ChainString *output;
 	ChainString *package_element_chain_string;
 	ChainString *package_element_list_chain_string;
@@ -548,6 +549,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *op_region_op_char_array;
 	char *op_region_op_suffix_char_array;
 	char *operand_char_array;
+	char *or_op_char_array;
 	char *package_element_char_array;
 	char *package_element_list_char_array;
 	char *package_op_char_array;
@@ -1839,6 +1841,54 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(region_len_chain_string);
 			free(region_len_char_array);
 		}
+		break;
+	case aml_def_or:
+		operands_chain_string = malloc(_countof(aml_symbol->component.def_or.operand) * sizeof(*operands_chain_string));
+		operands_char_array = malloc(_countof(aml_symbol->component.def_or.operand) * sizeof(*operands_char_array));
+		if(aml_symbol->component.def_or.or_op)
+		{
+			or_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_or.or_op);
+			insert_char_front(or_op_chain_string, or_op_chain_string->first_character, ' ');
+			replace_chain_string(or_op_chain_string, "\n", "\n ");
+			or_op_char_array = create_char_array_from_chain_string(or_op_chain_string);
+		}
+		else or_op_char_array = "";
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_or.operand); i++)if(aml_symbol->component.def_or.operand[i])
+		{
+			operands_chain_string[i] = aml_symbol_to_chain_string(aml_symbol->component.def_or.operand[i]);
+			insert_char_front(operands_chain_string[i], operands_chain_string[i]->first_character, ' ');
+			replace_chain_string(operands_chain_string[i], "\n", "\n ");
+			operands_char_array[i] = create_char_array_from_chain_string(operands_chain_string[i]);
+		}
+		else operands_char_array[i] = "";
+		if(aml_symbol->component.def_or.target)
+		{
+			target_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_or.target);
+			insert_char_front(target_chain_string, target_chain_string->first_character, ' ');
+			replace_chain_string(target_chain_string, "\n", "\n ");
+			target_char_array = create_char_array_from_chain_string(target_chain_string);
+		}
+		else target_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), or_op_char_array);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_or.operand); i++)if(aml_symbol->component.def_or.operand[i])insert_char_array_back(output, output->last_character, operands_char_array[i]);
+		insert_char_array_back(output, output->last_character, target_char_array);
+		if(aml_symbol->component.def_or.or_op)
+		{
+			delete_chain_string(or_op_chain_string);
+			free(or_op_char_array);
+		}
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_or.operand); i++)if(aml_symbol->component.def_or.operand[i])
+		{
+			delete_chain_string(operands_chain_string[i]);
+			free(operands_char_array[i]);
+		}
+		if(aml_symbol->component.def_or.target)
+		{
+			delete_chain_string(target_chain_string);
+			free(target_char_array);
+		}
+		free(operands_chain_string);
+		free(operands_char_array);
 		break;
 	case aml_def_package:
 		if(aml_symbol->component.def_package.package_op)
@@ -5069,6 +5119,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_mutex_name = "DefMutex";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
+	static char const * const aml_def_or_name = "DefOr";
 	static char const * const aml_def_package_name = "DefPackage";
 	static char const * const aml_def_release_name = "DefRelease";
 	static char const * const aml_def_return_name = "DefReturn";
@@ -5258,6 +5309,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_name_name;
 	case aml_def_op_region:
 		return aml_def_op_region_name;
+	case aml_def_or:
+		return aml_def_or_name;
 	case aml_def_package:
 		return aml_def_package_name;
 	case aml_def_release:
@@ -6357,6 +6410,24 @@ AMLSymbol *analyse_aml_def_op_region(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_op_region->component.def_op_region.region_len->string.length;
 	aml.length -= def_op_region->component.def_op_region.region_len->string.length;
 	return def_op_region;
+}
+
+// <def_or> := <or_op> <operand> <operand> <target>
+AMLSymbol *analyse_aml_def_or(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_or = malloc(sizeof(*def_or));
+	def_or->parent = parent;
+	def_or->string.initial = aml.initial;
+	def_or->string.length = 0;
+	def_or->type = aml_def_or;
+	def_or->component.def_or.or_op = NULL;
+	for(AMLSymbol **operand = def_or->component.def_or.operand; operand != def_or->component.def_or.operand + _countof(def_or->component.def_or.operand); operand++)
+	{
+		*operand = NULL;
+	}
+	def_or->component.def_or.target = NULL;
+	ERROR(); // Unimplemented
+	return def_or;
 }
 
 // <def_package> := <package_op> <pkg_length> <num_elements> <package_element_list>
@@ -9138,6 +9209,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_op_region.region_space)delete_aml_symbol(aml_symbol->component.def_op_region.region_space);
 		if(aml_symbol->component.def_op_region.region_offset)delete_aml_symbol(aml_symbol->component.def_op_region.region_offset);
 		if(aml_symbol->component.def_op_region.region_len)delete_aml_symbol(aml_symbol->component.def_op_region.region_len);
+		break;
+	case aml_def_or:
+		if(aml_symbol->component.def_or.or_op)delete_aml_symbol(aml_symbol->component.def_or.or_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_or.operand); i++)if(aml_symbol->component.def_or.operand[i])delete_aml_symbol(aml_symbol->component.def_or.operand[i]);
+		if(aml_symbol->component.def_or.target)delete_aml_symbol(aml_symbol->component.def_or.target);
 		break;
 	case aml_def_package:
 		if(aml_symbol->component.def_package.package_op)delete_aml_symbol(aml_symbol->component.def_package.package_op);
