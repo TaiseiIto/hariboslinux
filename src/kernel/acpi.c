@@ -6276,11 +6276,11 @@ AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml)
 	def_l_not->string.length = 0;
 	def_l_not->type = aml_def_l_not;
 	def_l_not->component.def_l_not.l_not_op = analyse_aml_l_not_op(def_l_not, aml);
-	def_l_not->string.length = def_l_not->component.def_l_not.l_not_op->string.length;
+	def_l_not->string.length += def_l_not->component.def_l_not.l_not_op->string.length;
 	aml.initial += def_l_not->component.def_l_not.l_not_op->string.length;
 	aml.length -= def_l_not->component.def_l_not.l_not_op->string.length;
 	def_l_not->component.def_l_not.operand = analyse_aml_operand(def_l_not, aml);
-	def_l_not->string.length = def_l_not->component.def_l_not.operand->string.length;
+	def_l_not->string.length += def_l_not->component.def_l_not.operand->string.length;
 	aml.initial += def_l_not->component.def_l_not.operand->string.length;
 	aml.length -= def_l_not->component.def_l_not.operand->string.length;
 	return def_l_not;
