@@ -209,6 +209,7 @@ typedef enum _AMLSymbolType
 	aml_def_l_equal,
 	aml_def_l_greater,
 	aml_def_l_less,
+	aml_def_l_not,
 	aml_def_l_or,
 	aml_def_method,
 	aml_def_mutex,
@@ -496,6 +497,12 @@ typedef struct _AMLDefLLess
 	struct _AMLSymbol *l_less_op;
 	struct _AMLSymbol *operand[2];
 } AMLDefLLess;
+
+typedef struct _AMLDefLNot
+{
+	struct _AMLSymbol *l_not_op;
+	struct _AMLSymbol *operand;
+} AMLDefLNot;
 
 typedef struct _AMLDefLOr
 {
@@ -1047,6 +1054,7 @@ typedef union _AMLComponent
 	AMLDefLEqual def_l_equal;
 	AMLDefLGreater def_l_greater;
 	AMLDefLLess def_l_less;
+	AMLDefLNot def_l_not;
 	AMLDefLOr def_l_or;
 	AMLDefMethod def_method;
 	AMLDefMutex def_mutex;
@@ -1190,6 +1198,8 @@ AMLSymbol *analyse_aml_def_l_equal(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_l_greater(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_less> := <l_less_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_less(AMLSymbol *parent, AMLSubstring aml);
+// <def_l_not> := <l_not_op> <operand>
+AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_or> := <l_or_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_or(AMLSymbol *parent, AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>

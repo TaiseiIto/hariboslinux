@@ -297,6 +297,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *l_equal_op_chain_string;
 	ChainString *l_greater_op_chain_string;
 	ChainString *l_less_op_chain_string;
+	ChainString *l_not_op_chain_string;
 	ChainString *l_or_op_chain_string;
 	ChainString *lead_name_char_chain_string;
 	ChainString *local_obj_chain_string;
@@ -516,6 +517,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *l_equal_op_char_array;
 	char *l_greater_op_char_array;
 	char *l_less_op_char_array;
+	char *l_not_op_char_array;
 	char *l_or_op_char_array;
 	char *lead_name_char_char_array;
 	char *local_obj_char_array;
@@ -1554,6 +1556,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		free(operands_chain_string);
 		free(operands_char_array);
+		break;
+	case aml_def_l_not:
+		if(aml_symbol->component.def_l_not.l_not_op)
+		{
+			l_not_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_l_not.l_not_op);
+			insert_char_front(l_not_op_chain_string, l_not_op_chain_string->first_character, ' ');
+			replace_chain_string(l_not_op_chain_string, "\n", "\n ");
+			l_not_op_char_array = create_char_array_from_chain_string(l_not_op_chain_string);
+		}
+		else l_not_op_char_array = "";
+		if(aml_symbol->component.def_l_not.operand)
+		{
+			operand_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_l_not.operand);
+			insert_char_front(operand_chain_string, operand_chain_string->first_character, ' ');
+			replace_chain_string(operand_chain_string, "\n", "\n ");
+			operand_char_array = create_char_array_from_chain_string(operand_chain_string);
+		}
+		else operand_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), l_not_op_char_array, operand_char_array);
+		if(aml_symbol->component.def_l_not.l_not_op)
+		{
+			delete_chain_string(l_not_op_chain_string);
+			free(l_not_op_char_array);
+		}
+		if(aml_symbol->component.def_l_not.operand)
+		{
+			delete_chain_string(operand_chain_string);
+			free(operand_char_array);
+		}
 		break;
 	case aml_def_l_or:
 		operands_chain_string = malloc(_countof(aml_symbol->component.def_l_or.operand) * sizeof(*operands_chain_string));
@@ -5029,6 +5060,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_l_equal_name = "DefLEqual";
 	static char const * const aml_def_l_greater_name = "DefLGreater";
 	static char const * const aml_def_l_less_name = "DefLLess";
+	static char const * const aml_def_l_not_name = "DefLNot";
 	static char const * const aml_def_l_or_name = "DefLOr";
 	static char const * const aml_def_method_name = "DefMethod";
 	static char const * const aml_def_mutex_name = "DefMutex";
@@ -5210,6 +5242,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_l_greater_name;
 	case aml_def_l_less:
 		return aml_def_l_less_name;
+	case aml_def_l_not:
+		return aml_def_l_not_name;
 	case aml_def_l_or:
 		return aml_def_l_or_name;
 	case aml_def_method:
@@ -6166,6 +6200,20 @@ AMLSymbol *analyse_aml_def_l_less(AMLSymbol *parent, AMLSubstring aml)
 		aml.length -= def_l_less->component.def_l_less.operand[i]->string.length;
 	}
 	return def_l_less;
+}
+
+// <def_l_not> := <l_not_op> <operand>
+AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_l_not = malloc(sizeof(*def_l_not));
+	def_l_not->parent = parent;
+	def_l_not->string.initial = aml.initial;
+	def_l_not->string.length = 0;
+	def_l_not->type = aml_def_l_not;
+	def_l_not->component.def_l_not.l_not_op = NULL;
+	def_l_not->component.def_l_not.operand = NULL;
+	ERROR(); // Unimplemented
+	return def_l_not;
 }
 
 // <def_l_or> := <l_or_op> <operand> <operand>
@@ -8692,7 +8740,6 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 			break;
 		}
 	}
-	if(!parent)printf_serial("Root TermList = %p\n", term_list);
 	return term_list;
 }
 
@@ -9027,6 +9074,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_def_l_less:
 		if(aml_symbol->component.def_l_less.l_less_op)delete_aml_symbol(aml_symbol->component.def_l_less.l_less_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_less.operand); i++)if(aml_symbol->component.def_l_less.operand[i])delete_aml_symbol(aml_symbol->component.def_l_less.operand[i]);
+		break;
+	case aml_def_l_not:
+		if(aml_symbol->component.def_l_not.l_not_op)delete_aml_symbol(aml_symbol->component.def_l_not.l_not_op);
+		if(aml_symbol->component.def_l_not.operand)delete_aml_symbol(aml_symbol->component.def_l_not.operand);
 		break;
 	case aml_def_l_or:
 		if(aml_symbol->component.def_l_or.l_or_op)delete_aml_symbol(aml_symbol->component.def_l_or.l_or_op);
