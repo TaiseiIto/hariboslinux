@@ -7820,7 +7820,7 @@ AMLSymbol *analyse_aml_null_char(AMLSymbol *parent, AMLSubstring aml)
 	null_char->string.initial = aml.initial;
 	null_char->string.length = 1;
 	null_char->type = aml_null_char;
-	if(*null_char->string.initial == AML_BYTE_NULL_CHAR)ERROR(); // Incorrect null char
+	if(*null_char->string.initial != AML_BYTE_NULL_CHAR)ERROR(); // Incorrect null char
 	return null_char;
 }
 
