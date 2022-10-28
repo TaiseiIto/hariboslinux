@@ -6155,6 +6155,7 @@ AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml)
 	def_buffer->string.length += def_buffer->component.def_buffer.byte_list->string.length;
 	aml.initial += def_buffer->component.def_buffer.byte_list->string.length;
 	aml.length -= def_buffer->component.def_buffer.byte_list->string.length;
+	if(aml.length)ERROR(); // Length error
 	return def_buffer;
 }
 
@@ -6201,6 +6202,7 @@ AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml)
 	def_device->string.length += def_device->component.def_device.term_list->string.length;
 	aml.initial += def_device->component.def_device.term_list->string.length;
 	aml.length -= def_device->component.def_device.term_list->string.length;
+	if(aml.length)ERROR(); // Length error
 	return def_device;
 }
 
@@ -6229,6 +6231,7 @@ AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml)
 		def_else->string.length += def_else->component.def_else.term_list->string.length;
 		aml.initial += def_else->component.def_else.term_list->string.length;
 		aml.length -= def_else->component.def_else.term_list->string.length;
+		if(aml.length)ERROR(); // Length error
 	}
 	return def_else;
 }
@@ -6261,6 +6264,7 @@ AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml)
 	def_field->string.length += def_field->component.def_field.field_list->string.length;
 	aml.initial += def_field->component.def_field.field_list->string.length;
 	aml.length -= def_field->component.def_field.field_list->string.length;
+	if(aml.length)ERROR(); // Length error
 	return def_field;
 }
 
@@ -6297,6 +6301,7 @@ AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml)
 	def_if_else->string.length += def_if_else->component.def_if_else.def_else->string.length;
 	aml.initial += def_if_else->component.def_if_else.def_else->string.length;
 	aml.length -= def_if_else->component.def_if_else.def_else->string.length;
+	if(aml.length)ERROR(); // Length error
 	return def_if_else;
 }
 
@@ -6481,6 +6486,7 @@ AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml)
 	def_method->string.length += def_method->component.def_method.term_list->string.length;
 	aml.initial += def_method->component.def_method.term_list->string.length;
 	aml.length -= def_method->component.def_method.term_list->string.length;
+	if(aml.length)ERROR(); // Length error
 	return def_method;
 }
 
@@ -6612,6 +6618,7 @@ AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml)
 	def_package->string.length += def_package->component.def_package.package_element_list->string.length;
 	aml.initial += def_package->component.def_package.package_element_list->string.length;
 	aml.length -= def_package->component.def_package.package_element_list->string.length;
+	if(aml.length)ERROR(); // Length error
 	return def_package;
 }
 
@@ -6677,6 +6684,7 @@ AMLSymbol *analyse_aml_def_scope(AMLSymbol *parent, AMLSubstring aml)
 	def_scope->string.length += def_scope->component.def_scope.term_list->string.length;
 	aml.initial += def_scope->component.def_scope.term_list->string.length;
 	aml.length -= def_scope->component.def_scope.term_list->string.length;
+	if(aml.length)ERROR(); // Length error
 	return def_scope;
 }
 
@@ -6872,6 +6880,7 @@ AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml)
 	def_while->string.length += def_while->component.def_while.term_list->string.length;
 	aml.initial += def_while->component.def_while.term_list->string.length;
 	aml.length -= def_while->component.def_while.term_list->string.length;
+	if(aml.length)ERROR(); // Length error
 	return def_while;
 }
 
