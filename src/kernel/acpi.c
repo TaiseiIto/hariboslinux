@@ -4782,7 +4782,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			null_char_char_array = create_char_array_from_chain_string(null_char_chain_string);
 		}
 		else null_char_char_array = "";
-		output = create_format_chain_string("%s\n%s%s%s", string_prefix_char_array, ascii_char_list_char_array, null_char_char_array);
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), string_prefix_char_array, ascii_char_list_char_array, null_char_char_array);
 		if(aml_symbol->component.string.string_prefix)
 		{
 			delete_chain_string(string_prefix_chain_string);
