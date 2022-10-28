@@ -6159,6 +6159,9 @@ AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ERROR(); // Length error
 		printf_serial("aml.length = %#010.8x\n", aml.length);
+		for(unsigned int i = 0; i < def_buffer->string.length; i++)printf_serial("%02.2x%c", def_buffer->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_buffer);
 	}
 	return def_buffer;
 }
@@ -6210,6 +6213,9 @@ AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ERROR(); // Length error
 		printf_serial("aml.length = %#010.8x\n", aml.length);
+		for(unsigned int i = 0; i < def_device->string.length; i++)printf_serial("%02.2x%c", def_device->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_device);
 	}
 	return def_device;
 }
@@ -6243,6 +6249,9 @@ AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml)
 		{
 			ERROR(); // Length error
 			printf_serial("aml.length = %#010.8x\n", aml.length);
+			for(unsigned int i = 0; i < def_else->string.length; i++)printf_serial("%02.2x%c", def_else->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+			printf_serial("\n");
+		print_aml_symbol(def_else);
 		}
 	}
 	return def_else;
@@ -6280,6 +6289,9 @@ AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ERROR(); // Length error
 		printf_serial("aml.length = %#010.8x\n", aml.length);
+		for(unsigned int i = 0; i < def_field->string.length; i++)printf_serial("%02.2x%c", def_field->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_field);
 	}
 	return def_field;
 }
@@ -6321,6 +6333,9 @@ AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ERROR(); // Length error
 		printf_serial("aml.length = %#010.8x\n", aml.length);
+		for(unsigned int i = 0; i < def_if_else->string.length; i++)printf_serial("%02.2x%c", def_if_else->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_if_else);
 	}
 	return def_if_else;
 }
@@ -6510,6 +6525,9 @@ AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ERROR(); // Length error
 		printf_serial("aml.length = %#010.8x\n", aml.length);
+		for(unsigned int i = 0; i < def_method->string.length; i++)printf_serial("%02.2x%c", def_method->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_method);
 	}
 	return def_method;
 }
@@ -6646,6 +6664,9 @@ AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ERROR(); // Length error
 		printf_serial("aml.length = %#010.8x\n", aml.length);
+		for(unsigned int i = 0; i < def_package->string.length; i++)printf_serial("%02.2x%c", def_package->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_package);
 	}
 	return def_package;
 }
@@ -6716,6 +6737,9 @@ AMLSymbol *analyse_aml_def_scope(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ERROR(); // Length error
 		printf_serial("aml.length = %#010.8x\n", aml.length);
+		for(unsigned int i = 0; i < def_scope->string.length; i++)printf_serial("%02.2x%c", def_scope->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_scope);
 	}
 	return def_scope;
 }
@@ -6916,6 +6940,9 @@ AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ERROR(); // Length error
 		printf_serial("aml.length = %#010.8x\n", aml.length);
+		for(unsigned int i = 0; i < def_while->string.length; i++)printf_serial("%02.2x%c", def_while->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_while);
 	}
 	return def_while;
 }
