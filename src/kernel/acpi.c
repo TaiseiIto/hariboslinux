@@ -375,6 +375,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *time_out_chain_string;
 	ChainString *to_buffer_op_chain_string;
 	ChainString *to_hex_string_op_chain_string;
+	ChainString *user_term_obj_chain_string;
 	ChainString *while_op_chain_string;
 	ChainString *word_const_chain_string;
 	ChainString *word_data_chain_string;
@@ -596,6 +597,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *time_out_char_array;
 	char *to_buffer_op_char_array;
 	char *to_hex_string_op_char_array;
+	char *user_term_obj_char_array;
 	char *while_op_char_array;
 	char *word_const_char_array;
 	char *word_data_char_array;
@@ -4391,6 +4393,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_qword_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_reference_type_opcode:
+		if(aml_symbol->component.reference_type_opcode.def_ref_of)
+		{
+			def_ref_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.reference_type_opcode.def_ref_of);
+			insert_char_front(def_ref_of_chain_string, def_ref_of_chain_string->first_character, ' ');
+			replace_chain_string(def_ref_of_chain_string, "\n", "\n ");
+			def_ref_of_char_array = create_char_array_from_chain_string(def_ref_of_chain_string);
+		}
+		else def_ref_of_char_array = "";
+		if(aml_symbol->component.reference_type_opcode.def_deref_of)
+		{
+			def_deref_of_chain_string = aml_symbol_to_chain_string(aml_symbol->component.reference_type_opcode.def_deref_of);
+			insert_char_front(def_deref_of_chain_string, def_deref_of_chain_string->first_character, ' ');
+			replace_chain_string(def_deref_of_chain_string, "\n", "\n ");
+			def_deref_of_char_array = create_char_array_from_chain_string(def_deref_of_chain_string);
+		}
+		else def_deref_of_char_array = "";
+		if(aml_symbol->component.reference_type_opcode.def_index)
+		{
+			def_index_chain_string = aml_symbol_to_chain_string(aml_symbol->component.reference_type_opcode.def_index);
+			insert_char_front(def_index_chain_string, def_index_chain_string->first_character, ' ');
+			replace_chain_string(def_index_chain_string, "\n", "\n ");
+			def_index_char_array = create_char_array_from_chain_string(def_index_chain_string);
+		}
+		else def_index_char_array = "";
+		if(aml_symbol->component.reference_type_opcode.user_term_obj)
+		{
+			user_term_obj_chain_string = aml_symbol_to_chain_string(aml_symbol->component.reference_type_opcode.user_term_obj);
+			insert_char_front(user_term_obj_chain_string, user_term_obj_chain_string->first_character, ' ');
+			replace_chain_string(user_term_obj_chain_string, "\n", "\n ");
+			user_term_obj_char_array = create_char_array_from_chain_string(user_term_obj_chain_string);
+		}
+		else user_term_obj_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), def_ref_of_char_array, def_deref_of_char_array, def_index_char_array, user_term_obj_char_array);
+		if(aml_symbol->component.reference_type_opcode.def_ref_of)
+		{
+			delete_chain_string(def_ref_of_chain_string);
+			free(def_ref_of_char_array);
+		}
+		if(aml_symbol->component.reference_type_opcode.def_deref_of)
+		{
+			delete_chain_string(def_deref_of_chain_string);
+			free(def_deref_of_char_array);
+		}
+		if(aml_symbol->component.reference_type_opcode.def_index)
+		{
+			delete_chain_string(def_index_chain_string);
+			free(def_index_char_array);
+		}
+		if(aml_symbol->component.reference_type_opcode.user_term_obj)
+		{
+			delete_chain_string(user_term_obj_chain_string);
+			free(user_term_obj_char_array);
+		}
+		break;
 	case aml_region_len:
 		if(aml_symbol->component.region_len.term_arg)
 		{
@@ -5250,6 +5307,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_qword_const_name = "QWordConst";
 	static char const * const aml_qword_data_name = "QWordData";
 	static char const * const aml_qword_prefix_name = "QWordPrefix";
+	static char const * const aml_reference_type_opcode_name = "ReferenceTypeOpcode";
 	static char const * const aml_region_len_name = "RegionLen";
 	static char const * const aml_region_offset_name = "RegionOffset";
 	static char const * const aml_region_space_name = "RegionSpace";
@@ -5524,6 +5582,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_qword_data_name;
 	case aml_qword_prefix:
 		return aml_qword_prefix_name;
+	case aml_reference_type_opcode:
+		return aml_reference_type_opcode_name;
 	case aml_region_len:
 		return aml_region_len_name;
 	case aml_region_offset:
@@ -8259,6 +8319,39 @@ AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml)
 	return qword_prefix;
 }
 
+// <reference_type_opcode> := <DefRefOf> <DefDerefOf> <DefIndex> <UserTermObj>
+AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *reference_type_opcode = malloc(sizeof(*reference_type_opcode));
+	reference_type_opcode->parent = parent;
+	reference_type_opcode->string.initial = aml.initial;
+	reference_type_opcode->string.length = 0;
+	reference_type_opcode->type = aml_reference_type_opcode;
+	reference_type_opcode->component.reference_type_opcode.def_ref_of = NULL;
+	reference_type_opcode->component.reference_type_opcode.def_deref_of = NULL;
+	reference_type_opcode->component.reference_type_opcode.def_index = NULL;
+	reference_type_opcode->component.reference_type_opcode.user_term_obj = NULL;
+	switch(*reference_type_opcode->string.initial)
+	{
+	case AML_BYTE_DEREF_OF_OP:
+		reference_type_opcode->component.reference_type_opcode.def_deref_of = analyse_aml_def_deref_of(reference_type_opcode, aml);
+		reference_type_opcode->string.length += reference_type_opcode->component.reference_type_opcode.def_deref_of->string.length;
+		aml.initial += reference_type_opcode->component.reference_type_opcode.def_deref_of->string.length;
+		aml.length -= reference_type_opcode->component.reference_type_opcode.def_deref_of->string.length;
+		break;
+	case AML_BYTE_INDEX_OP:
+		reference_type_opcode->component.reference_type_opcode.def_index = analyse_aml_def_index(reference_type_opcode, aml);
+		reference_type_opcode->string.length += reference_type_opcode->component.reference_type_opcode.def_index->string.length;
+		aml.initial += reference_type_opcode->component.reference_type_opcode.def_index->string.length;
+		aml.length -= reference_type_opcode->component.reference_type_opcode.def_index->string.length;
+		break;
+	default:
+		ERROR(); // DefRefOf and UserTermObj are unimplemented.
+		break;
+	}
+	return reference_type_opcode;
+}
+
 // <region_len> := <term_arg>
 AMLSymbol *analyse_aml_region_len(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -8651,6 +8744,13 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 	super_name->component.super_name.simple_name = NULL;
 	switch(*super_name->string.initial)
 	{
+	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_INDEX_OP:
+		super_name->component.super_name.reference_type_opcode = analyse_aml_reference_type_opcode(super_name, aml);
+		super_name->string.length += super_name->component.super_name.reference_type_opcode->string.length;
+		aml.initial += super_name->component.super_name.reference_type_opcode->string.length;
+		aml.length -= super_name->component.super_name.reference_type_opcode->string.length;
+		break;
 	case AML_BYTE_ARG_0_OP:
 	case AML_BYTE_ARG_1_OP:
 	case AML_BYTE_ARG_2_OP:
@@ -9679,6 +9779,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		for(AMLSymbol **dword_data = aml_symbol->component.qword_data.dword_data; dword_data != aml_symbol->component.qword_data.dword_data + _countof(aml_symbol->component.qword_data.dword_data); dword_data++)if(*dword_data)delete_aml_symbol(*dword_data);
 		break;
 	case aml_qword_prefix:
+		break;
+	case aml_reference_type_opcode:
+		if(aml_symbol->component.reference_type_opcode.def_ref_of)delete_aml_symbol(aml_symbol->component.reference_type_opcode.def_ref_of);
+		if(aml_symbol->component.reference_type_opcode.def_deref_of)delete_aml_symbol(aml_symbol->component.reference_type_opcode.def_deref_of);
+		if(aml_symbol->component.reference_type_opcode.def_index)delete_aml_symbol(aml_symbol->component.reference_type_opcode.def_index);
+		if(aml_symbol->component.reference_type_opcode.user_term_obj)delete_aml_symbol(aml_symbol->component.reference_type_opcode.user_term_obj);
 		break;
 	case aml_region_len:
 		if(aml_symbol->component.region_len.term_arg)delete_aml_symbol(aml_symbol->component.region_len.term_arg);

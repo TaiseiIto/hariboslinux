@@ -296,6 +296,7 @@ typedef enum _AMLSymbolType
 	aml_qword_const,
 	aml_qword_data,
 	aml_qword_prefix,
+	aml_reference_type_opcode,
 	aml_region_len,
 	aml_region_offset,
 	aml_region_space,
@@ -930,6 +931,14 @@ typedef struct _AMLQWordData
 	unsigned long long int value;
 } AMLQWordData;
 
+typedef struct _AMLReferenceTypeOpcode
+{
+	struct _AMLSymbol *def_ref_of;
+	struct _AMLSymbol *def_deref_of;
+	struct _AMLSymbol *def_index;
+	struct _AMLSymbol *user_term_obj;
+} AMLReferenceTypeOpcode;
+
 typedef struct _AMLRegionLen
 {
 	struct _AMLSymbol *term_arg;
@@ -1127,6 +1136,7 @@ typedef union _AMLComponent
 	AMLPrefixPath prefix_path;
 	AMLQWordConst qword_const;
 	AMLQWordData qword_data;
+	AMLReferenceTypeOpcode reference_type_opcode;
 	AMLRegionLen region_len;
 	AMLRegionOffset region_offset;
 	AMLReleaseOp release_op;
@@ -1393,6 +1403,8 @@ AMLSymbol *analyse_aml_qword_const(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_qword_data(AMLSymbol *parent, AMLSubstring aml);
 // <qword_prefix> := AML_BYTE_QWORD_PREFIX
 AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml);
+// <reference_type_opcode> := <DefRefOf> <DefDerefOf> <DefIndex> <UserTermObj>
+AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <region_len> := <term_arg>
 AMLSymbol *analyse_aml_region_len(AMLSymbol *parent, AMLSubstring aml);
 // <region_offset> := <term_arg>
