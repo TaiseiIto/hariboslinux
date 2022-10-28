@@ -282,6 +282,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *dword_const_chain_string;
 	ChainString *dword_data_chain_string;
 	ChainString *dword_prefix_chain_string;
+	ChainString *else_op_chain_string;
 	ChainString *expression_opcode_chain_string;
 	ChainString *ext_op_prefix_chain_string;
 	ChainString *extended_access_field_chain_string;
@@ -503,6 +504,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *dword_const_char_array;
 	char *dword_data_char_array;
 	char *dword_prefix_char_array;
+	char *else_op_char_array;
 	char *expression_opcode_char_array;
 	char *ext_op_prefix_char_array;
 	char *extended_access_field_char_array;
@@ -1232,6 +1234,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(name_string_char_array);
 		}
 		if(aml_symbol->component.def_device.term_list)
+		{
+			delete_chain_string(term_list_chain_string);
+			free(term_list_char_array);
+		}
+		break;
+	case aml_def_else:
+		if(aml_symbol->component.def_else.else_op)
+		{
+			else_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_else.else_op);
+			insert_char_front(else_op_chain_string, else_op_chain_string->first_character, ' ');
+			replace_chain_string(else_op_chain_string, "\n", "\n ");
+			else_op_char_array = create_char_array_from_chain_string(else_op_chain_string);
+		}
+		else else_op_char_array = "";
+		if(aml_symbol->component.def_else.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_else.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		if(aml_symbol->component.def_else.term_list)
+		{
+			term_list_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_else.term_list);
+			insert_char_front(term_list_chain_string, term_list_chain_string->first_character, ' ');
+			replace_chain_string(term_list_chain_string, "\n", "\n ");
+			term_list_char_array = create_char_array_from_chain_string(term_list_chain_string);
+		}
+		else term_list_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), else_op_char_array, pkg_length_char_array, term_list_char_array);
+		if(aml_symbol->component.def_else.else_op)
+		{
+			delete_chain_string(else_op_chain_string);
+			free(else_op_char_array);
+		}
+		if(aml_symbol->component.def_else.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		if(aml_symbol->component.def_else.term_list)
 		{
 			delete_chain_string(term_list_chain_string);
 			free(term_list_char_array);
@@ -5109,6 +5153,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
 	static char const * const aml_def_device_name = "DefDevice";
+	static char const * const aml_def_else_name = "DefElse";
 	static char const * const aml_def_field_name = "DefField";
 	static char const * const aml_def_if_else_name = "DefIfElse";
 	static char const * const aml_def_increment_name = "DefIncrement";
@@ -5287,6 +5332,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_deref_of_name;
 	case aml_def_device:
 		return aml_def_device_name;
+	case aml_def_else:
+		return aml_def_else_name;
 	case aml_def_field:
 		return aml_def_field_name;
 	case aml_def_if_else:
@@ -6089,6 +6136,21 @@ AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_device->component.def_device.term_list->string.length;
 	aml.length -= def_device->component.def_device.term_list->string.length;
 	return def_device;
+}
+
+// <def_else> := Nothing | <else_op> <pkg_length> <term_list>
+AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_else = malloc(sizeof(*def_else));
+	def_else->parent = parent;
+	def_else->string.initial = aml.initial;
+	def_else->string.length = 0;
+	def_else->type = aml_def_else;
+	def_else->component.def_else.else_op = NULL;
+	def_else->component.def_else.pkg_length = NULL;
+	def_else->component.def_else.term_list = NULL;
+	ERROR(); // Unimplemented
+	return def_else;
 }
 
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
@@ -9174,6 +9236,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_device.pkg_length)delete_aml_symbol(aml_symbol->component.def_device.pkg_length);
 		if(aml_symbol->component.def_device.name_string)delete_aml_symbol(aml_symbol->component.def_device.name_string);
 		if(aml_symbol->component.def_device.term_list)delete_aml_symbol(aml_symbol->component.def_device.term_list);
+		break;
+	case aml_def_else:
+		if(aml_symbol->component.def_else.else_op)delete_aml_symbol(aml_symbol->component.def_else.else_op);
+		if(aml_symbol->component.def_else.pkg_length)delete_aml_symbol(aml_symbol->component.def_else.pkg_length);
+		if(aml_symbol->component.def_else.term_list)delete_aml_symbol(aml_symbol->component.def_else.term_list);
 		break;
 	case aml_def_field:
 		if(aml_symbol->component.def_field.field_op)delete_aml_symbol(aml_symbol->component.def_field.field_op);
