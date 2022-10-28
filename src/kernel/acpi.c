@@ -6543,7 +6543,7 @@ AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml)
 	def_package->component.def_package.pkg_length = analyse_aml_pkg_length(def_package, aml);
 	def_package->string.length += def_package->component.def_package.pkg_length->string.length;
 	aml.initial += def_package->component.def_package.pkg_length->string.length;
-	aml.length -= def_package->component.def_package.pkg_length->string.length;
+	aml.length = def_package->component.def_package.pkg_length->component.pkg_length.length - def_package->component.def_package.pkg_length->string.length;
 	def_package->component.def_package.num_elements = analyse_aml_num_elements(def_package, aml);
 	def_package->string.length += def_package->component.def_package.num_elements->string.length;
 	aml.initial += def_package->component.def_package.num_elements->string.length;
@@ -8079,6 +8079,11 @@ AMLSymbol *analyse_aml_package_element_list(AMLSymbol *parent, AMLSubstring aml)
 			package_element_list->string.length += package_element_list->component.package_element_list.package_element_list->string.length;
 			aml.initial += package_element_list->component.package_element_list.package_element_list->string.length;
 			aml.length -= package_element_list->component.package_element_list.package_element_list->string.length;
+		}
+		else
+		{
+			ERROR(); // Syntax error
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
