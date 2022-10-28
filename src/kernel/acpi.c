@@ -8080,11 +8080,6 @@ AMLSymbol *analyse_aml_package_element_list(AMLSymbol *parent, AMLSubstring aml)
 			aml.initial += package_element_list->component.package_element_list.package_element_list->string.length;
 			aml.length -= package_element_list->component.package_element_list.package_element_list->string.length;
 		}
-		else
-		{
-			ERROR(); // Syntax error
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
 		break;
 	}
 	return package_element_list;
