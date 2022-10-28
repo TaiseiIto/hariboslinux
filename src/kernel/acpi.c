@@ -2598,6 +2598,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_dword_prefix:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_else_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.def_add)
 		{
@@ -5189,6 +5192,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_dword_const_name = "DWordConst";
 	static char const * const aml_dword_data_name = "DWordData";
 	static char const * const aml_dword_prefix_name = "DWordPrefix";
+	static char const * const aml_else_op_name = "ElseOp";
 	static char const * const aml_expression_opcode_name = "ExpressionOpcode";
 	static char const * const aml_ext_op_prefix_name = "ExtOpPrefix";
 	static char const * const aml_field_element_name = "FieldElement";
@@ -5404,6 +5408,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_dword_data_name;
 	case aml_dword_prefix:
 		return aml_dword_prefix_name;
+	case aml_else_op:
+		return aml_else_op_name;
 	case aml_expression_opcode:
 		return aml_expression_opcode_name;
 	case aml_ext_op_prefix:
@@ -6149,7 +6155,21 @@ AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml)
 	def_else->component.def_else.else_op = NULL;
 	def_else->component.def_else.pkg_length = NULL;
 	def_else->component.def_else.term_list = NULL;
-	ERROR(); // Unimplemented
+	if(*aml.initial == AML_BYTE_ELSE_OP)
+	{
+		def_else->component.def_else.else_op = analyse_aml_else_op(def_else, aml);
+		def_else->string.length += def_else->component.def_else.else_op->string.length;
+		aml.initial += def_else->component.def_else.else_op->string.length;
+		aml.length -= def_else->component.def_else.else_op->string.length;
+		def_else->component.def_else.pkg_length = analyse_aml_pkg_length(def_else, aml);
+		def_else->string.length += def_else->component.def_else.pkg_length->string.length;
+		aml.initial += def_else->component.def_else.pkg_length->string.length;
+		aml.length = def_else->component.def_else.pkg_length->component.pkg_length.length - def_else->component.def_else.pkg_length->string.length;
+		def_else->component.def_else.term_list = analyse_aml_term_list(def_else, aml);
+		def_else->string.length += def_else->component.def_else.term_list->string.length;
+		aml.initial += def_else->component.def_else.term_list->string.length;
+		aml.length -= def_else->component.def_else.term_list->string.length;
+	}
 	return def_else;
 }
 
@@ -6213,7 +6233,10 @@ AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml)
 	def_if_else->string.length += def_if_else->component.def_if_else.term_list->string.length;
 	aml.initial += def_if_else->component.def_if_else.term_list->string.length;
 	aml.length -= def_if_else->component.def_if_else.term_list->string.length;
-	if(aml.length)ERROR(); // def_else is unimplemented
+	def_if_else->component.def_if_else.def_else = analyse_aml_def_else(def_if_else, aml);
+	def_if_else->string.length += def_if_else->component.def_if_else.def_else->string.length;
+	aml.initial += def_if_else->component.def_if_else.def_else->string.length;
+	aml.length -= def_if_else->component.def_if_else.def_else->string.length;
 	return def_if_else;
 }
 
@@ -6934,6 +6957,18 @@ AMLSymbol *analyse_aml_dword_prefix(AMLSymbol *parent, AMLSubstring aml)
 	dword_prefix->type = aml_dword_prefix;
 	if(*dword_prefix->string.initial != AML_BYTE_DWORD_PREFIX)ERROR(); // Incorrect dword prefix
 	return dword_prefix;
+}
+
+// <else_op> := AML_BYTE_ELSE_OP
+AMLSymbol *analyse_aml_else_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *else_op = malloc(sizeof(*else_op));
+	else_op->parent = parent;
+	else_op->string.initial = aml.initial;
+	else_op->string.length = 1;
+	else_op->type = aml_else_op;
+	if(*else_op->string.initial != AML_BYTE_ELSE_OP)ERROR(); // Incorrect else_op
+	return else_op;
 }
 
 // <expression_opcode> := <def_acquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
@@ -9401,6 +9436,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		for(AMLSymbol **word_data = aml_symbol->component.dword_data.word_data; word_data != aml_symbol->component.dword_data.word_data + _countof(aml_symbol->component.dword_data.word_data); word_data++)if(*word_data)delete_aml_symbol(*word_data);
 		break;
 	case aml_dword_prefix:
+		break;
+	case aml_else_op:
 		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.def_add)delete_aml_symbol(aml_symbol->component.expression_opcode.def_add);

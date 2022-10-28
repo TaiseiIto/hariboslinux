@@ -238,6 +238,7 @@ typedef enum _AMLSymbolType
 	aml_dword_const,
 	aml_dword_data,
 	aml_dword_prefix,
+	aml_else_op,
 	aml_expression_opcode,
 	aml_ext_op_prefix,
 	aml_field_element,
@@ -1276,6 +1277,8 @@ AMLSymbol *analyse_aml_dword_const(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_dword_data(AMLSymbol *parent, AMLSubstring aml);
 // <dword_prefix> := AML_BYTE_DWORD_PREFIX
 AMLSymbol *analyse_aml_dword_prefix(AMLSymbol *parent, AMLSubstring aml);
+// <else_op> := AML_BYTE_ELSE_OP
+AMLSymbol *analyse_aml_else_op(AMLSymbol *parent, AMLSubstring aml);
 // <expression_opcode> := <def_acquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
 AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <ext_op_prefix> := AML_BYTE_EXT_OP_PREFIX
