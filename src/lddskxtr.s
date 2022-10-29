@@ -165,11 +165,40 @@ main:
 	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
-9:
+9:	# calculate copy destination
+	movl	$destination,%esi
+	movl	(%esi),	%eax
+	movl	$begin_disk_address,%esi
+	movl	(%esi),	%ebx
+	movl	$end_disk_address,%esi
+	movl	(%esi),	%ecx
+	addl	%ebx,	%eax
+	subl	%ebx,	%ecx
+	movl	$copy_destination,%edi
+	movl	%eax,	(%edi)
+	movl	$copy_size,%edi
+	movl	%ecx,	(%edi)
+	# print copy destination
+	movl	$copy_destination_message,(%esp)
+	call	print_serial
+	movl	$copy_destination,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
+	call	new_line_serial
+	movl	$copy_size_message,(%esp)
+	call	print_serial
+	movl	$copy_size,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
+	call	new_line_serial
+	call	new_line_serial
+10:
 	addl	$0x00000008,%esp
 	hlt
 	jmp	2b
-10:	# jump to kernel
+11:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
 	jmp	kernel
@@ -495,6 +524,10 @@ buffer_end_message:
 	.string "buffer_end = 0x"
 buffer_size_message:
 	.string "buffer_size = 0x"
+copy_destination_message:
+	.string "copy_destination = 0x"
+copy_size_message:
+	.string "copy_size = 0x"
 cylinder_message:
 	.string "cylinder = 0x"
 end_disk_address_message:
