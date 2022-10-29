@@ -169,12 +169,12 @@ print_dword_hex_serial:			# void print_dword_hex_serial(unsigned int value);
 	movl	%esp,	%ebp
 	subl	$0x00000004,%esp
 1:	# print higher word
-	movl	0x08(%esp),%edx		# %edx = value;
+	movl	0x08(%ebp),%edx		# %edx = value;
 	shrl	$0x10,	%edx		# %edx = value >> 0x10;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 2:	# print lower word
-	movl	0x08(%esp),%edx		# %edx = value;
+	movl	0x08(%ebp),%edx		# %edx = value;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 3:
@@ -188,12 +188,12 @@ print_word_hex_serial:			# void print_word_hex_serial(unsigned short value);
 	movl	%esp,	%ebp
 	subl	$0x00000004,%esp
 1:	# print higher byte
-	movw	0x08(%esp),%dx		# %dx = value;
+	movw	0x08(%ebp),%dx		# %dx = value;
 	shrw	$0x08,	%dx		# %dx = value >> 0x08;
 	movb	%dl,	(%esp)
 	call	print_byte_hex_serial
 2:	# print lower byte
-	movw	0x08(%esp),%dx		# %dx = value;
+	movw	0x08(%ebp),%dx		# %dx = value;
 	movb	%dl,	(%esp)
 	call	print_byte_hex_serial
 3:
