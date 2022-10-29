@@ -186,6 +186,7 @@ disk_address_2_sector_specifier:	# // void (unsigned int disk_address, SectorSpe
 	incb	%dl			# %dl = disk_address / sector_size % track_size + 1;
 	movb	%dl,	0x02(%edi)	# sector_specifier->sector = disk_address / sector_size % track_size + 1;
 	movl	$heads,	%ecx		# %ecx = heads;
+	xorl	%edx,	%edx		# %edx = 0;
 	divl	%ecx			# %eax = disk_address / sector_size / track_size / heads;
 					# %edx = disk_address / sector_size / track_size % heads;
 	movb	%dl,	0x01(%edi)	# sector_specifier->head = disk_address / sector_size / track_size % heads;
