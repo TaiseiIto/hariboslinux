@@ -17,5 +17,8 @@
 	.set	load_disk,	0x4200		# address of loaddisk.bin on the floppy disk
 						# (boot_sectors + fats * fat_size) * sector_size + files * file_entry_size
 	.set	load_dest,	0x7c00	# memory address the disk loaded to
-	.set	com1,	0x03f8			# serial port COM1
+	.set	com1,		0x03f8		# serial port COM1
+	.set	last_loaded_cylinder,	0x00000803
+	.set	last_loaded_head,	0x00000804
+	.set	last_loaded_sector,	0x00000805
 

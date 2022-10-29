@@ -14,13 +14,15 @@
 
 	.globl	main
 	.globl	new_line_serial
+	.globl	print_byte_hex_serial
 	.globl	print_serial
 	.globl	putchar_serial
 
-	.type	main,		@function
-	.type	new_line_serial,@function
-	.type	print_serial,	@function
-	.type	putchar_serial,	@function
+	.type	main,			@function
+	.type	new_line_serial,	@function
+	.type	print_byte_hex_serial,	@function
+	.type	print_serial,		@function
+	.type	putchar_serial,		@function
 
 	.code32
 	.text
@@ -28,11 +30,25 @@ main:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-1:
+	subl	$0x00000004,%esp
+1:				# Print test message
 	call	new_line_serial
 	movl	$hello_message,(%esp)
 	call	print_serial
-2:
+2:				# Calculate the first disk range to read
+	movl	$last_loaded_cylinder,%esi
+	movl	$begin_cylinder,%edi
+	movb	(%esi),	%dl
+	movb	%dl,	(%edi)
+	movl	$begin_cylinder_message,(%esp)
+	call	print_serial
+	movl	$begin_cylinder,%esi
+	movb	(%esi),	%dl
+	movb	%dl,	(%esp)
+	call	print_byte_hex_serial
+	call	new_line_serial
+3:
+	addl	$0x00000004,%esp
 	hlt
 	jmp	2b
 
@@ -44,6 +60,40 @@ new_line_serial:		# void new_line_serial(void);
 	subl	$0x00000004,%esp
 	movl	$0x0000000a,(%esp)# print LF
 	call	putchar_serial
+	addl	$0x00000004,%esp
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	subl	$0x00000004,%esp
+1:
+	movl	$0x00000001,%ecx	# if %ecx == 1, then print the digit of 0x10s place, else print the digit of 0x01s place.
+	movb	0x08(%ebp),%dl		# get the byte
+	shrb	$0x04,	%dl
+2:
+	andb	$0x0f,%dl
+	cmpb	$0x0a,	%dl
+	jge	4f
+3:					# the digit is less then 0x0a
+	addb	$0x30,	%dl
+	jmp	5f
+4:					# the digit is greater than or equal to 0x0a
+	subb	$0x0a,	%dl
+	addb	$0x61,	%dl
+5:					# print the digit
+	movl	%ecx,	%ebx
+	movl	%edx,	(%esp)
+	call	putchar_serial
+	movl	%ebx,	%ecx
+	jcxz	6f
+	movb	0x08(%ebp),%dl		# get the byte
+	decl	%ecx
+	jmp	2b
+6:
 	addl	$0x00000004,%esp
 	leave
 	ret
@@ -127,6 +177,8 @@ gdtr32:
 	.word	0x0017		# 3 segment descriptors * 8 bytes per segment descriptor - 1
 	.long	gdt32
 # The floppy disk limit
+last_disk_address:
+	.long	sectors * sector_size
 last_cylinder:
 	.byte	sectors / heads / track_size - 1
 last_head:
@@ -142,12 +194,16 @@ buffer_end:
 destination:
 	.long	0x00100000
 # Next disk range to read
+begin_disk_address:
+	.long	0x00000000
 begin_cylinder:
 	.byte	0x00
 begin_head:
 	.byte	0x00
 begin_sector:
 	.byte	0x00
+end_disk_address:
+	.long	0x00000000
 end_cylinder:
 	.byte	0x00
 end_head:
@@ -159,7 +215,9 @@ copy_destination:
 	.long	0x00000000
 copy_size:
 	.long	0x00000000
-# Test message
+# Serial messages
+begin_cylinder_message:
+	.string "begin_cylinder = 0x"
 hello_message:
 	.string "Hello, lddskxtr.bin!\n\n"
 	.align	0x0200

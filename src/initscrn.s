@@ -507,7 +507,7 @@ print:				# void print(char *string);
 	ret
 
 				# // print value as hexadecimal
-print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
+print_byte_hex_serial:		# void print_byte_hex_serial(unsigned char value);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
