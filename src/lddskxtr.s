@@ -193,11 +193,13 @@ validate_sector_specifier:	# void validate_sector_specifier(SectorSpecifier *sec
 	movl	0x08(%ebp),%esi # %esi = sector_specifier;
 	movl	%esi,	%edi	# %edi = sector_specifier;
 	movb	0x02(%esi),%al	# %al = sector;
+	decb	%al		# %al = sector - 1;
 	xorb	%ah,	%ah	# %ah = 0;
 	movb	$track_size,%dl	# %dl = track_size;
-	divb	%dl		# %al = sector / track_size;
-				# %ah = sector % track_size;
-	movb	%ah,	0x02(%edi) # sector = sector % track_size;
+	divb	%dl		# %al = (sector - 1) / track_size;
+				# %ah = (sector - 1) % track_size;
+	incb	%ah		# %ah = (sector - 1) % track_size + 1;
+	movb	%ah,	0x02(%edi) # sector = (sector - 1) % track_size + 1;
 	addb	0x01(%esi),%al	# %al += head;
 	xorb	%ah,	%ah	# %ah = 0;
 	movb	$heads,	%dl	# %dl = heads;
