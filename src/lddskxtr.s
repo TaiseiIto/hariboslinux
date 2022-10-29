@@ -230,9 +230,10 @@ main:
 	jmp 5b
 11:
 	addl	$0x0000000c,%esp
+12:
 	hlt
-	jmp	2b
-11:	# jump to kernel
+	jmp	12b
+13:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
 	jmp	kernel
