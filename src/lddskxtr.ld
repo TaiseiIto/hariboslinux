@@ -9,11 +9,11 @@ SECTIONS
 	. = BASE;
 	.text :
 	{
-		dplydisk.o(.text)
+		lddskxtr.o(.text)
 	}
 	.data :
 	{
-		dplydisk.o(.data)
+		lddskxtr.o(.data)
 	}
 	/DISCARD/ :
 	{
