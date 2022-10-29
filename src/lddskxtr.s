@@ -24,6 +24,7 @@
 	.globl	print_byte_hex_serial
 	.globl	print_dword_hex_serial
 	.globl	print_word_hex_serial
+	.globl	print_sector_specifier
 	.globl	print_serial
 	.globl	putchar_serial
 	.globl	sector_specifier_2_disk_address
@@ -34,6 +35,7 @@
 	.type	print_byte_hex_serial,		@function
 	.type	print_dword_hex_serial,		@function
 	.type	print_word_hex_serial,		@function
+	.type	print_sector_specifier,		@function
 	.type	print_serial,			@function
 	.type	putchar_serial,			@function
 	.type	sector_specifier_2_disk_address,@function
@@ -71,30 +73,12 @@ main:
 	movl	$begin_cylinder,(%esp)
 	call	validate_sector_specifier
 3:
-	# check begin cylinder
-	movl	$begin_cylinder_message,(%esp)
-	call	print_serial
-	movl	$begin_cylinder,%esi
-	movb	(%esi),	%dl
-	movb	%dl,	(%esp)
-	call	print_byte_hex_serial
-	call	new_line_serial
-	# check begin head
-	movl	$begin_head_message,(%esp)
-	call	print_serial
-	movl	$begin_head,%esi
-	movb	(%esi),	%dl
-	movb	%dl,	(%esp)
-	call	print_byte_hex_serial
-	call	new_line_serial
-	# check begin sector
+	# print begin sector
 	movl	$begin_sector_message,(%esp)
 	call	print_serial
-	movl	$begin_sector,%esi
-	movb	(%esi),	%dl
-	movb	%dl,	(%esp)
-	call	print_byte_hex_serial
 	call	new_line_serial
+	movl	$begin_cylinder,(%esp)
+	call	print_sector_specifier
 4:	# calculate begin_disk_address
 	movl	$begin_cylinder,(%esp)
 	call	sector_specifier_2_disk_address
@@ -198,6 +182,40 @@ print_word_hex_serial:			# void print_word_hex_serial(unsigned short value);
 	call	print_byte_hex_serial
 3:
 	addl	$0x00000004,%esp
+	leave
+	ret
+
+print_sector_specifier:		# void print_sector_specifier(SectorSpecifier *sector_specifier);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%esi
+	subl	$0x00000004,%esp
+	movl	0x08(%ebp),%esi
+1:	# print cylinder number
+	movl	$cylinder_message,(%esp)
+	call	print_serial
+	movb	(%esi),	%dl
+	movb	%dl,	(%esp)
+	call	print_byte_hex_serial
+	call	new_line_serial
+2:	# print head number
+	movl	$head_message,(%esp)
+	call	print_serial
+	movb	0x01(%esi),%dl
+	movb	%dl,	(%esp)
+	call	print_byte_hex_serial
+	call	new_line_serial
+3:	# print sector number
+	movl	$sector_message,(%esp)
+	call	print_serial
+	movb	0x02(%esi),%dl
+	movb	%dl,	(%esp)
+	call	print_byte_hex_serial
+	call	new_line_serial
+4:
+	addl	$0x00000004,%esp
+	popl	%esi
 	leave
 	ret
 
@@ -364,16 +382,18 @@ copy_destination:
 copy_size:
 	.long	0x00000000
 # Serial messages
-begin_cylinder_message:
-	.string "begin_cylinder = 0x"
 begin_disk_address_message:
 	.string "begin_disk_address = 0x"
-begin_head_message:
-	.string "begin_head = 0x"
 begin_sector_message:
-	.string "begin_sector = 0x"
+	.string "begin_sector"
+cylinder_message:
+	.string "cylinder = 0x"
+head_message:
+	.string "head = 0x"
 hello_message:
 	.string "Hello, lddskxtr.bin!\n\n"
+sector_message:
+	.string "sector = 0x"
 	.align	0x0200
 kernel:
 
