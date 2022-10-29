@@ -20,6 +20,7 @@
 	.include	"global.s"
 
 	.globl	main
+	.globl	disk_address_2_sector_specifier
 	.globl	new_line_serial
 	.globl	print_byte_hex_serial
 	.globl	print_dword_hex_serial
@@ -31,6 +32,7 @@
 	.globl	validate_sector_specifier
 
 	.type	main,				@function
+	.type	disk_address_2_sector_specifier,@function
 	.type	new_line_serial,		@function
 	.type	print_byte_hex_serial,		@function
 	.type	print_dword_hex_serial,		@function
@@ -47,7 +49,7 @@ main:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	subl	$0x00000004,%esp
+	subl	$0x00000008,%esp
 1:	# print test message
 	call	new_line_serial
 	movl	$hello_message,(%esp)
@@ -140,7 +142,15 @@ main:
 	addl	%edx,	%eax
 	movl	$end_disk_address,%edi
 	movl	%eax,	(%edi)
+	movl	$end_cylinder,0x04(%esp)
+	movl	%eax,	(%esp)
+	call	disk_address_2_sector_specifier
 	# print end_disk_address
+	movl	$end_sector_message,(%esp)
+	call	print_serial
+	call	new_line_serial
+	movl	$end_cylinder,(%esp)
+	call	print_sector_specifier
 	movl	$end_disk_address_message,(%esp)
 	call	print_serial
 	movl	$end_disk_address,%esi
@@ -148,14 +158,42 @@ main:
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
+	call	new_line_serial
 8:
-	addl	$0x00000004,%esp
+	addl	$0x00000008,%esp
 	hlt
 	jmp	2b
 9:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
 	jmp	kernel
+
+disk_address_2_sector_specifier:	# // void (unsigned int disk_address, SectorSpecifier *sector_specifier);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	pushl	%edi
+1:
+	movl	0x08(%ebp),%eax		# %eax = disk_address;
+	movl	0x0c(%ebp),%edi		# %edi = sector_specifier;
+	movl	$sector_size,%ecx	# %ecx = sector_size;
+	xorl	%edx,	%edx		# %edx = 0;
+	divl	%ecx			# %eax = disk_address / sector_size;
+	movl	$track_size,%ecx	# %ecx = track_size;
+	xorl	%edx,	%edx		# %edx = 0;
+	divl	%ecx			# %eax = disk_address / sector_size / track_size;
+					# %edx = disk_address / sector_size % track_size;
+	incb	%dl			# %dl = disk_address / sector_size % track_size + 1;
+	movb	%dl,	0x02(%edi)	# sector_specifier->sector = disk_address / sector_size % track_size + 1;
+	movl	$heads,	%ecx		# %ecx = heads;
+	divl	%ecx			# %eax = disk_address / sector_size / track_size / heads;
+					# %edx = disk_address / sector_size / track_size % heads;
+	movb	%dl,	0x01(%edi)	# sector_specifier->head = disk_address / sector_size / track_size % heads;
+	movb	%al,	(%edi)		# sector_specifier->cylinder = disk_address / sector_size / track_size / heads;
+2:
+	popl	%edi
+	leave
+	ret
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
@@ -454,6 +492,8 @@ cylinder_message:
 	.string "cylinder = 0x"
 end_disk_address_message:
 	.string "end_disk_address = 0x"
+end_sector_message:
+	.string "end_sector"
 head_message:
 	.string "head = 0x"
 hello_message:
