@@ -140,6 +140,12 @@ main:
 	movl	$buffer_size,%esi
 	movl	(%esi),	%edx
 	addl	%edx,	%eax
+	movl	$last_disk_address,%esi
+	movl	(%esi),	%edx
+	cmpl	%edx,	%eax
+	jb	8f
+	movl	%edx,	%eax
+8:
 	movl	$end_disk_address,%edi
 	movl	%eax,	(%edi)
 	movl	$end_cylinder,0x04(%esp)
@@ -159,11 +165,11 @@ main:
 	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
-8:
+9:
 	addl	$0x00000008,%esp
 	hlt
 	jmp	2b
-9:	# jump to kernel
+10:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
 	jmp	kernel
