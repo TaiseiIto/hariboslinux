@@ -209,9 +209,15 @@ main:
 	call	new_line_serial
 10:	# read sectors and copy to destination
 	# copy to destination
-	movl	$copy_destination_begin,(%esp)
-	movl	$buffer_begin,0x04(%esp)
-	movl	$copy_size,0x08(%esp)
+	movl	$copy_destination_begin,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	movl	$buffer_begin,%esi
+	movzxw	(%esi),	%edx
+	movl	%edx,	0x04(%esp)
+	movl	$copy_size,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	0x08(%esp)
 	call	memcpy
 	# continuation condition judgement
 	movl	$end_disk_address,(%esi)
