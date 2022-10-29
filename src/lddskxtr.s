@@ -220,9 +220,9 @@ main:
 	movl	%edx,	0x08(%esp)
 	call	memcpy
 	# continuation condition judgement
-	movl	$end_disk_address,(%esi)
+	movl	$end_disk_address,%esi
 	movl	(%esi),	%eax
-	movl	$last_disk_address,(%esi)
+	movl	$last_disk_address,%esi
 	movl	(%esi),	%edx
 	cmpl	%edx,	%eax
 	jae	11f
