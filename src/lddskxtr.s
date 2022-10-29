@@ -21,6 +21,7 @@
 
 	.globl	main
 	.globl	disk_address_2_sector_specifier
+	.globl	memcpy
 	.globl	new_line_serial
 	.globl	print_byte_hex_serial
 	.globl	print_dword_hex_serial
@@ -33,6 +34,7 @@
 
 	.type	main,				@function
 	.type	disk_address_2_sector_specifier,@function
+	.type	memcpy,				@function
 	.type	new_line_serial,		@function
 	.type	print_byte_hex_serial,		@function
 	.type	print_dword_hex_serial,		@function
@@ -49,7 +51,7 @@ main:
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	subl	$0x00000008,%esp
+	subl	$0x0000000c,%esp
 1:	# print test message
 	call	new_line_serial
 	movl	$hello_message,(%esp)
@@ -205,8 +207,13 @@ main:
 	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
-10:
-	addl	$0x00000008,%esp
+10:	# read sectors and copy to destination
+	movl	$copy_destination_begin,(%esp)
+	movl	$buffer_begin,0x04(%esp)
+	movl	$copy_size,0x08(%esp)
+	call	memcpy
+11:
+	addl	$0x0000000c,%esp
 	hlt
 	jmp	2b
 11:	# jump to kernel
@@ -239,6 +246,57 @@ disk_address_2_sector_specifier:	# // void (unsigned int disk_address, SectorSpe
 	movb	%al,	(%edi)		# sector_specifier->cylinder = disk_address / sector_size / track_size / heads;
 2:
 	popl	%edi
+	leave
+	ret
+
+# void *memcpy
+# (
+#	void *destination,	// 0x08(%ebp)
+#	void const *source,	// 0x0c(%ebp)
+#	size_t size		// 0x10(%ebp)
+# );
+memcpy:
+0:	# Start of the function.
+	pushl	%ebp
+	movl	%esp,	%ebp
+1:	# Save the preserved registers.
+	pushl	%ebx
+	pushl	%edi
+	pushl	%esi
+2:	# Load the arguments.
+	movl	0x08(%ebp),%edi		# EDI = destination;
+	movl	0x0c(%ebp),%esi 	# ESI = source;
+	movl	0x10(%ebp),%ecx 	# ECX = size;
+3:	# Copy from source to destination.
+	movl	%ecx,	%edx		# EDX = size;
+	shrl	$0x02,	%ecx		# ECX = size / 4;
+	andl	$0x00000003,%edx	# EDX = size % 4;
+	rep	movsl			# while(ECX--)
+					# {
+					#	*(int *)EDI = *(int *)ESI;
+					#	ESI += DF ? -4 : 4;
+					#	EDI += DF ? -4 : 4;
+					# }
+	testl	%edx,	%edx		# if(!(size % 4))goto 5;
+	jz	5f
+	cmpl	$0x00000001,%edx	# if(size % 4 == 1)goto 4;
+	je	4f
+	movsw				# *(short *)EDI = *(short *)ESI;
+					# ESI += DF ? -2 : 2;
+					# EDI += DF ? -2 : 2;
+	subl	$0x00000002,%edx	# EDX = size % 2;
+	testl	%edx,	%edx		# if(!(size % 2))goto 5;
+	jz	5f
+4:	# Copy the last byte.
+	movsb				# *(char *)EDI = *(char *)ESI;
+					# ESI += DF ? -1 : 1;
+					# EDI += DF ? -1 : 1;
+5:	# Restore the preserved registers.
+	popl	%esi
+	popl	%edi
+	popl	%ebx
+6:	# End of the function.
+	movl	0x08(%ebp),%eax		# return destination;
 	leave
 	ret
 
