@@ -91,6 +91,75 @@ putchar_serial:			# void putchar_serial(char c);
 	ret
 
 	.data
+	.align	0x8
+# GDT for 32bit protected mode
+gdt32:
+				# selector 0x0000 null segment descriptor
+	.word	0x0000		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x00		#  access_right
+	.byte	0x00		#  limit_high
+	.byte	0x00		#  base_high
+
+				# selector 0x0008 whole memory is readable and writable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x409a
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x92		#  access_right
+	.byte	0xcf		#  limit_high
+	.byte	0x00		#  base_high
+
+				# selector 0x0010 whole memory is readable and executable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x4092
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x9a		#  access_right
+	.byte	0xcf		#  limit_high
+	.byte	0x00		#  base_high
+gdtr32:
+	.word	0x0017		# 3 segment descriptors * 8 bytes per segment descriptor - 1
+	.long	gdt32
+# The floppy disk limit
+last_cylinder:
+	.byte	sectors / heads / track_size - 1
+last_head:
+	.byte	heads - 1
+last_sector:
+	.byte	track_size
+# Buffer range
+buffer_begin:
+	.word	load_dest
+buffer_end:
+	.word	main
+# Destination
+destination:
+	.long	0x00100000
+# Next disk range to read
+begin_cylinder:
+	.byte	0x00
+begin_head:
+	.byte	0x00
+begin_sector:
+	.byte	0x00
+end_cylinder:
+	.byte	0x00
+end_head:
+	.byte	0x00
+end_sector:
+	.byte	0x00
+# Next Copy target
+copy_destination:
+	.long	0x00000000
+copy_size:
+	.long	0x00000000
+# Test message
 hello_message:
 	.string "Hello, lddskxtr.bin!\n\n"
 	.align	0x0200
