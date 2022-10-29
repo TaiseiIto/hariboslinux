@@ -172,16 +172,27 @@ main:
 	movl	(%esi),	%ebx
 	movl	$end_disk_address,%esi
 	movl	(%esi),	%ecx
+	movl	%eax,	%edx
+	addl	%ecx,	%edx
 	addl	%ebx,	%eax
 	subl	%ebx,	%ecx
-	movl	$copy_destination,%edi
+	movl	$copy_destination_begin,%edi
 	movl	%eax,	(%edi)
+	movl	$copy_destination_end,%edi
+	movl	%edx,	(%edi)
 	movl	$copy_size,%edi
 	movl	%ecx,	(%edi)
 	# print copy destination
-	movl	$copy_destination_message,(%esp)
+	movl	$copy_destination_begin_message,(%esp)
 	call	print_serial
-	movl	$copy_destination,%esi
+	movl	$copy_destination_begin,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
+	call	new_line_serial
+	movl	$copy_destination_end_message,(%esp)
+	call	print_serial
+	movl	$copy_destination_end,%esi
 	movl	(%esi),	%edx
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
@@ -509,7 +520,9 @@ end_head:
 end_sector:
 	.byte	0x00
 # Next Copy target
-copy_destination:
+copy_destination_begin:
+	.long	0x00000000
+copy_destination_end:
 	.long	0x00000000
 copy_size:
 	.long	0x00000000
@@ -524,8 +537,10 @@ buffer_end_message:
 	.string "buffer_end = 0x"
 buffer_size_message:
 	.string "buffer_size = 0x"
-copy_destination_message:
-	.string "copy_destination = 0x"
+copy_destination_begin_message:
+	.string "copy_destination_begin = 0x"
+copy_destination_end_message:
+	.string "copy_destination_end = 0x"
 copy_size_message:
 	.string "copy_size = 0x"
 cylinder_message:
