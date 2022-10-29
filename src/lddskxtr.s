@@ -36,13 +36,41 @@ main:
 	movl	$hello_message,(%esp)
 	call	print_serial
 2:				# Calculate the first disk range to read
+	# get last loaded cylinder
 	movl	$last_loaded_cylinder,%esi
 	movl	$begin_cylinder,%edi
 	movb	(%esi),	%dl
 	movb	%dl,	(%edi)
+	# get last loaded head
+	movl	$last_loaded_head,%esi
+	movl	$begin_head,%edi
+	movb	(%esi),	%dl
+	movb	%dl,	(%edi)
+	# get last loaded sector
+	movl	$last_loaded_sector,%esi
+	movl	$begin_sector,%edi
+	movb	(%esi),	%dl
+	movb	%dl,	(%edi)
+	# check begin cylinder
 	movl	$begin_cylinder_message,(%esp)
 	call	print_serial
 	movl	$begin_cylinder,%esi
+	movb	(%esi),	%dl
+	movb	%dl,	(%esp)
+	call	print_byte_hex_serial
+	call	new_line_serial
+	# check begin head
+	movl	$begin_head_message,(%esp)
+	call	print_serial
+	movl	$begin_head,%esi
+	movb	(%esi),	%dl
+	movb	%dl,	(%esp)
+	call	print_byte_hex_serial
+	call	new_line_serial
+	# check begin sector
+	movl	$begin_sector_message,(%esp)
+	call	print_serial
+	movl	$begin_sector,%esi
 	movb	(%esi),	%dl
 	movb	%dl,	(%esp)
 	call	print_byte_hex_serial
@@ -218,6 +246,10 @@ copy_size:
 # Serial messages
 begin_cylinder_message:
 	.string "begin_cylinder = 0x"
+begin_head_message:
+	.string "begin_head = 0x"
+begin_sector_message:
+	.string "begin_sector = 0x"
 hello_message:
 	.string "Hello, lddskxtr.bin!\n\n"
 	.align	0x0200
