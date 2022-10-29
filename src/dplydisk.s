@@ -45,8 +45,6 @@ main:
 	addl	$0x00000014,%esp
 	leave
 5:					# jump to kernel
-	movl	$0x00300000,%ebp
-	movl	$0x00300000,%esp
 	jmp	lddskxtr
 
 memcpy:				# void memcpy(unsigned short dest_seg, void *dest_addr, unsigned short src_seg, void *src_addr, unsigned short size);

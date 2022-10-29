@@ -17,12 +17,14 @@
 	.globl	print_byte_hex_serial
 	.globl	print_serial
 	.globl	putchar_serial
+	.globl	validate_sector_specifier
 
-	.type	main,			@function
-	.type	new_line_serial,	@function
-	.type	print_byte_hex_serial,	@function
-	.type	print_serial,		@function
-	.type	putchar_serial,		@function
+	.type	main,				@function
+	.type	new_line_serial,		@function
+	.type	print_byte_hex_serial,		@function
+	.type	print_serial,			@function
+	.type	putchar_serial,			@function
+	.type	validate_sector_specifier,	@function
 
 	.code32
 	.text
@@ -31,11 +33,11 @@ main:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	subl	$0x00000004,%esp
-1:				# Print test message
+1:				# print test message
 	call	new_line_serial
 	movl	$hello_message,(%esp)
 	call	print_serial
-2:				# Calculate the first disk range to read
+2:				# calculate the first disk range to read
 	# get last loaded cylinder
 	movl	$last_loaded_cylinder,%esi
 	movl	$begin_cylinder,%edi
@@ -50,7 +52,12 @@ main:
 	movl	$last_loaded_sector,%esi
 	movl	$begin_sector,%edi
 	movb	(%esi),	%dl
+	incb	%dl		# calculate next sector
 	movb	%dl,	(%edi)
+	# standardize the begin sector specifier
+	movl	$begin_cylinder,(%esp)
+	call	validate_sector_specifier
+3:
 	# check begin cylinder
 	movl	$begin_cylinder_message,(%esp)
 	call	print_serial
@@ -79,6 +86,10 @@ main:
 	addl	$0x00000004,%esp
 	hlt
 	jmp	2b
+4:				# jump to kernel
+	movl	$0x00300000,%ebp
+	movl	$0x00300000,%esp
+	jmp	kernel
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
@@ -165,6 +176,36 @@ putchar_serial:			# void putchar_serial(char c);
 	movw	$com1,	%dx
 	outb	%al,	%dx
 3:
+	leave
+	ret
+
+				# typedef struct
+				# {
+				# 	unsigned char cylinder;
+				# 	unsigned char head;
+				# 	unsigned char sector;
+				# } SectorSpecifier;
+validate_sector_specifier:	# void validate_sector_specifier(SectorSpecifier *sector_specifier);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+1:
+	movl	0x08(%ebp),%esi # %esi = sector_specifier;
+	movl	%esi,	%edi	# %edi = sector_specifier;
+	movb	0x02(%esi),%al	# %al = sector;
+	xorb	%ah,	%ah	# %ah = 0;
+	movb	$track_size,%dl	# %dl = track_size;
+	divb	%dl		# %al = sector / track_size;
+				# %ah = sector % track_size;
+	movb	%ah,	0x02(%edi) # sector = sector % track_size;
+	addb	0x01(%esi),%al	# %al += head;
+	xorb	%ah,	%ah	# %ah = 0;
+	movb	$heads,	%dl	# %dl = heads;
+	divb	%dl		# %al = %al / heads;
+				# %ah = %al % heads;
+	movb	%ah,	0x01(%edi) # head = %ah;
+	addb	%al,	(%esi)	# cylinder += %al;
+2:
 	leave
 	ret
 
