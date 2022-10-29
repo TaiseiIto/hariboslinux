@@ -208,10 +208,26 @@ main:
 	call	new_line_serial
 	call	new_line_serial
 10:	# read sectors and copy to destination
+	# copy to destination
 	movl	$copy_destination_begin,(%esp)
 	movl	$buffer_begin,0x04(%esp)
 	movl	$copy_size,0x08(%esp)
 	call	memcpy
+	# continuation condition judgement
+	movl	$end_disk_address,(%esi)
+	movl	(%esi),	%eax
+	movl	$last_disk_address,(%esi)
+	movl	(%esi),	%edx
+	cmpl	%edx,	%eax
+	jae	11f
+	# advance next disk range to read
+	movl	$begin_disk_address,(%esp)
+	movl	$end_disk_address,0x04(%esp)
+	movl	$end_disk_address,%edx
+	subl	$begin_disk_address,%edx
+	movl	%edx,	0x08(%esp)
+	call	memcpy
+	jmp 5b
 11:
 	addl	$0x0000000c,%esp
 	hlt
