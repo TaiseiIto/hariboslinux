@@ -117,8 +117,7 @@ print_serial:			# void print_serial(char *string);
 	subl	$0x00000004,%esp
 	movl	0x08(%ebp),%esi
 1:				# put loop
-	xorl	%eax,	%eax
-	movb	(%esi),	%al
+	movzxb	(%esi),	%eax
 	cmpb	$0x00,	%al
 	je	2f		# finish putting all characters
 	movl	%eax,	(%esp)
