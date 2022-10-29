@@ -210,8 +210,7 @@ print_serial:			# void print_serial(char *string);
 	subl	$0x00000004,%esp
 	movl	0x08(%ebp),%esi
 1:				# put loop
-	xorl	%eax,	%eax
-	movb	(%esi),	%al
+	movzxb	(%esi),	%eax
 	cmpb	$0x00,	%al
 	je	2f		# finish putting all characters
 	movl	%eax,	(%esp)
@@ -271,9 +270,8 @@ validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *se
 	movl	%esp,	%ebp
 1:
 	movl	0x08(%ebp),%ecx 	# %ecx = sector_specifier;
-	movb	0x02(%ecx),%al		# %al = sector_specifier->sector;
+	movzxb	0x02(%ecx),%eax		# %al = sector_specifier->sector;
 	decb	%al			# %al = sector_specifier->sector - 1;
-	xorb	%ah,	%ah		# %ah = 0;
 	movb	$track_size,%dl		# %dl = track_size;
 	divb	%dl			# %al = (sector_specifier->sector - 1) / track_size;
 					# %ah = (sector_specifier->sector - 1) % track_size;
