@@ -48,11 +48,41 @@ main:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	subl	$0x00000004,%esp
-1:				# print test message
+1:	# print test message
 	call	new_line_serial
 	movl	$hello_message,(%esp)
 	call	print_serial
-2:				# calculate the first disk range to read
+2:	# print last sector
+	movl	$last_sector_message,(%esp)
+	call	print_serial
+	call	new_line_serial
+	movl	$last_cylinder,(%esp)
+	call	print_sector_specifier
+	movl	$last_disk_address_message,(%esp)
+	call	print_serial
+	movl	$last_disk_address,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
+	call	new_line_serial
+	call	new_line_serial
+3:	# print buffer range
+	movl	$buffer_begin_message,(%esp)
+	call	print_serial
+	movl	$buffer_begin,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	movl	$buffer_end_message,(%esp)
+	call	print_serial
+	movl	$buffer_end,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	call	new_line_serial
+4:	# calculate the first disk range to read
 	# get last loaded cylinder
 	movl	$last_loaded_cylinder,%esi
 	movl	$begin_cylinder,%edi
@@ -72,14 +102,13 @@ main:
 	# standardize the begin sector specifier
 	movl	$begin_cylinder,(%esp)
 	call	validate_sector_specifier
-3:
-	# print begin sector
+5:	# print begin sector
 	movl	$begin_sector_message,(%esp)
 	call	print_serial
 	call	new_line_serial
 	movl	$begin_cylinder,(%esp)
 	call	print_sector_specifier
-4:	# calculate begin_disk_address
+6:	# calculate begin_disk_address
 	movl	$begin_cylinder,(%esp)
 	call	sector_specifier_2_disk_address
 	movl	$begin_disk_address,%edi
@@ -92,11 +121,12 @@ main:
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
-5:
+	call	new_line_serial
+7:
 	addl	$0x00000004,%esp
 	hlt
 	jmp	2b
-6:				# jump to kernel
+8:				# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
 	jmp	kernel
@@ -386,12 +416,20 @@ begin_disk_address_message:
 	.string "begin_disk_address = 0x"
 begin_sector_message:
 	.string "begin_sector"
+buffer_begin_message:
+	.string "buffer_begin = 0x"
+buffer_end_message:
+	.string "buffer_end = 0x"
 cylinder_message:
 	.string "cylinder = 0x"
 head_message:
 	.string "head = 0x"
 hello_message:
 	.string "Hello, lddskxtr.bin!\n\n"
+last_disk_address_message:
+	.string "last_disk_address = 0x"
+last_sector_message:
+	.string "last_cylinder"
 sector_message:
 	.string "sector = 0x"
 	.align	0x0200
