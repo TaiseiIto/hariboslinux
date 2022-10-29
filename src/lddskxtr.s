@@ -5,25 +5,38 @@
 # Load buffer                0x00007c00~0x0000dc00
 #
 # calling convention = System V i386
-# return value: ax, dx
+# return value: eax, edx
 # parameters: stack
-# scratch registers: ax, cx, dx
-# preserved registers: bx, si, di, bp, sp
+# scratch registers: eax, ecx, edx
+# preserved registers: ebx, esi, edi, ebp, esp
+#
+# typedef struct
+# {
+# 	unsigned char cylinder;
+# 	unsigned char head;
+# 	unsigned char sector;
+# } SectorSpecifier;
 
 	.include	"global.s"
 
 	.globl	main
 	.globl	new_line_serial
 	.globl	print_byte_hex_serial
+	.globl	print_dword_hex_serial
+	.globl	print_word_hex_serial
 	.globl	print_serial
 	.globl	putchar_serial
+	.globl	sector_specifier_2_disk_address
 	.globl	validate_sector_specifier
 
 	.type	main,				@function
 	.type	new_line_serial,		@function
 	.type	print_byte_hex_serial,		@function
+	.type	print_dword_hex_serial,		@function
+	.type	print_word_hex_serial,		@function
 	.type	print_serial,			@function
 	.type	putchar_serial,			@function
+	.type	sector_specifier_2_disk_address,@function
 	.type	validate_sector_specifier,	@function
 
 	.code32
@@ -82,11 +95,24 @@ main:
 	movb	%dl,	(%esp)
 	call	print_byte_hex_serial
 	call	new_line_serial
-3:
+4:	# calculate begin_disk_address
+	movl	$begin_cylinder,(%esp)
+	call	sector_specifier_2_disk_address
+	movl	$begin_disk_address,%edi
+	movl	%eax,	(%edi)
+	# check begin_disk_address
+	movl	$begin_disk_address_message,(%esp)
+	call	print_serial
+	movl	$begin_disk_address,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
+	call	new_line_serial
+5:
 	addl	$0x00000004,%esp
 	hlt
 	jmp	2b
-4:				# jump to kernel
+6:				# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
 	jmp	kernel
@@ -137,6 +163,44 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 	leave
 	ret
 
+print_dword_hex_serial:			# void print_dword_hex_serial(unsigned int value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	subl	$0x00000004,%esp
+1:	# print higher word
+	movl	0x08(%esp),%edx		# %edx = value;
+	shrl	$0x10,	%edx		# %edx = value >> 0x10;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+2:	# print lower word
+	movl	0x08(%esp),%edx		# %edx = value;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+3:
+	addl	$0x00000004,%esp
+	leave
+	ret
+
+print_word_hex_serial:			# void print_word_hex_serial(unsigned short value);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+	subl	$0x00000004,%esp
+1:	# print higher byte
+	movw	0x08(%esp),%dx		# %dx = value;
+	shrw	$0x08,	%dx		# %dx = value >> 0x08;
+	movb	%dl,	(%esp)
+	call	print_byte_hex_serial
+2:	# print lower byte
+	movw	0x08(%esp),%dx		# %dx = value;
+	movb	%dl,	(%esp)
+	call	print_byte_hex_serial
+3:
+	addl	$0x00000004,%esp
+	leave
+	ret
+
 				# // print string to serial port COM1
 print_serial:			# void print_serial(char *string);
 0:
@@ -179,34 +243,49 @@ putchar_serial:			# void putchar_serial(char c);
 	leave
 	ret
 
-				# typedef struct
-				# {
-				# 	unsigned char cylinder;
-				# 	unsigned char head;
-				# 	unsigned char sector;
-				# } SectorSpecifier;
-validate_sector_specifier:	# void validate_sector_specifier(SectorSpecifier *sector_specifier);
+sector_specifier_2_disk_address:	# unsigned int sector_specifier_2_disk_address(SectorSpecifier const *sector_specifier);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 1:
-	movl	0x08(%ebp),%esi # %esi = sector_specifier;
-	movl	%esi,	%edi	# %edi = sector_specifier;
-	movb	0x02(%esi),%al	# %al = sector;
-	decb	%al		# %al = sector - 1;
-	xorb	%ah,	%ah	# %ah = 0;
-	movb	$track_size,%dl	# %dl = track_size;
-	divb	%dl		# %al = (sector - 1) / track_size;
-				# %ah = (sector - 1) % track_size;
-	incb	%ah		# %ah = (sector - 1) % track_size + 1;
-	movb	%ah,	0x02(%edi) # sector = (sector - 1) % track_size + 1;
-	addb	0x01(%esi),%al	# %al += head;
-	xorb	%ah,	%ah	# %ah = 0;
-	movb	$heads,	%dl	# %dl = heads;
-	divb	%dl		# %al = %al / heads;
-				# %ah = %al % heads;
-	movb	%ah,	0x01(%edi) # head = %ah;
-	addb	%al,	(%esi)	# cylinder += %al;
+	movl	0x08(%ebp),%ecx 	# %ecx = sector_specifier;
+	movzxb	(%ecx),	%eax		# %eax = sector_specifier->cylinder;
+	movl	$heads,	%edx		# %edx = heads;
+	mull	%edx			# %edx:%eax = sector_specifier->cylinder * heads;
+	movzxb	0x01(%ecx),%edx		# %edx = sector_specifier->head;
+	addl	%edx,	%eax		# %eax = sector_specifier->cylinder * heads + sector_specifier->head;
+	movl	$track_size,%edx	# %edx = track_size;
+	mull	%edx			# %edx:%eax = (sector_specifier->cylinder * heads + sector_specifier->head) * track_size;
+	movzxb	0x02(%ecx),%edx		# %edx = sector_specifier->sector;
+	decl	%edx			# %edx = sector_specifier->sector - 1;
+	addl	%edx,	%eax		# %eax = (sector_specifier->cylinder * heads + sector_specifier->head) * track_size + sector_specifier->sector - 1;
+	movl	$sector_size,%edx	# %edx = sector_size;
+	mull	%edx			# %edx:%eax = ((sector_specifier->cylinder * heads + sector_specifier->head) * track_size + sector_specifier->sector - 1) * sector_size;
+2:
+	leave
+	ret
+
+validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *sector_specifier);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+1:
+	movl	0x08(%ebp),%ecx 	# %ecx = sector_specifier;
+	movb	0x02(%ecx),%al		# %al = sector_specifier->sector;
+	decb	%al			# %al = sector_specifier->sector - 1;
+	xorb	%ah,	%ah		# %ah = 0;
+	movb	$track_size,%dl		# %dl = track_size;
+	divb	%dl			# %al = (sector_specifier->sector - 1) / track_size;
+					# %ah = (sector_specifier->sector - 1) % track_size;
+	incb	%ah			# %ah = (sector_specifier->sector - 1) % track_size + 1;
+	movb	%ah,	0x02(%ecx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
+	addb	0x01(%ecx),%al		# %al += sector_specifier->head;
+	xorb	%ah,	%ah		# %ah = 0;
+	movb	$heads,	%dl		# %dl = heads;
+	divb	%dl			# %al = %al / heads;
+					# %ah = %al % heads;
+	movb	%ah,	0x01(%ecx)	# sector_specifier->head = %ah;
+	addb	%al,	(%ecx)		# sector_specifier->cylinder += %al;
 2:
 	leave
 	ret
@@ -289,6 +368,8 @@ copy_size:
 # Serial messages
 begin_cylinder_message:
 	.string "begin_cylinder = 0x"
+begin_disk_address_message:
+	.string "begin_disk_address = 0x"
 begin_head_message:
 	.string "begin_head = 0x"
 begin_sector_message:
