@@ -67,6 +67,7 @@ main:
 	call	new_line_serial
 	call	new_line_serial
 3:	# print buffer range
+	# print buffer_begin
 	movl	$buffer_begin_message,(%esp)
 	call	print_serial
 	movl	$buffer_begin,%esi
@@ -74,9 +75,18 @@ main:
 	movl	%edx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
+	# print buffer_end
 	movl	$buffer_end_message,(%esp)
 	call	print_serial
 	movl	$buffer_end,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print buffer_size
+	movl	$buffer_size_message,(%esp)
+	call	print_serial
+	movl	$buffer_size,%esi
 	movl	(%esi),	%edx
 	movl	%edx,	(%esp)
 	call	print_word_hex_serial
@@ -122,11 +132,27 @@ main:
 	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
-7:
+7:	# calculate end_disk_address
+	movl	$begin_disk_address,%esi
+	movl	(%esi),	%eax
+	movl	$buffer_size,%esi
+	movl	(%esi),	%edx
+	addl	%edx,	%eax
+	movl	$end_disk_address,%edi
+	movl	%eax,	(%edi)
+	# print end_disk_address
+	movl	$end_disk_address_message,(%esp)
+	call	print_serial
+	movl	$end_disk_address,%esi
+	movl	(%esi),	%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
+	call	new_line_serial
+8:
 	addl	$0x00000004,%esp
 	hlt
 	jmp	2b
-8:				# jump to kernel
+9:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
 	jmp	kernel
@@ -386,6 +412,8 @@ buffer_begin:
 	.word	load_dest
 buffer_end:
 	.word	main
+buffer_size:
+	.word	main - load_dest
 # Destination
 destination:
 	.long	0x00100000
@@ -420,8 +448,12 @@ buffer_begin_message:
 	.string "buffer_begin = 0x"
 buffer_end_message:
 	.string "buffer_end = 0x"
+buffer_size_message:
+	.string "buffer_size = 0x"
 cylinder_message:
 	.string "cylinder = 0x"
+end_disk_address_message:
+	.string "end_disk_address = 0x"
 head_message:
 	.string "head = 0x"
 hello_message:
