@@ -10,6 +10,9 @@ SECTIONS
 	.text :
 	{
 		mv2prtmd.o(.text)
+	}
+	.data :
+	{
 		mv2prtmd.o(.data)
 	}
 	/DISCARD/ :

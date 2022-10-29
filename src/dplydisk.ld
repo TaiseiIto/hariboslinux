@@ -10,6 +10,9 @@ SECTIONS
 	.text :
 	{
 		dplydisk.o(.text)
+	}
+	.data :
+	{
 		dplydisk.o(.data)
 	}
 	/DISCARD/ :

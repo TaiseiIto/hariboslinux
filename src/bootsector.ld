@@ -10,6 +10,9 @@ SECTIONS
 	.text :
 	{
 		bootsector.o(.text)
+	}
+	.data :
+	{
 		bootsector.o(.data)
 	}
 	. = BASE;

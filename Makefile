@@ -17,7 +17,7 @@ BOOT_SECTORS = diskcontents/bootsector.bin
 APP_NAMES = $(shell for i in `ls -d src/apps/*/`; do basename $$i; done)
 APPS = $(shell for i in $(APP_NAMES); do echo diskcontents/$${i}.com; done)
 # files included in the floppy disk
-FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/kernel.bin $(APPS) diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
+FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/lddskxtr.bin diskcontents/kernel.bin $(APPS) diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
 
 # tcp ports
 DEBUG_PORT = 2159

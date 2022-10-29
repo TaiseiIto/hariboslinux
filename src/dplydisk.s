@@ -1,5 +1,5 @@
 # This program is called from mv2prtmd.s to deploy disk image to 0x00100000 and jump to kernel
-
+#
 # calling convention = System V i386
 # return value: ax, dx
 # parameters: stack
@@ -47,7 +47,7 @@ main:
 5:					# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
-	jmp	$0x10,	$0x00106000
+	jmp	$lddskxtr
 
 memcpy:				# void memcpy(unsigned short dest_seg, void *dest_addr, unsigned short src_seg, void *src_addr, unsigned short size);
 0:
@@ -158,5 +158,5 @@ finish_message:
 hello_message:
 	.string "Hello, dplydisk.bin!\n\n"
 	.align	0x0200
-kernel:
+lddskxtr:
 
