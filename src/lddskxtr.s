@@ -37,6 +37,8 @@
 	# 16bit mode functions
 	.globl	load_sectors_16
 	.globl	load_sectors
+	.globl	new_line_serial_16
+	.globl	print_serial_16
 	.globl	putchar_serial_16
 
 	# 32bit mode functions
@@ -57,7 +59,9 @@
 	# 16bit mode functions
 	.type	load_sectors_16,		@function
 	.type	load_sectors,			@function
-	.type	put_char_serial_16,		@function
+	.type	new_line_serial_16,		@function
+	.type	print_serial_16,		@function
+	.type	putchar_serial_16,		@function
 
 	.code32
 	.text
@@ -595,8 +599,10 @@ load_sectors:		# 16bit real mode
 	subw	$0x0002,%sp
 	movw	%sp,	%di
 	# serial test
-	movw	$0x0041,(%di)
-	call	putchar_serial_16
+	movw	$real_mode_message,(%di)
+	call	print_serial_16
+	call	new_line_serial_16
+	call	new_line_serial_16
 	addw	$0x0002,%sp
 	popw	%di
 	leave
@@ -617,6 +623,46 @@ load_sectors:		# 16bit real mode
 	movw	%ax,	%gs
 	# return to 32 bit protected mode
 	jmp	$0x0010,$return_2_32
+
+				# // print CRLF
+new_line_serial_16:		# void new_line_serial_16(void);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	$0x000a,(%di)
+	call	putchar_serial_16
+	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print string to console
+print_serial_16:		# void print_serial_16(char *string);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%si
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	0x04(%bp),%si
+1:				# put loop
+	movzxb	(%si),	%ax
+	cmpb	$0x00,	%al
+	je	2f		# finish putting all characters
+	movw	%ax,	(%di)
+	call	putchar_serial_16
+	incw	%si
+	jmp	1b		# put next character
+2:
+	addw	$0x0002,%sp
+	popw	%di
+	popw	%si
+	leave
+	ret
 
 				# // print a character to console
 putchar_serial_16:		# void putchar_serial(char c);
@@ -775,6 +821,8 @@ last_disk_address_message:
 	.string "last_disk_address = 0x"
 last_sector_message:
 	.string "last_cylinder"
+real_mode_message:
+	.string "REAL MODE NOW!"
 sector_message:
 	.string "sector = 0x"
 	.align	0x0200
