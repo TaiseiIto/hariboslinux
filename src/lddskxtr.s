@@ -19,8 +19,11 @@
 
 	.include	"global.s"
 
+	# 32bit mode functions
 	.globl	main
 	.globl	disk_address_2_sector_specifier
+	.globl	load_sectors_32
+	.globl	return_2_32
 	.globl	memcpy
 	.globl	new_line_serial
 	.globl	print_byte_hex_serial
@@ -31,9 +34,14 @@
 	.globl	putchar_serial
 	.globl	sector_specifier_2_disk_address
 	.globl	validate_sector_specifier
+	# 16bit mode functions
+	.globl	load_sectors_16
 
+	# 32bit mode functions
 	.type	main,				@function
 	.type	disk_address_2_sector_specifier,@function
+	.type	load_sectors_32,		@function
+	.type	return_2_32,			@function
 	.type	memcpy,				@function
 	.type	new_line_serial,		@function
 	.type	print_byte_hex_serial,		@function
@@ -44,6 +52,8 @@
 	.type	putchar_serial,			@function
 	.type	sector_specifier_2_disk_address,@function
 	.type	validate_sector_specifier,	@function
+	# 16bit mode functions
+	.type	load_sectors_16,		@function
 
 	.code32
 	.text
@@ -209,6 +219,7 @@ main:
 	call	new_line_serial
 	call	new_line_serial
 10:	# load sectors and copy to destination
+	call	load_sectors_32
 	# copy to destination
 	movl	$copy_destination_begin,%esi
 	movl	(%esi),	%edx
@@ -270,6 +281,17 @@ disk_address_2_sector_specifier:	# // void disk_address_2_sector_specifier(unsig
 	movb	%al,	(%edi)		# sector_specifier->cylinder = disk_address / sector_size / track_size / heads;
 2:
 	popl	%edi
+	leave
+	ret
+
+load_sectors_32:			# // void load_sectors_32(void);
+0:
+	pushl	%ebp
+	movl	%esp,	%ebp
+1:
+	jmp	$0x20,	$load_sectors_16
+return_2_32:
+0:
 	leave
 	ret
 
@@ -528,6 +550,11 @@ validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *se
 2:
 	leave
 	ret
+
+	.code16
+load_sectors_16:
+	0:
+	jmp	$0x10,	$return_2_32
 
 	.data
 	.align	0x8
