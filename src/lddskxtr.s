@@ -60,6 +60,7 @@
 	.type	load_sectors_16,		@function
 	.type	load_sectors,			@function
 	.type	new_line_serial_16,		@function
+	.type	print_byte_hex_serial_16,	@function
 	.type	print_serial_16,		@function
 	.type	putchar_serial_16,		@function
 
@@ -635,6 +636,42 @@ new_line_serial_16:		# void new_line_serial_16(void);
 	movw	$0x000a,(%di)
 	call	putchar_serial_16
 	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_byte_hex_serial_16:	# void print_byte_hex_serial_16(unsigned value);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	$0x0001,%cx	# if %cx == 1, then print the digit of 0x10s place, else print the digit of 0x01s place.
+	movw	0x04(%bp),%dx	# get the byte
+	shrw	$0x0004,%dx
+1:
+	andw	$0x000f,%dx
+	cmpw	$0x000a,%dx
+	jae	3f
+2:				# the digit is less than 0x0a
+	addw	$0x0030,%dx
+	jmp	4f
+3:				# the digit is greater than or equal to 0x0a
+	subw	$0x000a,%dx
+	addw	$0x0061,%dx
+4:				# print the digit
+	movw	%cx,	0x02(%di)
+	movw	%dx,	(%di)
+	call	putchar_serial_16
+	movw	0x02(%di),%cx
+	jcxz	5f
+	movw	0x04(%bp),%dx	# get the byte
+	decw	%cx
+	jmp	1b
+5:				# finish printing
+	addw	$0x0004,%sp
 	popw	%di
 	leave
 	ret
