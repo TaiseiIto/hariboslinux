@@ -17,14 +17,14 @@
 	.globl	print
 	.globl	print_byte_hex
 	.globl	putchar
-	.globl	read_sector
+	.globl	load_sector
 
 	.type	main,		@function
 	.type	new_line,	@function
 	.type	print,		@function
 	.type	print_byte_hex,	@function
 	.type	putchar,	@function
-	.type	read_sector,	@function
+	.type	load_sector,	@function
 
 	.code16					# real mode
 	.text
@@ -86,10 +86,10 @@ main:
 	shrw	$0x0004,%dx
 	movw	%dx,	0x08(%di)# destination_segment
 	movw	$0x2400,0x0a(%di)	# destination_address
-	call	read_sector
+	call	load_sector
 	cmpw	$0x0000,%ax
 	je	4f
-3:				# read_sector failure
+3:				# load_sector failure
 	movw	$error_message,(%di)
 	call print
 4:				# check loaddisk.bin
@@ -224,7 +224,7 @@ putchar:			# void putchar(char c);
 				# // destination: [destination_segment:destination_address]
 				# // return value 0 means success
 				# // return value 1 means failure
-read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsigned short head, unsigned short sector_number, unsigned short num_of_sectors, unsigned short destination_segment, unsigned short destination_address);
+load_sector:			# unsigned short load_sector(unsigned short cylinder_number, unsigned short head, unsigned short sector_number, unsigned short num_of_sectors, unsigned short destination_segment, unsigned short destination_address);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
