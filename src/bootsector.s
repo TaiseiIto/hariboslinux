@@ -167,7 +167,7 @@ print:				# void print(char *string);
 	ret
 
 				# // print value as hexadecimal
-print_byte_hex:			# void print_byte_hex(unsigned value);
+print_byte_hex:			# void print_byte_hex(unsigned char value);
 0:
 	pushw	%bp
 	movw	%sp,	%bp

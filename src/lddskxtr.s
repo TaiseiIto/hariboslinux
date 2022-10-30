@@ -39,6 +39,9 @@
 	.globl	load_sectors
 	.globl	load_sector
 	.globl	new_line_serial_16
+	.globl	print_byte_hex_serial_16
+	.globl	print_dword_hex_serial_16
+	.globl	print_word_hex_serial_16
 	.globl	print_serial_16
 	.globl	putchar_serial_16
 
@@ -63,6 +66,8 @@
 	.type	load_sector,			@function
 	.type	new_line_serial_16,		@function
 	.type	print_byte_hex_serial_16,	@function
+	.type	print_dword_hex_serial_16,	@function
+	.type	print_word_hex_serial_16,	@function
 	.type	print_serial_16,		@function
 	.type	putchar_serial_16,		@function
 
@@ -707,7 +712,7 @@ new_line_serial_16:		# void new_line_serial_16(void);
 	ret
 
 				# // print value as hexadecimal
-print_byte_hex_serial_16:	# void print_byte_hex_serial_16(unsigned value);
+print_byte_hex_serial_16:	# void print_byte_hex_serial_16(unsigned char value);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
@@ -737,6 +742,46 @@ print_byte_hex_serial_16:	# void print_byte_hex_serial_16(unsigned value);
 	decw	%cx
 	jmp	1b
 5:				# finish printing
+	addw	$0x0004,%sp
+	popw	%di
+	leave
+	ret
+
+print_dword_hex_serial_16:	# void print_dword_hex_serial_16(unsigned short low, unsigned short high);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	0x06(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial_16
+	movw	0x04(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial_16
+	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_word_hex_serial_16:	# void print_word_hex_serial_16(unsigned short value);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	0x04(%bp),%dx
+	movw	%dx,	0x02(%di)
+	shr	$0x0008,%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex_serial_16
+	movw	0x02(%di),%dx
+	andw	$0x00ff,%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex_serial_16
 	addw	$0x0004,%sp
 	popw	%di
 	leave
