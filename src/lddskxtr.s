@@ -12,9 +12,9 @@
 #
 # typedef struct
 # {
-# 	unsigned char cylinder;
-# 	unsigned char head;
-# 	unsigned char sector;
+# 	unsigned short cylinder;
+# 	unsigned short head;
+# 	unsigned short sector;
 # } SectorSpecifier;
 
 	.include	"global.s"
@@ -123,18 +123,16 @@ main:
 	call	new_line_serial
 4:	# calculate the first disk range to read
 	# get last loaded cylinder
-	movb	(last_loaded_cylinder),	%dl
-	movb	%dl,	(begin_cylinder)
+	movzxb	(last_loaded_cylinder),	%dx
+	movw	%dx,	(begin_cylinder)
 	# get last loaded head
-	movl	$last_loaded_head,%esi
-	movl	$begin_head,%edi
-	movb	(last_loaded_head),%dl
-	movb	%dl,	(begin_head)
+	movzxb	(last_loaded_head),%dx
+	movw	%dx,	(begin_head)
 	# get last loaded sector
-	movb	(last_loaded_sector),%dl
-	incb	%dl	# calculate next sector
-	movb	%dl,	(begin_sector)
-	# standardize the begin sector specifier
+	movzxb	(last_loaded_sector),%dx
+	incw	%dx	# calculate next sector
+	movw	%dx,	(begin_sector)
+	# validate the begin sector specifier
 	movl	$begin_cylinder,(%esp)
 	call	validate_sector_specifier
 5:	# print begin sector
@@ -146,12 +144,11 @@ main:
 6:	# calculate begin_disk_address
 	movl	$begin_cylinder,(%esp)
 	call	sector_specifier_2_disk_address
-	movl	$begin_disk_address,%edi
-	movl	%eax,	(%edi)
+	movl	%eax,	(begin_disk_address)
 	# check begin_disk_address
 	movl	$begin_disk_address_message,(%esp)
 	call	print_serial
-	movl	(begin_disk_address),	%edx
+	movl	(begin_disk_address),%edx
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
@@ -165,10 +162,9 @@ main:
 	jb	8f
 	movl	%edx,	%eax
 8:
-	movl	$end_disk_address,%edi
-	movl	%eax,	(%edi)
-	movl	$end_cylinder,0x04(%esp)
+	movl	%eax,	(end_disk_address)
 	movl	%eax,	(%esp)
+	movl	$end_cylinder,0x04(%esp)
 	call	disk_address_2_sector_specifier
 	# print end_disk_address
 	movl	$end_sector_message,(%esp)
@@ -191,12 +187,9 @@ main:
 	addl	%ecx,	%edx
 	addl	%ebx,	%eax
 	subl	%ebx,	%ecx
-	movl	$copy_destination_begin,%edi
-	movl	%eax,	(%edi)
-	movl	$copy_destination_end,%edi
-	movl	%edx,	(%edi)
-	movl	$copy_size,%edi
-	movl	%ecx,	(%edi)
+	movl	%eax,	(copy_destination_begin)
+	movl	%edx,	(copy_destination_end)
+	movl	%ecx,	(copy_size)
 	# print copy destination
 	movl	$copy_destination_begin_message,(%esp)
 	call	print_serial
@@ -270,14 +263,14 @@ disk_address_2_sector_specifier:	# // void disk_address_2_sector_specifier(unsig
 	xorl	%edx,	%edx		# %edx = 0;
 	divl	%ecx			# %eax = disk_address / sector_size / track_size;
 					# %edx = disk_address / sector_size % track_size;
-	incb	%dl			# %dl = disk_address / sector_size % track_size + 1;
-	movb	%dl,	0x02(%edi)	# sector_specifier->sector = disk_address / sector_size % track_size + 1;
+	incw	%dx			# %dx = disk_address / sector_size % track_size + 1;
+	movw	%dx,	0x04(%edi)	# sector_specifier->sector = disk_address / sector_size % track_size + 1;
 	movl	$heads,	%ecx		# %ecx = heads;
 	xorl	%edx,	%edx		# %edx = 0;
 	divl	%ecx			# %eax = disk_address / sector_size / track_size / heads;
 					# %edx = disk_address / sector_size / track_size % heads;
-	movb	%dl,	0x01(%edi)	# sector_specifier->head = disk_address / sector_size / track_size % heads;
-	movb	%al,	(%edi)		# sector_specifier->cylinder = disk_address / sector_size / track_size / heads;
+	movw	%dx,	0x02(%edi)	# sector_specifier->head = disk_address / sector_size / track_size % heads;
+	movw	%ax,	(%edi)		# sector_specifier->cylinder = disk_address / sector_size / track_size / heads;
 2:
 	popl	%edi
 	leave
@@ -447,23 +440,23 @@ print_sector_specifier:		# void print_sector_specifier(SectorSpecifier *sector_s
 1:	# print cylinder number
 	movl	$cylinder_message,(%esp)
 	call	print_serial
-	movb	(%esi),	%dl
-	movb	%dl,	(%esp)
-	call	print_byte_hex_serial
+	movw	(%esi),	%dx
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
 	call	new_line_serial
 2:	# print head number
 	movl	$head_message,(%esp)
 	call	print_serial
-	movb	0x01(%esi),%dl
-	movb	%dl,	(%esp)
-	call	print_byte_hex_serial
+	movw	0x02(%esi),%dx
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
 	call	new_line_serial
 3:	# print sector number
 	movl	$sector_message,(%esp)
 	call	print_serial
-	movb	0x02(%esi),%dl
-	movb	%dl,	(%esp)
-	call	print_byte_hex_serial
+	movw	0x04(%esi),%dx
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
 	call	new_line_serial
 4:
 	addl	$0x00000004,%esp
@@ -518,14 +511,14 @@ sector_specifier_2_disk_address:	# unsigned int sector_specifier_2_disk_address(
 	movl	%esp,	%ebp
 1:
 	movl	0x08(%ebp),%ecx 	# %ecx = sector_specifier;
-	movzxb	(%ecx),	%eax		# %eax = sector_specifier->cylinder;
+	movzxw	(%ecx),	%eax		# %eax = sector_specifier->cylinder;
 	movl	$heads,	%edx		# %edx = heads;
 	mull	%edx			# %edx:%eax = sector_specifier->cylinder * heads;
-	movzxb	0x01(%ecx),%edx		# %edx = sector_specifier->head;
+	movzxw	0x02(%ecx),%edx		# %edx = sector_specifier->head;
 	addl	%edx,	%eax		# %eax = sector_specifier->cylinder * heads + sector_specifier->head;
 	movl	$track_size,%edx	# %edx = track_size;
 	mull	%edx			# %edx:%eax = (sector_specifier->cylinder * heads + sector_specifier->head) * track_size;
-	movzxb	0x02(%ecx),%edx		# %edx = sector_specifier->sector;
+	movzxw	0x04(%ecx),%edx		# %edx = sector_specifier->sector;
 	decl	%edx			# %edx = sector_specifier->sector - 1;
 	addl	%edx,	%eax		# %eax = (sector_specifier->cylinder * heads + sector_specifier->head) * track_size + sector_specifier->sector - 1;
 	movl	$sector_size,%edx	# %edx = sector_size;
@@ -540,20 +533,19 @@ validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *se
 	movl	%esp,	%ebp
 1:
 	movl	0x08(%ebp),%ecx 	# %ecx = sector_specifier;
-	movzxb	0x02(%ecx),%eax		# %al = sector_specifier->sector;
-	decb	%al			# %al = sector_specifier->sector - 1;
-	movb	$track_size,%dl		# %dl = track_size;
-	divb	%dl			# %al = (sector_specifier->sector - 1) / track_size;
-					# %ah = (sector_specifier->sector - 1) % track_size;
-	incb	%ah			# %ah = (sector_specifier->sector - 1) % track_size + 1;
-	movb	%ah,	0x02(%ecx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
-	addb	0x01(%ecx),%al		# %al += sector_specifier->head;
-	xorb	%ah,	%ah		# %ah = 0;
-	movb	$heads,	%dl		# %dl = heads;
-	divb	%dl			# %al = %al / heads;
-					# %ah = %al % heads;
-	movb	%ah,	0x01(%ecx)	# sector_specifier->head = %ah;
-	addb	%al,	(%ecx)		# sector_specifier->cylinder += %al;
+	movzxw	0x04(%ecx),%eax		# %ax = sector_specifier->sector;
+	decw	%ax			# %ax = sector_specifier->sector - 1;
+	movw	$track_size,%dx		# %dx = track_size;
+	divw	%dx			# %ax = (sector_specifier->sector - 1) / track_size;
+					# %dx = (sector_specifier->sector - 1) % track_size;
+	incw	%dx			# %dx = (sector_specifier->sector - 1) % track_size + 1;
+	movw	%dx,	0x04(%ecx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
+	addw	0x02(%ecx),%ax		# %ax += sector_specifier->head;
+	movw	$heads,	%dx		# %dx = heads;
+	divw	%dx			# %ax = %ax / heads;
+					# %dx = %ax % heads;
+	movw	%dx,	0x02(%ecx)	# sector_specifier->head = %dx;
+	addw	%ax,	(%ecx)		# sector_specifier->cylinder += %ax;
 2:
 	leave
 	ret
@@ -601,11 +593,11 @@ load_sectors:		# 16bit real mode
 	call	new_line_serial_16
 	call	new_line_serial_16
 	# initialize load_sector arguments
-	movzxb	(begin_cylinder),%dx
+	movw	(begin_cylinder),%dx
 	movw	%dx,	(%bx)
-	movzxb	(begin_head),%dx
+	movw	(begin_head),%dx
 	movw	%dx,	0x02(%bx)
-	movzxb	(begin_sector),%dx
+	movw	(begin_sector),%dx
 	movw	%dx,	0x04(%bx)
 	movw	$0x0001,0x06(%bx)
 	movw	$0x0000,0x08(%bx)
@@ -873,19 +865,19 @@ validate_sector_specifier_16:		# void validate_sector_specifier_16(SectorSpecifi
 	push	%bx
 1:
 	movw	0x04(%bp),%bx 		# %bx = sector_specifier;
-	movzxb	0x02(%bx),%ax		# %al = sector_specifier->sector;
-	decb	%al			# %al = sector_specifier->sector - 1;
-	movb	$track_size,%dl		# %dl = track_size;
-	divb	%dl			# %al = (sector_specifier->sector - 1) / track_size;
-					# %ah = (sector_specifier->sector - 1) % track_size;
-	incb	%ah			# %ah = (sector_specifier->sector - 1) % track_size + 1;
-	movb	%ah,	0x02(%bx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
-	addb	0x01(%bx),%al		# %al += sector_specifier->head;
-	xorb	%ah,	%ah		# %ah = 0;
-	movb	$heads,	%dl		# %dl = heads;
-	divb	%dl			# %al = %al / heads;
-					# %ah = %al % heads;
-	movb	%ah,	0x01(%bx)	# sector_specifier->head = %ah;
+	movw	0x04(%bx),%ax		# %ax = sector_specifier->sector;
+	decw	%ax			# %ax = sector_specifier->sector - 1;
+	movw	$track_size,%dx		# %dx = track_size;
+	divw	%dx			# %ax = (sector_specifier->sector - 1) / track_size;
+					# %dx = (sector_specifier->sector - 1) % track_size;
+	incw	%dx			# %dx = (sector_specifier->sector - 1) % track_size + 1;
+	movw	%dx,	0x04(%bx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
+	addw	0x02(%bx),%ax		# %ax += sector_specifier->head;
+	movw	$heads,	%dx		# %dx = heads;
+	divw	%dx			# %ax = %ax / heads;
+					# %dx = %ax % heads;
+	movw	%dx,	0x02(%bx)	# sector_specifier->head = %dx;
+	addw	%ax,	(%bx)		# sector_specifier->cylinder += %ax;
 2:
 	popw	%bx
 	leave
@@ -959,11 +951,11 @@ gdtr:
 last_disk_address:
 	.long	sectors * sector_size
 last_cylinder:
-	.byte	sectors / heads / track_size - 1
+	.word	sectors / heads / track_size - 1
 last_head:
-	.byte	heads - 1
+	.word	heads - 1
 last_sector:
-	.byte	track_size
+	.word	track_size
 # Buffer range
 buffer_begin:
 	.word	load_dest
@@ -978,19 +970,19 @@ destination:
 begin_disk_address:
 	.long	0x00000000
 begin_cylinder:
-	.byte	0x00
+	.word	0x00
 begin_head:
-	.byte	0x00
+	.word	0x00
 begin_sector:
-	.byte	0x00
+	.word	0x00
 end_disk_address:
 	.long	0x00000000
 end_cylinder:
-	.byte	0x00
+	.word	0x00
 end_head:
-	.byte	0x00
+	.word	0x00
 end_sector:
-	.byte	0x00
+	.word	0x00
 # Next Copy target
 copy_destination_begin:
 	.long	0x00000000
