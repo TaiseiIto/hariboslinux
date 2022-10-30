@@ -42,6 +42,7 @@
 	.globl	print_byte_hex_serial_16
 	.globl	print_dword_hex_serial_16
 	.globl	print_word_hex_serial_16
+	.globl	print_sector_specifier_16
 	.globl	print_serial_16
 	.globl	putchar_serial_16
 	.globl	validate_sector_specifier_16
@@ -69,6 +70,7 @@
 	.type	print_byte_hex_serial_16,	@function
 	.type	print_dword_hex_serial_16,	@function
 	.type	print_word_hex_serial_16,	@function
+	.type	print_sector_specifier_16,	@function
 	.type	print_serial_16,		@function
 	.type	putchar_serial_16,		@function
 	.type	validate_sector_specifier_16,	@function
@@ -605,25 +607,48 @@ load_sectors:		# 16bit real mode
 0:
 	pushw	%bp
 	movw	%sp,	%bp
-	pushw	%di
-	subw	$0x0002,%sp
-	movw	%sp,	%di
+	pushw	%bx
+	subw	$0x000c,%sp
+	movw	%sp,	%bx
+	# 0x00(%bx) = cylinder number
+	# 0x02(%bx) = head
+	# 0x04(%bx) = sector number
+	# 0x06(%bx) = number of sectors to load
+	# 0x08(%bx) = destination segment
+	# 0x0a(%bx) = destination address
 	# serial test
-	movw	$real_mode_message,(%di)
+	movw	$real_mode_message,(%bx)
 	call	print_serial_16
 	call	new_line_serial_16
+	# initialize load_sector arguments
+	movb	(begin_cylinder),%dl
+	movb	%dl,	(%bx)
+	movb	(begin_head),%dl
+	movb	%dl,	0x02(%bx)
+	movb	(begin_sector),%dl
+	movb	%dl,	0x04(%bx)
+	movb	$0x01,	0x06(%bx)
+	movb	$0x00,	0x08(%bx)
+	movb	(buffer_begin),%dl
+	movb	%dl,	0x0a(%bx)
 	call	new_line_serial_16
+1:	# load loop
+	pushw	%bx
+	call	print_sector_specifier_16
 	addw	$0x0002,%sp
-	popw	%di
+2:
+	# closing
+	addw	$0x000c,%sp
+	popw	%bx
 	leave
-1:	# return to 16bit protected mode
+3:	# return to 16bit protected mode
 	# set CR0 PE bit
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
-	jmp	2f
-2:
+	jmp	4f
+4:
 	# set 32bit protected mode data segment
 	movw	$0x0008,%ax
 	movw	%ax,	%ss
@@ -788,6 +813,44 @@ print_word_hex_serial_16:	# void print_word_hex_serial_16(unsigned short value);
 	popw	%di
 	leave
 	ret
+
+print_sector_specifier_16:	# void print_sector_specifier_16(SectorSpecifier *sector_specifier);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%bx
+	pushw	%si
+	subw	$0x0002,%sp
+	movw	%sp,	%bx
+	movw	0x04(%bp),%si
+1:	# print cylinder number
+	movl	$cylinder_message,(%bx)
+	call	print_serial_16
+	movb	(%si),	%dl
+	movb	%dl,	(%bx)
+	call	print_byte_hex_serial_16
+	call	new_line_serial_16
+2:	# print head number
+	movl	$head_message,(%bx)
+	call	print_serial_16
+	movb	0x01(%si),%dl
+	movb	%dl,	(%bx)
+	call	print_byte_hex_serial_16
+	call	new_line_serial_16
+3:	# print sector number
+	movl	$sector_message,(%bx)
+	call	print_serial_16
+	movb	0x02(%si),%dl
+	movb	%dl,	(%bx)
+	call	print_byte_hex_serial_16
+	call	new_line_serial_16
+4:
+	addl	$0x0002,%esp
+	popw	%si
+	popw	%bx
+	leave
+	ret
+
 
 				# // print string to console
 print_serial_16:		# void print_serial_16(char *string);
