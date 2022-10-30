@@ -221,6 +221,11 @@ main:
 	call	new_line_serial
 10:	# load sectors and copy to destination
 	call	load_sectors_32
+	# protected mode message
+	movl	$protected_mode_message,(%esp)
+	call	print_serial
+	call	new_line_serial
+	call	new_line_serial
 	# copy to destination
 	movl	(copy_destination_begin),%edx
 	movl	%edx,	(%esp)
@@ -596,6 +601,7 @@ load_sectors:		# 16bit real mode
 	movw	$real_mode_message,(%bx)
 	call	print_serial_16
 	call	new_line_serial_16
+	call	new_line_serial_16
 	# initialize load_sector arguments
 	movb	(begin_cylinder),%dl
 	movb	%dl,	(%bx)
@@ -607,10 +613,10 @@ load_sectors:		# 16bit real mode
 	movb	$0x00,	0x08(%bx)
 	movb	(buffer_begin),%dl
 	movb	%dl,	0x0a(%bx)
-	call	new_line_serial_16
 1:	# load loop
 	pushw	%bx
 	call	print_sector_specifier_16
+	call	new_line_serial_16
 	addw	$0x0002,%sp
 2:
 	# closing
@@ -1039,6 +1045,8 @@ last_disk_address_message:
 	.string "last_disk_address = 0x"
 last_sector_message:
 	.string "last_cylinder"
+protected_mode_message:
+	.string "PROTECTED MODE NOW!"
 real_mode_message:
 	.string "REAL MODE NOW!"
 sector_message:
