@@ -42,7 +42,6 @@
 	.globl	print_byte_hex_serial_16
 	.globl	print_dword_hex_serial_16
 	.globl	print_word_hex_serial_16
-	.globl	print_sector_specifier_16
 	.globl	print_serial_16
 	.globl	putchar_serial_16
 	.globl	validate_sector_specifier_16
@@ -70,7 +69,6 @@
 	.type	print_byte_hex_serial_16,	@function
 	.type	print_dword_hex_serial_16,	@function
 	.type	print_word_hex_serial_16,	@function
-	.type	print_sector_specifier_16,	@function
 	.type	print_serial_16,		@function
 	.type	putchar_serial_16,		@function
 	.type	validate_sector_specifier_16,	@function
@@ -614,8 +612,26 @@ load_sectors:		# 16bit real mode
 	movw	(buffer_begin),%dx
 	movw	%dx,	0x0a(%bx)
 1:	# load loop
-	pushw	%bx
-	call	print_sector_specifier_16
+	pushw	$cylinder_message
+	call	print_serial_16
+	pushw	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	pushw	$head_message
+	call	print_serial_16
+	pushw	0x02(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	pushw	$sector_message
+	call	print_serial_16
+	pushw	0x04(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	pushw	$number_of_sectors_message
+	call	print_serial_16
+	pushw	0x06(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
 	pushw	$destination_segment_message
 	call	print_serial_16
 	pushw	0x08(%bx)
@@ -805,44 +821,6 @@ print_word_hex_serial_16:	# void print_word_hex_serial_16(unsigned short value);
 	popw	%di
 	leave
 	ret
-
-print_sector_specifier_16:	# void print_sector_specifier_16(SectorSpecifier *sector_specifier);
-0:
-	pushw	%bp
-	movw	%sp,	%bp
-	pushw	%bx
-	pushw	%si
-	subw	$0x0002,%sp
-	movw	%sp,	%bx
-	movw	0x04(%bp),%si
-1:	# print cylinder number
-	movl	$cylinder_message,(%bx)
-	call	print_serial_16
-	movb	(%si),	%dl
-	movb	%dl,	(%bx)
-	call	print_byte_hex_serial_16
-	call	new_line_serial_16
-2:	# print head number
-	movl	$head_message,(%bx)
-	call	print_serial_16
-	movb	0x01(%si),%dl
-	movb	%dl,	(%bx)
-	call	print_byte_hex_serial_16
-	call	new_line_serial_16
-3:	# print sector number
-	movl	$sector_message,(%bx)
-	call	print_serial_16
-	movb	0x02(%si),%dl
-	movb	%dl,	(%bx)
-	call	print_byte_hex_serial_16
-	call	new_line_serial_16
-4:
-	addl	$0x0002,%esp
-	popw	%si
-	popw	%bx
-	leave
-	ret
-
 
 				# // print string to console
 print_serial_16:		# void print_serial_16(char *string);
@@ -1059,6 +1037,8 @@ last_disk_address_message:
 	.string "last_disk_address = 0x"
 last_sector_message:
 	.string "last_cylinder"
+number_of_sectors_message:
+	.string "number_of_sectors = 0x"
 protected_mode_message:
 	.string "PROTECTED MODE NOW!"
 real_mode_message:
