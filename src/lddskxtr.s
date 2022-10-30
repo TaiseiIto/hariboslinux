@@ -292,6 +292,12 @@ load_sectors_32:			# // void load_sectors_32(void);
 	jmp	$0x20,	$load_sectors_16
 return_2_32:
 0:
+	movw	$0x08,	%ax
+	movw	%ax,	%ss
+	movw	%ax,	%ds
+	movw	%ax,	%es
+	movw	%ax,	%fs
+	movw	%ax,	%gs
 	leave
 	ret
 
@@ -554,6 +560,12 @@ validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *se
 	.code16
 load_sectors_16:
 	0:
+	movw	$0x18,	%ax
+	movw	%ax,	%ss
+	movw	%ax,	%ds
+	movw	%ax,	%es
+	movw	%ax,	%fs
+	movw	%ax,	%gs
 	jmp	$0x10,	$return_2_32
 
 	.data
