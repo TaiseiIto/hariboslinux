@@ -584,7 +584,7 @@ load_sectors_16:
 	movw	%ax,	%gs
 	jmp	$0x0000,$load_sectors
 load_sectors:
-0:	# load sector
+0:	# load sectors
 1:	# return to 16bit protected mode
 	# set CR0 PE bit
 	movl	%cr0,	%eax

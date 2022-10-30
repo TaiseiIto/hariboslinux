@@ -27,19 +27,19 @@
 
 	.globl	main
 	.globl	dump
+	.globl	load_sector
 	.globl	new_line
 	.globl	print
 	.globl	print_byte_hex
 	.globl	put_char
-	.globl	read_sector
 
 	.type	main,		@function
 	.type	dump,		@function
+	.type	load_sector,	@function
 	.type	new_line,	@function
 	.type	print,		@function
 	.type	print_byte_hex,	@function
 	.type	put_char,	@function
-	.type	read_sector,	@function
 
 	.code16				# real mode
 	.text
@@ -72,10 +72,10 @@ main:
 	shrw	$0x0004,%dx
 	movw	%dx,	0x08(%di)# destination_segment
 	movw	$0x0200,0x0a(%di)# destination_address
-	call	read_sector
+	call	load_sector
 	cmpw	$0x0000,%ax
 	je	5f
-4:				# read_sector failure
+4:				# load_sector failure
 	movw	$error_message,(%di)
 	call print
 5:				# check loaded FAT
@@ -103,7 +103,7 @@ main:
 	movw	$0x0c40,0x08(%di)# destination_segment
 	movw	$0x0000,0x0a(%di)# destination_address
 8:				# load loop
-	call	read_sector
+	call	load_sector
 	movw	0x08(%di),%cx	# advance destination_segment 1 segment
 	addw	$0x0020,%cx
 	movw	%cx,	0x08(%di)
@@ -191,6 +191,70 @@ dump:				# void dump(void *address, unsigned short num_of_bytes);
 	addw	$0x0004,%sp
 	popw	%di
 	popw	%si
+	leave
+	ret
+
+				# // load a sector from A drive
+				# // cylinder_number: 0x0000~0x004f
+				# // head: 0x0000, 0x0001
+				# // sector_number: 0x0000~0x0012
+				# // num_of_sectors: 0x0001~0x0012
+				# // destination: [destination_segment:destination_address]
+				# // return value 0 means success
+				# // return value 1 means failure
+load_sector:			# unsigned short load_sector(unsigned short cylinder_number, unsigned short head, unsigned short sector_number, unsigned short num_of_sectors, unsigned short destination_segment, unsigned short destination_address);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%bx
+	pushw	%di
+	pushw	%es
+	subw	$0x0006,%sp
+	movw	%sp,	%di
+				# cylinder_number: 0x04(%bp)
+				# head: 0x06(%bp)
+				# sector_number: 0x08(%bp)
+				# num_of_sectors: 0x0a(%bp)
+				# destination_segment: 0x0c(%bp)
+				# destination_address: 0x0e(%bp)
+	movw	$0x10,	%cx	# number of trials
+1:
+	movw	%cx,	0x04(%di)
+	movb	$0x02,	%ah	# load sectors
+	movb	0x0a(%bp),%al	# number of loaded sectors
+	movw	0x04(%bp),%cx	# cylinder_number
+	rolw	$0x08,	%cx
+	shlb	$0x06,	%cl
+	addb	0x08(%bp),%cl	# sector_number
+	xorb	%dl,	%dl	# load from A drive
+	movb	0x06(%bp),%dh	# head
+	movw	0x0c(%bp),%es	# destination_segment
+	movw	0x0e(%bp),%bx	# destination_address
+	int	$0x13
+	jc	3f
+2:				# success
+	xorw	%ax,	%ax
+	jmp	4f
+3:				# failure
+	shrw	$0x0008,%ax
+	movw	%ax,	0x02(%di)
+	movw	$int13_error_message,(%di)
+	call	print
+	movw	0x02(%di),%ax
+	movw	%ax,	(%di)
+	call	print_byte_hex
+	call	new_line
+	movw	0x04(%di),%cx
+	decw	%cx
+	jnz	1b		# retry
+	movw	$error_message,(%di)
+	call	print
+	movw	$0x0001,%ax
+4:
+	addw	$0x0006,%sp
+	popw	%es
+	popw	%di
+	popw	%bx
 	leave
 	ret
 
@@ -291,70 +355,6 @@ putchar:			# void putchar(char c);
 	movb	$0x0e,	%ah
 	movw	$0x000f,%bx
 	int	$0x10
-	popw	%bx
-	leave
-	ret
-
-				# // read a sector from A drive
-				# // cylinder_number: 0x0000~0x004f
-				# // head: 0x0000, 0x0001
-				# // sector_number: 0x0000~0x0012
-				# // num_of_sectors: 0x0001~0x0012
-				# // destination: [destination_segment:destination_address]
-				# // return value 0 means success
-				# // return value 1 means failure
-read_sector:			# unsigned short read_sector(unsigned short cylinder_number, unsigned short head, unsigned short sector_number, unsigned short num_of_sectors, unsigned short destination_segment, unsigned short destination_address);
-0:
-	pushw	%bp
-	movw	%sp,	%bp
-	pushw	%bx
-	pushw	%di
-	pushw	%es
-	subw	$0x0006,%sp
-	movw	%sp,	%di
-				# cylinder_number: 0x04(%bp)
-				# head: 0x06(%bp)
-				# sector_number: 0x08(%bp)
-				# num_of_sectors: 0x0a(%bp)
-				# destination_segment: 0x0c(%bp)
-				# destination_address: 0x0e(%bp)
-	movw	$0x10,	%cx	# number of trials
-1:
-	movw	%cx,	0x04(%di)
-	movb	$0x02,	%ah	# read sectors
-	movb	0x0a(%bp),%al	# number of read sectors
-	movw	0x04(%bp),%cx	# cylinder_number
-	rolw	$0x08,	%cx
-	shlb	$0x06,	%cl
-	addb	0x08(%bp),%cl	# sector_number
-	xorb	%dl,	%dl	# read from A drive
-	movb	0x06(%bp),%dh	# head
-	movw	0x0c(%bp),%es	# destination_segment
-	movw	0x0e(%bp),%bx	# destination_address
-	int	$0x13
-	jc	3f
-2:				# success
-	xorw	%ax,	%ax
-	jmp	4f
-3:				# failure
-	shrw	$0x0008,%ax
-	movw	%ax,	0x02(%di)
-	movw	$int13_error_message,(%di)
-	call	print
-	movw	0x02(%di),%ax
-	movw	%ax,	(%di)
-	call	print_byte_hex
-	call	new_line
-	movw	0x04(%di),%cx
-	decw	%cx
-	jnz	1b		# retry
-	movw	$error_message,(%di)
-	call	print
-	movw	$0x0001,%ax
-4:
-	addw	$0x0006,%sp
-	popw	%es
-	popw	%di
 	popw	%bx
 	leave
 	ret
