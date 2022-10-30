@@ -208,7 +208,7 @@ main:
 	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
-10:	# read sectors and copy to destination
+10:	# load sectors and copy to destination
 	# copy to destination
 	movl	$copy_destination_begin,%esi
 	movl	(%esi),	%edx
@@ -245,7 +245,7 @@ main:
 	movl	$0x00300000,%esp
 	jmp	kernel
 
-disk_address_2_sector_specifier:	# // void (unsigned int disk_address, SectorSpecifier *sector_specifier);
+disk_address_2_sector_specifier:	# // void disk_address_2_sector_specifier(unsigned int disk_address, SectorSpecifier *sector_specifier);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
