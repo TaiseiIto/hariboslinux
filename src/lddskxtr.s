@@ -531,22 +531,26 @@ validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *se
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
+	pushl	%ebx
 1:
-	movl	0x08(%ebp),%ecx 	# %ecx = sector_specifier;
-	movzxw	0x04(%ecx),%eax		# %ax = sector_specifier->sector;
+	movl	0x08(%ebp),%ebx 	# %ebx = sector_specifier;
+	movzxw	0x04(%ebx),%eax		# %ax = sector_specifier->sector;
 	decw	%ax			# %ax = sector_specifier->sector - 1;
-	movw	$track_size,%dx		# %dx = track_size;
-	divw	%dx			# %ax = (sector_specifier->sector - 1) / track_size;
+	movw	$track_size,%cx		# %cx = track_size;
+	xorw	%dx,	%dx		# %dx = 0;
+	divw	%cx			# %ax = (sector_specifier->sector - 1) / track_size;
 					# %dx = (sector_specifier->sector - 1) % track_size;
 	incw	%dx			# %dx = (sector_specifier->sector - 1) % track_size + 1;
-	movw	%dx,	0x04(%ecx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
-	addw	0x02(%ecx),%ax		# %ax += sector_specifier->head;
-	movw	$heads,	%dx		# %dx = heads;
-	divw	%dx			# %ax = %ax / heads;
+	movw	%dx,	0x04(%ebx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
+	addw	0x02(%ebx),%ax		# %ax += sector_specifier->head;
+	movw	$heads,	%cx		# %cx = heads;
+	xorw	%dx,	%dx		# %dx = 0;
+	divw	%cx			# %ax = %ax / heads;
 					# %dx = %ax % heads;
-	movw	%dx,	0x02(%ecx)	# sector_specifier->head = %dx;
-	addw	%ax,	(%ecx)		# sector_specifier->cylinder += %ax;
+	movw	%dx,	0x02(%ebx)	# sector_specifier->head = %dx;
+	addw	%ax,	(%ebx)		# sector_specifier->cylinder += %ax;
 2:
+	popl	%ebx
 	leave
 	ret
 
@@ -867,14 +871,16 @@ validate_sector_specifier_16:		# void validate_sector_specifier_16(SectorSpecifi
 	movw	0x04(%bp),%bx 		# %bx = sector_specifier;
 	movw	0x04(%bx),%ax		# %ax = sector_specifier->sector;
 	decw	%ax			# %ax = sector_specifier->sector - 1;
-	movw	$track_size,%dx		# %dx = track_size;
-	divw	%dx			# %ax = (sector_specifier->sector - 1) / track_size;
+	movw	$track_size,%cx		# %cx = track_size;
+	xorw	%dx,	%dx		# %dx = 0;
+	divw	%cx			# %ax = (sector_specifier->sector - 1) / track_size;
 					# %dx = (sector_specifier->sector - 1) % track_size;
 	incw	%dx			# %dx = (sector_specifier->sector - 1) % track_size + 1;
 	movw	%dx,	0x04(%bx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
 	addw	0x02(%bx),%ax		# %ax += sector_specifier->head;
-	movw	$heads,	%dx		# %dx = heads;
-	divw	%dx			# %ax = %ax / heads;
+	movw	$heads,	%cx		# %cx = heads;
+	xorw	%dx,	%dx		# %dx = 0;
+	divw	%cx			# %ax = %ax / heads;
 					# %dx = %ax % heads;
 	movw	%dx,	0x02(%bx)	# sector_specifier->head = %dx;
 	addw	%ax,	(%bx)		# sector_specifier->cylinder += %ax;
