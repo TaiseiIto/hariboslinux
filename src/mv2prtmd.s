@@ -202,7 +202,7 @@ gdt:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 gdtr:
-	.word	0x0017		# 3 segment descriptors * 8 bytes per segment descriptor - 1
+	.word	(gdtr) - (gdt) - 1	# limit of GDT
 	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"

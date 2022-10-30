@@ -49,6 +49,7 @@
 	.text
 main:
 0:
+	lgdt	(gdtr)
 	pushl	%ebp
 	movl	%esp,	%ebp
 	subl	$0x0000000c,%esp
@@ -530,8 +531,9 @@ validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *se
 
 	.data
 	.align	0x8
-# GDT for 32bit protected mode
-gdt32:
+# GDT
+gdt:
+				# null segment
 				# selector 0x0000 null segment descriptor
 	.word	0x0000		#  limit_low
 	.word	0x0000		#  base_low
@@ -540,6 +542,7 @@ gdt32:
 	.byte	0x00		#  limit_high
 	.byte	0x00		#  base_high
 
+				# data segment for 32bit protected mode
 				# selector 0x0008 whole memory is readable and writable
 				# base	0x00000000
 				# limit	0xffffffff
@@ -551,6 +554,7 @@ gdt32:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 
+				# code segment for 32bit protected mode
 				# selector 0x0010 whole memory is readable and executable
 				# base	0x00000000
 				# limit	0xffffffff
@@ -561,9 +565,34 @@ gdt32:
 	.byte	0x9a		#  access_right
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
-gdtr32:
-	.word	0x0017		# 3 segment descriptors * 8 bytes per segment descriptor - 1
-	.long	gdt32
+
+				# data segment for 16bit protected mode
+				# selector 0x0008 whole memory is readable and writable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x409a
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x92		#  access_right
+	.byte	0x0f		#  limit_high
+	.byte	0x00		#  base_high
+
+				# code segment for 16bit protected mode
+				# selector 0x0010 whole memory is readable and executable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x4092
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x9a		#  access_right
+	.byte	0x0f		#  limit_high
+	.byte	0x00		#  base_high
+
+gdtr:
+	.word	(gdtr) - (gdt) - 1	# limit of GDT
+	.long	gdt
 # The floppy disk limit
 last_disk_address:
 	.long	sectors * sector_size
