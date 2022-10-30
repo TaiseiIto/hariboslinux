@@ -631,16 +631,25 @@ load_sectors:		# 16bit real mode
 	movw	%bx,	%sp
 	call	new_line_serial_16
 	# load sector
-	call	load_sector
+	# call	load_sector
 	# increment sector
 	addw	$sector_size,0x0a(%bx)
 	incw	0x04(%bx)
 	pushw	%bx
 	call	validate_sector_specifier_16
 	movw	%bx,	%sp
-	movw	0x0a(%bx),%dx
-	cmpw	%dx,(buffer_end)
-	ja 1b
+	movw	(%bx),%dx
+	cmpw	(end_cylinder),%dx
+	jb 1b
+	ja 2f
+	movw	0x02(%bx),%dx
+	cmpw	(end_head),%dx
+	jb 1b
+	ja 2f
+	movw	0x04(%bx),%dx
+	cmpw	(end_sector),%dx
+	jb 1b
+	ja 2f
 2:
 	# closing
 	addw	$0x000c,%sp
