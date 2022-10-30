@@ -631,7 +631,7 @@ load_sectors:		# 16bit real mode
 	movw	%bx,	%sp
 	call	new_line_serial_16
 	# load sector
-	# call	load_sector
+	call	load_sector
 	# increment sector
 	addw	$sector_size,0x0a(%bx)
 	incw	0x04(%bx)
