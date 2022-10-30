@@ -617,7 +617,18 @@ load_sectors:		# 16bit real mode
 	pushw	%bx
 	call	print_sector_specifier_16
 	call	new_line_serial_16
-	addw	$0x0002,%sp
+	pushw	$destination_segment_message
+	call	print_serial_16
+	pushw	0x08(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	pushw	$destination_address_message
+	call	print_serial_16
+	pushw	0x0a(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	movw	%bx,	%sp
+	call	new_line_serial_16
 2:
 	# closing
 	addw	$0x000c,%sp
@@ -1029,6 +1040,10 @@ copy_size_message:
 	.string "copy_size = 0x"
 cylinder_message:
 	.string "cylinder = 0x"
+destination_address_message:
+	.string "destination address = 0x"
+destination_segment_message:
+	.string "destination segment = 0x"
 end_disk_address_message:
 	.string "end_disk_address = 0x"
 end_sector_message:
