@@ -77,6 +77,8 @@ main:
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
+	jmp	5f
+5:
 	movw	$0x0008,%dx
 	movw	%dx,	%ds
 	movw	%dx,	%es
