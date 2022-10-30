@@ -95,8 +95,7 @@ main:
 	call	print_sector_specifier
 	movl	$last_disk_address_message,(%esp)
 	call	print_serial
-	movl	$last_disk_address,%esi
-	movl	(%esi),	%edx
+	movl	(last_disk_address),%edx
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
@@ -105,45 +104,38 @@ main:
 	# print buffer_begin
 	movl	$buffer_begin_message,(%esp)
 	call	print_serial
-	movl	$buffer_begin,%esi
-	movl	(%esi),	%edx
+	movl	(buffer_begin),%edx
 	movl	%edx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print buffer_end
 	movl	$buffer_end_message,(%esp)
 	call	print_serial
-	movl	$buffer_end,%esi
-	movl	(%esi),	%edx
+	movl	(buffer_end),%edx
 	movl	%edx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print buffer_size
 	movl	$buffer_size_message,(%esp)
 	call	print_serial
-	movl	$buffer_size,%esi
-	movl	(%esi),	%edx
+	movl	(buffer_size),%edx
 	movl	%edx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	call	new_line_serial
 4:	# calculate the first disk range to read
 	# get last loaded cylinder
-	movl	$last_loaded_cylinder,%esi
-	movl	$begin_cylinder,%edi
-	movb	(%esi),	%dl
-	movb	%dl,	(%edi)
+	movb	(last_loaded_cylinder),	%dl
+	movb	%dl,	(begin_cylinder)
 	# get last loaded head
 	movl	$last_loaded_head,%esi
 	movl	$begin_head,%edi
-	movb	(%esi),	%dl
-	movb	%dl,	(%edi)
+	movb	(last_loaded_head),%dl
+	movb	%dl,	(begin_head)
 	# get last loaded sector
-	movl	$last_loaded_sector,%esi
-	movl	$begin_sector,%edi
-	movb	(%esi),	%dl
-	incb	%dl		# calculate next sector
-	movb	%dl,	(%edi)
+	movb	(last_loaded_sector),%dl
+	incb	%dl	# calculate next sector
+	movb	%dl,	(begin_sector)
 	# standardize the begin sector specifier
 	movl	$begin_cylinder,(%esp)
 	call	validate_sector_specifier
@@ -161,20 +153,16 @@ main:
 	# check begin_disk_address
 	movl	$begin_disk_address_message,(%esp)
 	call	print_serial
-	movl	$begin_disk_address,%esi
-	movl	(%esi),	%edx
+	movl	(begin_disk_address),	%edx
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
 7:	# calculate end_disk_address
-	movl	$begin_disk_address,%esi
-	movl	(%esi),	%eax
-	movl	$buffer_size,%esi
-	movl	(%esi),	%edx
+	movl	(begin_disk_address),%eax
+	movl	(buffer_size),%edx
 	addl	%edx,	%eax
-	movl	$last_disk_address,%esi
-	movl	(%esi),	%edx
+	movl	(last_disk_address),%edx
 	cmpl	%edx,	%eax
 	jb	8f
 	movl	%edx,	%eax
@@ -192,19 +180,15 @@ main:
 	call	print_sector_specifier
 	movl	$end_disk_address_message,(%esp)
 	call	print_serial
-	movl	$end_disk_address,%esi
-	movl	(%esi),	%edx
+	movl	(end_disk_address),%edx
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
 9:	# calculate copy destination
-	movl	$destination,%esi
-	movl	(%esi),	%eax
-	movl	$begin_disk_address,%esi
-	movl	(%esi),	%ebx
-	movl	$end_disk_address,%esi
-	movl	(%esi),	%ecx
+	movl	(destination),%eax
+	movl	(begin_disk_address),%ebx
+	movl	(end_disk_address),%ecx
 	movl	%eax,	%edx
 	addl	%ecx,	%edx
 	addl	%ebx,	%eax
@@ -218,22 +202,19 @@ main:
 	# print copy destination
 	movl	$copy_destination_begin_message,(%esp)
 	call	print_serial
-	movl	$copy_destination_begin,%esi
-	movl	(%esi),	%edx
+	movl	(copy_destination_begin),%edx
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
 	movl	$copy_destination_end_message,(%esp)
 	call	print_serial
-	movl	$copy_destination_end,%esi
-	movl	(%esi),	%edx
+	movl	(copy_destination_end),%edx
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
 	movl	$copy_size_message,(%esp)
 	call	print_serial
-	movl	$copy_size,%esi
-	movl	(%esi),	%edx
+	movl	(copy_size),%edx
 	movl	%edx,	(%esp)
 	call	print_dword_hex_serial
 	call	new_line_serial
@@ -241,21 +222,16 @@ main:
 10:	# load sectors and copy to destination
 	call	load_sectors_32
 	# copy to destination
-	movl	$copy_destination_begin,%esi
-	movl	(%esi),	%edx
+	movl	(copy_destination_begin),%edx
 	movl	%edx,	(%esp)
-	movl	$buffer_begin,%esi
-	movzxw	(%esi),	%edx
+	movzxw	(buffer_begin),%edx
 	movl	%edx,	0x04(%esp)
-	movl	$copy_size,%esi
-	movl	(%esi),	%edx
+	movl	(copy_size),%edx
 	movl	%edx,	0x08(%esp)
 	call	memcpy
 	# continuation condition judgement
-	movl	$end_disk_address,%esi
-	movl	(%esi),	%eax
-	movl	$last_disk_address,%esi
-	movl	(%esi),	%edx
+	movl	(end_disk_address),%eax
+	movl	(last_disk_address),%edx
 	cmpl	%edx,	%eax
 	jae	11f
 	# advance next disk range to read
