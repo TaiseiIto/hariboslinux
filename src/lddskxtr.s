@@ -36,6 +36,7 @@
 	.globl	validate_sector_specifier
 	# 16bit mode functions
 	.globl	load_sectors_16
+	.globl	load_sectors
 
 	# 32bit mode functions
 	.type	main,				@function
@@ -54,6 +55,7 @@
 	.type	validate_sector_specifier,	@function
 	# 16bit mode functions
 	.type	load_sectors_16,		@function
+	.type	load_sectors,			@function
 
 	.code32
 	.text
@@ -580,15 +582,17 @@ load_sectors_16:
 	movw	%ax,	%es
 	movw	%ax,	%fs
 	movw	%ax,	%gs
-2:	# load sectors
-3:	# return to 16bit protected mode
+	jmp	$0x0000,$load_sectors
+load_sectors:
+0:	# load sector
+1:	# return to 16bit protected mode
 	# set CR0 PE bit
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
-	jmp	4f
-4:
+	jmp	2f
+2:
 	# set 32bit protected mode data segment
 	movw	$0x0008,%ax
 	movw	%ax,	%ss
