@@ -44,6 +44,7 @@
 	.globl	print_word_hex_serial_16
 	.globl	print_serial_16
 	.globl	putchar_serial_16
+	.globl	validate_sector_specifier_16
 
 	# 32bit mode functions
 	.type	main,				@function
@@ -70,6 +71,7 @@
 	.type	print_word_hex_serial_16,	@function
 	.type	print_serial_16,		@function
 	.type	putchar_serial_16,		@function
+	.type	validate_sector_specifier_16,	@function
 
 	.code32
 	.text
@@ -828,6 +830,34 @@ putchar_serial_16:		# void putchar_serial(char c);
 	movw	$com1,	%dx
 	outb	%al,	%dx
 3:
+	leave
+	ret
+
+validate_sector_specifier_16:		# void validate_sector_specifier_16(SectorSpecifier *sector_specifier);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%si
+	pushw	%di
+1:
+	movw	0x04(%bp),%si 		# %si = sector_specifier;
+	movw	%si,	%di 		# %di = sector_specifier;
+	movzxb	0x02(%si),%ax		# %al = sector_specifier->sector;
+	decb	%al			# %al = sector_specifier->sector - 1;
+	movb	$track_size,%dl		# %dl = track_size;
+	divb	%dl			# %al = (sector_specifier->sector - 1) / track_size;
+					# %ah = (sector_specifier->sector - 1) % track_size;
+	incb	%ah			# %ah = (sector_specifier->sector - 1) % track_size + 1;
+	movb	%ah,	0x02(%di)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
+	addb	0x01(%si),%al		# %al += sector_specifier->head;
+	xorb	%ah,	%ah		# %ah = 0;
+	movb	$heads,	%dl		# %dl = heads;
+	divb	%dl			# %al = %al / heads;
+					# %ah = %al % heads;
+	movb	%ah,	0x01(%di)	# sector_specifier->head = %ah;
+2:
+	popw	%di
+	popw	%si
 	leave
 	ret
 
