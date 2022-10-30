@@ -603,20 +603,19 @@ load_sectors:		# 16bit real mode
 	call	new_line_serial_16
 	call	new_line_serial_16
 	# initialize load_sector arguments
-	movb	(begin_cylinder),%dl
-	movb	%dl,	(%bx)
-	movb	(begin_head),%dl
-	movb	%dl,	0x02(%bx)
-	movb	(begin_sector),%dl
-	movb	%dl,	0x04(%bx)
-	movb	$0x01,	0x06(%bx)
-	movb	$0x00,	0x08(%bx)
-	movb	(buffer_begin),%dl
-	movb	%dl,	0x0a(%bx)
+	movzxb	(begin_cylinder),%dx
+	movw	%dx,	(%bx)
+	movzxb	(begin_head),%dx
+	movw	%dx,	0x02(%bx)
+	movzxb	(begin_sector),%dx
+	movw	%dx,	0x04(%bx)
+	movw	$0x0001,0x06(%bx)
+	movw	$0x0000,0x08(%bx)
+	movw	(buffer_begin),%dx
+	movw	%dx,	0x0a(%bx)
 1:	# load loop
 	pushw	%bx
 	call	print_sector_specifier_16
-	call	new_line_serial_16
 	pushw	$destination_segment_message
 	call	print_serial_16
 	pushw	0x08(%bx)
