@@ -837,27 +837,24 @@ validate_sector_specifier_16:		# void validate_sector_specifier_16(SectorSpecifi
 0:
 	pushw	%bp
 	movw	%sp,	%bp
-	pushw	%si
-	pushw	%di
+	push	%bx
 1:
-	movw	0x04(%bp),%si 		# %si = sector_specifier;
-	movw	%si,	%di 		# %di = sector_specifier;
-	movzxb	0x02(%si),%ax		# %al = sector_specifier->sector;
+	movw	0x04(%bp),%bx 		# %bx = sector_specifier;
+	movzxb	0x02(%bx),%ax		# %al = sector_specifier->sector;
 	decb	%al			# %al = sector_specifier->sector - 1;
 	movb	$track_size,%dl		# %dl = track_size;
 	divb	%dl			# %al = (sector_specifier->sector - 1) / track_size;
 					# %ah = (sector_specifier->sector - 1) % track_size;
 	incb	%ah			# %ah = (sector_specifier->sector - 1) % track_size + 1;
-	movb	%ah,	0x02(%di)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
-	addb	0x01(%si),%al		# %al += sector_specifier->head;
+	movb	%ah,	0x02(%bx)	# sector_specifier->sector = (sectpr_specifier->sector - 1) % track_size + 1;
+	addb	0x01(%bx),%al		# %al += sector_specifier->head;
 	xorb	%ah,	%ah		# %ah = 0;
 	movb	$heads,	%dl		# %dl = heads;
 	divb	%dl			# %al = %al / heads;
 					# %ah = %al % heads;
-	movb	%ah,	0x01(%di)	# sector_specifier->head = %ah;
+	movb	%ah,	0x01(%bx)	# sector_specifier->head = %ah;
 2:
-	popw	%di
-	popw	%si
+	popw	%bx
 	leave
 	ret
 
