@@ -85,7 +85,7 @@ main:
 	movw	%dx,	%ss
 	movl	$0x00007c00,%ebp
 	movl	$0x00007c00,%esp
-	jmp	$0x10,	$dplydisk
+	jmp	$0x0010,$dplydisk
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);

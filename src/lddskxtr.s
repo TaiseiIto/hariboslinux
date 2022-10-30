@@ -559,14 +559,45 @@ validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *se
 
 	.code16
 load_sectors_16:
-	0:
-	movw	$0x18,	%ax
+0:
+	# set 16bit protected mode data segment
+	movw	$0x0018,%ax
 	movw	%ax,	%ss
 	movw	%ax,	%ds
 	movw	%ax,	%es
 	movw	%ax,	%fs
 	movw	%ax,	%gs
-	jmp	$0x10,	$return_2_32
+	# clear CR0 PE bit
+	movl	%cr0,	%eax
+	andl	$0x7ffffffe,%eax
+	movl	%eax,	%cr0
+	jmp	1f
+1:	# 16bit real mode
+	# set 16bit real mode data segment
+	movw	$0x0000,%ax
+	movw	%ax,	%ss
+	movw	%ax,	%ds
+	movw	%ax,	%es
+	movw	%ax,	%fs
+	movw	%ax,	%gs
+2:	# load sectors
+3:	# return to 16bit protected mode
+	# set CR0 PE bit
+	movl	%cr0,	%eax
+	andl	$0x7fffffff,%eax
+	orl	$0x00000001,%eax
+	movl	%eax,	%cr0
+	jmp	4f
+4:
+	# set 32bit protected mode data segment
+	movw	$0x0008,%ax
+	movw	%ax,	%ss
+	movw	%ax,	%ds
+	movw	%ax,	%es
+	movw	%ax,	%fs
+	movw	%ax,	%gs
+	# return to 32 bit protected mode
+	jmp	$0x0010,$return_2_32
 
 	.data
 	.align	0x8
