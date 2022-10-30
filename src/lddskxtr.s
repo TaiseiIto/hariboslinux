@@ -37,6 +37,7 @@
 	# 16bit mode functions
 	.globl	load_sectors_16
 	.globl	load_sectors
+	.globl	putchar_serial_16
 
 	# 32bit mode functions
 	.type	main,				@function
@@ -56,6 +57,7 @@
 	# 16bit mode functions
 	.type	load_sectors_16,		@function
 	.type	load_sectors,			@function
+	.type	put_char_serial_16,		@function
 
 	.code32
 	.text
@@ -290,6 +292,7 @@ load_sectors_32:			# // void load_sectors_32(void);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
+	pushal
 1:
 	jmp	$0x20,	$load_sectors_16
 return_2_32:
@@ -300,6 +303,7 @@ return_2_32:
 	movw	%ax,	%es
 	movw	%ax,	%fs
 	movw	%ax,	%gs
+	popal
 	leave
 	ret
 
@@ -560,7 +564,7 @@ validate_sector_specifier:		# void validate_sector_specifier(SectorSpecifier *se
 	ret
 
 	.code16
-load_sectors_16:
+load_sectors_16:	# 16bit protected mode
 0:
 	# set 16bit protected mode data segment
 	movw	$0x0018,%ax
@@ -583,8 +587,19 @@ load_sectors_16:
 	movw	%ax,	%fs
 	movw	%ax,	%gs
 	jmp	$0x0000,$load_sectors
-load_sectors:
-0:	# load sectors
+load_sectors:		# 16bit real mode
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	# serial test
+	movw	$0x0041,(%di)
+	call	putchar_serial_16
+	addw	$0x0002,%sp
+	popw	%di
+	leave
 1:	# return to 16bit protected mode
 	# set CR0 PE bit
 	movl	%cr0,	%eax
@@ -602,6 +617,25 @@ load_sectors:
 	movw	%ax,	%gs
 	# return to 32 bit protected mode
 	jmp	$0x0010,$return_2_32
+
+				# // print a character to console
+putchar_serial_16:		# void putchar_serial(char c);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+1:				# wait for device
+	movw	$com1,	%dx
+	addw	$0x0005,%dx
+	inb	%dx,	%al
+	andb	$0x20,	%al
+	jz	1b
+2:				# send the character
+	movb	0x04(%bp),%al
+	movw	$com1,	%dx
+	outb	%al,	%dx
+3:
+	leave
+	ret
 
 	.data
 	.align	0x8
