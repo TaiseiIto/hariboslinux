@@ -6231,7 +6231,7 @@ AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml)
 	def_else->component.def_else.else_op = NULL;
 	def_else->component.def_else.pkg_length = NULL;
 	def_else->component.def_else.term_list = NULL;
-	if(*aml.initial == AML_BYTE_ELSE_OP)
+	if(aml.length && *aml.initial == AML_BYTE_ELSE_OP)
 	{
 		def_else->component.def_else.else_op = analyse_aml_else_op(def_else, aml);
 		def_else->string.length += def_else->component.def_else.else_op->string.length;
