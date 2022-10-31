@@ -598,6 +598,12 @@ load_sectors:		# 16bit real mode
 	call	print_serial_16
 	call	new_line_serial_16
 	call	new_line_serial_16
+	# enable interrupt
+	movb	$0xb8,%al
+	outb	%al,	$0x0021
+	movb	$0xbf,%al
+	outb	%al,	$0x00a1
+	sti
 	# initialize load_sector arguments
 	movw	(begin_cylinder),%dx
 	movw	%dx,	(%bx)
@@ -651,6 +657,11 @@ load_sectors:		# 16bit real mode
 	jb 1b
 	ja 2f
 2:
+	# disable interrupt
+	movb	$0xff,	%al
+	outb	%al,	$0x0021
+	outb	%al,	$0x00a1
+	cli
 	# closing
 	addw	$0x000c,%sp
 	popw	%bx
