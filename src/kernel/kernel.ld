@@ -1,7 +1,7 @@
 ENTRY(main);
 OUTPUT_FORMAT("binary");
 
-BASE = 0x00106000;
+BASE = 0x00106c00;
 
 SECTIONS
 {

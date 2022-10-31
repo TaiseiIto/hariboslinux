@@ -240,15 +240,10 @@ main:
 	movl	%edx,	0x08(%esp)
 	call	memcpy
 	jmp 5b
-11:
-	addl	$0x0000000c,%esp
-12:
-	hlt
-	jmp	12b
-13:	# jump to kernel
+11:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
-	jmp	kernel
+	jmp	$0x0010,$0x00106c00
 
 disk_address_2_sector_specifier:	# // void disk_address_2_sector_specifier(unsigned int disk_address, SectorSpecifier *sector_specifier);
 0:
