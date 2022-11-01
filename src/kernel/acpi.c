@@ -168,8 +168,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *access_field_chain_string;
 	ChainString *acquire_op_chain_string;
 	ChainString *acquire_op_suffix_chain_string;
-	ChainString *alias_op_chain_string;
 	ChainString *add_op_chain_string;
+	ChainString *alias_op_chain_string;
 	ChainString *and_op_chain_string;
 	ChainString *arg_obj_chain_string;
 	ChainString *arg_object_chain_string;
@@ -181,11 +181,13 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *buffer_size_chain_string;
 	ChainString *byte_const_chain_string;
 	ChainString *byte_data_chain_string;
+	ChainString *byte_index_chain_string;
 	ChainString *byte_list_chain_string;
 	ChainString *byte_prefix_chain_string;
 	ChainString *computational_data_chain_string;
 	ChainString *connect_field_chain_string;
 	ChainString *const_obj_chain_string;
+	ChainString *create_dword_field_op_chain_string;
 	ChainString *data_object_chain_string;
 	ChainString *data_ref_object_chain_string;
 	ChainString *debug_obj_chain_string;
@@ -362,6 +364,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *shift_right_op_chain_string;
 	ChainString *simple_name_chain_string;
 	ChainString *size_of_op_chain_string;
+	ChainString *source_buff_chain_string;
 	ChainString *statement_opcode_chain_string;
 	ChainString *store_op_chain_string;
 	ChainString *string_chain_string;
@@ -393,8 +396,8 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *access_field_char_array;
 	char *acquire_op_char_array;
 	char *acquire_op_suffix_char_array;
-	char *alias_op_char_array;
 	char *add_op_char_array;
+	char *alias_op_char_array;
 	char *and_op_char_array;
 	char *arg_obj_char_array;
 	char *arg_object_char_array;
@@ -406,11 +409,13 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *buffer_size_char_array;
 	char *byte_const_char_array;
 	char *byte_data_char_array;
+	char *byte_index_char_array;
 	char *byte_list_char_array;
 	char *byte_prefix_char_array;
 	char *computational_data_char_array;
 	char *connect_field_char_array;
 	char *const_obj_char_array;
+	char *create_dword_field_op_char_array;
 	char *data_object_char_array;
 	char *data_ref_object_char_array;
 	char *debug_obj_char_array;
@@ -586,6 +591,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *shift_right_op_char_array;
 	char *simple_name_char_array;
 	char *size_of_op_char_array;
+	char *source_buff_char_array;
 	char *statement_opcode_char_array;
 	char *store_op_char_array;
 	char *string_char_array;
@@ -1261,6 +1267,61 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(byte_list_chain_string);
 			free(byte_list_char_array);
+		}
+		break;
+	case aml_def_create_dword_field:
+		if(aml_symbol->component.def_create_dword_field.create_dword_field_op)
+		{
+			create_dword_field_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_create_dword_field.create_dword_field_op);
+			insert_char_front(create_dword_field_op_chain_string, create_dword_field_op_chain_string->first_character, ' ');
+			replace_chain_string(create_dword_field_op_chain_string, "\n", "\n ");
+			create_dword_field_op_char_array = create_char_array_from_chain_string(create_dword_field_op_chain_string);
+		}
+		else create_dword_field_op_char_array = "";
+		if(aml_symbol->component.def_create_dword_field.source_buff)
+		{
+			source_buff_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_create_dword_field.source_buff);
+			insert_char_front(source_buff_chain_string, source_buff_chain_string->first_character, ' ');
+			replace_chain_string(source_buff_chain_string, "\n", "\n ");
+			source_buff_char_array = create_char_array_from_chain_string(source_buff_chain_string);
+		}
+		else source_buff_char_array = "";
+		if(aml_symbol->component.def_create_dword_field.byte_index)
+		{
+			byte_index_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_create_dword_field.byte_index);
+			insert_char_front(byte_index_chain_string, byte_index_chain_string->first_character, ' ');
+			replace_chain_string(byte_index_chain_string, "\n", "\n ");
+			byte_index_char_array = create_char_array_from_chain_string(byte_index_chain_string);
+		}
+		else byte_index_char_array = "";
+		if(aml_symbol->component.def_create_dword_field.name_string)
+		{
+			name_string_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_create_dword_field.name_string);
+			insert_char_front(name_string_chain_string, name_string_chain_string->first_character, ' ');
+			replace_chain_string(name_string_chain_string, "\n", "\n ");
+			name_string_char_array = create_char_array_from_chain_string(name_string_chain_string);
+		}
+		else name_string_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s%s", aml_symbol_type_name(aml_symbol->type), create_dword_field_op_char_array, source_buff_char_array, byte_index_char_array, name_string_char_array);
+		if(aml_symbol->component.def_create_dword_field.create_dword_field_op)
+		{
+			delete_chain_string(create_dword_field_op_chain_string);
+			free(create_dword_field_op_char_array);
+		}
+		if(aml_symbol->component.def_create_dword_field.source_buff)
+		{
+			delete_chain_string(source_buff_chain_string);
+			free(source_buff_char_array);
+		}
+		if(aml_symbol->component.def_create_dword_field.byte_index)
+		{
+			delete_chain_string(byte_index_chain_string);
+			free(byte_index_char_array);
+		}
+		if(aml_symbol->component.def_create_dword_field.name_string)
+		{
+			delete_chain_string(name_string_chain_string);
+			free(name_string_char_array);
 		}
 		break;
 	case aml_def_deref_of:
@@ -5321,6 +5382,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_add_name = "DefAdd";
 	static char const * const aml_def_and_name = "DefAnd";
 	static char const * const aml_def_buffer_name = "DefBuffer";
+	static char const * const aml_def_create_dword_field_name = "DefCreateDWordField";
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
 	static char const * const aml_def_device_name = "DefDevice";
 	static char const * const aml_def_else_name = "DefElse";
@@ -5508,6 +5570,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_and_name;
 	case aml_def_buffer:
 		return aml_def_buffer_name;
+	case aml_def_create_dword_field:
+		return aml_def_create_dword_field_name;
 	case aml_def_deref_of:
 		return aml_def_deref_of_name;
 	case aml_def_device:
@@ -6358,6 +6422,22 @@ AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml)
 		print_aml_symbol(def_buffer);
 	}
 	return def_buffer;
+}
+
+// <def_create_dword_field> := <create_dword_field_op> <source_buff> <byte_index> <name_string>
+AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_create_dword_field = malloc(sizeof(*def_create_dword_field));
+	def_create_dword_field->parent = parent;
+	def_create_dword_field->string.initial = aml.initial;
+	def_create_dword_field->string.length = 0;
+	def_create_dword_field->type = aml_def_create_dword_field;
+	def_create_dword_field->component.def_create_dword_field.create_dword_field_op = NULL;
+	def_create_dword_field->component.def_create_dword_field.source_buff = NULL;
+	def_create_dword_field->component.def_create_dword_field.byte_index = NULL;
+	def_create_dword_field->component.def_create_dword_field.name_string = NULL;
+	ERROR(); // Unimplemented
+	return def_create_dword_field;
 }
 
 // <def_deref_of> := <deref_of_op> <obj_reference>
@@ -9675,6 +9755,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_buffer.pkg_length)delete_aml_symbol(aml_symbol->component.def_buffer.pkg_length);
 		if(aml_symbol->component.def_buffer.buffer_size)delete_aml_symbol(aml_symbol->component.def_buffer.buffer_size);
 		if(aml_symbol->component.def_buffer.byte_list)delete_aml_symbol(aml_symbol->component.def_buffer.byte_list);
+		break;
+	case aml_def_create_dword_field:
+		if(aml_symbol->component.def_create_dword_field.create_dword_field_op)delete_aml_symbol(aml_symbol->component.def_create_dword_field.create_dword_field_op);
+		if(aml_symbol->component.def_create_dword_field.source_buff)delete_aml_symbol(aml_symbol->component.def_create_dword_field.source_buff);
+		if(aml_symbol->component.def_create_dword_field.byte_index)delete_aml_symbol(aml_symbol->component.def_create_dword_field.byte_index);
+		if(aml_symbol->component.def_create_dword_field.name_string)delete_aml_symbol(aml_symbol->component.def_create_dword_field.name_string);
 		break;
 	case aml_def_deref_of:
 		if(aml_symbol->component.def_deref_of.deref_of_op)delete_aml_symbol(aml_symbol->component.def_deref_of.deref_of_op);

@@ -204,6 +204,7 @@ typedef enum _AMLSymbolType
 	aml_def_add,
 	aml_def_and,
 	aml_def_buffer,
+	aml_def_create_dword_field,
 	aml_def_deref_of,
 	aml_def_device,
 	aml_def_else,
@@ -457,6 +458,14 @@ typedef struct _AMLDefBuffer
 	struct _AMLSymbol *buffer_size;
 	struct _AMLSymbol *byte_list;
 } AMLDefBuffer;
+
+typedef struct _AMLDefCreateDWordField
+{
+	struct _AMLSymbol *create_dword_field_op;
+	struct _AMLSymbol *source_buff;
+	struct _AMLSymbol *byte_index;
+	struct _AMLSymbol *name_string;
+} AMLDefCreateDWordField;
 
 typedef struct _AMLDefDerefOf
 {
@@ -1093,6 +1102,7 @@ typedef union _AMLComponent
 	AMLDefAdd def_add;
 	AMLDefAnd def_and;
 	AMLDefBuffer def_buffer;
+	AMLDefCreateDWordField def_create_dword_field;
 	AMLDefDerefOf def_deref_of;
 	AMLDefDevice def_device;
 	AMLDefElse def_else;
@@ -1239,6 +1249,8 @@ AMLSymbol *analyse_aml_def_add(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_and(AMLSymbol *parent, AMLSubstring aml);
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
 AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml);
+// <def_create_dword_field> := <create_dword_field_op> <source_buff> <byte_index> <name_string>
+AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring aml);
 // <def_deref_of> := <deref_of_op> <obj_reference>
 AMLSymbol *analyse_aml_def_deref_of(AMLSymbol *parent, AMLSubstring aml);
 // <def_device> := <device_op> <pkg_length> <name_string> <term_list>
