@@ -6300,8 +6300,10 @@ AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml)
 AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml)
 {
 	AMLSymbol *def_if_else = malloc(sizeof(*def_if_else));
+	AMLSubstring if_aml = aml;
+	AMLSubstring else_aml = aml;
 	def_if_else->parent = parent;
-	def_if_else->string.initial = aml.initial;
+	def_if_else->string.initial = if_aml.initial;
 	def_if_else->string.length = 0;
 	def_if_else->type = aml_def_if_else;
 	def_if_else->component.def_if_else.if_op = NULL;
@@ -6309,30 +6311,46 @@ AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml)
 	def_if_else->component.def_if_else.predicate = NULL;
 	def_if_else->component.def_if_else.term_list = NULL;
 	def_if_else->component.def_if_else.def_else = NULL;
-	def_if_else->component.def_if_else.if_op = analyse_aml_if_op(def_if_else, aml);
+	def_if_else->component.def_if_else.if_op = analyse_aml_if_op(def_if_else, if_aml);
 	def_if_else->string.length += def_if_else->component.def_if_else.if_op->string.length;
-	aml.initial += def_if_else->component.def_if_else.if_op->string.length;
-	aml.length -= def_if_else->component.def_if_else.if_op->string.length;
-	def_if_else->component.def_if_else.pkg_length = analyse_aml_pkg_length(def_if_else, aml);
+	if_aml.initial += def_if_else->component.def_if_else.if_op->string.length;
+	if_aml.length -= def_if_else->component.def_if_else.if_op->string.length;
+	else_aml.initial += def_if_else->component.def_if_else.if_op->string.length;
+	else_aml.length -= def_if_else->component.def_if_else.if_op->string.length;
+	def_if_else->component.def_if_else.pkg_length = analyse_aml_pkg_length(def_if_else, if_aml);
 	def_if_else->string.length += def_if_else->component.def_if_else.pkg_length->string.length;
-	aml.initial += def_if_else->component.def_if_else.pkg_length->string.length;
-	aml.length = def_if_else->component.def_if_else.pkg_length->component.pkg_length.length - def_if_else->component.def_if_else.pkg_length->string.length;
-	def_if_else->component.def_if_else.predicate = analyse_aml_predicate(def_if_else, aml);
+	if_aml.initial += def_if_else->component.def_if_else.pkg_length->string.length;
+	if_aml.length = def_if_else->component.def_if_else.pkg_length->component.pkg_length.length - def_if_else->component.def_if_else.pkg_length->string.length;
+	else_aml.initial += def_if_else->component.def_if_else.pkg_length->string.length;
+	else_aml.length -= def_if_else->component.def_if_else.pkg_length->string.length;
+	def_if_else->component.def_if_else.predicate = analyse_aml_predicate(def_if_else, if_aml);
 	def_if_else->string.length += def_if_else->component.def_if_else.predicate->string.length;
-	aml.initial += def_if_else->component.def_if_else.predicate->string.length;
-	aml.length -= def_if_else->component.def_if_else.predicate->string.length;
-	def_if_else->component.def_if_else.term_list = analyse_aml_term_list(def_if_else, aml);
+	if_aml.initial += def_if_else->component.def_if_else.predicate->string.length;
+	if_aml.length -= def_if_else->component.def_if_else.predicate->string.length;
+	else_aml.initial += def_if_else->component.def_if_else.predicate->string.length;
+	else_aml.length -= def_if_else->component.def_if_else.predicate->string.length;
+	def_if_else->component.def_if_else.term_list = analyse_aml_term_list(def_if_else, if_aml);
 	def_if_else->string.length += def_if_else->component.def_if_else.term_list->string.length;
-	aml.initial += def_if_else->component.def_if_else.term_list->string.length;
-	aml.length -= def_if_else->component.def_if_else.term_list->string.length;
-	def_if_else->component.def_if_else.def_else = analyse_aml_def_else(def_if_else, aml);
+	if_aml.initial += def_if_else->component.def_if_else.term_list->string.length;
+	if_aml.length -= def_if_else->component.def_if_else.term_list->string.length;
+	else_aml.initial += def_if_else->component.def_if_else.term_list->string.length;
+	else_aml.length -= def_if_else->component.def_if_else.term_list->string.length;
+	def_if_else->component.def_if_else.def_else = analyse_aml_def_else(def_if_else, else_aml);
 	def_if_else->string.length += def_if_else->component.def_if_else.def_else->string.length;
-	aml.initial += def_if_else->component.def_if_else.def_else->string.length;
-	aml.length -= def_if_else->component.def_if_else.def_else->string.length;
-	if((int)aml.length < 0)
+	else_aml.initial += def_if_else->component.def_if_else.def_else->string.length;
+	else_aml.length -= def_if_else->component.def_if_else.def_else->string.length;
+	if((int)if_aml.length < 0)
 	{
 		ERROR(); // Length error
-		printf_serial("aml.length = %#010.8x\n", aml.length);
+		printf_serial("if_aml.length = %#010.8x\n", if_aml.length);
+		for(unsigned int i = 0; i < def_if_else->string.length; i++)printf_serial("%02.2x%c", def_if_else->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
+		print_aml_symbol(def_if_else);
+	}
+	if((int)else_aml.length < 0)
+	{
+		ERROR(); // Length error
+		printf_serial("else_aml.length = %#010.8x\n", else_aml.length);
 		for(unsigned int i = 0; i < def_if_else->string.length; i++)printf_serial("%02.2x%c", def_if_else->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
 		printf_serial("\n");
 		print_aml_symbol(def_if_else);
