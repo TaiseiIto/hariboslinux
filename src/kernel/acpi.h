@@ -181,6 +181,7 @@ typedef enum _AMLSymbolType
 	aml_acquire_op,
 	aml_acquire_op_suffix,
 	aml_alias_op,
+	aml_add_op,
 	aml_and_op,
 	aml_arg_obj,
 	aml_arg_object,
@@ -200,6 +201,7 @@ typedef enum _AMLSymbolType
 	aml_data_ref_object,
 	aml_def_alias,
 	aml_def_acquire,
+	aml_def_add,
 	aml_def_and,
 	aml_def_buffer,
 	aml_def_deref_of,
@@ -433,6 +435,13 @@ typedef struct _AMLDefAcquire
 	struct _AMLSymbol *mutex_object;
 	struct _AMLSymbol *time_out;
 } AMLDefAcquire;
+
+typedef struct _AMLDefAdd
+{
+	struct _AMLSymbol *add_op;
+	struct _AMLSymbol *operand[2];
+	struct _AMLSymbol *target;
+} AMLDefAdd;
 
 typedef struct _AMLDefAnd
 {
@@ -1081,6 +1090,7 @@ typedef union _AMLComponent
 	AMLDataRefObject data_ref_object;
 	AMLDefAlias def_alias;
 	AMLDefAcquire def_acquire;
+	AMLDefAdd def_add;
 	AMLDefAnd def_and;
 	AMLDefBuffer def_buffer;
 	AMLDefDerefOf def_deref_of;
@@ -1183,6 +1193,8 @@ AMLSymbol *analyse_aml_acquire_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_acquire_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSymbol *parent, AMLSubstring aml);
+// <add_op> := AML_BYTE_ADD_OP
+AMLSymbol *analyse_aml_add_op(AMLSymbol *parent, AMLSubstring aml);
 // <and_op> := AML_BYTE_AND_OP
 AMLSymbol *analyse_aml_and_op(AMLSymbol *parent, AMLSubstring aml);
 // <arg_obj> := <arg_op>
@@ -1221,6 +1233,8 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml);
 // <def_acquire> := <acquire_op> <mutex_object> <time_out>
 AMLSymbol *analyse_aml_def_acquire(AMLSymbol *parent, AMLSubstring aml);
+// <def_add> := <add_op> <operand> <operand> <target>
+AMLSymbol *analyse_aml_def_add(AMLSymbol *parent, AMLSubstring aml);
 // <def_and> := <and_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_and(AMLSymbol *parent, AMLSubstring aml);
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
