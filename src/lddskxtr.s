@@ -256,7 +256,7 @@ main:
 	# copy to destination
 	movl	(copy_destination_begin),%edx
 	movl	%edx,	(%esp)
-	movzxw	(buffer_begin_address),%edx
+	movl	(buffer_begin_address),%edx
 	movl	%edx,	0x04(%esp)
 	movl	(copy_size),%edx
 	movl	%edx,	0x08(%esp)
