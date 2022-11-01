@@ -316,19 +316,10 @@ main:
 	orw	$0x4000,%bx			# use linear frame buffer
 	int	$0x0010
 14:						# write BootInforamtion structure
-						#
-						# 0x0800 unsigned short memory_size;	// MiB
 						# 0x0802 unsigned char keyboard_state;
-
-	movw	$0x8800,%ax			# memory size
-	int	$0x0015				# get extended memory size
-	addw	$0x0480,%ax			# add first 0x480KiB memory
-	shr	$0x000a,%ax			# convert KiB to MiB
-	movw	$0x0800,%si
-	movw	%ax,	(%si)
 	movw	$0x0200,%ax			# keyboard_state
-	int	$0x0016
-	movb	%al,	0x02(%si)
+	int	$0x16
+	movb	%al,	(keyboard_state)
 15:						# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial

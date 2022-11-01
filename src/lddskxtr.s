@@ -100,27 +100,61 @@ main:
 	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
-3:	# print buffer range
-	# print buffer_begin
-	movl	$buffer_begin_message,(%esp)
+3:	# calculate buffer range
+	movw	(highest_memory_segment),%dx
+	movw	%dx,	(buffer_end_segment)
+	subw	(buffer_begin_segment),%dx
+	movw	%dx,	(buffer_size_segment)
+	movzxw	(buffer_begin_segment),%edx
+	shll	$0x04,	%edx
+	movl	%edx,	(buffer_begin_address)
+	movzxw	(buffer_end_segment),%edx
+	shll	$0x04,	%edx
+	movl	%edx,	(buffer_end_address)
+	movzxw	(buffer_size_segment),%edx
+	shll	$0x04,	%edx
+	movl	%edx,	(buffer_size_address)
+	# print buffer_begin_segment
+	movl	$buffer_begin_segment_message,(%esp)
 	call	print_serial
-	movl	(buffer_begin),%edx
+	movl	(buffer_begin_segment),%edx
 	movl	%edx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print buffer_end
-	movl	$buffer_end_message,(%esp)
+	# print buffer_end_segment
+	movl	$buffer_end_segment_message,(%esp)
 	call	print_serial
-	movl	(buffer_end),%edx
+	movl	(buffer_end_segment),%edx
 	movl	%edx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print buffer_size
-	movl	$buffer_size_message,(%esp)
+	# print buffer_size_segment
+	movl	$buffer_size_segment_message,(%esp)
 	call	print_serial
-	movl	(buffer_size),%edx
+	movl	(buffer_size_segment),%edx
 	movl	%edx,	(%esp)
 	call	print_word_hex_serial
+	call	new_line_serial
+	# print buffer_begin_address
+	movl	$buffer_begin_address_message,(%esp)
+	call	print_serial
+	movl	(buffer_begin_address),%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
+	call	new_line_serial
+	# print buffer_end_address
+	movl	$buffer_end_address_message,(%esp)
+	call	print_serial
+	movl	(buffer_end_address),%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
+	call	new_line_serial
+	# print buffer_size_address
+	movl	$buffer_size_address_message,(%esp)
+	call	print_serial
+	movl	(buffer_size_address),%edx
+	movl	%edx,	(%esp)
+	call	print_dword_hex_serial
 	call	new_line_serial
 	call	new_line_serial
 4:	# calculate the first disk range to read
@@ -157,7 +191,7 @@ main:
 	call	new_line_serial
 7:	# calculate end_disk_address
 	movl	(begin_disk_address),%eax
-	movl	(buffer_size),%edx
+	movl	(buffer_size_address),%edx
 	addl	%edx,	%eax
 	movl	(last_disk_address),%edx
 	cmpl	%edx,	%eax
@@ -222,7 +256,7 @@ main:
 	# copy to destination
 	movl	(copy_destination_begin),%edx
 	movl	%edx,	(%esp)
-	movzxw	(buffer_begin),%edx
+	movzxw	(buffer_begin_address),%edx
 	movl	%edx,	0x04(%esp)
 	movl	(copy_size),%edx
 	movl	%edx,	0x08(%esp)
@@ -243,7 +277,7 @@ main:
 11:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
-	jmp	$0x0010,$0x00106c00
+	jmp	$0x0010,$0x00106e00
 
 disk_address_2_sector_specifier:	# // void disk_address_2_sector_specifier(unsigned int disk_address, SectorSpecifier *sector_specifier);
 0:
@@ -607,9 +641,9 @@ load_sectors:		# 16bit real mode
 	movw	(begin_sector),%dx
 	movw	%dx,	0x04(%bx)
 	movw	$0x0001,0x06(%bx)
-	movw	$0x0000,0x08(%bx)
-	movw	(buffer_begin),%dx
-	movw	%dx,	0x0a(%bx)
+	movw	(buffer_begin_segment),%dx
+	movw	%dx,	0x08(%bx)
+	movw	$0x0000,0x0a(%bx)
 1:	# load loop
 	# check load_sector arguments
 	pushw	%bx
@@ -634,7 +668,9 @@ load_sectors:		# 16bit real mode
 	# load sector
 	call	load_sector
 	# increment sector
-	addw	$sector_size,0x0a(%bx)
+	movw	$sector_size,%dx
+	shrw	$0x04,	%dx
+	addw	%dx	,0x08(%bx)
 	incw	0x04(%bx)
 	pushw	%bx
 	call	validate_sector_specifier_16
@@ -1016,12 +1052,18 @@ last_head:
 last_sector:
 	.word	track_size
 # Buffer range
-buffer_begin:
-	.word	load_dest
-buffer_end:
-	.word	main
-buffer_size:
-	.word	main - load_dest
+buffer_begin_segment:
+	.word	0x1000
+buffer_end_segment:
+	.word	0x0000
+buffer_size_segment:
+	.word	0x0000
+buffer_begin_address:
+	.long	0x00000000
+buffer_end_address:
+	.long	0x00000000
+buffer_size_address:
+	.long	0x00000000
 # Destination
 destination:
 	.long	0x00100000
@@ -1054,12 +1096,18 @@ begin_disk_address_message:
 	.string "begin_disk_address = 0x"
 begin_sector_message:
 	.string "begin_sector"
-buffer_begin_message:
-	.string "buffer_begin = 0x"
-buffer_end_message:
-	.string "buffer_end = 0x"
-buffer_size_message:
-	.string "buffer_size = 0x"
+buffer_begin_address_message:
+	.string "buffer_begin_address = 0x"
+buffer_begin_segment_message:
+	.string "buffer_begin_segment = 0x"
+buffer_end_address_message:
+	.string "buffer_end_address = 0x"
+buffer_end_segment_message:
+	.string "buffer_end_segment = 0x"
+buffer_size_address_message:
+	.string "buffer_size_address = 0x"
+buffer_size_segment_message:
+	.string "buffer_size_segment = 0x"
 copy_destination_begin_message:
 	.string "copy_destination_begin = 0x"
 copy_destination_end_message:

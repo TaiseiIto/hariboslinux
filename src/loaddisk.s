@@ -59,6 +59,7 @@ main:
 	int	$0x12		#  %ax = $0x027f (KB)
 	shlw	$0x0006,%ax	#  %ax = $0x9fc0 (the end of the low memory segment)
 	movw	%ax,	0x0c(%di)# 0x0c(%di) = $0x9fc0 (end of the low memory segment)
+	movw	%ax,	(highest_memory_segment)
 3:				# load disk
 				#  from cylinder 0x0000, head 0x0000, sector 0x0002
 				#  to   cylinder 0x0000, head 0x0000, sector 0x0012
