@@ -790,6 +790,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_byte_data:
 		output = create_format_chain_string("%s %#04.2x\n", aml_symbol_type_name(aml_symbol->type), *aml_symbol->string.initial);
 		break;
+	case aml_byte_index:
+		if(aml_symbol->component.byte_index.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.byte_index.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.byte_index.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		break;
 	case aml_byte_list:
 		if(aml_symbol->component.byte_list.byte_data)
 		{
@@ -5390,6 +5406,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_buffer_size_name = "BufferSize";
 	static char const * const aml_byte_const_name = "ByteConst";
 	static char const * const aml_byte_data_name = "ByteData";
+	static char const * const aml_byte_index_name = "ByteIndex";
 	static char const * const aml_byte_list_name = "ByteList";
 	static char const * const aml_byte_prefix_name = "BytePrefix";
 	static char const * const aml_computational_data_name = "ComputationalData";
@@ -5569,6 +5586,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_byte_const_name;
 	case aml_byte_data:
 		return aml_byte_data_name;
+	case aml_byte_index:
+		return aml_byte_index_name;
 	case aml_byte_list:
 		return aml_byte_list_name;
 	case aml_byte_prefix:
@@ -6100,6 +6119,21 @@ AMLSymbol *analyse_aml_byte_data(AMLSymbol *parent, AMLSubstring aml)
 	return byte_data;
 }
 
+// <byte_index> := <term_arg>
+AMLSymbol *analyse_aml_byte_index(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *byte_index = malloc(sizeof(*byte_index));
+	byte_index->parent = parent;
+	byte_index->string.initial = aml.initial;
+	byte_index->string.length = 0;
+	byte_index->type = aml_byte_index;
+	byte_index->component.byte_index.term_arg = analyse_aml_term_arg(byte_index, aml);
+	byte_index->string.length += byte_index->component.byte_index.term_arg->string.length;
+	aml.initial += byte_index->component.byte_index.term_arg->string.length;
+	aml.length -= byte_index->component.byte_index.term_arg->string.length;
+	return byte_index;
+}
+
 // <byte_list> := Nothing | <byte_data> <byte_list>
 AMLSymbol *analyse_aml_byte_list(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -6477,10 +6511,14 @@ AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring am
 	def_create_dword_field->string.length += def_create_dword_field->component.def_create_dword_field.source_buff->string.length;
 	aml.initial += def_create_dword_field->component.def_create_dword_field.source_buff->string.length;
 	aml.length -= def_create_dword_field->component.def_create_dword_field.source_buff->string.length;
-	def_create_dword_field->component.def_create_dword_field.byte_index = NULL;
-	def_create_dword_field->component.def_create_dword_field.name_string = NULL;
-	ERROR(); // Unimplemented
-	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	def_create_dword_field->component.def_create_dword_field.byte_index = analyse_aml_byte_index(def_create_dword_field, aml);
+	def_create_dword_field->string.length += def_create_dword_field->component.def_create_dword_field.byte_index->string.length;
+	aml.initial += def_create_dword_field->component.def_create_dword_field.byte_index->string.length;
+	aml.length -= def_create_dword_field->component.def_create_dword_field.byte_index->string.length;
+	def_create_dword_field->component.def_create_dword_field.name_string = analyse_aml_name_string(def_create_dword_field, aml);
+	def_create_dword_field->string.length += def_create_dword_field->component.def_create_dword_field.name_string->string.length;
+	aml.initial += def_create_dword_field->component.def_create_dword_field.name_string->string.length;
+	aml.length -= def_create_dword_field->component.def_create_dword_field.name_string->string.length;
 	return def_create_dword_field;
 }
 
@@ -9766,6 +9804,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.byte_const.byte_data)delete_aml_symbol(aml_symbol->component.byte_const.byte_data);
 		break;
 	case aml_byte_data:
+		break;
+	case aml_byte_index:
+		if(aml_symbol->component.byte_index.term_arg)delete_aml_symbol(aml_symbol->component.byte_index.term_arg);
 		break;
 	case aml_byte_list:
 		if(aml_symbol->component.byte_list.byte_data)delete_aml_symbol(aml_symbol->component.byte_list.byte_data);

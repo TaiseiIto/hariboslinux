@@ -193,6 +193,7 @@ typedef enum _AMLSymbolType
 	aml_buffer_size,
 	aml_byte_const,
 	aml_byte_data,
+	aml_byte_index,
 	aml_byte_list,
 	aml_byte_prefix,
 	aml_computational_data,
@@ -387,6 +388,11 @@ typedef struct _AMLByteConst
 	struct _AMLSymbol *byte_data;
 	unsigned char value;
 } AMLByteConst;
+
+typedef struct _AMLByteIndex
+{
+	struct _AMLSymbol *term_arg;
+} AMLByteIndex;
 
 typedef struct _AMLByteList
 {
@@ -1099,6 +1105,7 @@ typedef union _AMLComponent
 	AMLBufferSize buffer_size;
 	AMLBuffPkgStrObj buff_pkg_str_obj;
 	AMLByteConst byte_const;
+	AMLByteIndex byte_index;
 	AMLByteList byte_list;
 	AMLComputationalData computational_data;
 	AMLConstObj const_obj;
@@ -1235,6 +1242,8 @@ AMLSymbol *analyse_aml_buffer_size(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_byte_const(AMLSymbol *parent, AMLSubstring aml);
 // <byte_data> := 0x00 - 0xff
 AMLSymbol *analyse_aml_byte_data(AMLSymbol *parent, AMLSubstring aml);
+// <byte_index> := <term_arg>
+AMLSymbol *analyse_aml_byte_index(AMLSymbol *parent, AMLSubstring aml);
 // <byte_list> := Nothing | <byte_data> <byte_list>
 AMLSymbol *analyse_aml_byte_list(AMLSymbol *parent, AMLSubstring aml);
 // <byte_prefix> := AML_BYTE_BYTE_PREFIX
