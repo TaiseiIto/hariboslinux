@@ -4796,6 +4796,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_size_of_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_source_buff:
+		if(aml_symbol->component.source_buff.term_arg)
+		{
+			term_arg_chain_string = aml_symbol_to_chain_string(aml_symbol->component.source_buff.term_arg);
+			insert_char_front(term_arg_chain_string, term_arg_chain_string->first_character, ' ');
+			replace_chain_string(term_arg_chain_string, "\n", "\n ");
+			term_arg_char_array = create_char_array_from_chain_string(term_arg_chain_string);
+		}
+		else term_arg_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), term_arg_char_array);
+		if(aml_symbol->component.source_buff.term_arg)
+		{
+			delete_chain_string(term_arg_chain_string);
+			free(term_arg_char_array);
+		}
+		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)
 		{
@@ -5500,6 +5516,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_shift_right_op_name = "ShiftRightOp";
 	static char const * const aml_simple_name_name = "SimpleName";
 	static char const * const aml_size_of_op_name = "SizeOfOp";
+	static char const * const aml_source_buff_name = "SourceBuff";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_store_op_name = "StoreOp";
 	static char const * const aml_string_name = "String";
@@ -5804,6 +5821,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_simple_name_name;
 	case aml_size_of_op:
 		return aml_size_of_op_name;
+	case aml_source_buff:
+		return aml_source_buff_name;
 	case aml_statement_opcode:
 		return aml_statement_opcode_name;
 	case aml_store_op:
@@ -6454,10 +6473,14 @@ AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring am
 	def_create_dword_field->string.length += def_create_dword_field->component.def_create_dword_field.create_dword_field_op->string.length;
 	aml.initial += def_create_dword_field->component.def_create_dword_field.create_dword_field_op->string.length;
 	aml.length -= def_create_dword_field->component.def_create_dword_field.create_dword_field_op->string.length;
-	def_create_dword_field->component.def_create_dword_field.source_buff = NULL;
+	def_create_dword_field->component.def_create_dword_field.source_buff = analyse_aml_source_buff(def_create_dword_field, aml);
+	def_create_dword_field->string.length += def_create_dword_field->component.def_create_dword_field.source_buff->string.length;
+	aml.initial += def_create_dword_field->component.def_create_dword_field.source_buff->string.length;
+	aml.length -= def_create_dword_field->component.def_create_dword_field.source_buff->string.length;
 	def_create_dword_field->component.def_create_dword_field.byte_index = NULL;
 	def_create_dword_field->component.def_create_dword_field.name_string = NULL;
 	ERROR(); // Unimplemented
+	printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	return def_create_dword_field;
 }
 
@@ -9012,6 +9035,21 @@ AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml)
 	return size_of_op;
 }
 
+// <source_buff> := <term_arg>
+AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *source_buff = malloc(sizeof(*source_buff));
+	source_buff->parent = parent;
+	source_buff->string.initial = aml.initial;
+	source_buff->string.length = 0;
+	source_buff->type = aml_source_buff;
+	source_buff->component.source_buff.term_arg = analyse_aml_term_arg(source_buff, aml);
+	source_buff->string.length += source_buff->component.source_buff.term_arg->string.length;
+	aml.initial += source_buff->component.source_buff.term_arg->string.length;
+	aml.length -= source_buff->component.source_buff.term_arg->string.length;
+	return source_buff;
+}
+
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -10255,6 +10293,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.simple_name.local_obj)delete_aml_symbol(aml_symbol->component.simple_name.local_obj);
 		break;
 	case aml_size_of_op:
+		break;
+	case aml_source_buff:
+		if(aml_symbol->component.source_buff.term_arg)delete_aml_symbol(aml_symbol->component.source_buff.term_arg);
 		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break);
