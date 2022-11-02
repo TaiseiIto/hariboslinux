@@ -177,6 +177,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *arg_op_chain_string;
 	ChainString *ascii_char_chain_string;
 	ChainString *ascii_char_list_chain_string;
+	ChainString *break_op_chain_string;
 	ChainString *buff_pkg_str_obj_chain_string;
 	ChainString *buffer_op_chain_string;
 	ChainString *buffer_size_chain_string;
@@ -410,6 +411,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *arg_op_char_array;
 	char *ascii_char_char_array;
 	char *ascii_char_list_char_array;
+	char *break_op_char_array;
 	char *buff_pkg_str_obj_char_array;
 	char *buffer_op_char_array;
 	char *buffer_size_char_array;
@@ -733,6 +735,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			delete_chain_string(ascii_char_list_chain_string);
 			free(ascii_char_list_char_array);
 		}
+		break;
+	case aml_break_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
 	case aml_buff_pkg_str_obj:
 		if(aml_symbol->component.buff_pkg_str_obj.term_arg)
@@ -1243,6 +1248,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		}
 		free(operands_chain_string);
 		free(operands_char_array);
+		break;
+	case aml_def_break:
+		if(aml_symbol->component.def_break.break_op)
+		{
+			break_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_break.break_op);
+			insert_char_front(break_op_chain_string, break_op_chain_string->first_character, ' ');
+			replace_chain_string(break_op_chain_string, "\n", "\n ");
+			break_op_char_array = create_char_array_from_chain_string(break_op_chain_string);
+		}
+		else break_op_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), break_op_char_array);
+		if(aml_symbol->component.def_break.break_op)
+		{
+			delete_chain_string(break_op_chain_string);
+			free(break_op_char_array);
+		}
 		break;
 	case aml_def_buffer:
 		if(aml_symbol->component.def_buffer.buffer_op)
@@ -5559,6 +5580,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_arg_op_name = "ArgOp";
 	static char const * const aml_ascii_char_name = "AsciiChar";
 	static char const * const aml_ascii_char_list_name = "AsciiCharList";
+	static char const * const aml_break_op_name = "BreakOp";
 	static char const * const aml_buff_pkg_str_obj_name = "BuffPkgStrObj";
 	static char const * const aml_buffer_op_name = "BufferOp";
 	static char const * const aml_buffer_size_name = "BufferSize";
@@ -5576,6 +5598,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_acquire_name = "DefAcquire";
 	static char const * const aml_def_add_name = "DefAdd";
 	static char const * const aml_def_and_name = "DefAnd";
+	static char const * const aml_def_break_name = "DefBreak";
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_create_dword_field_name = "DefCreateDWordField";
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
@@ -5742,6 +5765,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_ascii_char_name;
 	case aml_ascii_char_list:
 		return aml_ascii_char_list_name;
+	case aml_break_op:
+		return aml_break_op_name;
 	case aml_buff_pkg_str_obj:
 		return aml_buff_pkg_str_obj_name;
 	case aml_buffer_op:
@@ -5776,6 +5801,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_add_name;
 	case aml_def_and:
 		return aml_def_and_name;
+	case aml_def_break:
+		return aml_def_break_name;
 	case aml_def_buffer:
 		return aml_def_buffer_name;
 	case aml_def_create_dword_field:
@@ -6230,6 +6257,17 @@ AMLSymbol *analyse_aml_ascii_char_list(AMLSymbol *parent, AMLSubstring aml)
 	return ascii_char_list;
 }
 
+// <break_op> := AML_BYTE_BREAK_OP
+AMLSymbol *analyse_aml_break_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *break_op = malloc(sizeof(*break_op));
+	break_op->parent = parent;
+	break_op->string.initial = aml.initial;
+	break_op->string.length = 0;
+	if(*break_op->string.initial != AML_BYTE_BREAK_OP)ERROR(); // Incorrect break_op
+	return break_op;
+}
+
 // <buff_pkg_str_obj> := <term_arg>
 AMLSymbol *analyse_aml_buff_pkg_str_obj(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -6640,6 +6678,21 @@ AMLSymbol *analyse_aml_def_and(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_and->component.def_and.target->string.length;
 	aml.length -= def_and->component.def_and.target->string.length;
 	return def_and;
+}
+
+// <def_break> := <break_op>
+AMLSymbol *analyse_aml_def_break(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_break = malloc(sizeof(*def_break));
+	def_break->parent = parent;
+	def_break->string.initial = aml.initial;
+	def_break->string.length = 0;
+	def_break->type = aml_def_break;
+	def_break->component.def_break.break_op = analyse_aml_break_op(def_break, aml);
+	def_break->string.length += def_break->component.def_break.break_op->string.length;
+	aml.initial += def_break->component.def_break.break_op->string.length;
+	aml.length -= def_break->component.def_break.break_op->string.length;
+	return def_break;
 }
 
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
@@ -9454,6 +9507,10 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 	statement_opcode->component.statement_opcode.def_while = NULL;
 	switch(*aml.initial)
 	{
+	case AML_BYTE_BREAK_OP:
+		statement_opcode->component.statement_opcode.def_break = analyse_aml_def_break(statement_opcode, aml);
+		statement_opcode->string.length += statement_opcode->component.statement_opcode.def_break->string.length;
+		break;
 	case AML_BYTE_EXT_OP_PREFIX:
 		switch(aml.initial[1])
 		{
@@ -9868,6 +9925,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 		case AML_BYTE_ADD_OP:
 		case AML_BYTE_AND_OP:
 		case AML_BYTE_ALIAS_OP:
+		case AML_BYTE_BREAK_OP:
 		case AML_BYTE_CREATE_DWORD_FIELD_OP:
 		case AML_BYTE_DEREF_OF_OP:
 		case AML_BYTE_EXT_OP_PREFIX:
@@ -9963,6 +10021,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 		term_obj->component.term_obj.object = analyse_aml_object(term_obj, aml);
 		term_obj->string.length += term_obj->component.term_obj.object->string.length;
 		break;
+	case AML_BYTE_BREAK_OP:
 	case AML_BYTE_IF_OP:
 	case AML_BYTE_NOTIFY_OP:
 	case AML_BYTE_RETURN_OP:
@@ -10157,6 +10216,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.ascii_char_list.ascii_char)delete_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char);
 		if(aml_symbol->component.ascii_char_list.ascii_char_list)delete_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char_list);
 		break;
+	case aml_break_op:
+		break;
 	case aml_buff_pkg_str_obj:
 		if(aml_symbol->component.buff_pkg_str_obj.term_arg)delete_aml_symbol(aml_symbol->component.buff_pkg_str_obj.term_arg);
 		break;
@@ -10224,6 +10285,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_or.or_op)delete_aml_symbol(aml_symbol->component.def_or.or_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_or.operand); i++)if(aml_symbol->component.def_or.operand[i])delete_aml_symbol(aml_symbol->component.def_or.operand[i]);
 		if(aml_symbol->component.def_or.target)delete_aml_symbol(aml_symbol->component.def_or.target);
+		break;
+	case aml_def_break:
+		if(aml_symbol->component.def_break.break_op)delete_aml_symbol(aml_symbol->component.def_break.break_op);
 		break;
 	case aml_def_buffer:
 		if(aml_symbol->component.def_buffer.buffer_op)delete_aml_symbol(aml_symbol->component.def_buffer.buffer_op);

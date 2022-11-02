@@ -188,6 +188,7 @@ typedef enum _AMLSymbolType
 	aml_arg_op,
 	aml_ascii_char,
 	aml_ascii_char_list,
+	aml_break_op,
 	aml_buff_pkg_str_obj,
 	aml_buffer_op,
 	aml_buffer_size,
@@ -205,6 +206,7 @@ typedef enum _AMLSymbolType
 	aml_def_acquire,
 	aml_def_add,
 	aml_def_and,
+	aml_def_break,
 	aml_def_buffer,
 	aml_def_create_dword_field,
 	aml_def_deref_of,
@@ -466,6 +468,11 @@ typedef struct _AMLDefAnd
 	struct _AMLSymbol *operand[2];
 	struct _AMLSymbol *target;
 } AMLDefAnd;
+
+typedef struct _AMLDefBreak
+{
+	struct _AMLSymbol *break_op;
+} AMLDefBreak;
 
 typedef struct _AMLDefBuffer
 {
@@ -1152,6 +1159,7 @@ typedef union _AMLComponent
 	AMLDefAcquire def_acquire;
 	AMLDefAdd def_add;
 	AMLDefAnd def_and;
+	AMLDefBreak def_break;
 	AMLDefBuffer def_buffer;
 	AMLDefCreateDWordField def_create_dword_field;
 	AMLDefDerefOf def_deref_of;
@@ -1274,6 +1282,8 @@ AMLSymbol *analyse_aml_arg_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_ascii_char(AMLSymbol *parent, AMLSubstring aml);
 // <ascii_char_list> := Nothing | <ascii_char> <ascii_char_list>
 AMLSymbol *analyse_aml_ascii_char_list(AMLSymbol *parent, AMLSubstring aml);
+// <break_op> := AML_BYTE_BREAK_OP
+AMLSymbol *analyse_aml_break_op(AMLSymbol *parent, AMLSubstring aml);
 // <buff_pkg_str_obj> := <term_arg>
 AMLSymbol *analyse_aml_buff_pkg_str_obj(AMLSymbol *parent, AMLSubstring aml);
 // <buffer_op> := AML_BYTE_BUFFER_OP
@@ -1308,6 +1318,8 @@ AMLSymbol *analyse_aml_def_acquire(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_add(AMLSymbol *parent, AMLSubstring aml);
 // <def_and> := <and_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_and(AMLSymbol *parent, AMLSubstring aml);
+// <def_break> := <break_op>
+AMLSymbol *analyse_aml_def_break(AMLSymbol *parent, AMLSubstring aml);
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
 AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml);
 // <def_create_dword_field> := <create_dword_field_op> <source_buff> <byte_index> <name_string>
