@@ -7760,6 +7760,11 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_package = analyse_aml_def_package(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_package->string.length;
 		break;
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_ROOT_CHAR:
+		expression_opcode->component.expression_opcode.method_invocation = analyse_aml_method_invocation(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.method_invocation->string.length;
+		break;
 	case AML_BYTE_SHIFT_LEFT_OP:
 		expression_opcode->component.expression_opcode.def_shift_left = analyse_aml_def_shift_left(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_shift_left->string.length;
@@ -9644,6 +9649,8 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_ROOT_CHAR:
 	case AML_BYTE_SHIFT_LEFT_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
