@@ -323,6 +323,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *name_string_chain_string;
 	ChainString *named_field_chain_string;
 	ChainString *named_obj_chain_string;
+	ChainString *notify_object_chain_string;
+	ChainString *notify_op_chain_string;
+	ChainString *notify_value_chain_string;
 	ChainString *null_char_chain_string;
 	ChainString *null_name_chain_string;
 	ChainString *num_elements_chain_string;
@@ -552,6 +555,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *name_string_char_array;
 	char *named_field_char_array;
 	char *named_obj_char_array;
+	char *notify_object_char_array;
+	char *notify_op_char_array;
+	char *notify_value_char_array;
 	char *null_char_char_array;
 	char *null_name_char_array;
 	char *num_elements_char_array;
@@ -2007,6 +2013,48 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		{
 			delete_chain_string(data_ref_object_chain_string);
 			free(data_ref_object_char_array);
+		}
+		break;
+	case aml_def_notify:
+		if(aml_symbol->component.def_notify.notify_op)
+		{
+			notify_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_notify.notify_op);
+			insert_char_front(notify_op_chain_string, notify_op_chain_string->first_character, ' ');
+			replace_chain_string(notify_op_chain_string, "\n", "\n ");
+			notify_op_char_array = create_char_array_from_chain_string(notify_op_chain_string);
+		}
+		else notify_op_char_array = "";
+		if(aml_symbol->component.def_notify.notify_object)
+		{
+			notify_object_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_notify.notify_object);
+			insert_char_front(notify_object_chain_string, notify_object_chain_string->first_character, ' ');
+			replace_chain_string(notify_object_chain_string, "\n", "\n ");
+			notify_object_char_array = create_char_array_from_chain_string(notify_object_chain_string);
+		}
+		else notify_object_char_array = "";
+		if(aml_symbol->component.def_notify.notify_value)
+		{
+			notify_value_chain_string = aml_symbol_to_chain_string(aml_symbol->component.def_notify.notify_value);
+			insert_char_front(notify_value_chain_string, notify_value_chain_string->first_character, ' ');
+			replace_chain_string(notify_value_chain_string, "\n", "\n ");
+			notify_value_char_array = create_char_array_from_chain_string(notify_value_chain_string);
+		}
+		else notify_value_char_array = "";
+		output = create_format_chain_string("%s\n%s%s%s", aml_symbol_type_name(aml_symbol->type), notify_op_char_array, notify_object_char_array, notify_value_char_array);
+		if(aml_symbol->component.def_notify.notify_op)
+		{
+			delete_chain_string(notify_op_chain_string);
+			free(notify_op_char_array);
+		}
+		if(aml_symbol->component.def_notify.notify_object)
+		{
+			delete_chain_string(notify_object_chain_string);
+			free(notify_object_char_array);
+		}
+		if(aml_symbol->component.def_notify.notify_value)
+		{
+			delete_chain_string(notify_value_chain_string);
+			free(notify_value_char_array);
 		}
 		break;
 	case aml_def_op_region:
@@ -5470,6 +5518,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_method_name = "DefMethod";
 	static char const * const aml_def_mutex_name = "DefMutex";
 	static char const * const aml_def_name_name = "DefName";
+	static char const * const aml_def_notify_name = "DefNotify";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_or_name = "DefOr";
 	static char const * const aml_def_package_name = "DefPackage";
@@ -5681,6 +5730,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_mutex_name;
 	case aml_def_name:
 		return aml_def_name_name;
+	case aml_def_notify:
+		return aml_def_notify_name;
 	case aml_def_op_region:
 		return aml_def_op_region_name;
 	case aml_def_or:
@@ -6991,6 +7042,21 @@ AMLSymbol *analyse_aml_def_name(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_name->component.def_name.data_ref_object->string.length;
 	aml.length -= def_name->component.def_name.data_ref_object->string.length;
 	return def_name;
+}
+
+// <def_notify> := <notify_op> <notify_object> <notify_value>
+AMLSymbol *analyse_aml_def_notify(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_notify = malloc(sizeof(*def_notify));
+	def_notify->parent = parent;
+	def_notify->string.initial = aml.initial;
+	def_notify->string.length = 0;
+	def_notify->type = aml_def_notify;
+	def_notify->component.def_notify.notify_op = NULL;
+	def_notify->component.def_notify.notify_object = NULL;
+	def_notify->component.def_notify.notify_value = NULL;
+	ERROR(); // Unimplemented
+	return def_notify;
 }
 
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
@@ -10055,6 +10121,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_name.name_op)delete_aml_symbol(aml_symbol->component.def_name.name_op);
 		if(aml_symbol->component.def_name.name_string)delete_aml_symbol(aml_symbol->component.def_name.name_string);
 		if(aml_symbol->component.def_name.data_ref_object)delete_aml_symbol(aml_symbol->component.def_name.data_ref_object);
+		break;
+	case aml_def_notify:
+		if(aml_symbol->component.def_notify.notify_op)delete_aml_symbol(aml_symbol->component.def_notify.notify_op);
+		if(aml_symbol->component.def_notify.notify_object)delete_aml_symbol(aml_symbol->component.def_notify.notify_object);
+		if(aml_symbol->component.def_notify.notify_value)delete_aml_symbol(aml_symbol->component.def_notify.notify_value);
 		break;
 	case aml_def_op_region:
 		if(aml_symbol->component.def_op_region.op_region_op)delete_aml_symbol(aml_symbol->component.def_op_region.op_region_op);

@@ -222,6 +222,7 @@ typedef enum _AMLSymbolType
 	aml_def_method,
 	aml_def_mutex,
 	aml_def_name,
+	aml_def_notify,
 	aml_def_op_region,
 	aml_def_or,
 	aml_def_package,
@@ -582,6 +583,13 @@ typedef struct _AMLDefName
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *data_ref_object;
 } AMLDefName;
+
+typedef struct _AMLDefNotify
+{
+	struct _AMLSymbol *notify_op;
+	struct _AMLSymbol *notify_object;
+	struct _AMLSymbol *notify_value;
+} AMLDefNotify;
 
 typedef struct _AMLDefOpRegion
 {
@@ -1140,6 +1148,7 @@ typedef union _AMLComponent
 	AMLDefMethod def_method;
 	AMLDefMutex def_mutex;
 	AMLDefName def_name;
+	AMLDefNotify def_notify;
 	AMLDefOpRegion def_op_region;
 	AMLDefOr def_or;
 	AMLDefPackage def_package;
@@ -1309,6 +1318,8 @@ AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_mutex(AMLSymbol *parent, AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
 AMLSymbol *analyse_aml_def_name(AMLSymbol *parent, AMLSubstring aml);
+// <def_notify> := <notify_op> <notify_object> <notify_value>
+AMLSymbol *analyse_aml_def_notify(AMLSymbol *parent, AMLSubstring aml);
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
 AMLSymbol *analyse_aml_def_op_region(AMLSymbol *parent, AMLSubstring aml);
 // <def_or> := <or_op> <operand> <operand> <target>
