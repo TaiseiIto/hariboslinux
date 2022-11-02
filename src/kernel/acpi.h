@@ -214,6 +214,7 @@ typedef enum _AMLSymbolType
 	aml_def_if_else,
 	aml_def_increment,
 	aml_def_index,
+	aml_def_l_and,
 	aml_def_l_equal,
 	aml_def_l_greater,
 	aml_def_l_less,
@@ -259,6 +260,7 @@ typedef enum _AMLSymbolType
 	aml_index_op,
 	aml_index_value,
 	aml_lead_name_char,
+	aml_l_and_op,
 	aml_l_equal_op,
 	aml_l_greater_op,
 	aml_l_less_op,
@@ -533,6 +535,12 @@ typedef struct _AMLDefIndex
 	struct _AMLSymbol *index_value;
 	struct _AMLSymbol *target;
 } AMLDefIndex;
+
+typedef struct _AMLDefLAnd
+{
+	struct _AMLSymbol *l_and_op;
+	struct _AMLSymbol *operand[2];
+} AMLDefLAnd;
 
 typedef struct _AMLDefLEqual
 {
@@ -1153,6 +1161,7 @@ typedef union _AMLComponent
 	AMLDefIfElse def_if_else;
 	AMLDefIncrement def_increment;
 	AMLDefIndex def_index;
+	AMLDefLAnd def_l_and;
 	AMLDefLEqual def_l_equal;
 	AMLDefLGreater def_l_greater;
 	AMLDefLLess def_l_less;
@@ -1317,6 +1326,8 @@ AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_increment(AMLSymbol *parent, AMLSubstring aml);
 // <def_index> := <index_op> <buff_pkf_str_obj> <index_value> <target>
 AMLSymbol *analyse_aml_def_index(AMLSymbol *parent, AMLSubstring aml);
+// <def_l_and> := <l_and_op> <operand> <operand>
+AMLSymbol *analyse_aml_def_l_and(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_equal> := <l_equal_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_equal(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_greater> := <l_greater_op> <operand> <operand>
@@ -1407,6 +1418,8 @@ AMLSymbol *analyse_aml_index_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_index_value(AMLSymbol *parent, AMLSubstring aml);
 // <lead_char> := 'A' - 'Z' | '_'
 AMLSymbol *analyse_aml_lead_name_char(AMLSymbol *parent, AMLSubstring aml);
+// <l_and_op> := AML_BYTE_L_OR_OP
+AMLSymbol *analyse_aml_l_and_op(AMLSymbol *parent, AMLSubstring aml);
 // <l_equal_op> := AML_BYTE_L_EQUAL_OP
 AMLSymbol *analyse_aml_l_equal_op(AMLSymbol *parent, AMLSubstring aml);
 // <l_greater_op> := AML_BYTE_L_GREATER_OP
