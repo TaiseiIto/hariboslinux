@@ -4307,6 +4307,22 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(def_thermal_zone_char_array);
 		}
 		break;
+	case aml_notify_object:
+		if(aml_symbol->component.notify_object.super_name)
+		{
+			super_name_chain_string = aml_symbol_to_chain_string(aml_symbol->component.notify_object.super_name);
+			insert_char_front(super_name_chain_string, super_name_chain_string->first_character, ' ');
+			replace_chain_string(super_name_chain_string, "\n", "\n ");
+			super_name_char_array = create_char_array_from_chain_string(super_name_chain_string);
+		}
+		else super_name_char_array = "";
+		output = create_format_chain_string("%s\n%s", aml_symbol_type_name(aml_symbol->type), super_name_char_array);
+		if(aml_symbol->component.notify_object.super_name)
+		{
+			delete_chain_string(super_name_chain_string);
+			free(super_name_char_array);
+		}
+		break;
 	case aml_notify_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
@@ -5581,6 +5597,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_name_string_name = "NameString";
 	static char const * const aml_named_field_name = "NamedField";
 	static char const * const aml_named_obj_name = "NamedObj";
+	static char const * const aml_notify_object_name = "NotifyObject";
 	static char const * const aml_notify_op_name = "NotifyOp";
 	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
@@ -5854,6 +5871,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_named_field_name;
 	case aml_named_obj:
 		return aml_named_obj_name;
+	case aml_notify_object:
+		return aml_notify_object_name;
 	case aml_notify_op:
 		return aml_notify_op_name;
 	case aml_null_char:
@@ -7062,7 +7081,10 @@ AMLSymbol *analyse_aml_def_notify(AMLSymbol *parent, AMLSubstring aml)
 	def_notify->string.length += def_notify->component.def_notify.notify_op->string.length;
 	aml.initial += def_notify->component.def_notify.notify_op->string.length;
 	aml.length -= def_notify->component.def_notify.notify_op->string.length;
-	def_notify->component.def_notify.notify_object = NULL;
+	def_notify->component.def_notify.notify_object = analyse_aml_notify_object(def_notify, aml);
+	def_notify->string.length += def_notify->component.def_notify.notify_object->string.length;
+	aml.initial += def_notify->component.def_notify.notify_object->string.length;
+	aml.length -= def_notify->component.def_notify.notify_object->string.length;
 	def_notify->component.def_notify.notify_value = NULL;
 	ERROR(); // Unimplemented
 	return def_notify;
@@ -8469,6 +8491,19 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	}
 	return named_obj;
+}
+
+// <notify_object> := <super_name>
+AMLSymbol *analyse_aml_notify_object(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *notify_object = malloc(sizeof(*notify_object));
+	notify_object->parent = parent;
+	notify_object->string.initial = aml.initial;
+	notify_object->string.length = 0;
+	notify_object->type = aml_notify_object;
+	notify_object->component.notify_object.super_name = analyse_aml_super_name(notify_object, aml);
+	notify_object->string.length += notify_object->component.notify_object.super_name->string.length;
+	return notify_object;
 }
 
 // <notify_op> := AML_BYTE_NOTIFY_OP
@@ -10431,6 +10466,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.named_obj.def_op_region)delete_aml_symbol(aml_symbol->component.named_obj.def_op_region);
 		if(aml_symbol->component.named_obj.def_power_res)delete_aml_symbol(aml_symbol->component.named_obj.def_power_res);
 		if(aml_symbol->component.named_obj.def_thermal_zone)delete_aml_symbol(aml_symbol->component.named_obj.def_thermal_zone);
+		break;
+	case aml_notify_object:
+		if(aml_symbol->component.notify_object.super_name)delete_aml_symbol(aml_symbol->component.notify_object.super_name);
 		break;
 	case aml_notify_op:
 		break;
