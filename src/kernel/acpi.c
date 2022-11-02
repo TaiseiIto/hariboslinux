@@ -729,7 +729,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.ascii_char_list.ascii_char_list)
 		{
 			delete_chain_string(ascii_char_list_chain_string);
-			free(ascii_char_char_array);
+			free(ascii_char_list_char_array);
 		}
 		break;
 	case aml_buff_pkg_str_obj:
