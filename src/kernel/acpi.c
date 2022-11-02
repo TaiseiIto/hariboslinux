@@ -11060,73 +11060,68 @@ ACPITableHeader const * const *get_sdt_headers(void)
 
 void print_acpi_table_header(ACPITableHeader acpi_table_header, char const *name)
 {
-	Shell *shell = get_current_shell();
-	printf_shell(shell, "%s.signature = %.*s\n", name, sizeof(acpi_table_header.signature), acpi_table_header.signature);
-	printf_shell(shell, "%s.length = %#010.8x\n", name, acpi_table_header.length);
-	printf_shell(shell, "%s.revision = %#04.2x\n", name, acpi_table_header.revision);
-	printf_shell(shell, "%s.checksum = %#04.2x\n", name, acpi_table_header.checksum);
-	printf_shell(shell, "%s.oem_id = %.*s\n", name, sizeof(acpi_table_header.oem_id), acpi_table_header.oem_id);
-	printf_shell(shell, "%s.oem_table_id = %.*s\n", name, sizeof(acpi_table_header.oem_table_id), acpi_table_header.oem_table_id);
-	printf_shell(shell, "%s.oem_revision = %#010.8x\n", name, acpi_table_header.oem_revision);
-	printf_shell(shell, "%s.creater_id = %#010.8x\n", name, acpi_table_header.creater_id);
-	printf_shell(shell, "%s.creater_revision = %#010.8x\n", name, acpi_table_header.creater_revision);
+	printf_serial("%s.signature = %.*s\n", name, sizeof(acpi_table_header.signature), acpi_table_header.signature);
+	printf_serial("%s.length = %#010.8x\n", name, acpi_table_header.length);
+	printf_serial("%s.revision = %#04.2x\n", name, acpi_table_header.revision);
+	printf_serial("%s.checksum = %#04.2x\n", name, acpi_table_header.checksum);
+	printf_serial("%s.oem_id = %.*s\n", name, sizeof(acpi_table_header.oem_id), acpi_table_header.oem_id);
+	printf_serial("%s.oem_table_id = %.*s\n", name, sizeof(acpi_table_header.oem_table_id), acpi_table_header.oem_table_id);
+	printf_serial("%s.oem_revision = %#010.8x\n", name, acpi_table_header.oem_revision);
+	printf_serial("%s.creater_id = %#010.8x\n", name, acpi_table_header.creater_id);
+	printf_serial("%s.creater_revision = %#010.8x\n", name, acpi_table_header.creater_revision);
 }
 
 void print_acpi_table_header_p(ACPITableHeader const *acpi_table_header, char const *name)
 {
-	Shell *shell = get_current_shell();
-	printf_shell(shell, "%s = %p\n", name, acpi_table_header);
-	printf_shell(shell, "%s->signature = %.*s\n", name, sizeof(acpi_table_header->signature), acpi_table_header->signature);
-	printf_shell(shell, "%s->length = %#010.8x\n", name, acpi_table_header->length);
-	printf_shell(shell, "%s->revision = %#04.2x\n", name, acpi_table_header->revision);
-	printf_shell(shell, "%s->checksum = %#04.2x\n", name, acpi_table_header->checksum);
-	printf_shell(shell, "%s->oem_id = %.*s\n", name, sizeof(acpi_table_header->oem_id), acpi_table_header->oem_id);
-	printf_shell(shell, "%s->oem_table_id = %.*s\n", name, sizeof(acpi_table_header->oem_table_id), acpi_table_header->oem_table_id);
-	printf_shell(shell, "%s->oem_revision = %#010.8x\n", name, acpi_table_header->oem_revision);
-	printf_shell(shell, "%s->creater_id = %#010.8x\n", name, acpi_table_header->creater_id);
-	printf_shell(shell, "%s->creater_revision = %#010.8x\n", name, acpi_table_header->creater_revision);
+	printf_serial("%s = %p\n", name, acpi_table_header);
+	printf_serial("%s->signature = %.*s\n", name, sizeof(acpi_table_header->signature), acpi_table_header->signature);
+	printf_serial("%s->length = %#010.8x\n", name, acpi_table_header->length);
+	printf_serial("%s->revision = %#04.2x\n", name, acpi_table_header->revision);
+	printf_serial("%s->checksum = %#04.2x\n", name, acpi_table_header->checksum);
+	printf_serial("%s->oem_id = %.*s\n", name, sizeof(acpi_table_header->oem_id), acpi_table_header->oem_id);
+	printf_serial("%s->oem_table_id = %.*s\n", name, sizeof(acpi_table_header->oem_table_id), acpi_table_header->oem_table_id);
+	printf_serial("%s->oem_revision = %#010.8x\n", name, acpi_table_header->oem_revision);
+	printf_serial("%s->creater_id = %#010.8x\n", name, acpi_table_header->creater_id);
+	printf_serial("%s->creater_revision = %#010.8x\n", name, acpi_table_header->creater_revision);
 }
 
 void print_aml_symbol(AMLSymbol const *aml_symbol)
 {
 	char *aml_symbol_string = aml_symbol_to_string(aml_symbol);
-	printf_shell(get_current_shell(), aml_symbol_string);
+	printf_serial(aml_symbol_string);
 	free(aml_symbol_string);
 }
 
 void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name)
 {
-	Shell *shell = get_current_shell();
-	printf_shell(shell, "%s.address_space = %#04.2x\n", name, generic_address_structure.address_space);
-	printf_shell(shell, "%s.bit_width = %#04.2x\n", name, generic_address_structure.bit_width);
-	printf_shell(shell, "%s.bit_offset = %#04.2x\n", name, generic_address_structure.bit_offset);
-	printf_shell(shell, "%s.access_size = %#04.2x\n", name, generic_address_structure.access_size);
-	printf_shell(shell, "%s.address = %#018.16x\n", name, generic_address_structure.address);
+	printf_serial("%s.address_space = %#04.2x\n", name, generic_address_structure.address_space);
+	printf_serial("%s.bit_width = %#04.2x\n", name, generic_address_structure.bit_width);
+	printf_serial("%s.bit_offset = %#04.2x\n", name, generic_address_structure.bit_offset);
+	printf_serial("%s.access_size = %#04.2x\n", name, generic_address_structure.access_size);
+	printf_serial("%s.address = %#018.16x\n", name, generic_address_structure.address);
 }
 
 void print_rsdp(RSDP const *rsdp, char const *name)
 {
-	Shell *shell = get_current_shell();
-	printf_shell(shell, "%s->signature = %.*s\n", name, sizeof(rsdp->signature), rsdp->signature);
-	printf_shell(shell, "%s->checksum = %#04.2x\n", name, rsdp->checksum);
-	printf_shell(shell, "%s->oemid = %.*s\n", name, sizeof(rsdp->oemid), rsdp->oemid);
-	printf_shell(shell, "%s->revision = %#04.2x\n", name, rsdp->revision);
-	printf_shell(shell, "%s->rsdt = %p\n", name, rsdp->rsdt);
-	printf_shell(shell, "%s->length = %#010.8x\n", name, rsdp->length);
-	printf_shell(shell, "%s->xsdt_addr = %#018.16x\n", name, rsdp->xsdt_addr);
-	printf_shell(shell, "%s->extended_checksum = %#04.2x\n", name, rsdp->extended_checksum);
+	printf_serial("%s->signature = %.*s\n", name, sizeof(rsdp->signature), rsdp->signature);
+	printf_serial("%s->checksum = %#04.2x\n", name, rsdp->checksum);
+	printf_serial("%s->oemid = %.*s\n", name, sizeof(rsdp->oemid), rsdp->oemid);
+	printf_serial("%s->revision = %#04.2x\n", name, rsdp->revision);
+	printf_serial("%s->rsdt = %p\n", name, rsdp->rsdt);
+	printf_serial("%s->length = %#010.8x\n", name, rsdp->length);
+	printf_serial("%s->xsdt_addr = %#018.16x\n", name, rsdp->xsdt_addr);
+	printf_serial("%s->extended_checksum = %#04.2x\n", name, rsdp->extended_checksum);
 }
 
 void print_sdts(void)
 {
-	Shell *shell = get_current_shell();
 	ACPITableHeader const * const *sdt_headers = get_sdt_headers();
 	unsigned int num_of_sdt_headers = get_num_of_sdt_headers();
 	for(ACPITableHeader const * const *sdt_header = sdt_headers; sdt_header != sdt_headers + num_of_sdt_headers; sdt_header++)
 	{
 		PRINT_ACPI_TABLE_HEADER_P(*sdt_header);
-		for(unsigned int i = 0; i < (*sdt_header)->length; i++)printf_shell(shell, "%02.2x%c", *((unsigned char *)(*sdt_header) + sizeof(**sdt_header) + i), (i + 1) % 0x10 ? ' ' : '\n');
-		printf_shell(shell, "\n");
+		for(unsigned int i = 0; i < (*sdt_header)->length; i++)printf_serial("%02.2x%c", *((unsigned char *)(*sdt_header) + sizeof(**sdt_header) + i), (i + 1) % 0x10 ? ' ' : '\n');
+		printf_serial("\n");
 	}
 }
 
