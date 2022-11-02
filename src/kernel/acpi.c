@@ -6263,7 +6263,7 @@ AMLSymbol *analyse_aml_break_op(AMLSymbol *parent, AMLSubstring aml)
 	AMLSymbol *break_op = malloc(sizeof(*break_op));
 	break_op->parent = parent;
 	break_op->string.initial = aml.initial;
-	break_op->string.length = 0;
+	break_op->string.length = 1;
 	break_op->type = aml_break_op;
 	if(*break_op->string.initial != AML_BYTE_BREAK_OP)ERROR(); // Incorrect break_op
 	return break_op;
