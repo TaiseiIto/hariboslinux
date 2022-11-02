@@ -8,6 +8,7 @@
 
 #define AML_BYTE_NULL_CHAR		0x00
 #define AML_BYTE_NULL_NAME		0x00
+#define AML_BYTE_RESERVED_FIELD_OP	0x00
 #define AML_BYTE_ZERO_OP		0x00
 #define AML_BYTE_ONE_OP			0x01
 #define AML_BYTE_ALIAS_OP		0x06
@@ -4735,6 +4736,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 			free(pkg_length_char_array);
 		}
 		break;
+	case aml_reserved_field_op:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)
 		{
@@ -5555,6 +5559,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_release_op_suffix_name = "ReleaseOpSuffix";
 	static char const * const aml_return_op_name = "ReturnOp";
 	static char const * const aml_reserved_field_name = "ReservedField";
+	static char const * const aml_reserved_field_op_name = "ReservedFieldOp";
 	static char const * const aml_revision_op_name = "RevisionOp";
 	static char const * const aml_revision_op_suffix_name = "RevisionOpSuffix";
 	static char const * const aml_root_char_name = "RootChar";
@@ -5854,6 +5859,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_return_op_name;
 	case aml_reserved_field:
 		return aml_reserved_field_name;
+	case aml_reserved_field_op:
+		return aml_reserved_field_op_name;
 	case aml_revision_op:
 		return aml_revision_op_name;
 	case aml_revision_op_suffix:
@@ -7704,14 +7711,25 @@ AMLSymbol *analyse_aml_field_element(AMLSymbol *parent, AMLSubstring aml)
 	field_element->component.field_element.access_field = NULL;
 	field_element->component.field_element.extended_access_field = NULL;
 	field_element->component.field_element.connect_field = NULL;
-	if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+	switch(*aml.initial)
 	{
-		field_element->component.field_element.named_field = analyse_aml_named_field(field_element, aml);
-		field_element->string.length += field_element->component.field_element.named_field->string.length;
-		aml.initial += field_element->component.field_element.named_field->string.length;
-		aml.length -= field_element->component.field_element.named_field->string.length;
+	case AML_BYTE_RESERVED_FIELD_OP:
+		field_element->component.field_element.reserved_field = analyse_aml_reserved_field(field_element, aml);
+		field_element->string.length += field_element->component.field_element.reserved_field->string.length;
+		aml.initial += field_element->component.field_element.reserved_field->string.length;
+		aml.length -= field_element->component.field_element.reserved_field->string.length;
+		break;
+	default:
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			field_element->component.field_element.named_field = analyse_aml_named_field(field_element, aml);
+			field_element->string.length += field_element->component.field_element.named_field->string.length;
+			aml.initial += field_element->component.field_element.named_field->string.length;
+			aml.length -= field_element->component.field_element.named_field->string.length;
+		}
+		else ERROR(); // Syntax error or unimplemented pattern
+		break;
 	}
-	else ERROR(); // Syntax error or unimplemented pattern
 	return field_element;
 }
 
@@ -7737,8 +7755,9 @@ AMLSymbol *analyse_aml_field_list(AMLSymbol *parent, AMLSubstring aml)
 	field_list->type = aml_field_list;
 	field_list->component.field_list.field_element = NULL;
 	field_list->component.field_list.field_list = NULL;
-	if(aml.length && (('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_'))
+	if(aml.length)switch(*aml.initial)
 	{
+	case AML_BYTE_RESERVED_FIELD_OP:
 		field_list->component.field_list.field_element = analyse_aml_field_element(field_list, aml);
 		field_list->string.length += field_list->component.field_list.field_element->string.length;
 		aml.initial += field_list->component.field_list.field_element->string.length;
@@ -7747,6 +7766,20 @@ AMLSymbol *analyse_aml_field_list(AMLSymbol *parent, AMLSubstring aml)
 		field_list->string.length += field_list->component.field_list.field_list->string.length;
 		aml.initial += field_list->component.field_list.field_list->string.length;
 		aml.length -= field_list->component.field_list.field_list->string.length;
+		break;
+	default:
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			field_list->component.field_list.field_element = analyse_aml_field_element(field_list, aml);
+			field_list->string.length += field_list->component.field_list.field_element->string.length;
+			aml.initial += field_list->component.field_list.field_element->string.length;
+			aml.length -= field_list->component.field_list.field_element->string.length;
+			field_list->component.field_list.field_list = analyse_aml_field_list(field_list, aml);
+			field_list->string.length += field_list->component.field_list.field_list->string.length;
+			aml.initial += field_list->component.field_list.field_list->string.length;
+			aml.length -= field_list->component.field_list.field_list->string.length;
+		}
+		break;
 	}
 	return field_list;
 }
@@ -8932,10 +8965,27 @@ AMLSymbol *analyse_aml_reserved_field(AMLSymbol *parent, AMLSubstring aml)
 	reserved_field->string.initial = aml.initial;
 	reserved_field->string.length = 0;
 	reserved_field->type = aml_reserved_field;
-	reserved_field->component.reserved_field.reserved_field_op = NULL;
-	reserved_field->component.reserved_field.pkg_length = NULL;
-	ERROR(); // Unimplemented
+	reserved_field->component.reserved_field.reserved_field_op = analyse_aml_reserved_field_op(reserved_field, aml);
+	reserved_field->string.length += reserved_field->component.reserved_field.reserved_field_op->string.length;
+	aml.initial += reserved_field->component.reserved_field.reserved_field_op->string.length;
+	aml.length -= reserved_field->component.reserved_field.reserved_field_op->string.length;
+	reserved_field->component.reserved_field.pkg_length = analyse_aml_pkg_length(reserved_field, aml);
+	reserved_field->string.length += reserved_field->component.reserved_field.pkg_length->string.length;
+	aml.initial += reserved_field->component.reserved_field.pkg_length->string.length;
+	aml.length -= reserved_field->component.reserved_field.pkg_length->string.length;
 	return reserved_field;
+}
+
+// <reserved_field_op> := AML_BYTE_RESERVED_FIELD_OP
+AMLSymbol *analyse_aml_reserved_field_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *reserved_field_op = malloc(sizeof(*reserved_field_op));
+	reserved_field_op->parent = parent;
+	reserved_field_op->string.initial = aml.initial;
+	reserved_field_op->string.length = 1;
+	reserved_field_op->type = aml_reserved_field_op;
+	if(*reserved_field_op->string.initial != AML_BYTE_RESERVED_FIELD_OP)ERROR(); // Incorrect reserved_field_op
+	return reserved_field_op;
 }
 
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
@@ -10373,6 +10423,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_reserved_field:
 		if(aml_symbol->component.reserved_field.reserved_field_op)delete_aml_symbol(aml_symbol->component.reserved_field.reserved_field_op);
 		if(aml_symbol->component.reserved_field.pkg_length)delete_aml_symbol(aml_symbol->component.reserved_field.pkg_length);
+		break;
+	case aml_reserved_field_op:
 		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.revision_op.ext_op_prefix);

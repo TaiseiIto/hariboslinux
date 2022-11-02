@@ -310,6 +310,7 @@ typedef enum _AMLSymbolType
 	aml_release_op,
 	aml_release_op_suffix,
 	aml_reserved_field,
+	aml_reserved_field_op,
 	aml_return_op,
 	aml_revision_op,
 	aml_revision_op_suffix,
@@ -1486,6 +1487,8 @@ AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml);
 // <reserved_field> := <reserved_field_op> <pkg_length>
 AMLSymbol *analyse_aml_reserved_field(AMLSymbol *parent, AMLSubstring aml);
+// <reserved_field_op> := AML_BYTE_RESERVED_FIELD_OP
+AMLSymbol *analyse_aml_reserved_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
 AMLSymbol *analyse_aml_revision_op(AMLSymbol *parent, AMLSubstring aml);
 // <revision_op_suffix> := AML_BYTE_REVISION_OP
