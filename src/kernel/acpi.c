@@ -9303,6 +9303,8 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_ARG_4_OP:
 	case AML_BYTE_ARG_5_OP:
 	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_INDEX_OP:
 	case AML_BYTE_LOCAL_0_OP:
 	case AML_BYTE_LOCAL_1_OP:
 	case AML_BYTE_LOCAL_2_OP:
@@ -9319,8 +9321,18 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 		aml.length -= target->component.target.super_name->string.length;
 		break;
 	default:
-		ERROR(); // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			target->component.target.super_name = analyse_aml_super_name(target, aml);
+			target->string.length += target->component.target.super_name->string.length;
+			aml.initial += target->component.target.super_name->string.length;
+			aml.length -= target->component.target.super_name->string.length;
+		}
+		else
+		{
+			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+		}
 		break;
 	}
 	return target;
