@@ -283,6 +283,7 @@ typedef enum _AMLSymbolType
 	aml_named_field,
 	aml_named_obj,
 	aml_notify_object,
+	aml_notify_value,
 	aml_notify_op,
 	aml_null_char,
 	aml_null_name,
@@ -911,6 +912,11 @@ typedef struct _AMLNotifyObject
 	struct _AMLSymbol *super_name;
 } AMLNotifyObject;
 
+typedef struct _AMLNotifyValue
+{
+	struct _AMLSymbol *term_arg;
+} AMLNotifyValue;
+
 typedef struct _AMLNumElements
 {
 	struct _AMLSymbol *byte_data;
@@ -1193,6 +1199,7 @@ typedef union _AMLComponent
 	AMLNameSpaceModifierObj name_space_modifier_obj;
 	AMLNameString name_string;
 	AMLNotifyObject notify_object;
+	AMLNotifyValue notify_value;
 	AMLNumElements num_elements;
 	AMLObject object;
 	AMLObjReference obj_reference;
@@ -1448,6 +1455,8 @@ AMLSymbol *analyse_aml_named_field(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml);
 // <notify_object> := <super_name>
 AMLSymbol *analyse_aml_notify_object(AMLSymbol *parent, AMLSubstring aml);
+// <notify_value> := <term_arg>
+AMLSymbol *analyse_aml_notify_value(AMLSymbol *parent, AMLSubstring aml);
 // <notify_op> := AML_BYTE_NOTIFY_OP
 AMLSymbol *analyse_aml_notify_op(AMLSymbol *parent, AMLSubstring aml);
 // <null_char> := AML_BYTE_NULL_CHAR
