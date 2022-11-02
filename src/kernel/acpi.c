@@ -353,6 +353,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *release_op_chain_string;
 	ChainString *release_op_suffix_chain_string;
 	ChainString *reserved_field_chain_string;
+	ChainString *reserved_field_op_chain_string;
 	ChainString *return_op_chain_string;
 	ChainString *revision_op_chain_string;
 	ChainString *revision_op_suffix_chain_string;
@@ -580,6 +581,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *release_op_char_array;
 	char *release_op_suffix_char_array;
 	char *reserved_field_char_array;
+	char *reserved_field_op_char_array;
 	char *return_op_char_array;
 	char *revision_op_char_array;
 	char *revision_op_suffix_char_array;
@@ -4704,6 +4706,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	case aml_return_op:
 		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
 		break;
+	case aml_reserved_field:
+		if(aml_symbol->component.reserved_field.reserved_field_op)
+		{
+			reserved_field_op_chain_string = aml_symbol_to_chain_string(aml_symbol->component.reserved_field.reserved_field_op);
+			insert_char_front(reserved_field_op_chain_string, reserved_field_op_chain_string->first_character, ' ');
+			replace_chain_string(reserved_field_op_chain_string, "\n", "\n ");
+			reserved_field_op_char_array = create_char_array_from_chain_string(reserved_field_op_chain_string);
+		}
+		else reserved_field_op_char_array = "";
+		if(aml_symbol->component.reserved_field.pkg_length)
+		{
+			pkg_length_chain_string = aml_symbol_to_chain_string(aml_symbol->component.reserved_field.pkg_length);
+			insert_char_front(pkg_length_chain_string, pkg_length_chain_string->first_character, ' ');
+			replace_chain_string(pkg_length_chain_string, "\n", "\n ");
+			pkg_length_char_array = create_char_array_from_chain_string(pkg_length_chain_string);
+		}
+		else pkg_length_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), reserved_field_op_char_array, pkg_length_char_array);
+		if(aml_symbol->component.reserved_field.reserved_field_op)
+		{
+			delete_chain_string(reserved_field_op_chain_string);
+			free(reserved_field_op_char_array);
+		}
+		if(aml_symbol->component.reserved_field.pkg_length)
+		{
+			delete_chain_string(pkg_length_chain_string);
+			free(pkg_length_char_array);
+		}
+		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)
 		{
@@ -5523,6 +5554,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_release_op_name = "ReleaseOp";
 	static char const * const aml_release_op_suffix_name = "ReleaseOpSuffix";
 	static char const * const aml_return_op_name = "ReturnOp";
+	static char const * const aml_reserved_field_name = "ReservedField";
 	static char const * const aml_revision_op_name = "RevisionOp";
 	static char const * const aml_revision_op_suffix_name = "RevisionOpSuffix";
 	static char const * const aml_root_char_name = "RootChar";
@@ -5820,6 +5852,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_release_op_suffix_name;
 	case aml_return_op:
 		return aml_return_op_name;
+	case aml_reserved_field:
+		return aml_reserved_field_name;
 	case aml_revision_op:
 		return aml_revision_op_name;
 	case aml_revision_op_suffix:
@@ -8890,6 +8924,20 @@ AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml)
 	return return_op;
 }
 
+// <reserved_field> := <reserved_field_op> <pkg_length>
+AMLSymbol *analyse_aml_reserved_field(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *reserved_field = malloc(sizeof(*reserved_field));
+	reserved_field->parent = parent;
+	reserved_field->string.initial = aml.initial;
+	reserved_field->string.length = 0;
+	reserved_field->type = aml_reserved_field;
+	reserved_field->component.reserved_field.reserved_field_op = NULL;
+	reserved_field->component.reserved_field.pkg_length = NULL;
+	ERROR(); // Unimplemented
+	return reserved_field;
+}
+
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
 AMLSymbol *analyse_aml_revision_op(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -10321,6 +10369,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_release_op_suffix:
 		break;
 	case aml_return_op:
+		break;
+	case aml_reserved_field:
+		if(aml_symbol->component.reserved_field.reserved_field_op)delete_aml_symbol(aml_symbol->component.reserved_field.reserved_field_op);
+		if(aml_symbol->component.reserved_field.pkg_length)delete_aml_symbol(aml_symbol->component.reserved_field.pkg_length);
 		break;
 	case aml_revision_op:
 		if(aml_symbol->component.revision_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.revision_op.ext_op_prefix);

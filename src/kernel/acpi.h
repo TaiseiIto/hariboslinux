@@ -309,6 +309,7 @@ typedef enum _AMLSymbolType
 	aml_region_space,
 	aml_release_op,
 	aml_release_op_suffix,
+	aml_reserved_field,
 	aml_return_op,
 	aml_revision_op,
 	aml_revision_op_suffix,
@@ -990,6 +991,12 @@ typedef struct _AMLReleaseOp
 	struct _AMLSymbol *release_op_suffix;
 } AMLReleaseOp;
 
+typedef struct _AMLReservedField
+{
+	struct _AMLSymbol *reserved_field_op;
+	struct _AMLSymbol *pkg_length;
+} AMLReservedField;
+
 typedef struct _AMLRevisionOp
 {
 	struct _AMLSymbol *ext_op_prefix;
@@ -1184,6 +1191,7 @@ typedef union _AMLComponent
 	AMLRegionLen region_len;
 	AMLRegionOffset region_offset;
 	AMLReleaseOp release_op;
+	AMLReservedField reserved_field;
 	AMLRevisionOp revision_op;
 	AMLShiftCount shift_count;
 	AMLSimpleName simple_name;
@@ -1476,6 +1484,8 @@ AMLSymbol *analyse_aml_release_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <return_op> := AML_BYTE_RETURN_OP
 AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml);
+// <reserved_field> := <reserved_field_op> <pkg_length>
+AMLSymbol *analyse_aml_reserved_field(AMLSymbol *parent, AMLSubstring aml);
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
 AMLSymbol *analyse_aml_revision_op(AMLSymbol *parent, AMLSubstring aml);
 // <revision_op_suffix> := AML_BYTE_REVISION_OP
