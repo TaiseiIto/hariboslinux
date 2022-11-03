@@ -204,6 +204,7 @@ typedef enum _AMLSymbolType
 	aml_data_ref_object,
 	aml_debug_obj,
 	aml_debug_op,
+	aml_debug_op_suffix,
 	aml_def_alias,
 	aml_def_acquire,
 	aml_def_add,
@@ -1329,6 +1330,8 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_debug_obj(AMLSymbol *parent, AMLSubstring aml);
 // <debug_op> := <ext_op_prefix> <debug_op_suffix>
 AMLSymbol *analyse_aml_debug_op(AMLSymbol *parent, AMLSubstring aml);
+// <debug_op_suffix> := AML_BYTE_DEBUG_OP
+AMLSymbol *analyse_aml_debug_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml);
 // <def_acquire> := <acquire_op> <mutex_object> <time_out>

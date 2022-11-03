@@ -1030,6 +1030,9 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.debug_op.ext_op_prefix)free(ext_op_prefix_char_array);
 		if(aml_symbol->component.debug_op.debug_op_suffix)free(debug_op_suffix_char_array);
 		break;
+	case aml_debug_op_suffix:
+		output = create_format_chain_string("%s\n", aml_symbol_type_name(aml_symbol->type));
+		break;
 	case aml_def_alias:
 		name_strings_chain_string = malloc(_countof(aml_symbol->component.def_alias.name_string) * sizeof(*name_strings_chain_string));
 		name_strings_char_array = malloc(_countof(aml_symbol->component.def_alias.name_string) * sizeof(*name_strings_char_array));
@@ -4640,6 +4643,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_debug_obj_name = "DebugObj";
 	static char const * const aml_debug_op_name = "DebugOp";
+	static char const * const aml_debug_op_suffix_name = "DebugOpSuffix";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_acquire_name = "DefAcquire";
 	static char const * const aml_def_add_name = "DefAdd";
@@ -4843,6 +4847,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_debug_obj_name;
 	case aml_debug_op:
 		return aml_debug_op_name;
+	case aml_debug_op_suffix:
+		return aml_debug_op_suffix_name;
 	case aml_def_alias:
 		return aml_def_alias_name;
 	case aml_def_acquire:
@@ -5651,9 +5657,23 @@ AMLSymbol *analyse_aml_debug_op(AMLSymbol *parent, AMLSubstring aml)
 	debug_op->string.length += debug_op->component.debug_op.ext_op_prefix->string.length;
 	aml.initial += debug_op->component.debug_op.ext_op_prefix->string.length;
 	aml.length -= debug_op->component.debug_op.ext_op_prefix->string.length;
-	debug_op->component.debug_op.debug_op_suffix = NULL;
-	ERROR(); // Unimplemented
+	debug_op->component.debug_op.debug_op_suffix = analyse_aml_debug_op_suffix(debug_op, aml);
+	debug_op->string.length += debug_op->component.debug_op.debug_op_suffix->string.length;
+	aml.initial += debug_op->component.debug_op.debug_op_suffix->string.length;
+	aml.length -= debug_op->component.debug_op.debug_op_suffix->string.length;
 	return debug_op;
+}
+
+// <debug_op_suffix> := AML_BYTE_DEBUG_OP
+AMLSymbol *analyse_aml_debug_op_suffix(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *debug_op_suffix = malloc(sizeof(*debug_op_suffix));
+	debug_op_suffix->parent = parent;
+	debug_op_suffix->string.initial = aml.initial;
+	debug_op_suffix->string.length = 1;
+	debug_op_suffix->type = aml_debug_op_suffix;
+	if(*debug_op_suffix->string.initial != AML_BYTE_DEBUG_OP)ERROR(); // Incorrect debug_op_suffix
+	return debug_op_suffix;
 }
 
 // <def_alias> := <alias_op> <name_string> <name_string>
@@ -8704,6 +8724,22 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 	super_name->component.super_name.simple_name = NULL;
 	switch(*super_name->string.initial)
 	{
+	case AML_BYTE_EXT_OP_PREFIX:
+		switch(super_name->string.initial[1])
+		{
+		case AML_BYTE_DEBUG_OP:
+			super_name->component.super_name.debug_obj = analyse_aml_debug_obj(super_name, aml);
+			super_name->string.length += super_name->component.super_name.debug_obj->string.length;
+			aml.initial += super_name->component.super_name.debug_obj->string.length;
+			aml.length -= super_name->component.super_name.debug_obj->string.length;
+			break;
+		default:
+			ERROR(); // Syntax error or unimplemented pattern
+			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
+			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
+			break;
+		}
+		break;
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_INDEX_OP:
 		super_name->component.super_name.reference_type_opcode = analyse_aml_reference_type_opcode(super_name, aml);
@@ -9356,6 +9392,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_debug_op:
 		if(aml_symbol->component.debug_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.debug_op.ext_op_prefix);
 		if(aml_symbol->component.debug_op.debug_op_suffix)delete_aml_symbol(aml_symbol->component.debug_op.debug_op_suffix);
+		break;
+	case aml_debug_op_suffix:
 		break;
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
