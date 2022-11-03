@@ -10701,6 +10701,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_def_return:
 		break;
 	case aml_def_scope:
+		if(aml_symbol->component.def_scope.scope_op)print_aml_symbol(aml_symbol->component.def_scope.scope_op);
+		if(aml_symbol->component.def_scope.pkg_length)print_aml_symbol(aml_symbol->component.def_scope.pkg_length);
+		if(aml_symbol->component.def_scope.name_string)print_aml_symbol(aml_symbol->component.def_scope.name_string);
+		if(aml_symbol->component.def_scope.term_list)print_aml_symbol(aml_symbol->component.def_scope.term_list);
 		break;
 	case aml_def_shift_left:
 		break;
@@ -10808,6 +10812,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.name_space_modifier_obj.def_scope)print_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_scope);
 		break;
 	case aml_name_string:
+		if(aml_symbol->component.name_string.prefix_path)print_aml_symbol(aml_symbol->component.name_string.prefix_path);
+		if(aml_symbol->component.name_string.root_char)print_aml_symbol(aml_symbol->component.name_string.root_char);
+		if(aml_symbol->component.name_string.name_path)print_aml_symbol(aml_symbol->component.name_string.name_path);
 		break;
 	case aml_named_field:
 		break;
@@ -10854,6 +10861,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_pkg_lead_byte:
 		break;
 	case aml_pkg_length:
+		if(aml_symbol->component.pkg_length.pkg_lead_byte)print_aml_symbol(aml_symbol->component.pkg_length.pkg_lead_byte);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.pkg_length.byte_data); i++)if(aml_symbol->component.pkg_length.byte_data[i])print_aml_symbol(aml_symbol->component.pkg_length.byte_data[i]);
 		break;
 	case aml_predicate:
 		break;
