@@ -10084,6 +10084,12 @@ AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_sy
 	else return NULL;
 }
 
+unsigned int get_aml_symbol_depth(AMLSymbol const *aml_symbol)
+{
+	if(aml_symbol->parent)return get_aml_symbol_depth(aml_symbol->parent) + 1;
+	else return 0;
+}
+
 AMLSubstring get_dsdt_aml(void)
 {
 	AMLSubstring dsdt_aml;
@@ -10214,9 +10220,719 @@ void print_acpi_table_header_p(ACPITableHeader const *acpi_table_header, char co
 
 void print_aml_symbol(AMLSymbol const *aml_symbol)
 {
-	char *aml_symbol_string = aml_symbol_to_string(aml_symbol);
-	printf_serial(aml_symbol_string);
-	free(aml_symbol_string);
+	for(unsigned int i = 0; i < get_aml_symbol_depth(aml_symbol); i++)printf_serial(" ");
+	printf_serial("%s", aml_symbol_type_name(aml_symbol->type));
+	switch(aml_symbol->type)
+	{
+	case aml_acquire_op:
+		break;
+	case aml_acquire_op_suffix:
+		break;
+	case aml_alias_op:
+		break;
+	case aml_add_op:
+		break;
+	case aml_and_op:
+		break;
+	case aml_arg_obj:
+		break;
+	case aml_arg_object:
+		break;
+	case aml_arg_op:
+		break;
+	case aml_ascii_char:
+		break;
+	case aml_ascii_char_list:
+		break;
+	case aml_break_op:
+		break;
+	case aml_buff_pkg_str_obj:
+		break;
+	case aml_buffer_op:
+		break;
+	case aml_buffer_size:
+		break;
+	case aml_byte_const:
+		break;
+	case aml_byte_data:
+		break;
+	case aml_byte_index:
+		break;
+	case aml_byte_list:
+		break;
+	case aml_byte_prefix:
+		break;
+	case aml_computational_data:
+		break;
+	case aml_const_obj:
+		break;
+	case aml_create_dword_field_op:
+		break;
+	case aml_data_object:
+		break;
+	case aml_data_ref_object:
+		break;
+	case aml_debug_obj:
+		break;
+	case aml_debug_op:
+		break;
+	case aml_debug_op_suffix:
+		break;
+	case aml_def_alias:
+		break;
+	case aml_def_acquire:
+		break;
+	case aml_def_add:
+		break;
+	case aml_def_and:
+		break;
+	case aml_def_break:
+		break;
+	case aml_def_buffer:
+		break;
+	case aml_def_create_dword_field:
+		break;
+	case aml_def_deref_of:
+		break;
+	case aml_def_device:
+		break;
+	case aml_def_else:
+		break;
+	case aml_def_field:
+		break;
+	case aml_def_if_else:
+		break;
+	case aml_def_increment:
+		break;
+	case aml_def_index:
+		break;
+	case aml_def_l_and:
+		break;
+	case aml_def_l_equal:
+		break;
+	case aml_def_l_greater:
+		break;
+	case aml_def_l_less:
+		break;
+	case aml_def_l_not:
+		break;
+	case aml_def_l_or:
+		break;
+	case aml_def_method:
+		break;
+	case aml_def_mutex:
+		break;
+	case aml_def_name:
+		break;
+	case aml_def_notify:
+		break;
+	case aml_def_op_region:
+		break;
+	case aml_def_or:
+		break;
+	case aml_def_package:
+		break;
+	case aml_def_release:
+		break;
+	case aml_def_return:
+		break;
+	case aml_def_scope:
+		break;
+	case aml_def_shift_left:
+		break;
+	case aml_def_shift_right:
+		break;
+	case aml_def_size_of:
+		break;
+	case aml_def_store:
+		break;
+	case aml_def_subtract:
+		break;
+	case aml_def_to_buffer:
+		break;
+	case aml_def_to_hex_string:
+		break;
+	case aml_def_while:
+		break;
+	case aml_deref_of_op:
+		break;
+	case aml_device_op:
+		break;
+	case aml_device_op_suffix:
+		break;
+	case aml_digit_char:
+		break;
+	case aml_dual_name_path:
+		break;
+	case aml_dual_name_prefix:
+		break;
+	case aml_dword_const:
+		break;
+	case aml_dword_data:
+		break;
+	case aml_dword_prefix:
+		break;
+	case aml_else_op:
+		break;
+	case aml_expression_opcode:
+		break;
+	case aml_ext_op_prefix:
+		break;
+	case aml_field_element:
+		break;
+	case aml_field_flags:
+		break;
+	case aml_field_list:
+		break;
+	case aml_field_op:
+		break;
+	case aml_field_op_suffix:
+		break;
+	case aml_if_op:
+		break;
+	case aml_increment_op:
+		break;
+	case aml_index_op:
+		break;
+	case aml_index_value:
+		break;
+	case aml_lead_name_char:
+		break;
+	case aml_l_and_op:
+		break;
+	case aml_l_equal_op:
+		break;
+	case aml_l_greater_op:
+		break;
+	case aml_l_less_op:
+		break;
+	case aml_l_not_op:
+		break;
+	case aml_l_or_op:
+		break;
+	case aml_local_obj:
+		break;
+	case aml_local_op:
+		break;
+	case aml_method_flags:
+		break;
+	case aml_method_invocation:
+		break;
+	case aml_method_op:
+		break;
+	case aml_multi_name_path:
+		break;
+	case aml_multi_name_prefix:
+		break;
+	case aml_mutex_object:
+		break;
+	case aml_mutex_op:
+		break;
+	case aml_mutex_op_suffix:
+		break;
+	case aml_name_char:
+		break;
+	case aml_name_op:
+		break;
+	case aml_name_path:
+		break;
+	case aml_name_seg:
+		break;
+	case aml_name_space_modifier_obj:
+		break;
+	case aml_name_string:
+		break;
+	case aml_named_field:
+		break;
+	case aml_named_obj:
+		break;
+	case aml_notify_object:
+		break;
+	case aml_notify_value:
+		break;
+	case aml_notify_op:
+		break;
+	case aml_null_char:
+		break;
+	case aml_null_name:
+		break;
+	case aml_num_elements:
+		break;
+	case aml_obj_reference:
+		break;
+	case aml_object:
+		break;
+	case aml_one_op:
+		break;
+	case aml_ones_op:
+		break;
+	case aml_op_region_op:
+		break;
+	case aml_op_region_op_suffix:
+		break;
+	case aml_operand:
+		break;
+	case aml_or_op:
+		break;
+	case aml_package_element:
+		break;
+	case aml_package_element_list:
+		break;
+	case aml_package_op:
+		break;
+	case aml_parent_prefix_char:
+		break;
+	case aml_pkg_lead_byte:
+		break;
+	case aml_pkg_length:
+		break;
+	case aml_predicate:
+		break;
+	case aml_prefix_path:
+		break;
+	case aml_qword_const:
+		break;
+	case aml_qword_data:
+		break;
+	case aml_qword_prefix:
+		break;
+	case aml_reference_type_opcode:
+		break;
+	case aml_region_len:
+		break;
+	case aml_region_offset:
+		break;
+	case aml_region_space:
+		break;
+	case aml_release_op:
+		break;
+	case aml_release_op_suffix:
+		break;
+	case aml_reserved_field:
+		break;
+	case aml_reserved_field_op:
+		break;
+	case aml_return_op:
+		break;
+	case aml_revision_op:
+		break;
+	case aml_revision_op_suffix:
+		break;
+	case aml_root_char:
+		break;
+	case aml_scope_op:
+		break;
+	case aml_seg_count:
+		break;
+	case aml_shift_count:
+		break;
+	case aml_shift_left_op:
+		break;
+	case aml_shift_right_op:
+		break;
+	case aml_simple_name:
+		break;
+	case aml_size_of_op:
+		break;
+	case aml_source_buff:
+		break;
+	case aml_statement_opcode:
+		break;
+	case aml_store_op:
+		break;
+	case aml_string:
+		break;
+	case aml_string_prefix:
+		break;
+	case aml_subtract_op:
+		break;
+	case aml_super_name:
+		break;
+	case aml_sync_flags:
+		break;
+	case aml_target:
+		break;
+	case aml_term_arg:
+		break;
+	case aml_term_arg_list:
+		break;
+	case aml_term_list:
+		break;
+	case aml_term_obj:
+		break;
+	case aml_time_out:
+		break;
+	case aml_to_buffer_op:
+		break;
+	case aml_to_hex_string_op:
+		break;
+	case aml_while_op:
+		break;
+	case aml_word_const:
+		break;
+	case aml_word_data:
+		break;
+	case aml_word_prefix:
+		break;
+	case aml_zero_op:
+		break;
+	}
+	printf_serial("length = %#010.8x\n", aml_symbol->string.length);
+	switch(aml_symbol->type)
+	{
+	case aml_acquire_op:
+		break;
+	case aml_acquire_op_suffix:
+		break;
+	case aml_alias_op:
+		break;
+	case aml_add_op:
+		break;
+	case aml_and_op:
+		break;
+	case aml_arg_obj:
+		break;
+	case aml_arg_object:
+		break;
+	case aml_arg_op:
+		break;
+	case aml_ascii_char:
+		break;
+	case aml_ascii_char_list:
+		break;
+	case aml_break_op:
+		break;
+	case aml_buff_pkg_str_obj:
+		break;
+	case aml_buffer_op:
+		break;
+	case aml_buffer_size:
+		break;
+	case aml_byte_const:
+		break;
+	case aml_byte_data:
+		break;
+	case aml_byte_index:
+		break;
+	case aml_byte_list:
+		break;
+	case aml_byte_prefix:
+		break;
+	case aml_computational_data:
+		break;
+	case aml_const_obj:
+		break;
+	case aml_create_dword_field_op:
+		break;
+	case aml_data_object:
+		break;
+	case aml_data_ref_object:
+		break;
+	case aml_debug_obj:
+		break;
+	case aml_debug_op:
+		break;
+	case aml_debug_op_suffix:
+		break;
+	case aml_def_alias:
+		break;
+	case aml_def_acquire:
+		break;
+	case aml_def_add:
+		break;
+	case aml_def_and:
+		break;
+	case aml_def_break:
+		break;
+	case aml_def_buffer:
+		break;
+	case aml_def_create_dword_field:
+		break;
+	case aml_def_deref_of:
+		break;
+	case aml_def_device:
+		break;
+	case aml_def_else:
+		break;
+	case aml_def_field:
+		break;
+	case aml_def_if_else:
+		break;
+	case aml_def_increment:
+		break;
+	case aml_def_index:
+		break;
+	case aml_def_l_and:
+		break;
+	case aml_def_l_equal:
+		break;
+	case aml_def_l_greater:
+		break;
+	case aml_def_l_less:
+		break;
+	case aml_def_l_not:
+		break;
+	case aml_def_l_or:
+		break;
+	case aml_def_method:
+		break;
+	case aml_def_mutex:
+		break;
+	case aml_def_name:
+		break;
+	case aml_def_notify:
+		break;
+	case aml_def_op_region:
+		break;
+	case aml_def_or:
+		break;
+	case aml_def_package:
+		break;
+	case aml_def_release:
+		break;
+	case aml_def_return:
+		break;
+	case aml_def_scope:
+		break;
+	case aml_def_shift_left:
+		break;
+	case aml_def_shift_right:
+		break;
+	case aml_def_size_of:
+		break;
+	case aml_def_store:
+		break;
+	case aml_def_subtract:
+		break;
+	case aml_def_to_buffer:
+		break;
+	case aml_def_to_hex_string:
+		break;
+	case aml_def_while:
+		break;
+	case aml_deref_of_op:
+		break;
+	case aml_device_op:
+		break;
+	case aml_device_op_suffix:
+		break;
+	case aml_digit_char:
+		break;
+	case aml_dual_name_path:
+		break;
+	case aml_dual_name_prefix:
+		break;
+	case aml_dword_const:
+		break;
+	case aml_dword_data:
+		break;
+	case aml_dword_prefix:
+		break;
+	case aml_else_op:
+		break;
+	case aml_expression_opcode:
+		break;
+	case aml_ext_op_prefix:
+		break;
+	case aml_field_element:
+		break;
+	case aml_field_flags:
+		break;
+	case aml_field_list:
+		break;
+	case aml_field_op:
+		break;
+	case aml_field_op_suffix:
+		break;
+	case aml_if_op:
+		break;
+	case aml_increment_op:
+		break;
+	case aml_index_op:
+		break;
+	case aml_index_value:
+		break;
+	case aml_lead_name_char:
+		break;
+	case aml_l_and_op:
+		break;
+	case aml_l_equal_op:
+		break;
+	case aml_l_greater_op:
+		break;
+	case aml_l_less_op:
+		break;
+	case aml_l_not_op:
+		break;
+	case aml_l_or_op:
+		break;
+	case aml_local_obj:
+		break;
+	case aml_local_op:
+		break;
+	case aml_method_flags:
+		break;
+	case aml_method_invocation:
+		break;
+	case aml_method_op:
+		break;
+	case aml_multi_name_path:
+		break;
+	case aml_multi_name_prefix:
+		break;
+	case aml_mutex_object:
+		break;
+	case aml_mutex_op:
+		break;
+	case aml_mutex_op_suffix:
+		break;
+	case aml_name_char:
+		break;
+	case aml_name_op:
+		break;
+	case aml_name_path:
+		break;
+	case aml_name_seg:
+		break;
+	case aml_name_space_modifier_obj:
+		break;
+	case aml_name_string:
+		break;
+	case aml_named_field:
+		break;
+	case aml_named_obj:
+		break;
+	case aml_notify_object:
+		break;
+	case aml_notify_value:
+		break;
+	case aml_notify_op:
+		break;
+	case aml_null_char:
+		break;
+	case aml_null_name:
+		break;
+	case aml_num_elements:
+		break;
+	case aml_obj_reference:
+		break;
+	case aml_object:
+		break;
+	case aml_one_op:
+		break;
+	case aml_ones_op:
+		break;
+	case aml_op_region_op:
+		break;
+	case aml_op_region_op_suffix:
+		break;
+	case aml_operand:
+		break;
+	case aml_or_op:
+		break;
+	case aml_package_element:
+		break;
+	case aml_package_element_list:
+		break;
+	case aml_package_op:
+		break;
+	case aml_parent_prefix_char:
+		break;
+	case aml_pkg_lead_byte:
+		break;
+	case aml_pkg_length:
+		break;
+	case aml_predicate:
+		break;
+	case aml_prefix_path:
+		break;
+	case aml_qword_const:
+		break;
+	case aml_qword_data:
+		break;
+	case aml_qword_prefix:
+		break;
+	case aml_reference_type_opcode:
+		break;
+	case aml_region_len:
+		break;
+	case aml_region_offset:
+		break;
+	case aml_region_space:
+		break;
+	case aml_release_op:
+		break;
+	case aml_release_op_suffix:
+		break;
+	case aml_reserved_field:
+		break;
+	case aml_reserved_field_op:
+		break;
+	case aml_return_op:
+		break;
+	case aml_revision_op:
+		break;
+	case aml_revision_op_suffix:
+		break;
+	case aml_root_char:
+		break;
+	case aml_scope_op:
+		break;
+	case aml_seg_count:
+		break;
+	case aml_shift_count:
+		break;
+	case aml_shift_left_op:
+		break;
+	case aml_shift_right_op:
+		break;
+	case aml_simple_name:
+		break;
+	case aml_size_of_op:
+		break;
+	case aml_source_buff:
+		break;
+	case aml_statement_opcode:
+		break;
+	case aml_store_op:
+		break;
+	case aml_string:
+		break;
+	case aml_string_prefix:
+		break;
+	case aml_subtract_op:
+		break;
+	case aml_super_name:
+		break;
+	case aml_sync_flags:
+		break;
+	case aml_target:
+		break;
+	case aml_term_arg:
+		break;
+	case aml_term_arg_list:
+		break;
+	case aml_term_list:
+		break;
+	case aml_term_obj:
+		break;
+	case aml_time_out:
+		break;
+	case aml_to_buffer_op:
+		break;
+	case aml_to_hex_string_op:
+		break;
+	case aml_while_op:
+		break;
+	case aml_word_const:
+		break;
+	case aml_word_data:
+		break;
+	case aml_word_prefix:
+		break;
+	case aml_zero_op:
+		break;
+	}
 }
 
 void print_generic_address_structure(GenericAddressStructure generic_address_structure, char const *name)
