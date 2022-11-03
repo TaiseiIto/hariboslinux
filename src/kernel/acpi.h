@@ -203,6 +203,7 @@ typedef enum _AMLSymbolType
 	aml_data_object,
 	aml_data_ref_object,
 	aml_debug_obj,
+	aml_debug_op,
 	aml_def_alias,
 	aml_def_acquire,
 	aml_def_add,
@@ -447,6 +448,12 @@ typedef struct _AMLDebugObj
 {
 	struct _AMLSymbol *debug_op;
 } AMLDebugObj;
+
+typedef struct _AMLDebugOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *debug_op_suffix;
+} AMLDebugOp;
 
 typedef struct _AMLDefAlias
 {
@@ -1162,6 +1169,7 @@ typedef union _AMLComponent
 	AMLDataObject data_object;
 	AMLDataRefObject data_ref_object;
 	AMLDebugObj debug_obj;
+	AMLDebugOp debug_op;
 	AMLDefAlias def_alias;
 	AMLDefAcquire def_acquire;
 	AMLDefAdd def_add;
@@ -1319,6 +1327,8 @@ AMLSymbol *analyse_aml_data_object(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_data_ref_object(AMLSymbol *parent, AMLSubstring aml);
 // <debug_obj> := <debug_op>
 AMLSymbol *analyse_aml_debug_obj(AMLSymbol *parent, AMLSubstring aml);
+// <debug_op> := <ext_op_prefix> <debug_op_suffix>
+AMLSymbol *analyse_aml_debug_op(AMLSymbol *parent, AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml);
 // <def_acquire> := <acquire_op> <mutex_object> <time_out>

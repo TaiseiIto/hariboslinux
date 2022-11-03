@@ -194,6 +194,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	ChainString *data_ref_object_chain_string;
 	ChainString *debug_obj_chain_string;
 	ChainString *debug_op_chain_string;
+	ChainString *debug_op_suffix_chain_string;
 	ChainString *def_acquire_chain_string;
 	ChainString *def_add_chain_string;
 	ChainString *def_alias_chain_string;
@@ -429,6 +430,7 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 	char *data_ref_object_char_array;
 	char *debug_obj_char_array;
 	char *debug_op_char_array;
+	char *debug_op_suffix_char_array;
 	char *def_acquire_char_array;
 	char *def_add_char_array;
 	char *def_alias_char_array;
@@ -1093,6 +1095,35 @@ ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.debug_obj.debug_op)
 		{
 			free(debug_op_char_array);
+		}
+		break;
+	case aml_debug_op:
+		if(aml_symbol->component.debug_op.ext_op_prefix)
+		{
+			ext_op_prefix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.debug_op.ext_op_prefix);
+			insert_char_front(ext_op_prefix_chain_string, ext_op_prefix_chain_string->first_character, ' ');
+			replace_chain_string(ext_op_prefix_chain_string, "\n", "\n ");
+			ext_op_prefix_char_array = create_char_array_from_chain_string(ext_op_prefix_chain_string);
+			delete_chain_string(ext_op_prefix_chain_string);
+		}
+		else ext_op_prefix_char_array = "";
+		if(aml_symbol->component.debug_op.debug_op_suffix)
+		{
+			debug_op_suffix_chain_string = aml_symbol_to_chain_string(aml_symbol->component.debug_op.debug_op_suffix);
+			insert_char_front(debug_op_suffix_chain_string, debug_op_suffix_chain_string->first_character, ' ');
+			replace_chain_string(debug_op_suffix_chain_string, "\n", "\n ");
+			debug_op_suffix_char_array = create_char_array_from_chain_string(debug_op_suffix_chain_string);
+			delete_chain_string(debug_op_suffix_chain_string);
+		}
+		else debug_op_suffix_char_array = "";
+		output = create_format_chain_string("%s\n%s%s", aml_symbol_type_name(aml_symbol->type), ext_op_prefix_char_array, debug_op_suffix_char_array);
+		if(aml_symbol->component.debug_op.ext_op_prefix)
+		{
+			free(ext_op_prefix_char_array);
+		}
+		if(aml_symbol->component.debug_op.debug_op_suffix)
+		{
+			free(debug_op_suffix_char_array);
 		}
 		break;
 	case aml_def_alias:
@@ -5613,6 +5644,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_data_object_name = "DataObject";
 	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_debug_obj_name = "DebugObj";
+	static char const * const aml_debug_op_name = "DebugOp";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_acquire_name = "DefAcquire";
 	static char const * const aml_def_add_name = "DefAdd";
@@ -5814,6 +5846,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_data_ref_object_name;
 	case aml_debug_obj:
 		return aml_debug_obj_name;
+	case aml_debug_op:
+		return aml_debug_op_name;
 	case aml_def_alias:
 		return aml_def_alias_name;
 	case aml_def_acquire:
@@ -6603,9 +6637,28 @@ AMLSymbol *analyse_aml_debug_obj(AMLSymbol *parent, AMLSubstring aml)
 	debug_obj->string.initial = aml.initial;
 	debug_obj->string.length = 0;
 	debug_obj->type = aml_debug_obj;
-	debug_obj->component.debug_obj.debug_op = NULL;
-	ERROR(); // Unimplemented
+	debug_obj->component.debug_obj.debug_op = analyse_aml_debug_op(debug_obj, aml);
+	debug_obj->string.length += debug_obj->component.debug_obj.debug_op->string.length;
+	aml.initial += debug_obj->component.debug_obj.debug_op->string.length;
+	aml.length -= debug_obj->component.debug_obj.debug_op->string.length;
 	return debug_obj;
+}
+
+// <debug_op> := <ext_op_prefix> <debug_op_suffix>
+AMLSymbol *analyse_aml_debug_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *debug_op = malloc(sizeof(*debug_op));
+	debug_op->parent = parent;
+	debug_op->string.initial = aml.initial;
+	debug_op->string.length = 0;
+	debug_op->type = aml_debug_op;
+	debug_op->component.debug_op.ext_op_prefix = analyse_aml_ext_op_prefix(debug_op, aml);
+	debug_op->string.length += debug_op->component.debug_op.ext_op_prefix->string.length;
+	aml.initial += debug_op->component.debug_op.ext_op_prefix->string.length;
+	aml.length -= debug_op->component.debug_op.ext_op_prefix->string.length;
+	debug_op->component.debug_op.debug_op_suffix = NULL;
+	ERROR(); // Unimplemented
+	return debug_op;
 }
 
 // <def_alias> := <alias_op> <name_string> <name_string>
@@ -10304,6 +10357,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_debug_obj:
 		if(aml_symbol->component.debug_obj.debug_op)delete_aml_symbol(aml_symbol->component.debug_obj.debug_op);
+		break;
+	case aml_debug_op:
+		if(aml_symbol->component.debug_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.debug_op.ext_op_prefix);
+		if(aml_symbol->component.debug_op.debug_op_suffix)delete_aml_symbol(aml_symbol->component.debug_op.debug_op_suffix);
 		break;
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
