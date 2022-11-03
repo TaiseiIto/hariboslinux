@@ -1275,8 +1275,6 @@ typedef struct _AMLSymbol
 	struct _AMLSymbol *parent;
 } AMLSymbol;
 
-ChainString *aml_symbol_to_chain_string(AMLSymbol const *aml_symbol);
-char *aml_symbol_to_string(AMLSymbol const *aml_symbol);
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 // <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
 AMLSymbol *analyse_aml_acquire_op(AMLSymbol *parent, AMLSubstring aml);
