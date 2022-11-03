@@ -6233,6 +6233,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_def_notify:
 		break;
 	case aml_def_op_region:
+		if(aml_symbol->component.def_op_region.op_region_op)print_aml_symbol(aml_symbol->component.def_op_region.op_region_op);
+		if(aml_symbol->component.def_op_region.name_string)print_aml_symbol(aml_symbol->component.def_op_region.name_string);
+		if(aml_symbol->component.def_op_region.region_space)print_aml_symbol(aml_symbol->component.def_op_region.region_space);
+		if(aml_symbol->component.def_op_region.region_offset)print_aml_symbol(aml_symbol->component.def_op_region.region_offset);
+		if(aml_symbol->component.def_op_region.region_len)print_aml_symbol(aml_symbol->component.def_op_region.region_len);
 		break;
 	case aml_def_or:
 		break;
@@ -6345,8 +6350,14 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_name_op:
 		break;
 	case aml_name_path:
+		if(aml_symbol->component.name_path.name_seg)print_aml_symbol(aml_symbol->component.name_path.name_seg);
+		if(aml_symbol->component.name_path.dual_name_path)print_aml_symbol(aml_symbol->component.name_path.dual_name_path);
+		if(aml_symbol->component.name_path.multi_name_path)print_aml_symbol(aml_symbol->component.name_path.multi_name_path);
+		if(aml_symbol->component.name_path.null_name)print_aml_symbol(aml_symbol->component.name_path.null_name);
 		break;
 	case aml_name_seg:
+		if(aml_symbol->component.name_seg.lead_name_char)print_aml_symbol(aml_symbol->component.name_seg.lead_name_char);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.name_seg.name_char); i++)if(aml_symbol->component.name_seg.name_char[i])print_aml_symbol(aml_symbol->component.name_seg.name_char[i]);
 		break;
 	case aml_name_space_modifier_obj:
 		if(aml_symbol->component.name_space_modifier_obj.def_alias)print_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_alias);
@@ -6361,6 +6372,22 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_named_field:
 		break;
 	case aml_named_obj:
+		if(aml_symbol->component.named_obj.def_bank_field)print_aml_symbol(aml_symbol->component.named_obj.def_bank_field);
+		if(aml_symbol->component.named_obj.def_create_bit_field)print_aml_symbol(aml_symbol->component.named_obj.def_create_bit_field);
+		if(aml_symbol->component.named_obj.def_create_byte_field)print_aml_symbol(aml_symbol->component.named_obj.def_create_byte_field);
+		if(aml_symbol->component.named_obj.def_create_dword_field)print_aml_symbol(aml_symbol->component.named_obj.def_create_dword_field);
+		if(aml_symbol->component.named_obj.def_create_field)print_aml_symbol(aml_symbol->component.named_obj.def_create_field);
+		if(aml_symbol->component.named_obj.def_create_qword_field)print_aml_symbol(aml_symbol->component.named_obj.def_create_qword_field);
+		if(aml_symbol->component.named_obj.def_create_word_field)print_aml_symbol(aml_symbol->component.named_obj.def_create_word_field);
+		if(aml_symbol->component.named_obj.def_data_region)print_aml_symbol(aml_symbol->component.named_obj.def_data_region);
+		if(aml_symbol->component.named_obj.def_device)print_aml_symbol(aml_symbol->component.named_obj.def_device);
+		if(aml_symbol->component.named_obj.def_external)print_aml_symbol(aml_symbol->component.named_obj.def_external);
+		if(aml_symbol->component.named_obj.def_field)print_aml_symbol(aml_symbol->component.named_obj.def_field);
+		if(aml_symbol->component.named_obj.def_method)print_aml_symbol(aml_symbol->component.named_obj.def_method);
+		if(aml_symbol->component.named_obj.def_mutex)print_aml_symbol(aml_symbol->component.named_obj.def_mutex);
+		if(aml_symbol->component.named_obj.def_op_region)print_aml_symbol(aml_symbol->component.named_obj.def_op_region);
+		if(aml_symbol->component.named_obj.def_power_res)print_aml_symbol(aml_symbol->component.named_obj.def_power_res);
+		if(aml_symbol->component.named_obj.def_thermal_zone)print_aml_symbol(aml_symbol->component.named_obj.def_thermal_zone);
 		break;
 	case aml_notify_object:
 		break;
