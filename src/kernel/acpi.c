@@ -10577,10 +10577,12 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_zero_op:
 		break;
 	}
-	printf_serial("length = %#010.8x\n", aml_symbol->string.length);
+	printf_serial(" length = %#010.8x\n", aml_symbol->string.length);
 	switch(aml_symbol->type)
 	{
 	case aml_acquire_op:
+		if(aml_symbol->component.acquire_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.acquire_op.ext_op_prefix);
+		if(aml_symbol->component.acquire_op.acquire_op_suffix)print_aml_symbol(aml_symbol->component.acquire_op.acquire_op_suffix);
 		break;
 	case aml_acquire_op_suffix:
 		break;
@@ -10591,22 +10593,28 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_and_op:
 		break;
 	case aml_arg_obj:
+		if(aml_symbol->component.arg_obj.arg_op)print_aml_symbol(aml_symbol->component.arg_obj.arg_op);
 		break;
 	case aml_arg_object:
+		if(aml_symbol->component.arg_object.term_arg)print_aml_symbol(aml_symbol->component.arg_object.term_arg);
 		break;
 	case aml_arg_op:
 		break;
 	case aml_ascii_char:
 		break;
 	case aml_ascii_char_list:
+		if(aml_symbol->component.ascii_char_list.ascii_char)print_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char);
+		if(aml_symbol->component.ascii_char_list.ascii_char_list)print_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char_list);
 		break;
 	case aml_break_op:
 		break;
 	case aml_buff_pkg_str_obj:
+		if(aml_symbol->component.buff_pkg_str_obj.term_arg)print_aml_symbol(aml_symbol->component.buff_pkg_str_obj.term_arg);
 		break;
 	case aml_buffer_op:
 		break;
 	case aml_buffer_size:
+		if(aml_symbol->component.buffer_size.term_arg)print_aml_symbol(aml_symbol->component.buffer_size.term_arg);
 		break;
 	case aml_byte_const:
 		break;
@@ -10795,6 +10803,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_name_seg:
 		break;
 	case aml_name_space_modifier_obj:
+		if(aml_symbol->component.name_space_modifier_obj.def_alias)print_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_alias);
+		if(aml_symbol->component.name_space_modifier_obj.def_name)print_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_name);
+		if(aml_symbol->component.name_space_modifier_obj.def_scope)print_aml_symbol(aml_symbol->component.name_space_modifier_obj.def_scope);
 		break;
 	case aml_name_string:
 		break;
@@ -10817,6 +10828,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_obj_reference:
 		break;
 	case aml_object:
+		if(aml_symbol->component.object.named_obj)print_aml_symbol(aml_symbol->component.object.named_obj);
+		if(aml_symbol->component.object.name_space_modifier_obj)print_aml_symbol(aml_symbol->component.object.name_space_modifier_obj);
 		break;
 	case aml_one_op:
 		break;
@@ -10913,8 +10926,13 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_term_arg_list:
 		break;
 	case aml_term_list:
+		if(aml_symbol->component.term_list.term_obj)print_aml_symbol(aml_symbol->component.term_list.term_obj);
+		if(aml_symbol->component.term_list.term_list)print_aml_symbol(aml_symbol->component.term_list.term_list);
 		break;
 	case aml_term_obj:
+		if(aml_symbol->component.term_obj.object)print_aml_symbol(aml_symbol->component.term_obj.object);
+		if(aml_symbol->component.term_obj.statement_opcode)print_aml_symbol(aml_symbol->component.term_obj.statement_opcode);
+		if(aml_symbol->component.term_obj.expression_opcode)print_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
 		break;
 	case aml_time_out:
 		break;
