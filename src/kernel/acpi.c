@@ -5764,6 +5764,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 {
 	for(unsigned int i = 0; i < get_aml_symbol_depth(aml_symbol); i++)printf_serial(" ");
 	printf_serial("%s", aml_symbol_type_name(aml_symbol->type));
+	printf_serial(" length = %#010.8x", aml_symbol->string.length);
 	switch(aml_symbol->type)
 	{
 	case aml_acquire_op:
@@ -6119,7 +6120,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_zero_op:
 		break;
 	}
-	printf_serial(" length = %#010.8x\n", aml_symbol->string.length);
+	printf_serial("\n");
 	switch(aml_symbol->type)
 	{
 	case aml_acquire_op:
@@ -6733,24 +6734,52 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.source_buff.term_arg)print_aml_symbol(aml_symbol->component.source_buff.term_arg);
 		break;
 	case aml_statement_opcode:
+		if(aml_symbol->component.statement_opcode.def_break)print_aml_symbol(aml_symbol->component.statement_opcode.def_break);
+		if(aml_symbol->component.statement_opcode.def_break_point)print_aml_symbol(aml_symbol->component.statement_opcode.def_break_point);
+		if(aml_symbol->component.statement_opcode.def_continue)print_aml_symbol(aml_symbol->component.statement_opcode.def_continue);
+		if(aml_symbol->component.statement_opcode.def_fatal)print_aml_symbol(aml_symbol->component.statement_opcode.def_fatal);
+		if(aml_symbol->component.statement_opcode.def_if_else)print_aml_symbol(aml_symbol->component.statement_opcode.def_if_else);
+		if(aml_symbol->component.statement_opcode.def_noop)print_aml_symbol(aml_symbol->component.statement_opcode.def_noop);
+		if(aml_symbol->component.statement_opcode.def_notify)print_aml_symbol(aml_symbol->component.statement_opcode.def_notify);
+		if(aml_symbol->component.statement_opcode.def_release)print_aml_symbol(aml_symbol->component.statement_opcode.def_release);
+		if(aml_symbol->component.statement_opcode.def_reset)print_aml_symbol(aml_symbol->component.statement_opcode.def_reset);
+		if(aml_symbol->component.statement_opcode.def_return)print_aml_symbol(aml_symbol->component.statement_opcode.def_return);
+		if(aml_symbol->component.statement_opcode.def_signal)print_aml_symbol(aml_symbol->component.statement_opcode.def_signal);
+		if(aml_symbol->component.statement_opcode.def_sleep)print_aml_symbol(aml_symbol->component.statement_opcode.def_sleep);
+		if(aml_symbol->component.statement_opcode.def_stall)print_aml_symbol(aml_symbol->component.statement_opcode.def_stall);
+		if(aml_symbol->component.statement_opcode.def_while)print_aml_symbol(aml_symbol->component.statement_opcode.def_while);
 		break;
 	case aml_store_op:
 		break;
 	case aml_string:
+		if(aml_symbol->component.string.string_prefix)print_aml_symbol(aml_symbol->component.string.string_prefix);
+		if(aml_symbol->component.string.ascii_char_list)print_aml_symbol(aml_symbol->component.string.ascii_char_list);
+		if(aml_symbol->component.string.null_char)print_aml_symbol(aml_symbol->component.string.null_char);
 		break;
 	case aml_string_prefix:
 		break;
 	case aml_subtract_op:
 		break;
 	case aml_super_name:
+		if(aml_symbol->component.super_name.debug_obj)print_aml_symbol(aml_symbol->component.super_name.debug_obj);
+		if(aml_symbol->component.super_name.reference_type_opcode)print_aml_symbol(aml_symbol->component.super_name.reference_type_opcode);
+		if(aml_symbol->component.super_name.simple_name)print_aml_symbol(aml_symbol->component.super_name.simple_name);
 		break;
 	case aml_sync_flags:
 		break;
 	case aml_target:
+		if(aml_symbol->component.target.super_name)print_aml_symbol(aml_symbol->component.target.super_name);
+		if(aml_symbol->component.target.null_name)print_aml_symbol(aml_symbol->component.target.null_name);
 		break;
 	case aml_term_arg:
+		if(aml_symbol->component.term_arg.expression_opcode)print_aml_symbol(aml_symbol->component.term_arg.expression_opcode);
+		if(aml_symbol->component.term_arg.data_object)print_aml_symbol(aml_symbol->component.term_arg.data_object);
+		if(aml_symbol->component.term_arg.arg_obj)print_aml_symbol(aml_symbol->component.term_arg.arg_obj);
+		if(aml_symbol->component.term_arg.local_obj)print_aml_symbol(aml_symbol->component.term_arg.local_obj);
 		break;
 	case aml_term_arg_list:
+		if(aml_symbol->component.term_arg_list.term_arg)print_aml_symbol(aml_symbol->component.term_arg_list.term_arg);
+		if(aml_symbol->component.term_arg_list.term_arg_list)print_aml_symbol(aml_symbol->component.term_arg_list.term_arg_list);
 		break;
 	case aml_term_list:
 		if(aml_symbol->component.term_list.term_obj)print_aml_symbol(aml_symbol->component.term_list.term_obj);
@@ -6762,6 +6791,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.term_obj.expression_opcode)print_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
 		break;
 	case aml_time_out:
+		if(aml_symbol->component.time_out.word_data)print_aml_symbol(aml_symbol->component.time_out.word_data);
 		break;
 	case aml_to_buffer_op:
 		break;
@@ -6770,8 +6800,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_while_op:
 		break;
 	case aml_word_const:
+		if(aml_symbol->component.word_const.word_prefix)print_aml_symbol(aml_symbol->component.word_const.word_prefix);
+		if(aml_symbol->component.word_const.word_data)print_aml_symbol(aml_symbol->component.word_const.word_data);
 		break;
 	case aml_word_data:
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.word_data.byte_data); i++)if(aml_symbol->component.word_data.byte_data[i])print_aml_symbol(aml_symbol->component.word_data.byte_data[i]);
 		break;
 	case aml_word_prefix:
 		break;
