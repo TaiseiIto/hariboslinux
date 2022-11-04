@@ -293,6 +293,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_pkg_length_name = "PkgLength";
 	static char const * const aml_predicate_name = "Predicate";
 	static char const * const aml_prefix_path_name = "PrefixPath";
+	static char const * const aml_processor_op_name = "ProcessorOp";
 	static char const * const aml_qword_const_name = "QWordConst";
 	static char const * const aml_qword_data_name = "QWordData";
 	static char const * const aml_qword_prefix_name = "QWordPrefix";
@@ -606,6 +607,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_predicate_name;
 	case aml_prefix_path:
 		return aml_prefix_path_name;
+	case aml_processor_op:
+		return aml_processor_op_name;
 	case aml_qword_const:
 		return aml_qword_const_name;
 	case aml_qword_data:
@@ -3759,6 +3762,23 @@ AMLSymbol *analyse_aml_prefix_path(AMLSymbol *parent, AMLSubstring aml)
 	return prefix_path;
 }
 
+// <processor_op> := <ext_op_prefix> <processor_op_suffix>
+AMLSymbol *analyse_aml_processor_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *processor_op = malloc(sizeof(*processor_op));
+	processor_op->parent = parent;
+	processor_op->string.initial = aml.initial;
+	processor_op->string.length = 0;
+	processor_op->type = aml_processor_op;
+	processor_op->component.processor_op.ext_op_prefix = analyse_aml_ext_op_prefix(processor_op, aml);
+	processor_op->string.length += processor_op->component.processor_op.ext_op_prefix->string.length;
+	aml.initial += processor_op->component.processor_op.ext_op_prefix->string.length;
+	aml.length -= processor_op->component.processor_op.ext_op_prefix->string.length;
+	processor_op->component.processor_op.processor_op_suffix = NULL;
+	ERROR(); // Unimplemented
+	return processor_op;
+}
+
 // <qword_const> := <qword_prefix> <qword_data>
 AMLSymbol *analyse_aml_qword_const(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -5432,6 +5452,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.prefix_path.prefix_path)delete_aml_symbol(aml_symbol->component.prefix_path.prefix_path);
 		free(aml_symbol->component.prefix_path.string);
 		break;
+	case aml_processor_op:
+		if(aml_symbol->component.processor_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.processor_op.ext_op_prefix);
+		if(aml_symbol->component.processor_op.processor_op_suffix)delete_aml_symbol(aml_symbol->component.processor_op.processor_op_suffix);
+		break;
 	case aml_qword_const:
 		if(aml_symbol->component.qword_const.qword_prefix)delete_aml_symbol(aml_symbol->component.qword_const.qword_prefix);
 		if(aml_symbol->component.qword_const.qword_data)delete_aml_symbol(aml_symbol->component.qword_const.qword_data);
@@ -6083,6 +6107,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_prefix_path:
 		break;
+	case aml_processor_op:
+		break;
 	case aml_qword_const:
 		printf_serial(" value = %#018.16x", aml_symbol->component.qword_const.value);
 		break;
@@ -6730,6 +6756,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_prefix_path:
 		if(aml_symbol->component.prefix_path.parent_prefix_char)print_aml_symbol(aml_symbol->component.prefix_path.parent_prefix_char);
 		if(aml_symbol->component.prefix_path.prefix_path)print_aml_symbol(aml_symbol->component.prefix_path.prefix_path);
+		break;
+	case aml_processor_op:
+		if(aml_symbol->component.processor_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.processor_op.ext_op_prefix);
+		if(aml_symbol->component.processor_op.processor_op_suffix)print_aml_symbol(aml_symbol->component.processor_op.processor_op_suffix);
 		break;
 	case aml_qword_const:
 		if(aml_symbol->component.qword_const.qword_prefix)print_aml_symbol(aml_symbol->component.qword_const.qword_prefix);
