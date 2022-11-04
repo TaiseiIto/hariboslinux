@@ -6690,22 +6690,22 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_region_space:
 		break;
 	case aml_release_op:
-		if(aml_symbol->component.release_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.release_op.ext_op_prefix);
-		if(aml_symbol->component.release_op.release_op_suffix)delete_aml_symbol(aml_symbol->component.release_op.release_op_suffix);
+		if(aml_symbol->component.release_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.release_op.ext_op_prefix);
+		if(aml_symbol->component.release_op.release_op_suffix)print_aml_symbol(aml_symbol->component.release_op.release_op_suffix);
 		break;
 	case aml_release_op_suffix:
 		break;
 	case aml_reserved_field:
-		if(aml_symbol->component.reserved_field.reserved_field_op)delete_aml_symbol(aml_symbol->component.reserved_field.reserved_field_op);
-		if(aml_symbol->component.reserved_field.pkg_length)delete_aml_symbol(aml_symbol->component.reserved_field.pkg_length);
+		if(aml_symbol->component.reserved_field.reserved_field_op)print_aml_symbol(aml_symbol->component.reserved_field.reserved_field_op);
+		if(aml_symbol->component.reserved_field.pkg_length)print_aml_symbol(aml_symbol->component.reserved_field.pkg_length);
 		break;
 	case aml_reserved_field_op:
 		break;
 	case aml_return_op:
 		break;
 	case aml_revision_op:
-		if(aml_symbol->component.revision_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.revision_op.ext_op_prefix);
-		if(aml_symbol->component.revision_op.revision_op_suffix)delete_aml_symbol(aml_symbol->component.revision_op.revision_op_suffix);
+		if(aml_symbol->component.revision_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.revision_op.ext_op_prefix);
+		if(aml_symbol->component.revision_op.revision_op_suffix)print_aml_symbol(aml_symbol->component.revision_op.revision_op_suffix);
 		break;
 	case aml_revision_op_suffix:
 		break;
@@ -6716,21 +6716,21 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_seg_count:
 		break;
 	case aml_shift_count:
-		if(aml_symbol->component.shift_count.term_arg)delete_aml_symbol(aml_symbol->component.shift_count.term_arg);
+		if(aml_symbol->component.shift_count.term_arg)print_aml_symbol(aml_symbol->component.shift_count.term_arg);
 		break;
 	case aml_shift_left_op:
 		break;
 	case aml_shift_right_op:
 		break;
 	case aml_simple_name:
-		if(aml_symbol->component.simple_name.name_string)delete_aml_symbol(aml_symbol->component.simple_name.name_string);
-		if(aml_symbol->component.simple_name.arg_obj)delete_aml_symbol(aml_symbol->component.simple_name.arg_obj);
-		if(aml_symbol->component.simple_name.local_obj)delete_aml_symbol(aml_symbol->component.simple_name.local_obj);
+		if(aml_symbol->component.simple_name.name_string)print_aml_symbol(aml_symbol->component.simple_name.name_string);
+		if(aml_symbol->component.simple_name.arg_obj)print_aml_symbol(aml_symbol->component.simple_name.arg_obj);
+		if(aml_symbol->component.simple_name.local_obj)print_aml_symbol(aml_symbol->component.simple_name.local_obj);
 		break;
 	case aml_size_of_op:
 		break;
 	case aml_source_buff:
-		if(aml_symbol->component.source_buff.term_arg)delete_aml_symbol(aml_symbol->component.source_buff.term_arg);
+		if(aml_symbol->component.source_buff.term_arg)print_aml_symbol(aml_symbol->component.source_buff.term_arg);
 		break;
 	case aml_statement_opcode:
 		break;
