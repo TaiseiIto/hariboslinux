@@ -2024,7 +2024,6 @@ AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml)
 	def_processor->string.length += def_processor->component.def_processor.term_list->string.length;
 	aml.initial += def_processor->component.def_processor.term_list->string.length;
 	aml.length -= def_processor->component.def_processor.term_list->string.length;
-	ERROR(); // Unimplemented
 	return def_processor;
 }
 
