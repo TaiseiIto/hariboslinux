@@ -5784,8 +5784,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_arg_op:
 		break;
 	case aml_ascii_char:
+		printf_serial(" '%c'", *aml_symbol->string.initial);
 		break;
 	case aml_ascii_char_list:
+		printf_serial(" \"%.*s\"", aml_symbol->string.length, *aml_symbol->string.initial);
 		break;
 	case aml_break_op:
 		break;
@@ -5796,8 +5798,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_buffer_size:
 		break;
 	case aml_byte_const:
+		printf_serial(" value = %#04.2x", aml_symbol->component.byte_const.value);
 		break;
 	case aml_byte_data:
+		printf_serial(" value = %#04.2x", *aml_symbol->string.initial);
 		break;
 	case aml_byte_index:
 		break;
@@ -5906,12 +5910,15 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_digit_char:
 		break;
 	case aml_dual_name_path:
+		printf_serial(" \"%s\"", aml_symbol->component.dual_name_path.string);
 		break;
 	case aml_dual_name_prefix:
 		break;
 	case aml_dword_const:
+		printf_serial(" value = %#010.8x", aml_symbol->component.dword_const.value);
 		break;
 	case aml_dword_data:
+		printf_serial(" value = %#010.8x", aml_symbol->component.dword_data.value);
 		break;
 	case aml_dword_prefix:
 		break;
@@ -5954,16 +5961,19 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_l_or_op:
 		break;
 	case aml_local_obj:
+		printf_serial(" Local%dOp", aml_symbol->component.local_obj.local_op_number);
 		break;
 	case aml_local_op:
 		break;
 	case aml_method_flags:
+		printf_serial(" arg_count = %d, %s, sync_level = %d", aml_symbol->component.method_flags.arg_count, aml_symbol->component.method_flags.serialize_flag ? "Serialized" : "NotSerialized", aml_symbol->component.method_flags.sync_level);
 		break;
 	case aml_method_invocation:
 		break;
 	case aml_method_op:
 		break;
 	case aml_multi_name_path:
+		printf_serial(" \"%s\"", aml_symbol->component.multi_name_path.string);
 		break;
 	case aml_multi_name_prefix:
 		break;
@@ -5974,16 +5984,20 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_mutex_op_suffix:
 		break;
 	case aml_name_char:
+		printf_serial(" '%c'", aml_symbol->component.name_char.character);
 		break;
 	case aml_name_op:
 		break;
 	case aml_name_path:
+		printf_serial(" \"%s\"", aml_symbol->component.name_path.string);
 		break;
 	case aml_name_seg:
+		printf_serial(" \"%s\"", aml_symbol->component.name_seg.string);
 		break;
 	case aml_name_space_modifier_obj:
 		break;
 	case aml_name_string:
+		printf_serial(" \"%s\"", aml_symbol->component.name_string.string);
 		break;
 	case aml_named_field:
 		break;
@@ -6028,14 +6042,17 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_pkg_lead_byte:
 		break;
 	case aml_pkg_length:
+		printf_serial(" pkg_length = %#010.8x", aml_symbol->component.pkg_length.length);
 		break;
 	case aml_predicate:
 		break;
 	case aml_prefix_path:
 		break;
 	case aml_qword_const:
+		printf_serial(" value = %#018.16x", aml_symbol->component.qword_const.value);
 		break;
 	case aml_qword_data:
+		printf_serial(" value = %#018.16x", aml_symbol->component.qword_data.value);
 		break;
 	case aml_qword_prefix:
 		break;
@@ -6112,8 +6129,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_while_op:
 		break;
 	case aml_word_const:
+		printf_serial(" value = %#06.4x", aml_symbol->component.word_const.value);
 		break;
 	case aml_word_data:
+		printf_serial(" value = %#06.4x", aml_symbol->component.word_data.value);
 		break;
 	case aml_word_prefix:
 		break;
