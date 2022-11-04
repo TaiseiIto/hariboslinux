@@ -4743,7 +4743,9 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 		case AML_BYTE_NAME_OP:
 		case AML_BYTE_NOTIFY_OP:
 		case AML_BYTE_PACKAGE_OP:
+		case AML_BYTE_PARENT_PREFIX_CHAR:
 		case AML_BYTE_RETURN_OP:
+		case AML_BYTE_ROOT_CHAR:
 		case AML_BYTE_SCOPE_OP:
 		case AML_BYTE_SHIFT_LEFT_OP:
 		case AML_BYTE_SHIFT_RIGHT_OP:
@@ -4803,6 +4805,8 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_ROOT_CHAR:
 	case AML_BYTE_SHIFT_LEFT_OP:
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
