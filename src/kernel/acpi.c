@@ -213,6 +213,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_or_name = "DefOr";
 	static char const * const aml_def_package_name = "DefPackage";
+	static char const * const aml_def_processor_name = "DefProcessor";
 	static char const * const aml_def_release_name = "DefRelease";
 	static char const * const aml_def_return_name = "DefReturn";
 	static char const * const aml_def_scope_name = "DefScope";
@@ -445,6 +446,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_or_name;
 	case aml_def_package:
 		return aml_def_package_name;
+	case aml_def_processor:
+		return aml_def_processor_name;
 	case aml_def_release:
 		return aml_def_release_name;
 	case aml_def_return:
@@ -1969,6 +1972,25 @@ AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml)
 	return def_package;
 }
 
+// <def_processor> := <processor_op> <pkg_length> <name_string> <proc_id> <pblk_addr> <pblk_len> <term_list>
+AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_processor = malloc(sizeof(*def_processor));
+	def_processor->parent = parent;
+	def_processor->string.initial = aml.initial;
+	def_processor->string.length = 0;
+	def_processor->type = aml_def_processor;
+	def_processor->component.def_processor.processor_op = NULL;
+	def_processor->component.def_processor.pkg_length = NULL;
+	def_processor->component.def_processor.name_string = NULL;
+	def_processor->component.def_processor.proc_id = NULL;
+	def_processor->component.def_processor.pblk_addr = NULL;
+	def_processor->component.def_processor.pbkl_len = NULL;
+	def_processor->component.def_processor.term_list = NULL;
+	ERROR(); // Unimplemented
+	return def_processor;
+}
+
 // <def_release> := <release_op> <mutex_object>
 AMLSymbol *analyse_aml_def_release(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -3256,6 +3278,7 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 	named_obj->component.named_obj.def_mutex = NULL;
 	named_obj->component.named_obj.def_op_region = NULL;
 	named_obj->component.named_obj.def_power_res = NULL;
+	named_obj->component.named_obj.def_processor = NULL;
 	named_obj->component.named_obj.def_thermal_zone = NULL;
 	switch(aml.initial[0])
 	{
@@ -5074,6 +5097,15 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_package.num_elements)delete_aml_symbol(aml_symbol->component.def_package.num_elements);
 		if(aml_symbol->component.def_package.package_element_list)delete_aml_symbol(aml_symbol->component.def_package.package_element_list);
 		break;
+	case aml_def_processor:
+		if(aml_symbol->component.def_processor.processor_op)delete_aml_symbol(aml_symbol->component.def_processor.processor_op);
+		if(aml_symbol->component.def_processor.pkg_length)delete_aml_symbol(aml_symbol->component.def_processor.pkg_length);
+		if(aml_symbol->component.def_processor.name_string)delete_aml_symbol(aml_symbol->component.def_processor.name_string);
+		if(aml_symbol->component.def_processor.proc_id)delete_aml_symbol(aml_symbol->component.def_processor.proc_id);
+		if(aml_symbol->component.def_processor.pblk_addr)delete_aml_symbol(aml_symbol->component.def_processor.pblk_addr);
+		if(aml_symbol->component.def_processor.pbkl_len)delete_aml_symbol(aml_symbol->component.def_processor.pbkl_len);
+		if(aml_symbol->component.def_processor.term_list)delete_aml_symbol(aml_symbol->component.def_processor.term_list);
+		break;
 	case aml_def_release:
 		if(aml_symbol->component.def_release.release_op)delete_aml_symbol(aml_symbol->component.def_release.release_op);
 		if(aml_symbol->component.def_release.mutex_object)delete_aml_symbol(aml_symbol->component.def_release.mutex_object);
@@ -5334,6 +5366,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.named_obj.def_mutex)delete_aml_symbol(aml_symbol->component.named_obj.def_mutex);
 		if(aml_symbol->component.named_obj.def_op_region)delete_aml_symbol(aml_symbol->component.named_obj.def_op_region);
 		if(aml_symbol->component.named_obj.def_power_res)delete_aml_symbol(aml_symbol->component.named_obj.def_power_res);
+		if(aml_symbol->component.named_obj.def_processor)delete_aml_symbol(aml_symbol->component.named_obj.def_processor);
 		if(aml_symbol->component.named_obj.def_thermal_zone)delete_aml_symbol(aml_symbol->component.named_obj.def_thermal_zone);
 		break;
 	case aml_notify_object:
@@ -5879,6 +5912,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_package:
 		break;
+	case aml_def_processor:
+		break;
 	case aml_def_release:
 		break;
 	case aml_def_return:
@@ -6365,6 +6400,15 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_package.num_elements)print_aml_symbol(aml_symbol->component.def_package.num_elements);
 		if(aml_symbol->component.def_package.package_element_list)print_aml_symbol(aml_symbol->component.def_package.package_element_list);
 		break;
+	case aml_def_processor:
+		if(aml_symbol->component.def_processor.processor_op)print_aml_symbol(aml_symbol->component.def_processor.processor_op);
+		if(aml_symbol->component.def_processor.pkg_length)print_aml_symbol(aml_symbol->component.def_processor.pkg_length);
+		if(aml_symbol->component.def_processor.name_string)print_aml_symbol(aml_symbol->component.def_processor.name_string);
+		if(aml_symbol->component.def_processor.proc_id)print_aml_symbol(aml_symbol->component.def_processor.proc_id);
+		if(aml_symbol->component.def_processor.pblk_addr)print_aml_symbol(aml_symbol->component.def_processor.pblk_addr);
+		if(aml_symbol->component.def_processor.pbkl_len)print_aml_symbol(aml_symbol->component.def_processor.pbkl_len);
+		if(aml_symbol->component.def_processor.term_list)print_aml_symbol(aml_symbol->component.def_processor.term_list);
+		break;
 	case aml_def_release:
 		if(aml_symbol->component.def_release.release_op)print_aml_symbol(aml_symbol->component.def_release.release_op);
 		if(aml_symbol->component.def_release.mutex_object)print_aml_symbol(aml_symbol->component.def_release.mutex_object);
@@ -6622,6 +6666,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.named_obj.def_mutex)print_aml_symbol(aml_symbol->component.named_obj.def_mutex);
 		if(aml_symbol->component.named_obj.def_op_region)print_aml_symbol(aml_symbol->component.named_obj.def_op_region);
 		if(aml_symbol->component.named_obj.def_power_res)print_aml_symbol(aml_symbol->component.named_obj.def_power_res);
+		if(aml_symbol->component.named_obj.def_processor)print_aml_symbol(aml_symbol->component.named_obj.def_processor);
 		if(aml_symbol->component.named_obj.def_thermal_zone)print_aml_symbol(aml_symbol->component.named_obj.def_thermal_zone);
 		break;
 	case aml_notify_object:

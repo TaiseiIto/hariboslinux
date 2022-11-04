@@ -232,6 +232,7 @@ typedef enum _AMLSymbolType
 	aml_def_op_region,
 	aml_def_or,
 	aml_def_package,
+	aml_def_processor,
 	aml_def_release,
 	aml_def_return,
 	aml_def_scope,
@@ -647,6 +648,17 @@ typedef struct _AMLDefPackage
 	struct _AMLSymbol *package_element_list;
 } AMLDefPackage;
 
+typedef struct _AMLDefProcessor
+{
+	struct _AMLSymbol *processor_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *proc_id;
+	struct _AMLSymbol *pblk_addr;
+	struct _AMLSymbol *pbkl_len;
+	struct _AMLSymbol *term_list;
+} AMLDefProcessor;
+
 typedef struct _AMLDefRelease
 {
 	struct _AMLSymbol *release_op;
@@ -902,6 +914,7 @@ typedef struct _AMLNamedObj
 	struct _AMLSymbol *def_mutex;
 	struct _AMLSymbol *def_op_region;
 	struct _AMLSymbol *def_power_res;
+	struct _AMLSymbol *def_processor;
 	struct _AMLSymbol *def_thermal_zone;
 } AMLNamedObj;
 
@@ -1198,6 +1211,7 @@ typedef union _AMLComponent
 	AMLDefOpRegion def_op_region;
 	AMLDefOr def_or;
 	AMLDefPackage def_package;
+	AMLDefProcessor def_processor;
 	AMLDefRelease def_release;
 	AMLDefReturn def_return;
 	AMLDefScope def_scope;
@@ -1384,6 +1398,8 @@ AMLSymbol *analyse_aml_def_op_region(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_or(AMLSymbol *parent, AMLSubstring aml);
 // <def_package> := <package_op> <pkg_length> <num_elements> <package_element_list>
 AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml);
+// <def_processor> := <processor_op> <pkg_length> <name_string> <proc_id> <pblk_addr> <pblk_len> <term_list>
+AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml);
 // <def_release> := <release_op> <mutex_object>
 AMLSymbol *analyse_aml_def_release(AMLSymbol *parent, AMLSubstring aml);
 // <def_return> := <return_op> <arg_object>
