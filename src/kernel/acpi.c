@@ -6631,8 +6631,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_ones_op:
 		break;
 	case aml_op_region_op:
-		if(aml_symbol->component.op_region_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.op_region_op.ext_op_prefix);
-		if(aml_symbol->component.op_region_op.op_region_op_suffix)delete_aml_symbol(aml_symbol->component.op_region_op.op_region_op_suffix);
+		if(aml_symbol->component.op_region_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.op_region_op.ext_op_prefix);
+		if(aml_symbol->component.op_region_op.op_region_op_suffix)print_aml_symbol(aml_symbol->component.op_region_op.op_region_op_suffix);
 		break;
 	case aml_op_region_op_suffix:
 		break;
@@ -6642,12 +6642,12 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_or_op:
 		break;
 	case aml_package_element:
-		if(aml_symbol->component.package_element.data_ref_object)delete_aml_symbol(aml_symbol->component.package_element.data_ref_object);
-		if(aml_symbol->component.package_element.name_string)delete_aml_symbol(aml_symbol->component.package_element.name_string);
+		if(aml_symbol->component.package_element.data_ref_object)print_aml_symbol(aml_symbol->component.package_element.data_ref_object);
+		if(aml_symbol->component.package_element.name_string)print_aml_symbol(aml_symbol->component.package_element.name_string);
 		break;
 	case aml_package_element_list:
-		if(aml_symbol->component.package_element_list.package_element)delete_aml_symbol(aml_symbol->component.package_element_list.package_element);
-		if(aml_symbol->component.package_element_list.package_element_list)delete_aml_symbol(aml_symbol->component.package_element_list.package_element_list);
+		if(aml_symbol->component.package_element_list.package_element)print_aml_symbol(aml_symbol->component.package_element_list.package_element);
+		if(aml_symbol->component.package_element_list.package_element_list)print_aml_symbol(aml_symbol->component.package_element_list.package_element_list);
 		break;
 	case aml_package_op:
 		break;
