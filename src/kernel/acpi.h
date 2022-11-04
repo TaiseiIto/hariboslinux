@@ -312,6 +312,7 @@ typedef enum _AMLSymbolType
 	aml_pkg_length,
 	aml_predicate,
 	aml_prefix_path,
+	aml_proc_id,
 	aml_processor_op,
 	aml_processor_op_suffix,
 	aml_qword_const,
@@ -1026,6 +1027,11 @@ typedef struct _AMLProcessorOp
 	struct _AMLSymbol *processor_op_suffix;
 } AMLProcessorOp;
 
+typedef struct _AMLProcID
+{
+	struct _AMLSymbol *byte_data;
+} AMLProcID;
+
 typedef struct _AMLQWordConst
 {
 	struct _AMLSymbol *qword_prefix;
@@ -1266,6 +1272,7 @@ typedef union _AMLComponent
 	AMLPredicate predicate;
 	AMLPrefixPath prefix_path;
 	AMLProcessorOp processor_op;
+	AMLProcID proc_id;
 	AMLQWordConst qword_const;
 	AMLQWordData qword_data;
 	AMLReferenceTypeOpcode reference_type_opcode;
@@ -1567,6 +1574,8 @@ AMLSymbol *analyse_aml_pkg_length(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_predicate(AMLSymbol *parent, AMLSubstring aml);
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
 AMLSymbol *analyse_aml_prefix_path(AMLSymbol *parent, AMLSubstring aml);
+// <proc_id> := <byte_data>
+AMLSymbol *analyse_aml_proc_id(AMLSymbol *parent, AMLSubstring aml);
 // <processor_op> := <ext_op_prefix> <processor_op_suffix>
 AMLSymbol *analyse_aml_processor_op(AMLSymbol *parent, AMLSubstring aml);
 // <processor_op_suffix> := AML_BYTE_PROCESSOR_OP
