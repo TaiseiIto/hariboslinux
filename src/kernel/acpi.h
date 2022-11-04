@@ -309,6 +309,7 @@ typedef enum _AMLSymbolType
 	aml_package_op,
 	aml_parent_prefix_char,
 	aml_pblk_addr,
+	aml_pblk_len,
 	aml_pkg_lead_byte,
 	aml_pkg_length,
 	aml_predicate,
@@ -659,7 +660,7 @@ typedef struct _AMLDefProcessor
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *proc_id;
 	struct _AMLSymbol *pblk_addr;
-	struct _AMLSymbol *pbkl_len;
+	struct _AMLSymbol *pblk_len;
 	struct _AMLSymbol *term_list;
 } AMLDefProcessor;
 
@@ -1007,6 +1008,11 @@ typedef struct _AMLPblkAddr
 	struct _AMLSymbol *dword_data;
 } AMLPblkAddr;
 
+typedef struct _AMLPblkLen
+{
+	struct _AMLSymbol *byte_data;
+} AMLPblkLen;
+
 typedef struct _AMLPkgLength
 {
 	struct _AMLSymbol *pkg_lead_byte;
@@ -1275,6 +1281,7 @@ typedef union _AMLComponent
 	AMLPackageElement package_element;
 	AMLPackageElementList package_element_list;
 	AMLPblkAddr pblk_addr;
+	AMLPblkLen pblk_len;
 	AMLPkgLength pkg_length;
 	AMLPredicate predicate;
 	AMLPrefixPath prefix_path;
@@ -1575,6 +1582,8 @@ AMLSymbol *analyse_aml_package_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSymbol *parent, AMLSubstring aml);
 // <pblk_addr> := <dword_data>
 AMLSymbol *analyse_aml_pblk_addr(AMLSymbol *parent, AMLSubstring aml);
+// <pblk_len> := <byte_data>
+AMLSymbol *analyse_aml_pblk_len(AMLSymbol *parent, AMLSubstring aml);
 // <pkg_lead_byte>
 AMLSymbol *analyse_aml_pkg_lead_byte(AMLSymbol *parent, AMLSubstring aml);
 // <pkg_length> := <pkg_lead_byte> | <pkg_lead_byte> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> <byte_data>

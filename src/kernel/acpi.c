@@ -291,6 +291,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_package_op_name = "PackageOp";
 	static char const * const aml_parent_prefix_char_name = "ParentPrefixChar";
 	static char const * const aml_pblk_addr_name = "PblkAddr";
+	static char const * const aml_pblk_len_name = "PblkLen";
 	static char const * const aml_pkg_lead_byte_name = "PkgLeadByte";
 	static char const * const aml_pkg_length_name = "PkgLength";
 	static char const * const aml_predicate_name = "Predicate";
@@ -605,6 +606,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_parent_prefix_char_name;
 	case aml_pblk_addr:
 		return aml_pblk_addr_name;
+	case aml_pblk_len:
+		return aml_pblk_len_name;
 	case aml_pkg_lead_byte:
 		return aml_pkg_lead_byte_name;
 	case aml_pkg_length:
@@ -2013,8 +2016,14 @@ AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml)
 	def_processor->string.length += def_processor->component.def_processor.pblk_addr->string.length;
 	aml.initial += def_processor->component.def_processor.pblk_addr->string.length;
 	aml.length -= def_processor->component.def_processor.pblk_addr->string.length;
-	def_processor->component.def_processor.pbkl_len = NULL;
-	def_processor->component.def_processor.term_list = NULL;
+	def_processor->component.def_processor.pblk_len = analyse_aml_pblk_len(def_processor, aml);
+	def_processor->string.length += def_processor->component.def_processor.pblk_len->string.length;
+	aml.initial += def_processor->component.def_processor.pblk_len->string.length;
+	aml.length -= def_processor->component.def_processor.pblk_len->string.length;
+	def_processor->component.def_processor.term_list = analyse_aml_term_list(def_processor, aml);
+	def_processor->string.length += def_processor->component.def_processor.term_list->string.length;
+	aml.initial += def_processor->component.def_processor.term_list->string.length;
+	aml.length -= def_processor->component.def_processor.term_list->string.length;
 	ERROR(); // Unimplemented
 	return def_processor;
 }
@@ -3712,6 +3721,21 @@ AMLSymbol *analyse_aml_pblk_addr(AMLSymbol *parent, AMLSubstring aml)
 	return pblk_addr;
 }
 
+// <pblk_len> := <byte_data>
+AMLSymbol *analyse_aml_pblk_len(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *pblk_len = malloc(sizeof(*pblk_len));
+	pblk_len->parent = parent;
+	pblk_len->string.initial = aml.initial;
+	pblk_len->string.length = 0;
+	pblk_len->type = aml_pblk_len;
+	pblk_len->component.pblk_len.byte_data = analyse_aml_byte_data(pblk_len, aml);
+	pblk_len->string.length += pblk_len->component.pblk_len.byte_data->string.length;
+	aml.initial += pblk_len->component.pblk_len.byte_data->string.length;
+	aml.length -= pblk_len->component.pblk_len.byte_data->string.length;
+	return pblk_len;
+}
+
 // <pkg_lead_byte>
 AMLSymbol *analyse_aml_pkg_lead_byte(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -3837,7 +3861,6 @@ AMLSymbol *analyse_aml_processor_op(AMLSymbol *parent, AMLSubstring aml)
 	processor_op->string.length += processor_op->component.processor_op.processor_op_suffix->string.length;
 	aml.initial += processor_op->component.processor_op.processor_op_suffix->string.length;
 	aml.length -= processor_op->component.processor_op.processor_op_suffix->string.length;
-	ERROR(); // Unimplemented
 	return processor_op;
 }
 
@@ -5197,7 +5220,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_processor.name_string)delete_aml_symbol(aml_symbol->component.def_processor.name_string);
 		if(aml_symbol->component.def_processor.proc_id)delete_aml_symbol(aml_symbol->component.def_processor.proc_id);
 		if(aml_symbol->component.def_processor.pblk_addr)delete_aml_symbol(aml_symbol->component.def_processor.pblk_addr);
-		if(aml_symbol->component.def_processor.pbkl_len)delete_aml_symbol(aml_symbol->component.def_processor.pbkl_len);
+		if(aml_symbol->component.def_processor.pblk_len)delete_aml_symbol(aml_symbol->component.def_processor.pblk_len);
 		if(aml_symbol->component.def_processor.term_list)delete_aml_symbol(aml_symbol->component.def_processor.term_list);
 		break;
 	case aml_def_release:
@@ -5514,6 +5537,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_pblk_addr:
 		if(aml_symbol->component.pblk_addr.dword_data)delete_aml_symbol(aml_symbol->component.pblk_addr.dword_data);
+		break;
+	case aml_pblk_len:
+		if(aml_symbol->component.pblk_len.byte_data)delete_aml_symbol(aml_symbol->component.pblk_len.byte_data);
 		break;
 	case aml_pkg_lead_byte:
 		break;
@@ -6182,6 +6208,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_pblk_addr:
 		break;
+	case aml_pblk_len:
+		break;
 	case aml_pkg_lead_byte:
 		break;
 	case aml_pkg_length:
@@ -6520,7 +6548,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_processor.name_string)print_aml_symbol(aml_symbol->component.def_processor.name_string);
 		if(aml_symbol->component.def_processor.proc_id)print_aml_symbol(aml_symbol->component.def_processor.proc_id);
 		if(aml_symbol->component.def_processor.pblk_addr)print_aml_symbol(aml_symbol->component.def_processor.pblk_addr);
-		if(aml_symbol->component.def_processor.pbkl_len)print_aml_symbol(aml_symbol->component.def_processor.pbkl_len);
+		if(aml_symbol->component.def_processor.pblk_len)print_aml_symbol(aml_symbol->component.def_processor.pblk_len);
 		if(aml_symbol->component.def_processor.term_list)print_aml_symbol(aml_symbol->component.def_processor.term_list);
 		break;
 	case aml_def_release:
@@ -6834,6 +6862,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_pblk_addr:
 		if(aml_symbol->component.pblk_addr.dword_data)print_aml_symbol(aml_symbol->component.pblk_addr.dword_data);
+		break;
+	case aml_pblk_len:
+		if(aml_symbol->component.pblk_len.byte_data)print_aml_symbol(aml_symbol->component.pblk_len.byte_data);
 		break;
 	case aml_pkg_lead_byte:
 		break;
