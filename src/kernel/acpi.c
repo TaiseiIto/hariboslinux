@@ -4760,8 +4760,11 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 						if(!get_aml_method(method_name, term_list, NULL))
 						{
 							AMLSymbol *term_arg_list = method_invocation->component.method_invocation.term_arg_list;
-							while(term_arg_list->component.term_arg_list.term_arg_list)term_arg_list = term_arg_list->component.term_arg_list.term_arg_list;
+							
+							unsigned int num_of_args = 0;
+							for(AMLSymbol *term_arg_counter = term_arg_list; term_arg_counter->component.term_arg_list.term_arg_list; term_arg_counter = term_arg_counter->component.term_arg_list.term_arg_list)num_of_args++;
 							printf_serial("Undefined method \"%s\" invocation arglist addition.\n", method_name);
+							printf_serial("num_of_args = %d\n", num_of_args);
 						}
 					}
 				}
