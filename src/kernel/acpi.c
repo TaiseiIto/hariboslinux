@@ -4725,9 +4725,24 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 			// Undefined method invocation arglist addition
 			switch(*aml.initial)
 			{
+			case AML_BYTE_ARG_0_OP:
+			case AML_BYTE_ARG_1_OP:
+			case AML_BYTE_ARG_2_OP:
+			case AML_BYTE_ARG_3_OP:
+			case AML_BYTE_ARG_4_OP:
+			case AML_BYTE_ARG_5_OP:
+			case AML_BYTE_ARG_6_OP:
 			case AML_BYTE_BUFFER_OP:
 			case AML_BYTE_BYTE_PREFIX:
 			case AML_BYTE_DWORD_PREFIX:
+			case AML_BYTE_LOCAL_0_OP:
+			case AML_BYTE_LOCAL_1_OP:
+			case AML_BYTE_LOCAL_2_OP:
+			case AML_BYTE_LOCAL_3_OP:
+			case AML_BYTE_LOCAL_4_OP:
+			case AML_BYTE_LOCAL_5_OP:
+			case AML_BYTE_LOCAL_6_OP:
+			case AML_BYTE_LOCAL_7_OP:
 			case AML_BYTE_ONE_OP:
 			case AML_BYTE_ONES_OP:
 			case AML_BYTE_QWORD_PREFIX:
@@ -4740,9 +4755,14 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 					if(expression_opcode->component.expression_opcode.method_invocation)
 					{
 						AMLSymbol *method_invocation = expression_opcode->component.expression_opcode.method_invocation;
-						AMLSymbol *term_arg_list = method_invocation->component.method_invocation.term_arg_list;
-						while(term_arg_list->component.term_arg_list.term_arg_list)term_arg_list = term_arg_list->component.term_arg_list.term_arg_list;
-						printf_serial("Undefined method invocation arglist addition.\n");
+						AMLSymbol *method_name_string = method_invocation->component.method_invocation.name_string;
+						char *method_name = method_name_string->component.name_string.string;
+						if(!get_aml_method(method_name, term_list, NULL))
+						{
+							AMLSymbol *term_arg_list = method_invocation->component.method_invocation.term_arg_list;
+							while(term_arg_list->component.term_arg_list.term_arg_list)term_arg_list = term_arg_list->component.term_arg_list.term_arg_list;
+							printf_serial("Undefined method \"%s\" invocation arglist addition.\n", method_name_string);
+						}
 					}
 				}
 				break;
