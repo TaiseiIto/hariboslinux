@@ -4720,60 +4720,91 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 		term_list->string.length += term_list->component.term_list.term_obj->string.length;
 		aml.initial += term_list->component.term_list.term_obj->string.length;
 		aml.length -= term_list->component.term_list.term_obj->string.length;
-		if(aml.length && term_list->component.term_list.term_obj->string.length)switch(*aml.initial)
+		if(aml.length && term_list->component.term_list.term_obj->string.length)
 		{
-		case AML_BYTE_ADD_OP:
-		case AML_BYTE_AND_OP:
-		case AML_BYTE_ALIAS_OP:
-		case AML_BYTE_BREAK_OP:
-		case AML_BYTE_CREATE_DWORD_FIELD_OP:
-		case AML_BYTE_DEREF_OF_OP:
-		case AML_BYTE_EXT_OP_PREFIX:
-		case AML_BYTE_IF_OP:
-		case AML_BYTE_INCREMENT_OP:
-		case AML_BYTE_INDEX_OP:
-		case AML_BYTE_L_AND_OP:
-		case AML_BYTE_L_EQUAL_OP:
-		case AML_BYTE_L_GREATER_OP:
-		case AML_BYTE_L_LESS_OP:
-		case AML_BYTE_L_NOT_OP:
-		case AML_BYTE_L_OR_OP:
-		case AML_BYTE_OR_OP:
-		case AML_BYTE_METHOD_OP:
-		case AML_BYTE_NAME_OP:
-		case AML_BYTE_NOTIFY_OP:
-		case AML_BYTE_PACKAGE_OP:
-		case AML_BYTE_PARENT_PREFIX_CHAR:
-		case AML_BYTE_RETURN_OP:
-		case AML_BYTE_ROOT_CHAR:
-		case AML_BYTE_SCOPE_OP:
-		case AML_BYTE_SHIFT_LEFT_OP:
-		case AML_BYTE_SHIFT_RIGHT_OP:
-		case AML_BYTE_SIZE_OF_OP:
-		case AML_BYTE_STORE_OP:
-		case AML_BYTE_SUBTRACT_OP:
-		case AML_BYTE_TO_BUFFER_OP:
-		case AML_BYTE_TO_HEX_STRING_OP:
-		case AML_BYTE_WHILE_OP:
-			term_list->component.term_list.term_list = analyse_aml_term_list(term_list, aml);
-			term_list->string.length += term_list->component.term_list.term_list->string.length;
-			aml.initial += term_list->component.term_list.term_list->string.length;
-			aml.length -= term_list->component.term_list.term_list->string.length;
-			break;
-		default:
-			if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+			// Undefined method invocation arglist addition
+			switch(*aml.initial)
 			{
+			case AML_BYTE_BUFFER_OP:
+			case AML_BYTE_BYTE_PREFIX:
+			case AML_BYTE_DWORD_PREFIX:
+			case AML_BYTE_ONE_OP:
+			case AML_BYTE_ONES_OP:
+			case AML_BYTE_QWORD_PREFIX:
+			case AML_BYTE_STRING_PREFIX:
+			case AML_BYTE_WORD_PREFIX:
+			case AML_BYTE_ZERO_OP:
+				if(term_list->component.term_list.term_obj->component.term_obj.expression_opcode)
+				{
+					AMLSymbol *expression_opcode = term_list->component.term_list.term_obj->component.term_obj.expression_opcode;
+					if(expression_opcode->component.expression_opcode.method_invocation)
+					{
+						AMLSymbol *method_invocation = expression_opcode->component.expression_opcode.method_invocation;
+						AMLSymbol *term_arg_list = method_invocation->component.method_invocation.term_arg_list;
+						while(term_arg_list->component.term_arg_list.term_arg_list)term_arg_list = term_arg_list->component.term_arg_list.term_arg_list;
+						printf_serial("Undefined method invocation arglist addition.\n");
+					}
+				}
+				break;
+			default:
+				break;
+			}
+			// Analyse next term_list
+			switch(*aml.initial)
+			{
+			case AML_BYTE_ADD_OP:
+			case AML_BYTE_AND_OP:
+			case AML_BYTE_ALIAS_OP:
+			case AML_BYTE_BREAK_OP:
+			case AML_BYTE_CREATE_DWORD_FIELD_OP:
+			case AML_BYTE_DEREF_OF_OP:
+			case AML_BYTE_EXT_OP_PREFIX:
+			case AML_BYTE_IF_OP:
+			case AML_BYTE_INCREMENT_OP:
+			case AML_BYTE_INDEX_OP:
+			case AML_BYTE_L_AND_OP:
+			case AML_BYTE_L_EQUAL_OP:
+			case AML_BYTE_L_GREATER_OP:
+			case AML_BYTE_L_LESS_OP:
+			case AML_BYTE_L_NOT_OP:
+			case AML_BYTE_L_OR_OP:
+			case AML_BYTE_OR_OP:
+			case AML_BYTE_METHOD_OP:
+			case AML_BYTE_NAME_OP:
+			case AML_BYTE_NOTIFY_OP:
+			case AML_BYTE_PACKAGE_OP:
+			case AML_BYTE_PARENT_PREFIX_CHAR:
+			case AML_BYTE_RETURN_OP:
+			case AML_BYTE_ROOT_CHAR:
+			case AML_BYTE_SCOPE_OP:
+			case AML_BYTE_SHIFT_LEFT_OP:
+			case AML_BYTE_SHIFT_RIGHT_OP:
+			case AML_BYTE_SIZE_OF_OP:
+			case AML_BYTE_STORE_OP:
+			case AML_BYTE_SUBTRACT_OP:
+			case AML_BYTE_TO_BUFFER_OP:
+			case AML_BYTE_TO_HEX_STRING_OP:
+			case AML_BYTE_WHILE_OP:
 				term_list->component.term_list.term_list = analyse_aml_term_list(term_list, aml);
 				term_list->string.length += term_list->component.term_list.term_list->string.length;
 				aml.initial += term_list->component.term_list.term_list->string.length;
 				aml.length -= term_list->component.term_list.term_list->string.length;
+				break;
+			default:
+				if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+				{
+					term_list->component.term_list.term_list = analyse_aml_term_list(term_list, aml);
+					term_list->string.length += term_list->component.term_list.term_list->string.length;
+					aml.initial += term_list->component.term_list.term_list->string.length;
+					aml.length -= term_list->component.term_list.term_list->string.length;
+				}
+				else
+				{
+					ERROR(); // Syntax error or unimplemented pattern
+					printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+				}
+				break;
 			}
-			else
-			{
-				ERROR(); // Syntax error or unimplemented pattern
-				printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-			}
-			break;
 		}
 	}
 	return term_list;
