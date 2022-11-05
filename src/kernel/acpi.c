@@ -187,6 +187,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_debug_obj_name = "DebugObj";
 	static char const * const aml_debug_op_name = "DebugOp";
 	static char const * const aml_debug_op_suffix_name = "DebugOpSuffix";
+	static char const * const aml_decrement_op_name = "DecrementOp";
 	static char const * const aml_def_alias_name = "DefAlias";
 	static char const * const aml_def_acquire_name = "DefAcquire";
 	static char const * const aml_def_add_name = "DefAdd";
@@ -194,6 +195,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_break_name = "DefBreak";
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_create_dword_field_name = "DefCreateDWordField";
+	static char const * const aml_def_decrement_name = "DefDecrement";
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
 	static char const * const aml_def_device_name = "DefDevice";
 	static char const * const aml_def_else_name = "DefElse";
@@ -398,6 +400,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_debug_op_name;
 	case aml_debug_op_suffix:
 		return aml_debug_op_suffix_name;
+	case aml_decrement_op:
+		return aml_decrement_op_name;
 	case aml_def_alias:
 		return aml_def_alias_name;
 	case aml_def_acquire:
@@ -412,6 +416,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_buffer_name;
 	case aml_def_create_dword_field:
 		return aml_def_create_dword_field_name;
+	case aml_def_decrement:
+		return aml_def_decrement_name;
 	case aml_def_deref_of:
 		return aml_def_deref_of_name;
 	case aml_def_device:
@@ -1237,6 +1243,18 @@ AMLSymbol *analyse_aml_debug_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	return debug_op_suffix;
 }
 
+// <decrement_op> := AML_BYTE_DECREMENT_OP
+AMLSymbol *analyse_aml_decrement_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *decrement_op = malloc(sizeof(*decrement_op));
+	decrement_op->parent = parent;
+	decrement_op->string.initial = aml.initial;
+	decrement_op->string.length = 1;
+	decrement_op->type = aml_decrement_op;
+	if(*decrement_op->string.initial != AML_BYTE_DECREMENT_OP)ERROR(); // Incorrect decrement_op
+	return decrement_op;
+}
+
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -1419,6 +1437,25 @@ AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring am
 	aml.initial += def_create_dword_field->component.def_create_dword_field.name_string->string.length;
 	aml.length -= def_create_dword_field->component.def_create_dword_field.name_string->string.length;
 	return def_create_dword_field;
+}
+
+// <def_decrement> := <decrement_op> <super_name>
+AMLSymbol *analyse_aml_def_decrement(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_decrement = malloc(sizeof(*def_decrement));
+	def_decrement->parent = parent;
+	def_decrement->string.initial = aml.initial;
+	def_decrement->string.length = 0;
+	def_decrement->type = aml_def_decrement;
+	def_decrement->component.def_decrement.decrement_op = analyse_aml_decrement_op(def_decrement, aml);
+	def_decrement->string.length += def_decrement->component.def_decrement.decrement_op->string.length;
+	aml.initial += def_decrement->component.def_decrement.decrement_op->string.length;
+	aml.length -= def_decrement->component.def_decrement.decrement_op->string.length;
+	def_decrement->component.def_decrement.super_name = analyse_aml_super_name(def_decrement, aml);
+	def_decrement->string.length += def_decrement->component.def_decrement.super_name->string.length;
+	aml.initial += def_decrement->component.def_decrement.super_name->string.length;
+	aml.length -= def_decrement->component.def_decrement.super_name->string.length;
+	return def_decrement;
 }
 
 // <def_deref_of> := <deref_of_op> <obj_reference>
@@ -2529,6 +2566,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_AND_OP:
 		expression_opcode->component.expression_opcode.def_and = analyse_aml_def_and(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_and->string.length;
+		break;
+	case AML_BYTE_DECREMENT_OP:
+		expression_opcode->component.expression_opcode.def_decrement = analyse_aml_def_decrement(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_decrement->string.length;
 		break;
 	case AML_BYTE_DEREF_OF_OP:
 		expression_opcode->component.expression_opcode.def_deref_of = analyse_aml_def_deref_of(expression_opcode, aml);
@@ -4580,6 +4621,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	case AML_BYTE_ADD_OP:
 	case AML_BYTE_AND_OP:
+	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
@@ -4653,6 +4695,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, unsign
 	case AML_BYTE_ARG_6_OP:
 	case AML_BYTE_BUFFER_OP:
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_EXT_OP_PREFIX:
@@ -4824,6 +4867,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 			case AML_BYTE_ALIAS_OP:
 			case AML_BYTE_BREAK_OP:
 			case AML_BYTE_CREATE_DWORD_FIELD_OP:
+			case AML_BYTE_DECREMENT_OP:
 			case AML_BYTE_DEREF_OF_OP:
 			case AML_BYTE_EXT_OP_PREFIX:
 			case AML_BYTE_IF_OP:
@@ -4892,6 +4936,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	{
 	case AML_BYTE_ADD_OP:
 	case AML_BYTE_AND_OP:
+	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
@@ -5178,6 +5223,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_debug_op_suffix:
 		break;
+	case aml_decrement_op:
+		break;
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)delete_aml_symbol(aml_symbol->component.def_alias.alias_op);
 		for(AMLSymbol **name_string = aml_symbol->component.def_alias.name_string; name_string != aml_symbol->component.def_alias.name_string + _countof(aml_symbol->component.def_alias.name_string); name_string++)if(*name_string)delete_aml_symbol(*name_string);
@@ -5211,6 +5258,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_create_dword_field.source_buff)delete_aml_symbol(aml_symbol->component.def_create_dword_field.source_buff);
 		if(aml_symbol->component.def_create_dword_field.byte_index)delete_aml_symbol(aml_symbol->component.def_create_dword_field.byte_index);
 		if(aml_symbol->component.def_create_dword_field.name_string)delete_aml_symbol(aml_symbol->component.def_create_dword_field.name_string);
+		break;
+	case aml_def_decrement:
+		if(aml_symbol->component.def_decrement.decrement_op)delete_aml_symbol(aml_symbol->component.def_decrement.decrement_op);
+		if(aml_symbol->component.def_decrement.super_name)delete_aml_symbol(aml_symbol->component.def_decrement.super_name);
 		break;
 	case aml_def_deref_of:
 		if(aml_symbol->component.def_deref_of.deref_of_op)delete_aml_symbol(aml_symbol->component.def_deref_of.deref_of_op);
@@ -6106,6 +6157,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_debug_op_suffix:
 		break;
+	case aml_decrement_op:
+		break;
 	case aml_def_alias:
 		break;
 	case aml_def_acquire:
@@ -6119,6 +6172,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_def_buffer:
 		break;
 	case aml_def_create_dword_field:
+		break;
+	case aml_def_decrement:
 		break;
 	case aml_def_deref_of:
 		break;
@@ -6522,6 +6577,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_debug_op_suffix:
 		break;
+	case aml_decrement_op:
+		break;
 	case aml_def_alias:
 		if(aml_symbol->component.def_alias.alias_op)print_aml_symbol(aml_symbol->component.def_alias.alias_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_alias.name_string); i++)if(aml_symbol->component.def_alias.name_string[i])print_aml_symbol(aml_symbol->component.def_alias.name_string[i]);
@@ -6555,6 +6612,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_create_dword_field.source_buff)print_aml_symbol(aml_symbol->component.def_create_dword_field.source_buff);
 		if(aml_symbol->component.def_create_dword_field.byte_index)print_aml_symbol(aml_symbol->component.def_create_dword_field.byte_index);
 		if(aml_symbol->component.def_create_dword_field.name_string)print_aml_symbol(aml_symbol->component.def_create_dword_field.name_string);
+		break;
+	case aml_def_decrement:
+		if(aml_symbol->component.def_decrement.decrement_op)print_aml_symbol(aml_symbol->component.def_decrement.decrement_op);
+		if(aml_symbol->component.def_decrement.super_name)print_aml_symbol(aml_symbol->component.def_decrement.super_name);
 		break;
 	case aml_def_deref_of:
 		if(aml_symbol->component.def_deref_of.deref_of_op)print_aml_symbol(aml_symbol->component.def_deref_of.deref_of_op);

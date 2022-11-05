@@ -205,6 +205,7 @@ typedef enum _AMLSymbolType
 	aml_debug_obj,
 	aml_debug_op,
 	aml_debug_op_suffix,
+	aml_decrement_op,
 	aml_def_alias,
 	aml_def_acquire,
 	aml_def_add,
@@ -212,6 +213,7 @@ typedef enum _AMLSymbolType
 	aml_def_break,
 	aml_def_buffer,
 	aml_def_create_dword_field,
+	aml_def_decrement,
 	aml_def_deref_of,
 	aml_def_device,
 	aml_def_else,
@@ -509,6 +511,12 @@ typedef struct _AMLDefCreateDWordField
 	struct _AMLSymbol *byte_index;
 	struct _AMLSymbol *name_string;
 } AMLDefCreateDWordField;
+
+typedef struct _AMLDefDecrement
+{
+	struct _AMLSymbol *decrement_op;
+	struct _AMLSymbol *super_name;
+} AMLDefDecrement;
 
 typedef struct _AMLDefDerefOf
 {
@@ -1217,6 +1225,7 @@ typedef union _AMLComponent
 	AMLDefBreak def_break;
 	AMLDefBuffer def_buffer;
 	AMLDefCreateDWordField def_create_dword_field;
+	AMLDefDecrement def_decrement;
 	AMLDefDerefOf def_deref_of;
 	AMLDefDevice def_device;
 	AMLDefElse def_else;
@@ -1374,6 +1383,8 @@ AMLSymbol *analyse_aml_debug_obj(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_debug_op(AMLSymbol *parent, AMLSubstring aml);
 // <debug_op_suffix> := AML_BYTE_DEBUG_OP
 AMLSymbol *analyse_aml_debug_op_suffix(AMLSymbol *parent, AMLSubstring aml);
+// <decrement_op> := AML_BYTE_DECREMENT_OP
+AMLSymbol *analyse_aml_decrement_op(AMLSymbol *parent, AMLSubstring aml);
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml);
 // <def_acquire> := <acquire_op> <mutex_object> <time_out>
@@ -1388,6 +1399,8 @@ AMLSymbol *analyse_aml_def_break(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml);
 // <def_create_dword_field> := <create_dword_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring aml);
+// <def_decrement> := <decrement_op> <super_name>
+AMLSymbol *analyse_aml_def_decrement(AMLSymbol *parent, AMLSubstring aml);
 // <def_deref_of> := <deref_of_op> <obj_reference>
 AMLSymbol *analyse_aml_def_deref_of(AMLSymbol *parent, AMLSubstring aml);
 // <def_device> := <device_op> <pkg_length> <name_string> <term_list>
