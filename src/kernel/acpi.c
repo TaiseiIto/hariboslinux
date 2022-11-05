@@ -4761,7 +4761,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 						{
 							AMLSymbol *term_arg_list = method_invocation->component.method_invocation.term_arg_list;
 							while(term_arg_list->component.term_arg_list.term_arg_list)term_arg_list = term_arg_list->component.term_arg_list.term_arg_list;
-							printf_serial("Undefined method \"%s\" invocation arglist addition.\n", method_name_string);
+							printf_serial("Undefined method \"%s\" invocation arglist addition.\n", method_name);
 						}
 					}
 				}
