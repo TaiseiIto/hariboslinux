@@ -4138,7 +4138,11 @@ AMLSymbol *analyse_aml_revision_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	revision_op_suffix->string.initial = aml.initial;
 	revision_op_suffix->string.length = 1;
 	revision_op_suffix->type = aml_revision_op_suffix;
-	if(*revision_op_suffix->string.initial != AML_BYTE_REVISION_OP)ERROR(); // Incorrect revision op prefix
+	if(*revision_op_suffix->string.initial != AML_BYTE_REVISION_OP)
+	{
+		ERROR(); // Incorrect revision op prefix
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	}
 	return revision_op_suffix;
 }
 
@@ -5757,6 +5761,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.revision_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.revision_op.ext_op_prefix);
 		if(aml_symbol->component.revision_op.revision_op_suffix)delete_aml_symbol(aml_symbol->component.revision_op.revision_op_suffix);
 		break;
+	case aml_revision_op_suffix:
+		break;
 	case aml_root_char:
 		break;
 	case aml_scope_op:
@@ -5859,6 +5865,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	default:
 		ERROR(); // Invalid AML symbol type
+		printf_serial("aml_symbol->type = %#010.8x\n", aml_symbol->type);
 		break;
 	}
 	free(aml_symbol);
