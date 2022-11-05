@@ -5960,6 +5960,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_and_op:
 		break;
 	case aml_arg_obj:
+		printf_serial(" Arg%dOp", aml_symbol->component.arg_obj.arg_op_number);
 		break;
 	case aml_arg_object:
 		break;
@@ -6131,6 +6132,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_index_value:
 		break;
 	case aml_lead_name_char:
+		printf_serial(" '%c'", *aml_symbol->string.initial);
 		break;
 	case aml_l_and_op:
 		break;
