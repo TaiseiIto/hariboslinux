@@ -4765,6 +4765,50 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 							printf_serial("Undefined method \"%s\" invocation arglist addition.\n", method_name);
 							printf_serial("term_arg_list_root = %p\n", term_arg_list_root);
 							printf_serial("term_arg_list_tail = %p\n", term_arg_list_tail);
+							while
+							(
+								*aml.initial == AML_BYTE_ARG_0_OP ||
+								*aml.initial == AML_BYTE_ARG_1_OP ||
+								*aml.initial == AML_BYTE_ARG_2_OP ||
+								*aml.initial == AML_BYTE_ARG_3_OP ||
+								*aml.initial == AML_BYTE_ARG_4_OP ||
+								*aml.initial == AML_BYTE_ARG_5_OP ||
+								*aml.initial == AML_BYTE_ARG_6_OP ||
+								*aml.initial == AML_BYTE_BUFFER_OP ||
+								*aml.initial == AML_BYTE_BYTE_PREFIX ||
+								*aml.initial == AML_BYTE_DWORD_PREFIX ||
+								*aml.initial == AML_BYTE_LOCAL_0_OP ||
+								*aml.initial == AML_BYTE_LOCAL_1_OP ||
+								*aml.initial == AML_BYTE_LOCAL_2_OP ||
+								*aml.initial == AML_BYTE_LOCAL_3_OP ||
+								*aml.initial == AML_BYTE_LOCAL_4_OP ||
+								*aml.initial == AML_BYTE_LOCAL_5_OP ||
+								*aml.initial == AML_BYTE_LOCAL_6_OP ||
+								*aml.initial == AML_BYTE_LOCAL_7_OP ||
+								*aml.initial == AML_BYTE_ONE_OP ||
+								*aml.initial == AML_BYTE_ONES_OP ||
+								*aml.initial == AML_BYTE_QWORD_PREFIX ||
+								*aml.initial == AML_BYTE_STRING_PREFIX ||
+								*aml.initial == AML_BYTE_WORD_PREFIX ||
+								*aml.initial == AML_BYTE_ZERO_OP
+							)
+							{
+								AMLSymbol *new_term_arg_list = malloc(sizeof(*new_term_arg_list));
+								unsigned int new_term_arg_length;
+								new_term_arg_list->parent = term_arg_list_tail;
+								new_term_arg_list->string.initial = aml.initial;
+								new_term_arg_list->string.length = 0;
+								new_term_arg_list->type = aml_term_arg_list;
+								new_term_arg_list->component.term_arg_list.term_arg = NULL;
+								new_term_arg_list->component.term_arg_list.term_arg_list = NULL;
+								new_term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(new_term_arg_list, aml);
+								new_term_arg_length = new_term_arg_list->component.term_arg_list.term_arg->string.length;
+								term_arg_list_tail->component.term_arg_list.term_arg_list = new_term_arg_list;
+								for(AMLSymbol *extended_aml_symbol = new_term_arg_list; extended_aml_symbol != term_list->parent; extended_aml_symbol = extended_aml_symbol->parent)extended_aml_symbol->string.length += new_term_arg_length;
+								aml.initial += new_term_arg_length;
+								aml.length -= new_term_arg_length;
+								term_arg_list_tail = new_term_arg_list;
+							}
 						}
 					}
 				}
