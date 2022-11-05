@@ -5736,6 +5736,7 @@ AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_sy
 	AMLSymbol const *def_method_in_def_if_else = NULL;
 	AMLSymbol const *def_method_in_def_scope = NULL;
 	AMLSymbol const *def_method_in_def_while = NULL;
+	AMLSymbol const *def_method_in_name_space_modifier_obj = NULL;
 	AMLSymbol const *def_method_in_named_obj = NULL;
 	AMLSymbol const *def_method_in_term_list = NULL;
 	AMLSymbol const *def_method_in_term_obj = NULL;
@@ -5773,6 +5774,7 @@ AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_sy
 		if(aml_symbol->component.named_obj.def_method != searched)def_method = get_aml_method(method_name, aml_symbol->component.named_obj.def_method, aml_symbol);
 		break;
 	case aml_object:
+		if(aml_symbol->component.object.name_space_modifier_obj != searched)def_method_in_name_space_modifier_obj = get_aml_method(method_name, aml_symbol->component.object.name_space_modifier_obj, aml_symbol);
 		if(aml_symbol->component.object.named_obj != searched)def_method_in_named_obj = get_aml_method(method_name, aml_symbol->component.object.named_obj, aml_symbol);
 		break;
 	case aml_statement_opcode:
@@ -5796,6 +5798,7 @@ AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_sy
 	else if(def_method_in_def_if_else)return def_method_in_def_if_else;
 	else if(def_method_in_def_scope)return def_method_in_def_scope;
 	else if(def_method_in_def_while)return def_method_in_def_while;
+	else if(def_method_in_name_space_modifier_obj)return def_method_in_name_space_modifier_obj;
 	else if(def_method_in_named_obj)return def_method_in_named_obj;
 	else if(def_method_in_term_list)return def_method_in_term_list;
 	else if(def_method_in_term_obj)return def_method_in_term_obj;
