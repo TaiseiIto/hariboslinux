@@ -3476,6 +3476,7 @@ AMLSymbol *analyse_aml_num_elements(AMLSymbol *parent, AMLSubstring aml)
 	num_elements->string.length = 0;
 	num_elements->type = aml_num_elements;
 	num_elements->component.num_elements.byte_data = analyse_aml_byte_data(num_elements, aml);
+	num_elements->component.num_elements.num_of_elements = *num_elements->component.num_elements.byte_data->string.initial;
 	num_elements->string.length += num_elements->component.num_elements.byte_data->string.length;
 	aml.initial += num_elements->component.num_elements.byte_data->string.length;
 	aml.length -= num_elements->component.num_elements.byte_data->string.length;
@@ -6052,6 +6053,17 @@ AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol)
 	return s5_data_object->component.data_object.def_package;
 }
 
+unsigned char get_aml_s5_pm1a_cnt_slp_typ(AMLSymbol const *aml_symbol)
+{
+	AMLSymbol const *s5_package = get_aml_s5_package(aml_symbol);
+	if(!s5_package->component.def_package.num_elements->component.num_elements.num_of_elements)
+	{
+		ERROR(); // There is no package element.
+		return 0;
+	}
+	return 0;
+}
+
 unsigned int get_aml_symbol_depth(AMLSymbol const *aml_symbol)
 {
 	if(aml_symbol->parent)return get_aml_symbol_depth(aml_symbol->parent) + 1;
@@ -6448,6 +6460,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_null_name:
 		break;
 	case aml_num_elements:
+		printf_serial(" NumOfElements = %#04.2x", aml_symbol->component.num_elements.num_of_elements);
 		break;
 	case aml_obj_reference:
 		break;

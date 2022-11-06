@@ -975,6 +975,7 @@ typedef struct _AMLNotifyValue
 typedef struct _AMLNumElements
 {
 	struct _AMLSymbol *byte_data;
+	unsigned int num_of_elements;
 } AMLNumElements;
 
 typedef struct _AMLObject
@@ -1703,6 +1704,7 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
 AMLSymbol const *get_aml_def_name(char const *name, AMLSymbol const *aml_symbol);
 AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_symbol, AMLSymbol const *searched);
 AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol);
+unsigned char get_aml_s5_pm1a_cnt_slp_typ(AMLSymbol const *aml_symbol);
 unsigned int get_aml_symbol_depth(AMLSymbol const *aml_symbol);
 AMLSubstring get_dsdt_aml(void);
 ACPITableHeader const *get_dsdt_header(void);
