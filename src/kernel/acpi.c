@@ -6189,6 +6189,7 @@ AMLSymbol const *get_aml_previous_method_invocation(AMLSymbol const *aml_symbol,
 	AMLSymbol const *method_invocation_in_object = NULL;
 	AMLSymbol const *method_invocation_in_term_list = NULL;
 	AMLSymbol const *method_invocation_in_term_obj = NULL;
+	AMLSymbol const *method_invocation_in_predicate = NULL;
 	if(!aml_symbol)return NULL;
 	switch(aml_symbol->type)
 	{
@@ -6201,8 +6202,10 @@ AMLSymbol const *get_aml_previous_method_invocation(AMLSymbol const *aml_symbol,
 	case aml_def_if_else:
 		if(aml_symbol->component.def_if_else.def_else != searched)method_invocation_in_def_else = get_aml_previous_method_invocation(aml_symbol->component.def_if_else.def_else, aml_symbol);
 		if(aml_symbol->component.def_if_else.term_list != searched)method_invocation_in_term_list = get_aml_previous_method_invocation(aml_symbol->component.def_if_else.term_list, aml_symbol);
+		if(aml_symbol->component.def_if_else.predicate != searched)method_invocation_in_predicate = get_aml_previous_method_invocation(aml_symbol->component.def_if_else.predicate, aml_symbol);
 		if(method_invocation_in_def_else)return method_invocation_in_def_else;
 		if(method_invocation_in_term_list)return method_invocation_in_term_list;
+		if(method_invocation_in_predicate)return method_invocation_in_predicate;
 		break;
 	case aml_def_method:
 		if(aml_symbol->component.def_method.term_list != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.def_method.term_list, aml_symbol);
@@ -6211,7 +6214,10 @@ AMLSymbol const *get_aml_previous_method_invocation(AMLSymbol const *aml_symbol,
 		if(aml_symbol->component.def_scope.term_list != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.def_scope.term_list, aml_symbol);
 		break;
 	case aml_def_while:
-		if(aml_symbol->component.def_while.term_list != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.def_while.term_list, aml_symbol);
+		if(aml_symbol->component.def_while.term_list != searched)method_invocation_in_term_list = get_aml_previous_method_invocation(aml_symbol->component.def_while.term_list, aml_symbol);
+		if(aml_symbol->component.def_while.predicate != searched)method_invocation_in_predicate = get_aml_previous_method_invocation(aml_symbol->component.def_while.predicate, aml_symbol);
+		if(method_invocation_in_term_list)return method_invocation_in_term_list;
+		if(method_invocation_in_predicate)return method_invocation_in_predicate;
 		break;
 	case aml_expression_opcode:
 		if(aml_symbol->component.expression_opcode.method_invocation != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.expression_opcode.method_invocation, aml_symbol);
