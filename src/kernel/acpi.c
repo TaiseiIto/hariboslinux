@@ -5018,6 +5018,46 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	term_obj->component.term_obj.object = NULL;
 	term_obj->component.term_obj.statement_opcode = NULL;
 	term_obj->component.term_obj.expression_opcode = NULL;
+	// Undefined method invocation arglist addition
+	switch(*aml.initial)
+	{
+		AMLSymbol const *method_invocation;
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_BUFFER_OP:
+	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_LOCAL_0_OP:
+	case AML_BYTE_LOCAL_1_OP:
+	case AML_BYTE_LOCAL_2_OP:
+	case AML_BYTE_LOCAL_3_OP:
+	case AML_BYTE_LOCAL_4_OP:
+	case AML_BYTE_LOCAL_5_OP:
+	case AML_BYTE_LOCAL_6_OP:
+	case AML_BYTE_LOCAL_7_OP:
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_STRING_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
+	case AML_BYTE_ZERO_OP:
+		ERROR();
+		printf_serial("Extra term arg by undefined method invocation.\n");
+		method_invocation = get_aml_previous_method_invocation(term_obj, NULL);
+		if(method_invocation)
+		{
+			printf_serial("Previous method invocation \"%s\"\n", method_invocation->component.method_invocation.name_string->component.name_string.string);
+		}
+		break;
+	default:
+		break;
+	}
+	// Analyse term_obj
 	switch(*aml.initial)
 	{
 	case AML_BYTE_ADD_OP:
@@ -6133,6 +6173,96 @@ AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_sy
 	else if(def_method_in_statement_opcode)return def_method_in_statement_opcode;
 	else if(aml_symbol->parent != searched)return get_aml_method(method_name, aml_symbol->parent, aml_symbol);
 	else return NULL;
+}
+
+AMLSymbol const *get_aml_previous_method_invocation(AMLSymbol const *aml_symbol, AMLSymbol const *searched)
+{
+	AMLSymbol const *method_invocation = NULL;
+	AMLSymbol const *method_invocation_in_def_device = NULL;
+	AMLSymbol const *method_invocation_in_def_else = NULL;
+	AMLSymbol const *method_invocation_in_def_if_else = NULL;
+	AMLSymbol const *method_invocation_in_def_method = NULL;
+	AMLSymbol const *method_invocation_in_def_while = NULL;
+	AMLSymbol const *method_invocation_in_expression_opcode = NULL;
+	AMLSymbol const *method_invocation_in_name_space_modifier_obj = NULL;
+	AMLSymbol const *method_invocation_in_named_obj = NULL;
+	AMLSymbol const *method_invocation_in_object = NULL;
+	AMLSymbol const *method_invocation_in_term_list = NULL;
+	AMLSymbol const *method_invocation_in_term_obj = NULL;
+	if(!aml_symbol)return NULL;
+	switch(aml_symbol->type)
+	{
+	case aml_def_device:
+		if(aml_symbol->component.def_device.term_list != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.def_device.term_list, aml_symbol);
+		break;
+	case aml_def_else:
+		if(aml_symbol->component.def_else.term_list != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.def_else.term_list, aml_symbol);
+		break;
+	case aml_def_if_else:
+		if(aml_symbol->component.def_if_else.def_else != searched)method_invocation_in_def_else = get_aml_previous_method_invocation(aml_symbol->component.def_if_else.def_else, aml_symbol);
+		if(aml_symbol->component.def_if_else.term_list != searched)method_invocation_in_term_list = get_aml_previous_method_invocation(aml_symbol->component.def_if_else.term_list, aml_symbol);
+		if(method_invocation_in_def_else)return method_invocation_in_def_else;
+		if(method_invocation_in_term_list)return method_invocation_in_term_list;
+		break;
+	case aml_def_method:
+		if(aml_symbol->component.def_method.term_list != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.def_method.term_list, aml_symbol);
+		break;
+	case aml_def_scope:
+		if(aml_symbol->component.def_scope.term_list != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.def_scope.term_list, aml_symbol);
+		break;
+	case aml_def_while:
+		if(aml_symbol->component.def_while.term_list != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.def_while.term_list, aml_symbol);
+		break;
+	case aml_expression_opcode:
+		if(aml_symbol->component.expression_opcode.method_invocation != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.expression_opcode.method_invocation, aml_symbol);
+		break;
+	case aml_method_invocation:
+		return aml_symbol;
+	case aml_name_space_modifier_obj:
+		if(aml_symbol->component.name_space_modifier_obj.def_scope != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.name_space_modifier_obj.def_scope, aml_symbol);
+		break;
+	case aml_named_obj:
+		if(aml_symbol->component.named_obj.def_device != searched)method_invocation_in_def_device = get_aml_previous_method_invocation(aml_symbol->component.named_obj.def_device, aml_symbol);
+		if(aml_symbol->component.named_obj.def_method != searched)method_invocation_in_def_method = get_aml_previous_method_invocation(aml_symbol->component.named_obj.def_method, aml_symbol);
+		if(method_invocation_in_def_device)return method_invocation_in_def_device;
+		if(method_invocation_in_def_method)return method_invocation_in_def_method;
+		break;
+	case aml_object:
+		if(aml_symbol->component.object.name_space_modifier_obj != searched)method_invocation_in_name_space_modifier_obj = get_aml_previous_method_invocation(aml_symbol->component.object.name_space_modifier_obj, aml_symbol);
+		if(aml_symbol->component.object.named_obj != searched)method_invocation_in_named_obj = get_aml_previous_method_invocation(aml_symbol->component.object.named_obj, aml_symbol);
+		if(method_invocation_in_name_space_modifier_obj)return method_invocation_in_name_space_modifier_obj;
+		if(method_invocation_in_named_obj)return method_invocation_in_named_obj;
+		break;
+	case aml_statement_opcode:
+		if(aml_symbol->component.statement_opcode.def_if_else != searched)method_invocation_in_def_if_else = get_aml_previous_method_invocation(aml_symbol->component.statement_opcode.def_if_else, aml_symbol);
+		if(aml_symbol->component.statement_opcode.def_while != searched)method_invocation_in_def_while = get_aml_previous_method_invocation(aml_symbol->component.statement_opcode.def_while, aml_symbol);
+		if(method_invocation_in_def_if_else)return method_invocation_in_def_if_else;
+		if(method_invocation_in_def_while)return method_invocation_in_def_while;
+		break;
+	case aml_term_arg:
+		if(aml_symbol->component.term_arg.expression_opcode != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.term_arg.expression_opcode, aml_symbol);
+		break;
+	case aml_term_arg_list:
+		if(aml_symbol->component.term_arg_list.term_arg != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.term_arg_list.term_arg, aml_symbol);
+		break;
+	case aml_term_list:
+		if(aml_symbol->component.term_list.term_list != searched)method_invocation_in_term_list = get_aml_previous_method_invocation(aml_symbol->component.term_list.term_list, aml_symbol);
+		if(aml_symbol->component.term_list.term_obj != searched)method_invocation_in_term_obj = get_aml_previous_method_invocation(aml_symbol->component.term_list.term_obj, aml_symbol);
+		if(method_invocation_in_term_list)return method_invocation_in_term_list;
+		if(method_invocation_in_term_obj)return method_invocation_in_term_obj;
+		break;
+	case aml_term_obj:
+		if(aml_symbol->component.term_obj.expression_opcode != searched)method_invocation_in_expression_opcode = get_aml_previous_method_invocation(aml_symbol->component.term_obj.expression_opcode, aml_symbol);
+		if(aml_symbol->component.term_obj.object != searched)method_invocation_in_object = get_aml_previous_method_invocation(aml_symbol->component.term_obj.object, aml_symbol);
+		if(method_invocation_in_expression_opcode)return method_invocation_in_expression_opcode;
+		if(method_invocation_in_object)return method_invocation_in_object;
+		break;
+	default:
+		break;
+	}
+	if(method_invocation)return method_invocation;
+	if(aml_symbol->parent != searched)return get_aml_previous_method_invocation(aml_symbol->parent, aml_symbol);
+	return NULL;
 }
 
 AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol)
