@@ -644,6 +644,11 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_serial("fadt->pm1a_evt_blk = %#010.8x\n", fadt->pm1a_evt_blk);
 					printf_serial("fadt->pm1b_evt_blk = %#010.8x\n", fadt->pm1b_evt_blk);
 					printf_serial("fadt->pm1a_cnt_blk = %#010.8x\n", fadt->pm1a_cnt_blk);
+					if(!fadt->pm1a_cnt_blk)
+					{
+						ERROR(); // There is no valid address of pm1a_cnt_blk
+						break;
+					}
 					printf_serial("fadt->pm1b_cnt_blk = %#010.8x\n", fadt->pm1b_cnt_blk);
 					printf_serial("fadt->pm2_cnt_blk = %#010.8x\n", fadt->pm2_cnt_blk);
 					printf_serial("fadt->pm_tmr_blk = %#010.8x\n", fadt->pm_tmr_blk);
@@ -700,7 +705,15 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					if(dsdt_aml_syntax_tree->string.length == dsdt_aml.length)
 					{
 						unsigned short pm1_cnt_slp_typ = get_aml_s5_pm1_cnt_slp_typ(dsdt_aml_syntax_tree);
-						printf_serial("pm1_cnt_slp_typ = %#06.4x\n", pm1_cnt_slp_typ);
+						unsigned short pm1a_cnt_slp_typ = pm1_cnt_slp_typ & 0x00ff;
+						unsigned short pm1b_cnt_slp_typ = pm1_cnt_slp_typ >> 8;
+						printf_serial("pm1a_cnt_slp_typ = %#06.4x\n", pm1a_cnt_slp_typ);
+						printf_serial("pm1b_cnt_slp_typ = %#06.4x\n", pm1b_cnt_slp_typ);
+						// Shutdown command
+						outw(fadt->pm1a_cnt_blk, pm1a_cnt_slp_typ << 10 | 0x2000);
+						if(fadt->pm1b_cnt_blk)outw(fadt->pm1b_cnt_blk, pm1b_cnt_slp_typ << 10 | 0x2000);
+						// Shutdown wait
+						while(true);
 					}
 					else
 					{
