@@ -180,6 +180,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_byte_list_name = "ByteList";
 	static char const * const aml_byte_prefix_name = "BytePrefix";
 	static char const * const aml_computational_data_name = "ComputationalData";
+	static char const * const aml_cond_ref_of_op_name = "CondRefOfOp";
 	static char const * const aml_const_obj_name = "ConstObj";
 	static char const * const aml_create_dword_field_op_name = "CreateDWordFieldOp";
 	static char const * const aml_data_object_name = "DataObject";
@@ -387,6 +388,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_byte_prefix_name;
 	case aml_computational_data:
 		return aml_computational_data_name;
+	case aml_cond_ref_of_op:
+		return aml_cond_ref_of_op_name;
 	case aml_const_obj:
 		return aml_const_obj_name;
 	case aml_create_dword_field_op:
@@ -1075,6 +1078,20 @@ AMLSymbol *analyse_aml_computational_data(AMLSymbol *parent, AMLSubstring aml)
 	return computational_data;
 }
 
+// <cond_ref_of_op> := <ext_op_prefix> <cond_ref_of_op_suffix>
+AMLSymbol *analyse_aml_cond_ref_of_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *cond_ref_of_op = malloc(sizeof(*cond_ref_of_op));
+	cond_ref_of_op->parent = parent;
+	cond_ref_of_op->string.initial = aml.initial;
+	cond_ref_of_op->string.length = 0;
+	cond_ref_of_op->type = aml_cond_ref_of_op;
+	cond_ref_of_op->component.cond_ref_of_op.ext_op_prefix = NULL;
+	cond_ref_of_op->component.cond_ref_of_op.cond_ref_of_op_suffix = NULL;
+	ERROR(); // Unimplemented
+	return cond_ref_of_op;
+}
+
 // <const_obj> := <zero_op> | <one_op> | <ones_op>
 AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -1421,10 +1438,18 @@ AMLSymbol *analyse_aml_def_cond_ref_of(AMLSymbol *parent, AMLSubstring aml)
 	def_cond_ref_of->string.initial = aml.initial;
 	def_cond_ref_of->string.length = 0;
 	def_cond_ref_of->type = aml_def_cond_ref_of;
-	def_cond_ref_of->component.def_cond_ref_of.cond_ref_of_op = NULL;
-	def_cond_ref_of->component.def_cond_ref_of.super_name = NULL;
-	def_cond_ref_of->component.def_cond_ref_of.target = NULL;
-	ERROR(); // Unimplemented
+	def_cond_ref_of->component.def_cond_ref_of.cond_ref_of_op = analyse_aml_cond_ref_of_op(def_cond_ref_of, aml);
+	def_cond_ref_of->string.length += def_cond_ref_of->component.def_cond_ref_of.cond_ref_of_op->string.length;
+	aml.initial += def_cond_ref_of->component.def_cond_ref_of.cond_ref_of_op->string.length;
+	aml.length -= def_cond_ref_of->component.def_cond_ref_of.cond_ref_of_op->string.length;
+	def_cond_ref_of->component.def_cond_ref_of.super_name = analyse_aml_super_name(def_cond_ref_of, aml);
+	def_cond_ref_of->string.length += def_cond_ref_of->component.def_cond_ref_of.super_name->string.length;
+	aml.initial += def_cond_ref_of->component.def_cond_ref_of.super_name->string.length;
+	aml.length -= def_cond_ref_of->component.def_cond_ref_of.super_name->string.length;
+	def_cond_ref_of->component.def_cond_ref_of.target = analyse_aml_target(def_cond_ref_of, aml);
+	def_cond_ref_of->string.length += def_cond_ref_of->component.def_cond_ref_of.target->string.length;
+	aml.initial += def_cond_ref_of->component.def_cond_ref_of.target->string.length;
+	aml.length -= def_cond_ref_of->component.def_cond_ref_of.target->string.length;
 	return def_cond_ref_of;
 }
 
@@ -5219,6 +5244,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.computational_data.revision_op)delete_aml_symbol(aml_symbol->component.computational_data.revision_op);
 		if(aml_symbol->component.computational_data.def_buffer)delete_aml_symbol(aml_symbol->component.computational_data.def_buffer);
 		break;
+	case aml_cond_ref_of_op:
+		if(aml_symbol->component.cond_ref_of_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.cond_ref_of_op.ext_op_prefix);
+		if(aml_symbol->component.cond_ref_of_op.cond_ref_of_op_suffix)delete_aml_symbol(aml_symbol->component.cond_ref_of_op.cond_ref_of_op_suffix);
+		break;
 	case aml_const_obj:
 		if(aml_symbol->component.const_obj.zero_op)delete_aml_symbol(aml_symbol->component.const_obj.zero_op);
 		if(aml_symbol->component.const_obj.one_op)delete_aml_symbol(aml_symbol->component.const_obj.one_op);
@@ -6393,6 +6422,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_computational_data:
 		break;
+	case aml_cond_ref_of_op:
+		break;
 	case aml_const_obj:
 		break;
 	case aml_create_dword_field_op:
@@ -6804,6 +6835,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.computational_data.const_obj)print_aml_symbol(aml_symbol->component.computational_data.const_obj);
 		if(aml_symbol->component.computational_data.revision_op)print_aml_symbol(aml_symbol->component.computational_data.revision_op);
 		if(aml_symbol->component.computational_data.def_buffer)print_aml_symbol(aml_symbol->component.computational_data.def_buffer);
+		break;
+	case aml_cond_ref_of_op:
+		if(aml_symbol->component.cond_ref_of_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.cond_ref_of_op.ext_op_prefix);
+		if(aml_symbol->component.cond_ref_of_op.cond_ref_of_op_suffix)print_aml_symbol(aml_symbol->component.cond_ref_of_op.cond_ref_of_op_suffix);
 		break;
 	case aml_const_obj:
 		if(aml_symbol->component.const_obj.zero_op)print_aml_symbol(aml_symbol->component.const_obj.zero_op);

@@ -198,6 +198,7 @@ typedef enum _AMLSymbolType
 	aml_byte_list,
 	aml_byte_prefix,
 	aml_computational_data,
+	aml_cond_ref_of_op,
 	aml_const_obj,
 	aml_create_dword_field_op,
 	aml_data_object,
@@ -433,6 +434,12 @@ typedef struct _AMLComputationalData
 	struct _AMLSymbol *revision_op;
 	struct _AMLSymbol *def_buffer;
 } AMLComputationalData;
+
+typedef struct _AMLCondRefOfOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *cond_ref_of_op_suffix;
+} AMLCondRefOfOp;
 
 typedef struct _AMLConstObj
 {
@@ -1222,6 +1229,7 @@ typedef union _AMLComponent
 	AMLByteIndex byte_index;
 	AMLByteList byte_list;
 	AMLComputationalData computational_data;
+	AMLCondRefOfOp cond_ref_of_op;
 	AMLConstObj const_obj;
 	AMLDataObject data_object;
 	AMLDataRefObject data_ref_object;
@@ -1379,6 +1387,8 @@ AMLSymbol *analyse_aml_byte_list(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_byte_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <computational_data> := <byte_const> | <word_const> | <dword_const> | <qword_const> | <string> | <const_obj> | <revision_op> | <def_buffer>
 AMLSymbol *analyse_aml_computatinoal_data(AMLSymbol *parent, AMLSubstring aml);
+// <cond_ref_of_op> := <ext_op_prefix> <cond_ref_of_op_suffix>
+AMLSymbol *analyse_aml_cond_ref_of_op(AMLSymbol *parent, AMLSubstring aml);
 // <const_obj> := <zero_op> | <one_op> | <ones_op>
 AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml);
 // <create_dword_field_op> := AML_BYTE_CREATE_DWORD_FIELD_OP
