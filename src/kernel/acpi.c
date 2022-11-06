@@ -3631,6 +3631,7 @@ AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_QWORD_PREFIX:
 	case AML_BYTE_STRING_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
+	case AML_BYTE_ZERO_OP:
 		package_element->component.package_element.data_ref_object = analyse_aml_data_ref_object(package_element, aml);
 		package_element->string.length += package_element->component.package_element.data_ref_object->string.length;
 		aml.initial += package_element->component.package_element.data_ref_object->string.length;
@@ -3638,7 +3639,6 @@ AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	case AML_BYTE_DUAL_NAME_PREFIX:
 	case AML_BYTE_MULTI_NAME_PREFIX:
-	case AML_BYTE_NULL_NAME:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
 	case AML_BYTE_ROOT_CHAR:
 		package_element->component.package_element.name_string = analyse_aml_name_string(package_element, aml);
