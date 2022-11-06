@@ -194,6 +194,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_and_name = "DefAnd";
 	static char const * const aml_def_break_name = "DefBreak";
 	static char const * const aml_def_buffer_name = "DefBuffer";
+	static char const * const aml_def_cond_ref_of_name = "DefCondRefOf";
 	static char const * const aml_def_create_dword_field_name = "DefCreateDWordField";
 	static char const * const aml_def_decrement_name = "DefDecrement";
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
@@ -414,6 +415,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_break_name;
 	case aml_def_buffer:
 		return aml_def_buffer_name;
+	case aml_def_cond_ref_of:
+		return aml_def_cond_ref_of_name;
 	case aml_def_create_dword_field:
 		return aml_def_create_dword_field_name;
 	case aml_def_decrement:
@@ -714,11 +717,9 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_word_prefix_name;
 	case aml_zero_op:
 		return aml_zero_op_name;
-	default:
-		ERROR(); // Invalid AML symbol type
-		printf_serial("aml_symbol_type = %#010.8x\n", aml_symbol_type);
-		return NULL;
 	}
+	ERROR(); // Invalid aml_symbol->type
+	return NULL;
 }
 
 // <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
@@ -1410,6 +1411,21 @@ AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml)
 		print_aml_symbol(def_buffer);
 	}
 	return def_buffer;
+}
+
+// <def_cond_ref_of> := <cond_ref_of_op> <super_name> <target>
+AMLSymbol *analyse_aml_def_cond_ref_of(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_cond_ref_of = malloc(sizeof(*def_cond_ref_of));
+	def_cond_ref_of->parent = parent;
+	def_cond_ref_of->string.initial = aml.initial;
+	def_cond_ref_of->string.length = 0;
+	def_cond_ref_of->type = aml_def_cond_ref_of;
+	def_cond_ref_of->component.def_cond_ref_of.cond_ref_of_op = NULL;
+	def_cond_ref_of->component.def_cond_ref_of.super_name = NULL;
+	def_cond_ref_of->component.def_cond_ref_of.target = NULL;
+	ERROR(); // Unimplemented
+	return def_cond_ref_of;
 }
 
 // <def_create_dword_field> := <create_dword_field_op> <source_buff> <byte_index> <name_string>
@@ -5258,6 +5274,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_buffer.buffer_size)delete_aml_symbol(aml_symbol->component.def_buffer.buffer_size);
 		if(aml_symbol->component.def_buffer.byte_list)delete_aml_symbol(aml_symbol->component.def_buffer.byte_list);
 		break;
+	case aml_def_cond_ref_of:
+		if(aml_symbol->component.def_cond_ref_of.cond_ref_of_op)delete_aml_symbol(aml_symbol->component.def_cond_ref_of.cond_ref_of_op);
+		if(aml_symbol->component.def_cond_ref_of.super_name)delete_aml_symbol(aml_symbol->component.def_cond_ref_of.super_name);
+		if(aml_symbol->component.def_cond_ref_of.target)delete_aml_symbol(aml_symbol->component.def_cond_ref_of.target);
+		break;
 	case aml_def_create_dword_field:
 		if(aml_symbol->component.def_create_dword_field.create_dword_field_op)delete_aml_symbol(aml_symbol->component.def_create_dword_field.create_dword_field_op);
 		if(aml_symbol->component.def_create_dword_field.source_buff)delete_aml_symbol(aml_symbol->component.def_create_dword_field.source_buff);
@@ -6400,6 +6421,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_buffer:
 		break;
+	case aml_def_cond_ref_of:
+		break;
 	case aml_def_create_dword_field:
 		break;
 	case aml_def_decrement:
@@ -6836,6 +6859,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_buffer.pkg_length)print_aml_symbol(aml_symbol->component.def_buffer.pkg_length);
 		if(aml_symbol->component.def_buffer.buffer_size)print_aml_symbol(aml_symbol->component.def_buffer.buffer_size);
 		if(aml_symbol->component.def_buffer.byte_list)print_aml_symbol(aml_symbol->component.def_buffer.byte_list);
+		break;
+	case aml_def_cond_ref_of:
+		if(aml_symbol->component.def_cond_ref_of.cond_ref_of_op)print_aml_symbol(aml_symbol->component.def_cond_ref_of.cond_ref_of_op);
+		if(aml_symbol->component.def_cond_ref_of.super_name)print_aml_symbol(aml_symbol->component.def_cond_ref_of.super_name);
+		if(aml_symbol->component.def_cond_ref_of.target)print_aml_symbol(aml_symbol->component.def_cond_ref_of.target);
 		break;
 	case aml_def_create_dword_field:
 		if(aml_symbol->component.def_create_dword_field.create_dword_field_op)print_aml_symbol(aml_symbol->component.def_create_dword_field.create_dword_field_op);
