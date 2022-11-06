@@ -699,8 +699,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					printf_serial("\n");
 					if(dsdt_aml_syntax_tree->string.length == dsdt_aml.length)
 					{
-						AMLSymbol const *s5_package = get_aml_s5_package(dsdt_aml_syntax_tree);
-						printf_serial("s5_package = %p\n", s5_package);
+						unsigned short pm1_cnt_slp_typ = get_aml_s5_pm1_cnt_slp_typ(dsdt_aml_syntax_tree);
+						printf_serial("pm1_cnt_slp_typ = %#06.4x\n", pm1_cnt_slp_typ);
 					}
 					else
 					{

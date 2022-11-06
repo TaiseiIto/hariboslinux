@@ -6053,15 +6053,137 @@ AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol)
 	return s5_data_object->component.data_object.def_package;
 }
 
-unsigned char get_aml_s5_pm1a_cnt_slp_typ(AMLSymbol const *aml_symbol)
+unsigned short get_aml_s5_pm1_cnt_slp_typ(AMLSymbol const *aml_symbol)
 {
+	unsigned char pm1a_cnt_slp_typ = 0;
+	unsigned char pm1b_cnt_slp_typ = 0;
 	AMLSymbol const *s5_package = get_aml_s5_package(aml_symbol);
+	AMLSymbol const *s5_package_element_list = s5_package->component.def_package.package_element_list;
+	AMLSymbol const *s5_pm1a_cnt_slp_typ_package_element = s5_package_element_list->component.package_element_list.package_element;
+	AMLSymbol const *s5_pm1a_cnt_slp_typ_data_ref_object = s5_pm1a_cnt_slp_typ_package_element->component.package_element.data_ref_object;
+	AMLSymbol const *s5_pm1a_cnt_slp_typ_data_object = s5_pm1a_cnt_slp_typ_data_ref_object->component.data_ref_object.data_object;
+	AMLSymbol const *s5_pm1a_cnt_slp_typ_computational_data = s5_pm1a_cnt_slp_typ_data_object->component.data_object.computational_data;
 	if(!s5_package->component.def_package.num_elements->component.num_elements.num_of_elements)
 	{
-		ERROR(); // There is no package element.
+		ERROR();
 		return 0;
 	}
-	return 0;
+	if(!s5_package_element_list)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_pm1a_cnt_slp_typ_package_element)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_pm1a_cnt_slp_typ_data_ref_object)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_pm1a_cnt_slp_typ_data_object)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_pm1a_cnt_slp_typ_computational_data)
+	{
+		ERROR();
+		return 0;
+	}
+	if(s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.byte_const)
+	{
+		pm1a_cnt_slp_typ = s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.byte_const->component.byte_const.value;
+	}
+	else if(s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.word_const)
+	{
+		return s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.word_const->component.word_const.value;
+	}
+	else if(s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.dword_const)
+	{
+		return s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.dword_const->component.dword_const.value;
+	}
+	else if(s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.qword_const)
+	{
+		return s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.qword_const->component.qword_const.value;
+	}
+	else if(s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.const_obj)
+	{
+		AMLSymbol const *s5_pm1a_cnt_slp_typ_const_obj = s5_pm1a_cnt_slp_typ_computational_data->component.computational_data.const_obj;
+		if(s5_pm1a_cnt_slp_typ_const_obj->component.const_obj.zero_op)pm1a_cnt_slp_typ = 0x00;
+		if(s5_pm1a_cnt_slp_typ_const_obj->component.const_obj.one_op)pm1a_cnt_slp_typ = 0x01;
+		if(s5_pm1a_cnt_slp_typ_const_obj->component.const_obj.ones_op)pm1a_cnt_slp_typ = 0xff;
+	}
+	else
+	{
+		ERROR(); // Unimplemented pattern
+		return 0;
+	}
+	AMLSymbol const *s5_pm1b_cnt_slp_typ_package_element = s5_package_element_list->component.package_element_list.package_element_list->component.package_element_list.package_element;
+	AMLSymbol const *s5_pm1b_cnt_slp_typ_data_ref_object = s5_pm1b_cnt_slp_typ_package_element->component.package_element.data_ref_object;
+	AMLSymbol const *s5_pm1b_cnt_slp_typ_data_object = s5_pm1b_cnt_slp_typ_data_ref_object->component.data_ref_object.data_object;
+	AMLSymbol const *s5_pm1b_cnt_slp_typ_computational_data = s5_pm1b_cnt_slp_typ_data_object->component.data_object.computational_data;
+	if(!s5_package->component.def_package.num_elements->component.num_elements.num_of_elements)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_package_element_list)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_pm1b_cnt_slp_typ_package_element)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_pm1b_cnt_slp_typ_data_ref_object)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_pm1b_cnt_slp_typ_data_object)
+	{
+		ERROR();
+		return 0;
+	}
+	if(!s5_pm1b_cnt_slp_typ_computational_data)
+	{
+		ERROR();
+		return 0;
+	}
+	if(s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.byte_const)
+	{
+		pm1b_cnt_slp_typ = s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.byte_const->component.byte_const.value;
+	}
+	else if(s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.word_const)
+	{
+		pm1b_cnt_slp_typ = s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.word_const->component.word_const.value;
+	}
+	else if(s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.dword_const)
+	{
+		pm1b_cnt_slp_typ = s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.dword_const->component.dword_const.value;
+	}
+	else if(s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.qword_const)
+	{
+		pm1b_cnt_slp_typ = s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.qword_const->component.qword_const.value;
+	}
+	else if(s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.const_obj)
+	{
+		AMLSymbol const *s5_pm1b_cnt_slp_typ_const_obj = s5_pm1b_cnt_slp_typ_computational_data->component.computational_data.const_obj;
+		if(s5_pm1b_cnt_slp_typ_const_obj->component.const_obj.zero_op)pm1b_cnt_slp_typ = 0x00;
+		if(s5_pm1b_cnt_slp_typ_const_obj->component.const_obj.one_op)pm1b_cnt_slp_typ = 0x01;
+		if(s5_pm1b_cnt_slp_typ_const_obj->component.const_obj.ones_op)pm1b_cnt_slp_typ = 0xff;
+	}
+	else
+	{
+		ERROR(); // Unimplemented pattern
+		return 0;
+	}
+	return (unsigned short)pm1b_cnt_slp_typ << 8 | (unsigned short)pm1a_cnt_slp_typ;
 }
 
 unsigned int get_aml_symbol_depth(AMLSymbol const *aml_symbol)
