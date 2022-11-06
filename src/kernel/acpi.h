@@ -1702,6 +1702,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
 AMLSymbol const *get_aml_def_name(char const *name, AMLSymbol const *aml_symbol);
 AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_symbol, AMLSymbol const *searched);
+AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol);
 unsigned int get_aml_symbol_depth(AMLSymbol const *aml_symbol);
 AMLSubstring get_dsdt_aml(void);
 ACPITableHeader const *get_dsdt_header(void);

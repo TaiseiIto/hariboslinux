@@ -6041,6 +6041,17 @@ AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_sy
 	else return NULL;
 }
 
+AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol)
+{
+	AMLSymbol const *s5_def_name = get_aml_def_name("_S5_", aml_symbol);
+	AMLSymbol const *s5_data_ref_object = s5_def_name->component.def_name.data_ref_object;
+	AMLSymbol const *s5_data_object;
+	if(!s5_data_ref_object)return NULL;
+	s5_data_object = s5_data_ref_object->component.data_ref_object.data_object;
+	if(!s5_data_object)return NULL;
+	return s5_data_object->component.data_object.def_package;
+}
+
 unsigned int get_aml_symbol_depth(AMLSymbol const *aml_symbol)
 {
 	if(aml_symbol->parent)return get_aml_symbol_depth(aml_symbol->parent) + 1;
