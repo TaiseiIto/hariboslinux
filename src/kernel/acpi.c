@@ -6239,6 +6239,9 @@ AMLSymbol const *get_aml_previous_method_invocation(AMLSymbol const *aml_symbol,
 		if(method_invocation_in_name_space_modifier_obj)return method_invocation_in_name_space_modifier_obj;
 		if(method_invocation_in_named_obj)return method_invocation_in_named_obj;
 		break;
+	case aml_predicate:
+		if(aml_symbol->component.predicate.term_arg != searched)method_invocation = get_aml_previous_method_invocation(aml_symbol->component.predicate.term_arg, aml_symbol);
+		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_if_else != searched)method_invocation_in_def_if_else = get_aml_previous_method_invocation(aml_symbol->component.statement_opcode.def_if_else, aml_symbol);
 		if(aml_symbol->component.statement_opcode.def_while != searched)method_invocation_in_def_while = get_aml_previous_method_invocation(aml_symbol->component.statement_opcode.def_while, aml_symbol);
