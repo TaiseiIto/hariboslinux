@@ -6733,7 +6733,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		printf_serial(" '%c'", *aml_symbol->string.initial);
 		break;
 	case aml_ascii_char_list:
-		printf_serial(" \"%.*s\"", aml_symbol->string.length, *aml_symbol->string.initial);
+		printf_serial(" \"%.*s\"", aml_symbol->string.length, aml_symbol->string.initial);
 		break;
 	case aml_break_op:
 		break;
