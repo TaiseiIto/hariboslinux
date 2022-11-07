@@ -4882,6 +4882,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_STRING_PREFIX:
 	case AML_BYTE_WORD_PREFIX:
 	case AML_BYTE_ZERO_OP:
+		printf_serial("Extra term arg by undefined method invocation.\n");
 		expression_opcode = term_list->component.term_list.term_obj->component.term_obj.expression_opcode;
 		if(!expression_opcode)
 		{
@@ -4904,9 +4905,6 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 		term_arg_list_root = method_invocation->component.method_invocation.term_arg_list;
 		term_arg_list_tail = term_arg_list_root;
 		while(term_arg_list_tail->component.term_arg_list.term_arg_list)term_arg_list_tail = term_arg_list_tail->component.term_arg_list.term_arg_list;
-		printf_serial("Undefined method \"%s\" invocation arglist addition.\n", method_name);
-		printf_serial("term_arg_list_root = %p\n", term_arg_list_root);
-		printf_serial("term_arg_list_tail = %p\n", term_arg_list_tail);
 		while
 		(
 			*aml.initial == AML_BYTE_ARG_0_OP ||
@@ -5075,12 +5073,9 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 			ERROR(); // method_invocation is not adjacent with term_obj on AML byte code.
 			break;
 		}
-		printf_serial("Previous method invocation \"%s\"\n", invoked_method_name);
 		term_arg_list_root = method_invocation->component.method_invocation.term_arg_list;
 		term_arg_list_tail = term_arg_list_root;
 		while(term_arg_list_tail->component.term_arg_list.term_arg_list)term_arg_list_tail = term_arg_list_tail->component.term_arg_list.term_arg_list;
-		printf_serial("term_arg_list_root = %p\n", term_arg_list_root);
-		printf_serial("term_arg_list_tail = %p\n", term_arg_list_tail);
 		while
 		(
 			*aml.initial == AML_BYTE_ARG_0_OP ||
