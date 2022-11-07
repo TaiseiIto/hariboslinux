@@ -198,6 +198,7 @@ typedef enum _AMLSymbolType
 	aml_byte_list,
 	aml_byte_prefix,
 	aml_computational_data,
+	aml_concat_op,
 	aml_cond_ref_of_op,
 	aml_cond_ref_of_op_suffix,
 	aml_const_obj,
@@ -1397,6 +1398,8 @@ AMLSymbol *analyse_aml_byte_list(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_byte_prefix(AMLSymbol *parent, AMLSubstring aml);
 // <computational_data> := <byte_const> | <word_const> | <dword_const> | <qword_const> | <string> | <const_obj> | <revision_op> | <def_buffer>
 AMLSymbol *analyse_aml_computatinoal_data(AMLSymbol *parent, AMLSubstring aml);
+// <concat_op> := AML_BYTE_CONCAT_OP
+AMLSymbol *analyse_aml_concat_op(AMLSymbol *parent, AMLSubstring aml);
 // <cond_ref_of_op> := <ext_op_prefix> <cond_ref_of_op_suffix>
 AMLSymbol *analyse_aml_cond_ref_of_op(AMLSymbol *parent, AMLSubstring aml);
 // <cond_ref_of_op_suffix> := AML_BYTE_COND_REF_OF_OP
