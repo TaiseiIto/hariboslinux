@@ -203,6 +203,7 @@ typedef enum _AMLSymbolType
 	aml_cond_ref_of_op_suffix,
 	aml_const_obj,
 	aml_create_dword_field_op,
+	aml_data,
 	aml_data_object,
 	aml_data_ref_object,
 	aml_debug_obj,
@@ -450,6 +451,11 @@ typedef struct _AMLConstObj
 	struct _AMLSymbol *one_op;
 	struct _AMLSymbol *ones_op;
 } AMLConstObj;
+
+typedef struct _AMLData
+{
+	struct _AMLSymbol *term_arg;
+} AMLData;
 
 typedef struct _AMLDataObject
 {
@@ -1241,6 +1247,7 @@ typedef union _AMLComponent
 	AMLComputationalData computational_data;
 	AMLCondRefOfOp cond_ref_of_op;
 	AMLConstObj const_obj;
+	AMLData data;
 	AMLDataObject data_object;
 	AMLDataRefObject data_ref_object;
 	AMLDebugObj debug_obj;
@@ -1408,6 +1415,8 @@ AMLSymbol *analyse_aml_cond_ref_of_op_suffix(AMLSymbol *parent, AMLSubstring aml
 AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml);
 // <create_dword_field_op> := AML_BYTE_CREATE_DWORD_FIELD_OP
 AMLSymbol *analyse_aml_create_dword_field_op(AMLSymbol *parent, AMLSubstring aml);
+// <data> := <term_arg>
+AMLSymbol *analyse_aml_data(AMLSymbol *parent, AMLSubstring aml);
 // <data_object> := <computational_data> | <def_package> | <def_var_package>
 AMLSymbol *analyse_aml_data_object(AMLSymbol *parent, AMLSubstring aml);
 // <data_ref_object> := <data_object> | <object_reference>

@@ -185,6 +185,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_cond_ref_of_op_suffix_name = "CondRefOfOpSuffix";
 	static char const * const aml_const_obj_name = "ConstObj";
 	static char const * const aml_create_dword_field_op_name = "CreateDWordFieldOp";
+	static char const * const aml_data_name = "Data";
 	static char const * const aml_data_object_name = "DataObject";
 	static char const * const aml_data_ref_object_name = "DataRefObject";
 	static char const * const aml_debug_obj_name = "DebugObj";
@@ -401,6 +402,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_const_obj_name;
 	case aml_create_dword_field_op:
 		return aml_create_dword_field_op_name;
+	case aml_data:
+		return aml_data_name;
 	case aml_data_object:
 		return aml_data_object_name;
 	case aml_data_ref_object:
@@ -1181,6 +1184,21 @@ AMLSymbol *analyse_aml_create_dword_field_op(AMLSymbol *parent, AMLSubstring aml
 	return create_dword_field_op;
 }
 
+// <data> := <term_arg>
+AMLSymbol *analyse_aml_data(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *data = malloc(sizeof(*data));
+	data->parent = parent;
+	data->string.initial = aml.initial;
+	data->string.length = 0;
+	data->type = aml_data;
+	data->component.data.term_arg = analyse_aml_term_arg(data, aml);
+	data->string.length += data->component.data.term_arg->string.length;
+	aml.initial += data->component.data.term_arg->string.length;
+	aml.length -= data->component.data.term_arg->string.length;
+	return data;
+}
+
 // <data_object> := <computational_data> | <def_package> | <def_var_package>
 AMLSymbol *analyse_aml_data_object(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -1480,8 +1498,17 @@ AMLSymbol *analyse_aml_def_concat(AMLSymbol *parent, AMLSubstring aml)
 	def_concat->string.length += def_concat->component.def_concat.concat_op->string.length;
 	aml.initial += def_concat->component.def_concat.concat_op->string.length;
 	aml.length -= def_concat->component.def_concat.concat_op->string.length;
-	for(unsigned int i = 0; i < _countof(def_concat->component.def_concat.data); i++)def_concat->component.def_concat.data[i] = NULL;
-	def_concat->component.def_concat.target = NULL;
+	for(unsigned int i = 0; i < _countof(def_concat->component.def_concat.data); i++)
+	{
+		def_concat->component.def_concat.data[i] = analyse_aml_data(def_concat, aml);
+		def_concat->string.length += def_concat->component.def_concat.data[i]->string.length;
+		aml.initial += def_concat->component.def_concat.data[i]->string.length;
+		aml.length -= def_concat->component.def_concat.data[i]->string.length;
+	}
+	def_concat->component.def_concat.target = analyse_aml_target(def_concat, aml);
+	def_concat->string.length += def_concat->component.def_concat.target->string.length;
+	aml.initial += def_concat->component.def_concat.target->string.length;
+	aml.length -= def_concat->component.def_concat.target->string.length;
 	return def_concat;
 }
 
@@ -2662,6 +2689,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_AND_OP:
 		expression_opcode->component.expression_opcode.def_and = analyse_aml_def_and(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_and->string.length;
+		break;
+	case AML_BYTE_CONCAT_OP:
+		expression_opcode->component.expression_opcode.def_concat = analyse_aml_def_concat(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_concat->string.length;
 		break;
 	case AML_BYTE_DECREMENT_OP:
 		expression_opcode->component.expression_opcode.def_decrement = analyse_aml_def_decrement(expression_opcode, aml);
@@ -4713,6 +4744,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	case AML_BYTE_ADD_OP:
 	case AML_BYTE_AND_OP:
+	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_INCREMENT_OP:
@@ -4816,6 +4848,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, unsign
 	case AML_BYTE_ARG_6_OP:
 	case AML_BYTE_BUFFER_OP:
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_DWORD_PREFIX:
@@ -4902,6 +4935,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_ARG_6_OP:
 	case AML_BYTE_BUFFER_OP:
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_LOCAL_0_OP:
 	case AML_BYTE_LOCAL_1_OP:
@@ -5075,6 +5109,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_ARG_6_OP:
 	case AML_BYTE_BUFFER_OP:
 	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_LOCAL_0_OP:
 	case AML_BYTE_LOCAL_1_OP:
@@ -5441,6 +5476,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.const_obj.ones_op)delete_aml_symbol(aml_symbol->component.const_obj.ones_op);
 		break;
 	case aml_create_dword_field_op:
+		break;
+	case aml_data:
+		if(aml_symbol->component.data.term_arg)delete_aml_symbol(aml_symbol->component.data.term_arg);
 		break;
 	case aml_data_object:
 		if(aml_symbol->component.data_object.computational_data)delete_aml_symbol(aml_symbol->component.data_object.computational_data);
@@ -6729,6 +6767,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_create_dword_field_op:
 		break;
+	case aml_data:
+		break;
 	case aml_data_object:
 		break;
 	case aml_data_ref_object:
@@ -7153,6 +7193,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.const_obj.ones_op)print_aml_symbol(aml_symbol->component.const_obj.ones_op);
 		break;
 	case aml_create_dword_field_op:
+		break;
+	case aml_data:
+		if(aml_symbol->component.data.term_arg)print_aml_symbol(aml_symbol->component.data.term_arg);
 		break;
 	case aml_data_object:
 		if(aml_symbol->component.data_object.computational_data)print_aml_symbol(aml_symbol->component.data_object.computational_data);
