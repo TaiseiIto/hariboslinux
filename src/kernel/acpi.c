@@ -4935,7 +4935,6 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_ARG_6_OP:
 	case AML_BYTE_BUFFER_OP:
 	case AML_BYTE_BYTE_PREFIX:
-	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_LOCAL_0_OP:
 	case AML_BYTE_LOCAL_1_OP:
@@ -5029,6 +5028,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_AND_OP:
 	case AML_BYTE_ALIAS_OP:
 	case AML_BYTE_BREAK_OP:
+	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
@@ -5109,7 +5109,6 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_ARG_6_OP:
 	case AML_BYTE_BUFFER_OP:
 	case AML_BYTE_BYTE_PREFIX:
-	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_LOCAL_0_OP:
 	case AML_BYTE_LOCAL_1_OP:
@@ -5199,6 +5198,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	{
 	case AML_BYTE_ADD_OP:
 	case AML_BYTE_AND_OP:
+	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_INCREMENT_OP:
