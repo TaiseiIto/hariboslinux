@@ -5,6 +5,8 @@
 #include "stddef.h"
 
 #define _countof(array) (sizeof(array) / sizeof(array[0]))
+#define max(a, b) ((a) < (b) ? (b) : (a))
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
 #endif
 
