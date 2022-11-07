@@ -706,7 +706,11 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						unsigned int aml_index_end = min(0x10 * (row + 1), dsdt_aml_syntax_tree->string.length);
 						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)printf_serial("%02.2x ", dsdt_aml_syntax_tree->string.initial[aml_index]);
 						printf_serial("\n");
-						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)if(0x20 <= dsdt_aml_syntax_tree->string.initial[aml_index] && dsdt_aml_syntax_tree->string.initial[aml_index] <= 0x7f)printf_serial(" %c ", dsdt_aml_syntax_tree->string.initial[aml_index]);
+						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)
+						{
+							unsigned char aml_byte = dsdt_aml_syntax_tree->string.initial[aml_index];
+							printf_serial(" %c ", 0x20 <= aml_byte && aml_byte <= 0x7f ? aml_byte : ' ');
+						}
 						printf_serial("\n");
 					}
 					if(dsdt_aml_syntax_tree->string.length == dsdt_aml.length)
