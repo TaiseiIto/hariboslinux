@@ -225,6 +225,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_l_not_name = "DefLNot";
 	static char const * const aml_def_l_or_name = "DefLOr";
 	static char const * const aml_def_method_name = "DefMethod";
+	static char const * const aml_def_multiply_name = "DefMultiply";
 	static char const * const aml_def_mutex_name = "DefMutex";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_notify_name = "DefNotify";
@@ -493,6 +494,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_l_or_name;
 	case aml_def_method:
 		return aml_def_method_name;
+	case aml_def_multiply:
+		return aml_def_multiply_name;
 	case aml_def_mutex:
 		return aml_def_mutex_name;
 	case aml_def_name:
@@ -2218,6 +2221,21 @@ AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml)
 	aml.length -= def_method->component.def_method.term_list->string.length;
 	if((int)aml.length < 0)def_method->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_method;
+}
+
+// <def_multiply> := <multiply_op> <operand> <operand> <target>
+AMLSymbol *analyse_aml_def_multiply(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_multiply = malloc(sizeof(*def_multiply));
+	def_multiply->parent = parent;
+	def_multiply->string.initial = aml.initial;
+	def_multiply->string.length = 0;
+	def_multiply->type = aml_def_multiply;
+	def_multiply->flags = 0;
+	def_multiply->component.def_multiply.multiply_op = NULL;
+	for(unsigned int i = 0; i < _countof(def_multiply->component.def_multiply.operand); i++)def_multiply->component.def_multiply.operand[i] = NULL;
+	def_multiply->component.def_multiply.target = NULL;
+	return def_multiply;
 }
 
 // <def_mutex> := <mutex_op> <name_string> <sync_flags>
@@ -5849,6 +5867,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_method.method_flags)delete_aml_symbol(aml_symbol->component.def_method.method_flags);
 		if(aml_symbol->component.def_method.term_list)delete_aml_symbol(aml_symbol->component.def_method.term_list);
 		break;
+	case aml_def_multiply:
+		if(aml_symbol->component.def_multiply.multiply_op)delete_aml_symbol(aml_symbol->component.def_multiply.multiply_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_multiply.operand); i++)if(aml_symbol->component.def_multiply.operand[i])delete_aml_symbol(aml_symbol->component.def_multiply.operand[i]);
+		if(aml_symbol->component.def_multiply.target)delete_aml_symbol(aml_symbol->component.def_multiply.target);
+		break;
 	case aml_def_mutex:
 		if(aml_symbol->component.def_mutex.mutex_op)delete_aml_symbol(aml_symbol->component.def_mutex.mutex_op);
 		if(aml_symbol->component.def_mutex.name_string)delete_aml_symbol(aml_symbol->component.def_mutex.name_string);
@@ -6980,6 +7003,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_method:
 		break;
+	case aml_def_multiply:
+		break;
 	case aml_def_mutex:
 		break;
 	case aml_def_name:
@@ -7529,6 +7554,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_method.name_string)print_aml_symbol(aml_symbol->component.def_method.name_string);
 		if(aml_symbol->component.def_method.method_flags)print_aml_symbol(aml_symbol->component.def_method.method_flags);
 		if(aml_symbol->component.def_method.term_list)print_aml_symbol(aml_symbol->component.def_method.term_list);
+		break;
+	case aml_def_multiply:
+		if(aml_symbol->component.def_multiply.multiply_op)print_aml_symbol(aml_symbol->component.def_multiply.multiply_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_multiply.operand); i++)if(aml_symbol->component.def_multiply.operand[i])print_aml_symbol(aml_symbol->component.def_multiply.operand[i]);
+		if(aml_symbol->component.def_multiply.target)print_aml_symbol(aml_symbol->component.def_multiply.target);
 		break;
 	case aml_def_mutex:
 		if(aml_symbol->component.def_mutex.mutex_op)print_aml_symbol(aml_symbol->component.def_mutex.mutex_op);

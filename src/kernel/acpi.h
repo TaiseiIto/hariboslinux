@@ -243,6 +243,7 @@ typedef enum _AMLSymbolType
 	aml_def_l_not,
 	aml_def_l_or,
 	aml_def_method,
+	aml_def_multiply,
 	aml_def_mutex,
 	aml_def_name,
 	aml_def_notify,
@@ -698,6 +699,13 @@ typedef struct _AMLDefMethod
 	struct _AMLSymbol *method_flags;
 	struct _AMLSymbol *term_list;
 } AMLDefMethod;
+
+typedef struct _AMLDefMultiply
+{
+	struct _AMLSymbol *multiply_op;
+	struct _AMLSymbol *operand[2];
+	struct _AMLSymbol *target;
+} AMLDefMultiply;
 
 typedef struct _AMLDefMutex
 {
@@ -1342,6 +1350,7 @@ typedef union _AMLComponent
 	AMLDefLNot def_l_not;
 	AMLDefLOr def_l_or;
 	AMLDefMethod def_method;
+	AMLDefMultiply def_multiply;
 	AMLDefMutex def_mutex;
 	AMLDefName def_name;
 	AMLDefNotify def_notify;
@@ -1554,6 +1563,8 @@ AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_l_or(AMLSymbol *parent, AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml);
+// <def_multiply> := <multiply_op> <operand> <operand> <target>
+AMLSymbol *analyse_aml_def_multiply(AMLSymbol *parent, AMLSubstring aml);
 // <def_mutex> := <mutex_op> <name_string> <sync_flags>
 AMLSymbol *analyse_aml_def_mutex(AMLSymbol *parent, AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
