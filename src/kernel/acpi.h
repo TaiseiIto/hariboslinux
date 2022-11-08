@@ -227,6 +227,7 @@ typedef enum _AMLSymbolType
 	aml_def_if_else,
 	aml_def_increment,
 	aml_def_index,
+	aml_def_index_field,
 	aml_def_l_and,
 	aml_def_l_equal,
 	aml_def_l_greater,
@@ -601,6 +602,15 @@ typedef struct _AMLDefIndex
 	struct _AMLSymbol *index_value;
 	struct _AMLSymbol *target;
 } AMLDefIndex;
+
+typedef struct _AMLDefIndexField
+{
+	struct _AMLSymbol *index_field_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *name_string[2];
+	struct _AMLSymbol *field_flags;
+	struct _AMLSymbol *field_list;
+} AMLDefIndexField;
 
 typedef struct _AMLDefLAnd
 {
@@ -1269,6 +1279,7 @@ typedef union _AMLComponent
 	AMLDefIfElse def_if_else;
 	AMLDefIncrement def_increment;
 	AMLDefIndex def_index;
+	AMLDefIndexField def_index_field;
 	AMLDefLAnd def_l_and;
 	AMLDefLEqual def_l_equal;
 	AMLDefLGreater def_l_greater;
@@ -1465,6 +1476,8 @@ AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_increment(AMLSymbol *parent, AMLSubstring aml);
 // <def_index> := <index_op> <buff_pkf_str_obj> <index_value> <target>
 AMLSymbol *analyse_aml_def_index(AMLSymbol *parent, AMLSubstring aml);
+// <def_index_field> := <index_field_op> <pkg_length> <name_string> <name_string> <field_flags> <field_list>
+AMLSymbol *analyse_aml_def_index_field(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_and> := <l_and_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_and(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_equal> := <l_equal_op> <operand> <operand>

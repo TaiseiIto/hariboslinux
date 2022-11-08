@@ -209,6 +209,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_if_else_name = "DefIfElse";
 	static char const * const aml_def_increment_name = "DefIncrement";
 	static char const * const aml_def_index_name = "DefIndex";
+	static char const * const aml_def_index_field_name = "DefIndexField";
 	static char const * const aml_def_l_and_name = "DefLAnd";
 	static char const * const aml_def_l_equal_name = "DefLEqual";
 	static char const * const aml_def_l_greater_name = "DefLGreater";
@@ -450,6 +451,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_increment_name;
 	case aml_def_index:
 		return aml_def_index_name;
+	case aml_def_index_field:
+		return aml_def_index_field_name;
 	case aml_def_l_and:
 		return aml_def_l_and_name;
 	case aml_def_l_equal:
@@ -1818,6 +1821,23 @@ AMLSymbol *analyse_aml_def_index(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_index->component.def_index.target->string.length;
 	aml.length -= def_index->component.def_index.target->string.length;
 	return def_index;
+}
+
+// <def_index_field> := <index_field_op> <pkg_length> <name_string> <name_string> <field_flags> <field_list>
+AMLSymbol *analyse_aml_def_index_field(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_index_field = malloc(sizeof(*def_index_field));
+	def_index_field->parent = parent;
+	def_index_field->string.initial = aml.initial;
+	def_index_field->string.length = 0;
+	def_index_field->type = aml_def_index_field;
+	def_index_field->flags = 0;
+	def_index_field->component.def_index_field.index_field_op = NULL;
+	def_index_field->component.def_index_field.pkg_length = NULL;
+	for(unsigned int i = 0; i < _countof(def_index_field->component.def_index_field.name_string); i++)def_index_field->component.def_index_field.name_string[i] = NULL;
+	def_index_field->component.def_index_field.field_flags = NULL;
+	def_index_field->component.def_index_field.field_list = NULL;
+	return def_index_field;
 }
 
 // <def_l_and> := <l_and_op> <operand> <operand>
@@ -5481,6 +5501,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_index.index_value)delete_aml_symbol(aml_symbol->component.def_index.index_value);
 		if(aml_symbol->component.def_index.target)delete_aml_symbol(aml_symbol->component.def_index.target);
 		break;
+	case aml_def_index_field:
+		if(aml_symbol->component.def_index_field.index_field_op)delete_aml_symbol(aml_symbol->component.def_index_field.index_field_op);
+		if(aml_symbol->component.def_index_field.pkg_length)delete_aml_symbol(aml_symbol->component.def_index_field.pkg_length);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_index_field.name_string); i++)if(aml_symbol->component.def_index_field.name_string[i])delete_aml_symbol(aml_symbol->component.def_index_field.name_string[i]);
+		if(aml_symbol->component.def_index_field.field_flags)delete_aml_symbol(aml_symbol->component.def_index_field.field_flags);
+		if(aml_symbol->component.def_index_field.field_list)delete_aml_symbol(aml_symbol->component.def_index_field.field_list);
+		break;
 	case aml_def_l_and:
 		if(aml_symbol->component.def_l_and.l_and_op)delete_aml_symbol(aml_symbol->component.def_l_and.l_and_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_and.operand); i++)if(aml_symbol->component.def_l_and.operand[i])delete_aml_symbol(aml_symbol->component.def_l_and.operand[i]);
@@ -6604,6 +6631,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_index:
 		break;
+	case aml_def_index_field:
+		break;
 	case aml_def_l_and:
 		break;
 	case aml_def_l_equal:
@@ -7093,6 +7122,13 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_index.buff_pkg_str_obj)print_aml_symbol(aml_symbol->component.def_index.buff_pkg_str_obj);
 		if(aml_symbol->component.def_index.index_value)print_aml_symbol(aml_symbol->component.def_index.index_value);
 		if(aml_symbol->component.def_index.target)print_aml_symbol(aml_symbol->component.def_index.target);
+		break;
+	case aml_def_index_field:
+		if(aml_symbol->component.def_index_field.index_field_op)print_aml_symbol(aml_symbol->component.def_index_field.index_field_op);
+		if(aml_symbol->component.def_index_field.pkg_length)print_aml_symbol(aml_symbol->component.def_index_field.pkg_length);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_index_field.name_string); i++)if(aml_symbol->component.def_index_field.name_string[i])print_aml_symbol(aml_symbol->component.def_index_field.name_string[i]);
+		if(aml_symbol->component.def_index_field.field_flags)print_aml_symbol(aml_symbol->component.def_index_field.field_flags);
+		if(aml_symbol->component.def_index_field.field_list)print_aml_symbol(aml_symbol->component.def_index_field.field_list);
 		break;
 	case aml_def_l_and:
 		if(aml_symbol->component.def_l_and.l_and_op)print_aml_symbol(aml_symbol->component.def_l_and.l_and_op);
