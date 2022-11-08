@@ -272,6 +272,7 @@ typedef enum _AMLSymbolType
 	aml_field_op_suffix,
 	aml_if_op,
 	aml_increment_op,
+	aml_index_field_op,
 	aml_index_op,
 	aml_index_value,
 	aml_lead_name_char,
@@ -895,6 +896,12 @@ typedef struct _AMLFieldOp
 	struct _AMLSymbol *field_op_suffix;
 } AMLFieldOp;
 
+typedef struct _AMLIndexFieldOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *index_field_op_suffix;
+} AMLIndexFieldOp;
+
 typedef struct _AMLIndexValue
 {
 	struct _AMLSymbol *term_arg;
@@ -1313,6 +1320,7 @@ typedef union _AMLComponent
 	AMLFieldElement field_element;
 	AMLFieldList field_list;
 	AMLFieldOp field_op;
+	AMLIndexFieldOp index_field_op;
 	AMLIndexValue index_value;
 	AMLLocalObj local_obj;
 	AMLMethodFlags method_flags;
@@ -1566,6 +1574,8 @@ AMLSymbol *analyse_aml_field_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_if_op(AMLSymbol *parent, AMLSubstring aml);
 // <increment_op> := AML_BYTE_INCREMENT_OP
 AMLSymbol *analyse_aml_increment_op(AMLSymbol *parent, AMLSubstring aml);
+// <index_field_op> := <ext_op_prefix> <index_field_op_suffix>
+AMLSymbol *analyse_aml_index_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <index_op> := AML_BYTE_INDEX_OP
 AMLSymbol *analyse_aml_index_op(AMLSymbol *parent, AMLSubstring aml);
 // <index_value> := <term_arg>

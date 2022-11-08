@@ -254,6 +254,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_op_suffix_name = "FieldOpSuffix";
 	static char const * const aml_if_op_name = "IfOp";
 	static char const * const aml_increment_op_name = "IncrementOp";
+	static char const * const aml_index_field_op_name = "IndexFieldOp";
 	static char const * const aml_index_op_name = "IndexOp";
 	static char const * const aml_index_value_name = "IndexValue";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
@@ -541,6 +542,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_if_op_name;
 	case aml_increment_op:
 		return aml_increment_op_name;
+	case aml_index_field_op:
+		return aml_index_field_op_name;
 	case aml_index_op:
 		return aml_index_op_name;
 	case aml_index_value:
@@ -1832,11 +1835,29 @@ AMLSymbol *analyse_aml_def_index_field(AMLSymbol *parent, AMLSubstring aml)
 	def_index_field->string.length = 0;
 	def_index_field->type = aml_def_index_field;
 	def_index_field->flags = 0;
-	def_index_field->component.def_index_field.index_field_op = NULL;
-	def_index_field->component.def_index_field.pkg_length = NULL;
-	for(unsigned int i = 0; i < _countof(def_index_field->component.def_index_field.name_string); i++)def_index_field->component.def_index_field.name_string[i] = NULL;
-	def_index_field->component.def_index_field.field_flags = NULL;
-	def_index_field->component.def_index_field.field_list = NULL;
+	def_index_field->component.def_index_field.index_field_op = analyse_aml_index_field_op(def_index_field, aml);
+	def_index_field->string.length += def_index_field->component.def_index_field.index_field_op->string.length;
+	aml.initial += def_index_field->component.def_index_field.index_field_op->string.length;
+	aml.length += def_index_field->component.def_index_field.index_field_op->string.length;
+	def_index_field->component.def_index_field.pkg_length = analyse_aml_pkg_length(def_index_field, aml);
+	def_index_field->string.length += def_index_field->component.def_index_field.pkg_length->string.length;
+	aml.initial += def_index_field->component.def_index_field.pkg_length->string.length;
+	aml.length += def_index_field->component.def_index_field.pkg_length->string.length;
+	for(unsigned int i = 0; i < _countof(def_index_field->component.def_index_field.name_string); i++)
+	{
+		def_index_field->component.def_index_field.name_string[i] = analyse_aml_name_string(def_index_field, aml);
+		def_index_field->string.length += def_index_field->component.def_index_field.name_string[i]->string.length;
+		aml.initial += def_index_field->component.def_index_field.name_string[i]->string.length;
+		aml.length += def_index_field->component.def_index_field.name_string[i]->string.length;
+	}
+	def_index_field->component.def_index_field.field_flags = analyse_aml_field_flags(def_index_field, aml);
+	def_index_field->string.length += def_index_field->component.def_index_field.field_flags->string.length;
+	aml.initial += def_index_field->component.def_index_field.field_flags->string.length;
+	aml.length += def_index_field->component.def_index_field.field_flags->string.length;
+	def_index_field->component.def_index_field.field_list = analyse_aml_field_list(def_index_field, aml);
+	def_index_field->string.length += def_index_field->component.def_index_field.field_list->string.length;
+	aml.initial += def_index_field->component.def_index_field.field_list->string.length;
+	aml.length += def_index_field->component.def_index_field.field_list->string.length;
 	return def_index_field;
 }
 
@@ -2993,6 +3014,23 @@ AMLSymbol *analyse_aml_increment_op(AMLSymbol *parent, AMLSubstring aml)
 	increment_op->flags = 0;
 	if(*increment_op->string.initial != AML_BYTE_INCREMENT_OP)increment_op->flags |= AML_SYMBOL_ERROR; // Incorrect increment op
 	return increment_op;
+}
+
+// <index_field_op> := <ext_op_prefix> <index_field_op_suffix>
+AMLSymbol *analyse_aml_index_field_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *index_field_op = malloc(sizeof(*index_field_op));
+	index_field_op->parent = parent;
+	index_field_op->string.initial = aml.initial;
+	index_field_op->string.length = 0;
+	index_field_op->type = aml_index_field_op;
+	index_field_op->flags = 0;
+	index_field_op->component.index_field_op.ext_op_prefix = analyse_aml_ext_op_prefix(index_field_op, aml);
+	index_field_op->string.length += index_field_op->component.index_field_op.ext_op_prefix->string.length;
+	aml.initial += index_field_op->component.index_field_op.ext_op_prefix->string.length;
+	aml.length -= index_field_op->component.index_field_op.ext_op_prefix->string.length;
+	index_field_op->component.index_field_op.index_field_op_suffix = NULL;
+	return index_field_op;
 }
 
 // <index_op> := AML_BYTE_INDEX_OP
@@ -5744,6 +5782,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_increment_op:
 		break;
+	case aml_index_field_op:
+		if(aml_symbol->component.index_field_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.index_field_op.ext_op_prefix);
+		if(aml_symbol->component.index_field_op.index_field_op_suffix)delete_aml_symbol(aml_symbol->component.index_field_op.index_field_op_suffix);
+		break;
 	case aml_index_op:
 		break;
 	case aml_index_value:
@@ -6724,6 +6766,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_increment_op:
 		break;
+	case aml_index_field_op:
+		break;
 	case aml_index_op:
 		break;
 	case aml_index_value:
@@ -7365,6 +7409,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_if_op:
 		break;
 	case aml_increment_op:
+		break;
+	case aml_index_field_op:
+		if(aml_symbol->component.index_field_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.index_field_op.ext_op_prefix);
+		if(aml_symbol->component.index_field_op.index_field_op_suffix)print_aml_symbol(aml_symbol->component.index_field_op.index_field_op_suffix);
 		break;
 	case aml_index_op:
 		break;
