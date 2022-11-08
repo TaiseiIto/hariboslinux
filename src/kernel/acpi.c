@@ -281,6 +281,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_method_op_name = "MethodOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
+	static char const * const aml_multiply_op_name = "MultiplyOp";
 	static char const * const aml_mutex_object_name = "MutexObject";
 	static char const * const aml_mutex_op_name = "MutexOp";
 	static char const * const aml_mutex_op_suffix_name = "MutexOpSuffix";
@@ -606,6 +607,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_multi_name_path_name;
 	case aml_multi_name_prefix:
 		return aml_multi_name_prefix_name;
+	case aml_multiply_op:
+		return aml_multiply_op_name;
 	case aml_mutex_object:
 		return aml_mutex_object_name;
 	case aml_mutex_op:
@@ -2232,9 +2235,21 @@ AMLSymbol *analyse_aml_def_multiply(AMLSymbol *parent, AMLSubstring aml)
 	def_multiply->string.length = 0;
 	def_multiply->type = aml_def_multiply;
 	def_multiply->flags = 0;
-	def_multiply->component.def_multiply.multiply_op = NULL;
-	for(unsigned int i = 0; i < _countof(def_multiply->component.def_multiply.operand); i++)def_multiply->component.def_multiply.operand[i] = NULL;
-	def_multiply->component.def_multiply.target = NULL;
+	def_multiply->component.def_multiply.multiply_op = analyse_aml_multiply_op(def_multiply, aml);
+	def_multiply->string.length += def_multiply->component.def_multiply.multiply_op->string.length;
+	aml.initial += def_multiply->component.def_multiply.multiply_op->string.length;
+	aml.length -= def_multiply->component.def_multiply.multiply_op->string.length;
+	for(unsigned int i = 0; i < _countof(def_multiply->component.def_multiply.operand); i++)
+	{
+		def_multiply->component.def_multiply.operand[i] = analyse_aml_operand(def_multiply, aml);
+		def_multiply->string.length += def_multiply->component.def_multiply.operand[i]->string.length;
+		aml.initial += def_multiply->component.def_multiply.operand[i]->string.length;
+		aml.length -= def_multiply->component.def_multiply.operand[i]->string.length;
+	}
+	def_multiply->component.def_multiply.target = analyse_aml_target(def_multiply, aml);
+	def_multiply->string.length += def_multiply->component.def_multiply.target->string.length;
+	aml.initial += def_multiply->component.def_multiply.target->string.length;
+	aml.length -= def_multiply->component.def_multiply.target->string.length;
 	return def_multiply;
 }
 
@@ -3011,6 +3026,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_l_or = analyse_aml_def_l_or(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_or->string.length;
 		break;
+	case AML_BYTE_MULTIPLY_OP:
+		expression_opcode->component.expression_opcode.def_multiply = analyse_aml_def_multiply(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_multiply->string.length;
+		break;
 	case AML_BYTE_OR_OP:
 		expression_opcode->component.expression_opcode.def_or = analyse_aml_def_or(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_or->string.length;
@@ -3523,6 +3542,19 @@ AMLSymbol *analyse_aml_multi_name_prefix(AMLSymbol *parent, AMLSubstring aml)
 	multi_name_prefix->flags = 0;
 	if(*multi_name_prefix->string.initial != AML_BYTE_MULTI_NAME_PREFIX)multi_name_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect munti name prefix
 	return multi_name_prefix;
+}
+
+// <multiply_op> := AML_BYTE_MULTIPLY_OP
+AMLSymbol *analyse_aml_multiply_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *multiply_op = malloc(sizeof(*multiply_op));
+	multiply_op->parent = parent;
+	multiply_op->string.initial = aml.initial;
+	multiply_op->string.length = 1;
+	multiply_op->type = aml_multiply_op;
+	multiply_op->flags = 0;
+	if(*multiply_op->string.initial != AML_BYTE_MULTIPLY_OP)multiply_op->flags |= AML_SYMBOL_ERROR; // Incorrect multiply_op
+	return multiply_op;
 }
 
 // <mutex_object> := <super_name>
@@ -5125,6 +5157,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
@@ -5221,6 +5254,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_LOCAL_5_OP:
 	case AML_BYTE_LOCAL_6_OP:
 	case AML_BYTE_LOCAL_7_OP:
+	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_ONE_OP:
 	case AML_BYTE_ONES_OP:
 	case AML_BYTE_QWORD_PREFIX:
@@ -5347,10 +5381,11 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
-	case AML_BYTE_OR_OP:
 	case AML_BYTE_METHOD_OP:
+	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NAME_OP:
 	case AML_BYTE_NOTIFY_OP:
+	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
 	case AML_BYTE_RETURN_OP:
@@ -6123,6 +6158,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		free(aml_symbol->component.multi_name_path.string);
 		break;
 	case aml_multi_name_prefix:
+		break;
+	case aml_multiply_op:
 		break;
 	case aml_mutex_object:
 		if(aml_symbol->component.mutex_object.super_name)delete_aml_symbol(aml_symbol->component.mutex_object.super_name);
@@ -7122,6 +7159,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_multi_name_prefix:
 		break;
+	case aml_multiply_op:
+		break;
 	case aml_mutex_object:
 		break;
 	case aml_mutex_op:
@@ -7808,6 +7847,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		for(unsigned int i = 0; i < *aml_symbol->component.multi_name_path.seg_count->string.initial; i++)if(aml_symbol->component.multi_name_path.name_seg[i])print_aml_symbol(aml_symbol->component.multi_name_path.name_seg[i]);
 		break;
 	case aml_multi_name_prefix:
+		break;
+	case aml_multiply_op:
 		break;
 	case aml_mutex_object:
 		if(aml_symbol->component.mutex_object.super_name)print_aml_symbol(aml_symbol->component.mutex_object.super_name);

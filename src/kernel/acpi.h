@@ -299,6 +299,7 @@ typedef enum _AMLSymbolType
 	aml_method_op,
 	aml_multi_name_path,
 	aml_multi_name_prefix,
+	aml_multiply_op,
 	aml_mutex_object,
 	aml_mutex_op,
 	aml_mutex_op_suffix,
@@ -1675,6 +1676,8 @@ AMLSymbol *analyse_aml_method_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_multi_name_path(AMLSymbol *parent, AMLSubstring aml);
 // <mult_name_prefix> := AML_BYTE_MULTI_NAME_PREFIX
 AMLSymbol *analyse_aml_multi_name_prefix(AMLSymbol *parent, AMLSubstring aml);
+// <multiply_op> := AML_BYTE_MULTIPLY_OP
+AMLSymbol *analyse_aml_multiply_op(AMLSymbol *parent, AMLSubstring aml);
 // <mutex_object> := <super_name>
 AMLSymbol *analyse_aml_mutex_object(AMLSymbol *parent, AMLSubstring aml);
 // <mutex_op> := <ext_op_prefix> <mutex_op_suffix>
