@@ -709,7 +709,7 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)
 						{
 							unsigned char aml_byte = dsdt_aml_syntax_tree->string.initial[aml_index];
-							printf_serial(" %c ", 0x20 <= aml_byte && aml_byte <= 0x7f ? aml_byte : ' ');
+							printf_serial(" %c ", 0x20 <= aml_byte && aml_byte < 0x7f ? aml_byte : ' ');
 						}
 						printf_serial("\n");
 					}
@@ -728,8 +728,10 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					}
 					else
 					{
-						printf_serial("next bytes =");
+						printf_serial("next bytes\n");
 						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_serial(" %02.2x", *aml_byte);
+						printf_serial("\n");
+						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_serial(" %c ", 0x20 <= *aml_byte && *aml_byte < 0x7f ? *aml_byte : ' ');
 						printf_serial("\n");
 					}
 					delete_aml_symbol(dsdt_aml_syntax_tree);
