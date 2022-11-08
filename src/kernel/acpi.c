@@ -3133,7 +3133,7 @@ AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 {
 	AMLSymbol *method_invocation = malloc(sizeof(*method_invocation));
 	AMLSymbol const *def_method;
-	unsigned char num_of_args;
+	int num_of_args;
 	method_invocation->parent = parent;
 	method_invocation->string.initial = aml.initial;
 	method_invocation->string.length = 0;
@@ -3148,7 +3148,7 @@ AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 	{
 		WARNING();
 		printf_serial("Undefined method \"%s\" is called.\n", method_invocation->component.method_invocation.name_string->component.name_string.string);
-		num_of_args = 0;
+		num_of_args = -1;
 	}
 	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(method_invocation, aml, num_of_args);
 	method_invocation->string.length += method_invocation->component.method_invocation.term_arg_list->string.length;
@@ -4826,7 +4826,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 }
 
 // <term_arg_list> := Nothing | <term_arg> <term_arg_list>
-AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, unsigned int num_of_term_args)
+AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int num_of_term_args)
 {
 	AMLSymbol *term_arg_list = malloc(sizeof(*term_arg_list));
 	term_arg_list->parent = parent;
@@ -4835,7 +4835,45 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, unsign
 	term_arg_list->type = aml_term_arg_list;
 	term_arg_list->component.term_arg_list.term_arg = NULL;
 	term_arg_list->component.term_arg_list.term_arg_list = NULL;
-	if(num_of_term_args)switch(*aml.initial)
+	if(num_of_term_args == -1)switch(*aml.initial)
+	{
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_BUFFER_OP:
+	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
+	case AML_BYTE_LOCAL_0_OP:
+	case AML_BYTE_LOCAL_1_OP:
+	case AML_BYTE_LOCAL_2_OP:
+	case AML_BYTE_LOCAL_3_OP:
+	case AML_BYTE_LOCAL_4_OP:
+	case AML_BYTE_LOCAL_5_OP:
+	case AML_BYTE_LOCAL_6_OP:
+	case AML_BYTE_LOCAL_7_OP:
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_QWORD_PREFIX:
+	case AML_BYTE_STRING_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
+	case AML_BYTE_ZERO_OP:
+		term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(term_arg_list, aml);
+		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg->string.length;
+		aml.initial += term_arg_list->component.term_arg_list.term_arg->string.length;
+		aml.length -= term_arg_list->component.term_arg_list.term_arg->string.length;
+		term_arg_list->component.term_arg_list.term_arg_list = analyse_aml_term_arg_list(term_arg_list, aml, num_of_term_args);
+		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg_list->string.length;
+		aml.initial += term_arg_list->component.term_arg_list.term_arg_list->string.length;
+		aml.length -= term_arg_list->component.term_arg_list.term_arg_list->string.length;
+		break;
+	default:
+		break;
+	}
+	else if(num_of_term_args)switch(*aml.initial)
 	{
 	case AML_BYTE_ADD_OP:
 	case AML_BYTE_AND_OP:
@@ -4917,110 +4955,6 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += term_list->component.term_list.term_obj->string.length;
 	aml.length -= term_list->component.term_list.term_obj->string.length;
 	if(!aml.length || !term_list->component.term_list.term_obj->string.length)return term_list;
-	// Undefined method invocation arglist addition
-	switch(*aml.initial)
-	{
-		AMLSymbol *expression_opcode;
-		AMLSymbol *method_invocation;
-		AMLSymbol *method_name_string;
-		AMLSymbol *term_arg_list_root;
-		AMLSymbol *term_arg_list_tail;
-		char *method_name;
-	case AML_BYTE_ARG_0_OP:
-	case AML_BYTE_ARG_1_OP:
-	case AML_BYTE_ARG_2_OP:
-	case AML_BYTE_ARG_3_OP:
-	case AML_BYTE_ARG_4_OP:
-	case AML_BYTE_ARG_5_OP:
-	case AML_BYTE_ARG_6_OP:
-	case AML_BYTE_BUFFER_OP:
-	case AML_BYTE_BYTE_PREFIX:
-	case AML_BYTE_DWORD_PREFIX:
-	case AML_BYTE_LOCAL_0_OP:
-	case AML_BYTE_LOCAL_1_OP:
-	case AML_BYTE_LOCAL_2_OP:
-	case AML_BYTE_LOCAL_3_OP:
-	case AML_BYTE_LOCAL_4_OP:
-	case AML_BYTE_LOCAL_5_OP:
-	case AML_BYTE_LOCAL_6_OP:
-	case AML_BYTE_LOCAL_7_OP:
-	case AML_BYTE_ONE_OP:
-	case AML_BYTE_ONES_OP:
-	case AML_BYTE_QWORD_PREFIX:
-	case AML_BYTE_STRING_PREFIX:
-	case AML_BYTE_WORD_PREFIX:
-	case AML_BYTE_ZERO_OP:
-		printf_serial("Extra term arg by undefined method invocation.\n");
-		expression_opcode = term_list->component.term_list.term_obj->component.term_obj.expression_opcode;
-		if(!expression_opcode)
-		{
-			ERROR();
-			break;
-		}
-		method_invocation = expression_opcode->component.expression_opcode.method_invocation;
-		if(!method_invocation)
-		{
-			ERROR();
-			break;
-		}
-		method_name_string = method_invocation->component.method_invocation.name_string;
-		method_name = method_name_string->component.name_string.string;
-		if(get_aml_method(method_name, term_list, NULL))
-		{
-			ERROR();
-			break;
-		}
-		term_arg_list_root = method_invocation->component.method_invocation.term_arg_list;
-		term_arg_list_tail = term_arg_list_root;
-		while(term_arg_list_tail->component.term_arg_list.term_arg_list)term_arg_list_tail = term_arg_list_tail->component.term_arg_list.term_arg_list;
-		while
-		(
-			*aml.initial == AML_BYTE_ARG_0_OP ||
-			*aml.initial == AML_BYTE_ARG_1_OP ||
-			*aml.initial == AML_BYTE_ARG_2_OP ||
-			*aml.initial == AML_BYTE_ARG_3_OP ||
-			*aml.initial == AML_BYTE_ARG_4_OP ||
-			*aml.initial == AML_BYTE_ARG_5_OP ||
-			*aml.initial == AML_BYTE_ARG_6_OP ||
-			*aml.initial == AML_BYTE_BUFFER_OP ||
-			*aml.initial == AML_BYTE_BYTE_PREFIX ||
-			*aml.initial == AML_BYTE_DWORD_PREFIX ||
-			*aml.initial == AML_BYTE_LOCAL_0_OP ||
-			*aml.initial == AML_BYTE_LOCAL_1_OP ||
-			*aml.initial == AML_BYTE_LOCAL_2_OP ||
-			*aml.initial == AML_BYTE_LOCAL_3_OP ||
-			*aml.initial == AML_BYTE_LOCAL_4_OP ||
-			*aml.initial == AML_BYTE_LOCAL_5_OP ||
-			*aml.initial == AML_BYTE_LOCAL_6_OP ||
-			*aml.initial == AML_BYTE_LOCAL_7_OP ||
-			*aml.initial == AML_BYTE_ONE_OP ||
-			*aml.initial == AML_BYTE_ONES_OP ||
-			*aml.initial == AML_BYTE_QWORD_PREFIX ||
-			*aml.initial == AML_BYTE_STRING_PREFIX ||
-			*aml.initial == AML_BYTE_WORD_PREFIX ||
-			*aml.initial == AML_BYTE_ZERO_OP
-		)
-		{
-			AMLSymbol *new_term_arg_list = malloc(sizeof(*new_term_arg_list));
-			unsigned int new_term_arg_length;
-			new_term_arg_list->parent = term_arg_list_tail;
-			new_term_arg_list->string.initial = aml.initial;
-			new_term_arg_list->string.length = 0;
-			new_term_arg_list->type = aml_term_arg_list;
-			new_term_arg_list->component.term_arg_list.term_arg = NULL;
-			new_term_arg_list->component.term_arg_list.term_arg_list = NULL;
-			new_term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(new_term_arg_list, aml);
-			new_term_arg_length = new_term_arg_list->component.term_arg_list.term_arg->string.length;
-			term_arg_list_tail->component.term_arg_list.term_arg_list = new_term_arg_list;
-			for(AMLSymbol *extended_aml_symbol = new_term_arg_list; extended_aml_symbol != term_list->parent; extended_aml_symbol = extended_aml_symbol->parent)extended_aml_symbol->string.length += new_term_arg_length;
-			aml.initial += new_term_arg_length;
-			aml.length -= new_term_arg_length;
-			term_arg_list_tail = new_term_arg_list;
-		}
-		break;
-	default:
-		break;
-	}
 	// Analyse next term_list
 	switch(*aml.initial)
 	{
@@ -5093,106 +5027,6 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	term_obj->component.term_obj.object = NULL;
 	term_obj->component.term_obj.statement_opcode = NULL;
 	term_obj->component.term_obj.expression_opcode = NULL;
-	// Undefined method invocation arglist addition
-	switch(*aml.initial)
-	{
-		AMLSymbol *method_invocation;
-		AMLSymbol *term_arg_list_root;
-		AMLSymbol *term_arg_list_tail;
-		char const *invoked_method_name;
-	case AML_BYTE_ARG_0_OP:
-	case AML_BYTE_ARG_1_OP:
-	case AML_BYTE_ARG_2_OP:
-	case AML_BYTE_ARG_3_OP:
-	case AML_BYTE_ARG_4_OP:
-	case AML_BYTE_ARG_5_OP:
-	case AML_BYTE_ARG_6_OP:
-	case AML_BYTE_BUFFER_OP:
-	case AML_BYTE_BYTE_PREFIX:
-	case AML_BYTE_DWORD_PREFIX:
-	case AML_BYTE_LOCAL_0_OP:
-	case AML_BYTE_LOCAL_1_OP:
-	case AML_BYTE_LOCAL_2_OP:
-	case AML_BYTE_LOCAL_3_OP:
-	case AML_BYTE_LOCAL_4_OP:
-	case AML_BYTE_LOCAL_5_OP:
-	case AML_BYTE_LOCAL_6_OP:
-	case AML_BYTE_LOCAL_7_OP:
-	case AML_BYTE_ONE_OP:
-	case AML_BYTE_ONES_OP:
-	case AML_BYTE_QWORD_PREFIX:
-	case AML_BYTE_STRING_PREFIX:
-	case AML_BYTE_WORD_PREFIX:
-	case AML_BYTE_ZERO_OP:
-		printf_serial("Extra term arg by undefined method invocation.\n");
-		method_invocation = get_aml_previous_method_invocation(term_obj, NULL);
-		if(!method_invocation)
-		{
-			ERROR(); // method_invocation is not found.
-			break;
-		}
-		invoked_method_name = method_invocation->component.method_invocation.name_string->component.name_string.string;
-		if(get_aml_method(invoked_method_name, term_obj, NULL))
-		{
-			ERROR(); // The method is defined.
-			break;
-		}
-		if(method_invocation->string.initial + method_invocation->string.length != term_obj->string.initial)
-		{
-			ERROR(); // method_invocation is not adjacent with term_obj on AML byte code.
-			break;
-		}
-		term_arg_list_root = method_invocation->component.method_invocation.term_arg_list;
-		term_arg_list_tail = term_arg_list_root;
-		while(term_arg_list_tail->component.term_arg_list.term_arg_list)term_arg_list_tail = term_arg_list_tail->component.term_arg_list.term_arg_list;
-		while
-		(
-			*aml.initial == AML_BYTE_ARG_0_OP ||
-			*aml.initial == AML_BYTE_ARG_1_OP ||
-			*aml.initial == AML_BYTE_ARG_2_OP ||
-			*aml.initial == AML_BYTE_ARG_3_OP ||
-			*aml.initial == AML_BYTE_ARG_4_OP ||
-			*aml.initial == AML_BYTE_ARG_5_OP ||
-			*aml.initial == AML_BYTE_ARG_6_OP ||
-			*aml.initial == AML_BYTE_BUFFER_OP ||
-			*aml.initial == AML_BYTE_BYTE_PREFIX ||
-			*aml.initial == AML_BYTE_DWORD_PREFIX ||
-			*aml.initial == AML_BYTE_LOCAL_0_OP ||
-			*aml.initial == AML_BYTE_LOCAL_1_OP ||
-			*aml.initial == AML_BYTE_LOCAL_2_OP ||
-			*aml.initial == AML_BYTE_LOCAL_3_OP ||
-			*aml.initial == AML_BYTE_LOCAL_4_OP ||
-			*aml.initial == AML_BYTE_LOCAL_5_OP ||
-			*aml.initial == AML_BYTE_LOCAL_6_OP ||
-			*aml.initial == AML_BYTE_LOCAL_7_OP ||
-			*aml.initial == AML_BYTE_ONE_OP ||
-			*aml.initial == AML_BYTE_ONES_OP ||
-			*aml.initial == AML_BYTE_QWORD_PREFIX ||
-			*aml.initial == AML_BYTE_STRING_PREFIX ||
-			*aml.initial == AML_BYTE_WORD_PREFIX ||
-			*aml.initial == AML_BYTE_ZERO_OP
-		)
-		{
-			AMLSymbol *new_term_arg_list = malloc(sizeof(*new_term_arg_list));
-			unsigned int new_term_arg_length;
-			new_term_arg_list->parent = term_arg_list_tail;
-			new_term_arg_list->string.initial = aml.initial;
-			new_term_arg_list->string.length = 0;
-			new_term_arg_list->type = aml_term_arg_list;
-			new_term_arg_list->component.term_arg_list.term_arg = NULL;
-			new_term_arg_list->component.term_arg_list.term_arg_list = NULL;
-			new_term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(new_term_arg_list, aml);
-			new_term_arg_length = new_term_arg_list->component.term_arg_list.term_arg->string.length;
-			term_arg_list_tail->component.term_arg_list.term_arg_list = new_term_arg_list;
-			for(AMLSymbol *extended_aml_symbol = new_term_arg_list; extended_aml_symbol != get_aml_symbol_common_ancestor(term_obj, method_invocation)->parent; extended_aml_symbol = extended_aml_symbol->parent)extended_aml_symbol->string.length += new_term_arg_length;
-			aml.initial += new_term_arg_length;
-			aml.length -= new_term_arg_length;
-			term_arg_list_tail = new_term_arg_list;
-		}
-		break;
-	default:
-		break;
-	}
 	// Analyse term_obj
 	switch(*aml.initial)
 	{

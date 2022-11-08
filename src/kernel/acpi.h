@@ -1724,7 +1724,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml);
 // <term_arg> := <expression_op_code> | <data_object> | <arg_obj> | <local_obj>
 AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml);
 // <term_arg_list> := Nothing | <term_arg> <term_arg_list>
-AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, unsigned int num_of_term_args);
+AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int num_of_term_args);
 // <term_list> := Nothing | <term_obj> <term_list>
 AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
