@@ -3790,9 +3790,25 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 	named_obj->component.named_obj.def_thermal_zone = NULL;
 	switch(aml.initial[0])
 	{
+	case AML_BYTE_CREATE_BIT_FIELD_OP:
+		named_obj->component.named_obj.def_create_bit_field = analyse_aml_def_create_bit_field(named_obj, aml);
+		named_obj->string.length += named_obj->component.named_obj.def_create_bit_field->string.length;
+		break;
+	case AML_BYTE_CREATE_BYTE_FIELD_OP:
+		named_obj->component.named_obj.def_create_byte_field = analyse_aml_def_create_byte_field(named_obj, aml);
+		named_obj->string.length += named_obj->component.named_obj.def_create_byte_field->string.length;
+		break;
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
 		named_obj->component.named_obj.def_create_dword_field = analyse_aml_def_create_dword_field(named_obj, aml);
 		named_obj->string.length += named_obj->component.named_obj.def_create_dword_field->string.length;
+		break;
+	case AML_BYTE_CREATE_QWORD_FIELD_OP:
+		named_obj->component.named_obj.def_create_qword_field = analyse_aml_def_create_qword_field(named_obj, aml);
+		named_obj->string.length += named_obj->component.named_obj.def_create_qword_field->string.length;
+		break;
+	case AML_BYTE_CREATE_WORD_FIELD_OP:
+		named_obj->component.named_obj.def_create_word_field = analyse_aml_def_create_word_field(named_obj, aml);
+		named_obj->string.length += named_obj->component.named_obj.def_create_word_field->string.length;
 		break;
 	case AML_BYTE_EXT_OP_PREFIX:
 		switch(aml.initial[1])
@@ -3956,7 +3972,11 @@ AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml)
 		object->component.object.name_space_modifier_obj = analyse_aml_name_space_modifier_obj(object, aml);
 		object->string.length += object->component.object.name_space_modifier_obj->string.length;
 		break;
+	case AML_BYTE_CREATE_BIT_FIELD_OP:
+	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
+	case AML_BYTE_CREATE_QWORD_FIELD_OP:
+	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_METHOD_OP:
 		object->component.object.named_obj = analyse_aml_named_obj(object, aml);
@@ -5292,7 +5312,11 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_ALIAS_OP:
 	case AML_BYTE_BREAK_OP:
 	case AML_BYTE_CONCAT_OP:
+	case AML_BYTE_CREATE_BIT_FIELD_OP:
+	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
+	case AML_BYTE_CREATE_QWORD_FIELD_OP:
+	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_EXT_OP_PREFIX:
@@ -5384,7 +5408,11 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
 		break;
 	case AML_BYTE_ALIAS_OP:
+	case AML_BYTE_CREATE_BIT_FIELD_OP:
+	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
+	case AML_BYTE_CREATE_QWORD_FIELD_OP:
+	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_METHOD_OP:
 	case AML_BYTE_NAME_OP:
 	case AML_BYTE_SCOPE_OP:
