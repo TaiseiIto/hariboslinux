@@ -859,7 +859,6 @@ AMLSymbol *analyse_aml_arg_op(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		arg_op->flags |= AML_SYMBOL_ERROR; // Incorrect arg op
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return arg_op;
@@ -1104,7 +1103,6 @@ AMLSymbol *analyse_aml_computational_data(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		computational_data->flags |= AML_SYMBOL_ERROR; // Incorrect computational data
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return computational_data;
@@ -1190,7 +1188,6 @@ AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		const_obj->flags |= AML_SYMBOL_ERROR; // Incorrect const obj
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return const_obj;
@@ -1258,7 +1255,6 @@ AMLSymbol *analyse_aml_data_object(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		data_object->flags |= AML_SYMBOL_ERROR; // Incorrect data object
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return data_object;
@@ -1293,7 +1289,6 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		data_ref_object->flags |= AML_SYMBOL_ERROR; // Incorrect data ref object
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return data_ref_object;
@@ -1383,7 +1378,6 @@ AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml)
 			break;
 		default:
 			def_alias->flags |= AML_SYMBOL_ERROR; // Syntax error
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 			break;
 		}
 		*name_string = analyse_aml_name_string(def_alias, aml);
@@ -1513,14 +1507,7 @@ AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml)
 	def_buffer->string.length += def_buffer->component.def_buffer.byte_list->string.length;
 	aml.initial += def_buffer->component.def_buffer.byte_list->string.length;
 	aml.length -= def_buffer->component.def_buffer.byte_list->string.length;
-	if((int)aml.length < 0)
-	{
-		def_buffer->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("aml.length = %#010.8x\n", aml.length);
-		for(unsigned int i = 0; i < def_buffer->string.length; i++)printf_serial("%02.2x%c", def_buffer->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_buffer);
-	}
+	if((int)aml.length < 0)def_buffer->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_buffer;
 }
 
@@ -1668,14 +1655,7 @@ AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml)
 	def_device->string.length += def_device->component.def_device.term_list->string.length;
 	aml.initial += def_device->component.def_device.term_list->string.length;
 	aml.length -= def_device->component.def_device.term_list->string.length;
-	if((int)aml.length < 0)
-	{
-		def_device->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("aml.length = %#010.8x\n", aml.length);
-		for(unsigned int i = 0; i < def_device->string.length; i++)printf_serial("%02.2x%c", def_device->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_device);
-	}
+	if((int)aml.length < 0)def_device->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_device;
 }
 
@@ -1705,14 +1685,7 @@ AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml)
 		def_else->string.length += def_else->component.def_else.term_list->string.length;
 		aml.initial += def_else->component.def_else.term_list->string.length;
 		aml.length -= def_else->component.def_else.term_list->string.length;
-		if((int)aml.length < 0)
-		{
-			def_else->flags |= AML_SYMBOL_ERROR; // Length error
-			printf_serial("aml.length = %#010.8x\n", aml.length);
-			for(unsigned int i = 0; i < def_else->string.length; i++)printf_serial("%02.2x%c", def_else->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-			printf_serial("\n");
-		print_aml_symbol(def_else);
-		}
+		if((int)aml.length < 0)def_else->flags |= AML_SYMBOL_ERROR; // Length error
 	}
 	return def_else;
 }
@@ -1746,14 +1719,7 @@ AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml)
 	def_field->string.length += def_field->component.def_field.field_list->string.length;
 	aml.initial += def_field->component.def_field.field_list->string.length;
 	aml.length -= def_field->component.def_field.field_list->string.length;
-	if((int)aml.length < 0)
-	{
-		def_field->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("aml.length = %#010.8x\n", aml.length);
-		for(unsigned int i = 0; i < def_field->string.length; i++)printf_serial("%02.2x%c", def_field->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_field);
-	}
+	if((int)aml.length < 0)def_field->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_field;
 }
 
@@ -1801,22 +1767,8 @@ AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml)
 	def_if_else->string.length += def_if_else->component.def_if_else.def_else->string.length;
 	else_aml.initial += def_if_else->component.def_if_else.def_else->string.length;
 	else_aml.length -= def_if_else->component.def_if_else.def_else->string.length;
-	if((int)if_aml.length < 0)
-	{
-		def_if_else->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("if_aml.length = %#010.8x\n", if_aml.length);
-		for(unsigned int i = 0; i < def_if_else->string.length; i++)printf_serial("%02.2x%c", def_if_else->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_if_else);
-	}
-	if((int)else_aml.length < 0)
-	{
-		def_if_else->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("else_aml.length = %#010.8x\n", else_aml.length);
-		for(unsigned int i = 0; i < def_if_else->string.length; i++)printf_serial("%02.2x%c", def_if_else->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_if_else);
-	}
+	if((int)if_aml.length < 0)def_if_else->flags |= AML_SYMBOL_ERROR; // Length error
+	if((int)else_aml.length < 0)def_if_else->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_if_else;
 }
 
@@ -2032,14 +1984,7 @@ AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml)
 	def_method->string.length += def_method->component.def_method.term_list->string.length;
 	aml.initial += def_method->component.def_method.term_list->string.length;
 	aml.length -= def_method->component.def_method.term_list->string.length;
-	if((int)aml.length < 0)
-	{
-		def_method->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("aml.length = %#010.8x\n", aml.length);
-		for(unsigned int i = 0; i < def_method->string.length; i++)printf_serial("%02.2x%c", def_method->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_method);
-	}
+	if((int)aml.length < 0)def_method->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_method;
 }
 
@@ -2199,14 +2144,7 @@ AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml)
 	def_package->string.length += def_package->component.def_package.package_element_list->string.length;
 	aml.initial += def_package->component.def_package.package_element_list->string.length;
 	aml.length -= def_package->component.def_package.package_element_list->string.length;
-	if((int)aml.length < 0)
-	{
-		def_package->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("aml.length = %#010.8x\n", aml.length);
-		for(unsigned int i = 0; i < def_package->string.length; i++)printf_serial("%02.2x%c", def_package->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_package);
-	}
+	if((int)aml.length < 0)def_package->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_package;
 }
 
@@ -2315,14 +2253,7 @@ AMLSymbol *analyse_aml_def_scope(AMLSymbol *parent, AMLSubstring aml)
 	def_scope->string.length += def_scope->component.def_scope.term_list->string.length;
 	aml.initial += def_scope->component.def_scope.term_list->string.length;
 	aml.length -= def_scope->component.def_scope.term_list->string.length;
-	if((int)aml.length < 0)
-	{
-		def_scope->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("aml.length = %#010.8x\n", aml.length);
-		for(unsigned int i = 0; i < def_scope->string.length; i++)printf_serial("%02.2x%c", def_scope->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_scope);
-	}
+	if((int)aml.length < 0)def_scope->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_scope;
 }
 
@@ -2526,14 +2457,7 @@ AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml)
 	def_while->string.length += def_while->component.def_while.term_list->string.length;
 	aml.initial += def_while->component.def_while.term_list->string.length;
 	aml.length -= def_while->component.def_while.term_list->string.length;
-	if((int)aml.length < 0)
-	{
-		def_while->flags |= AML_SYMBOL_ERROR; // Length error
-		printf_serial("aml.length = %#010.8x\n", aml.length);
-		for(unsigned int i = 0; i < def_while->string.length; i++)printf_serial("%02.2x%c", def_while->string.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf_serial("\n");
-		print_aml_symbol(def_while);
-	}
+	if((int)aml.length < 0)def_while->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_while;
 }
 
@@ -2884,12 +2808,8 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 			expression_opcode->component.expression_opcode.method_invocation = analyse_aml_method_invocation(expression_opcode, aml);
 			expression_opcode->string.length += expression_opcode->component.expression_opcode.method_invocation->string.length;
 		}
-		else
-		{
-			expression_opcode->flags |= AML_SYMBOL_ERROR; // Syntax error
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-			break;
-		}
+		else expression_opcode->flags |= AML_SYMBOL_ERROR; // Syntax error
+		break;
 	}
 	return expression_opcode;
 }
@@ -3212,7 +3132,6 @@ AMLSymbol *analyse_aml_local_op(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		local_op->flags |= AML_SYMBOL_ERROR; // Incorrect local op
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return local_op;
@@ -3446,11 +3365,7 @@ AMLSymbol *analyse_aml_name_path(AMLSymbol *parent, AMLSubstring aml)
 			name_path->string.length += name_path->component.name_path.name_seg->string.length;
 			name_path->component.name_path.string = name_path->component.name_path.name_seg->component.name_seg.string;
 		}
-		else
-		{
-			name_path->flags |= AML_SYMBOL_ERROR; // Syntax error
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else name_path->flags |= AML_SYMBOL_ERROR; // Syntax error
 		break;
 	}
 	return name_path;
@@ -3511,7 +3426,6 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSymbol *parent, AMLSubstring a
 		break;
 	default:
 		name_space_modifier_obj->flags |= AML_SYMBOL_ERROR; // Syntax error
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return name_space_modifier_obj;
@@ -3639,8 +3553,6 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 			break;
 		default:
 			named_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
-			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
 			break;
 		}
 		break;
@@ -3650,7 +3562,6 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		named_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return named_obj;
@@ -3783,7 +3694,6 @@ AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		object->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return object;
@@ -3921,11 +3831,7 @@ AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml)
 			aml.initial += package_element->component.package_element.name_string->string.length;
 			aml.length -= package_element->component.package_element.name_string->string.length;
 		}
-		else
-		{
-			package_element->flags |= AML_SYMBOL_ERROR; // Syntax error
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else package_element->flags |= AML_SYMBOL_ERROR; // Syntax error
 		break;
 	}
 	return package_element;
@@ -3980,11 +3886,7 @@ AMLSymbol *analyse_aml_package_element_list(AMLSymbol *parent, AMLSubstring aml)
 			aml.initial += package_element_list->component.package_element_list.package_element_list->string.length;
 			aml.length -= package_element_list->component.package_element_list.package_element_list->string.length;
 		}
-		else
-		{
-			package_element_list->flags |= AML_SYMBOL_ERROR; // Syntax error
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else package_element_list->flags |= AML_SYMBOL_ERROR; // Syntax error
 		break;
 	}
 	return package_element_list;
@@ -4431,11 +4333,7 @@ AMLSymbol *analyse_aml_revision_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	revision_op_suffix->string.length = 1;
 	revision_op_suffix->type = aml_revision_op_suffix;
 	revision_op_suffix->flags = 0;
-	if(*revision_op_suffix->string.initial != AML_BYTE_REVISION_OP)
-	{
-		revision_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect revision op prefix
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-	}
+	if(*revision_op_suffix->string.initial != AML_BYTE_REVISION_OP)revision_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect revision op prefix
 	return revision_op_suffix;
 }
 
@@ -4575,11 +4473,7 @@ AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml)
 			aml.initial += simple_name->component.simple_name.name_string->string.length;
 			aml.length -= simple_name->component.simple_name.name_string->string.length;
 		}
-		else
-		{
-			simple_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else simple_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		break;
 	}
 	return simple_name;
@@ -4675,7 +4569,6 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	default:
 		statement_opcode->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return statement_opcode;
@@ -4769,8 +4662,6 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 			break;
 		default:
 			super_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
-			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
 			break;
 		}
 		break;
@@ -4812,11 +4703,7 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 			aml.initial += super_name->component.super_name.simple_name->string.length;
 			aml.length -= super_name->component.super_name.simple_name->string.length;
 		}
-		else
-		{
-			super_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else super_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		break;
 	}
 	return super_name;
@@ -4886,11 +4773,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 			aml.initial += target->component.target.super_name->string.length;
 			aml.length -= target->component.target.super_name->string.length;
 		}
-		else
-		{
-			target->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else target->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		break;
 	}
 	return target;
@@ -4973,7 +4856,6 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 			break;
 		default:
 			term_arg->flags |= AML_SYMBOL_ERROR;
-			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
 			break;
 		}
 		break;
@@ -4994,11 +4876,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 			term_arg->component.term_arg.expression_opcode = analyse_aml_expression_opcode(term_arg, aml);
 			term_arg->string.length += term_arg->component.term_arg.expression_opcode->string.length;
 		}
-		else
-		{
-			term_arg->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else term_arg->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		break;
 	}
 	return term_arg;
@@ -5187,11 +5065,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 			aml.initial += term_list->component.term_list.term_list->string.length;
 			aml.length -= term_list->component.term_list.term_list->string.length;
 		}
-		else
-		{
-			term_list->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else term_list->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		break;
 	}
 	return term_list;
@@ -5279,11 +5153,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 			term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(term_obj, aml);
 			term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
 		}
-		else 
-		{
-			term_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
-		}
+		else term_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		break;
 	}
 	return term_obj;
@@ -7034,6 +6904,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_zero_op:
 		break;
 	}
+	if(aml_symbol->flags & AML_SYMBOL_ERROR)printf_serial(" ERROR!!!");
 	printf_serial("\n");
 	switch(aml_symbol->type)
 	{
