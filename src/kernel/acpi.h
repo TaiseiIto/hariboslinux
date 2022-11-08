@@ -202,7 +202,11 @@ typedef enum _AMLSymbolType
 	aml_cond_ref_of_op,
 	aml_cond_ref_of_op_suffix,
 	aml_const_obj,
+	aml_create_bit_field_op,
+	aml_create_byte_field_op,
+	aml_create_word_field_op,
 	aml_create_dword_field_op,
+	aml_create_qword_field_op,
 	aml_data,
 	aml_data_object,
 	aml_data_ref_object,
@@ -218,7 +222,11 @@ typedef enum _AMLSymbolType
 	aml_def_buffer,
 	aml_def_concat,
 	aml_def_cond_ref_of,
+	aml_def_create_bit_field,
+	aml_def_create_byte_field,
 	aml_def_create_dword_field,
+	aml_def_create_qword_field,
+	aml_def_create_word_field,
 	aml_def_decrement,
 	aml_def_deref_of,
 	aml_def_device,
@@ -538,6 +546,30 @@ typedef struct _AMLDefCondRefOf
 	struct _AMLSymbol *target;
 } AMLDefCondRefOf;
 
+typedef struct _AMLDefCreateBitField
+{
+	struct _AMLSymbol *create_bit_field_op;
+	struct _AMLSymbol *source_buff;
+	struct _AMLSymbol *byte_index;
+	struct _AMLSymbol *name_string;
+} AMLDefCreateBitField;
+
+typedef struct _AMLDefCreateByteField
+{
+	struct _AMLSymbol *create_byte_field_op;
+	struct _AMLSymbol *source_buff;
+	struct _AMLSymbol *byte_index;
+	struct _AMLSymbol *name_string;
+} AMLDefCreateByteField;
+
+typedef struct _AMLDefCreateWordField
+{
+	struct _AMLSymbol *create_word_field_op;
+	struct _AMLSymbol *source_buff;
+	struct _AMLSymbol *byte_index;
+	struct _AMLSymbol *name_string;
+} AMLDefCreateWordField;
+
 typedef struct _AMLDefCreateDWordField
 {
 	struct _AMLSymbol *create_dword_field_op;
@@ -545,6 +577,14 @@ typedef struct _AMLDefCreateDWordField
 	struct _AMLSymbol *byte_index;
 	struct _AMLSymbol *name_string;
 } AMLDefCreateDWordField;
+
+typedef struct _AMLDefCreateQWordField
+{
+	struct _AMLSymbol *create_qword_field_op;
+	struct _AMLSymbol *source_buff;
+	struct _AMLSymbol *byte_index;
+	struct _AMLSymbol *name_string;
+} AMLDefCreateQWordField;
 
 typedef struct _AMLDefDecrement
 {
@@ -1258,28 +1298,34 @@ typedef union _AMLComponent
 	AMLArgObj arg_obj;
 	AMLArgObject arg_object;
 	AMLAsciiCharList ascii_char_list;
-	AMLBufferSize buffer_size;
 	AMLBuffPkgStrObj buff_pkg_str_obj;
+	AMLBufferSize buffer_size;
 	AMLByteConst byte_const;
 	AMLByteIndex byte_index;
 	AMLByteList byte_list;
 	AMLComputationalData computational_data;
 	AMLCondRefOfOp cond_ref_of_op;
 	AMLConstObj const_obj;
+	AMLDWordConst dword_const;
+	AMLDWordData dword_data;
 	AMLData data;
 	AMLDataObject data_object;
 	AMLDataRefObject data_ref_object;
 	AMLDebugObj debug_obj;
 	AMLDebugOp debug_op;
-	AMLDefAlias def_alias;
 	AMLDefAcquire def_acquire;
 	AMLDefAdd def_add;
+	AMLDefAlias def_alias;
 	AMLDefAnd def_and;
 	AMLDefBreak def_break;
 	AMLDefBuffer def_buffer;
 	AMLDefConcat def_concat;
 	AMLDefCondRefOf def_cond_ref_of;
+	AMLDefCreateBitField def_create_bit_field;
+	AMLDefCreateByteField def_create_byte_field;
 	AMLDefCreateDWordField def_create_dword_field;
+	AMLDefCreateQWordField def_create_qword_field;
+	AMLDefCreateWordField def_create_word_field;
 	AMLDefDecrement def_decrement;
 	AMLDefDerefOf def_deref_of;
 	AMLDefDevice def_device;
@@ -1316,8 +1362,6 @@ typedef union _AMLComponent
 	AMLDefWhile def_while;
 	AMLDeviceOp device_op;
 	AMLDualNamePath dual_name_path;
-	AMLDWordConst dword_const;
-	AMLDWordData dword_data;
 	AMLExpressionOpcode expression_opcode;
 	AMLFieldElement field_element;
 	AMLFieldList field_list;
@@ -1331,19 +1375,19 @@ typedef union _AMLComponent
 	AMLMutexObject mutex_object;
 	AMLMutexOp mutex_op;
 	AMLNameChar name_char;
-	AMLNamedField named_field;
-	AMLNamedObj named_obj;
 	AMLNamePath name_path;
 	AMLNameSeg name_seg;
 	AMLNameSpaceModifierObj name_space_modifier_obj;
 	AMLNameString name_string;
+	AMLNamedField named_field;
+	AMLNamedObj named_obj;
 	AMLNotifyObject notify_object;
 	AMLNotifyValue notify_value;
 	AMLNumElements num_elements;
-	AMLObject object;
 	AMLObjReference obj_reference;
-	AMLOperand operand;
+	AMLObject object;
 	AMLOpRegionOp op_region_op;
+	AMLOperand operand;
 	AMLPackageElement package_element;
 	AMLPackageElementList package_element_list;
 	AMLPblkAddr pblk_addr;
@@ -1351,8 +1395,8 @@ typedef union _AMLComponent
 	AMLPkgLength pkg_length;
 	AMLPredicate predicate;
 	AMLPrefixPath prefix_path;
-	AMLProcessorOp processor_op;
 	AMLProcID proc_id;
+	AMLProcessorOp processor_op;
 	AMLQWordConst qword_const;
 	AMLQWordData qword_data;
 	AMLReferenceTypeOpcode reference_type_opcode;
@@ -1468,8 +1512,16 @@ AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_concat(AMLSymbol *parent, AMLSubstring aml);
 // <def_cond_ref_of> := <cond_ref_of_op> <super_name> <target>
 AMLSymbol *analyse_aml_def_cond_ref_of(AMLSymbol *parent, AMLSubstring aml);
+// <def_create_bit_field> := <create_bit_field_op> <source_buff> <byte_index> <name_string>
+AMLSymbol *analyse_aml_def_create_bit_field(AMLSymbol *parent, AMLSubstring aml);
+// <def_create_byte_field> := <create_byte_field_op> <source_buff> <byte_index> <name_string>
+AMLSymbol *analyse_aml_def_create_byte_field(AMLSymbol *parent, AMLSubstring aml);
 // <def_create_dword_field> := <create_dword_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring aml);
+// <def_create_qword_field> := <create_qword_field_op> <source_buff> <byte_index> <name_string>
+AMLSymbol *analyse_aml_def_create_qword_field(AMLSymbol *parent, AMLSubstring aml);
+// <def_create_word_field> := <create_word_field_op> <source_buff> <byte_index> <name_string>
+AMLSymbol *analyse_aml_def_create_word_field(AMLSymbol *parent, AMLSubstring aml);
 // <def_decrement> := <decrement_op> <super_name>
 AMLSymbol *analyse_aml_def_decrement(AMLSymbol *parent, AMLSubstring aml);
 // <def_deref_of> := <deref_of_op> <obj_reference>
