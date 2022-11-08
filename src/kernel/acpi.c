@@ -4473,7 +4473,8 @@ AMLSymbol *analyse_aml_seg_count(AMLSymbol *parent, AMLSubstring aml)
 	seg_count->string.initial = aml.initial;
 	seg_count->string.length = 1;
 	seg_count->type = aml_seg_count;
-	if(*seg_count->string.initial == 0x00)ERROR(); // SegCount can be from 1 to 255.
+	seg_count->flags = 0;
+	if(*seg_count->string.initial == 0x00)seg_count->flags |= AML_SYMBOL_ERROR; // SegCount can be from 1 to 255.
 	return seg_count;
 }
 
@@ -4485,6 +4486,7 @@ AMLSymbol *analyse_aml_shift_count(AMLSymbol *parent, AMLSubstring aml)
 	shift_count->string.initial = aml.initial;
 	shift_count->string.length = 0;
 	shift_count->type = aml_shift_count;
+	shift_count->flags = 0;
 	shift_count->component.shift_count.term_arg = analyse_aml_term_arg(shift_count, aml);
 	shift_count->string.length += shift_count->component.shift_count.term_arg->string.length;
 	aml.initial += shift_count->component.shift_count.term_arg->string.length;
@@ -4500,7 +4502,8 @@ AMLSymbol *analyse_aml_shift_left_op(AMLSymbol *parent, AMLSubstring aml)
 	shift_left_op->string.initial = aml.initial;
 	shift_left_op->string.length = 1;
 	shift_left_op->type = aml_shift_left_op;
-	if(*shift_left_op->string.initial != AML_BYTE_SHIFT_LEFT_OP)ERROR(); // Incorrect shift_left_op
+	shift_left_op->flags = 0;
+	if(*shift_left_op->string.initial != AML_BYTE_SHIFT_LEFT_OP)shift_left_op->flags |= AML_SYMBOL_ERROR; // Incorrect shift_left_op
 	return shift_left_op;
 }
 
@@ -4512,7 +4515,8 @@ AMLSymbol *analyse_aml_shift_right_op(AMLSymbol *parent, AMLSubstring aml)
 	shift_right_op->string.initial = aml.initial;
 	shift_right_op->string.length = 1;
 	shift_right_op->type = aml_shift_right_op;
-	if(*shift_right_op->string.initial != AML_BYTE_SHIFT_RIGHT_OP)ERROR(); // Incorrect shift_right_op
+	shift_right_op->flags = 0;
+	if(*shift_right_op->string.initial != AML_BYTE_SHIFT_RIGHT_OP)shift_right_op->flags |= AML_SYMBOL_ERROR; // Incorrect shift_right_op
 	return shift_right_op;
 }
 
@@ -4524,6 +4528,7 @@ AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml)
 	simple_name->string.initial = aml.initial;
 	simple_name->string.length = 0;
 	simple_name->type = aml_simple_name;
+	simple_name->flags = 0;
 	simple_name->component.simple_name.name_string = NULL;
 	simple_name->component.simple_name.arg_obj = NULL;
 	simple_name->component.simple_name.local_obj = NULL;
@@ -4572,7 +4577,7 @@ AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml)
 		}
 		else
 		{
-			ERROR(); // Syntax error or unimplemented pattern
+			simple_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
@@ -4588,7 +4593,8 @@ AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml)
 	size_of_op->string.initial = aml.initial;
 	size_of_op->string.length = 1;
 	size_of_op->type = aml_size_of_op;
-	if(*size_of_op->string.initial != AML_BYTE_SIZE_OF_OP)ERROR(); // Incorrect size of op
+	size_of_op->flags = 0;
+	if(*size_of_op->string.initial != AML_BYTE_SIZE_OF_OP)size_of_op->flags |= AML_SYMBOL_ERROR; // Incorrect size of op
 	return size_of_op;
 }
 
@@ -4600,6 +4606,7 @@ AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml)
 	source_buff->string.initial = aml.initial;
 	source_buff->string.length = 0;
 	source_buff->type = aml_source_buff;
+	source_buff->flags = 0;
 	source_buff->component.source_buff.term_arg = analyse_aml_term_arg(source_buff, aml);
 	source_buff->string.length += source_buff->component.source_buff.term_arg->string.length;
 	aml.initial += source_buff->component.source_buff.term_arg->string.length;
@@ -4615,6 +4622,7 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 	statement_opcode->string.initial = aml.initial;
 	statement_opcode->string.length = 0;
 	statement_opcode->type = aml_statement_opcode;
+	statement_opcode->flags = 0;
 	statement_opcode->component.statement_opcode.def_break = NULL;
 	statement_opcode->component.statement_opcode.def_break_point = NULL;
 	statement_opcode->component.statement_opcode.def_continue = NULL;
@@ -4666,7 +4674,7 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 		statement_opcode->string.length += statement_opcode->component.statement_opcode.def_while->string.length;
 		break;
 	default:
-		ERROR(); // Syntax error or unimplemented pattern
+		statement_opcode->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
@@ -4681,7 +4689,8 @@ AMLSymbol *analyse_aml_store_op(AMLSymbol *parent, AMLSubstring aml)
 	store_op->string.initial = aml.initial;
 	store_op->string.length = 1;
 	store_op->type = aml_store_op;
-	if(*store_op->string.initial != AML_BYTE_STORE_OP)ERROR(); // Incorrect store op
+	store_op->flags = 0;
+	if(*store_op->string.initial != AML_BYTE_STORE_OP)store_op->flags |= AML_SYMBOL_ERROR; // Incorrect store op
 	return store_op;
 }
 
@@ -4693,6 +4702,7 @@ AMLSymbol *analyse_aml_string(AMLSymbol *parent, AMLSubstring aml)
 	string->string.initial = aml.initial;
 	string->string.length = 0;
 	string->type = aml_string;
+	string->flags = 0;
 	string->component.string.string_prefix = analyse_aml_string_prefix(string, aml);
 	string->string.length += string->component.string.string_prefix->string.length;
 	aml.initial += string->component.string.string_prefix->string.length;
@@ -4716,7 +4726,8 @@ AMLSymbol *analyse_aml_string_prefix(AMLSymbol *parent, AMLSubstring aml)
 	string_prefix->string.initial = aml.initial;
 	string_prefix->string.length = 1;
 	string_prefix->type = aml_string_prefix;
-	if(*string_prefix->string.initial != AML_BYTE_STRING_PREFIX)ERROR(); // Incorrect string prefix
+	string_prefix->flags = 0;
+	if(*string_prefix->string.initial != AML_BYTE_STRING_PREFIX)string_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect string prefix
 	return string_prefix;
 }
 
@@ -4728,7 +4739,8 @@ AMLSymbol *analyse_aml_subtract_op(AMLSymbol *parent, AMLSubstring aml)
 	subtract_op->string.initial = aml.initial;
 	subtract_op->string.length = 1;
 	subtract_op->type = aml_subtract_op;
-	if(*subtract_op->string.initial != AML_BYTE_SUBTRACT_OP)ERROR(); // Incorrect subtract op
+	subtract_op->flags = 0;
+	if(*subtract_op->string.initial != AML_BYTE_SUBTRACT_OP)subtract_op->flags |= AML_SYMBOL_ERROR; // Incorrect subtract op
 	return subtract_op;
 }
 
@@ -4740,6 +4752,7 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 	super_name->string.initial = aml.initial;
 	super_name->string.length = 0;
 	super_name->type = aml_super_name;
+	super_name->flags = 0;
 	super_name->component.super_name.debug_obj = NULL;
 	super_name->component.super_name.reference_type_opcode = NULL;
 	super_name->component.super_name.simple_name = NULL;
@@ -4755,7 +4768,7 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 			aml.length -= super_name->component.super_name.debug_obj->string.length;
 			break;
 		default:
-			ERROR(); // Syntax error or unimplemented pattern
+			super_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
 			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
 			break;
@@ -4801,7 +4814,7 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 		}
 		else
 		{
-			ERROR(); // Syntax error or unimplemented pattern
+			super_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
@@ -4817,7 +4830,8 @@ AMLSymbol *analyse_aml_sync_flags(AMLSymbol *parent, AMLSubstring aml)
 	sync_flags->string.initial = aml.initial;
 	sync_flags->string.length = 1;
 	sync_flags->type = aml_sync_flags;
-	if(0x10 <= *aml.initial)ERROR(); // Incorrect sync flags
+	sync_flags->flags = 0;
+	if(0x10 <= *aml.initial)sync_flags->flags |= AML_SYMBOL_ERROR; // Incorrect sync flags
 	return sync_flags;
 }
 
@@ -4829,6 +4843,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 	target->string.initial = aml.initial;
 	target->string.length = 0;
 	target->type = aml_target;
+	target->flags = 0;
 	target->component.target.super_name = NULL;
 	target->component.target.null_name = NULL;
 	switch(*target->string.initial)
@@ -4873,7 +4888,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 		}
 		else
 		{
-			ERROR(); // Syntax error or unimplemented pattern
+			target->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
@@ -4889,6 +4904,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	term_arg->string.initial = aml.initial;
 	term_arg->string.length = 0;
 	term_arg->type = aml_term_arg;
+	term_arg->flags = 0;
 	term_arg->component.term_arg.expression_opcode = NULL;
 	term_arg->component.term_arg.data_object = NULL;
 	term_arg->component.term_arg.arg_obj = NULL;
@@ -4956,7 +4972,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 			term_arg->string.length += term_arg->component.term_arg.data_object->string.length;
 			break;
 		default:
-			ERROR();
+			term_arg->flags |= AML_SYMBOL_ERROR;
 			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
 			break;
 		}
@@ -4980,7 +4996,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 		}
 		else
 		{
-			ERROR(); // Syntax error or unimplemented pattern
+			term_arg->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
@@ -4996,6 +5012,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	term_arg_list->string.initial = aml.initial;
 	term_arg_list->string.length = 0;
 	term_arg_list->type = aml_term_arg_list;
+	term_arg_list->flags = 0;
 	term_arg_list->component.term_arg_list.term_arg = NULL;
 	term_arg_list->component.term_arg_list.term_arg_list = NULL;
 	if(num_of_term_args == -1)switch(*aml.initial)
@@ -5109,6 +5126,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	term_list->string.initial = aml.initial;
 	term_list->string.length = 0;
 	term_list->type = aml_term_list;
+	term_list->flags = 0;
 	term_list->component.term_list.term_list = NULL;
 	term_list->component.term_list.term_obj = NULL;
 	if(!aml.length)return term_list;
@@ -5171,7 +5189,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 		}
 		else
 		{
-			ERROR(); // Syntax error or unimplemented pattern
+			term_list->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
@@ -5187,6 +5205,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	term_obj->string.initial = aml.initial;
 	term_obj->string.length = 0;
 	term_obj->type = aml_term_obj;
+	term_obj->flags = 0;
 	term_obj->component.term_obj.object = NULL;
 	term_obj->component.term_obj.statement_opcode = NULL;
 	term_obj->component.term_obj.expression_opcode = NULL;
@@ -5262,7 +5281,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 		}
 		else 
 		{
-			ERROR(); // Syntax error or unimplemented pattern
+			term_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
@@ -5278,6 +5297,7 @@ AMLSymbol *analyse_aml_time_out(AMLSymbol *parent, AMLSubstring aml)
 	time_out->string.initial = aml.initial;
 	time_out->string.length = 0;
 	time_out->type = aml_time_out;
+	time_out->flags = 0;
 	time_out->component.time_out.word_data = analyse_aml_word_data(time_out, aml);
 	time_out->string.length += time_out->component.time_out.word_data->string.length;
 	return time_out;
@@ -5291,7 +5311,8 @@ AMLSymbol *analyse_aml_to_buffer_op(AMLSymbol *parent, AMLSubstring aml)
 	to_buffer_op->string.initial = aml.initial;
 	to_buffer_op->string.length = 1;
 	to_buffer_op->type = aml_to_buffer_op;
-	if(*to_buffer_op->string.initial != AML_BYTE_TO_BUFFER_OP)ERROR();
+	to_buffer_op->flags = 0;
+	if(*to_buffer_op->string.initial != AML_BYTE_TO_BUFFER_OP)to_buffer_op->flags |= AML_SYMBOL_ERROR;
 	return to_buffer_op;
 }
 
@@ -5303,7 +5324,8 @@ AMLSymbol *analyse_aml_to_hex_string_op(AMLSymbol *parent, AMLSubstring aml)
 	to_hex_string_op->string.initial = aml.initial;
 	to_hex_string_op->string.length = 1;
 	to_hex_string_op->type = aml_to_hex_string_op;
-	if(*to_hex_string_op->string.initial != AML_BYTE_TO_HEX_STRING_OP)ERROR();
+	to_hex_string_op->flags = 0;
+	if(*to_hex_string_op->string.initial != AML_BYTE_TO_HEX_STRING_OP)to_hex_string_op->flags |= AML_SYMBOL_ERROR;
 	return to_hex_string_op;
 }
 
@@ -5315,7 +5337,8 @@ AMLSymbol *analyse_aml_while_op(AMLSymbol *parent, AMLSubstring aml)
 	while_op->string.initial = aml.initial;
 	while_op->string.length = 1;
 	while_op->type = aml_while_op;
-	if(*while_op->string.initial != AML_BYTE_WHILE_OP)ERROR(); // Incorrect while op
+	while_op->flags = 0;
+	if(*while_op->string.initial != AML_BYTE_WHILE_OP)while_op->flags |= AML_SYMBOL_ERROR; // Incorrect while op
 	return while_op;
 }
 
@@ -5327,6 +5350,7 @@ AMLSymbol *analyse_aml_word_const(AMLSymbol *parent, AMLSubstring aml)
 	word_const->string.initial = aml.initial;
 	word_const->string.length = 0;
 	word_const->type = aml_word_const;
+	word_const->flags = 0;
 	word_const->component.word_const.word_prefix = analyse_aml_word_prefix(word_const, aml);
 	word_const->string.length += word_const->component.word_const.word_prefix->string.length;
 	aml.initial += word_const->component.word_const.word_prefix->string.length;
@@ -5347,6 +5371,7 @@ AMLSymbol *analyse_aml_word_data(AMLSymbol *parent, AMLSubstring aml)
 	word_data->string.initial = aml.initial;
 	word_data->string.length = 0;
 	word_data->type = aml_word_data;
+	word_data->flags = 0;
 	for(AMLSymbol **byte_data = word_data->component.word_data.byte_data; byte_data != word_data->component.word_data.byte_data + _countof(word_data->component.word_data.byte_data); byte_data++)
 	{
 		*byte_data = analyse_aml_byte_data(word_data, aml);
@@ -5366,7 +5391,8 @@ AMLSymbol *analyse_aml_word_prefix(AMLSymbol *parent, AMLSubstring aml)
 	word_prefix->string.initial = aml.initial;
 	word_prefix->string.length = 1;
 	word_prefix->type = aml_word_prefix;
-	if(*aml.initial != AML_BYTE_WORD_PREFIX)ERROR(); // Incorrect word prefix
+	word_prefix->flags = 0;
+	if(*aml.initial != AML_BYTE_WORD_PREFIX)word_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect word prefix
 	return word_prefix;
 }
 
@@ -5379,7 +5405,8 @@ AMLSymbol *analyse_aml_zero_op(AMLSymbol *parent, AMLSubstring aml)
 	zero_op->string.initial = aml.initial;
 	zero_op->string.length = 1;
 	zero_op->type = aml_zero_op;
-	if(*zero_op->string.initial != AML_BYTE_ZERO_OP)ERROR(); // Incorrect zero op
+	zero_op->flags = 0;
+	if(*zero_op->string.initial != AML_BYTE_ZERO_OP)zero_op->flags |= AML_SYMBOL_ERROR; // Incorrect zero op
 	return zero_op;
 }
 
