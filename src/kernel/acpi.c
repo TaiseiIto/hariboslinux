@@ -1570,7 +1570,7 @@ AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring am
 	def_create_dword_field->string.initial = aml.initial;
 	def_create_dword_field->string.length = 0;
 	def_create_dword_field->type = aml_def_create_dword_field;
-	def_create_dword_field->flags |= AML_SYMBOL_ERROR;
+	def_create_dword_field->flags = 0;
 	def_create_dword_field->component.def_create_dword_field.create_dword_field_op = analyse_aml_create_dword_field_op(def_create_dword_field, aml);
 	def_create_dword_field->string.length += def_create_dword_field->component.def_create_dword_field.create_dword_field_op->string.length;
 	aml.initial += def_create_dword_field->component.def_create_dword_field.create_dword_field_op->string.length;
