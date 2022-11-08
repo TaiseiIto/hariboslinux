@@ -1362,6 +1362,8 @@ typedef struct _AMLSymbol
 	AMLSymbolType type;
 	AMLComponent component;
 	struct _AMLSymbol *parent;
+	unsigned char flags;
+	#define AML_SYMBOL_ERROR 0x01
 } AMLSymbol;
 
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
