@@ -273,6 +273,7 @@ typedef enum _AMLSymbolType
 	aml_if_op,
 	aml_increment_op,
 	aml_index_field_op,
+	aml_index_field_op_suffix,
 	aml_index_op,
 	aml_index_value,
 	aml_lead_name_char,
@@ -971,6 +972,7 @@ typedef struct _AMLNamedObj
 	struct _AMLSymbol *def_device;
 	struct _AMLSymbol *def_external;
 	struct _AMLSymbol *def_field;
+	struct _AMLSymbol *def_index_field;
 	struct _AMLSymbol *def_method;
 	struct _AMLSymbol *def_mutex;
 	struct _AMLSymbol *def_op_region;
@@ -1576,6 +1578,8 @@ AMLSymbol *analyse_aml_if_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_increment_op(AMLSymbol *parent, AMLSubstring aml);
 // <index_field_op> := <ext_op_prefix> <index_field_op_suffix>
 AMLSymbol *analyse_aml_index_field_op(AMLSymbol *parent, AMLSubstring aml);
+// <index_field_op_suffix> := AML_BYTE_INDEX_FIELD_OP
+AMLSymbol *analyse_aml_index_field_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <index_op> := AML_BYTE_INDEX_OP
 AMLSymbol *analyse_aml_index_op(AMLSymbol *parent, AMLSubstring aml);
 // <index_value> := <term_arg>

@@ -255,6 +255,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_if_op_name = "IfOp";
 	static char const * const aml_increment_op_name = "IncrementOp";
 	static char const * const aml_index_field_op_name = "IndexFieldOp";
+	static char const * const aml_index_field_op_suffix_name = "IndexFieldOpSuffix";
 	static char const * const aml_index_op_name = "IndexOp";
 	static char const * const aml_index_value_name = "IndexValue";
 	static char const * const aml_lead_name_char_name = "LeadNameChar";
@@ -544,6 +545,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_increment_op_name;
 	case aml_index_field_op:
 		return aml_index_field_op_name;
+	case aml_index_field_op_suffix:
+		return aml_index_field_op_suffix_name;
 	case aml_index_op:
 		return aml_index_op_name;
 	case aml_index_value:
@@ -3029,8 +3032,24 @@ AMLSymbol *analyse_aml_index_field_op(AMLSymbol *parent, AMLSubstring aml)
 	index_field_op->string.length += index_field_op->component.index_field_op.ext_op_prefix->string.length;
 	aml.initial += index_field_op->component.index_field_op.ext_op_prefix->string.length;
 	aml.length -= index_field_op->component.index_field_op.ext_op_prefix->string.length;
-	index_field_op->component.index_field_op.index_field_op_suffix = NULL;
+	index_field_op->component.index_field_op.index_field_op_suffix = analyse_aml_index_field_op_suffix(index_field_op, aml);
+	index_field_op->string.length += index_field_op->component.index_field_op.index_field_op_suffix->string.length;
+	aml.initial += index_field_op->component.index_field_op.index_field_op_suffix->string.length;
+	aml.length -= index_field_op->component.index_field_op.index_field_op_suffix->string.length;
 	return index_field_op;
+}
+
+// <index_field_op_suffix> := AML_BYTE_INDEX_FIELD_OP
+AMLSymbol *analyse_aml_index_field_op_suffix(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *index_field_op_suffix = malloc(sizeof(*index_field_op_suffix));
+	index_field_op_suffix->parent = parent;
+	index_field_op_suffix->string.initial = aml.initial;
+	index_field_op_suffix->string.length = 1;
+	index_field_op_suffix->type = aml_index_field_op_suffix;
+	index_field_op_suffix->flags = 0;
+	if(*index_field_op_suffix->string.initial != AML_BYTE_INDEX_FIELD_OP)index_field_op_suffix->flags |= AML_SYMBOL_ERROR;
+	return index_field_op_suffix;
 }
 
 // <index_op> := AML_BYTE_INDEX_OP
@@ -3574,6 +3593,7 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 	named_obj->component.named_obj.def_device = NULL;
 	named_obj->component.named_obj.def_external = NULL;
 	named_obj->component.named_obj.def_field = NULL;
+	named_obj->component.named_obj.def_index_field = NULL;
 	named_obj->component.named_obj.def_method = NULL;
 	named_obj->component.named_obj.def_mutex = NULL;
 	named_obj->component.named_obj.def_op_region = NULL;
@@ -3596,6 +3616,10 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 		case AML_BYTE_FIELD_OP:
 			named_obj->component.named_obj.def_field = analyse_aml_def_field(named_obj, aml);
 			named_obj->string.length += named_obj->component.named_obj.def_field->string.length;
+			break;
+		case AML_BYTE_INDEX_FIELD_OP:
+			named_obj->component.named_obj.def_index_field = analyse_aml_def_index_field(named_obj, aml);
+			named_obj->string.length += named_obj->component.named_obj.def_index_field->string.length;
 			break;
 		case AML_BYTE_MUTEX_OP:
 			named_obj->component.named_obj.def_mutex = analyse_aml_def_mutex(named_obj, aml);
@@ -5786,6 +5810,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.index_field_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.index_field_op.ext_op_prefix);
 		if(aml_symbol->component.index_field_op.index_field_op_suffix)delete_aml_symbol(aml_symbol->component.index_field_op.index_field_op_suffix);
 		break;
+	case aml_index_field_op_suffix:
+		break;
 	case aml_index_op:
 		break;
 	case aml_index_value:
@@ -5879,6 +5905,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.named_obj.def_device)delete_aml_symbol(aml_symbol->component.named_obj.def_device);
 		if(aml_symbol->component.named_obj.def_external)delete_aml_symbol(aml_symbol->component.named_obj.def_external);
 		if(aml_symbol->component.named_obj.def_field)delete_aml_symbol(aml_symbol->component.named_obj.def_field);
+		if(aml_symbol->component.named_obj.def_index_field)delete_aml_symbol(aml_symbol->component.named_obj.def_index_field);
 		if(aml_symbol->component.named_obj.def_method)delete_aml_symbol(aml_symbol->component.named_obj.def_method);
 		if(aml_symbol->component.named_obj.def_mutex)delete_aml_symbol(aml_symbol->component.named_obj.def_mutex);
 		if(aml_symbol->component.named_obj.def_op_region)delete_aml_symbol(aml_symbol->component.named_obj.def_op_region);
@@ -6768,6 +6795,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_index_field_op:
 		break;
+	case aml_index_field_op_suffix:
+		break;
 	case aml_index_op:
 		break;
 	case aml_index_value:
@@ -7414,6 +7443,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.index_field_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.index_field_op.ext_op_prefix);
 		if(aml_symbol->component.index_field_op.index_field_op_suffix)print_aml_symbol(aml_symbol->component.index_field_op.index_field_op_suffix);
 		break;
+	case aml_index_field_op_suffix:
 	case aml_index_op:
 		break;
 	case aml_index_value:
@@ -7504,6 +7534,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.named_obj.def_device)print_aml_symbol(aml_symbol->component.named_obj.def_device);
 		if(aml_symbol->component.named_obj.def_external)print_aml_symbol(aml_symbol->component.named_obj.def_external);
 		if(aml_symbol->component.named_obj.def_field)print_aml_symbol(aml_symbol->component.named_obj.def_field);
+		if(aml_symbol->component.named_obj.def_index_field)print_aml_symbol(aml_symbol->component.named_obj.def_index_field);
 		if(aml_symbol->component.named_obj.def_method)print_aml_symbol(aml_symbol->component.named_obj.def_method);
 		if(aml_symbol->component.named_obj.def_mutex)print_aml_symbol(aml_symbol->component.named_obj.def_mutex);
 		if(aml_symbol->component.named_obj.def_op_region)print_aml_symbol(aml_symbol->component.named_obj.def_op_region);
