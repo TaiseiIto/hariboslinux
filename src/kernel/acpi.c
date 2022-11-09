@@ -217,6 +217,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_device_name = "DefDevice";
 	static char const * const aml_def_else_name = "DefElse";
 	static char const * const aml_def_field_name = "DefField";
+	static char const * const aml_def_find_set_right_bit_name = "DefFindSetRightBit";
 	static char const * const aml_def_if_else_name = "DefIfElse";
 	static char const * const aml_def_increment_name = "DefIncrement";
 	static char const * const aml_def_index_name = "DefIndex";
@@ -482,6 +483,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_else_name;
 	case aml_def_field:
 		return aml_def_field_name;
+	case aml_def_find_set_right_bit:
+		return aml_def_find_set_right_bit_name;
 	case aml_def_if_else:
 		return aml_def_if_else_name;
 	case aml_def_increment:
@@ -2146,6 +2149,21 @@ AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml)
 	aml.length -= def_field->component.def_field.field_list->string.length;
 	if((int)aml.length < 0)def_field->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_field;
+}
+
+// <def_find_set_right_bit> := <find_set_right_bitop> <operand> <target>
+AMLSymbol *analyse_aml_def_find_set_right_bit(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_find_set_right_bit aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_find_set_right_bit = malloc(sizeof(*def_find_set_right_bit));
+	def_find_set_right_bit->parent = parent;
+	def_find_set_right_bit->string.initial = aml.initial;
+	def_find_set_right_bit->string.length = 0;
+	def_find_set_right_bit->flags = 0;
+	def_find_set_right_bit->component.def_find_set_right_bit.find_set_right_bit_op = NULL;
+	def_find_set_right_bit->component.def_find_set_right_bit.operand = NULL;
+	def_find_set_right_bit->component.def_find_set_right_bit.target = NULL;
+	return def_find_set_right_bit;
 }
 
 // <def_if_else> := <if_op> <pkg_length> <predicate> <term_list> <def_else>
@@ -6533,6 +6551,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_field.field_flags)delete_aml_symbol(aml_symbol->component.def_field.field_flags);
 		if(aml_symbol->component.def_field.field_list)delete_aml_symbol(aml_symbol->component.def_field.field_list);
 		break;
+	case aml_def_find_set_right_bit:
+		if(aml_symbol->component.def_find_set_right_bit.find_set_right_bit_op)delete_aml_symbol(aml_symbol->component.def_find_set_right_bit.find_set_right_bit_op);
+		if(aml_symbol->component.def_find_set_right_bit.operand)delete_aml_symbol(aml_symbol->component.def_find_set_right_bit.operand);
+		if(aml_symbol->component.def_find_set_right_bit.target)delete_aml_symbol(aml_symbol->component.def_find_set_right_bit.target);
+		break;
 	case aml_def_if_else:
 		if(aml_symbol->component.def_if_else.if_op)delete_aml_symbol(aml_symbol->component.def_if_else.if_op);
 		if(aml_symbol->component.def_if_else.pkg_length)delete_aml_symbol(aml_symbol->component.def_if_else.pkg_length);
@@ -7711,6 +7734,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_field:
 		break;
+	case aml_def_find_set_right_bit:
+		break;
 	case aml_def_if_else:
 		break;
 	case aml_def_increment:
@@ -8241,6 +8266,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_field.name_string)print_aml_symbol(aml_symbol->component.def_field.name_string);
 		if(aml_symbol->component.def_field.field_flags)print_aml_symbol(aml_symbol->component.def_field.field_flags);
 		if(aml_symbol->component.def_field.field_list)print_aml_symbol(aml_symbol->component.def_field.field_list);
+		break;
+	case aml_def_find_set_right_bit:
+		if(aml_symbol->component.def_find_set_right_bit.find_set_right_bit_op)print_aml_symbol(aml_symbol->component.def_find_set_right_bit.find_set_right_bit_op);
+		if(aml_symbol->component.def_find_set_right_bit.operand)print_aml_symbol(aml_symbol->component.def_find_set_right_bit.operand);
+		if(aml_symbol->component.def_find_set_right_bit.target)print_aml_symbol(aml_symbol->component.def_find_set_right_bit.target);
 		break;
 	case aml_def_if_else:
 		if(aml_symbol->component.def_if_else.if_op)print_aml_symbol(aml_symbol->component.def_if_else.if_op);

@@ -235,6 +235,7 @@ typedef enum _AMLSymbolType
 	aml_def_device,
 	aml_def_else,
 	aml_def_field,
+	aml_def_find_set_right_bit,
 	aml_def_if_else,
 	aml_def_increment,
 	aml_def_index,
@@ -638,6 +639,13 @@ typedef struct _AMLDefField
 	struct _AMLSymbol *field_flags;
 	struct _AMLSymbol *field_list;
 } AMLDefField;
+
+typedef struct _AMLDefFindSetRightBit
+{
+	struct _AMLSymbol *find_set_right_bit_op;
+	struct _AMLSymbol *operand;
+	struct _AMLSymbol *target;
+} AMLDefFindSetRightBit;
 
 typedef struct _AMLDefIfElse
 {
@@ -1357,6 +1365,7 @@ typedef union _AMLComponent
 	AMLDefDevice def_device;
 	AMLDefElse def_else;
 	AMLDefField def_field;
+	AMLDefFindSetRightBit def_find_set_right_bit;
 	AMLDefIfElse def_if_else;
 	AMLDefIncrement def_increment;
 	AMLDefIndex def_index;
@@ -1565,6 +1574,8 @@ AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml);
+// <def_find_set_right_bit> := <find_set_right_bitop> <operand> <target>
+AMLSymbol *analyse_aml_def_find_set_right_bit(AMLSymbol *parent, AMLSubstring aml);
 // <def_if_else> := <if_op> <pkg_length> <predicate> <term_list> <def_else>
 AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml);
 // <def_increment> := <increment_op> <super_name>
