@@ -210,6 +210,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_create_bit_field_name = "DefCreateBitField";
 	static char const * const aml_def_create_byte_field_name = "DefCreateByteField";
 	static char const * const aml_def_create_dword_field_name = "DefCreateDWordField";
+	static char const * const aml_def_create_field_name = "DefCreateField";
 	static char const * const aml_def_create_qword_field_name = "DefCreateQWordField";
 	static char const * const aml_def_create_word_field_name = "DefCreateWordField";
 	static char const * const aml_def_decrement_name = "DefDecrement";
@@ -470,6 +471,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_create_byte_field_name;
 	case aml_def_create_dword_field:
 		return aml_def_create_dword_field_name;
+	case aml_def_create_field:
+		return aml_def_create_field_name;
 	case aml_def_create_qword_field:
 		return aml_def_create_qword_field_name;
 	case aml_def_create_word_field:
@@ -1956,6 +1959,24 @@ AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring am
 	aml.initial += def_create_dword_field->component.def_create_dword_field.name_string->string.length;
 	aml.length -= def_create_dword_field->component.def_create_dword_field.name_string->string.length;
 	return def_create_dword_field;
+}
+
+// <def_create_field> := <create_field_op> <soutce_buff> <bit_index> <num_bits> <name_string>
+AMLSymbol *analyse_aml_def_create_field(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_create_field aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_create_field = malloc(sizeof(*def_create_field));
+	def_create_field->parent = parent;
+	def_create_field->string.initial = aml.initial;
+	def_create_field->string.length = 0;
+	def_create_field->type = aml_def_create_field;
+	def_create_field->flags = 0;
+	def_create_field->component.def_create_field.create_field_op = NULL;
+	def_create_field->component.def_create_field.source_buff = NULL;
+	def_create_field->component.def_create_field.bit_index = NULL;
+	def_create_field->component.def_create_field.num_bits = NULL;
+	def_create_field->component.def_create_field.name_string = NULL;
+	return def_create_field;
 }
 
 // <def_create_qword_field> := <create_qword_field_op> <source_buff> <byte_index> <name_string>
@@ -6552,6 +6573,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_create_dword_field.byte_index)delete_aml_symbol(aml_symbol->component.def_create_dword_field.byte_index);
 		if(aml_symbol->component.def_create_dword_field.name_string)delete_aml_symbol(aml_symbol->component.def_create_dword_field.name_string);
 		break;
+	case aml_def_create_field:
+		if(aml_symbol->component.def_create_field.create_field_op)delete_aml_symbol(aml_symbol->component.def_create_field.create_field_op);
+		if(aml_symbol->component.def_create_field.source_buff)delete_aml_symbol(aml_symbol->component.def_create_field.source_buff);
+		if(aml_symbol->component.def_create_field.bit_index)delete_aml_symbol(aml_symbol->component.def_create_field.bit_index);
+		if(aml_symbol->component.def_create_field.num_bits)delete_aml_symbol(aml_symbol->component.def_create_field.num_bits);
+		if(aml_symbol->component.def_create_field.name_string)delete_aml_symbol(aml_symbol->component.def_create_field.name_string);
+		break;
 	case aml_def_create_qword_field:
 		if(aml_symbol->component.def_create_qword_field.create_qword_field_op)delete_aml_symbol(aml_symbol->component.def_create_qword_field.create_qword_field_op);
 		if(aml_symbol->component.def_create_qword_field.source_buff)delete_aml_symbol(aml_symbol->component.def_create_qword_field.source_buff);
@@ -7761,6 +7789,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_create_dword_field:
 		break;
+	case aml_def_create_field:
+		break;
 	case aml_def_create_qword_field:
 		break;
 	case aml_def_create_word_field:
@@ -8271,6 +8301,13 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_create_dword_field.source_buff)print_aml_symbol(aml_symbol->component.def_create_dword_field.source_buff);
 		if(aml_symbol->component.def_create_dword_field.byte_index)print_aml_symbol(aml_symbol->component.def_create_dword_field.byte_index);
 		if(aml_symbol->component.def_create_dword_field.name_string)print_aml_symbol(aml_symbol->component.def_create_dword_field.name_string);
+		break;
+	case aml_def_create_field:
+		if(aml_symbol->component.def_create_field.create_field_op)print_aml_symbol(aml_symbol->component.def_create_field.create_field_op);
+		if(aml_symbol->component.def_create_field.source_buff)print_aml_symbol(aml_symbol->component.def_create_field.source_buff);
+		if(aml_symbol->component.def_create_field.bit_index)print_aml_symbol(aml_symbol->component.def_create_field.bit_index);
+		if(aml_symbol->component.def_create_field.num_bits)print_aml_symbol(aml_symbol->component.def_create_field.num_bits);
+		if(aml_symbol->component.def_create_field.name_string)print_aml_symbol(aml_symbol->component.def_create_field.name_string);
 		break;
 	case aml_def_create_qword_field:
 		if(aml_symbol->component.def_create_qword_field.create_qword_field_op)print_aml_symbol(aml_symbol->component.def_create_qword_field.create_qword_field_op);

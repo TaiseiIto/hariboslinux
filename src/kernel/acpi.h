@@ -228,6 +228,7 @@ typedef enum _AMLSymbolType
 	aml_def_create_bit_field,
 	aml_def_create_byte_field,
 	aml_def_create_dword_field,
+	aml_def_create_field,
 	aml_def_create_qword_field,
 	aml_def_create_word_field,
 	aml_def_decrement,
@@ -580,6 +581,15 @@ typedef struct _AMLDefCreateByteField
 	struct _AMLSymbol *byte_index;
 	struct _AMLSymbol *name_string;
 } AMLDefCreateByteField;
+
+typedef struct _AMLDefCreateField
+{
+	struct _AMLSymbol *create_field_op;
+	struct _AMLSymbol *source_buff;
+	struct _AMLSymbol *bit_index;
+	struct _AMLSymbol *num_bits;
+	struct _AMLSymbol *name_string;
+} AMLDefCreateField;
 
 typedef struct _AMLDefCreateWordField
 {
@@ -1359,6 +1369,7 @@ typedef union _AMLComponent
 	AMLDefCreateBitField def_create_bit_field;
 	AMLDefCreateByteField def_create_byte_field;
 	AMLDefCreateDWordField def_create_dword_field;
+	AMLDefCreateField def_create_field;
 	AMLDefCreateQWordField def_create_qword_field;
 	AMLDefCreateWordField def_create_word_field;
 	AMLDefDecrement def_decrement;
@@ -1561,6 +1572,8 @@ AMLSymbol *analyse_aml_def_create_bit_field(AMLSymbol *parent, AMLSubstring aml)
 AMLSymbol *analyse_aml_def_create_byte_field(AMLSymbol *parent, AMLSubstring aml);
 // <def_create_dword_field> := <create_dword_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring aml);
+// <def_create_field> := <create_field_op> <soutce_buff> <bit_index> <num_bits> <name_string>
+AMLSymbol *analyse_aml_def_create_field(AMLSymbol *parent, AMLSubstring aml);
 // <def_create_qword_field> := <create_qword_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_qword_field(AMLSymbol *parent, AMLSubstring aml);
 // <def_create_word_field> := <create_word_field_op> <source_buff> <byte_index> <name_string>
