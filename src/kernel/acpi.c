@@ -203,6 +203,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_break_name = "DefBreak";
 	static char const * const aml_def_buffer_name = "DefBuffer";
 	static char const * const aml_def_concat_name = "DefConcat";
+	static char const * const aml_def_concat_res_name = "DefConcatRes";
 	static char const * const aml_def_cond_ref_of_name = "DefCondRefOf";
 	static char const * const aml_def_create_bit_field_name = "DefCreateBitField";
 	static char const * const aml_def_create_byte_field_name = "DefCreateByteField";
@@ -451,6 +452,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_buffer_name;
 	case aml_def_concat:
 		return aml_def_concat_name;
+	case aml_def_concat_res:
+		return aml_def_concat_res_name;
 	case aml_def_cond_ref_of:
 		return aml_def_cond_ref_of_name;
 	case aml_def_create_bit_field:
@@ -1627,6 +1630,21 @@ AMLSymbol *analyse_aml_def_concat(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_concat->component.def_concat.target->string.length;
 	aml.length -= def_concat->component.def_concat.target->string.length;
 	return def_concat;
+}
+
+// <def_concat_res> := <concat_res_op> <buf_data> <buf_data> <target>
+AMLSymbol *analyse_aml_def_concat_res(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *def_concat_res = malloc(sizeof(*def_concat_res));
+	def_concat_res->parent = parent;
+	def_concat_res->string.initial = aml.initial;
+	def_concat_res->string.length = 0;
+	def_concat_res->type = aml_def_concat_res;
+	def_concat_res->flags = 0;
+	def_concat_res->component.def_concat_res.concat_res_op = NULL;
+	for(unsigned int i = 0; i < _countof(def_concat_res->component.def_concat_res.buf_data); i++)def_concat_res->component.def_concat_res.buf_data[i] = NULL;
+	def_concat_res->component.def_concat_res.target = NULL;
+	return def_concat_res;
 }
 
 // <def_cond_ref_of> := <cond_ref_of_op> <super_name> <target>
@@ -5786,6 +5804,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_concat.data); i++)if(aml_symbol->component.def_concat.data[i])delete_aml_symbol(aml_symbol->component.def_concat.data[i]);
 		if(aml_symbol->component.def_concat.target)delete_aml_symbol(aml_symbol->component.def_concat.target);
 		break;
+	case aml_def_concat_res:
+		if(aml_symbol->component.def_concat_res.concat_res_op)delete_aml_symbol(aml_symbol->component.def_concat_res.concat_res_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_concat_res.buf_data); i++)if(aml_symbol->component.def_concat_res.buf_data[i])delete_aml_symbol(aml_symbol->component.def_concat_res.buf_data[i]);
+		if(aml_symbol->component.def_concat_res.target)delete_aml_symbol(aml_symbol->component.def_concat_res.target);
+		break;
 	case aml_def_cond_ref_of:
 		if(aml_symbol->component.def_cond_ref_of.cond_ref_of_op)delete_aml_symbol(aml_symbol->component.def_cond_ref_of.cond_ref_of_op);
 		if(aml_symbol->component.def_cond_ref_of.super_name)delete_aml_symbol(aml_symbol->component.def_cond_ref_of.super_name);
@@ -6996,6 +7019,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_concat:
 		break;
+	case aml_def_concat_res:
+		break;
 	case aml_def_cond_ref_of:
 		break;
 	case aml_def_create_bit_field:
@@ -7477,6 +7502,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_concat.concat_op)print_aml_symbol(aml_symbol->component.def_concat.concat_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_concat.data); i++)if(aml_symbol->component.def_concat.data[i])print_aml_symbol(aml_symbol->component.def_concat.data[i]);
 		if(aml_symbol->component.def_concat.target)print_aml_symbol(aml_symbol->component.def_concat.target);
+		break;
+	case aml_def_concat_res:
+		if(aml_symbol->component.def_concat_res.concat_res_op)print_aml_symbol(aml_symbol->component.def_concat_res.concat_res_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_concat_res.buf_data); i++)if(aml_symbol->component.def_concat_res.buf_data[i])print_aml_symbol(aml_symbol->component.def_concat_res.buf_data[i]);
+		if(aml_symbol->component.def_concat_res.target)print_aml_symbol(aml_symbol->component.def_concat_res.target);
 		break;
 	case aml_def_cond_ref_of:
 		if(aml_symbol->component.def_cond_ref_of.cond_ref_of_op)print_aml_symbol(aml_symbol->component.def_cond_ref_of.cond_ref_of_op);
