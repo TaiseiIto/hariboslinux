@@ -283,6 +283,7 @@ typedef enum _AMLSymbolType
 	aml_field_list,
 	aml_field_op,
 	aml_field_op_suffix,
+	aml_find_set_right_bit_op,
 	aml_if_op,
 	aml_increment_op,
 	aml_index_field_op,
@@ -1670,6 +1671,8 @@ AMLSymbol *analyse_aml_field_list(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <field_op_suffix> := AML_BYTE_FIELD_OP_PREFIX
 AMLSymbol *analyse_aml_field_op_suffix(AMLSymbol *parent, AMLSubstring aml);
+// <find_set_right_bit_op> := AML_BYTE_FIND_SET_RIGHT_BIT
+AMLSymbol *analyse_aml_find_set_right_bit_op(AMLSymbol *parent, AMLSubstring aml);
 // <if_op> := AML_BYTE_IF_OP
 AMLSymbol *analyse_aml_if_op(AMLSymbol *parent, AMLSubstring aml);
 // <increment_op> := AML_BYTE_INCREMENT_OP
