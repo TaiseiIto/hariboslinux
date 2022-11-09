@@ -189,6 +189,7 @@ typedef enum _AMLSymbolType
 	aml_ascii_char,
 	aml_ascii_char_list,
 	aml_break_op,
+	aml_buf_data,
 	aml_buff_pkg_str_obj,
 	aml_buffer_op,
 	aml_buffer_size,
@@ -413,6 +414,11 @@ typedef struct _AMLAsciiCharList
 	struct _AMLSymbol *ascii_char;
 	struct _AMLSymbol *ascii_char_list;
 } AMLAsciiCharList;
+
+typedef struct _AMLBufData
+{
+	struct _AMLSymbol *term_arg;
+} AMLBufData;
 
 typedef struct _AMLBufferSize
 {
@@ -1316,6 +1322,7 @@ typedef union _AMLComponent
 	AMLArgObj arg_obj;
 	AMLArgObject arg_object;
 	AMLAsciiCharList ascii_char_list;
+	AMLBufData buf_data;
 	AMLBuffPkgStrObj buff_pkg_str_obj;
 	AMLBufferSize buffer_size;
 	AMLByteConst byte_const;
@@ -1474,6 +1481,8 @@ AMLSymbol *analyse_aml_ascii_char(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_ascii_char_list(AMLSymbol *parent, AMLSubstring aml);
 // <break_op> := AML_BYTE_BREAK_OP
 AMLSymbol *analyse_aml_break_op(AMLSymbol *parent, AMLSubstring aml);
+// <buf_data> := <term_arg>
+AMLSymbol *analyse_aml_buf_data(AMLSymbol *parent, AMLSubstring aml);
 // <buff_pkg_str_obj> := <term_arg>
 AMLSymbol *analyse_aml_buff_pkg_str_obj(AMLSymbol *parent, AMLSubstring aml);
 // <buffer_op> := AML_BYTE_BUFFER_OP
