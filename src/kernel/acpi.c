@@ -181,6 +181,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_byte_prefix_name = "BytePrefix";
 	static char const * const aml_computational_data_name = "ComputationalData";
 	static char const * const aml_concat_op_name = "ConcatOp";
+	static char const * const aml_concat_res_op_name = "ConcatResOp";
 	static char const * const aml_cond_ref_of_op_name = "CondRefOfOp";
 	static char const * const aml_cond_ref_of_op_suffix_name = "CondRefOfOpSuffix";
 	static char const * const aml_const_obj_name = "ConstObj";
@@ -408,6 +409,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_computational_data_name;
 	case aml_concat_op:
 		return aml_concat_op_name;
+	case aml_concat_res_op:
+		return aml_concat_res_op_name;
 	case aml_cond_ref_of_op:
 		return aml_cond_ref_of_op_name;
 	case aml_cond_ref_of_op_suffix:
@@ -1163,6 +1166,19 @@ AMLSymbol *analyse_aml_concat_op(AMLSymbol *parent, AMLSubstring aml)
 	return concat_op;
 }
 
+// <concat_res_op> := AML_BYTE_CONCAT_RES_OP
+AMLSymbol *analyse_aml_concat_res_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	AMLSymbol *concat_res_op = malloc(sizeof(*concat_res_op));
+	concat_res_op->parent = parent;
+	concat_res_op->string.initial = aml.initial;
+	concat_res_op->string.length = 0;
+	concat_res_op->type = aml_concat_res_op;
+	concat_res_op->flags = 0;
+	if(*concat_res_op->string.initial != AML_BYTE_CONCAT_RES_OP)concat_res_op->flags |= AML_SYMBOL_ERROR;
+	return concat_res_op;
+}
+
 // <cond_ref_of_op> := <ext_op_prefix> <cond_ref_of_op_suffix>
 AMLSymbol *analyse_aml_cond_ref_of_op(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -1641,7 +1657,10 @@ AMLSymbol *analyse_aml_def_concat_res(AMLSymbol *parent, AMLSubstring aml)
 	def_concat_res->string.length = 0;
 	def_concat_res->type = aml_def_concat_res;
 	def_concat_res->flags = 0;
-	def_concat_res->component.def_concat_res.concat_res_op = NULL;
+	def_concat_res->component.def_concat_res.concat_res_op = analyse_aml_concat_res_op(def_concat_res, aml);
+	def_concat_res->string.length += def_concat_res->component.def_concat_res.concat_res_op->string.length;
+	aml.initial += def_concat_res->component.def_concat_res.concat_res_op->string.length;
+	aml.length -= def_concat_res->component.def_concat_res.concat_res_op->string.length;
 	for(unsigned int i = 0; i < _countof(def_concat_res->component.def_concat_res.buf_data); i++)def_concat_res->component.def_concat_res.buf_data[i] = NULL;
 	def_concat_res->component.def_concat_res.target = NULL;
 	return def_concat_res;
@@ -5727,6 +5746,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_concat_op:
 		break;
+	case aml_concat_res_op:
+		break;
 	case aml_cond_ref_of_op:
 		if(aml_symbol->component.cond_ref_of_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.cond_ref_of_op.ext_op_prefix);
 		if(aml_symbol->component.cond_ref_of_op.cond_ref_of_op_suffix)delete_aml_symbol(aml_symbol->component.cond_ref_of_op.cond_ref_of_op_suffix);
@@ -6975,6 +6996,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_concat_op:
 		break;
+	case aml_concat_res_op:
+		break;
 	case aml_cond_ref_of_op:
 		break;
 	case aml_cond_ref_of_op_suffix:
@@ -7425,6 +7448,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.computational_data.def_buffer)print_aml_symbol(aml_symbol->component.computational_data.def_buffer);
 		break;
 	case aml_concat_op:
+		break;
+	case aml_concat_res_op:
 		break;
 	case aml_cond_ref_of_op:
 		if(aml_symbol->component.cond_ref_of_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.cond_ref_of_op.ext_op_prefix);
