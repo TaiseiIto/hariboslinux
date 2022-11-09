@@ -5183,20 +5183,20 @@ AMLSymbol *analyse_aml_release_op(AMLSymbol *parent, AMLSubstring aml)
 // <release_op_suffix> := AML_BYTE_RELEASE_OP
 AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("release_op aml.length = %#010.8x\n", aml.length);
-	AMLSymbol *release_op = malloc(sizeof(*release_op));
-	release_op->parent = parent;
-	release_op->string.initial = aml.initial;
-	release_op->string.length = 1;
-	release_op->type = aml_release_op;
-	release_op->flags = 0;
+	printf_serial("release_op_suffix aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *release_op_suffix = malloc(sizeof(*release_op_suffix));
+	release_op_suffix->parent = parent;
+	release_op_suffix->string.initial = aml.initial;
+	release_op_suffix->string.length = 1;
+	release_op_suffix->type = aml_release_op_suffix;
+	release_op_suffix->flags = 0;
 	if(!aml.length)
 	{
-		release_op->string.length = 0;
-		release_op->flags |= AML_SYMBOL_ERROR;
+		release_op_suffix->string.length = 0;
+		release_op_suffix->flags |= AML_SYMBOL_ERROR;
 	}
-	else if(*aml.initial != AML_BYTE_RELEASE_OP)release_op->flags |= AML_SYMBOL_ERROR; // Incorrect release_op
-	return release_op;
+	else if(*aml.initial != AML_BYTE_RELEASE_OP)release_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect release_op_suffix
+	return release_op_suffix;
 }
 
 // <return_op> := AML_BYTE_RETURN_OP
