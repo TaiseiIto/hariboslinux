@@ -7588,6 +7588,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 {
 	for(unsigned int i = 0; i < get_aml_symbol_depth(aml_symbol); i++)printf_serial(" ");
 	printf_serial("%s", aml_symbol_type_name(aml_symbol->type));
+	printf_serial(" initial = %p", aml_symbol->string.initial);
 	printf_serial(" length = %#010.8x", aml_symbol->string.length);
 	switch(aml_symbol->type)
 	{
