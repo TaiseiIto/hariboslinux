@@ -1269,7 +1269,7 @@ AMLSymbol *analyse_aml_concat_res_op(AMLSymbol *parent, AMLSubstring aml)
 	AMLSymbol *concat_res_op = malloc(sizeof(*concat_res_op));
 	concat_res_op->parent = parent;
 	concat_res_op->string.initial = aml.initial;
-	concat_res_op->string.length = 0;
+	concat_res_op->string.length = 1;
 	concat_res_op->type = aml_concat_res_op;
 	concat_res_op->flags = 0;
 	if(!aml.length)
