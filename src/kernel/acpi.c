@@ -7578,7 +7578,7 @@ RSDP const *get_rsdp(void)
 ACPITableHeader const *get_rsdt_header(void)
 {
 	ACPITableHeader const *rsdt_header = (ACPITableHeader const *)(unsigned int)get_acpi_memory_region_descriptor().base;
-	if(!rsdt_header)
+	if(!rsdt_header || strncmp(rsdt_header->signature, "RSDT", 4))
 	{
 		RSDP const *rsdp = get_rsdp();
 		if(!rsdp)
