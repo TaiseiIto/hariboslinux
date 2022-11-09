@@ -788,7 +788,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 // <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
 AMLSymbol *analyse_aml_acquire_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("acquire_op\n");
+	printf_serial("acquire_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *acquire_op = malloc(sizeof(*acquire_op));
 	acquire_op->parent = parent;
 	acquire_op->string.initial = aml.initial;
@@ -809,7 +809,7 @@ AMLSymbol *analyse_aml_acquire_op(AMLSymbol *parent, AMLSubstring aml)
 // <acquire_op_suffix> := AML_BYTE_ACQUIRE_OP
 AMLSymbol *analyse_aml_acquire_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("acquire_op_suffix\n");
+	printf_serial("acquire_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *acquire_op_suffix = malloc(sizeof(*acquire_op_suffix));
 	acquire_op_suffix->parent = parent;
 	acquire_op_suffix->string.initial = aml.initial;
@@ -828,7 +828,7 @@ AMLSymbol *analyse_aml_acquire_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <alias_op> := AML_BYTE_ALIAS_OP
 AMLSymbol *analyse_aml_alias_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("alias_op\n");
+	printf_serial("alias_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *alias_op = malloc(sizeof(*alias_op));
 	alias_op->parent = parent;
 	alias_op->string.initial = aml.initial;
@@ -847,7 +847,7 @@ AMLSymbol *analyse_aml_alias_op(AMLSymbol *parent, AMLSubstring aml)
 // <add_op> := AML_BYTE_ADD_OP
 AMLSymbol *analyse_aml_add_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("add_op\n");
+	printf_serial("add_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *add_op = malloc(sizeof(*add_op));
 	add_op->parent = parent;
 	add_op->string.initial = aml.initial;
@@ -866,7 +866,7 @@ AMLSymbol *analyse_aml_add_op(AMLSymbol *parent, AMLSubstring aml)
 // <and_op> := AML_BYTE_AND_OP
 AMLSymbol *analyse_aml_and_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("and_op\n");
+	printf_serial("and_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *and_op = malloc(sizeof(*and_op));
 	and_op->parent = parent;
 	and_op->string.initial = aml.initial;
@@ -885,7 +885,7 @@ AMLSymbol *analyse_aml_and_op(AMLSymbol *parent, AMLSubstring aml)
 // <arg_obj> := <arg_op>
 AMLSymbol *analyse_aml_arg_obj(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("arg_obj\n");
+	printf_serial("arg_obj aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *arg_obj = malloc(sizeof(*arg_obj));
 	arg_obj->parent = parent;
 	arg_obj->string.initial = aml.initial;
@@ -901,7 +901,7 @@ AMLSymbol *analyse_aml_arg_obj(AMLSymbol *parent, AMLSubstring aml)
 // <arg_object> := <term_arg>
 AMLSymbol *analyse_aml_arg_object(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("arg_object\n");
+	printf_serial("arg_object aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *arg_object = malloc(sizeof(*arg_object));
 	arg_object->parent = parent;
 	arg_object->string.initial = aml.initial;
@@ -916,7 +916,7 @@ AMLSymbol *analyse_aml_arg_object(AMLSymbol *parent, AMLSubstring aml)
 // <arg_op> := 0x68 - 0x6e
 AMLSymbol *analyse_aml_arg_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("arg_op\n");
+	printf_serial("arg_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *arg_op = malloc(sizeof(*arg_op));
 	arg_op->parent = parent;
 	arg_op->string.initial = aml.initial;
@@ -948,7 +948,7 @@ AMLSymbol *analyse_aml_arg_op(AMLSymbol *parent, AMLSubstring aml)
 // <ascii_char> := 0x01 - 0x7f
 AMLSymbol *analyse_aml_ascii_char(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("ascii_char\n");
+	printf_serial("ascii_char aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *ascii_char = malloc(sizeof(*ascii_char));
 	ascii_char->parent = parent;
 	ascii_char->string.initial = aml.initial;
@@ -967,7 +967,7 @@ AMLSymbol *analyse_aml_ascii_char(AMLSymbol *parent, AMLSubstring aml)
 // <ascii_char_list> := Nothing | <ascii_char> <ascii_char_list>
 AMLSymbol *analyse_aml_ascii_char_list(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("ascii_char_list\n");
+	printf_serial("ascii_char_list aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *ascii_char_list = malloc(sizeof(*ascii_char_list));
 	ascii_char_list->parent = parent;
 	ascii_char_list->string.initial = aml.initial;
@@ -996,7 +996,7 @@ AMLSymbol *analyse_aml_ascii_char_list(AMLSymbol *parent, AMLSubstring aml)
 // <break_op> := AML_BYTE_BREAK_OP
 AMLSymbol *analyse_aml_break_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("break_op\n");
+	printf_serial("break_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *break_op = malloc(sizeof(*break_op));
 	break_op->parent = parent;
 	break_op->string.initial = aml.initial;
@@ -1015,7 +1015,7 @@ AMLSymbol *analyse_aml_break_op(AMLSymbol *parent, AMLSubstring aml)
 // <buf_data> := <term_arg>
 AMLSymbol *analyse_aml_buf_data(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("buf_data\n");
+	printf_serial("buf_data aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *buf_data = malloc(sizeof(*buf_data));
 	buf_data->parent = parent;
 	buf_data->string.initial = aml.initial;
@@ -1032,7 +1032,7 @@ AMLSymbol *analyse_aml_buf_data(AMLSymbol *parent, AMLSubstring aml)
 // <buff_pkg_str_obj> := <term_arg>
 AMLSymbol *analyse_aml_buff_pkg_str_obj(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("buff_pkg_str_obj\n");
+	printf_serial("buff_pkg_str_obj aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *buff_pkg_str_obj = malloc(sizeof(*buff_pkg_str_obj));
 	buff_pkg_str_obj->parent = parent;
 	buff_pkg_str_obj->string.initial = aml.initial;
@@ -1049,7 +1049,7 @@ AMLSymbol *analyse_aml_buff_pkg_str_obj(AMLSymbol *parent, AMLSubstring aml)
 // <buffer_op> := AML_BYTE_BUFFER_OP
 AMLSymbol *analyse_aml_buffer_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("buffer_op\n");
+	printf_serial("buffer_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *buffer_op = malloc(sizeof(*buffer_op));
 	buffer_op->parent = parent;
 	buffer_op->string.initial = aml.initial;
@@ -1068,7 +1068,7 @@ AMLSymbol *analyse_aml_buffer_op(AMLSymbol *parent, AMLSubstring aml)
 // <buffer_size> := <term_arg>
 AMLSymbol *analyse_aml_buffer_size(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("buffer_size\n");
+	printf_serial("buffer_size aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *buffer_size = malloc(sizeof(*buffer_size));
 	buffer_size->parent = parent;
 	buffer_size->string.initial = aml.initial;
@@ -1083,7 +1083,7 @@ AMLSymbol *analyse_aml_buffer_size(AMLSymbol *parent, AMLSubstring aml)
 // <byte_const> := <byte_prefix> <byte_data>
 AMLSymbol *analyse_aml_byte_const(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("byte_const\n");
+	printf_serial("byte_const aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *byte_const = malloc(sizeof(*byte_const));
 	byte_const->parent = parent;
 	byte_const->string.initial = aml.initial;
@@ -1105,7 +1105,7 @@ AMLSymbol *analyse_aml_byte_const(AMLSymbol *parent, AMLSubstring aml)
 // <byte_data> := 0x00 - 0xff
 AMLSymbol *analyse_aml_byte_data(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("byte_data\n");
+	printf_serial("byte_data aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *byte_data = malloc(sizeof(*byte_data));
 	byte_data->parent = parent;
 	byte_data->string.initial = aml.initial;
@@ -1123,7 +1123,7 @@ AMLSymbol *analyse_aml_byte_data(AMLSymbol *parent, AMLSubstring aml)
 // <byte_index> := <term_arg>
 AMLSymbol *analyse_aml_byte_index(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("byte_index\n");
+	printf_serial("byte_index aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *byte_index = malloc(sizeof(*byte_index));
 	byte_index->parent = parent;
 	byte_index->string.initial = aml.initial;
@@ -1140,7 +1140,7 @@ AMLSymbol *analyse_aml_byte_index(AMLSymbol *parent, AMLSubstring aml)
 // <byte_list> := Nothing | <byte_data> <byte_list>
 AMLSymbol *analyse_aml_byte_list(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("byte_list\n");
+	printf_serial("byte_list aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *byte_list = malloc(sizeof(*byte_list));
 	byte_list->parent = parent;
 	byte_list->string.initial = aml.initial;
@@ -1166,7 +1166,7 @@ AMLSymbol *analyse_aml_byte_list(AMLSymbol *parent, AMLSubstring aml)
 // <byte_prefix> := AML_BYTE_BYTE_PREFIX
 AMLSymbol *analyse_aml_byte_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("byte_prefix\n");
+	printf_serial("byte_prefix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *byte_prefix = malloc(sizeof(*byte_prefix));
 	byte_prefix->parent = parent;
 	byte_prefix->string.initial = aml.initial;
@@ -1185,7 +1185,7 @@ AMLSymbol *analyse_aml_byte_prefix(AMLSymbol *parent, AMLSubstring aml)
 // <computational_data> := <byte_const> | <word_const> | <dword_const> | <qword_const> | <string> | <const_obj> | <revision_op> | <def_buffer>
 AMLSymbol *analyse_aml_computational_data(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("computational_data\n");
+	printf_serial("computational_data aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *computational_data = malloc(sizeof(*computational_data));
 	computational_data->parent = parent;
 	computational_data->string.initial = aml.initial;
@@ -1246,7 +1246,7 @@ AMLSymbol *analyse_aml_computational_data(AMLSymbol *parent, AMLSubstring aml)
 // <concat_op> := AML_BYTE_CONCAT_OP
 AMLSymbol *analyse_aml_concat_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("concat_op\n");
+	printf_serial("concat_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *concat_op = malloc(sizeof(*concat_op));
 	concat_op->parent = parent;
 	concat_op->string.initial = aml.initial;
@@ -1265,7 +1265,7 @@ AMLSymbol *analyse_aml_concat_op(AMLSymbol *parent, AMLSubstring aml)
 // <concat_res_op> := AML_BYTE_CONCAT_RES_OP
 AMLSymbol *analyse_aml_concat_res_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("concat_res_op\n");
+	printf_serial("concat_res_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *concat_res_op = malloc(sizeof(*concat_res_op));
 	concat_res_op->parent = parent;
 	concat_res_op->string.initial = aml.initial;
@@ -1284,7 +1284,7 @@ AMLSymbol *analyse_aml_concat_res_op(AMLSymbol *parent, AMLSubstring aml)
 // <cond_ref_of_op> := <ext_op_prefix> <cond_ref_of_op_suffix>
 AMLSymbol *analyse_aml_cond_ref_of_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("cond_ref_of_op\n");
+	printf_serial("cond_ref_of_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *cond_ref_of_op = malloc(sizeof(*cond_ref_of_op));
 	cond_ref_of_op->parent = parent;
 	cond_ref_of_op->string.initial = aml.initial;
@@ -1305,7 +1305,7 @@ AMLSymbol *analyse_aml_cond_ref_of_op(AMLSymbol *parent, AMLSubstring aml)
 // <cond_ref_of_op_suffix> := AML_BYTE_COND_REF_OF_OP
 AMLSymbol *analyse_aml_cond_ref_of_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("cond_ref_of_op_suffix\n");
+	printf_serial("cond_ref_of_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *cond_ref_of_op_suffix = malloc(sizeof(*cond_ref_of_op_suffix));
 	cond_ref_of_op_suffix->parent = parent;
 	cond_ref_of_op_suffix->string.initial = aml.initial;
@@ -1324,7 +1324,7 @@ AMLSymbol *analyse_aml_cond_ref_of_op_suffix(AMLSymbol *parent, AMLSubstring aml
 // <const_obj> := <zero_op> | <one_op> | <ones_op>
 AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("const_obj\n");
+	printf_serial("const_obj aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *const_obj = malloc(sizeof(*const_obj));
 	const_obj->parent = parent;
 	const_obj->string.initial = aml.initial;
@@ -1364,7 +1364,7 @@ AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml)
 // <create_bit_field_op> := AML_BYTE_CREATE_BIT_FIELD_OP
 AMLSymbol *analyse_aml_create_bit_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("create_bit_field_op\n");
+	printf_serial("create_bit_field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *create_bit_field_op = malloc(sizeof(*create_bit_field_op));
 	create_bit_field_op->parent = parent;
 	create_bit_field_op->string.initial = aml.initial;
@@ -1383,7 +1383,7 @@ AMLSymbol *analyse_aml_create_bit_field_op(AMLSymbol *parent, AMLSubstring aml)
 // <create_byte_field_op> := AML_BYTE_CREATE_BYTE_FIELD_OP
 AMLSymbol *analyse_aml_create_byte_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("create_byte_field_op\n");
+	printf_serial("create_byte_field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *create_byte_field_op = malloc(sizeof(*create_byte_field_op));
 	create_byte_field_op->parent = parent;
 	create_byte_field_op->string.initial = aml.initial;
@@ -1402,7 +1402,7 @@ AMLSymbol *analyse_aml_create_byte_field_op(AMLSymbol *parent, AMLSubstring aml)
 // <create_dword_field_op> := AML_BYTE_CREATE_DWORD_FIELD_OP
 AMLSymbol *analyse_aml_create_dword_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("create_dword_field_op\n");
+	printf_serial("create_dword_field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *create_dword_field_op = malloc(sizeof(*create_dword_field_op));
 	create_dword_field_op->parent = parent;
 	create_dword_field_op->string.initial = aml.initial;
@@ -1421,7 +1421,7 @@ AMLSymbol *analyse_aml_create_dword_field_op(AMLSymbol *parent, AMLSubstring aml
 // <create_qword_field_op> := AML_BYTE_CREATE_QWORD_FIELD_OP
 AMLSymbol *analyse_aml_create_qword_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("create_qword_field_op\n");
+	printf_serial("create_qword_field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *create_qword_field_op = malloc(sizeof(*create_qword_field_op));
 	create_qword_field_op->parent = parent;
 	create_qword_field_op->string.initial = aml.initial;
@@ -1440,7 +1440,7 @@ AMLSymbol *analyse_aml_create_qword_field_op(AMLSymbol *parent, AMLSubstring aml
 // <create_word_field_op> := AML_BYTE_CREATE_WORD_FIELD_OP
 AMLSymbol *analyse_aml_create_word_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("create_word_field_op\n");
+	printf_serial("create_word_field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *create_word_field_op = malloc(sizeof(*create_word_field_op));
 	create_word_field_op->parent = parent;
 	create_word_field_op->string.initial = aml.initial;
@@ -1459,7 +1459,7 @@ AMLSymbol *analyse_aml_create_word_field_op(AMLSymbol *parent, AMLSubstring aml)
 // <data> := <term_arg>
 AMLSymbol *analyse_aml_data(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("data\n");
+	printf_serial("data aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *data = malloc(sizeof(*data));
 	data->parent = parent;
 	data->string.initial = aml.initial;
@@ -1476,7 +1476,7 @@ AMLSymbol *analyse_aml_data(AMLSymbol *parent, AMLSubstring aml)
 // <data_object> := <computational_data> | <def_package> | <def_var_package>
 AMLSymbol *analyse_aml_data_object(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("data_object\n");
+	printf_serial("data_object aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *data_object = malloc(sizeof(*data_object));
 	data_object->parent = parent;
 	data_object->string.initial = aml.initial;
@@ -1515,7 +1515,7 @@ AMLSymbol *analyse_aml_data_object(AMLSymbol *parent, AMLSubstring aml)
 // <data_ref_object> := <data_object> | <object_reference>
 AMLSymbol *analyse_aml_data_ref_object(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("data_ref_object\n");
+	printf_serial("data_ref_object aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *data_ref_object = malloc(sizeof(*data_ref_object));
 	data_ref_object->parent = parent;
 	data_ref_object->string.initial = aml.initial;
@@ -1550,7 +1550,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSymbol *parent, AMLSubstring aml)
 // <debug_obj> := <debug_op>
 AMLSymbol *analyse_aml_debug_obj(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("debug_obj\n");
+	printf_serial("debug_obj aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *debug_obj = malloc(sizeof(*debug_obj));
 	debug_obj->parent = parent;
 	debug_obj->string.initial = aml.initial;
@@ -1567,7 +1567,7 @@ AMLSymbol *analyse_aml_debug_obj(AMLSymbol *parent, AMLSubstring aml)
 // <debug_op> := <ext_op_prefix> <debug_op_suffix>
 AMLSymbol *analyse_aml_debug_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("debug_op\n");
+	printf_serial("debug_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *debug_op = malloc(sizeof(*debug_op));
 	debug_op->parent = parent;
 	debug_op->string.initial = aml.initial;
@@ -1588,7 +1588,7 @@ AMLSymbol *analyse_aml_debug_op(AMLSymbol *parent, AMLSubstring aml)
 // <debug_op_suffix> := AML_BYTE_DEBUG_OP
 AMLSymbol *analyse_aml_debug_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("debug_op_suffix\n");
+	printf_serial("debug_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *debug_op_suffix = malloc(sizeof(*debug_op_suffix));
 	debug_op_suffix->parent = parent;
 	debug_op_suffix->string.initial = aml.initial;
@@ -1607,7 +1607,7 @@ AMLSymbol *analyse_aml_debug_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <decrement_op> := AML_BYTE_DECREMENT_OP
 AMLSymbol *analyse_aml_decrement_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("decrement_op\n");
+	printf_serial("decrement_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *decrement_op = malloc(sizeof(*decrement_op));
 	decrement_op->parent = parent;
 	decrement_op->string.initial = aml.initial;
@@ -1626,7 +1626,7 @@ AMLSymbol *analyse_aml_decrement_op(AMLSymbol *parent, AMLSubstring aml)
 // <def_alias> := <alias_op> <name_string> <name_string>
 AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_alias\n");
+	printf_serial("def_alias aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_alias = malloc(sizeof(*def_alias));
 	def_alias->parent = parent;
 	def_alias->string.initial = aml.initial;
@@ -1659,7 +1659,7 @@ AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml)
 // <def_acquire> := <acquire_op> <mutex_object> <time_out>
 AMLSymbol *analyse_aml_def_acquire(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_acquire\n");
+	printf_serial("def_acquire aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_acquire = malloc(sizeof(*def_acquire));
 	def_acquire->parent = parent;
 	def_acquire->string.initial = aml.initial;
@@ -1684,7 +1684,7 @@ AMLSymbol *analyse_aml_def_acquire(AMLSymbol *parent, AMLSubstring aml)
 // <def_add> := <add_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_add(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_add\n");
+	printf_serial("def_add aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_add = malloc(sizeof(*def_add));
 	def_add->parent = parent;
 	def_add->string.initial = aml.initial;
@@ -1712,7 +1712,7 @@ AMLSymbol *analyse_aml_def_add(AMLSymbol *parent, AMLSubstring aml)
 // <def_and> := <and_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_and(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_and\n");
+	printf_serial("def_and aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_and = malloc(sizeof(*def_and));
 	def_and->parent = parent;
 	def_and->string.initial = aml.initial;
@@ -1740,7 +1740,7 @@ AMLSymbol *analyse_aml_def_and(AMLSymbol *parent, AMLSubstring aml)
 // <def_break> := <break_op>
 AMLSymbol *analyse_aml_def_break(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_break\n");
+	printf_serial("def_break aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_break = malloc(sizeof(*def_break));
 	def_break->parent = parent;
 	def_break->string.initial = aml.initial;
@@ -1757,7 +1757,7 @@ AMLSymbol *analyse_aml_def_break(AMLSymbol *parent, AMLSubstring aml)
 // <def_buffer> := <buffer_op> <pkg_length> <buffer_size> <byte_list>
 AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_buffer\n");
+	printf_serial("def_buffer aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_buffer = malloc(sizeof(*def_buffer));
 	def_buffer->parent = parent;
 	def_buffer->string.initial = aml.initial;
@@ -1787,7 +1787,7 @@ AMLSymbol *analyse_aml_def_buffer(AMLSymbol *parent, AMLSubstring aml)
 // <def_concat> := <concat_op> <data> <data> <target>
 AMLSymbol *analyse_aml_def_concat(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_concat\n");
+	printf_serial("def_concat aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_concat = malloc(sizeof(*def_concat));
 	def_concat->parent = parent;
 	def_concat->string.initial = aml.initial;
@@ -1815,7 +1815,7 @@ AMLSymbol *analyse_aml_def_concat(AMLSymbol *parent, AMLSubstring aml)
 // <def_concat_res> := <concat_res_op> <buf_data> <buf_data> <target>
 AMLSymbol *analyse_aml_def_concat_res(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_concat_res\n");
+	printf_serial("def_concat_res aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_concat_res = malloc(sizeof(*def_concat_res));
 	def_concat_res->parent = parent;
 	def_concat_res->string.initial = aml.initial;
@@ -1843,7 +1843,7 @@ AMLSymbol *analyse_aml_def_concat_res(AMLSymbol *parent, AMLSubstring aml)
 // <def_cond_ref_of> := <cond_ref_of_op> <super_name> <target>
 AMLSymbol *analyse_aml_def_cond_ref_of(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_cond_ref_of\n");
+	printf_serial("def_cond_ref_of aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_cond_ref_of = malloc(sizeof(*def_cond_ref_of));
 	def_cond_ref_of->parent = parent;
 	def_cond_ref_of->string.initial = aml.initial;
@@ -1868,7 +1868,7 @@ AMLSymbol *analyse_aml_def_cond_ref_of(AMLSymbol *parent, AMLSubstring aml)
 // <def_create_bit_field> := <create_bit_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_bit_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_create_bit_field\n");
+	printf_serial("def_create_bit_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_create_bit_field = malloc(sizeof(*def_create_bit_field));
 	def_create_bit_field->parent = parent;
 	def_create_bit_field->string.initial = aml.initial;
@@ -1897,7 +1897,7 @@ AMLSymbol *analyse_aml_def_create_bit_field(AMLSymbol *parent, AMLSubstring aml)
 // <def_create_byte_field> := <create_byte_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_byte_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_create_byte_field\n");
+	printf_serial("def_create_byte_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_create_byte_field = malloc(sizeof(*def_create_byte_field));
 	def_create_byte_field->parent = parent;
 	def_create_byte_field->string.initial = aml.initial;
@@ -1926,7 +1926,7 @@ AMLSymbol *analyse_aml_def_create_byte_field(AMLSymbol *parent, AMLSubstring aml
 // <def_create_dword_field> := <create_dword_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_create_dword_field\n");
+	printf_serial("def_create_dword_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_create_dword_field = malloc(sizeof(*def_create_dword_field));
 	def_create_dword_field->parent = parent;
 	def_create_dword_field->string.initial = aml.initial;
@@ -1955,7 +1955,7 @@ AMLSymbol *analyse_aml_def_create_dword_field(AMLSymbol *parent, AMLSubstring am
 // <def_create_qword_field> := <create_qword_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_qword_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_create_qword_field\n");
+	printf_serial("def_create_qword_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_create_qword_field = malloc(sizeof(*def_create_qword_field));
 	def_create_qword_field->parent = parent;
 	def_create_qword_field->string.initial = aml.initial;
@@ -1984,7 +1984,7 @@ AMLSymbol *analyse_aml_def_create_qword_field(AMLSymbol *parent, AMLSubstring am
 // <def_create_word_field> := <create_word_field_op> <source_buff> <byte_index> <name_string>
 AMLSymbol *analyse_aml_def_create_word_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_create_word_field\n");
+	printf_serial("def_create_word_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_create_word_field = malloc(sizeof(*def_create_word_field));
 	def_create_word_field->parent = parent;
 	def_create_word_field->string.initial = aml.initial;
@@ -2013,7 +2013,7 @@ AMLSymbol *analyse_aml_def_create_word_field(AMLSymbol *parent, AMLSubstring aml
 // <def_decrement> := <decrement_op> <super_name>
 AMLSymbol *analyse_aml_def_decrement(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_decrement\n");
+	printf_serial("def_decrement aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_decrement = malloc(sizeof(*def_decrement));
 	def_decrement->parent = parent;
 	def_decrement->string.initial = aml.initial;
@@ -2034,7 +2034,7 @@ AMLSymbol *analyse_aml_def_decrement(AMLSymbol *parent, AMLSubstring aml)
 // <def_deref_of> := <deref_of_op> <obj_reference>
 AMLSymbol *analyse_aml_def_deref_of(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_deref_of\n");
+	printf_serial("def_deref_of aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_deref_of = malloc(sizeof(*def_deref_of));
 	def_deref_of->parent = parent;
 	def_deref_of->string.initial = aml.initial;
@@ -2055,7 +2055,7 @@ AMLSymbol *analyse_aml_def_deref_of(AMLSymbol *parent, AMLSubstring aml)
 // <def_device> := <device_op> <pkg_length> <name_string> <term_list>
 AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_device\n");
+	printf_serial("def_device aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_device = malloc(sizeof(*def_device));
 	def_device->parent = parent;
 	def_device->string.initial = aml.initial;
@@ -2085,7 +2085,7 @@ AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml)
 // <def_else> := Nothing | <else_op> <pkg_length> <term_list>
 AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_else\n");
+	printf_serial("def_else aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_else = malloc(sizeof(*def_else));
 	def_else->parent = parent;
 	def_else->string.initial = aml.initial;
@@ -2117,7 +2117,7 @@ AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml)
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_field\n");
+	printf_serial("def_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_field = malloc(sizeof(*def_field));
 	def_field->parent = parent;
 	def_field->string.initial = aml.initial;
@@ -2151,7 +2151,7 @@ AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml)
 // <def_if_else> := <if_op> <pkg_length> <predicate> <term_list> <def_else>
 AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_if_else\n");
+	printf_serial("def_if_else aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_if_else = malloc(sizeof(*def_if_else));
 	AMLSubstring if_aml = aml;
 	AMLSubstring else_aml = aml;
@@ -2201,7 +2201,7 @@ AMLSymbol *analyse_aml_def_if_else(AMLSymbol *parent, AMLSubstring aml)
 // <def_increment> := <increment_op> <super_name>
 AMLSymbol *analyse_aml_def_increment(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_increment\n");
+	printf_serial("def_increment aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_increment = malloc(sizeof(*def_increment));
 	def_increment->parent = parent;
 	def_increment->string.initial = aml.initial;
@@ -2222,7 +2222,7 @@ AMLSymbol *analyse_aml_def_increment(AMLSymbol *parent, AMLSubstring aml)
 // <def_index> := <index_op> <buff_pkf_str_obj> <index_value> <target>
 AMLSymbol *analyse_aml_def_index(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_index\n");
+	printf_serial("def_index aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_index = malloc(sizeof(*def_index));
 	def_index->parent = parent;
 	def_index->string.initial = aml.initial;
@@ -2251,7 +2251,7 @@ AMLSymbol *analyse_aml_def_index(AMLSymbol *parent, AMLSubstring aml)
 // <def_index_field> := <index_field_op> <pkg_length> <name_string> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_index_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_index_field\n");
+	printf_serial("def_index_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_index_field = malloc(sizeof(*def_index_field));
 	def_index_field->parent = parent;
 	def_index_field->string.initial = aml.initial;
@@ -2287,7 +2287,7 @@ AMLSymbol *analyse_aml_def_index_field(AMLSymbol *parent, AMLSubstring aml)
 // <def_l_and> := <l_and_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_and(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_l_and\n");
+	printf_serial("def_l_and aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_l_and = malloc(sizeof(*def_l_and));
 	def_l_and->parent = parent;
 	def_l_and->string.initial = aml.initial;
@@ -2311,7 +2311,7 @@ AMLSymbol *analyse_aml_def_l_and(AMLSymbol *parent, AMLSubstring aml)
 // <def_l_equal> := <l_equal_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_equal(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_l_equal\n");
+	printf_serial("def_l_equal aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_l_equal = malloc(sizeof(*def_l_equal));
 	def_l_equal->parent = parent;
 	def_l_equal->string.initial = aml.initial;
@@ -2335,7 +2335,7 @@ AMLSymbol *analyse_aml_def_l_equal(AMLSymbol *parent, AMLSubstring aml)
 // <def_l_greater> := <l_greater_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_greater(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_l_greater\n");
+	printf_serial("def_l_greater aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_l_greater = malloc(sizeof(*def_l_greater));
 	def_l_greater->parent = parent;
 	def_l_greater->string.initial = aml.initial;
@@ -2359,7 +2359,7 @@ AMLSymbol *analyse_aml_def_l_greater(AMLSymbol *parent, AMLSubstring aml)
 // <def_l_less> := <l_less_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_less(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_l_less\n");
+	printf_serial("def_l_less aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_l_less = malloc(sizeof(*def_l_less));
 	def_l_less->parent = parent;
 	def_l_less->string.initial = aml.initial;
@@ -2383,7 +2383,7 @@ AMLSymbol *analyse_aml_def_l_less(AMLSymbol *parent, AMLSubstring aml)
 // <def_l_not> := <l_not_op> <operand>
 AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_l_not\n");
+	printf_serial("def_l_not aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_l_not = malloc(sizeof(*def_l_not));
 	def_l_not->parent = parent;
 	def_l_not->string.initial = aml.initial;
@@ -2404,7 +2404,7 @@ AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml)
 // <def_l_or> := <l_or_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_or(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_l_or\n");
+	printf_serial("def_l_or aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_l_or = malloc(sizeof(*def_l_or));
 	def_l_or->parent = parent;
 	def_l_or->string.initial = aml.initial;
@@ -2428,7 +2428,7 @@ AMLSymbol *analyse_aml_def_l_or(AMLSymbol *parent, AMLSubstring aml)
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_method\n");
+	printf_serial("def_method aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_method = malloc(sizeof(*def_method));
 	def_method->parent = parent;
 	def_method->string.initial = aml.initial;
@@ -2462,7 +2462,7 @@ AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml)
 // <def_multiply> := <multiply_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_multiply(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_multiply\n");
+	printf_serial("def_multiply aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_multiply = malloc(sizeof(*def_multiply));
 	def_multiply->parent = parent;
 	def_multiply->string.initial = aml.initial;
@@ -2490,7 +2490,7 @@ AMLSymbol *analyse_aml_def_multiply(AMLSymbol *parent, AMLSubstring aml)
 // <def_mutex> := <mutex_op> <name_string> <sync_flags>
 AMLSymbol *analyse_aml_def_mutex(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_mutex\n");
+	printf_serial("def_mutex aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_mutex = malloc(sizeof(*def_mutex));
 	def_mutex->parent = parent;
 	def_mutex->string.initial = aml.initial;
@@ -2515,7 +2515,7 @@ AMLSymbol *analyse_aml_def_mutex(AMLSymbol *parent, AMLSubstring aml)
 // <def_name> := <name_op> <name_string> <data_ref_object>
 AMLSymbol *analyse_aml_def_name(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_name\n");
+	printf_serial("def_name aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_name = malloc(sizeof(*def_name));
 	def_name->parent = parent;
 	def_name->string.initial = aml.initial;
@@ -2540,7 +2540,7 @@ AMLSymbol *analyse_aml_def_name(AMLSymbol *parent, AMLSubstring aml)
 // <def_notify> := <notify_op> <notify_object> <notify_value>
 AMLSymbol *analyse_aml_def_notify(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_notify\n");
+	printf_serial("def_notify aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_notify = malloc(sizeof(*def_notify));
 	def_notify->parent = parent;
 	def_notify->string.initial = aml.initial;
@@ -2565,7 +2565,7 @@ AMLSymbol *analyse_aml_def_notify(AMLSymbol *parent, AMLSubstring aml)
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
 AMLSymbol *analyse_aml_def_op_region(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_op_region\n");
+	printf_serial("def_op_region aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_op_region = malloc(sizeof(*def_op_region));
 	def_op_region->parent = parent;
 	def_op_region->string.initial = aml.initial;
@@ -2598,7 +2598,7 @@ AMLSymbol *analyse_aml_def_op_region(AMLSymbol *parent, AMLSubstring aml)
 // <def_or> := <or_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_or(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_or\n");
+	printf_serial("def_or aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_or = malloc(sizeof(*def_or));
 	def_or->parent = parent;
 	def_or->string.initial = aml.initial;
@@ -2626,7 +2626,7 @@ AMLSymbol *analyse_aml_def_or(AMLSymbol *parent, AMLSubstring aml)
 // <def_package> := <package_op> <pkg_length> <num_elements> <package_element_list>
 AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_package\n");
+	printf_serial("def_package aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_package = malloc(sizeof(*def_package));
 	def_package->parent = parent;
 	def_package->string.initial = aml.initial;
@@ -2656,7 +2656,7 @@ AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml)
 // <def_processor> := <processor_op> <pkg_length> <name_string> <proc_id> <pblk_addr> <pblk_len> <term_list>
 AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_processor\n");
+	printf_serial("def_processor aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_processor = malloc(sizeof(*def_processor));
 	def_processor->parent = parent;
 	def_processor->string.initial = aml.initial;
@@ -2697,7 +2697,7 @@ AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml)
 // <def_release> := <release_op> <mutex_object>
 AMLSymbol *analyse_aml_def_release(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_release\n");
+	printf_serial("def_release aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_release = malloc(sizeof(*def_release));
 	def_release->parent = parent;
 	def_release->string.initial = aml.initial;
@@ -2718,7 +2718,7 @@ AMLSymbol *analyse_aml_def_release(AMLSymbol *parent, AMLSubstring aml)
 // <def_return> := <return_op> <arg_object>
 AMLSymbol *analyse_aml_def_return(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_return\n");
+	printf_serial("def_return aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_return = malloc(sizeof(*def_return));
 	def_return->parent = parent;
 	def_return->string.initial = aml.initial;
@@ -2739,7 +2739,7 @@ AMLSymbol *analyse_aml_def_return(AMLSymbol *parent, AMLSubstring aml)
 // <def_scope> := <scope_op> <pkg_length> <name_string> <term_list>
 AMLSymbol *analyse_aml_def_scope(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_scope\n");
+	printf_serial("def_scope aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_scope = malloc(sizeof(*def_scope));
 	def_scope->parent = parent;
 	def_scope->string.initial = aml.initial;
@@ -2769,7 +2769,7 @@ AMLSymbol *analyse_aml_def_scope(AMLSymbol *parent, AMLSubstring aml)
 // <def_shift_left> := <shift_left_op> <operand> <shift_count> <target>
 AMLSymbol *analyse_aml_def_shift_left(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_shift_left\n");
+	printf_serial("def_shift_left aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_shift_left = malloc(sizeof(*def_shift_left));
 	def_shift_left->parent = parent;
 	def_shift_left->string.initial = aml.initial;
@@ -2798,7 +2798,7 @@ AMLSymbol *analyse_aml_def_shift_left(AMLSymbol *parent, AMLSubstring aml)
 // <def_shift_right> := <shift_right_op> <operand> <shift_count> <target>
 AMLSymbol *analyse_aml_def_shift_right(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_shift_right\n");
+	printf_serial("def_shift_right aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_shift_right = malloc(sizeof(*def_shift_right));
 	def_shift_right->parent = parent;
 	def_shift_right->string.initial = aml.initial;
@@ -2827,7 +2827,7 @@ AMLSymbol *analyse_aml_def_shift_right(AMLSymbol *parent, AMLSubstring aml)
 // <def_size_of> := <size_of_op> <super_name>
 AMLSymbol *analyse_aml_def_size_of(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_size_of\n");
+	printf_serial("def_size_of aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_size_of = malloc(sizeof(*def_size_of));
 	def_size_of->parent = parent;
 	def_size_of->string.initial = aml.initial;
@@ -2848,7 +2848,7 @@ AMLSymbol *analyse_aml_def_size_of(AMLSymbol *parent, AMLSubstring aml)
 // <def_store> := <store_op> <term_arg> <super_name>
 AMLSymbol *analyse_aml_def_store(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_store\n");
+	printf_serial("def_store aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_store = malloc(sizeof(*def_store));
 	def_store->parent = parent;
 	def_store->string.initial = aml.initial;
@@ -2873,7 +2873,7 @@ AMLSymbol *analyse_aml_def_store(AMLSymbol *parent, AMLSubstring aml)
 // <def_subtract> := <subtract_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_subtract(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_subtract\n");
+	printf_serial("def_subtract aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_subtract = malloc(sizeof(*def_subtract));
 	def_subtract->parent = parent;
 	def_subtract->string.initial = aml.initial;
@@ -2901,7 +2901,7 @@ AMLSymbol *analyse_aml_def_subtract(AMLSymbol *parent, AMLSubstring aml)
 // <def_to_buffer> := <to_buffer_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_buffer(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_to_buffer\n");
+	printf_serial("def_to_buffer aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_to_buffer = malloc(sizeof(*def_to_buffer));
 	def_to_buffer->parent = parent;
 	def_to_buffer->string.initial = aml.initial;
@@ -2926,7 +2926,7 @@ AMLSymbol *analyse_aml_def_to_buffer(AMLSymbol *parent, AMLSubstring aml)
 // <def_to_hex_string> := <to_hex_string_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_hex_string(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_to_hex_string\n");
+	printf_serial("def_to_hex_string aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_to_hex_string = malloc(sizeof(*def_to_hex_string));
 	def_to_hex_string->parent = parent;
 	def_to_hex_string->string.initial = aml.initial;
@@ -2951,7 +2951,7 @@ AMLSymbol *analyse_aml_def_to_hex_string(AMLSymbol *parent, AMLSubstring aml)
 // <def_while> := <while_op> <pkg_length> <predicate> <term_list>
 AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("def_while\n");
+	printf_serial("def_while aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *def_while = malloc(sizeof(*def_while));
 	def_while->parent = parent;
 	def_while->string.initial = aml.initial;
@@ -2981,7 +2981,7 @@ AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml)
 // <deref_of_op> := AML_BYTE_DEREF_OF_OP
 AMLSymbol *analyse_aml_deref_of_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("deref_of_op\n");
+	printf_serial("deref_of_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *deref_of_op = malloc(sizeof(*deref_of_op));
 	deref_of_op->parent = parent;
 	deref_of_op->string.initial = aml.initial;
@@ -3000,7 +3000,7 @@ AMLSymbol *analyse_aml_deref_of_op(AMLSymbol *parent, AMLSubstring aml)
 // <device_op> := <ext_op_prefix> <device_op_suffix>
 AMLSymbol *analyse_aml_device_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("device_op\n");
+	printf_serial("device_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *device_op = malloc(sizeof(*device_op));
 	device_op->parent = parent;
 	device_op->string.initial = aml.initial;
@@ -3021,7 +3021,7 @@ AMLSymbol *analyse_aml_device_op(AMLSymbol *parent, AMLSubstring aml)
 // <device_op_suffix> := AML_BYTE_DEVICE_OP
 AMLSymbol *analyse_aml_device_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("device_op_suffix\n");
+	printf_serial("device_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *device_op_suffix = malloc(sizeof(*device_op_suffix));
 	device_op_suffix->parent = parent;
 	device_op_suffix->string.initial = aml.initial;
@@ -3040,7 +3040,7 @@ AMLSymbol *analyse_aml_device_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("digit_char\n");
+	printf_serial("digit_char aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *digit_char = malloc(sizeof(*digit_char));
 	digit_char->parent = parent;
 	digit_char->string.initial = aml.initial;
@@ -3059,7 +3059,7 @@ AMLSymbol *analyse_aml_digit_char(AMLSymbol *parent, AMLSubstring aml)
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>
 AMLSymbol *analyse_aml_dual_name_path(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("dual_name_path\n");
+	printf_serial("dual_name_path aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *dual_name_path = malloc(sizeof(*dual_name_path));
 	char *string_writer = dual_name_path->component.dual_name_path.string;
 	dual_name_path->parent = parent;
@@ -3087,7 +3087,7 @@ AMLSymbol *analyse_aml_dual_name_path(AMLSymbol *parent, AMLSubstring aml)
 // <dual_name_prefix> := AML_BYTE_DUAL_NAME_PREFIX
 AMLSymbol *analyse_aml_dual_name_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("dual_name_prefix\n");
+	printf_serial("dual_name_prefix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *dual_name_prefix = malloc(sizeof(*dual_name_prefix));
 	dual_name_prefix->parent = parent;
 	dual_name_prefix->string.initial = aml.initial;
@@ -3106,7 +3106,7 @@ AMLSymbol *analyse_aml_dual_name_prefix(AMLSymbol *parent, AMLSubstring aml)
 // <dword_const> := <dword_prefix> <dword_data>
 AMLSymbol *analyse_aml_dword_const(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("dword_const\n");
+	printf_serial("dword_const aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *dword_const = malloc(sizeof(*dword_const));
 	dword_const->parent = parent;
 	dword_const->string.initial = aml.initial;
@@ -3128,7 +3128,7 @@ AMLSymbol *analyse_aml_dword_const(AMLSymbol *parent, AMLSubstring aml)
 // <dword_data> := <word_data> <word_data>
 AMLSymbol *analyse_aml_dword_data(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("dword_data\n");
+	printf_serial("dword_data aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *dword_data = malloc(sizeof(*dword_data));
 	dword_data->parent = parent;
 	dword_data->string.initial = aml.initial;
@@ -3149,7 +3149,7 @@ AMLSymbol *analyse_aml_dword_data(AMLSymbol *parent, AMLSubstring aml)
 // <dword_prefix> := AML_BYTE_DWORD_PREFIX
 AMLSymbol *analyse_aml_dword_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("dword_prefix\n");
+	printf_serial("dword_prefix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *dword_prefix = malloc(sizeof(*dword_prefix));
 	dword_prefix->parent = parent;
 	dword_prefix->string.initial = aml.initial;
@@ -3168,7 +3168,7 @@ AMLSymbol *analyse_aml_dword_prefix(AMLSymbol *parent, AMLSubstring aml)
 // <else_op> := AML_BYTE_ELSE_OP
 AMLSymbol *analyse_aml_else_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("else_op\n");
+	printf_serial("else_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *else_op = malloc(sizeof(*else_op));
 	else_op->parent = parent;
 	else_op->string.initial = aml.initial;
@@ -3187,7 +3187,7 @@ AMLSymbol *analyse_aml_else_op(AMLSymbol *parent, AMLSubstring aml)
 // <expression_opcode> := <def_acquire> | <def_add> | <def_and> | <def_buffer> | <def_concat> | <def_concat_res> | <def_cond_ref_of> | <def_copy_object> | <def_decrement> | <def_deref_of> | <def_divide> | <def_find_set_left_bit> | <def_find_set_right_bit> | <def_from_bcd> | <def_increment> | <def_index> | <def_l_and> | <def_l_equal> | <def_l_greater> | <def_l_greater_equal> | <def_l_less> | <def_l_less_equal> | <def_mid> | <def_l_not> | <def_l_not_equal> | <def_load_table> | <def_l_or> | <def_match> | <def_mod> | <def_multiply> | <def_nand> | <def_nor> | <def_not> | <def_object_type> | <def_or> | <def_package> | <def_var_package> | <def_ref_of> | <def_shift_left> | <def_shift_right> | <def_size_of> | <def_store> | <def_subtract> | <def_timer> | <def_to_bcd> | <def_to_buffer> | <def_to_decimal_string> | <def_to_hex_string> | <def_to_integer> | <def_to_string> | <def_wait> | <def_xor> | <method_invocation>
 AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("expression_opcode\n");
+	printf_serial("expression_opcode aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *expression_opcode = malloc(sizeof(*expression_opcode));
 	expression_opcode->parent = parent;
 	expression_opcode->string.initial = aml.initial;
@@ -3383,7 +3383,7 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 // <ext_op_prefix> := AML_BYTE_EXT_OP_PREFIX
 AMLSymbol *analyse_aml_ext_op_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("ext_op_prefix\n");
+	printf_serial("ext_op_prefix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *ext_op_prefix = malloc(sizeof(*ext_op_prefix));
 	ext_op_prefix->parent = parent;
 	ext_op_prefix->string.initial = aml.initial;
@@ -3402,7 +3402,7 @@ AMLSymbol *analyse_aml_ext_op_prefix(AMLSymbol *parent, AMLSubstring aml)
 // <field_element> := <named_field> | <reserved_field> | <access_field> | <extended_access_field> | <connect_field>
 AMLSymbol *analyse_aml_field_element(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("field_element\n");
+	printf_serial("field_element aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *field_element = malloc(sizeof(*field_element));
 	field_element->parent = parent;
 	field_element->string.initial = aml.initial;
@@ -3439,7 +3439,7 @@ AMLSymbol *analyse_aml_field_element(AMLSymbol *parent, AMLSubstring aml)
 // <field_flags>
 AMLSymbol *analyse_aml_field_flags(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("field_flags\n");
+	printf_serial("field_flags aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *field_flags = malloc(sizeof(*field_flags));
 	field_flags->parent = parent;
 	field_flags->string.initial = aml.initial;
@@ -3458,7 +3458,7 @@ AMLSymbol *analyse_aml_field_flags(AMLSymbol *parent, AMLSubstring aml)
 // <field_list> := Nothing | <field_element> <field_list>
 AMLSymbol *analyse_aml_field_list(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("field_list\n");
+	printf_serial("field_list aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *field_list = malloc(sizeof(*field_list));
 	field_list->parent = parent;
 	field_list->string.initial = aml.initial;
@@ -3499,7 +3499,7 @@ AMLSymbol *analyse_aml_field_list(AMLSymbol *parent, AMLSubstring aml)
 // <field_op> := <ext_op_prefix> <field_op_suffix>
 AMLSymbol *analyse_aml_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("field_op\n");
+	printf_serial("field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *field_op = malloc(sizeof(*field_op));
 	field_op->parent = parent;
 	field_op->string.initial = aml.initial;
@@ -3520,7 +3520,7 @@ AMLSymbol *analyse_aml_field_op(AMLSymbol *parent, AMLSubstring aml)
 // <field_op_suffix> := AML_BYTE_FIELD_OP_PREFIX
 AMLSymbol *analyse_aml_field_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("field_op_suffix\n");
+	printf_serial("field_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *field_op_suffix = malloc(sizeof(*field_op_suffix));
 	field_op_suffix->parent = parent;
 	field_op_suffix->string.initial = aml.initial;
@@ -3539,7 +3539,7 @@ AMLSymbol *analyse_aml_field_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <if_op> := AML_BYTE_IF_OP
 AMLSymbol *analyse_aml_if_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("if_op\n");
+	printf_serial("if_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *if_op = malloc(sizeof(*if_op));
 	if_op->parent = parent;
 	if_op->string.initial = aml.initial;
@@ -3558,7 +3558,7 @@ AMLSymbol *analyse_aml_if_op(AMLSymbol *parent, AMLSubstring aml)
 // <increment_op> := AML_BYTE_INCREMENT_OP
 AMLSymbol *analyse_aml_increment_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("increment_op\n");
+	printf_serial("increment_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *increment_op = malloc(sizeof(*increment_op));
 	increment_op->parent = parent;
 	increment_op->string.initial = aml.initial;
@@ -3577,7 +3577,7 @@ AMLSymbol *analyse_aml_increment_op(AMLSymbol *parent, AMLSubstring aml)
 // <index_field_op> := <ext_op_prefix> <index_field_op_suffix>
 AMLSymbol *analyse_aml_index_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("index_field_op\n");
+	printf_serial("index_field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *index_field_op = malloc(sizeof(*index_field_op));
 	index_field_op->parent = parent;
 	index_field_op->string.initial = aml.initial;
@@ -3598,7 +3598,7 @@ AMLSymbol *analyse_aml_index_field_op(AMLSymbol *parent, AMLSubstring aml)
 // <index_field_op_suffix> := AML_BYTE_INDEX_FIELD_OP
 AMLSymbol *analyse_aml_index_field_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("index_field_op_suffix\n");
+	printf_serial("index_field_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *index_field_op_suffix = malloc(sizeof(*index_field_op_suffix));
 	index_field_op_suffix->parent = parent;
 	index_field_op_suffix->string.initial = aml.initial;
@@ -3617,7 +3617,7 @@ AMLSymbol *analyse_aml_index_field_op_suffix(AMLSymbol *parent, AMLSubstring aml
 // <index_op> := AML_BYTE_INDEX_OP
 AMLSymbol *analyse_aml_index_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("index_op\n");
+	printf_serial("index_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *index_op = malloc(sizeof(*index_op));
 	index_op->parent = parent;
 	index_op->string.initial = aml.initial;
@@ -3636,7 +3636,7 @@ AMLSymbol *analyse_aml_index_op(AMLSymbol *parent, AMLSubstring aml)
 // <index_value> := <term_arg>
 AMLSymbol *analyse_aml_index_value(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("index_value\n");
+	printf_serial("index_value aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *index_value = malloc(sizeof(*index_value));
 	index_value->parent = parent;
 	index_value->string.initial = aml.initial;
@@ -3651,7 +3651,7 @@ AMLSymbol *analyse_aml_index_value(AMLSymbol *parent, AMLSubstring aml)
 // <lead_name_char> := 'A' - 'Z' | '_'
 AMLSymbol *analyse_aml_lead_name_char(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("lead_name_char\n");
+	printf_serial("lead_name_char aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *lead_name_char = malloc(sizeof(*lead_name_char));
 	lead_name_char->parent = parent;
 	lead_name_char->string.initial = aml.initial;
@@ -3670,7 +3670,7 @@ AMLSymbol *analyse_aml_lead_name_char(AMLSymbol *parent, AMLSubstring aml)
 // <l_and_op> := AML_BYTE_L_AND_OP
 AMLSymbol *analyse_aml_l_and_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("l_and_op\n");
+	printf_serial("l_and_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *l_and_op = malloc(sizeof(*l_and_op));
 	l_and_op->parent = parent;
 	l_and_op->string.initial = aml.initial;
@@ -3689,7 +3689,7 @@ AMLSymbol *analyse_aml_l_and_op(AMLSymbol *parent, AMLSubstring aml)
 // <l_equal_op> := AML_BYTE_L_EQUAL_OP
 AMLSymbol *analyse_aml_l_equal_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("l_equal_op\n");
+	printf_serial("l_equal_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *l_equal_op = malloc(sizeof(*l_equal_op));
 	l_equal_op->parent = parent;
 	l_equal_op->string.initial = aml.initial;
@@ -3708,7 +3708,7 @@ AMLSymbol *analyse_aml_l_equal_op(AMLSymbol *parent, AMLSubstring aml)
 // <l_greater_op> := AML_BYTE_L_EQUAL_OP
 AMLSymbol *analyse_aml_l_greater_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("l_greater_op\n");
+	printf_serial("l_greater_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *l_greater_op = malloc(sizeof(*l_greater_op));
 	l_greater_op->parent = parent;
 	l_greater_op->string.initial = aml.initial;
@@ -3727,7 +3727,7 @@ AMLSymbol *analyse_aml_l_greater_op(AMLSymbol *parent, AMLSubstring aml)
 // <l_less_op> := AML_BYTE_L_LESS_OP
 AMLSymbol *analyse_aml_l_less_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("l_less_op\n");
+	printf_serial("l_less_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *l_less_op = malloc(sizeof(*l_less_op));
 	l_less_op->parent = parent;
 	l_less_op->string.initial = aml.initial;
@@ -3746,7 +3746,7 @@ AMLSymbol *analyse_aml_l_less_op(AMLSymbol *parent, AMLSubstring aml)
 // <l_not_op> := AML_BYTE_L_NOT_OP
 AMLSymbol *analyse_aml_l_not_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("l_not_op\n");
+	printf_serial("l_not_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *l_not_op = malloc(sizeof(*l_not_op));
 	l_not_op->parent = parent;
 	l_not_op->string.initial = aml.initial;
@@ -3765,7 +3765,7 @@ AMLSymbol *analyse_aml_l_not_op(AMLSymbol *parent, AMLSubstring aml)
 // <l_or_op> := AML_BYTE_L_OR_OP
 AMLSymbol *analyse_aml_l_or_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("l_or_op\n");
+	printf_serial("l_or_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *l_or_op = malloc(sizeof(*l_or_op));
 	l_or_op->parent = parent;
 	l_or_op->string.initial = aml.initial;
@@ -3784,7 +3784,7 @@ AMLSymbol *analyse_aml_l_or_op(AMLSymbol *parent, AMLSubstring aml)
 // <local_obj> := <local_op>
 AMLSymbol *analyse_aml_local_obj(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("local_obj\n");
+	printf_serial("local_obj aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *local_obj = malloc(sizeof(*local_obj));
 	local_obj->parent = parent;
 	local_obj->string.initial = aml.initial;
@@ -3802,7 +3802,7 @@ AMLSymbol *analyse_aml_local_obj(AMLSymbol *parent, AMLSubstring aml)
 // <local_op> := 0x60 - 0x67
 AMLSymbol *analyse_aml_local_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("local_op\n");
+	printf_serial("local_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *local_op = malloc(sizeof(*local_op));
 	local_op->parent = parent;
 	local_op->string.initial = aml.initial;
@@ -3835,7 +3835,7 @@ AMLSymbol *analyse_aml_local_op(AMLSymbol *parent, AMLSubstring aml)
 // <method_flags>
 AMLSymbol *analyse_aml_method_flags(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("method_flags\n");
+	printf_serial("method_flags aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *method_flags = malloc(sizeof(*method_flags));
 	method_flags->parent = parent;
 	method_flags->string.initial = aml.initial;
@@ -3862,7 +3862,7 @@ AMLSymbol *analyse_aml_method_flags(AMLSymbol *parent, AMLSubstring aml)
 // <method_invocation> := <name_string> <term_arg_list>
 AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("method_invocation\n");
+	printf_serial("method_invocation aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *method_invocation = malloc(sizeof(*method_invocation));
 	AMLSymbol const *def_method;
 	int num_of_args;
@@ -3894,7 +3894,7 @@ AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 // <method_op> := AML_BYTE_METHOD_OP
 AMLSymbol *analyse_aml_method_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("method_op\n");
+	printf_serial("method_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *method_op = malloc(sizeof(*method_op));
 	method_op->parent = parent;
 	method_op->string.initial = aml.initial;
@@ -3913,7 +3913,7 @@ AMLSymbol *analyse_aml_method_op(AMLSymbol *parent, AMLSubstring aml)
 // <multi_name_path> := <multi_name_prefix> <seg_count> <name_seg>*
 AMLSymbol *analyse_aml_multi_name_path(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("multi_name_path\n");
+	printf_serial("multi_name_path aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *multi_name_path = malloc(sizeof(*multi_name_path));
 	char *string_writer;
 	multi_name_path->parent = parent;
@@ -3948,7 +3948,7 @@ AMLSymbol *analyse_aml_multi_name_path(AMLSymbol *parent, AMLSubstring aml)
 // <mult_name_prefix> := AML_BYTE_MULTI_NAME_PREFIX
 AMLSymbol *analyse_aml_multi_name_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("multi_name_prefix\n");
+	printf_serial("multi_name_prefix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *multi_name_prefix = malloc(sizeof(*multi_name_prefix));
 	multi_name_prefix->parent = parent;
 	multi_name_prefix->string.initial = aml.initial;
@@ -3967,7 +3967,7 @@ AMLSymbol *analyse_aml_multi_name_prefix(AMLSymbol *parent, AMLSubstring aml)
 // <multiply_op> := AML_BYTE_MULTIPLY_OP
 AMLSymbol *analyse_aml_multiply_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("multiply_op\n");
+	printf_serial("multiply_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *multiply_op = malloc(sizeof(*multiply_op));
 	multiply_op->parent = parent;
 	multiply_op->string.initial = aml.initial;
@@ -3986,7 +3986,7 @@ AMLSymbol *analyse_aml_multiply_op(AMLSymbol *parent, AMLSubstring aml)
 // <mutex_object> := <super_name>
 AMLSymbol *analyse_aml_mutex_object(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("mutex_object\n");
+	printf_serial("mutex_object aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *mutex_object = malloc(sizeof(*mutex_object));
 	mutex_object->parent = parent;
 	mutex_object->string.initial = aml.initial;
@@ -4001,7 +4001,7 @@ AMLSymbol *analyse_aml_mutex_object(AMLSymbol *parent, AMLSubstring aml)
 // <mutex_op> := <ext_op_prefix> <mutex_op_suffix>
 AMLSymbol *analyse_aml_mutex_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("mutex_op\n");
+	printf_serial("mutex_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *mutex_op = malloc(sizeof(*mutex_op));
 	mutex_op->parent = parent;
 	mutex_op->string.initial = aml.initial;
@@ -4022,7 +4022,7 @@ AMLSymbol *analyse_aml_mutex_op(AMLSymbol *parent, AMLSubstring aml)
 // <mutex_op_suffix> := AML_BYTE_MUTEX_OP
 AMLSymbol *analyse_aml_mutex_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("mutex_op_suffix\n");
+	printf_serial("mutex_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *mutex_op_suffix = malloc(sizeof(*mutex_op_suffix));
 	mutex_op_suffix->parent = parent;
 	mutex_op_suffix->string.initial = aml.initial;
@@ -4041,7 +4041,7 @@ AMLSymbol *analyse_aml_mutex_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <name_char> := <digit_char> | <lead_name_char>
 AMLSymbol *analyse_aml_name_char(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("name_char\n");
+	printf_serial("name_char aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *name_char = malloc(sizeof(*name_char));
 	name_char->parent = parent;
 	name_char->string.initial = aml.initial;
@@ -4068,7 +4068,7 @@ AMLSymbol *analyse_aml_name_char(AMLSymbol *parent, AMLSubstring aml)
 // <name_op> := AML_BYTE_NAME_OP
 AMLSymbol *analyse_aml_name_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("name_op\n");
+	printf_serial("name_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *name_op = malloc(sizeof(*name_op));
 	name_op->parent = parent;
 	name_op->string.initial = aml.initial;
@@ -4087,7 +4087,7 @@ AMLSymbol *analyse_aml_name_op(AMLSymbol *parent, AMLSubstring aml)
 // <name_path> := <name_seg> | <dual_name_path> | <multi_name_path> | <null_name>
 AMLSymbol *analyse_aml_name_path(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("name_path\n");
+	printf_serial("name_path aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *name_path = malloc(sizeof(*name_path));
 	name_path->parent = parent;
 	name_path->string.initial = aml.initial;
@@ -4131,7 +4131,7 @@ AMLSymbol *analyse_aml_name_path(AMLSymbol *parent, AMLSubstring aml)
 // <name_seg> := <lead_name_char> <name_char> <name_char> <name_char>
 AMLSymbol *analyse_aml_name_seg(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("name_seg\n");
+	printf_serial("name_seg aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *name_seg = malloc(sizeof(*name_seg));
 	char *string_writer = name_seg->component.name_seg.string;
 	name_seg->parent = parent;
@@ -4159,7 +4159,7 @@ AMLSymbol *analyse_aml_name_seg(AMLSymbol *parent, AMLSubstring aml)
 // <name_space_modifier_obj> := <def_alias> | <def_name> | <def_scope>
 AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("name_space_modifier_obj\n");
+	printf_serial("name_space_modifier_obj aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *name_space_modifier_obj = malloc(sizeof(*name_space_modifier_obj));
 	name_space_modifier_obj->parent = parent;
 	name_space_modifier_obj->string.initial = aml.initial;
@@ -4193,7 +4193,7 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSymbol *parent, AMLSubstring a
 // <name_string> := <root_char> <name_path> | <prefix_path> <name_path>
 AMLSymbol *analyse_aml_name_string(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("name_string\n");
+	printf_serial("name_string aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *name_string = malloc(sizeof(*name_string));
 	unsigned int string_length;
 	char *string_writer;
@@ -4239,7 +4239,7 @@ AMLSymbol *analyse_aml_name_string(AMLSymbol *parent, AMLSubstring aml)
 // <named_field> := <name_seg> <pkg_length>
 AMLSymbol *analyse_aml_named_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("named_field\n");
+	printf_serial("named_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *named_field = malloc(sizeof(*named_field));
 	named_field->parent = parent;
 	named_field->string.initial = aml.initial;
@@ -4260,7 +4260,7 @@ AMLSymbol *analyse_aml_named_field(AMLSymbol *parent, AMLSubstring aml)
 // <named_obj> := <def_bank_field> | <def_create_bit_field> | <def_create_byte_field> | <def_create_dword_field> | <def_create_field> | <def_create_qword_field> | <def_create_word_field> | <def_data_region> | <def_external> | <def_op_region> | <def_power_res> | <def_thermal_zone>
 AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("named_obj\n");
+	printf_serial("named_obj aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *named_obj = malloc(sizeof(*named_obj));
 	named_obj->parent = parent;
 	named_obj->string.initial = aml.initial;
@@ -4353,7 +4353,7 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 // <notify_object> := <super_name>
 AMLSymbol *analyse_aml_notify_object(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("notify_object\n");
+	printf_serial("notify_object aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *notify_object = malloc(sizeof(*notify_object));
 	notify_object->parent = parent;
 	notify_object->string.initial = aml.initial;
@@ -4368,7 +4368,7 @@ AMLSymbol *analyse_aml_notify_object(AMLSymbol *parent, AMLSubstring aml)
 // <notify_value> := <term_arg>
 AMLSymbol *analyse_aml_notify_value(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("notify_value\n");
+	printf_serial("notify_value aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *notify_value = malloc(sizeof(*notify_value));
 	notify_value->parent = parent;
 	notify_value->string.initial = aml.initial;
@@ -4383,7 +4383,7 @@ AMLSymbol *analyse_aml_notify_value(AMLSymbol *parent, AMLSubstring aml)
 // <notify_op> := AML_BYTE_NOTIFY_OP
 AMLSymbol *analyse_aml_notify_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("notify_op\n");
+	printf_serial("notify_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *notify_op = malloc(sizeof(*notify_op));
 	notify_op->parent = parent;
 	notify_op->string.initial = aml.initial;
@@ -4402,7 +4402,7 @@ AMLSymbol *analyse_aml_notify_op(AMLSymbol *parent, AMLSubstring aml)
 // <null_char> := AML_BYTE_NULL_CHAR
 AMLSymbol *analyse_aml_null_char(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("null_char\n");
+	printf_serial("null_char aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *null_char = malloc(sizeof(*null_char));
 	null_char->parent = parent;
 	null_char->string.initial = aml.initial;
@@ -4421,7 +4421,7 @@ AMLSymbol *analyse_aml_null_char(AMLSymbol *parent, AMLSubstring aml)
 // <null_name> := AML_BYTE_NULL_NAME
 AMLSymbol *analyse_aml_null_name(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("null_name\n");
+	printf_serial("null_name aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *null_name = malloc(sizeof(*null_name));
 	null_name->parent = parent;
 	null_name->string.initial = aml.initial;
@@ -4440,7 +4440,7 @@ AMLSymbol *analyse_aml_null_name(AMLSymbol *parent, AMLSubstring aml)
 // <num_elements> := <byte_data>
 AMLSymbol *analyse_aml_num_elements(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("num_elements\n");
+	printf_serial("num_elements aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *num_elements = malloc(sizeof(*num_elements));
 	num_elements->parent = parent;
 	num_elements->string.initial = aml.initial;
@@ -4458,7 +4458,7 @@ AMLSymbol *analyse_aml_num_elements(AMLSymbol *parent, AMLSubstring aml)
 // <obj_reference> := <term_arg>
 AMLSymbol *analyse_aml_obj_reference(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("obj_reference\n");
+	printf_serial("obj_reference aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *obj_reference = malloc(sizeof(*obj_reference));
 	obj_reference->parent = parent;
 	obj_reference->string.initial = aml.initial;
@@ -4475,7 +4475,7 @@ AMLSymbol *analyse_aml_obj_reference(AMLSymbol *parent, AMLSubstring aml)
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("object\n");
+	printf_serial("object aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *object = malloc(sizeof(*object));
 	object->parent = parent;
 	object->string.initial = aml.initial;
@@ -4512,7 +4512,7 @@ AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml)
 // <one_op> := AML_BYTE_ONE_OP
 AMLSymbol *analyse_aml_one_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("one_op\n");
+	printf_serial("one_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *one_op = malloc(sizeof(*one_op));
 	one_op->parent = parent;
 	one_op->string.initial = aml.initial;
@@ -4531,7 +4531,7 @@ AMLSymbol *analyse_aml_one_op(AMLSymbol *parent, AMLSubstring aml)
 // <ones_op> := AML_BYTE_ONES_OP
 AMLSymbol *analyse_aml_ones_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("ones_op\n");
+	printf_serial("ones_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *ones_op = malloc(sizeof(*ones_op));
 	ones_op->parent = parent;
 	ones_op->string.initial = aml.initial;
@@ -4550,7 +4550,7 @@ AMLSymbol *analyse_aml_ones_op(AMLSymbol *parent, AMLSubstring aml)
 // <op_region_op> := <ext_op_prefix> <op_region_op_suffix>
 AMLSymbol *analyse_aml_op_region_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("op_region_op\n");
+	printf_serial("op_region_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *op_region_op = malloc(sizeof(*op_region_op));
 	op_region_op->parent = parent;
 	op_region_op->string.initial = aml.initial;
@@ -4571,7 +4571,7 @@ AMLSymbol *analyse_aml_op_region_op(AMLSymbol *parent, AMLSubstring aml)
 // <op_region_op_suffix> := AML_BYTE_OP_REGION_OP
 AMLSymbol *analyse_aml_op_region_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("op_region_op_suffix\n");
+	printf_serial("op_region_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *op_region_op_suffix = malloc(sizeof(*op_region_op_suffix));
 	op_region_op_suffix->parent = parent;
 	op_region_op_suffix->string.initial = aml.initial;
@@ -4590,7 +4590,7 @@ AMLSymbol *analyse_aml_op_region_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <operand> := <term_arg>
 AMLSymbol *analyse_aml_operand(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("operand\n");
+	printf_serial("operand aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *operand = malloc(sizeof(*operand));
 	operand->parent = parent;
 	operand->string.initial = aml.initial;
@@ -4605,7 +4605,7 @@ AMLSymbol *analyse_aml_operand(AMLSymbol *parent, AMLSubstring aml)
 // <or_op> := AML_BYTE_OR_OP
 AMLSymbol *analyse_aml_or_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("or_op\n");
+	printf_serial("or_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *or_op = malloc(sizeof(*or_op));
 	or_op->parent = parent;
 	or_op->string.initial = aml.initial;
@@ -4624,7 +4624,7 @@ AMLSymbol *analyse_aml_or_op(AMLSymbol *parent, AMLSubstring aml)
 // <package_element> := <data_ref_object> | <name_string>
 AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("package_element\n");
+	printf_serial("package_element aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *package_element = malloc(sizeof(*package_element));
 	package_element->parent = parent;
 	package_element->string.initial = aml.initial;
@@ -4677,7 +4677,7 @@ AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml)
 // <package_element_list> := Nothing | <package_element> <package_element_list>
 AMLSymbol *analyse_aml_package_element_list(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("package_element_list\n");
+	printf_serial("package_element_list aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *package_element_list = malloc(sizeof(*package_element_list));
 	package_element_list->parent = parent;
 	package_element_list->string.initial = aml.initial;
@@ -4733,7 +4733,7 @@ AMLSymbol *analyse_aml_package_element_list(AMLSymbol *parent, AMLSubstring aml)
 // <package_op> := AML_BYTE_PACKAGE_OP
 AMLSymbol *analyse_aml_package_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("package_op\n");
+	printf_serial("package_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *package_op = malloc(sizeof(*package_op));
 	package_op->parent = parent;
 	package_op->string.initial = aml.initial;
@@ -4752,7 +4752,7 @@ AMLSymbol *analyse_aml_package_op(AMLSymbol *parent, AMLSubstring aml)
 // <parent_prefix_char> := AML_BYTE_PARENT_PREFIX_CHAR
 AMLSymbol *analyse_aml_parent_prefix_char(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("parent_prefix_char\n");
+	printf_serial("parent_prefix_char aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *parent_prefix_char = malloc(sizeof(*parent_prefix_char));
 	parent_prefix_char->parent = parent;
 	parent_prefix_char->string.initial = aml.initial;
@@ -4771,7 +4771,7 @@ AMLSymbol *analyse_aml_parent_prefix_char(AMLSymbol *parent, AMLSubstring aml)
 // <pblk_addr> := <dword_data>
 AMLSymbol *analyse_aml_pblk_addr(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("pblk_addr\n");
+	printf_serial("pblk_addr aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *pblk_addr = malloc(sizeof(*pblk_addr));
 	pblk_addr->parent = parent;
 	pblk_addr->string.initial = aml.initial;
@@ -4788,7 +4788,7 @@ AMLSymbol *analyse_aml_pblk_addr(AMLSymbol *parent, AMLSubstring aml)
 // <pblk_len> := <byte_data>
 AMLSymbol *analyse_aml_pblk_len(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("pblk_len\n");
+	printf_serial("pblk_len aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *pblk_len = malloc(sizeof(*pblk_len));
 	pblk_len->parent = parent;
 	pblk_len->string.initial = aml.initial;
@@ -4805,7 +4805,7 @@ AMLSymbol *analyse_aml_pblk_len(AMLSymbol *parent, AMLSubstring aml)
 // <pkg_lead_byte>
 AMLSymbol *analyse_aml_pkg_lead_byte(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("pkg_lead_byte\n");
+	printf_serial("pkg_lead_byte aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *pkg_lead_byte = malloc(sizeof(*pkg_lead_byte));
 	pkg_lead_byte->parent = parent;
 	pkg_lead_byte->string.initial = aml.initial;
@@ -4818,7 +4818,7 @@ AMLSymbol *analyse_aml_pkg_lead_byte(AMLSymbol *parent, AMLSubstring aml)
 // <pkg_length> := <pkg_lead_byte> | <pkg_lead_byte> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> | <pkg_lead_byte> <byte_data> <byte_data> <byte_data>
 AMLSymbol *analyse_aml_pkg_length(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("pkg_length\n");
+	printf_serial("pkg_length aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *pkg_length = malloc(sizeof(*pkg_length));
 	pkg_length->parent = parent;
 	pkg_length->string.initial = aml.initial;
@@ -4857,7 +4857,7 @@ AMLSymbol *analyse_aml_pkg_length(AMLSymbol *parent, AMLSubstring aml)
 // <predicate> := <term_arg>
 AMLSymbol *analyse_aml_predicate(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("predicate\n");
+	printf_serial("predicate aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *predicate = malloc(sizeof(*predicate));
 	predicate->parent = parent;
 	predicate->string.initial = aml.initial;
@@ -4872,7 +4872,7 @@ AMLSymbol *analyse_aml_predicate(AMLSymbol *parent, AMLSubstring aml)
 // <prefix_path> := Nothing | <parent_prefix_char> <prefix_path>
 AMLSymbol *analyse_aml_prefix_path(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("prefix_path\n");
+	printf_serial("prefix_path aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *prefix_path = malloc(sizeof(*prefix_path));
 	char *string_writer;
 	prefix_path->parent = parent;
@@ -4907,7 +4907,7 @@ AMLSymbol *analyse_aml_prefix_path(AMLSymbol *parent, AMLSubstring aml)
 // <proc_id> := <byte_data>
 AMLSymbol *analyse_aml_proc_id(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("proc_id\n");
+	printf_serial("proc_id aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *proc_id = malloc(sizeof(*proc_id));
 	proc_id->parent = parent;
 	proc_id->string.initial = aml.initial;
@@ -4924,7 +4924,7 @@ AMLSymbol *analyse_aml_proc_id(AMLSymbol *parent, AMLSubstring aml)
 // <processor_op> := <ext_op_prefix> <processor_op_suffix>
 AMLSymbol *analyse_aml_processor_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("processor_op\n");
+	printf_serial("processor_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *processor_op = malloc(sizeof(*processor_op));
 	processor_op->parent = parent;
 	processor_op->string.initial = aml.initial;
@@ -4945,7 +4945,7 @@ AMLSymbol *analyse_aml_processor_op(AMLSymbol *parent, AMLSubstring aml)
 // <processor_op_suffix> := AML_BYTE_PROCESSOR_OP
 AMLSymbol *analyse_aml_processor_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("processor_op_suffix\n");
+	printf_serial("processor_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *processor_op_suffix = malloc(sizeof(*processor_op_suffix));
 	processor_op_suffix->parent = parent;
 	processor_op_suffix->string.initial = aml.initial;
@@ -4964,7 +4964,7 @@ AMLSymbol *analyse_aml_processor_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <qword_const> := <qword_prefix> <qword_data>
 AMLSymbol *analyse_aml_qword_const(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("qword_const\n");
+	printf_serial("qword_const aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *qword_const = malloc(sizeof(*qword_const));
 	qword_const->parent = parent;
 	qword_const->string.initial = aml.initial;
@@ -4986,7 +4986,7 @@ AMLSymbol *analyse_aml_qword_const(AMLSymbol *parent, AMLSubstring aml)
 // <qword_data> := <dword_data> <dword_data>
 AMLSymbol *analyse_aml_qword_data(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("qword_data\n");
+	printf_serial("qword_data aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *qword_data = malloc(sizeof(*qword_data));
 	qword_data->parent = parent;
 	qword_data->string.initial = aml.initial;
@@ -5007,7 +5007,7 @@ AMLSymbol *analyse_aml_qword_data(AMLSymbol *parent, AMLSubstring aml)
 // <qword_prefix> := AML_BYTE_QWORD_PREFIX
 AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("qword_prefix\n");
+	printf_serial("qword_prefix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *qword_prefix = malloc(sizeof(*qword_prefix));
 	qword_prefix->parent = parent;
 	qword_prefix->string.initial = aml.initial;
@@ -5026,7 +5026,7 @@ AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml)
 // <reference_type_opcode> := <DefRefOf> <DefDerefOf> <DefIndex> <UserTermObj>
 AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("reference_type_opcode\n");
+	printf_serial("reference_type_opcode aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *reference_type_opcode = malloc(sizeof(*reference_type_opcode));
 	reference_type_opcode->parent = parent;
 	reference_type_opcode->string.initial = aml.initial;
@@ -5061,7 +5061,7 @@ AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml
 // <region_len> := <term_arg>
 AMLSymbol *analyse_aml_region_len(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("region_len\n");
+	printf_serial("region_len aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *region_len = malloc(sizeof(*region_len));
 	region_len->parent = parent;
 	region_len->string.initial = aml.initial;
@@ -5076,7 +5076,7 @@ AMLSymbol *analyse_aml_region_len(AMLSymbol *parent, AMLSubstring aml)
 // <region_offset> := <term_arg>
 AMLSymbol *analyse_aml_region_offset(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("region_offset\n");
+	printf_serial("region_offset aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *region_offset = malloc(sizeof(*region_offset));
 	region_offset->parent = parent;
 	region_offset->string.initial = aml.initial;
@@ -5091,7 +5091,7 @@ AMLSymbol *analyse_aml_region_offset(AMLSymbol *parent, AMLSubstring aml)
 // <region_space>
 AMLSymbol *analyse_aml_region_space(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("region_space\n");
+	printf_serial("region_space aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *region_space = malloc(sizeof(*region_space));
 	region_space->parent = parent;
 	region_space->string.initial = aml.initial;
@@ -5109,7 +5109,7 @@ AMLSymbol *analyse_aml_region_space(AMLSymbol *parent, AMLSubstring aml)
 // <release_op> := <ext_op_prefix> <release_op_suffix>
 AMLSymbol *analyse_aml_release_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("release_op\n");
+	printf_serial("release_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *release_op = malloc(sizeof(*release_op));
 	release_op->parent = parent;
 	release_op->string.initial = aml.initial;
@@ -5130,7 +5130,7 @@ AMLSymbol *analyse_aml_release_op(AMLSymbol *parent, AMLSubstring aml)
 // <release_op_suffix> := AML_BYTE_RELEASE_OP
 AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("release_op\n");
+	printf_serial("release_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *release_op = malloc(sizeof(*release_op));
 	release_op->parent = parent;
 	release_op->string.initial = aml.initial;
@@ -5149,7 +5149,7 @@ AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <return_op> := AML_BYTE_RETURN_OP
 AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("return_op\n");
+	printf_serial("return_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *return_op = malloc(sizeof(*return_op));
 	return_op->parent = parent;
 	return_op->string.initial = aml.initial;
@@ -5168,7 +5168,7 @@ AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml)
 // <reserved_field> := <reserved_field_op> <pkg_length>
 AMLSymbol *analyse_aml_reserved_field(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("reserved_field\n");
+	printf_serial("reserved_field aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *reserved_field = malloc(sizeof(*reserved_field));
 	reserved_field->parent = parent;
 	reserved_field->string.initial = aml.initial;
@@ -5189,7 +5189,7 @@ AMLSymbol *analyse_aml_reserved_field(AMLSymbol *parent, AMLSubstring aml)
 // <reserved_field_op> := AML_BYTE_RESERVED_FIELD_OP
 AMLSymbol *analyse_aml_reserved_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("reserved_field_op\n");
+	printf_serial("reserved_field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *reserved_field_op = malloc(sizeof(*reserved_field_op));
 	reserved_field_op->parent = parent;
 	reserved_field_op->string.initial = aml.initial;
@@ -5208,7 +5208,7 @@ AMLSymbol *analyse_aml_reserved_field_op(AMLSymbol *parent, AMLSubstring aml)
 // <revision_op> := <ext_op_prefix> <revision_op_suffix>
 AMLSymbol *analyse_aml_revision_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("revision_op\n");
+	printf_serial("revision_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *revision_op = malloc(sizeof(*revision_op));
 	revision_op->parent = parent;
 	revision_op->string.initial = aml.initial;
@@ -5229,7 +5229,7 @@ AMLSymbol *analyse_aml_revision_op(AMLSymbol *parent, AMLSubstring aml)
 // <revision_op_suffix> := AML_BYTE_REVISION_OP
 AMLSymbol *analyse_aml_revision_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("revision_op_suffix\n");
+	printf_serial("revision_op_suffix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *revision_op_suffix = malloc(sizeof(*revision_op_suffix));
 	revision_op_suffix->parent = parent;
 	revision_op_suffix->string.initial = aml.initial;
@@ -5248,7 +5248,7 @@ AMLSymbol *analyse_aml_revision_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 // <root_char> := AML_BYTE_ROOT_CHAR
 AMLSymbol *analyse_aml_root_char(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("root_char\n");
+	printf_serial("root_char aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *root_char = malloc(sizeof(*root_char));
 	root_char->parent = parent;
 	root_char->string.initial = aml.initial;
@@ -5267,7 +5267,7 @@ AMLSymbol *analyse_aml_root_char(AMLSymbol *parent, AMLSubstring aml)
 // <scope_op> := AML_BYTE_SCOPE_OP
 AMLSymbol *analyse_aml_scope_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("scope_op\n");
+	printf_serial("scope_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *scope_op = malloc(sizeof(*scope_op));
 	scope_op->parent = parent;
 	scope_op->string.initial = aml.initial;
@@ -5286,7 +5286,7 @@ AMLSymbol *analyse_aml_scope_op(AMLSymbol *parent, AMLSubstring aml)
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("seg_count\n");
+	printf_serial("seg_count aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *seg_count = malloc(sizeof(*seg_count));
 	seg_count->parent = parent;
 	seg_count->string.initial = aml.initial;
@@ -5305,7 +5305,7 @@ AMLSymbol *analyse_aml_seg_count(AMLSymbol *parent, AMLSubstring aml)
 // <shift_count> := <term_arg>
 AMLSymbol *analyse_aml_shift_count(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("shift_count\n");
+	printf_serial("shift_count aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *shift_count = malloc(sizeof(*shift_count));
 	shift_count->parent = parent;
 	shift_count->string.initial = aml.initial;
@@ -5322,7 +5322,7 @@ AMLSymbol *analyse_aml_shift_count(AMLSymbol *parent, AMLSubstring aml)
 // <shift_left_op> := AML_BYTE_SHIFT_LEFT
 AMLSymbol *analyse_aml_shift_left_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("shift_left_op\n");
+	printf_serial("shift_left_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *shift_left_op = malloc(sizeof(*shift_left_op));
 	shift_left_op->parent = parent;
 	shift_left_op->string.initial = aml.initial;
@@ -5341,7 +5341,7 @@ AMLSymbol *analyse_aml_shift_left_op(AMLSymbol *parent, AMLSubstring aml)
 // <shift_right_op> := AML_BYTE_SHIFT_RIGHT
 AMLSymbol *analyse_aml_shift_right_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("shift_right_op\n");
+	printf_serial("shift_right_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *shift_right_op = malloc(sizeof(*shift_right_op));
 	shift_right_op->parent = parent;
 	shift_right_op->string.initial = aml.initial;
@@ -5360,7 +5360,7 @@ AMLSymbol *analyse_aml_shift_right_op(AMLSymbol *parent, AMLSubstring aml)
 // <simple_name> := <name_string> | <arg_obj> | <local_obj>
 AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("simple_name\n");
+	printf_serial("simple_name aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *simple_name = malloc(sizeof(*simple_name));
 	simple_name->parent = parent;
 	simple_name->string.initial = aml.initial;
@@ -5422,7 +5422,7 @@ AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml)
 // <size_of_op> := AML_BYTE_SIZE_OF_OP
 AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("size_of_op\n");
+	printf_serial("size_of_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *size_of_op = malloc(sizeof(*size_of_op));
 	size_of_op->parent = parent;
 	size_of_op->string.initial = aml.initial;
@@ -5441,7 +5441,7 @@ AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml)
 // <source_buff> := <term_arg>
 AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("source_buff\n");
+	printf_serial("source_buff aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *source_buff = malloc(sizeof(*source_buff));
 	source_buff->parent = parent;
 	source_buff->string.initial = aml.initial;
@@ -5458,7 +5458,7 @@ AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml)
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("statement_opcode\n");
+	printf_serial("statement_opcode aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *statement_opcode = malloc(sizeof(*statement_opcode));
 	statement_opcode->parent = parent;
 	statement_opcode->string.initial = aml.initial;
@@ -5525,7 +5525,7 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 // <store_op> := AML_BYTE_STORE_OP
 AMLSymbol *analyse_aml_store_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("store_op\n");
+	printf_serial("store_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *store_op = malloc(sizeof(*store_op));
 	store_op->parent = parent;
 	store_op->string.initial = aml.initial;
@@ -5544,7 +5544,7 @@ AMLSymbol *analyse_aml_store_op(AMLSymbol *parent, AMLSubstring aml)
 // <string> := <string_prefix> <ascii_char_list> <null_char>
 AMLSymbol *analyse_aml_string(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("string\n");
+	printf_serial("string aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *string = malloc(sizeof(*string));
 	string->parent = parent;
 	string->string.initial = aml.initial;
@@ -5569,7 +5569,7 @@ AMLSymbol *analyse_aml_string(AMLSymbol *parent, AMLSubstring aml)
 // <string_prefix> := AML_BYTE_STRING_PREFIX
 AMLSymbol *analyse_aml_string_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("string_prefix\n");
+	printf_serial("string_prefix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *string_prefix = malloc(sizeof(*string_prefix));
 	string_prefix->parent = parent;
 	string_prefix->string.initial = aml.initial;
@@ -5588,7 +5588,7 @@ AMLSymbol *analyse_aml_string_prefix(AMLSymbol *parent, AMLSubstring aml)
 // <subtract_op> := AML_BYTE_SUBTRACT_OP
 AMLSymbol *analyse_aml_subtract_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("subtract_op\n");
+	printf_serial("subtract_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *subtract_op = malloc(sizeof(*subtract_op));
 	subtract_op->parent = parent;
 	subtract_op->string.initial = aml.initial;
@@ -5607,7 +5607,7 @@ AMLSymbol *analyse_aml_subtract_op(AMLSymbol *parent, AMLSubstring aml)
 // <super_name> := <simple_name> | <debug_obj> | <reference_type_opcode>
 AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("super_name\n");
+	printf_serial("super_name aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *super_name = malloc(sizeof(*super_name));
 	super_name->parent = parent;
 	super_name->string.initial = aml.initial;
@@ -5680,7 +5680,7 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 // <sync_flags>
 AMLSymbol *analyse_aml_sync_flags(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("sync_flags\n");
+	printf_serial("sync_flags aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *sync_flags = malloc(sizeof(*sync_flags));
 	sync_flags->parent = parent;
 	sync_flags->string.initial = aml.initial;
@@ -5699,7 +5699,7 @@ AMLSymbol *analyse_aml_sync_flags(AMLSymbol *parent, AMLSubstring aml)
 // <target> := <super_name> | <null_name>
 AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("target\n");
+	printf_serial("target aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *target = malloc(sizeof(*target));
 	target->parent = parent;
 	target->string.initial = aml.initial;
@@ -5757,7 +5757,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 // <term_arg> := <expression_opcode> | <data_object> | <arg_obj> | <local_obj>
 AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("term_arg\n");
+	printf_serial("term_arg aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *term_arg = malloc(sizeof(*term_arg));
 	term_arg->parent = parent;
 	term_arg->string.initial = aml.initial;
@@ -5863,7 +5863,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 // <term_arg_list> := Nothing | <term_arg> <term_arg_list>
 AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int num_of_term_args)
 {
-	printf_serial("term_arg_list\n");
+	printf_serial("term_arg_list aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *term_arg_list = malloc(sizeof(*term_arg_list));
 	term_arg_list->parent = parent;
 	term_arg_list->string.initial = aml.initial;
@@ -5980,7 +5980,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 // <term_list> := Nothing | <term_obj> <term_list>
 AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("term_list\n");
+	printf_serial("term_list aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *term_list = malloc(sizeof(*term_list));
 	term_list->parent = parent;
 	term_list->string.initial = aml.initial;
@@ -6062,7 +6062,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
 AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("term_obj\n");
+	printf_serial("term_obj aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *term_obj = malloc(sizeof(*term_obj));
 	term_obj->parent = parent;
 	term_obj->string.initial = aml.initial;
@@ -6156,7 +6156,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 // <time_out> := <word_data>
 AMLSymbol *analyse_aml_time_out(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("time_out\n");
+	printf_serial("time_out aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *time_out = malloc(sizeof(*time_out));
 	time_out->parent = parent;
 	time_out->string.initial = aml.initial;
@@ -6171,7 +6171,7 @@ AMLSymbol *analyse_aml_time_out(AMLSymbol *parent, AMLSubstring aml)
 // <to_buffer_op> := AML_BYTE_TO_BUFFER_OP
 AMLSymbol *analyse_aml_to_buffer_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("to_buffer_op\n");
+	printf_serial("to_buffer_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *to_buffer_op = malloc(sizeof(*to_buffer_op));
 	to_buffer_op->parent = parent;
 	to_buffer_op->string.initial = aml.initial;
@@ -6190,7 +6190,7 @@ AMLSymbol *analyse_aml_to_buffer_op(AMLSymbol *parent, AMLSubstring aml)
 // <to_hex_string_op> := AML_BYTE_TO_HEX_STRING_OP
 AMLSymbol *analyse_aml_to_hex_string_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("to_hex_string_op\n");
+	printf_serial("to_hex_string_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *to_hex_string_op = malloc(sizeof(*to_hex_string_op));
 	to_hex_string_op->parent = parent;
 	to_hex_string_op->string.initial = aml.initial;
@@ -6209,7 +6209,7 @@ AMLSymbol *analyse_aml_to_hex_string_op(AMLSymbol *parent, AMLSubstring aml)
 // <while_op> := AML_BYTE_WHILE_OP
 AMLSymbol *analyse_aml_while_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("while_op\n");
+	printf_serial("while_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *while_op = malloc(sizeof(*while_op));
 	while_op->parent = parent;
 	while_op->string.initial = aml.initial;
@@ -6228,7 +6228,7 @@ AMLSymbol *analyse_aml_while_op(AMLSymbol *parent, AMLSubstring aml)
 // <word_const> := <word_prefix> <word_data>
 AMLSymbol *analyse_aml_word_const(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("word_const\n");
+	printf_serial("word_const aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *word_const = malloc(sizeof(*word_const));
 	word_const->parent = parent;
 	word_const->string.initial = aml.initial;
@@ -6250,7 +6250,7 @@ AMLSymbol *analyse_aml_word_const(AMLSymbol *parent, AMLSubstring aml)
 // <word_data> := <byte_data> <byte_data>
 AMLSymbol *analyse_aml_word_data(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("word_data\n");
+	printf_serial("word_data aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *word_data = malloc(sizeof(*word_data));
 	word_data->parent = parent;
 	word_data->string.initial = aml.initial;
@@ -6271,7 +6271,7 @@ AMLSymbol *analyse_aml_word_data(AMLSymbol *parent, AMLSubstring aml)
 // <word_prefix> := AML_BYTE_WORD_PREFIX
 AMLSymbol *analyse_aml_word_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("word_prefix\n");
+	printf_serial("word_prefix aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *word_prefix = malloc(sizeof(*word_prefix));
 	word_prefix->parent = parent;
 	word_prefix->string.initial = aml.initial;
@@ -6290,7 +6290,7 @@ AMLSymbol *analyse_aml_word_prefix(AMLSymbol *parent, AMLSubstring aml)
 // <zero_op> := AML_BYTE_ZERO_OP
 AMLSymbol *analyse_aml_zero_op(AMLSymbol *parent, AMLSubstring aml)
 {
-	printf_serial("zero_op\n");
+	printf_serial("zero_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *zero_op = malloc(sizeof(*zero_op));
 	zero_op->parent = parent;
 	zero_op->parent = parent;
