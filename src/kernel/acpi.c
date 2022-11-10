@@ -239,6 +239,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_l_not_name = "DefLNot";
 	static char const * const aml_def_l_or_name = "DefLOr";
 	static char const * const aml_def_method_name = "DefMethod";
+	static char const * const aml_def_mid_name = "DefMid";
 	static char const * const aml_def_multiply_name = "DefMultiply";
 	static char const * const aml_def_mutex_name = "DefMutex";
 	static char const * const aml_def_name_name = "DefName";
@@ -546,6 +547,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_l_or_name;
 	case aml_def_method:
 		return aml_def_method_name;
+	case aml_def_mid:
+		return aml_def_mid_name;
 	case aml_def_multiply:
 		return aml_def_multiply_name;
 	case aml_def_mutex:
@@ -2746,6 +2749,23 @@ AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml)
 	aml.length -= def_method->component.def_method.term_list->string.length;
 	if((int)aml.length < 0)def_method->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_method;
+}
+
+// <def_mid> := <mid_op> <mid_obj> <term_arg> <term_arg> <target>
+AMLSymbol *analyse_aml_def_mid(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_mid aml.length %#010.8x\n", aml.length);
+	AMLSymbol *def_mid = malloc(sizeof(*def_mid));
+	def_mid->parent = parent;
+	def_mid->string.initial = aml.initial;
+	def_mid->string.length = 0;
+	def_mid->type = aml_def_mid;
+	def_mid->flags = 0;
+	def_mid->component.def_mid.mid_op = NULL;
+	def_mid->component.def_mid.mid_obj = NULL;
+	for(unsigned int i = 0; i < _countof(def_mid->component.def_mid.term_arg); i++)def_mid->component.def_mid.term_arg[i] = NULL;
+	def_mid->component.def_mid.target = NULL;
+	return def_mid;
 }
 
 // <def_multiply> := <multiply_op> <operand> <operand> <target>
@@ -7218,6 +7238,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_method.method_flags)delete_aml_symbol(aml_symbol->component.def_method.method_flags);
 		if(aml_symbol->component.def_method.term_list)delete_aml_symbol(aml_symbol->component.def_method.term_list);
 		break;
+	case aml_def_mid:
+		if(aml_symbol->component.def_mid.mid_op)delete_aml_symbol(aml_symbol->component.def_mid.mid_op);
+		if(aml_symbol->component.def_mid.mid_obj)delete_aml_symbol(aml_symbol->component.def_mid.mid_obj);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_mid.term_arg); i++)if(aml_symbol->component.def_mid.term_arg[i])delete_aml_symbol(aml_symbol->component.def_mid.term_arg[i]);
+		if(aml_symbol->component.def_mid.target)delete_aml_symbol(aml_symbol->component.def_mid.target);
+		break;
 	case aml_def_multiply:
 		if(aml_symbol->component.def_multiply.multiply_op)delete_aml_symbol(aml_symbol->component.def_multiply.multiply_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_multiply.operand); i++)if(aml_symbol->component.def_multiply.operand[i])delete_aml_symbol(aml_symbol->component.def_multiply.operand[i]);
@@ -8415,6 +8441,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_method:
 		break;
+	case aml_def_mid:
+		break;
 	case aml_def_multiply:
 		break;
 	case aml_def_mutex:
@@ -9041,6 +9069,12 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_method.name_string)print_aml_symbol(aml_symbol->component.def_method.name_string);
 		if(aml_symbol->component.def_method.method_flags)print_aml_symbol(aml_symbol->component.def_method.method_flags);
 		if(aml_symbol->component.def_method.term_list)print_aml_symbol(aml_symbol->component.def_method.term_list);
+		break;
+	case aml_def_mid:
+		if(aml_symbol->component.def_mid.mid_op)print_aml_symbol(aml_symbol->component.def_mid.mid_op);
+		if(aml_symbol->component.def_mid.mid_obj)print_aml_symbol(aml_symbol->component.def_mid.mid_obj);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_mid.term_arg); i++)if(aml_symbol->component.def_mid.term_arg[i])print_aml_symbol(aml_symbol->component.def_mid.term_arg[i]);
+		if(aml_symbol->component.def_mid.target)print_aml_symbol(aml_symbol->component.def_mid.target);
 		break;
 	case aml_def_multiply:
 		if(aml_symbol->component.def_multiply.multiply_op)print_aml_symbol(aml_symbol->component.def_multiply.multiply_op);
