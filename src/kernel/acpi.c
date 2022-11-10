@@ -350,6 +350,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_region_space_name = "RegionSpace";
 	static char const * const aml_release_op_name = "ReleaseOp";
 	static char const * const aml_release_op_suffix_name = "ReleaseOpSuffix";
+	static char const * const aml_remainder_name = "Remainder";
 	static char const * const aml_return_op_name = "ReturnOp";
 	static char const * const aml_reserved_field_name = "ReservedField";
 	static char const * const aml_reserved_field_op_name = "ReservedFieldOp";
@@ -764,6 +765,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_release_op_name;
 	case aml_release_op_suffix:
 		return aml_release_op_suffix_name;
+	case aml_remainder:
+		return aml_remainder_name;
 	case aml_return_op:
 		return aml_return_op_name;
 	case aml_reserved_field:
@@ -2324,7 +2327,10 @@ AMLSymbol *analyse_aml_def_divide(AMLSymbol *parent, AMLSubstring aml)
 	def_divide->string.length =+ def_divide->component.def_divide.divisor->string.length;
 	aml.initial += def_divide->component.def_divide.divisor->string.length;
 	aml.length -= def_divide->component.def_divide.divisor->string.length;
-	def_divide->component.def_divide.remainder = NULL;
+	def_divide->component.def_divide.remainder = analyse_aml_remainder(def_divide, aml);
+	def_divide->string.length =+ def_divide->component.def_divide.remainder->string.length;
+	aml.initial += def_divide->component.def_divide.remainder->string.length;
+	aml.length -= def_divide->component.def_divide.remainder->string.length;
 	def_divide->component.def_divide.quotient = NULL;
 	return def_divide;
 }
@@ -5617,6 +5623,21 @@ AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	return release_op_suffix;
 }
 
+// <remainder> := <term_arg>
+AMLSymbol *analyse_aml_remainder(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("remainder aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *remainder = malloc(sizeof(*remainder));
+	remainder->parent = parent;
+	remainder->string.initial = aml.initial;
+	remainder->string.length = 0;
+	remainder->type = aml_remainder;
+	remainder->flags = 0;
+	remainder->component.remainder.term_arg = analyse_aml_term_arg(remainder, aml);
+	remainder->string.length += remainder->component.remainder.term_arg->string.length;
+	return remainder;
+}
+
 // <return_op> := AML_BYTE_RETURN_OP
 AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -7559,6 +7580,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_release_op_suffix:
 		break;
+	case aml_remainder:
+		if(aml_symbol->component.remainder.term_arg)delete_aml_symbol(aml_symbol->component.remainder.term_arg);
+		break;
 	case aml_return_op:
 		break;
 	case aml_reserved_field:
@@ -8539,6 +8563,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_reserved_field_op:
 		break;
+	case aml_remainder:
+		break;
 	case aml_return_op:
 		break;
 	case aml_revision_op:
@@ -9366,6 +9392,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.reserved_field.pkg_length)print_aml_symbol(aml_symbol->component.reserved_field.pkg_length);
 		break;
 	case aml_reserved_field_op:
+		break;
+	case aml_remainder:
+		if(aml_symbol->component.remainder.term_arg)print_aml_symbol(aml_symbol->component.remainder.term_arg);
 		break;
 	case aml_return_op:
 		break;

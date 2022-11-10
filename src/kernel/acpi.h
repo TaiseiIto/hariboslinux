@@ -367,6 +367,7 @@ typedef enum _AMLSymbolType
 	aml_region_space,
 	aml_release_op,
 	aml_release_op_suffix,
+	aml_remainder,
 	aml_reserved_field,
 	aml_reserved_field_op,
 	aml_return_op,
@@ -1299,6 +1300,11 @@ typedef struct _AMLReleaseOp
 	struct _AMLSymbol *release_op_suffix;
 } AMLReleaseOp;
 
+typedef struct _AMLRemainder
+{
+	struct _AMLSymbol *term_arg;
+} AMLRemainder;
+
 typedef struct _AMLReservedField
 {
 	struct _AMLSymbol *reserved_field_op;
@@ -1537,6 +1543,7 @@ typedef union _AMLComponent
 	AMLRegionLen region_len;
 	AMLRegionOffset region_offset;
 	AMLReleaseOp release_op;
+	AMLRemainder remainder;
 	AMLReservedField reserved_field;
 	AMLRevisionOp revision_op;
 	AMLShiftCount shift_count;
@@ -1944,6 +1951,8 @@ AMLSymbol *analyse_aml_region_space(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_release_op(AMLSymbol *parent, AMLSubstring aml);
 // <release_op_suffix> := AML_BYTE_RELEASE_OP
 AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml);
+// <remainder> := <term_arg>
+AMLSymbol *analyse_aml_remainder(AMLSymbol *parent, AMLSubstring aml);
 // <return_op> := AML_BYTE_RETURN_OP
 AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml);
 // <reserved_field> := <reserved_field_op> <pkg_length>
