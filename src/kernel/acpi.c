@@ -163,6 +163,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 {
 	static char const * const aml_access_field_name = "AccessField";
 	static char const * const aml_access_field_op_name = "AccessFieldOp";
+	static char const * const aml_access_type_name = "AccessType";
 	static char const * const aml_acquire_op_name = "AcquireOp";
 	static char const * const aml_acquire_op_suffix_name = "AcquireOpSuffix";
 	static char const * const aml_alias_op_name = "AliasOp";
@@ -382,6 +383,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_access_field_name;
 	case aml_access_field_op:
 		return aml_access_field_op_name;
+	case aml_access_type:
+		return aml_access_type_name;
 	case aml_acquire_op:
 		return aml_acquire_op_name;
 	case aml_acquire_op_suffix:
@@ -827,7 +830,10 @@ AMLSymbol *analyse_aml_access_field(AMLSymbol *parent, AMLSubstring aml)
 	access_field->string.length += access_field->component.access_field.access_field_op->string.length;
 	aml.initial += access_field->component.access_field.access_field_op->string.length;
 	aml.length -= access_field->component.access_field.access_field_op->string.length;
-	access_field->component.access_field.access_type = NULL;
+	access_field->component.access_field.access_type = analyse_aml_access_type(access_field, aml);
+	access_field->string.length += access_field->component.access_field.access_type->string.length;
+	aml.initial += access_field->component.access_field.access_type->string.length;
+	aml.length -= access_field->component.access_field.access_type->string.length;
 	access_field->component.access_field.access_attrib = NULL;
 	return access_field;
 }
@@ -849,6 +855,23 @@ AMLSymbol *analyse_aml_access_field_op(AMLSymbol *parent, AMLSubstring aml)
 	}
 	else if(*aml.initial != AML_BYTE_ACCESS_FIELD_OP)access_field_op->flags |= AML_SYMBOL_ERROR; // Incorrect access_field_op
 	return access_field_op;
+}
+
+// <access_type> := <byte_data>
+AMLSymbol *analyse_aml_access_type(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("access_type aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *access_type = malloc(sizeof(*access_type));
+	access_type->parent = parent;
+	access_type->string.initial = aml.initial;
+	access_type->string.length = 0;
+	access_type->type = aml_access_type;
+	access_type->flags = 0;
+	access_type->component.access_type.byte_data = analyse_aml_byte_data(access_type, aml);
+	access_type->string.length += access_type->component.access_type.byte_data->string.length;
+	aml.initial += access_type->component.access_type.byte_data->string.length;
+	aml.length -= access_type->component.access_type.byte_data->string.length;
+	return access_type;
 }
 
 // <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
@@ -6559,6 +6582,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_access_field_op:
 		break;
+	case aml_access_type:
+		if(aml_symbol->component.access_type.byte_data)delete_aml_symbol(aml_symbol->component.access_type.byte_data);
+		break;
 	case aml_acquire_op:
 		if(aml_symbol->component.acquire_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.acquire_op.ext_op_prefix);
 		if(aml_symbol->component.acquire_op.acquire_op_suffix)delete_aml_symbol(aml_symbol->component.acquire_op.acquire_op_suffix);
@@ -7859,6 +7885,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_access_field_op:
 		break;
+	case aml_access_type:
+		break;
 	case aml_acquire_op:
 		break;
 	case aml_acquire_op_suffix:
@@ -8318,6 +8346,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.access_field.access_attrib)print_aml_symbol(aml_symbol->component.access_field.access_attrib);
 		break;
 	case aml_access_field_op:
+		break;
+	case aml_access_type:
+		if(aml_symbol->component.access_type.byte_data)print_aml_symbol(aml_symbol->component.access_type.byte_data);
 		break;
 	case aml_acquire_op:
 		if(aml_symbol->component.acquire_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.acquire_op.ext_op_prefix);
