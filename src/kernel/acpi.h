@@ -259,6 +259,7 @@ typedef enum _AMLSymbolType
 	aml_def_multiply,
 	aml_def_mutex,
 	aml_def_name,
+	aml_def_not,
 	aml_def_notify,
 	aml_def_object_type,
 	aml_def_op_region,
@@ -808,6 +809,13 @@ typedef struct _AMLDefName
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *data_ref_object;
 } AMLDefName;
+
+typedef struct _AMLDefNot
+{
+	struct _AMLSymbol *not_op;
+	struct _AMLSymbol *operand;
+	struct _AMLSymbol *target;
+} AMLDefNot;
 
 typedef struct _AMLDefNotify
 {
@@ -1486,6 +1494,7 @@ typedef union _AMLComponent
 	AMLDefMultiply def_multiply;
 	AMLDefMutex def_mutex;
 	AMLDefName def_name;
+	AMLDefNot def_not;
 	AMLDefNotify def_notify;
 	AMLDefObjectType def_object_type;
 	AMLDefOpRegion def_op_region;
@@ -1742,6 +1751,8 @@ AMLSymbol *analyse_aml_def_multiply(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_mutex(AMLSymbol *parent, AMLSubstring aml);
 // <def_name> := <name_op> <name_string> <data_ref_object>
 AMLSymbol *analyse_aml_def_name(AMLSymbol *parent, AMLSubstring aml);
+// <def_not> := <not_op> <operand> <target>
+AMLSymbol *analyse_aml_def_not(AMLSymbol *parent, AMLSubstring aml);
 // <def_notify> := <notify_op> <notify_object> <notify_value>
 AMLSymbol *analyse_aml_def_notify(AMLSymbol *parent, AMLSubstring aml);
 // <def_object_type> := <object_type_op> (<simple_name> | <debug_obj> | <def_ref_of> | <def_deref_of> | <def_index>)

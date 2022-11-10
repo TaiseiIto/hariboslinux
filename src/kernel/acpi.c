@@ -242,6 +242,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_multiply_name = "DefMultiply";
 	static char const * const aml_def_mutex_name = "DefMutex";
 	static char const * const aml_def_name_name = "DefName";
+	static char const * const aml_def_not_name = "DefNot";
 	static char const * const aml_def_notify_name = "DefNotify";
 	static char const * const aml_def_object_type_name = "DefObjectType";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
@@ -550,6 +551,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_mutex_name;
 	case aml_def_name:
 		return aml_def_name_name;
+	case aml_def_not:
+		return aml_def_not_name;
 	case aml_def_notify:
 		return aml_def_notify_name;
 	case aml_def_object_type:
@@ -2818,6 +2821,22 @@ AMLSymbol *analyse_aml_def_name(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_name->component.def_name.data_ref_object->string.length;
 	aml.length -= def_name->component.def_name.data_ref_object->string.length;
 	return def_name;
+}
+
+// <def_not> := <not_op> <operand> <target>
+AMLSymbol *analyse_aml_def_not(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_not aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_not = malloc(sizeof(*def_not));
+	def_not->parent = parent;
+	def_not->string.initial = aml.initial;
+	def_not->string.length = 0;
+	def_not->type = aml_def_not;
+	def_not->flags = 0;
+	def_not->component.def_not.not_op = NULL;
+	def_not->component.def_not.operand = NULL;
+	def_not->component.def_not.target = NULL;
+	return def_not;
 }
 
 // <def_notify> := <notify_op> <notify_object> <notify_value>
@@ -7175,6 +7194,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_name.name_string)delete_aml_symbol(aml_symbol->component.def_name.name_string);
 		if(aml_symbol->component.def_name.data_ref_object)delete_aml_symbol(aml_symbol->component.def_name.data_ref_object);
 		break;
+	case aml_def_not:
+		if(aml_symbol->component.def_not.not_op)delete_aml_symbol(aml_symbol->component.def_not.not_op);
+		if(aml_symbol->component.def_not.operand)delete_aml_symbol(aml_symbol->component.def_not.operand);
+		if(aml_symbol->component.def_not.target)delete_aml_symbol(aml_symbol->component.def_not.target);
+		break;
 	case aml_def_notify:
 		if(aml_symbol->component.def_notify.notify_op)delete_aml_symbol(aml_symbol->component.def_notify.notify_op);
 		if(aml_symbol->component.def_notify.notify_object)delete_aml_symbol(aml_symbol->component.def_notify.notify_object);
@@ -8356,6 +8380,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_name:
 		break;
+	case aml_def_not:
+		break;
 	case aml_def_notify:
 		break;
 	case aml_def_object_type:
@@ -8987,6 +9013,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_name.name_op)print_aml_symbol(aml_symbol->component.def_name.name_op);
 		if(aml_symbol->component.def_name.name_string)print_aml_symbol(aml_symbol->component.def_name.name_string);
 		if(aml_symbol->component.def_name.data_ref_object)print_aml_symbol(aml_symbol->component.def_name.data_ref_object);
+		break;
+	case aml_def_not:
+		if(aml_symbol->component.def_not.not_op)print_aml_symbol(aml_symbol->component.def_not.not_op);
+		if(aml_symbol->component.def_not.operand)print_aml_symbol(aml_symbol->component.def_not.operand);
+		if(aml_symbol->component.def_not.target)print_aml_symbol(aml_symbol->component.def_not.target);
 		break;
 	case aml_def_notify:
 		if(aml_symbol->component.def_notify.notify_op)print_aml_symbol(aml_symbol->component.def_notify.notify_op);
