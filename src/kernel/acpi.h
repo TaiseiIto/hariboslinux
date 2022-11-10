@@ -358,6 +358,7 @@ typedef enum _AMLSymbolType
 	aml_proc_id,
 	aml_processor_op,
 	aml_processor_op_suffix,
+	aml_quotient,
 	aml_qword_const,
 	aml_qword_data,
 	aml_qword_prefix,
@@ -1263,6 +1264,11 @@ typedef struct _AMLProcID
 	struct _AMLSymbol *byte_data;
 } AMLProcID;
 
+typedef struct _AMLQuotient
+{
+	struct _AMLSymbol *term_arg;
+} AMLQuotient;
+
 typedef struct _AMLQWordConst
 {
 	struct _AMLSymbol *qword_prefix;
@@ -1537,6 +1543,7 @@ typedef union _AMLComponent
 	AMLPrefixPath prefix_path;
 	AMLProcID proc_id;
 	AMLProcessorOp processor_op;
+	AMLQuotient quotient;
 	AMLQWordConst qword_const;
 	AMLQWordData qword_data;
 	AMLReferenceTypeOpcode reference_type_opcode;
@@ -1933,6 +1940,8 @@ AMLSymbol *analyse_aml_proc_id(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_processor_op(AMLSymbol *parent, AMLSubstring aml);
 // <processor_op_suffix> := AML_BYTE_PROCESSOR_OP
 AMLSymbol *analyse_aml_processor_op_suffix(AMLSymbol *parent, AMLSubstring aml);
+// <quotient> := <term_arg>
+AMLSymbol *analyse_aml_quotient(AMLSymbol *parent, AMLSubstring aml);
 // <qword_const> := <qword_prefix> <qword_data>
 AMLSymbol *analyse_aml_qword_const(AMLSymbol *parent, AMLSubstring aml);
 // <qword_data> := <dword_data> <dword_data>
