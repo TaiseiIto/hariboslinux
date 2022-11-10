@@ -206,9 +206,10 @@ typedef enum _AMLSymbolType
 	aml_const_obj,
 	aml_create_bit_field_op,
 	aml_create_byte_field_op,
-	aml_create_word_field_op,
 	aml_create_dword_field_op,
+	aml_create_field_op,
 	aml_create_qword_field_op,
+	aml_create_word_field_op,
 	aml_data,
 	aml_data_object,
 	aml_data_ref_object,
@@ -1532,8 +1533,18 @@ AMLSymbol *analyse_aml_cond_ref_of_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_cond_ref_of_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <const_obj> := <zero_op> | <one_op> | <ones_op>
 AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml);
+// <create_bit_field_op> := AML_BYTE_CREATE_BIT_FIELD_OP
+AMLSymbol *analyse_aml_create_bit_field_op(AMLSymbol *parent, AMLSubstring aml);
+// <create_byte_field_op> := AML_BYTE_CREATE_BYTE_FIELD_OP
+AMLSymbol *analyse_aml_create_byte_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <create_dword_field_op> := AML_BYTE_CREATE_DWORD_FIELD_OP
 AMLSymbol *analyse_aml_create_dword_field_op(AMLSymbol *parent, AMLSubstring aml);
+// <create_field_op> := AML_BYTE_CREATE_FIELD_OP
+AMLSymbol *analyse_aml_create_field_op(AMLSymbol *parent, AMLSubstring aml);
+// <create_qword_field_op> := AML_BYTE_CREATE_QWORD_FIELD_OP
+AMLSymbol *analyse_aml_create_qword_field_op(AMLSymbol *parent, AMLSubstring aml);
+// <create_word_field_op> := AML_BYTE_CREATE_WORD_FIELD_OP
+AMLSymbol *analyse_aml_create_word_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <data> := <term_arg>
 AMLSymbol *analyse_aml_data(AMLSymbol *parent, AMLSubstring aml);
 // <data_object> := <computational_data> | <def_package> | <def_var_package>
