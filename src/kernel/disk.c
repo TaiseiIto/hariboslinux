@@ -67,6 +67,7 @@ unsigned int get_file_size(char const *file_name)
 {
 	FileInformation const *file_information = get_file_information(file_name);
 	if(file_information)return file_information->size; // Return file size.
+	else if(!strcmp(file_name, dsdt_file_name))return get_dsdt_aml().length; // Return size of DSDT AML.
 	else if(!strcmp(file_name, root_directory_name))return boot_sector->number_of_root_directory_entries * sizeof(FileInformation); // Return size of root directory entries.
 	else return 0; // File is not found.
 }
