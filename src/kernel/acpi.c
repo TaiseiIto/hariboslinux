@@ -6634,6 +6634,17 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 		aml.length -= term_arg_list->component.term_arg_list.term_arg_list->string.length;
 		break;
 	default:
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(term_arg_list, aml);
+			term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg->string.length;
+			aml.initial += term_arg_list->component.term_arg_list.term_arg->string.length;
+			aml.length -= term_arg_list->component.term_arg_list.term_arg->string.length;
+			term_arg_list->component.term_arg_list.term_arg_list = analyse_aml_term_arg_list(term_arg_list, aml, num_of_term_args - 1);
+			term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg_list->string.length;
+			aml.initial += term_arg_list->component.term_arg_list.term_arg_list->string.length;
+			aml.length -= term_arg_list->component.term_arg_list.term_arg_list->string.length;
+		}
 		// term_arg_list can be nothing.
 		break;
 	}
