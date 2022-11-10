@@ -282,6 +282,7 @@ typedef enum _AMLSymbolType
 	aml_digit_char,
 	aml_divide_op,
 	aml_dividend,
+	aml_divisor,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
 	aml_dword_const,
@@ -947,6 +948,11 @@ typedef struct _AMLDividend
 	struct _AMLSymbol *term_arg;
 } AMLDividend;
 
+typedef struct _AMLDivisor
+{
+	struct _AMLSymbol *term_arg;
+} AMLDivisor;
+
 typedef struct _AMLDualNamePath
 {
 	struct _AMLSymbol *dual_name_prefix;
@@ -1487,6 +1493,7 @@ typedef union _AMLComponent
 	AMLDefWhile def_while;
 	AMLDeviceOp device_op;
 	AMLDividend dividend;
+	AMLDivisor divisor;
 	AMLDualNamePath dual_name_path;
 	AMLExpressionOpcode expression_opcode;
 	AMLFieldElement field_element;
@@ -1767,6 +1774,8 @@ AMLSymbol *analyse_aml_digit_char(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_divide_op(AMLSymbol *parent, AMLSubstring aml);
 // <dividend> := <term_arg>
 AMLSymbol *analyse_aml_dividend(AMLSymbol *parent, AMLSubstring aml);
+// <divisor> := <term_arg>
+AMLSymbol *analyse_aml_divisor(AMLSymbol *parent, AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>
 AMLSymbol *analyse_aml_dual_name_path(AMLSymbol *parent, AMLSubstring aml);
 // <dual_name_prefix> := AML_BYTE_DUAL_NAME_PREFIX
