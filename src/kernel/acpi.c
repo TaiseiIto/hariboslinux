@@ -306,6 +306,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_notify_op_name = "NotifyOp";
 	static char const * const aml_null_char_name = "NullChar";
 	static char const * const aml_null_name_name = "NullName";
+	static char const * const aml_num_bits_name = "NumBits";
 	static char const * const aml_num_elements_name = "NumElements";
 	static char const * const aml_obj_reference_name = "ObjReference";
 	static char const * const aml_object_name = "Object";
@@ -665,6 +666,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_null_char_name;
 	case aml_null_name:
 		return aml_null_name_name;
+	case aml_num_bits:
+		return aml_num_bits_name;
 	case aml_num_elements:
 		return aml_num_elements_name;
 	case aml_obj_reference:
@@ -2025,8 +2028,14 @@ AMLSymbol *analyse_aml_def_create_field(AMLSymbol *parent, AMLSubstring aml)
 	def_create_field->string.length += def_create_field->component.def_create_field.bit_index->string.length;
 	aml.initial += def_create_field->component.def_create_field.bit_index->string.length;
 	aml.length -= def_create_field->component.def_create_field.bit_index->string.length;
-	def_create_field->component.def_create_field.num_bits = NULL;
-	def_create_field->component.def_create_field.name_string = NULL;
+	def_create_field->component.def_create_field.num_bits = analyse_aml_num_bits(def_create_field, aml);
+	def_create_field->string.length += def_create_field->component.def_create_field.num_bits->string.length;
+	aml.initial += def_create_field->component.def_create_field.num_bits->string.length;
+	aml.length -= def_create_field->component.def_create_field.num_bits->string.length;
+	def_create_field->component.def_create_field.name_string = analyse_aml_name_string(def_create_field, aml);
+	def_create_field->string.length += def_create_field->component.def_create_field.name_string->string.length;
+	aml.initial += def_create_field->component.def_create_field.name_string->string.length;
+	aml.length -= def_create_field->component.def_create_field.name_string->string.length;
 	return def_create_field;
 }
 
@@ -4424,6 +4433,10 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 		named_obj->component.named_obj.def_create_dword_field = analyse_aml_def_create_dword_field(named_obj, aml);
 		named_obj->string.length += named_obj->component.named_obj.def_create_dword_field->string.length;
 		break;
+	case AML_BYTE_CREATE_FIELD_OP:
+		named_obj->component.named_obj.def_create_field = analyse_aml_def_create_field(named_obj, aml);
+		named_obj->string.length += named_obj->component.named_obj.def_create_field->string.length;
+		break;
 	case AML_BYTE_CREATE_QWORD_FIELD_OP:
 		named_obj->component.named_obj.def_create_qword_field = analyse_aml_def_create_qword_field(named_obj, aml);
 		named_obj->string.length += named_obj->component.named_obj.def_create_qword_field->string.length;
@@ -4562,6 +4575,23 @@ AMLSymbol *analyse_aml_null_name(AMLSymbol *parent, AMLSubstring aml)
 	return null_name;
 }
 
+// <num_bits> := <term_arg>
+AMLSymbol *analyse_aml_num_bits(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("num_bits aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *num_bits = malloc(sizeof(*num_bits));
+	num_bits->parent = parent;
+	num_bits->string.initial = aml.initial;
+	num_bits->string.length = 0;
+	num_bits->type = aml_num_bits;
+	num_bits->flags = 0;
+	num_bits->component.num_bits.term_arg = analyse_aml_term_arg(num_bits, aml);
+	num_bits->string.length += num_bits->component.num_bits.term_arg->string.length;
+	aml.initial += num_bits->component.num_bits.term_arg->string.length;
+	aml.length -= num_bits->component.num_bits.term_arg->string.length;
+	return num_bits;
+}
+
 // <num_elements> := <byte_data>
 AMLSymbol *analyse_aml_num_elements(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -4620,6 +4650,7 @@ AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CREATE_BIT_FIELD_OP:
 	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
+	case AML_BYTE_CREATE_FIELD_OP:
 	case AML_BYTE_CREATE_QWORD_FIELD_OP:
 	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_EXT_OP_PREFIX:
@@ -6135,6 +6166,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CREATE_BIT_FIELD_OP:
 	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
+	case AML_BYTE_CREATE_FIELD_OP:
 	case AML_BYTE_CREATE_QWORD_FIELD_OP:
 	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_DECREMENT_OP:
@@ -6236,6 +6268,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CREATE_BIT_FIELD_OP:
 	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
+	case AML_BYTE_CREATE_FIELD_OP:
 	case AML_BYTE_CREATE_QWORD_FIELD_OP:
 	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_METHOD_OP:
@@ -7066,6 +7099,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_null_char:
 		break;
 	case aml_null_name:
+		break;
+	case aml_num_bits:
+		if(aml_symbol->component.num_bits.term_arg)delete_aml_symbol(aml_symbol->component.num_bits.term_arg);
 		break;
 	case aml_num_elements:
 		if(aml_symbol->component.num_elements.byte_data)delete_aml_symbol(aml_symbol->component.num_elements.byte_data);
@@ -8048,6 +8084,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_null_name:
 		break;
+	case aml_num_bits:
+		break;
 	case aml_num_elements:
 		printf_serial(" NumOfElements = %#04.2x", aml_symbol->component.num_elements.num_of_elements);
 		break;
@@ -8800,6 +8838,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_null_char:
 		break;
 	case aml_null_name:
+		break;
+	case aml_num_bits:
+		if(aml_symbol->component.num_bits.term_arg)print_aml_symbol(aml_symbol->component.num_bits.term_arg);
 		break;
 	case aml_num_elements:
 		if(aml_symbol->component.num_elements.byte_data)print_aml_symbol(aml_symbol->component.num_elements.byte_data);

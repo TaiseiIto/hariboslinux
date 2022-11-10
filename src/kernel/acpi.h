@@ -324,6 +324,7 @@ typedef enum _AMLSymbolType
 	aml_notify_op,
 	aml_null_char,
 	aml_null_name,
+	aml_num_bits,
 	aml_num_elements,
 	aml_obj_reference,
 	aml_object,
@@ -1112,6 +1113,11 @@ typedef struct _AMLNotifyValue
 	struct _AMLSymbol *term_arg;
 } AMLNotifyValue;
 
+typedef struct _AMLNumBits
+{
+	struct _AMLSymbol *term_arg;
+} AMLNumBits;
+
 typedef struct _AMLNumElements
 {
 	struct _AMLSymbol *byte_data;
@@ -1439,6 +1445,7 @@ typedef union _AMLComponent
 	AMLNamedObj named_obj;
 	AMLNotifyObject notify_object;
 	AMLNotifyValue notify_value;
+	AMLNumBits num_bits;
 	AMLNumElements num_elements;
 	AMLObjReference obj_reference;
 	AMLObject object;
@@ -1780,6 +1787,8 @@ AMLSymbol *analyse_aml_notify_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_null_char(AMLSymbol *parent, AMLSubstring aml);
 // <null_name> := AML_BYTE_NULL_NAME
 AMLSymbol *analyse_aml_null_name(AMLSymbol *parent, AMLSubstring aml);
+// <num_bits> := <term_arg>
+AMLSymbol *analyse_aml_num_bits(AMLSymbol *parent, AMLSubstring aml);
 // <num_elements> := <byte_data>
 AMLSymbol *analyse_aml_num_elements(AMLSymbol *parent, AMLSubstring aml);
 // <obj_reference> := <term_arg>
