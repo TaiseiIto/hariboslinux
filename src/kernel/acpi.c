@@ -5887,7 +5887,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 	target->flags = 0;
 	target->component.target.super_name = NULL;
 	target->component.target.null_name = NULL;
-	switch(*target->string.initial)
+	if(aml.length)switch(*target->string.initial)
 	{
 	case AML_BYTE_NULL_NAME:
 		target->component.target.null_name = analyse_aml_null_name(target, aml);
@@ -5930,6 +5930,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 		else target->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		break;
 	}
+	else target->flags |= AML_SYMBOL_ERROR;
 	return target;
 }
 
@@ -5947,7 +5948,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	term_arg->component.term_arg.data_object = NULL;
 	term_arg->component.term_arg.arg_obj = NULL;
 	term_arg->component.term_arg.local_obj = NULL;
-	switch(*aml.initial)
+	if(aml.length)switch(*aml.initial)
 	{
 	case AML_BYTE_ARG_0_OP:
 	case AML_BYTE_ARG_1_OP:
@@ -6037,6 +6038,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 		else term_arg->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		break;
 	}
+	else term_arg->flags |= AML_SYMBOL_ERROR;
 	return term_arg;
 }
 
