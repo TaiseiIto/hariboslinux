@@ -178,6 +178,7 @@ struct _AMLSymbol;
 
 typedef enum _AMLSymbolType
 {
+	aml_access_attrib,
 	aml_access_field,
 	aml_access_field_op,
 	aml_access_type,
@@ -401,6 +402,11 @@ typedef struct _AMLSubstring
 	unsigned char const *initial;
 	size_t length;
 } AMLSubstring;
+
+typedef struct _AMLAccessAttrib
+{
+	struct _AMLSymbol *byte_data;
+} AMLAccessAttrib;
 
 typedef struct _AMLAccessField
 {
@@ -1372,6 +1378,7 @@ typedef struct _AMLWordData
 
 typedef union _AMLComponent
 {
+	AMLAccessAttrib access_attrib;
 	AMLAccessField access_field;
 	AMLAccessType access_type;
 	AMLAcquireOp acquire_op;
@@ -1520,6 +1527,8 @@ typedef struct _AMLSymbol
 } AMLSymbol;
 
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
+// <access_attrib> := <byte_data>
+AMLSymbol *analyse_aml_access_attrib(AMLSymbol *parent, AMLSubstring aml);
 // <access_field> := <access_field_op> <access_type> <access_attrib>
 AMLSymbol *analyse_aml_access_field(AMLSymbol *parent, AMLSubstring aml);
 // <access_field_op> := AML_BYTE_ACCESS_FIELD_OP
