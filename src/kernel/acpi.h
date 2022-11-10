@@ -334,6 +334,7 @@ typedef enum _AMLSymbolType
 	aml_num_elements,
 	aml_obj_reference,
 	aml_object,
+	aml_object_type_op,
 	aml_one_op,
 	aml_ones_op,
 	aml_op_region_op,
@@ -1851,6 +1852,8 @@ AMLSymbol *analyse_aml_num_elements(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_obj_reference(AMLSymbol *parent, AMLSubstring aml);
 // <object> := <name_space_modifier_obj> | <named_obj>
 AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml);
+// <object_type_op> := AML_BYTE_OBJECT_TYPE_OP
+AMLSymbol *analyse_aml_object_type_op(AMLSymbol *parent, AMLSubstring aml);
 // <one_op> := AML_BYTE_ONE_OP
 AMLSymbol *analyse_aml_one_op(AMLSymbol *parent, AMLSubstring aml);
 // <ones_op> := AML_BYTE_ONES_OP

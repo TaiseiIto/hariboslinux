@@ -317,6 +317,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_num_elements_name = "NumElements";
 	static char const * const aml_obj_reference_name = "ObjReference";
 	static char const * const aml_object_name = "Object";
+	static char const * const aml_object_type_op_name = "ObjectTypeOp";
 	static char const * const aml_one_op_name = "OneOp";
 	static char const * const aml_ones_op_name = "OnesOp";
 	static char const * const aml_op_region_op_name = "OpRegionOp";
@@ -693,6 +694,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_obj_reference_name;
 	case aml_object:
 		return aml_object_name;
+	case aml_object_type_op:
+		return aml_object_type_op_name;
 	case aml_one_op:
 		return aml_one_op_name;
 	case aml_ones_op:
@@ -2801,12 +2804,70 @@ AMLSymbol *analyse_aml_def_object_type(AMLSymbol *parent, AMLSubstring aml)
 	def_object_type->string.length = 0;
 	def_object_type->type = aml_def_object_type;
 	def_object_type->flags = 0;
-	def_object_type->component.def_object_type.object_type_op = NULL;
+	def_object_type->component.def_object_type.object_type_op = analyse_aml_object_type_op(def_object_type, aml);
+	def_object_type->string.length += def_object_type->component.def_object_type.object_type_op->string.length;
+	aml.initial += def_object_type->component.def_object_type.object_type_op->string.length;
+	aml.length -= def_object_type->component.def_object_type.object_type_op->string.length;
 	def_object_type->component.def_object_type.simple_name = NULL;
 	def_object_type->component.def_object_type.debug_obj = NULL;
 	def_object_type->component.def_object_type.def_ref_of = NULL;
 	def_object_type->component.def_object_type.def_deref_of = NULL;
 	def_object_type->component.def_object_type.def_index = NULL;
+	if(aml.length)switch(*aml.initial)
+	{
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_LOCAL_0_OP:
+	case AML_BYTE_LOCAL_1_OP:
+	case AML_BYTE_LOCAL_2_OP:
+	case AML_BYTE_LOCAL_3_OP:
+	case AML_BYTE_LOCAL_4_OP:
+	case AML_BYTE_LOCAL_5_OP:
+	case AML_BYTE_LOCAL_6_OP:
+	case AML_BYTE_LOCAL_7_OP:
+	case AML_BYTE_NULL_NAME:
+	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_ROOT_CHAR:
+		def_object_type->component.def_object_type.simple_name = analyse_aml_simple_name(def_object_type, aml);
+		def_object_type->string.length += def_object_type->component.def_object_type.simple_name->string.length;
+		aml.initial += def_object_type->component.def_object_type.simple_name->string.length;
+		aml.length -= def_object_type->component.def_object_type.simple_name->string.length;
+		break;
+	case AML_BYTE_DEBUG_OP:
+		def_object_type->component.def_object_type.debug_obj = analyse_aml_debug_obj(def_object_type, aml);
+		def_object_type->string.length += def_object_type->component.def_object_type.debug_obj->string.length;
+		aml.initial += def_object_type->component.def_object_type.debug_obj->string.length;
+		aml.length -= def_object_type->component.def_object_type.debug_obj->string.length;
+		break;
+	case AML_BYTE_DEREF_OF_OP:
+		def_object_type->component.def_object_type.def_deref_of = analyse_aml_def_deref_of(def_object_type, aml);
+		def_object_type->string.length += def_object_type->component.def_object_type.def_deref_of->string.length;
+		aml.initial += def_object_type->component.def_object_type.def_deref_of->string.length;
+		aml.length -= def_object_type->component.def_object_type.def_deref_of->string.length;
+		break;
+	case AML_BYTE_INDEX_OP:
+		def_object_type->component.def_object_type.def_index = analyse_aml_def_index(def_object_type, aml);
+		def_object_type->string.length += def_object_type->component.def_object_type.def_index->string.length;
+		aml.initial += def_object_type->component.def_object_type.def_index->string.length;
+		aml.length -= def_object_type->component.def_object_type.def_index->string.length;
+		break;
+	default:
+		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
+		{
+			def_object_type->component.def_object_type.simple_name = analyse_aml_simple_name(def_object_type, aml);
+			def_object_type->string.length += def_object_type->component.def_object_type.simple_name->string.length;
+			aml.initial += def_object_type->component.def_object_type.simple_name->string.length;
+			aml.length -= def_object_type->component.def_object_type.simple_name->string.length;
+		}
+		else def_object_type->flags |= AML_SYMBOL_ERROR;
+		break;
+	}
+	else def_object_type->flags |= AML_SYMBOL_ERROR;
 	return def_object_type;
 }
 
@@ -3578,6 +3639,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_MULTIPLY_OP:
 		expression_opcode->component.expression_opcode.def_multiply = analyse_aml_def_multiply(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_multiply->string.length;
+		break;
+	case AML_BYTE_OBJECT_TYPE_OP:
+		expression_opcode->component.expression_opcode.def_object_type = analyse_aml_def_object_type(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_object_type->string.length;
 		break;
 	case AML_BYTE_OR_OP:
 		expression_opcode->component.expression_opcode.def_or = analyse_aml_def_or(expression_opcode, aml);
@@ -4806,6 +4871,25 @@ AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	}
 	return object;
+}
+
+// <object_type_op> := AML_BYTE_OBJECT_TYPE_OP
+AMLSymbol *analyse_aml_object_type_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("object_type_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *object_type_op = malloc(sizeof(*object_type_op));
+	object_type_op->parent = parent;
+	object_type_op->string.initial = aml.initial;
+	object_type_op->string.length = 1;
+	object_type_op->type = aml_object_type_op;
+	object_type_op->flags = 0;
+	if(!aml.length)
+	{
+		object_type_op->string.length = 0;
+		object_type_op->flags |= AML_SYMBOL_ERROR;
+	}
+	else if(*object_type_op->string.initial != AML_BYTE_OBJECT_TYPE_OP)object_type_op->flags |= AML_SYMBOL_ERROR; // Incorrect object_type op
+	return object_type_op;
 }
 
 // <one_op> := AML_BYTE_ONE_OP
@@ -6096,6 +6180,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_MULTIPLY_OP:
+	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
@@ -6249,6 +6334,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_ONES_OP:
 	case AML_BYTE_ONE_OP:
@@ -6330,6 +6416,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NAME_OP:
 	case AML_BYTE_NOTIFY_OP:
+	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
@@ -6394,6 +6481,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
@@ -7280,6 +7368,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)delete_aml_symbol(aml_symbol->component.object.named_obj);
 		if(aml_symbol->component.object.name_space_modifier_obj)delete_aml_symbol(aml_symbol->component.object.name_space_modifier_obj);
+		break;
+	case aml_object_type_op:
 		break;
 	case aml_one_op:
 		break;
@@ -8273,6 +8363,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_object:
 		break;
+	case aml_object_type_op:
+		break;
 	case aml_one_op:
 		break;
 	case aml_ones_op:
@@ -9056,6 +9148,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_object:
 		if(aml_symbol->component.object.named_obj)print_aml_symbol(aml_symbol->component.object.named_obj);
 		if(aml_symbol->component.object.name_space_modifier_obj)print_aml_symbol(aml_symbol->component.object.name_space_modifier_obj);
+		break;
+	case aml_object_type_op:
 		break;
 	case aml_one_op:
 		break;
