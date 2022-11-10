@@ -313,6 +313,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_name_string_name = "NameString";
 	static char const * const aml_named_field_name = "NamedField";
 	static char const * const aml_named_obj_name = "NamedObj";
+	static char const * const aml_not_op_name = "NotOp";
 	static char const * const aml_notify_object_name = "NotifyObject";
 	static char const * const aml_notify_value_name = "NotifyValue";
 	static char const * const aml_notify_op_name = "NotifyOp";
@@ -693,6 +694,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_named_field_name;
 	case aml_named_obj:
 		return aml_named_obj_name;
+	case aml_not_op:
+		return aml_not_op_name;
 	case aml_notify_object:
 		return aml_notify_object_name;
 	case aml_notify_value:
@@ -2833,9 +2836,18 @@ AMLSymbol *analyse_aml_def_not(AMLSymbol *parent, AMLSubstring aml)
 	def_not->string.length = 0;
 	def_not->type = aml_def_not;
 	def_not->flags = 0;
-	def_not->component.def_not.not_op = NULL;
-	def_not->component.def_not.operand = NULL;
-	def_not->component.def_not.target = NULL;
+	def_not->component.def_not.not_op = analyse_aml_not_op(def_not, aml);
+	def_not->string.length += def_not->component.def_not.not_op->string.length;
+	aml.initial += def_not->component.def_not.not_op->string.length;
+	aml.length -= def_not->component.def_not.not_op->string.length;
+	def_not->component.def_not.operand = analyse_aml_operand(def_not, aml);
+	def_not->string.length += def_not->component.def_not.operand->string.length;
+	aml.initial += def_not->component.def_not.operand->string.length;
+	aml.length -= def_not->component.def_not.operand->string.length;
+	def_not->component.def_not.target = analyse_aml_target(def_not, aml);
+	def_not->string.length += def_not->component.def_not.target->string.length;
+	aml.initial += def_not->component.def_not.target->string.length;
+	aml.length -= def_not->component.def_not.target->string.length;
 	return def_not;
 }
 
@@ -3762,6 +3774,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_MULTIPLY_OP:
 		expression_opcode->component.expression_opcode.def_multiply = analyse_aml_def_multiply(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_multiply->string.length;
+		break;
+	case AML_BYTE_NOT_OP:
+		expression_opcode->component.expression_opcode.def_not = analyse_aml_def_not(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_not->string.length;
 		break;
 	case AML_BYTE_OBJECT_TYPE_OP:
 		expression_opcode->component.expression_opcode.def_object_type = analyse_aml_def_object_type(expression_opcode, aml);
@@ -4818,6 +4834,25 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	}
 	return named_obj;
+}
+
+// <not_op> := AML_BYTE_NOT_OP
+AMLSymbol *analyse_aml_not_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("not_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *not_op = malloc(sizeof(*not_op));
+	not_op->parent = parent;
+	not_op->string.initial = aml.initial;
+	not_op->string.length = 1;
+	not_op->type = aml_not_op;
+	not_op->flags = 0;
+	if(!aml.length)
+	{
+		not_op->string.length = 0;
+		not_op->flags |= AML_SYMBOL_ERROR;
+	}
+	else if(*not_op->string.initial != AML_BYTE_NOT_OP)not_op->flags |= AML_SYMBOL_ERROR; // Incorrect not_op
+	return not_op;
 }
 
 // <notify_object> := <super_name>
@@ -6334,6 +6369,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_MULTIPLY_OP:
+	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
@@ -6489,6 +6525,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_ONES_OP:
@@ -6571,6 +6608,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_METHOD_OP:
 	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NAME_OP:
+	case AML_BYTE_NOT_OP:
 	case AML_BYTE_NOTIFY_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
@@ -6638,6 +6676,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
@@ -7520,6 +7559,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.named_obj.def_power_res)delete_aml_symbol(aml_symbol->component.named_obj.def_power_res);
 		if(aml_symbol->component.named_obj.def_processor)delete_aml_symbol(aml_symbol->component.named_obj.def_processor);
 		if(aml_symbol->component.named_obj.def_thermal_zone)delete_aml_symbol(aml_symbol->component.named_obj.def_thermal_zone);
+		break;
+	case aml_not_op:
 		break;
 	case aml_notify_object:
 		if(aml_symbol->component.notify_object.super_name)delete_aml_symbol(aml_symbol->component.notify_object.super_name);
@@ -8533,6 +8574,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_named_obj:
 		break;
+	case aml_not_op:
+		break;
 	case aml_notify_object:
 		break;
 	case aml_notify_value:
@@ -9336,6 +9379,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.named_obj.def_power_res)print_aml_symbol(aml_symbol->component.named_obj.def_power_res);
 		if(aml_symbol->component.named_obj.def_processor)print_aml_symbol(aml_symbol->component.named_obj.def_processor);
 		if(aml_symbol->component.named_obj.def_thermal_zone)print_aml_symbol(aml_symbol->component.named_obj.def_thermal_zone);
+		break;
+	case aml_not_op:
 		break;
 	case aml_notify_object:
 		if(aml_symbol->component.notify_object.super_name)print_aml_symbol(aml_symbol->component.notify_object.super_name);

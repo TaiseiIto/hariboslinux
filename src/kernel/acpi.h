@@ -330,6 +330,7 @@ typedef enum _AMLSymbolType
 	aml_name_string,
 	aml_named_field,
 	aml_named_obj,
+	aml_not_op,
 	aml_notify_object,
 	aml_notify_value,
 	aml_notify_op,
@@ -1893,6 +1894,8 @@ AMLSymbol *analyse_aml_name_string(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_named_field(AMLSymbol *parent, AMLSubstring aml);
 // <named_obj> := <def_bank_field> | <def_create_bit_field> | <def_create_byte_field> | <def_create_dword_field> | <def_create_field> | <def_create_qword_field> | <def_create_word_field> | <def_data_region> | <def_external> | <def_op_region> | <def_power_res> | <def_thermal_zone>
 AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml);
+// <not_op> := AML_BYTE_NOT_OP
+AMLSymbol *analyse_aml_not_op(AMLSymbol *parent, AMLSubstring aml);
 // <notify_object> := <super_name>
 AMLSymbol *analyse_aml_notify_object(AMLSymbol *parent, AMLSubstring aml);
 // <notify_value> := <term_arg>
