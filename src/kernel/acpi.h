@@ -280,6 +280,7 @@ typedef enum _AMLSymbolType
 	aml_device_op,
 	aml_device_op_suffix,
 	aml_digit_char,
+	aml_divide_op,
 	aml_dual_name_path,
 	aml_dual_name_prefix,
 	aml_dword_const,
@@ -1755,6 +1756,8 @@ AMLSymbol *analyse_aml_device_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_device_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <digit_char> := '0' - '9'
 AMLSymbol *analyse_aml_digit_char(AMLSymbol *parent, AMLSubstring aml);
+// <divide_op> := AML_BYTE_DIVIDE_OP
+AMLSymbol *analyse_aml_divide_op(AMLSymbol *parent, AMLSubstring aml);
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>
 AMLSymbol *analyse_aml_dual_name_path(AMLSymbol *parent, AMLSubstring aml);
 // <dual_name_prefix> := AML_BYTE_DUAL_NAME_PREFIX
