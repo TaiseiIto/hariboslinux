@@ -300,6 +300,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_method_flags_name = "MethodFlags";
 	static char const * const aml_method_invocation_name = "MethodInvocation";
 	static char const * const aml_method_op_name = "MethodOp";
+	static char const * const aml_mid_op_name = "MidOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
 	static char const * const aml_multiply_op_name = "MultiplyOp";
@@ -669,6 +670,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_method_invocation_name;
 	case aml_method_op:
 		return aml_method_op_name;
+	case aml_mid_op:
+		return aml_mid_op_name;
 	case aml_multi_name_path:
 		return aml_multi_name_path_name;
 	case aml_multi_name_prefix:
@@ -2761,7 +2764,10 @@ AMLSymbol *analyse_aml_def_mid(AMLSymbol *parent, AMLSubstring aml)
 	def_mid->string.length = 0;
 	def_mid->type = aml_def_mid;
 	def_mid->flags = 0;
-	def_mid->component.def_mid.mid_op = NULL;
+	def_mid->component.def_mid.mid_op = analyse_aml_mid_op(def_mid, aml);
+	def_mid->string.length += def_mid->component.def_mid.mid_op->string.length;
+	aml.initial += def_mid->component.def_mid.mid_op->string.length;
+	aml.length -= def_mid->component.def_mid.mid_op->string.length;
 	def_mid->component.def_mid.mid_obj = NULL;
 	for(unsigned int i = 0; i < _countof(def_mid->component.def_mid.term_arg); i++)def_mid->component.def_mid.term_arg[i] = NULL;
 	def_mid->component.def_mid.target = NULL;
@@ -4410,6 +4416,25 @@ AMLSymbol *analyse_aml_method_op(AMLSymbol *parent, AMLSubstring aml)
 	}
 	else if(*method_op->string.initial != AML_BYTE_METHOD_OP)method_op->flags |= AML_SYMBOL_ERROR; // Incorrect method op
 	return method_op;
+}
+
+// <mid_op> := AML_BYTE_MID_OP
+AMLSymbol *analyse_aml_mid_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("mid_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *mid_op = malloc(sizeof(*mid_op));
+	mid_op->parent = parent;
+	mid_op->string.initial = aml.initial;
+	mid_op->string.length = 1;
+	mid_op->type = aml_mid_op;
+	mid_op->flags = 0;
+	if(!aml.initial)
+	{
+		mid_op->string.length = 0;
+		mid_op->flags |= AML_SYMBOL_ERROR;
+	}
+	else if(*mid_op->string.initial != AML_BYTE_MID_OP)mid_op->flags |= AML_SYMBOL_ERROR; // Incorrect munti name prefix
+	return mid_op;
 }
 
 // <multi_name_path> := <multi_name_prefix> <seg_count> <name_seg>*
@@ -7515,6 +7540,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_method_op:
 		break;
+	case aml_mid_op:
+		break;
 	case aml_multi_name_path:
 		for(unsigned int i = 0; i < *aml_symbol->component.multi_name_path.seg_count->string.initial; i++)if(aml_symbol->component.multi_name_path.name_seg[i])delete_aml_symbol(aml_symbol->component.multi_name_path.name_seg[i]);
 		free(aml_symbol->component.multi_name_path.name_seg);
@@ -8569,6 +8596,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_method_op:
 		break;
+	case aml_mid_op:
+		break;
 	case aml_multi_name_path:
 		printf_serial(" \"%s\"", aml_symbol->component.multi_name_path.string);
 		break;
@@ -9345,6 +9374,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.method_invocation.term_arg_list)print_aml_symbol(aml_symbol->component.method_invocation.term_arg_list);
 		break;
 	case aml_method_op:
+		break;
+	case aml_mid_op:
 		break;
 	case aml_multi_name_path:
 		if(aml_symbol->component.multi_name_path.multi_name_prefix)print_aml_symbol(aml_symbol->component.multi_name_path.multi_name_prefix);
