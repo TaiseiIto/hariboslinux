@@ -224,6 +224,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_decrement_name = "DefDecrement";
 	static char const * const aml_def_deref_of_name = "DefDerefOf";
 	static char const * const aml_def_device_name = "DefDevice";
+	static char const * const aml_def_divide_name = "DefDivide";
 	static char const * const aml_def_else_name = "DefElse";
 	static char const * const aml_def_field_name = "DefField";
 	static char const * const aml_def_find_set_right_bit_name = "DefFindSetRightBit";
@@ -508,6 +509,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_deref_of_name;
 	case aml_def_device:
 		return aml_def_device_name;
+	case aml_def_divide:
+		return aml_def_divide_name;
 	case aml_def_else:
 		return aml_def_else_name;
 	case aml_def_field:
@@ -2288,6 +2291,24 @@ AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml)
 	aml.length -= def_device->component.def_device.term_list->string.length;
 	if((int)aml.length < 0)def_device->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_device;
+}
+
+// <def_divide> := <divide_op> <dividend> <divisor> <remainder> <quotient>
+AMLSymbol *analyse_aml_def_divide(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_divide aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_divide = malloc(sizeof(*def_divide));
+	def_divide->parent = parent;
+	def_divide->string.initial = aml.initial;
+	def_divide->string.length = 0;
+	def_divide->type = aml_def_divide;
+	def_divide->flags = 0;
+	def_divide->component.def_divide.divide_op = NULL;
+	def_divide->component.def_divide.dividend = NULL;
+	def_divide->component.def_divide.divisor = NULL;
+	def_divide->component.def_divide.remainder = NULL;
+	def_divide->component.def_divide.quotient = NULL;
+	return def_divide;
 }
 
 // <def_else> := Nothing | <else_op> <pkg_length> <term_list>
@@ -6943,6 +6964,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_device.name_string)delete_aml_symbol(aml_symbol->component.def_device.name_string);
 		if(aml_symbol->component.def_device.term_list)delete_aml_symbol(aml_symbol->component.def_device.term_list);
 		break;
+	case aml_def_divide:
+		if(aml_symbol->component.def_divide.divide_op)delete_aml_symbol(aml_symbol->component.def_divide.divide_op);
+		if(aml_symbol->component.def_divide.dividend)delete_aml_symbol(aml_symbol->component.def_divide.dividend);
+		if(aml_symbol->component.def_divide.divisor)delete_aml_symbol(aml_symbol->component.def_divide.divisor);
+		if(aml_symbol->component.def_divide.remainder)delete_aml_symbol(aml_symbol->component.def_divide.remainder);
+		if(aml_symbol->component.def_divide.quotient)delete_aml_symbol(aml_symbol->component.def_divide.quotient);
+		break;
 	case aml_def_else:
 		if(aml_symbol->component.def_else.else_op)delete_aml_symbol(aml_symbol->component.def_else.else_op);
 		if(aml_symbol->component.def_else.pkg_length)delete_aml_symbol(aml_symbol->component.def_else.pkg_length);
@@ -8165,6 +8193,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_device:
 		break;
+	case aml_def_divide:
+		break;
 	case aml_def_else:
 		break;
 	case aml_def_field:
@@ -8726,6 +8756,13 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_device.pkg_length)print_aml_symbol(aml_symbol->component.def_device.pkg_length);
 		if(aml_symbol->component.def_device.name_string)print_aml_symbol(aml_symbol->component.def_device.name_string);
 		if(aml_symbol->component.def_device.term_list)print_aml_symbol(aml_symbol->component.def_device.term_list);
+		break;
+	case aml_def_divide:
+		if(aml_symbol->component.def_divide.divide_op)print_aml_symbol(aml_symbol->component.def_divide.divide_op);
+		if(aml_symbol->component.def_divide.dividend)print_aml_symbol(aml_symbol->component.def_divide.dividend);
+		if(aml_symbol->component.def_divide.divisor)print_aml_symbol(aml_symbol->component.def_divide.divisor);
+		if(aml_symbol->component.def_divide.remainder)print_aml_symbol(aml_symbol->component.def_divide.remainder);
+		if(aml_symbol->component.def_divide.quotient)print_aml_symbol(aml_symbol->component.def_divide.quotient);
 		break;
 	case aml_def_else:
 		if(aml_symbol->component.def_else.else_op)print_aml_symbol(aml_symbol->component.def_else.else_op);

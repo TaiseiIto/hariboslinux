@@ -241,6 +241,7 @@ typedef enum _AMLSymbolType
 	aml_def_decrement,
 	aml_def_deref_of,
 	aml_def_device,
+	aml_def_divide,
 	aml_def_else,
 	aml_def_field,
 	aml_def_find_set_right_bit,
@@ -672,6 +673,15 @@ typedef struct _AMLDefDevice
 	struct _AMLSymbol *name_string;
 	struct _AMLSymbol *term_list;
 } AMLDefDevice;
+
+typedef struct _AMLDefDivide
+{
+	struct _AMLSymbol *divide_op;
+	struct _AMLSymbol *dividend;
+	struct _AMLSymbol *divisor;
+	struct _AMLSymbol *remainder;
+	struct _AMLSymbol *quotient;
+} AMLDefDivide;
 
 typedef struct _AMLDefElse
 {
@@ -1433,6 +1443,7 @@ typedef union _AMLComponent
 	AMLDefDecrement def_decrement;
 	AMLDefDerefOf def_deref_of;
 	AMLDefDevice def_device;
+	AMLDefDivide def_divide;
 	AMLDefElse def_else;
 	AMLDefField def_field;
 	AMLDefFindSetRightBit def_find_set_right_bit;
@@ -1666,6 +1677,8 @@ AMLSymbol *analyse_aml_def_decrement(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_deref_of(AMLSymbol *parent, AMLSubstring aml);
 // <def_device> := <device_op> <pkg_length> <name_string> <term_list>
 AMLSymbol *analyse_aml_def_device(AMLSymbol *parent, AMLSubstring aml);
+// <def_divide> := <divide_op> <dividend> <divisor> <remainder> <quotient>
+AMLSymbol *analyse_aml_def_divide(AMLSymbol *parent, AMLSubstring aml);
 // <def_else> := Nothing | <else_op> <pkg_length> <term_list>
 AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
