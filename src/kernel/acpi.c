@@ -170,6 +170,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_arg_op_name = "ArgOp";
 	static char const * const aml_ascii_char_name = "AsciiChar";
 	static char const * const aml_ascii_char_list_name = "AsciiCharList";
+	static char const * const aml_bit_index_name = "BitIndex";
 	static char const * const aml_break_op_name = "BreakOp";
 	static char const * const aml_buf_data_name = "BufData";
 	static char const * const aml_buff_pkg_str_obj_name = "BuffPkgStrObj";
@@ -392,6 +393,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_ascii_char_name;
 	case aml_ascii_char_list:
 		return aml_ascii_char_list_name;
+	case aml_bit_index:
+		return aml_bit_index_name;
 	case aml_break_op:
 		return aml_break_op_name;
 	case aml_buf_data:
@@ -1003,6 +1006,23 @@ AMLSymbol *analyse_aml_ascii_char_list(AMLSymbol *parent, AMLSubstring aml)
 		ascii_char_list->component.ascii_char_list.ascii_char_list = NULL;
 	}
 	return ascii_char_list;
+}
+
+// <bit_index> := <term_arg>
+AMLSymbol *analyse_aml_bit_index(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("bit_index aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *bit_index = malloc(sizeof(*bit_index));
+	bit_index->parent = parent;
+	bit_index->string.initial = aml.initial;
+	bit_index->string.length = 0;
+	bit_index->type = aml_bit_index;
+	bit_index->flags = 0;
+	bit_index->component.bit_index.term_arg = analyse_aml_term_arg(bit_index, aml);
+	bit_index->string.length += bit_index->component.bit_index.term_arg->string.length;
+	aml.initial += bit_index->component.bit_index.term_arg->string.length;
+	aml.length -= bit_index->component.bit_index.term_arg->string.length;
+	return bit_index;
 }
 
 // <break_op> := AML_BYTE_BREAK_OP
@@ -2001,7 +2021,10 @@ AMLSymbol *analyse_aml_def_create_field(AMLSymbol *parent, AMLSubstring aml)
 	def_create_field->string.length += def_create_field->component.def_create_field.source_buff->string.length;
 	aml.initial += def_create_field->component.def_create_field.source_buff->string.length;
 	aml.length -= def_create_field->component.def_create_field.source_buff->string.length;
-	def_create_field->component.def_create_field.bit_index = NULL;
+	def_create_field->component.def_create_field.bit_index = analyse_aml_bit_index(def_create_field, aml);
+	def_create_field->string.length += def_create_field->component.def_create_field.bit_index->string.length;
+	aml.initial += def_create_field->component.def_create_field.bit_index->string.length;
+	aml.length -= def_create_field->component.def_create_field.bit_index->string.length;
 	def_create_field->component.def_create_field.num_bits = NULL;
 	def_create_field->component.def_create_field.name_string = NULL;
 	return def_create_field;
@@ -6454,6 +6477,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.ascii_char_list.ascii_char)delete_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char);
 		if(aml_symbol->component.ascii_char_list.ascii_char_list)delete_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char_list);
 		break;
+	case aml_bit_index:
+		if(aml_symbol->component.bit_index.term_arg)delete_aml_symbol(aml_symbol->component.bit_index.term_arg);
+		break;
 	case aml_break_op:
 		break;
 	case aml_buf_data:
@@ -7737,6 +7763,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_ascii_char_list:
 		printf_serial(" \"%.*s\"", aml_symbol->string.length, aml_symbol->string.initial);
 		break;
+	case aml_bit_index:
+		break;
 	case aml_break_op:
 		break;
 	case aml_buf_data:
@@ -8186,6 +8214,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_ascii_char_list:
 		if(aml_symbol->component.ascii_char_list.ascii_char)print_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char);
 		if(aml_symbol->component.ascii_char_list.ascii_char_list)print_aml_symbol(aml_symbol->component.ascii_char_list.ascii_char_list);
+		break;
+	case aml_bit_index:
+		if(aml_symbol->component.bit_index.term_arg)print_aml_symbol(aml_symbol->component.bit_index.term_arg);
 		break;
 	case aml_break_op:
 		break;
