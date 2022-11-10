@@ -242,6 +242,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_mutex_name = "DefMutex";
 	static char const * const aml_def_name_name = "DefName";
 	static char const * const aml_def_notify_name = "DefNotify";
+	static char const * const aml_def_object_type_name = "DefObjectType";
 	static char const * const aml_def_op_region_name = "DefOpRegion";
 	static char const * const aml_def_or_name = "DefOr";
 	static char const * const aml_def_package_name = "DefPackage";
@@ -542,6 +543,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_name_name;
 	case aml_def_notify:
 		return aml_def_notify_name;
+	case aml_def_object_type:
+		return aml_def_object_type_name;
 	case aml_def_op_region:
 		return aml_def_op_region_name;
 	case aml_def_or:
@@ -2786,6 +2789,25 @@ AMLSymbol *analyse_aml_def_notify(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_notify->component.def_notify.notify_value->string.length;
 	aml.length -= def_notify->component.def_notify.notify_value->string.length;
 	return def_notify;
+}
+
+// <def_object_type> := <object_type_op> (<simple_name> | <debug_obj> | <def_ref_of> | <def_deref_of> | <def_index>)
+AMLSymbol *analyse_aml_def_object_type(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_object_type aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_object_type = malloc(sizeof(*def_object_type));
+	def_object_type->parent = parent;
+	def_object_type->string.initial = aml.initial;
+	def_object_type->string.length = 0;
+	def_object_type->type = aml_def_object_type;
+	def_object_type->flags = 0;
+	def_object_type->component.def_object_type.object_type_op = NULL;
+	def_object_type->component.def_object_type.simple_name = NULL;
+	def_object_type->component.def_object_type.debug_obj = NULL;
+	def_object_type->component.def_object_type.def_ref_of = NULL;
+	def_object_type->component.def_object_type.def_deref_of = NULL;
+	def_object_type->component.def_object_type.def_index = NULL;
+	return def_object_type;
 }
 
 // <def_op_region> := <op_region_op> <name_string> <region_space> <region_offset> <region_len>
@@ -6925,6 +6947,14 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_notify.notify_object)delete_aml_symbol(aml_symbol->component.def_notify.notify_object);
 		if(aml_symbol->component.def_notify.notify_value)delete_aml_symbol(aml_symbol->component.def_notify.notify_value);
 		break;
+	case aml_def_object_type:
+		if(aml_symbol->component.def_object_type.object_type_op)delete_aml_symbol(aml_symbol->component.def_object_type.object_type_op);
+		if(aml_symbol->component.def_object_type.simple_name)delete_aml_symbol(aml_symbol->component.def_object_type.simple_name);
+		if(aml_symbol->component.def_object_type.debug_obj)delete_aml_symbol(aml_symbol->component.def_object_type.debug_obj);
+		if(aml_symbol->component.def_object_type.def_ref_of)delete_aml_symbol(aml_symbol->component.def_object_type.def_ref_of);
+		if(aml_symbol->component.def_object_type.def_deref_of)delete_aml_symbol(aml_symbol->component.def_object_type.def_deref_of);
+		if(aml_symbol->component.def_object_type.def_index)delete_aml_symbol(aml_symbol->component.def_object_type.def_index);
+		break;
 	case aml_def_op_region:
 		if(aml_symbol->component.def_op_region.op_region_op)delete_aml_symbol(aml_symbol->component.def_op_region.op_region_op);
 		if(aml_symbol->component.def_op_region.name_string)delete_aml_symbol(aml_symbol->component.def_op_region.name_string);
@@ -8081,6 +8111,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_notify:
 		break;
+	case aml_def_object_type:
+		break;
 	case aml_def_op_region:
 		break;
 	case aml_def_or:
@@ -8694,6 +8726,14 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_notify.notify_op)print_aml_symbol(aml_symbol->component.def_notify.notify_op);
 		if(aml_symbol->component.def_notify.notify_object)print_aml_symbol(aml_symbol->component.def_notify.notify_object);
 		if(aml_symbol->component.def_notify.notify_value)print_aml_symbol(aml_symbol->component.def_notify.notify_value);
+		break;
+	case aml_def_object_type:
+		if(aml_symbol->component.def_object_type.object_type_op)print_aml_symbol(aml_symbol->component.def_object_type.object_type_op);
+		if(aml_symbol->component.def_object_type.simple_name)print_aml_symbol(aml_symbol->component.def_object_type.simple_name);
+		if(aml_symbol->component.def_object_type.debug_obj)print_aml_symbol(aml_symbol->component.def_object_type.debug_obj);
+		if(aml_symbol->component.def_object_type.def_ref_of)print_aml_symbol(aml_symbol->component.def_object_type.def_ref_of);
+		if(aml_symbol->component.def_object_type.def_deref_of)print_aml_symbol(aml_symbol->component.def_object_type.def_deref_of);
+		if(aml_symbol->component.def_object_type.def_index)print_aml_symbol(aml_symbol->component.def_object_type.def_index);
 		break;
 	case aml_def_op_region:
 		if(aml_symbol->component.def_op_region.op_region_op)print_aml_symbol(aml_symbol->component.def_op_region.op_region_op);
