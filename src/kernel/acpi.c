@@ -3682,6 +3682,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_deref_of = analyse_aml_def_deref_of(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_deref_of->string.length;
 		break;
+	case AML_BYTE_DIVIDE_OP:
+		expression_opcode->component.expression_opcode.def_divide = analyse_aml_def_divide(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_divide->string.length;
+		break;
 	case AML_BYTE_EXT_OP_PREFIX:
 		switch(aml.initial[1])
 		{
@@ -6300,6 +6304,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CONCAT_RES_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_DIVIDE_OP:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
@@ -6445,6 +6450,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_CONCAT_RES_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_DIVIDE_OP:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
@@ -6531,6 +6537,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_DIVIDE_OP:
 	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 	case AML_BYTE_IF_OP:
@@ -6602,6 +6609,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CONCAT_RES_OP:
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
+	case AML_BYTE_DIVIDE_OP:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
