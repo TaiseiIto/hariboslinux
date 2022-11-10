@@ -179,6 +179,7 @@ struct _AMLSymbol;
 typedef enum _AMLSymbolType
 {
 	aml_access_field,
+	aml_access_field_op,
 	aml_acquire_op,
 	aml_acquire_op_suffix,
 	aml_alias_op,
@@ -1514,6 +1515,8 @@ typedef struct _AMLSymbol
 char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type);
 // <access_field> := <access_field_op> <access_type> <access_attrib>
 AMLSymbol *analyse_aml_access_field(AMLSymbol *parent, AMLSubstring aml);
+// <access_field_op> := AML_BYTE_ACCESS_FIELD_OP
+AMLSymbol *analyse_aml_access_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <acquire_op> := <ext_op_prefix> <acquire_op_suffix>
 AMLSymbol *analyse_aml_acquire_op(AMLSymbol *parent, AMLSubstring aml);
 // <acquire_op_suffix> := AML_BYTE_ACQUIRE_OP
