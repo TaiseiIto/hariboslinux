@@ -7729,10 +7729,6 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_zero_op:
 		break;
-	default:
-		ERROR(); // Invalid AML symbol type
-		printf_serial("aml_symbol->type = %#010.8x\n", aml_symbol->type);
-		break;
 	}
 	free(aml_symbol);
 }
