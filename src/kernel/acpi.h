@@ -317,6 +317,7 @@ typedef enum _AMLSymbolType
 	aml_method_flags,
 	aml_method_invocation,
 	aml_method_op,
+	aml_mid_obj,
 	aml_mid_op,
 	aml_multi_name_path,
 	aml_multi_name_prefix,
@@ -1102,6 +1103,11 @@ typedef struct _AMLMethodInvocation
 	struct _AMLSymbol *term_arg_list;
 } AMLMethodInvocation;
 
+typedef struct _AMLMidObj
+{
+	struct _AMLSymbol *term_arg;
+} AMLMidObj;
+
 typedef struct _AMLMultiNamePath
 {
 	struct _AMLSymbol *multi_name_prefix;
@@ -1537,6 +1543,7 @@ typedef union _AMLComponent
 	AMLLocalObj local_obj;
 	AMLMethodFlags method_flags;
 	AMLMethodInvocation method_invocation;
+	AMLMidObj mid_obj;
 	AMLMultiNamePath multi_name_path;
 	AMLMutexObject mutex_object;
 	AMLMutexOp mutex_op;
@@ -1879,6 +1886,8 @@ AMLSymbol *analyse_aml_method_flags(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml);
 // <method_op> := 0x14
 AMLSymbol *analyse_aml_method_op(AMLSymbol *parent, AMLSubstring aml);
+// <mid_obj> := <term_arg>
+AMLSymbol *analyse_aml_mid_obj(AMLSymbol *parent, AMLSubstring aml);
 // <mid_op> := AML_BYTE_MID_OP
 AMLSymbol *analyse_aml_mid_op(AMLSymbol *parent, AMLSubstring aml);
 // <multi_name_path> := <multi_name_prefix> <seg_count> <name_seg>*

@@ -300,6 +300,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_method_flags_name = "MethodFlags";
 	static char const * const aml_method_invocation_name = "MethodInvocation";
 	static char const * const aml_method_op_name = "MethodOp";
+	static char const * const aml_mid_obj_name = "MidObj";
 	static char const * const aml_mid_op_name = "MidOp";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
@@ -670,6 +671,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_method_invocation_name;
 	case aml_method_op:
 		return aml_method_op_name;
+	case aml_mid_obj:
+		return aml_mid_obj_name;
 	case aml_mid_op:
 		return aml_mid_op_name;
 	case aml_multi_name_path:
@@ -2768,9 +2771,21 @@ AMLSymbol *analyse_aml_def_mid(AMLSymbol *parent, AMLSubstring aml)
 	def_mid->string.length += def_mid->component.def_mid.mid_op->string.length;
 	aml.initial += def_mid->component.def_mid.mid_op->string.length;
 	aml.length -= def_mid->component.def_mid.mid_op->string.length;
-	def_mid->component.def_mid.mid_obj = NULL;
-	for(unsigned int i = 0; i < _countof(def_mid->component.def_mid.term_arg); i++)def_mid->component.def_mid.term_arg[i] = NULL;
-	def_mid->component.def_mid.target = NULL;
+	def_mid->component.def_mid.mid_obj = analyse_aml_mid_obj(def_mid, aml);
+	def_mid->string.length += def_mid->component.def_mid.mid_obj->string.length;
+	aml.initial += def_mid->component.def_mid.mid_obj->string.length;
+	aml.length -= def_mid->component.def_mid.mid_obj->string.length;
+	for(unsigned int i = 0; i < _countof(def_mid->component.def_mid.term_arg); i++)
+	{
+		def_mid->component.def_mid.term_arg[i] = analyse_aml_term_arg(def_mid, aml);
+		def_mid->string.length += def_mid->component.def_mid.term_arg[i]->string.length;
+		aml.initial += def_mid->component.def_mid.term_arg[i]->string.length;
+		aml.length -= def_mid->component.def_mid.term_arg[i]->string.length;
+	}
+	def_mid->component.def_mid.target = analyse_aml_target(def_mid, aml);
+	def_mid->string.length += def_mid->component.def_mid.target->string.length;
+	aml.initial += def_mid->component.def_mid.target->string.length;
+	aml.length -= def_mid->component.def_mid.target->string.length;
 	return def_mid;
 }
 
@@ -3797,6 +3812,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_l_or = analyse_aml_def_l_or(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_or->string.length;
 		break;
+	case AML_BYTE_MID_OP:
+		expression_opcode->component.expression_opcode.def_mid = analyse_aml_def_mid(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_mid->string.length;
+		break;
 	case AML_BYTE_MULTIPLY_OP:
 		expression_opcode->component.expression_opcode.def_multiply = analyse_aml_def_multiply(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_multiply->string.length;
@@ -4416,6 +4435,21 @@ AMLSymbol *analyse_aml_method_op(AMLSymbol *parent, AMLSubstring aml)
 	}
 	else if(*method_op->string.initial != AML_BYTE_METHOD_OP)method_op->flags |= AML_SYMBOL_ERROR; // Incorrect method op
 	return method_op;
+}
+
+// <mid_obj> := <term_arg>
+AMLSymbol *analyse_aml_mid_obj(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("mid_obj aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *mid_obj = malloc(sizeof(*mid_obj));
+	mid_obj->parent = parent;
+	mid_obj->string.initial = aml.initial;
+	mid_obj->string.length = 0;
+	mid_obj->type = aml_mid_obj;
+	mid_obj->flags = 0;
+	mid_obj->component.mid_obj.term_arg = analyse_aml_term_arg(mid_obj, aml);
+	mid_obj->string.length += mid_obj->component.mid_obj.term_arg->string.length;
+	return mid_obj;
 }
 
 // <mid_op> := AML_BYTE_MID_OP
@@ -6413,6 +6447,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_MID_OP:
 	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
@@ -6570,6 +6605,8 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_MID_OP:
+	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
@@ -6651,6 +6688,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_METHOD_OP:
+	case AML_BYTE_MID_OP:
 	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NAME_OP:
 	case AML_BYTE_NOT_OP:
@@ -6721,6 +6759,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_MID_OP:
 	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
@@ -7539,6 +7578,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.method_invocation.term_arg_list)delete_aml_symbol(aml_symbol->component.method_invocation.term_arg_list);
 		break;
 	case aml_method_op:
+		break;
+	case aml_mid_obj:
+		if(aml_symbol->component.mid_obj.term_arg)delete_aml_symbol(aml_symbol->component.mid_obj.term_arg);
 		break;
 	case aml_mid_op:
 		break;
@@ -8596,6 +8638,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_method_op:
 		break;
+	case aml_mid_obj:
+		break;
 	case aml_mid_op:
 		break;
 	case aml_multi_name_path:
@@ -9374,6 +9418,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.method_invocation.term_arg_list)print_aml_symbol(aml_symbol->component.method_invocation.term_arg_list);
 		break;
 	case aml_method_op:
+		break;
+	case aml_mid_obj:
+		if(aml_symbol->component.mid_obj.term_arg)print_aml_symbol(aml_symbol->component.mid_obj.term_arg);
 		break;
 	case aml_mid_op:
 		break;
