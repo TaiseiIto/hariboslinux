@@ -264,6 +264,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_device_op_suffix_name = "DeviceOpSuffix";
 	static char const * const aml_digit_char_name = "DigitChar";
 	static char const * const aml_divide_op_name = "DivideOp";
+	static char const * const aml_dividend_name = "Dividend";
 	static char const * const aml_dual_name_path_name = "DualNamePath";
 	static char const * const aml_dual_name_prefix_name = "DualNamePrefix";
 	static char const * const aml_dword_const_name = "DWordConst";
@@ -590,6 +591,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_digit_char_name;
 	case aml_divide_op:
 		return aml_divide_op_name;
+	case aml_dividend:
+		return aml_dividend_name;
 	case aml_dual_name_path:
 		return aml_dual_name_path_name;
 	case aml_dual_name_prefix:
@@ -2310,7 +2313,10 @@ AMLSymbol *analyse_aml_def_divide(AMLSymbol *parent, AMLSubstring aml)
 	def_divide->string.length =+ def_divide->component.def_divide.divide_op->string.length;
 	aml.initial += def_divide->component.def_divide.divide_op->string.length;
 	aml.length -= def_divide->component.def_divide.divide_op->string.length;
-	def_divide->component.def_divide.dividend = NULL;
+	def_divide->component.def_divide.dividend = analyse_aml_dividend(def_divide, aml);
+	def_divide->string.length =+ def_divide->component.def_divide.dividend->string.length;
+	aml.initial += def_divide->component.def_divide.dividend->string.length;
+	aml.length -= def_divide->component.def_divide.dividend->string.length;
 	def_divide->component.def_divide.divisor = NULL;
 	def_divide->component.def_divide.remainder = NULL;
 	def_divide->component.def_divide.quotient = NULL;
@@ -3409,6 +3415,21 @@ AMLSymbol *analyse_aml_divide_op(AMLSymbol *parent, AMLSubstring aml)
 	}
 	else if(*divide_op->string.initial != AML_BYTE_DIVIDE_OP)divide_op->flags |= AML_SYMBOL_ERROR; // Incorrect dual name prefix
 	return divide_op;
+}
+
+// <dividend> := <term_arg>
+AMLSymbol *analyse_aml_dividend(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("dividend aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *dividend = malloc(sizeof(*dividend));
+	dividend->parent = parent;
+	dividend->string.initial = aml.initial;
+	dividend->string.length = 0;
+	dividend->type = aml_dividend;
+	dividend->flags = 0;
+	dividend->component.dividend.term_arg = analyse_aml_term_arg(dividend, aml);
+	dividend->string.length += dividend->component.dividend.term_arg->string.length;
+	return dividend;
 }
 
 // <dual_name_path> := <dual_name_prefix> <name_seg> <name_seg>
@@ -7191,6 +7212,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_divide_op:
 		break;
+	case aml_dividend:
+		if(aml_symbol->component.dividend.term_arg)delete_aml_symbol(aml_symbol->component.dividend.term_arg);
+		break;
 	case aml_dual_name_path:
 		if(aml_symbol->component.dual_name_path.dual_name_prefix)delete_aml_symbol(aml_symbol->component.dual_name_path.dual_name_prefix);
 		for(AMLSymbol **name_seg = aml_symbol->component.dual_name_path.name_seg; name_seg != aml_symbol->component.dual_name_path.name_seg + _countof(aml_symbol->component.dual_name_path.name_seg); name_seg++)if(*name_seg)delete_aml_symbol(*name_seg);
@@ -8300,6 +8324,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_divide_op:
 		break;
+	case aml_dividend:
+		break;
 	case aml_dual_name_path:
 		printf_serial(" \"%s\"", aml_symbol->component.dual_name_path.string);
 		break;
@@ -8987,6 +9013,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_digit_char:
 		break;
 	case aml_divide_op:
+		break;
+	case aml_dividend:
+		if(aml_symbol->component.dividend.term_arg)print_aml_symbol(aml_symbol->component.dividend.term_arg);
 		break;
 	case aml_dual_name_path:
 		if(aml_symbol->component.dual_name_path.dual_name_prefix)print_aml_symbol(aml_symbol->component.dual_name_path.dual_name_prefix);
