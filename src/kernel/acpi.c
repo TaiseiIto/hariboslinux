@@ -191,6 +191,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_create_byte_field_op_name = "CreateByteFieldOp";
 	static char const * const aml_create_dword_field_op_name = "CreateDWordFieldOp";
 	static char const * const aml_create_field_op_name = "CreateFieldOp";
+	static char const * const aml_create_field_op_suffix_name = "CreateFieldOpSuffix";
 	static char const * const aml_create_qword_field_op_name = "CreateQWordFieldOp";
 	static char const * const aml_create_word_field_op_name = "CreateWordFieldOp";
 	static char const * const aml_data_name = "Data";
@@ -436,6 +437,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_create_dword_field_op_name;
 	case aml_create_field_op:
 		return aml_create_field_op_name;
+	case aml_create_field_op_suffix:
+		return aml_create_field_op_suffix_name;
 	case aml_create_qword_field_op:
 		return aml_create_qword_field_op_name;
 	case aml_create_word_field_op:
@@ -1453,23 +1456,44 @@ AMLSymbol *analyse_aml_create_dword_field_op(AMLSymbol *parent, AMLSubstring aml
 	return create_dword_field_op;
 }
 
-// <create_field_op> := AML_BYTE_CREATE_FIELD_OP
+// <create_field_op> := <ext_op_prefix> <create_field_op_suffix>
 AMLSymbol *analyse_aml_create_field_op(AMLSymbol *parent, AMLSubstring aml)
 {
 	printf_serial("create_field_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *create_field_op = malloc(sizeof(*create_field_op));
 	create_field_op->parent = parent;
 	create_field_op->string.initial = aml.initial;
-	create_field_op->string.length = 1;
+	create_field_op->string.length = 0;
 	create_field_op->type = aml_create_field_op;
 	create_field_op->flags = 0;
+	create_field_op->component.create_field_op.ext_op_prefix = analyse_aml_ext_op_prefix(create_field_op, aml);
+	create_field_op->string.length += create_field_op->component.create_field_op.ext_op_prefix->string.length;
+	aml.initial += create_field_op->component.create_field_op.ext_op_prefix->string.length;
+	aml.length -= create_field_op->component.create_field_op.ext_op_prefix->string.length;
+	create_field_op->component.create_field_op.create_field_op_suffix = analyse_aml_create_field_op_suffix(create_field_op, aml);
+	create_field_op->string.length += create_field_op->component.create_field_op.create_field_op_suffix->string.length;
+	aml.initial += create_field_op->component.create_field_op.create_field_op_suffix->string.length;
+	aml.length -= create_field_op->component.create_field_op.create_field_op_suffix->string.length;
+	return create_field_op;
+}
+
+// <create_field_op_suffix> := AML_BYTE_CREATE_FIELD_OP
+AMLSymbol *analyse_aml_create_field_op_suffix(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("create_field_op_suffix aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *create_field_op_suffix = malloc(sizeof(*create_field_op_suffix));
+	create_field_op_suffix->parent = parent;
+	create_field_op_suffix->string.initial = aml.initial;
+	create_field_op_suffix->string.length = 1;
+	create_field_op_suffix->type = aml_create_field_op_suffix;
+	create_field_op_suffix->flags = 0;
 	if(!aml.length)
 	{
-		create_field_op->string.length = 0;
-		create_field_op->flags |= AML_SYMBOL_ERROR;
+		create_field_op_suffix->string.length = 0;
+		create_field_op_suffix->flags |= AML_SYMBOL_ERROR;
 	}
-	else if(*create_field_op->string.initial != AML_BYTE_CREATE_FIELD_OP)create_field_op->flags |= AML_SYMBOL_ERROR;
-	return create_field_op;
+	else if(*create_field_op_suffix->string.initial != AML_BYTE_CREATE_FIELD_OP)create_field_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect create_field_op_suffix
+	return create_field_op_suffix;
 }
 
 // <create_qword_field_op> := AML_BYTE_CREATE_QWORD_FIELD_OP
@@ -4433,10 +4457,6 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 		named_obj->component.named_obj.def_create_dword_field = analyse_aml_def_create_dword_field(named_obj, aml);
 		named_obj->string.length += named_obj->component.named_obj.def_create_dword_field->string.length;
 		break;
-	case AML_BYTE_CREATE_FIELD_OP:
-		named_obj->component.named_obj.def_create_field = analyse_aml_def_create_field(named_obj, aml);
-		named_obj->string.length += named_obj->component.named_obj.def_create_field->string.length;
-		break;
 	case AML_BYTE_CREATE_QWORD_FIELD_OP:
 		named_obj->component.named_obj.def_create_qword_field = analyse_aml_def_create_qword_field(named_obj, aml);
 		named_obj->string.length += named_obj->component.named_obj.def_create_qword_field->string.length;
@@ -4448,6 +4468,10 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_EXT_OP_PREFIX:
 		switch(aml.initial[1])
 		{
+		case AML_BYTE_CREATE_FIELD_OP:
+			named_obj->component.named_obj.def_create_field = analyse_aml_def_create_field(named_obj, aml);
+			named_obj->string.length += named_obj->component.named_obj.def_create_field->string.length;
+			break;
 		case AML_BYTE_DEVICE_OP:
 			named_obj->component.named_obj.def_device = analyse_aml_def_device(named_obj, aml);
 			named_obj->string.length += named_obj->component.named_obj.def_device->string.length;
@@ -4650,7 +4674,6 @@ AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CREATE_BIT_FIELD_OP:
 	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
-	case AML_BYTE_CREATE_FIELD_OP:
 	case AML_BYTE_CREATE_QWORD_FIELD_OP:
 	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_EXT_OP_PREFIX:
@@ -6166,7 +6189,6 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CREATE_BIT_FIELD_OP:
 	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
-	case AML_BYTE_CREATE_FIELD_OP:
 	case AML_BYTE_CREATE_QWORD_FIELD_OP:
 	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_DECREMENT_OP:
@@ -6268,7 +6290,6 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_CREATE_BIT_FIELD_OP:
 	case AML_BYTE_CREATE_BYTE_FIELD_OP:
 	case AML_BYTE_CREATE_DWORD_FIELD_OP:
-	case AML_BYTE_CREATE_FIELD_OP:
 	case AML_BYTE_CREATE_QWORD_FIELD_OP:
 	case AML_BYTE_CREATE_WORD_FIELD_OP:
 	case AML_BYTE_METHOD_OP:
@@ -6573,6 +6594,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 	case aml_create_dword_field_op:
 		break;
 	case aml_create_field_op:
+		if(aml_symbol->component.create_field_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.create_field_op.ext_op_prefix);
+		if(aml_symbol->component.create_field_op.create_field_op_suffix)delete_aml_symbol(aml_symbol->component.create_field_op.create_field_op_suffix);
+		break;
+	case aml_create_field_op_suffix:
 		break;
 	case aml_create_qword_field_op:
 		break;
@@ -7843,6 +7868,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_create_field_op:
 		break;
+	case aml_create_field_op_suffix:
+		break;
 	case aml_create_qword_field_op:
 		break;
 	case aml_create_word_field_op:
@@ -8316,6 +8343,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_create_dword_field_op:
 		break;
 	case aml_create_field_op:
+		if(aml_symbol->component.create_field_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.create_field_op.ext_op_prefix);
+		if(aml_symbol->component.create_field_op.create_field_op_suffix)print_aml_symbol(aml_symbol->component.create_field_op.create_field_op_suffix);
+		break;
+	case aml_create_field_op_suffix:
 		break;
 	case aml_create_qword_field_op:
 		break;

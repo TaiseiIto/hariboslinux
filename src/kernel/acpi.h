@@ -209,6 +209,7 @@ typedef enum _AMLSymbolType
 	aml_create_byte_field_op,
 	aml_create_dword_field_op,
 	aml_create_field_op,
+	aml_create_field_op_suffix,
 	aml_create_qword_field_op,
 	aml_create_word_field_op,
 	aml_data,
@@ -483,6 +484,12 @@ typedef struct _AMLConstObj
 	struct _AMLSymbol *one_op;
 	struct _AMLSymbol *ones_op;
 } AMLConstObj;
+
+typedef struct _AMLCreateFieldOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *create_field_op_suffix;
+} AMLCreateFieldOp;
 
 typedef struct _AMLData
 {
@@ -1364,6 +1371,7 @@ typedef union _AMLComponent
 	AMLComputationalData computational_data;
 	AMLCondRefOfOp cond_ref_of_op;
 	AMLConstObj const_obj;
+	AMLCreateFieldOp create_field_op;
 	AMLDWordConst dword_const;
 	AMLDWordData dword_data;
 	AMLData data;
@@ -1555,8 +1563,10 @@ AMLSymbol *analyse_aml_create_bit_field_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_create_byte_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <create_dword_field_op> := AML_BYTE_CREATE_DWORD_FIELD_OP
 AMLSymbol *analyse_aml_create_dword_field_op(AMLSymbol *parent, AMLSubstring aml);
-// <create_field_op> := AML_BYTE_CREATE_FIELD_OP
+// <create_field_op> := <ext_op_prefix> <create_field_op_suffix>
 AMLSymbol *analyse_aml_create_field_op(AMLSymbol *parent, AMLSubstring aml);
+// <create_field_op_suffix> := AML_BYTE_CREATE_FIELD_OP
+AMLSymbol *analyse_aml_create_field_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <create_qword_field_op> := AML_BYTE_CREATE_QWORD_FIELD_OP
 AMLSymbol *analyse_aml_create_qword_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <create_word_field_op> := AML_BYTE_CREATE_WORD_FIELD_OP
