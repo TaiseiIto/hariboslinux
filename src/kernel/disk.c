@@ -86,7 +86,6 @@ FileInformation *get_file_information(char const *file_name)
 			free(candidate_name);
 			if(found)return candidate;
 		}
-		else break;
 	}
 	return NULL; // The file is not found.
 }
