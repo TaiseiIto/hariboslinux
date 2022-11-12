@@ -170,7 +170,7 @@ void init_file_system(void)
 {
 
 	cluster_size = boot_sector->number_of_sectors_per_cluster * boot_sector->sector_size;
-	number_of_clusters = (boot_sector->sector_size * (boot_sector->number_of_sectors - 1 - boot_sector->number_of_file_allocation_tables * boot_sector->number_of_sectors_per_file_allocation_table) - boot_sector->number_of_root_directory_entries * sizeof(FileInformation)) / (boot_sector->sector_size * boot_sector->number_of_sectors_per_cluster);
+	number_of_clusters = (boot_sector->sector_size * (boot_sector->number_of_sectors - boot_sector->first_sector_number - boot_sector->number_of_file_allocation_tables * boot_sector->number_of_sectors_per_file_allocation_table) - boot_sector->number_of_root_directory_entries * sizeof(FileInformation)) / (boot_sector->sector_size * boot_sector->number_of_sectors_per_cluster);
 	first_sector = (void *)boot_sector + boot_sector->first_sector_number * boot_sector->sector_size;
 	file_allocation_tables = malloc(boot_sector->number_of_file_allocation_tables * sizeof(*file_allocation_tables));
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)file_allocation_tables[i] = first_sector + i * boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size;
@@ -198,6 +198,7 @@ void init_file_system(void)
 
 	printf_serial("cluster_size = %#010.8x\n", cluster_size);
 	printf_serial("first_sector = %p\n", first_sector);
+	printf_serial("number_of_clusters = %#06.4x\n", number_of_clusters);
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)printf_serial("file_allocation_tables[%#04.2x] = %p\n", i, file_allocation_tables[i]);
 	printf_serial("root_directory_entries = %p\n", root_directory_entries);
 	for(unsigned int i = 0; i < boot_sector->number_of_root_directory_entries; i++)
