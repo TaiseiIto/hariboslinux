@@ -147,6 +147,16 @@ unsigned short get_next_cluster_number(unsigned short cluster_number)
 	return next_cluster_number;
 }
 
+FileInformation *get_unused_file_information(void)
+{
+	for(unsigned int i = 0; i < boot_sector->number_of_root_directory_entries; i++) // Search file informations.
+	{
+		FileInformation *candidate = root_directory_entries + i;
+		if(!candidate->name[0])return candidate;
+	}
+	return NULL; // All file informations are used.
+}
+
 void init_file_system(void)
 {
 
@@ -239,9 +249,18 @@ void primary_ATA_hard_disk_interrupt_handler(void)
 
 void save_file(char const *file_name, unsigned char const *content, unsigned int length)
 {
+	FileInformation *file_information = get_file_information(file_name);
+	char const *dot = strchr(file_name, '.');
+	char const *prefix_begin = file_name;
+	char const *prefix_end = dot && (unsigned int)dot - (unsigned int)file_name <= _countof(file_information->name) ? dot : file_name + _countof(file_information->name);
+	char const *suffix_begin = dot ? dot + 1 : file_name + _countof(file_information->name);
+	char const *suffix_end = strlen(suffix_begin) <= _countof(file_information->extension) ? suffix_begin + strlen(suffix_begin) : suffix_begin + _countof(file_information->extension);
 	UNUSED_ARGUMENT(content);
 	UNUSED_ARGUMENT(length);
-	if(get_file_information(file_name))delete_file(file_name);
+	if(file_information)delete_file(file_name);
+	else file_information = get_unused_file_information();
+	for(char *name = file_information->name; name != file_information->name + _countof(file_information->name); name++)*name = prefix_begin != prefix_end ? *prefix_begin++ : '\0';
+	for(char *extension = file_information->extension; extension != file_information->extension + _countof(file_information->extension); extension++)*extension = suffix_begin != suffix_end ? *suffix_begin++ : '\0';
 }
 
 void secondary_ATA_hard_disk_interrupt_handler(void)
