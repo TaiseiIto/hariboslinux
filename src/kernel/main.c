@@ -318,7 +318,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			printf_serial("Detect console task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case TASK_TYPE_COMMAND:
-			clean_up_command_task(event->event_union.task_deletion_response_event.arguments);
+			clean_up_command_task(event->event_union.task_deletion_response_event.task, event->event_union.task_deletion_response_event.arguments);
 			break;
 		case TASK_TYPE_TEST:
 			printf_serial("Detect test task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);

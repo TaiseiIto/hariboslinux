@@ -42,7 +42,7 @@ char const *look_up_dictionary(Dictionary const *dictionary, char const *key);
 void set_dictionary_element(Dictionary *dictionary, char const *key, char const *value);
 void show_dictionary(Dictionary const *dictionary);
 
-void clean_up_command_task(CommandTaskArgument *command_task_argument)
+void clean_up_command_task(Task *command_task, CommandTaskArgument *command_task_argument)
 {
 	ConsoleEvent *console_event;
 	Event new_event;
@@ -54,6 +54,7 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 	for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
 	free(command_task_argument->argv);
 	free(command_task_argument->task_return->task_return);
+	delete_redirection(command_task);
 	switch(command_task_argument->shell->type)
 	{
 	case SHELL_TYPE_CONSOLE:
@@ -327,6 +328,29 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	close_task(get_current_task());
 }
 
+Redirection *create_redirection(Shell *shell, Task *task, char *destination_file_name)
+{
+	Redirection *redirection = malloc(sizeof(*redirection));
+	redirection->task = task;
+	redirection->destination_file_name = malloc(strlen(destination_file_name) + 1);
+	strcpy(redirection->destination_file_name, destination_file_name);
+	if(shell->redirections)
+	{
+		redirection->previous = shell->redirections->previous;
+		redirection->next = shell->redirections;
+		shell->redirections->previous->next = redirection;
+		shell->redirections->previous = redirection;
+	}
+	else
+	{
+		redirection->previous = redirection;
+		redirection->next = redirection;
+		shell->redirections = redirection;
+	}
+	printf_shell(shell, "Redirection to %s\n", shell->redirections->previous->destination_file_name);
+	return redirection;
+}
+
 Shell *create_shell(Console *console)
 {
 	Shell *shell;
@@ -348,6 +372,7 @@ Shell *create_shell(Console *console)
 	}
 	allow_switch_task();
 	shell->variables = create_dictionary();
+	shell->redirections = NULL;
 	if(console)
 	{
 		shell->event_queue = console->text_box->sheet->event_queue;
@@ -368,6 +393,33 @@ Dictionary *create_dictionary(void)
 	Dictionary *dictionary = malloc(sizeof(*dictionary));
 	dictionary->elements = NULL;
 	return dictionary;
+}
+
+void delete_redirection(Task *command_task)
+{
+	Shell *shell = serial_shell;
+	do
+	{
+		if(shell->redirections)
+		{
+			Redirection *redirection = shell->redirections;
+			do
+			{
+				if(redirection->task == command_task)
+				{
+					redirection->previous->next = redirection->next;
+					redirection->next->previous = redirection->previous;
+					if(shell->redirections == redirection)shell->redirections = redirection->next;
+					if(shell->redirections == redirection)shell->redirections = NULL;
+					free(redirection->destination_file_name);
+					free(redirection);
+					return;
+				}
+				redirection = redirection->next;
+			} while(redirection != shell->redirections);
+		}
+		shell = shell->next;
+	} while(shell != serial_shell);
 }
 
 void delete_shell(Shell *shell)
@@ -418,6 +470,7 @@ void *execute_command(Shell *shell, char const *command)
 	unsigned int argc;
 	char **argv;
 	char *com_file_name;
+	char *redirection_destination_file_name = NULL;
 	void *com_file_binary;
 	unsigned int com_file_size;
 	unsigned char flags = 0;
@@ -438,8 +491,7 @@ void *execute_command(Shell *shell, char const *command)
 	// Redirection
 	if(2 < argc)if(!strcmp(argv[argc - 2], ">"))
 	{
-		printf_shell(shell, "Redirect to %s\n", argv[argc - 1]);
-		free(argv[argc - 1]);
+		redirection_destination_file_name = argv[argc - 1];
 		free(argv[argc - 2]);
 		argc -= 2;
 	}
@@ -483,6 +535,11 @@ void *execute_command(Shell *shell, char const *command)
 			break;
 		}
 		else shell->flags |= SHELL_FLAG_BUSY;
+		if(redirection_destination_file_name)
+		{
+			create_redirection(shell, command_task, redirection_destination_file_name);
+			free(redirection_destination_file_name);
+		}
 		start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
 	}
 	else // The com file is not found.

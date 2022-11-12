@@ -212,7 +212,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 			switch(task_return->task_type)
 			{
 			case TASK_TYPE_COMMAND:
-				clean_up_command_task(event->event_union.task_deletion_response_event.arguments);
+				clean_up_command_task(event->event_union.task_deletion_response_event.task, event->event_union.task_deletion_response_event.arguments);
 				break;
 			default:
 				ERROR(); // Invalid task type
