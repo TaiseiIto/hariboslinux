@@ -1,5 +1,6 @@
 #include "acpi.h"
 #include "chain_string.h"
+#include "common.h"
 #include "disk.h"
 #include "memory.h"
 #include "pic.h"
@@ -16,13 +17,14 @@ char const * const memory_file_name = "memory.dev";
 char const * const root_directory_name = "";
 char const * const timer_file_name = "timer.dev";
 char const * const window_file_name = "window.dev";
+unsigned short const no_more_clusters = 0x0fff;
 
 unsigned int cluster_size;
 unsigned int number_of_clusters;
 void const *cluster0;
 void const **file_allocation_tables;
 void const *first_sector;
-FileInformation const *root_directory_entries;
+FileInformation *root_directory_entries;
 
 char *create_file_name(FileInformation const *file_information)
 {
@@ -39,17 +41,43 @@ void disk_interrupt_handler(void)
 	print_serial("disk interrupt\n");
 }
 
+void delete_file(char const *file_name)
+{
+	FileInformation *file_information = get_file_information(file_name);
+	if(!file_information)ERROR(); // The fine is not found.
+	// Free the file information.
+	file_information->name[0] = '\0';
+	// Free the clusters.
+	free_cluster(file_information->cluster_number);
+}
+
+void free_cluster(unsigned short cluster_number)
+{
+	unsigned short next_cluster_number = get_next_cluster_number(cluster_number);
+	if(next_cluster_number != no_more_clusters)free_cluster(next_cluster_number);
+	if(cluster_number % 2)
+	{
+		((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 2] = 0x00;
+		((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 1] &= 0x0f;
+	}
+	else
+	{
+		((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3 + 1] &= 0xf0;
+		((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3] = 0x00;
+	}
+}
+
 void const *get_cluster(unsigned short cluster_number)
 {
 	return cluster0 + cluster_number * cluster_size;
 }
 
-FileInformation const *get_file_information(char const *file_name)
+FileInformation *get_file_information(char const *file_name)
 {
 	bool found = false;
 	for(unsigned int i = 0; i < boot_sector->number_of_root_directory_entries; i++) // Search file informations.
 	{
-		FileInformation const *candidate;
+		FileInformation *candidate;
 		candidate = root_directory_entries + i;
 		if(candidate->name[0])
 		{
@@ -208,6 +236,13 @@ void primary_ATA_hard_disk_interrupt_handler(void)
 {
 	finish_interruption(IRQ_PRIMARY_ATA_HARD_DISK);
 	print_serial("primary ATA hard disk interrupt\n");
+}
+
+void save_file(char const *file_name, unsigned char const *content, unsigned int length)
+{
+	UNUSED_ARGUMENT(content);
+	UNUSED_ARGUMENT(length);
+	if(get_file_information(file_name))delete_file(file_name);
 }
 
 void secondary_ATA_hard_disk_interrupt_handler(void)

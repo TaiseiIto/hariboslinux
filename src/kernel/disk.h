@@ -59,9 +59,11 @@ extern char const * const timer_file_name;
 extern char const * const window_file_name;
 
 char *create_file_name(FileInformation const *file_information);
+void delete_file(char const *file_name);
 void disk_interrupt_handler(void);
+void free_cluster(unsigned short cluster_number);
 void const *get_cluster(unsigned short cluster_number);
-FileInformation const *get_file_information(char const *file_name);
+FileInformation *get_file_information(char const *file_name);
 unsigned int get_file_size(char const *file_name);
 unsigned int get_file_updated_year(FileInformation const *file_information);
 unsigned char get_file_updated_month(FileInformation const *file_information);
@@ -73,6 +75,7 @@ unsigned short get_next_cluster_number(unsigned short cluster_number);
 void init_file_system(void);
 void *load_file(char *file_name);
 void primary_ATA_hard_disk_interrupt_handler(void);
+void save_file(char const *file_name, unsigned char const *content, unsigned int length);
 void secondary_ATA_hard_disk_interrupt_handler(void);
 
 #endif
