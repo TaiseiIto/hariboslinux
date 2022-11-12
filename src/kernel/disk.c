@@ -1,4 +1,5 @@
 #include "acpi.h"
+#include "bios.h"
 #include "chain_string.h"
 #include "common.h"
 #include "disk.h"
@@ -339,6 +340,16 @@ void write_entire_disk(void)
 
 void write_cluster(unsigned char cylinder, unsigned char head, unsigned char sector)
 {
+	BIOSInterface arguments;
+	void *buffer_address = MEMORY_MAP_BIOS_BUFFER;
 	printf_serial("Save cylinder %#04.2x, head %#04.2x, sector %#04.2x\n", cylinder, head, sector);
+	arguments.ax = 0x0301;
+	arguments.cx = (cylinder << 8) | sector;
+	arguments.bx = (unsigned short)((unsigned int)buffer_address);
+	arguments.dx = head << 8;
+	arguments.es = (unsigned short)((unsigned int)buffer_address >> 4 & 0x0000f000);
+	arguments.fs = 0x0000;
+	arguments.gs = 0x0000;
+	bios_interrupt(0x13, arguments);
 }
 
