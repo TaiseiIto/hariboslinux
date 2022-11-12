@@ -1,6 +1,7 @@
 #ifndef _SHELL_H_
 #define _SHELL_H_
 
+struct _ChainString;
 struct _Queue;
 struct _Shell;
 struct _Task;
@@ -27,8 +28,10 @@ typedef struct _Dictionary
 
 typedef struct _Redirection
 {
+	struct _Shell *shell;
 	struct _Task *task;
 	char *destination_file_name;
+	struct _ChainString *output;
 	struct _Redirection *previous;
 	struct _Redirection *next;
 } Redirection;
@@ -85,9 +88,11 @@ void delete_redirection(Task *command_task);
 void delete_shell(Shell *shell);
 void *execute_command(Shell *shell, char const *command);
 Shell *get_current_shell(void);
+Redirection *get_redirection(Task *task);
 void init_shells(void);
 void print_shell(Shell *shell, char const *string);
 void printf_shell(Shell *shell, char const *format, ...);
+void put_char_redirection(Redirection *redirection, char character);
 void put_char_shell(Shell *shell, char character);
 
 #endif

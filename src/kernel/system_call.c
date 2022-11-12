@@ -554,15 +554,21 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 		Shell *shell = get_current_shell();
 		switch((unsigned int)file_descriptor)
 		{
+			Redirection *redirection;
 		case STDOUT:
 		case STDERR:
+			redirection = get_redirection(task);
 			if(shell)for(void const *reader = buffer; reader != buffer + count; reader++)
 			{
-				Event event;
-				event.type = EVENT_TYPE_SHELL_PUT_CHARACTER;
-				event.event_union.shell_put_character_event.character = *(char const *)reader;
-				event.event_union.shell_put_character_event.shell = shell;
-				enqueue(shell->event_queue, &event);
+				if(redirection)put_char_redirection(redirection, *(char const *)reader);
+				else
+				{
+					Event event;
+					event.type = EVENT_TYPE_SHELL_PUT_CHARACTER;
+					event.event_union.shell_put_character_event.character = *(char const *)reader;
+					event.event_union.shell_put_character_event.shell = shell;
+					enqueue(shell->event_queue, &event);
+				}
 				counter++;
 			}
 			break;

@@ -331,9 +331,11 @@ void command_task_procedure(CommandTaskArgument *arguments)
 Redirection *create_redirection(Shell *shell, Task *task, char *destination_file_name)
 {
 	Redirection *redirection = malloc(sizeof(*redirection));
+	redirection->shell = shell;
 	redirection->task = task;
 	redirection->destination_file_name = malloc(strlen(destination_file_name) + 1);
 	strcpy(redirection->destination_file_name, destination_file_name);
+	redirection->output = create_chain_string(NULL);
 	if(shell->redirections)
 	{
 		redirection->previous = shell->redirections->previous;
@@ -397,29 +399,22 @@ Dictionary *create_dictionary(void)
 
 void delete_redirection(Task *command_task)
 {
-	Shell *shell = serial_shell;
-	do
+	Redirection *redirection = get_redirection(command_task);
+	if(redirection)
 	{
-		if(shell->redirections)
-		{
-			Redirection *redirection = shell->redirections;
-			do
-			{
-				if(redirection->task == command_task)
-				{
-					redirection->previous->next = redirection->next;
-					redirection->next->previous = redirection->previous;
-					if(shell->redirections == redirection)shell->redirections = redirection->next;
-					if(shell->redirections == redirection)shell->redirections = NULL;
-					free(redirection->destination_file_name);
-					free(redirection);
-					return;
-				}
-				redirection = redirection->next;
-			} while(redirection != shell->redirections);
-		}
-		shell = shell->next;
-	} while(shell != serial_shell);
+		unsigned char *output = (unsigned char *)create_char_array_from_chain_string(redirection->output);
+		printf_shell(redirection->shell, "Redirection output \n");
+		for(unsigned int i = 0; i < redirection->output->length; i++)printf_shell(redirection->shell, "%02.2x%c", output[i], (i + 1) % 0x10 ? ' ' : '\n');
+		printf_shell(redirection->shell, "\n");
+		redirection->previous->next = redirection->next;
+		redirection->next->previous = redirection->previous;
+		if(redirection->shell->redirections == redirection)redirection->shell->redirections = redirection->next;
+		if(redirection->shell->redirections == redirection)redirection->shell->redirections = NULL;
+		free(output);
+		free(redirection->destination_file_name);
+		delete_chain_string(redirection->output);
+		free(redirection);
+	}
 }
 
 void delete_shell(Shell *shell)
@@ -586,6 +581,25 @@ Shell *get_current_shell(void)
 	return NULL; // The shell is not found.
 }
 
+Redirection *get_redirection(Task *task)
+{
+	Shell *shell = serial_shell;
+	do
+	{
+		if(shell->redirections)
+		{
+			Redirection *redirection = shell->redirections;
+			do
+			{
+				if(redirection->task == task)return redirection;
+				redirection = redirection->next;
+			} while(redirection != shell->redirections);
+		}
+		shell = shell->next;
+	} while(shell != serial_shell);
+	return NULL;
+}
+
 void init_shells(void)
 {
 	serial_console_input_string = create_chain_string("");
@@ -690,6 +704,11 @@ void printf_shell(Shell *shell, char const *format, ...)
 	print_shell(shell, output_string);
 	free(output_string);
 	delete_chain_string(output_chain_string);
+}
+
+void put_char_redirection(Redirection *redirection, char character)
+{
+	insert_char_back(redirection->output, redirection->output->last_character, character);
 }
 
 void put_char_shell(Shell *shell, char character)
