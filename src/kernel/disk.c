@@ -149,6 +149,13 @@ unsigned short get_next_cluster_number(unsigned short cluster_number)
 	return next_cluster_number;
 }
 
+unsigned short get_unused_cluster_number(void)
+{
+	for(unsigned short cluster_number = 2; cluster_number <= number_of_clusters + 1; cluster_number++)if(!get_next_cluster_number(cluster_number))return cluster_number;
+	ERROR(); // There is no unused cluster.
+	return 0;
+}
+
 FileInformation *get_unused_file_information(void)
 {
 	for(unsigned int i = 0; i < boot_sector->number_of_root_directory_entries; i++) // Search file informations.
@@ -163,7 +170,7 @@ void init_file_system(void)
 {
 
 	cluster_size = boot_sector->number_of_sectors_per_cluster * boot_sector->sector_size;
-	number_of_clusters = (boot_sector->number_of_sectors + boot_sector->number_of_sectors_per_cluster - 1) / boot_sector->number_of_sectors_per_cluster;
+	number_of_clusters = (boot_sector->sector_size * (boot_sector->number_of_sectors - 1 - boot_sector->number_of_file_allocation_tables * boot_sector->number_of_sectors_per_file_allocation_table) - boot_sector->number_of_root_directory_entries * sizeof(FileInformation)) / (boot_sector->sector_size * boot_sector->number_of_sectors_per_cluster);
 	first_sector = (void *)boot_sector + boot_sector->first_sector_number * boot_sector->sector_size;
 	file_allocation_tables = malloc(boot_sector->number_of_file_allocation_tables * sizeof(*file_allocation_tables));
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)file_allocation_tables[i] = first_sector + i * boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size;
@@ -252,6 +259,7 @@ void primary_ATA_hard_disk_interrupt_handler(void)
 void save_file(char const *file_name, unsigned char const *content, unsigned int length)
 {
 	FileInformation *file_information = get_file_information(file_name);
+	Time time = get_current_time();
 	char const *dot = strchr(file_name, '.');
 	char const *prefix_begin = file_name;
 	char const *prefix_end = dot && (unsigned int)dot - (unsigned int)file_name <= _countof(file_information->name) ? dot : file_name + _countof(file_information->name);
@@ -273,6 +281,9 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 	for(char *extension = file_information->extension; extension != file_information->extension + _countof(file_information->extension); extension++)*extension = suffix_begin != suffix_end ? *suffix_begin++ : '\0';
 	file_information->flags = FILE_INFORMATION_FLAG_NORMAL_FILE;
 	for(char *reserved = file_information->reserved; reserved != file_information->reserved + _countof(file_information->reserved); reserved++)*reserved = 0x00;
+	file_information->time = ((unsigned short)time.hour << 11) + ((unsigned short)time.minute << 5) + (unsigned short)time.second / 2;
+	file_information->date = ((time.year - 1980) << 9) + ((unsigned short)time.month << 5) + (unsigned short)time.day;
+	file_information->cluster_number = get_unused_cluster_number();
 }
 
 void secondary_ATA_hard_disk_interrupt_handler(void)

@@ -72,6 +72,7 @@ unsigned char get_file_updated_hour(FileInformation const *file_information);
 unsigned char get_file_updated_minute(FileInformation const *file_information);
 unsigned char get_file_updated_second(FileInformation const *file_information);
 unsigned short get_next_cluster_number(unsigned short cluster_number);
+unsigned short get_unused_cluster_number(void);
 FileInformation *get_unused_file_information(void);
 void init_file_system(void);
 void *load_file(char *file_name);
