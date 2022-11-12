@@ -757,7 +757,15 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			else if(!strcmp(file_descriptor->file_name, disk_file_name)) // Control the disk.
 			{
 				DiskCommand const * const command = buffer;
-				printf_serial("DiskCommand command->type = %#04.2x\n", command->type);
+				switch(command->type)
+				{
+				case DISK_COMMAND_SAVE:
+					for(unsigned char cylinder = 0; cylinder < boot_sector->number_of_sectors / (boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track); cylinder++)for(unsigned char head = 0; head < boot_sector->number_of_heads; head++)for(unsigned char sector = 1; sector <= boot_sector->number_of_sectors_per_track; sector++)
+					{
+						printf_serial("Save cylinder %#04.2x, head %#04.2x, sector %#04.2x\n", cylinder, head, sector);
+					}
+					break;
+				}
 			}
 			else if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
 			{
