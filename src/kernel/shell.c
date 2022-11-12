@@ -435,6 +435,14 @@ void *execute_command(Shell *shell, char const *command)
 		free(argv[argc - 1]);
 		argc--;
 	}
+	// Redirection
+	if(2 < argc)if(!strcmp(argv[argc - 2], ">"))
+	{
+		printf_shell(shell, "Redirect to %s\n", argv[argc - 1]);
+		free(argv[argc - 1]);
+		free(argv[argc - 2]);
+		argc -= 2;
+	}
 	// Load a file specified by argv[0].
 	com_file_name = create_format_char_array("%s.com", argv[0]);
 	com_file_binary = load_file(com_file_name);
