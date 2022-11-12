@@ -180,8 +180,7 @@ print:				# void print(char *string);
 	movw	%sp,	%di
 	movw	0x04(%bp),%si
 1:				# put loop
-	xorb	%ah,	%ah
-	movb	(%si),	%al
+	movzxb	(%si),	%ax
 	cmpb	$0x0a,	%al
 	je	2f		# print CRLF
 	cmpb	$0x00,	%al

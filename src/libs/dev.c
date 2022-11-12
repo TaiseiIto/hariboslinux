@@ -13,7 +13,8 @@ typedef struct _ConsoleCommand
 typedef struct _CPUCommand
 {
 	unsigned char type;
-	#define CPU_COMMAND_HLT	0x0
+	#define CPU_COMMAND_HLT		0x0
+	#define CPU_COMMAND_SHUTDOWN	0x1
 } CPUCommand;
 
 typedef struct _MemoryCommand
@@ -277,5 +278,13 @@ void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Col
 	command.arguments.put_dot.y = y;
 	command.arguments.put_dot.color = color;
 	fwrite(&command, sizeof(command), 1, window_file);
+}
+
+void shutdown(void)
+{
+	CPUCommand command;
+	if(!cpu_file)cpu_file = fopen(cpu_file_name, "wr");
+	command.type = CPU_COMMAND_SHUTDOWN;
+	fwrite(&command, sizeof(command), 1, cpu_file);
 }
 

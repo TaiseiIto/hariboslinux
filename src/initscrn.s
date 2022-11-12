@@ -316,19 +316,10 @@ main:
 	orw	$0x4000,%bx			# use linear frame buffer
 	int	$0x0010
 14:						# write BootInforamtion structure
-						#
-						# 0x0800 unsigned short memory_size;	// MiB
 						# 0x0802 unsigned char keyboard_state;
-
-	movw	$0x8800,%ax			# memory size
-	int	$0x0015				# get extended memory size
-	addw	$0x0480,%ax			# add first 0x480KiB memory
-	shr	$0x000a,%ax			# convert KiB to MiB
-	movw	$0x0800,%si
-	movw	%ax,	(%si)
 	movw	$0x0200,%ax			# keyboard_state
-	int	$0x0016
-	movb	%al,	0x02(%si)
+	int	$0x16
+	movb	%al,	(keyboard_state)
 15:						# check keyboard state
 	movw	$keyboard_message,(%di)
 	call	print_serial
@@ -482,8 +473,7 @@ print:				# void print(char *string);
 	movw	%sp,	%di
 	movw	0x04(%bp),%si
 1:				# put loop
-	xorb	%ah,	%ah
-	movb	(%si),	%al
+	movzxb	(%si),	%ax
 	cmpb	$0x0a,	%al
 	je	2f		# print CRLF
 	cmpb	$0x00,	%al
@@ -507,7 +497,7 @@ print:				# void print(char *string);
 	ret
 
 				# // print value as hexadecimal
-print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
+print_byte_hex_serial:		# void print_byte_hex_serial(unsigned char value);
 0:
 	pushw	%bp
 	movw	%sp,	%bp
@@ -593,8 +583,7 @@ print_serial:			# void print_serial(char *string);
 	movw	%sp,	%di
 	movw	0x04(%bp),%si
 1:				# put loop
-	xorb	%ah,	%ah
-	movb	(%si),	%al
+	movzxb	(%si),	%ax
 	cmpb	$0x00,	%al
 	je	2f		# finish putting all characters
 	movw	%ax,	(%di)

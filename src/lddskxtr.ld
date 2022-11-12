@@ -2,18 +2,18 @@ OUTPUT_FORMAT("binary");
 
 INCLUDE global.ld
 
-BASE = LOADDEST + LOADDISKADDR;
+BASE = LOADDEST + LOADDISKADDR + LOADDISKSIZE + GETMEMMPSIZE + INITSCRNSIZE + MV2PRTMDSIZE + DPLYDISKSIZE;
 
 SECTIONS
 {
 	. = BASE;
 	.text :
 	{
-		loaddisk.o(.text)
+		lddskxtr.o(.text)
 	}
 	.data :
 	{
-		loaddisk.o(.data)
+		lddskxtr.o(.data)
 	}
 	/DISCARD/ :
 	{

@@ -20,7 +20,7 @@ BINARIES = $(BINSRCS:.s=.bin)
 all: $(BINARIES) kernel.bin $(APPS)
 
 clean:
-	rm -f kernel.s *.bin *.o 
+	rm -f kernel.s *.bin *.com *.o 
 	make clean -C apps
 	make clean -C libs
 	make clean -C kernel

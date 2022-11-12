@@ -2,6 +2,7 @@
 // http://faculty.nps.edu/cseagle/assembly/sys_call.html
 // https://rninche01.tistory.com/entry/Linux-system-call-table-%EC%A0%95%EB%A6%ACx86-x64
 
+#include "acpi.h"
 #include "common.h"
 #include "disk.h"
 #include "event.h"
@@ -11,6 +12,7 @@
 #include "memory.h"
 #include "rtc.h"
 #include "shell.h"
+#include "stdlib.h"
 #include "string.h"
 #include "system_call.h"
 
@@ -147,7 +149,8 @@ typedef struct _ConsoleCommand
 typedef struct _CPUCommand
 {
 	unsigned char type;
-	#define CPU_COMMAND_HLT	0x0
+	#define CPU_COMMAND_HLT		0x0
+	#define CPU_COMMAND_SHUTDOWN	0x1
 } CPUCommand;
 
 typedef struct _MemoryCommand
@@ -607,8 +610,132 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				CPUCommand const * const command = buffer;
 				switch(command->type)
 				{
+					MemoryRegionDescriptor acpi_memory_region_descriptor;
+					ACPITableHeader const *dsdt_header;
+					ACPITableHeader const *rsdt_header;
+					AMLSubstring dsdt_aml;
+					AMLSymbol *dsdt_aml_syntax_tree;
+					FADT const *fadt;
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
+					break;
+				case CPU_COMMAND_SHUTDOWN:
+					acpi_memory_region_descriptor = get_acpi_memory_region_descriptor();
+					printf_serial("acpi_memory_region_descriptor.base = %#018.16llx\n", acpi_memory_region_descriptor.base);
+					printf_serial("acpi_memory_region_descriptor.length = %#018.16llx\n", acpi_memory_region_descriptor.length);
+					printf_serial("acpi_memory_region_descriptor.type = %#010.8llx\n", acpi_memory_region_descriptor.type);
+					printf_serial("acpi_memory_region_descriptor.attribute = %#010.8llx\n", acpi_memory_region_descriptor.attribute);
+					rsdt_header = get_rsdt_header();
+					PRINT_ACPI_TABLE_HEADER_P(rsdt_header);
+					printf_serial("num_of_sdt_headers = %#010.8x\n", get_num_of_sdt_headers());
+					print_sdts();
+					fadt = get_fadt();
+					PRINT_ACPI_TABLE_HEADER(fadt->header);
+					printf_serial("fadt->firmware_ctrl = %p\n", fadt->firmware_ctrl);
+					printf_serial("fadt->dsdt = %p\n", fadt->dsdt);
+					printf_serial("fadt->reserved0 = %#04.2x\n", fadt->reserved0);
+					printf_serial("fadt->preferred_pm_profile = %#04.2x\n", fadt->preferred_pm_profile);
+					printf_serial("fadt->sci_int = %#06.4x\n", fadt->sci_int);
+					printf_serial("fadt->smi_cmd = %#010.8x\n", fadt->smi_cmd);
+					printf_serial("fadt->acpi_enable = %#04.2x\n", fadt->acpi_enable);
+					printf_serial("fadt->acpi_disable = %#04.2x\n", fadt->acpi_disable);
+					printf_serial("fadt->s4_bios_req = %#04.2x\n", fadt->s4_bios_req);
+					printf_serial("fadt->pstate_cnt = %#04.2x\n", fadt->pstate_cnt);
+					printf_serial("fadt->pm1a_evt_blk = %#010.8x\n", fadt->pm1a_evt_blk);
+					printf_serial("fadt->pm1b_evt_blk = %#010.8x\n", fadt->pm1b_evt_blk);
+					printf_serial("fadt->pm1a_cnt_blk = %#010.8x\n", fadt->pm1a_cnt_blk);
+					if(!fadt->pm1a_cnt_blk)
+					{
+						ERROR(); // There is no valid address of pm1a_cnt_blk
+						break;
+					}
+					printf_serial("fadt->pm1b_cnt_blk = %#010.8x\n", fadt->pm1b_cnt_blk);
+					printf_serial("fadt->pm2_cnt_blk = %#010.8x\n", fadt->pm2_cnt_blk);
+					printf_serial("fadt->pm_tmr_blk = %#010.8x\n", fadt->pm_tmr_blk);
+					printf_serial("fadt->gpe0_blk = %#010.8x\n", fadt->gpe0_blk);
+					printf_serial("fadt->gpe1_blk = %#010.8x\n", fadt->gpe1_blk);
+					printf_serial("fadt->pm1_evt_len = %#04.2x\n", fadt->pm1_evt_len);
+					printf_serial("fadt->pm1_cnt_len = %#04.2x\n", fadt->pm1_cnt_len);
+					printf_serial("fadt->pm2_cnt_len = %#04.2x\n", fadt->pm2_cnt_len);
+					printf_serial("fadt->pm_tmr_len = %#04.2x\n", fadt->pm_tmr_len);
+					printf_serial("fadt->gpe0_blk_len = %#04.2x\n", fadt->gpe0_blk_len);
+					printf_serial("fadt->gpe1_blk_len = %#04.2x\n", fadt->gpe1_blk_len);
+					printf_serial("fadt->gpe1_base = %#04.2x\n", fadt->gpe1_base);
+					printf_serial("fadt->cst_cnt = %#04.2x\n", fadt->cst_cnt);
+					printf_serial("fadt->p_lvl2_lat = %#06.4x\n", fadt->p_lvl2_lat);
+					printf_serial("fadt->p_lvl3_lat = %#06.4x\n", fadt->p_lvl3_lat);
+					printf_serial("fadt->flush_size = %#06.4x\n", fadt->flush_size);
+					printf_serial("fadt->flush_stride = %#06.4x\n", fadt->flush_stride);
+					printf_serial("fadt->duty_offset = %#04.2x\n", fadt->duty_offset);
+					printf_serial("fadt->duty_width = %#04.2x\n", fadt->duty_width);
+					printf_serial("fadt->day_alrm = %#04.2x\n", fadt->day_alrm);
+					printf_serial("fadt->mon_alarm = %#04.2x\n", fadt->mon_alrm);
+					printf_serial("fadt->century = %#04.2x\n", fadt->century);
+					printf_serial("fadt->iapc_boot_arch = %#06.4x\n", fadt->iapc_boot_arch);
+					printf_serial("fadt->reserved1 = %#04.2x\n", fadt->reserved1);
+					printf_serial("fadt->flags = %#010.8x\n", fadt->flags);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->reset_reg);
+					printf_serial("fadt->reset_value = %#04.2x\n", fadt->reset_value);
+					printf_serial("fadt->arm_boot_arch = %#06.4x\n", fadt->arm_boot_arch);
+					printf_serial("fadt->fadt_minor_version = %#04.2x\n", fadt->fadt_minor_version);
+					printf_serial("fadt->x_firmware_ctrl = %#018.16llx\n", fadt->x_firmware_ctrl);
+					printf_serial("fadt->x_dsdt = %#018.16llx\n", fadt->x_dsdt);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm1a_evt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm1b_evt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm1a_cnt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm1b_cnt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm2_cnt_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm_tmr_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm_gpe0_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->x_pm_gpe1_blk);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->sleep_control_reg);
+					PRINT_GENERIC_ADDRESS_STRUCTURE(fadt->sleep_status_reg);
+					printf_serial("fadt->hypervisor_vender_identity = %#018.16llx\n", fadt->hypervisor_vender_identity);
+					dsdt_header = get_dsdt_header();
+					PRINT_ACPI_TABLE_HEADER_P(dsdt_header);
+					dsdt_aml = get_dsdt_aml();
+					printf_serial("---------- DSDT AML SYNTAX TREE ----------\n");
+					dsdt_aml_syntax_tree = create_dsdt_aml_syntax_tree();
+					print_aml_symbol(dsdt_aml_syntax_tree);
+					printf_serial("dsdt_aml.length = %#010.8x\n", dsdt_aml.length);
+					printf_serial("number of read bytes = %#010.8x\n", dsdt_aml_syntax_tree->string.length);
+					printf_serial("---------- read bytes ----------\n");
+					for(unsigned int row = 0; row <= (dsdt_aml_syntax_tree->string.length - 1) / 0x10; row++)
+					{
+						unsigned int aml_index_begin = 0x10 * row;
+						unsigned int aml_index_end = min(0x10 * (row + 1), dsdt_aml_syntax_tree->string.length);
+						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)printf_serial("%02.2x ", dsdt_aml_syntax_tree->string.initial[aml_index]);
+						printf_serial("\n");
+						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)
+						{
+							unsigned char aml_byte = dsdt_aml_syntax_tree->string.initial[aml_index];
+							printf_serial(" %c ", 0x20 <= aml_byte && aml_byte < 0x7f ? aml_byte : ' ');
+						}
+						printf_serial("\n");
+					}
+					if(dsdt_aml_syntax_tree->string.length == dsdt_aml.length)
+					{
+						unsigned short pm1_cnt_slp_typ = get_aml_s5_pm1_cnt_slp_typ(dsdt_aml_syntax_tree);
+						unsigned short pm1a_cnt_slp_typ = pm1_cnt_slp_typ & 0x00ff;
+						unsigned short pm1b_cnt_slp_typ = pm1_cnt_slp_typ >> 8;
+						printf_serial("pm1a_cnt_slp_typ = %#06.4x\n", pm1a_cnt_slp_typ);
+						printf_serial("pm1b_cnt_slp_typ = %#06.4x\n", pm1b_cnt_slp_typ);
+						// Shutdown command
+						outw(fadt->pm1a_cnt_blk, pm1a_cnt_slp_typ << 10 | 0x2000);
+						if(fadt->pm1b_cnt_blk)outw(fadt->pm1b_cnt_blk, pm1b_cnt_slp_typ << 10 | 0x2000);
+						// Shutdown wait
+						while(true);
+					}
+					else
+					{
+						printf_serial("next bytes\n");
+						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_serial(" %02.2x", *aml_byte);
+						printf_serial("\n");
+						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_serial(" %c ", 0x20 <= *aml_byte && *aml_byte < 0x7f ? *aml_byte : ' ');
+						printf_serial("\n");
+					}
+					delete_aml_symbol(dsdt_aml_syntax_tree);
+					printf_serial("DSDT AML syntax tree is deleted.\n");
 					break;
 				default:
 					ERROR(); // Invalid CPU command.

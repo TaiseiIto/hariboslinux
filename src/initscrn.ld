@@ -10,6 +10,9 @@ SECTIONS
 	.text :
 	{
 		initscrn.o(.text)
+	}
+	.data :
+	{
 		initscrn.o(.data)
 	}
 	/DISCARD/ :

@@ -10,6 +10,9 @@ SECTIONS
 	.text :
 	{
 		getmemmp.o(.text)
+	}
+	.data :
+	{
 		getmemmp.o(.data)
 	}
 	/DISCARD/ :

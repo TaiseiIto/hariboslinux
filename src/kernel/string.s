@@ -8,15 +8,17 @@
 	.globl	memset
 	.globl	strchr
 	.globl	strcmp
+	.globl	strncmp
 	.globl	strcpy
 	.globl	strlen
 
-	.type	memcpy,	@function
-	.type	memset,	@function
-	.type	strchr,	@function
-	.type	strcmp,	@function
-	.type	strcpy,	@function
-	.type	strlen,	@function
+	.type	memcpy,		@function
+	.type	memset,		@function
+	.type	strchr,		@function
+	.type	strcmp,		@function
+	.type	strncmp,	@function
+	.type	strcpy,		@function
+	.type	strlen,		@function
 
 	.text
 
@@ -169,15 +171,15 @@ strcmp:
 	call	strlen			# EAX = strlen(string2);
 	addl	$0x00000008,%esp
 3:	# Choose shorter string length.
-	cmpl	%ebx,	%eax		# if(strlen(string2) < strlen(string1))EAX = strlen(string2);
-	jbe	4f			# if(strlen(string1) <= strlen(string2))goto 4;
-	movl	%ebx,	%eax		# EAX = strlen(string2);
+	cmpl	%ebx,	%eax		# if(strlen(string1) < strlen(string2))EAX = strlen(string1);
+	jbe	4f			# if(strlen(string2) <= strlen(string1))goto 4;
+	movl	%ebx,	%eax		# EAX = strlen(string1);
 4:	# Compare the strings.
 	movl	%eax,	%ecx		# ECX = min(strlen(string1), strlen(string2));
 	incl	%ecx			# ECX = min(strlen(string1), strlen(string2)) + 1;
 	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
 	ja	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
-	jb	6f			# if(*(char *)EDI < *(char *)ESI)
+	jb	6f			# if(*(char *)EDI < *(char *)ESI)goto 6f;
 	# if(*(char *)ESI == *(char *)EDI)return 0;
 	xorl	%eax,	%eax
 	jmp	7f
@@ -191,6 +193,47 @@ strcmp:
 	popl	%edi
 	popl	%ebx
 8:	# End of the function.
+	leave
+	ret
+
+# int strncmp
+# (
+# 	char const *string1,	// 0x08(%ebp)
+# 	char const *string2,	// 0x0c(%ebp)
+# 	size_t     n		// 0x10(%ebp)
+# );
+strncmp:
+0:	# Start of the function.
+	pushl	%ebp
+	movl	%esp,	%ebp
+1:	# Save preserved registers.
+	pushl	%ebx
+	pushl	%edi
+	pushl	%esi
+2:	# Load the arguments.
+	movl	0x08(%ebp),%esi		# ESI = string1;
+	movl	0x0c(%ebp),%edi		# EDI = string2;
+	movl	0x10(%ebp),%ecx		# ECX = n;
+3:	# if(n == 0)return 0;
+	testl	%ecx,	%ecx
+	jz	5f
+4:	# Compare the strings.
+	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
+	ja	6f			# if(*(char *)ESI < *(char *)EDI)goto 4f;
+	jb	7f			# if(*(char *)EDI < *(char *)ESI)goto 5f;
+5:	# if(*(char *)ESI == *(char *)EDI)return 0;
+	xorl	%eax,	%eax
+	jmp	8f
+6:	# if(*(char *)ESI < *(char *)EDI)return -1;
+	movl	$0xffffffff,%eax
+	jmp	8f
+7:	# if(*(char *)EDI < *(char *)ESI)return 1;
+	movl	$0x00000001,%eax
+8:	# Restore preserved registers.
+	popl	%esi
+	popl	%edi
+	popl	%ebx
+9:	# End of the function.
 	leave
 	ret
 

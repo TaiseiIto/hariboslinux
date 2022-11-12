@@ -6,6 +6,7 @@
 #define _STRING(x) #x
 #define _STRING2(x) _STRING(x)
 #define ERROR() print_serial("ERROR " __FILE__ " : " _STRING2(__LINE__) "\n")
+#define WARNING() print_serial("WARNING " __FILE__ " : " _STRING2(__LINE__) "\n")
 
 typedef struct _SerialInterrupt
 {

@@ -2,6 +2,7 @@
 #include "io.h"
 #include "memory.h"
 #include "serial.h"
+#include "stdlib.h"
 #include "task.h"
 
 MemorySection *root_memory_section;
@@ -38,7 +39,7 @@ void free(void *address)
 
 MemoryRegionDescriptor get_memory_region_descriptor(unsigned int index)
 {
-	return ((MemoryRegionDescriptor const *)0x00000900)[index];
+	return ((MemoryRegionDescriptor const *)MEMORY_MAP_MEMORY_INFORMATION)[index];
 }
 
 MemorySection const *get_root_memory_section(void)
@@ -72,7 +73,7 @@ void init_memory(void)
 	{
 		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);
 		printf_serial_without_malloc("base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
-		if(memory_region_descriptor.type == 0x00000001 && (unsigned long long int)(unsigned int)heap_base + sizeof(MemorySection) < memory_region_descriptor.base + memory_region_descriptor.length && memory_region_descriptor.base < 0x0000000100000000)
+		if(memory_region_descriptor.type == MEMORY_REGION_AVAILABLE && (unsigned long long int)(unsigned int)heap_base + sizeof(MemorySection) < memory_region_descriptor.base + memory_region_descriptor.length && memory_region_descriptor.base < 0x0000000100000000)
 		{
 			if(memory_region_descriptor.base < (unsigned long long int)(unsigned int)heap_base)
 			{

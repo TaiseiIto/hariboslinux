@@ -1,3 +1,4 @@
+#include "acpi.h"
 #include "chain_string.h"
 #include "disk.h"
 #include "memory.h"
@@ -8,10 +9,11 @@
 
 BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOADED_DISK_BEGIN;
 
-char const * const root_directory_name = "";
 char const * const console_file_name = "console.dev";
 char const * const cpu_file_name = "cpu.dev";
+char const * const dsdt_file_name = "dsdt.aml";
 char const * const memory_file_name = "memory.dev";
+char const * const root_directory_name = "";
 char const * const timer_file_name = "timer.dev";
 char const * const window_file_name = "window.dev";
 
@@ -65,6 +67,7 @@ unsigned int get_file_size(char const *file_name)
 {
 	FileInformation const *file_information = get_file_information(file_name);
 	if(file_information)return file_information->size; // Return file size.
+	else if(!strcmp(file_name, dsdt_file_name))return get_dsdt_aml().length; // Return size of DSDT AML.
 	else if(!strcmp(file_name, root_directory_name))return boot_sector->number_of_root_directory_entries * sizeof(FileInformation); // Return size of root directory entries.
 	else return 0; // File is not found.
 }
@@ -183,6 +186,13 @@ void *load_file(char *file_name)
 			writer += copied_size;
 			unwritten_size -= copied_size;
 		}
+		return loaded_address;
+	}
+	else if(!strcmp(file_name, dsdt_file_name)) // Load DSDT AML.
+	{
+		AMLSubstring dsdt_aml = get_dsdt_aml();
+		FileInformation *loaded_address = malloc(dsdt_aml.length);
+		memcpy(loaded_address, dsdt_aml.initial, dsdt_aml.length);
 		return loaded_address;
 	}
 	else if(!strcmp(file_name, root_directory_name)) // Load root directory entries.
