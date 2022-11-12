@@ -22,9 +22,9 @@ unsigned short const no_more_clusters = 0x0fff;
 
 unsigned int cluster_size;
 unsigned int number_of_clusters;
-void const *cluster0;
-void const **file_allocation_tables;
-void const *first_sector;
+void *cluster0;
+void **file_allocation_tables;
+void *first_sector;
 FileInformation *root_directory_entries;
 
 char *create_file_name(FileInformation const *file_information)
@@ -69,7 +69,7 @@ void free_cluster(unsigned short cluster_number)
 	}
 }
 
-void const *get_cluster(unsigned short cluster_number)
+void *get_cluster(unsigned short cluster_number)
 {
 	return cluster0 + cluster_number * cluster_size;
 }
@@ -170,12 +170,12 @@ void init_file_system(void)
 {
 
 	cluster_size = boot_sector->number_of_sectors_per_cluster * boot_sector->sector_size;
-	number_of_clusters = (boot_sector->sector_size * (boot_sector->number_of_sectors - boot_sector->first_sector_number - boot_sector->number_of_file_allocation_tables * boot_sector->number_of_sectors_per_file_allocation_table) - boot_sector->number_of_root_directory_entries * sizeof(FileInformation)) / (boot_sector->sector_size * boot_sector->number_of_sectors_per_cluster);
+	number_of_clusters = (boot_sector->sector_size * (boot_sector->number_of_sectors - boot_sector->first_sector_number - boot_sector->number_of_file_allocation_tables * boot_sector->number_of_sectors_per_file_allocation_table) - boot_sector->number_of_root_directory_entries * sizeof(FileInformation)) / cluster_size;
 	first_sector = (void *)boot_sector + boot_sector->first_sector_number * boot_sector->sector_size;
 	file_allocation_tables = malloc(boot_sector->number_of_file_allocation_tables * sizeof(*file_allocation_tables));
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)file_allocation_tables[i] = first_sector + i * boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size;
 	root_directory_entries = (FileInformation *)(file_allocation_tables[boot_sector->number_of_file_allocation_tables - 1] + boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size);
-	cluster0 = (void const *)((((unsigned int)(root_directory_entries + boot_sector->number_of_root_directory_entries) + cluster_size - 1) / cluster_size - 2) * cluster_size);
+	cluster0 = (void *)((((unsigned int)(root_directory_entries + boot_sector->number_of_root_directory_entries) + cluster_size - 1) / cluster_size - 2) * cluster_size);
 	printf_serial("Jump instruction = %#04x %#04x %#04x\n", boot_sector->jump_instruction[0], boot_sector->jump_instruction[1], boot_sector->jump_instruction[2]);
 	printf_serial("Product name = \"%.8s\"\n", boot_sector->product_name);
 	printf_serial("Sector size = %#06.4x\n", boot_sector->sector_size);
@@ -259,15 +259,17 @@ void primary_ATA_hard_disk_interrupt_handler(void)
 
 void save_file(char const *file_name, unsigned char const *content, unsigned int length)
 {
+	prohibit_switch_task();
 	FileInformation *file_information = get_file_information(file_name);
+	unsigned short number_of_necessary_clusters = (length + cluster_size - 1) / cluster_size;
+	unsigned short cluster_number;
+	unsigned short next_cluster_number;
 	Time time = get_current_time();
 	char const *dot = strchr(file_name, '.');
 	char const *prefix_begin = file_name;
 	char const *prefix_end = dot && (unsigned int)dot - (unsigned int)file_name <= _countof(file_information->name) ? dot : file_name + _countof(file_information->name);
 	char const *suffix_begin = dot ? dot + 1 : file_name + _countof(file_information->name);
 	char const *suffix_end = strlen(suffix_begin) <= _countof(file_information->extension) ? suffix_begin + strlen(suffix_begin) : suffix_begin + _countof(file_information->extension);
-	UNUSED_ARGUMENT(content);
-	UNUSED_ARGUMENT(length);
 	if(file_information)
 	{
 		if(file_information->flags & FILE_INFORMATION_FLAG_READ_ONLY_FILE)
@@ -285,11 +287,47 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 	file_information->time = ((unsigned short)time.hour << 11) + ((unsigned short)time.minute << 5) + (unsigned short)time.second / 2;
 	file_information->date = ((time.year - 1980) << 9) + ((unsigned short)time.month << 5) + (unsigned short)time.day;
 	file_information->cluster_number = get_unused_cluster_number();
+	file_information->size = length;
+	cluster_number = file_information->cluster_number;
+	for(unsigned short i = 0; i < number_of_necessary_clusters; i++)
+	{
+		memcpy(get_cluster(cluster_number), content, cluster_size);
+		content += cluster_size;
+		set_next_cluster_number(cluster_number, no_more_clusters);
+		if(i < number_of_necessary_clusters - 1){
+			next_cluster_number = get_unused_cluster_number();
+			set_next_cluster_number(cluster_number, next_cluster_number);
+			cluster_number = next_cluster_number;
+		}
+	}
+	allow_switch_task();
 }
 
 void secondary_ATA_hard_disk_interrupt_handler(void)
 {
 	finish_interruption(IRQ_SECONDARY_ATA_HARD_DISK);
 	print_serial("secondary ATA hard disk interrupt\n");
+}
+
+void set_next_cluster_number(unsigned short cluster_number, unsigned short next_cluster_number)
+{
+	if(cluster_number % 2)
+	{
+		((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 2] = (unsigned char)(next_cluster_number >> 4);
+		((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 1] &= 0x0f;
+		((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 1] += (unsigned char)(next_cluster_number << 4);
+		((unsigned char **)file_allocation_tables)[1][(cluster_number - 1) / 2 * 3 + 2] = (unsigned char)(next_cluster_number >> 4);
+		((unsigned char **)file_allocation_tables)[1][(cluster_number - 1) / 2 * 3 + 1] &= 0x0f;
+		((unsigned char **)file_allocation_tables)[1][(cluster_number - 1) / 2 * 3 + 1] += (unsigned char)(next_cluster_number << 4);
+	}
+	else
+	{
+		((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3 + 1] &= 0xf0;
+		((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3 + 1] += (unsigned char)(next_cluster_number >> 8 & 0x0f);
+		((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3] = (unsigned char)next_cluster_number;
+		((unsigned char **)file_allocation_tables)[1][cluster_number / 2 * 3 + 1] &= 0xf0;
+		((unsigned char **)file_allocation_tables)[1][cluster_number / 2 * 3 + 1] += (unsigned char)(next_cluster_number >> 8 & 0x0f);
+		((unsigned char **)file_allocation_tables)[1][cluster_number / 2 * 3] = (unsigned char)next_cluster_number;
+	}
 }
 

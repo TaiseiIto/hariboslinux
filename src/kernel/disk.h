@@ -62,7 +62,7 @@ char *create_file_name(FileInformation const *file_information);
 void delete_file(char const *file_name);
 void disk_interrupt_handler(void);
 void free_cluster(unsigned short cluster_number);
-void const *get_cluster(unsigned short cluster_number);
+void *get_cluster(unsigned short cluster_number);
 FileInformation *get_file_information(char const *file_name);
 unsigned int get_file_size(char const *file_name);
 unsigned int get_file_updated_year(FileInformation const *file_information);
@@ -79,6 +79,7 @@ void *load_file(char *file_name);
 void primary_ATA_hard_disk_interrupt_handler(void);
 void save_file(char const *file_name, unsigned char const *content, unsigned int length);
 void secondary_ATA_hard_disk_interrupt_handler(void);
+void set_next_cluster_number(unsigned short cluster_number, unsigned short next_cluster_number);
 
 #endif
 
