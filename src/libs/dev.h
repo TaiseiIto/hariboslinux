@@ -241,6 +241,7 @@ void print_window(unsigned int window, short x, short y, Color foreground, Color
 void printf_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string, ...);
 void process_event(void);
 void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Color color);
+void save_disk(void);
 void shutdown(void);
 
 #endif

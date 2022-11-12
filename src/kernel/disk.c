@@ -13,6 +13,7 @@ BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOAD
 
 char const * const console_file_name = "console.dev";
 char const * const cpu_file_name = "cpu.dev";
+char const * const disk_file_name = "disk.dev";
 char const * const dsdt_file_name = "dsdt.aml";
 char const * const memory_file_name = "memory.dev";
 char const * const root_directory_name = "";

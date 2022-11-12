@@ -17,6 +17,12 @@ typedef struct _CPUCommand
 	#define CPU_COMMAND_SHUTDOWN	0x1
 } CPUCommand;
 
+typedef struct _DiskCommand
+{
+	unsigned char type;
+	#define DISK_COMMAND_SAVE	0x00
+} DiskCommand;
+
 typedef struct _MemoryCommand
 {
 	unsigned char type;
@@ -113,12 +119,14 @@ typedef struct _WindowCommand
 
 char const * const console_file_name = "console.dev";
 char const * const cpu_file_name = "cpu.dev";
+char const * const disk_file_name = "disk.dev";
 char const * const memory_file_name = "memory.dev";
 char const * const timer_file_name = "timer.dev";
 char const * const window_file_name = "window.dev";
 
 unsigned int console_file = 0;
 unsigned int cpu_file = 0;
+unsigned int disk_file = 0;
 unsigned int memory_file = 0;
 unsigned int timer_file = 0;
 unsigned int window_file = 0;
@@ -278,6 +286,14 @@ void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Col
 	command.arguments.put_dot.y = y;
 	command.arguments.put_dot.color = color;
 	fwrite(&command, sizeof(command), 1, window_file);
+}
+
+void save_disk(void)
+{
+	DiskCommand command;
+	if(!disk_file)disk_file = fopen(disk_file_name, "wr");
+	command.type = DISK_COMMAND_SAVE;
+	fwrite(&command, sizeof(command), 1, disk_file);
 }
 
 void shutdown(void)

@@ -149,9 +149,15 @@ typedef struct _ConsoleCommand
 typedef struct _CPUCommand
 {
 	unsigned char type;
-	#define CPU_COMMAND_HLT		0x0
-	#define CPU_COMMAND_SHUTDOWN	0x1
+	#define CPU_COMMAND_HLT		0x00
+	#define CPU_COMMAND_SHUTDOWN	0x01
 } CPUCommand;
+
+typedef struct _DiskCommand
+{
+	unsigned char type;
+	#define DISK_COMMAND_SAVE	0x00
+} DiskCommand;
 
 typedef struct _MemoryCommand
 {
@@ -747,6 +753,11 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					ERROR(); // Invalid CPU command.
 					break;
 				}
+			}
+			else if(!strcmp(file_descriptor->file_name, disk_file_name)) // Control the disk.
+			{
+				DiskCommand const * const command = buffer;
+				printf_serial("DiskCommand command->type = %#04.2x\n", command->type);
 			}
 			else if(!strcmp(file_descriptor->file_name, memory_file_name)) // Control the memory.
 			{
