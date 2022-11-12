@@ -81,6 +81,8 @@ void primary_ATA_hard_disk_interrupt_handler(void);
 void save_file(char const *file_name, unsigned char const *content, unsigned int length);
 void secondary_ATA_hard_disk_interrupt_handler(void);
 void set_next_cluster_number(unsigned short cluster_number, unsigned short next_cluster_number);
+void write_entire_disk(void);
+void write_cluster(unsigned char cylinder, unsigned char head, unsigned char sector);
 
 #endif
 

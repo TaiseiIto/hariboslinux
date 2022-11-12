@@ -332,3 +332,13 @@ void set_next_cluster_number(unsigned short cluster_number, unsigned short next_
 	}
 }
 
+void write_entire_disk(void)
+{
+	for(unsigned char cylinder = 0; cylinder < boot_sector->number_of_sectors / (boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track); cylinder++)for(unsigned char head = 0; head < boot_sector->number_of_heads; head++)for(unsigned char sector = 1; sector <= boot_sector->number_of_sectors_per_track; sector++)write_cluster(cylinder, head, sector);
+}
+
+void write_cluster(unsigned char cylinder, unsigned char head, unsigned char sector)
+{
+	printf_serial("Save cylinder %#04.2x, head %#04.2x, sector %#04.2x\n", cylinder, head, sector);
+}
+
