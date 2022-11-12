@@ -4,6 +4,7 @@
 #include "disk.h"
 #include "memory.h"
 #include "pic.h"
+#include "rtc.h"
 #include "serial.h"
 #include "stdlib.h"
 #include "string.h"
@@ -45,6 +46,7 @@ void delete_file(char const *file_name)
 {
 	FileInformation *file_information = get_file_information(file_name);
 	if(!file_information)ERROR(); // The fine is not found.
+	if(file_information->flags & FILE_INFORMATION_FLAG_READ_ONLY_FILE)ERROR(); // The file is read only.
 	// Free the file information.
 	file_information->name[0] = '\0';
 	// Free the clusters.
@@ -257,10 +259,20 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 	char const *suffix_end = strlen(suffix_begin) <= _countof(file_information->extension) ? suffix_begin + strlen(suffix_begin) : suffix_begin + _countof(file_information->extension);
 	UNUSED_ARGUMENT(content);
 	UNUSED_ARGUMENT(length);
-	if(file_information)delete_file(file_name);
+	if(file_information)
+	{
+		if(file_information->flags & FILE_INFORMATION_FLAG_READ_ONLY_FILE)
+		{
+			ERROR(); // There is a read only file with same name.
+			return;
+		}
+		delete_file(file_name);
+	}
 	else file_information = get_unused_file_information();
 	for(char *name = file_information->name; name != file_information->name + _countof(file_information->name); name++)*name = prefix_begin != prefix_end ? *prefix_begin++ : '\0';
 	for(char *extension = file_information->extension; extension != file_information->extension + _countof(file_information->extension); extension++)*extension = suffix_begin != suffix_end ? *suffix_begin++ : '\0';
+	file_information->flags = FILE_INFORMATION_FLAG_NORMAL_FILE;
+	for(char *reserved = file_information->reserved; reserved != file_information->reserved + _countof(file_information->reserved); reserved++)*reserved = 0x00;
 }
 
 void secondary_ATA_hard_disk_interrupt_handler(void)

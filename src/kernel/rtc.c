@@ -6,8 +6,6 @@
 #include "rtc.h"
 #include "serial.h"
 
-typedef RTCInterrupt Time;
-
 Time current_time;
 Queue *rtc_interrupt_queue;
 
@@ -96,6 +94,11 @@ char const *get_day_of_week_string(unsigned char day_of_week)
 	default:
 		return invalid_day_of_week;
 	}
+}
+
+Time get_current_time(void)
+{
+	return current_time;
 }
 
 unsigned int get_unix_time(void)
