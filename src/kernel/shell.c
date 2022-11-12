@@ -349,7 +349,6 @@ Redirection *create_redirection(Shell *shell, Task *task, char *destination_file
 		redirection->next = redirection;
 		shell->redirections = redirection;
 	}
-	printf_shell(shell, "Redirection to %s\n", shell->redirections->previous->destination_file_name);
 	return redirection;
 }
 
@@ -403,8 +402,6 @@ void delete_redirection(Task *command_task)
 	if(redirection)
 	{
 		unsigned char *output = (unsigned char *)create_char_array_from_chain_string(redirection->output);
-		printf_shell(redirection->shell, "Redirection output \n");
-		for(unsigned int i = 0; i < redirection->output->length; i++)printf_shell(redirection->shell, "%02.2x%c", output[i], (i + 1) % 0x10 ? ' ' : '\n');
 		save_file(redirection->destination_file_name, output, redirection->output->length);
 		printf_shell(redirection->shell, "\n");
 		redirection->previous->next = redirection->next;
