@@ -29,17 +29,19 @@ void **file_allocation_tables;
 void *first_sector;
 FileInformation *root_directory_entries;
 
-SectorSpecifier address2sector_specifier(void const *address)
+unsigned char *sector_flags;
+#define SECTOR_FLAG_CHANGED 0x01
+
+unsigned int address2sector_number(void const *address)
 {
 	unsigned int disk_address = (unsigned int)address - (unsigned int)MEMORY_MAP_LOADED_DISK_BEGIN;
 	unsigned int sector_number = disk_address / boot_sector->sector_size;
-	SectorSpecifier sector_specifier;
-	sector_specifier.cylinder = sector_number / (boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track);
-	sector_number -= sector_specifier.cylinder * boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track;
-	sector_specifier.head = sector_number / boot_sector->number_of_sectors_per_track;
-	sector_number -= sector_specifier.head * boot_sector->number_of_sectors_per_track;
-	sector_specifier.sector = sector_number + 1;
-	return sector_specifier;
+	return sector_number;
+}
+
+SectorSpecifier address2sector_specifier(void const *address)
+{
+	return sector_number2sector_specifier(address2sector_number(address));
 }
 
 char *create_file_name(FileInformation const *file_information)
@@ -191,6 +193,8 @@ void init_file_system(void)
 	for(unsigned int i = 0; i < boot_sector->number_of_file_allocation_tables; i++)file_allocation_tables[i] = first_sector + i * boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size;
 	root_directory_entries = (FileInformation *)(file_allocation_tables[boot_sector->number_of_file_allocation_tables - 1] + boot_sector->number_of_sectors_per_file_allocation_table * boot_sector->sector_size);
 	cluster0 = (void *)((((unsigned int)(root_directory_entries + boot_sector->number_of_root_directory_entries) + cluster_size - 1) / cluster_size - 2) * cluster_size);
+	sector_flags = malloc(boot_sector->number_of_sectors);
+	for(unsigned int i = 0; i < boot_sector->number_of_sectors; i++)sector_flags[i] = 0;
 	printf_serial("Jump instruction = %#04x %#04x %#04x\n", boot_sector->jump_instruction[0], boot_sector->jump_instruction[1], boot_sector->jump_instruction[2]);
 	printf_serial("Product name = \"%.8s\"\n", boot_sector->product_name);
 	printf_serial("Sector size = %#06.4x\n", boot_sector->sector_size);
@@ -285,9 +289,6 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 	char const *prefix_end = dot && (unsigned int)dot - (unsigned int)file_name <= _countof(file_information->name) ? dot : file_name + _countof(file_information->name);
 	char const *suffix_begin = dot ? dot + 1 : file_name + _countof(file_information->name);
 	char const *suffix_end = strlen(suffix_begin) <= _countof(file_information->extension) ? suffix_begin + strlen(suffix_begin) : suffix_begin + _countof(file_information->extension);
-	unsigned char *sector_flags = malloc(boot_sector->number_of_sectors);
-	#define SECTOR_FLAG_CHANGED 0x01
-	for(unsigned int i = 0; i < boot_sector->number_of_sectors; i++)sector_flags[i] = 0;
 	if(file_information)
 	{
 		if(file_information->flags & FILE_INFORMATION_FLAG_READ_ONLY_FILE)
@@ -318,7 +319,6 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 			cluster_number = next_cluster_number;
 		}
 	}
-	free(sector_flags);
 	allow_switch_task();
 }
 
@@ -328,9 +328,30 @@ void secondary_ATA_hard_disk_interrupt_handler(void)
 	print_serial("secondary ATA hard disk interrupt\n");
 }
 
+void *sector_number2address(unsigned int sector_number)
+{
+	return (void *)((unsigned int)sector_number * (unsigned int)boot_sector->sector_size + (unsigned int)MEMORY_MAP_LOADED_DISK_BEGIN);
+}
+
+SectorSpecifier sector_number2sector_specifier(unsigned int sector_number)
+{
+	SectorSpecifier sector_specifier;
+	sector_specifier.cylinder = sector_number / (boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track);
+	sector_number -= sector_specifier.cylinder * boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track;
+	sector_specifier.head = sector_number / boot_sector->number_of_sectors_per_track;
+	sector_number -= sector_specifier.head * boot_sector->number_of_sectors_per_track;
+	sector_specifier.sector = sector_number + 1;
+	return sector_specifier;
+}
+
 void *sector_specifier2address(SectorSpecifier sector_specifier)
 {
-	return (void *)((((unsigned int)sector_specifier.cylinder * (unsigned int)boot_sector->number_of_heads + (unsigned int)sector_specifier.head) * (unsigned int)boot_sector->number_of_sectors_per_track + (unsigned int)sector_specifier.sector - 1) * (unsigned int)boot_sector->sector_size + (unsigned int)MEMORY_MAP_LOADED_DISK_BEGIN);
+	return sector_number2address(sector_specifier2sector_number(sector_specifier));
+}
+
+unsigned int sector_specifier2sector_number(SectorSpecifier sector_specifier)
+{
+	return ((unsigned int)sector_specifier.cylinder * (unsigned int)boot_sector->number_of_heads + (unsigned int)sector_specifier.head) * (unsigned int)boot_sector->number_of_sectors_per_track + (unsigned int)sector_specifier.sector - 1;
 }
 
 void set_next_cluster_number(unsigned short cluster_number, unsigned short next_cluster_number)
