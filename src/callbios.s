@@ -45,7 +45,7 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	subl	$0x00000004,(%esp)
+	subl	$0x00000004,%esp
 1:
 	# print interrupt_number
 	movl	$interrupt_number_message,(%esp)
@@ -55,7 +55,7 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	call	print_byte_hex_serial
 	call	new_line_serial
 2:
-	addl	$0x00000004,(%esp)
+	addl	$0x00000004,%esp
 	leave
 	ret
 
@@ -186,4 +186,4 @@ putchar_serial:			# void putchar_serial(char c);
 
 	.data
 interrupt_number_message:
-	.string "interrupt_num = "
+	.string "interrupt_num = 0x"
