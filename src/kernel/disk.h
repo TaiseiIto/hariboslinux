@@ -49,6 +49,13 @@ typedef struct _FileIntormation
 	unsigned int size;
 } FileInformation;
 
+typedef struct _SectorSpecifier
+{
+	unsigned char cylinder;
+	unsigned char head;
+	unsigned char sector;
+} SectorSpecifier;
+
 extern BootSector const * const boot_sector;
 
 extern char const * const root_directory_name;
@@ -59,6 +66,7 @@ extern char const * const memory_file_name;
 extern char const * const timer_file_name;
 extern char const * const window_file_name;
 
+SectorSpecifier address2sector_specifier(void const *address);
 char *create_file_name(FileInformation const *file_information);
 void delete_file(char const *file_name);
 void disk_interrupt_handler(void);
@@ -80,9 +88,10 @@ void *load_file(char *file_name);
 void primary_ATA_hard_disk_interrupt_handler(void);
 void save_file(char const *file_name, unsigned char const *content, unsigned int length);
 void secondary_ATA_hard_disk_interrupt_handler(void);
+void *sector_specifier2address(SectorSpecifier sector_specifier);
 void set_next_cluster_number(unsigned short cluster_number, unsigned short next_cluster_number);
 void write_entire_disk(void);
-void write_cluster(unsigned char cylinder, unsigned char head, unsigned char sector);
+void write_cluster(SectorSpecifier sector_specifier);
 
 #endif
 

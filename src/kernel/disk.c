@@ -29,6 +29,19 @@ void **file_allocation_tables;
 void *first_sector;
 FileInformation *root_directory_entries;
 
+SectorSpecifier address2sector_specifier(void const *address)
+{
+	unsigned int disk_address = (unsigned int)address - (unsigned int)MEMORY_MAP_LOADED_DISK_BEGIN;
+	unsigned int sector_number = disk_address / boot_sector->sector_size;
+	SectorSpecifier sector_specifier;
+	sector_specifier.cylinder = sector_number / (boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track);
+	sector_number -= sector_specifier.cylinder * boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track;
+	sector_specifier.head = sector_number / boot_sector->number_of_sectors_per_track;
+	sector_number -= sector_specifier.head * boot_sector->number_of_sectors_per_track;
+	sector_specifier.sector = sector_number + 1;
+	return sector_specifier;
+}
+
 char *create_file_name(FileInformation const *file_information)
 {
 	unsigned char name_length;
@@ -272,6 +285,9 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 	char const *prefix_end = dot && (unsigned int)dot - (unsigned int)file_name <= _countof(file_information->name) ? dot : file_name + _countof(file_information->name);
 	char const *suffix_begin = dot ? dot + 1 : file_name + _countof(file_information->name);
 	char const *suffix_end = strlen(suffix_begin) <= _countof(file_information->extension) ? suffix_begin + strlen(suffix_begin) : suffix_begin + _countof(file_information->extension);
+	unsigned char *sector_flags = malloc(boot_sector->number_of_sectors);
+	#define SECTOR_FLAG_CHANGED 0x01
+	for(unsigned int i = 0; i < boot_sector->number_of_sectors; i++)sector_flags[i] = 0;
 	if(file_information)
 	{
 		if(file_information->flags & FILE_INFORMATION_FLAG_READ_ONLY_FILE)
@@ -302,6 +318,7 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 			cluster_number = next_cluster_number;
 		}
 	}
+	free(sector_flags);
 	allow_switch_task();
 }
 
@@ -309,6 +326,11 @@ void secondary_ATA_hard_disk_interrupt_handler(void)
 {
 	finish_interruption(IRQ_SECONDARY_ATA_HARD_DISK);
 	print_serial("secondary ATA hard disk interrupt\n");
+}
+
+void *sector_specifier2address(SectorSpecifier sector_specifier)
+{
+	return (void *)((((unsigned int)sector_specifier.cylinder * (unsigned int)boot_sector->number_of_heads + (unsigned int)sector_specifier.head) * (unsigned int)boot_sector->number_of_sectors_per_track + (unsigned int)sector_specifier.sector - 1) * (unsigned int)boot_sector->sector_size + (unsigned int)MEMORY_MAP_LOADED_DISK_BEGIN);
 }
 
 void set_next_cluster_number(unsigned short cluster_number, unsigned short next_cluster_number)
@@ -335,21 +357,28 @@ void set_next_cluster_number(unsigned short cluster_number, unsigned short next_
 
 void write_entire_disk(void)
 {
-	for(unsigned char cylinder = 0; cylinder < boot_sector->number_of_sectors / (boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track); cylinder++)for(unsigned char head = 0; head < boot_sector->number_of_heads; head++)for(unsigned char sector = 1; sector <= boot_sector->number_of_sectors_per_track; sector++)write_cluster(cylinder, head, sector);
+	for(unsigned char cylinder = 0; cylinder < boot_sector->number_of_sectors / (boot_sector->number_of_heads * boot_sector->number_of_sectors_per_track); cylinder++)for(unsigned char head = 0; head < boot_sector->number_of_heads; head++)for(unsigned char sector = 1; sector <= boot_sector->number_of_sectors_per_track; sector++)
+	{
+		SectorSpecifier sector_specifier;
+		sector_specifier.cylinder = cylinder;
+		sector_specifier.head = head;
+		sector_specifier.sector = sector;
+		write_cluster(sector_specifier);
+	}
 }
 
-void write_cluster(unsigned char cylinder, unsigned char head, unsigned char sector)
+void write_cluster(SectorSpecifier sector_specifier)
 {
 	BIOSInterface arguments;
-	unsigned char *source_address = MEMORY_MAP_LOADED_DISK_BEGIN + ((cylinder * boot_sector->number_of_heads + head) * boot_sector->number_of_sectors_per_track + sector - 1) * boot_sector->sector_size;
+	unsigned char *source_address = sector_specifier2address(sector_specifier);
 	unsigned char *buffer_address = MEMORY_MAP_BIOS_BUFFER;
 	memcpy(buffer_address, source_address, boot_sector->sector_size);
-	printf_serial("Save cylinder %#04.2x, head %#04.2x, sector %#04.2x, source address %p\n", cylinder, head, sector, source_address);
+	printf_serial("Save cylinder %#04.2x, head %#04.2x, sector %#04.2x, source address %p\n", sector_specifier.cylinder, sector_specifier.head, sector_specifier.sector, source_address);
 	for(unsigned char *byte = buffer_address; byte != buffer_address + boot_sector->sector_size; byte++)printf_serial("%02.2x%c", *byte, (unsigned int)(byte+ 1) % 0x10 ? ' ' : '\n');
 	arguments.ax = 0x0301;
-	arguments.cx = (cylinder << 8) | sector;
+	arguments.cx = (sector_specifier.cylinder << 8) | sector_specifier.sector;
 	arguments.bx = (unsigned short)((unsigned int)buffer_address);
-	arguments.dx = head << 8;
+	arguments.dx = sector_specifier.head << 8;
 	arguments.es = (unsigned short)((unsigned int)buffer_address >> 4 & 0x0000f000);
 	arguments.fs = 0x0000;
 	arguments.gs = 0x0000;
