@@ -360,7 +360,6 @@ applicationの出力をfileに保存できます．
 > echo "Hello, World!" > test.txt
 > cat test.txt
 Hello, World!
-> 
 ```
 
 ### 各種application
@@ -444,7 +443,7 @@ hariboslinuxに以下のapplicationが含まれます．
 > calc atan(1)
 -0.7853981633+0.0000000000i
 > calc asinh(1)
--0.6154797086+0.5493061443i
+0.8813735870+0.0000000000i
 > calc acosh(2)
 1.3169578969+0.0000000000i
 > calc atanh(1/2)
@@ -456,6 +455,9 @@ hariboslinuxに以下のapplicationが含まれます．
 fileを出力します．
 
 ```
+> echo "Hello, World!" > test.txt
+> cat test.txt
+Hello, World!
 ```
 
 #### clear
@@ -466,6 +468,8 @@ RS-232C上のconsoleでは効果はありません．
 Unix時刻を出力します．
 
 ```
+> date
+1668322598
 ```
 
 #### deadbeef
@@ -473,6 +477,9 @@ Unix時刻を出力します．
 一般保護例外によるapplicationの強制終了を確認するためのものです．
 
 ```
+> deadbeef
+GENERAL PROTECTION FAULT!!!
+ERROR CODE = 0X00000000
 ```
 
 #### draw
@@ -482,6 +489,8 @@ Unix時刻を出力します．
 文字列を出力します．
 
 ```
+> echo "Hello, World!"
+Hello, World!
 ```
 
 #### editor
@@ -495,12 +504,16 @@ RS-232C上のconsoleでは効果はありません．
 空きmemory容量を表示します．
 
 ```
+> free
+free memory space 0xbb916024 bytes
 ```
 
 #### hello
 `Hello, World!`という文字列を表示します．
 
 ```
+> hello
+Hello, World!
 ```
 
 #### lines
@@ -510,6 +523,44 @@ RS-232C上のconsoleでは効果はありません．
 file一覧を表示します．
 
 ```
+> ls
+loaddisk.bin
+getmemmp.bin
+initscrn.bin
+mv2prtmd.bin
+dplydisk.bin
+lddskxtr.bin
+kernel.bin
+calc.com
+cat.com
+clear.com
+date.com
+deadbeef.com
+draw.com
+echo.com
+editor.com
+exit.com
+free.com
+hello.com
+lines.com
+ls.com
+mandel.com
+mrsntwst.com
+nop.com
+prntargs.com
+savedisk.com
+shutdown.com
+stars.com
+strtrnvl.com
+timer.com
+window.com
+xxd.com
+test0.txt
+test1.txt
+test2.txt
+test3.txt
+test4.txt
+
 ```
 
 #### mandel
@@ -521,18 +572,29 @@ mouse wheelでも拡大縮小できます．
 mersenne twisterによる乱数のtestです．
 
 ```
+> mrsntwst
+1067595299  955945823  477289528 4107218783 4228976476 
+3344332714 3355579695  227628506  810200273 2591290167 
+2560260675 3242736208  646746669 1479517882 4245472273 
+...
 ```
 
 #### nop
 何もせずに終了します．
 
 ```
+> nop
 ```
 
 #### prntargs
 command line引数一覧を表示します．
 
 ```
+> prntargs Hello World "Hello, World!"
+argv[0] = prntargs
+argv[1] = Hello
+argv[2] = World
+argv[3] = Hello, World!
 ```
 
 #### savedisk
@@ -548,6 +610,11 @@ OSを終了します．
 shell変数`$?`に値をsetします．
 
 ```
+> echo $?
+0
+> strtrnvl 123
+> echo $?
+123
 ```
 
 #### timer
@@ -560,6 +627,11 @@ windowを表示します．
 fileをbinary形式で表示します．
 
 ```
+> xxd dsdt.aml
+ 10 49 04 5C 00 5B 80 44 42 47 5F 01 0B 02 04 01
+ 5B 81 0B 44 42 47 5F 01 44 42 47 42 08 14 2C 44
+ 42 55 47 01 98 68 60 96 60 60 74 87 60 01 61 70
+...
 ```
 
 ## 開発者用メモ
