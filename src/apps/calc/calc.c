@@ -2868,6 +2868,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			break;
 		case i:
 			if(symbol->previous && symbol->previous->type == factor)break;
+			if(symbol->previous && symbol->previous->type == operand)break;
+			if(symbol->previous && symbol->previous->type == power)break;
 			if(symbol->previous && symbol->previous->type == numbers)break;
 			// <operand> ::= <i>
 			new_symbol = malloc(sizeof(*new_symbol));
