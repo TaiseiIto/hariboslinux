@@ -241,7 +241,7 @@ real modeからprotected modeに移行し，dplydisk.binに移行します．
 
 [lddskxtrのsource](src/lddskxtr.s)
 
-#### kernel.bin実行時のmemory map
+#### lddskxtr.bin実行時のmemory map
 | memory start | memory end | disk start | disk end   | description                        |
 | ------------ | ---------- | ---------- | ---------- | ---------------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table             |
@@ -251,6 +251,7 @@ real modeからprotected modeに移行し，dplydisk.binに移行します．
 | 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
+| ?            | 0x00007bff |            |            | stack                              |
 | 0x00007c00   | 0x0009fbff | 0x00000000 | 0x00097fff | loaded disk data                   |
 | 0x00007c00   | 0x00007dff | 0x00000000 | 0x000001ff | bootsector.bin                     |
 | 0x00007e00   | 0x00008fff | 0x00000200 | 0x000013ff | first FAT                          |
@@ -262,7 +263,7 @@ real modeからprotected modeに移行し，dplydisk.binに移行します．
 | 0x0000d400   | 0x0000d7ff | 0x00005800 | 0x00005bff | mv2prtmd.bin                       |
 | 0x0000d800   | 0x0000dbff | 0x00005c00 | 0x00005fff | dplydisk.bin                       |
 | 0x0000dc00   | 0x0000e9ff | 0x00006000 | 0x00006dff | lddskxtr.bin                       |
-| 0x0000ea00   | 0x0009fc00 |            |            | buffer to load disk                |
+| 0x0000ea00   | 0x0009fbff |            |            | buffer to load disk                |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
