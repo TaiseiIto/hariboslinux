@@ -341,8 +341,11 @@ void write_entire_disk(void)
 void write_cluster(unsigned char cylinder, unsigned char head, unsigned char sector)
 {
 	BIOSInterface arguments;
-	void *buffer_address = MEMORY_MAP_BIOS_BUFFER;
-	printf_serial("Save cylinder %#04.2x, head %#04.2x, sector %#04.2x\n", cylinder, head, sector);
+	unsigned char *source_address = MEMORY_MAP_LOADED_DISK_BEGIN + ((cylinder * boot_sector->number_of_heads + head) * boot_sector->number_of_sectors_per_track + sector - 1) * boot_sector->sector_size;
+	unsigned char *buffer_address = MEMORY_MAP_BIOS_BUFFER;
+	memcpy(buffer_address, source_address, boot_sector->sector_size);
+	printf_serial("Save cylinder %#04.2x, head %#04.2x, sector %#04.2x, source address %p\n", cylinder, head, sector, source_address);
+	for(unsigned char *byte = buffer_address; byte != buffer_address + boot_sector->sector_size; byte++)printf_serial("%02.2x%c", *byte, (unsigned int)(byte+ 1) % 0x10 ? ' ' : '\n');
 	arguments.ax = 0x0301;
 	arguments.cx = (cylinder << 8) | sector;
 	arguments.bx = (unsigned short)((unsigned int)buffer_address);
