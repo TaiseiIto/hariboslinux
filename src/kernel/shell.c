@@ -761,7 +761,7 @@ void set_dictionary_element(Dictionary *dictionary, char const *key, char const 
 		new_element->next = element;
 		element->previous->next = new_element;
 		element->previous = new_element;
-		if(element == dictionary->elements)dictionary->elements = new_element;
+		if(strcmp(dictionary->elements->previous->key, dictionary->elements->key) < 0)dictionary->elements = dictionary->elements->previous;
 	}
 	else
 	{
