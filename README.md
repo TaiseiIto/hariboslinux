@@ -345,8 +345,23 @@ clickや矢印keyでcursorを移動できますが，applicationを実行する�
 #### shell変数
 consoleごとにshell変数を保持できます．
 
+```
+> echo $asdf
+$asdf
+> asdf=Hello, World!
+> echo $asdf
+Hello, World!
+```
+
 #### redirection
 applicationの出力をfileに保存できます．
+
+```
+> echo "Hello, World!" > test.txt
+> cat test.txt
+Hello, World!
+> 
+```
 
 ### 各種application
 hariboslinuxに以下のapplicationが含まれます．
@@ -379,8 +394,69 @@ hariboslinuxに以下のapplicationが含まれます．
 #### calc
 複素数の数値計算を行います．
 
+```
+> calc 1+1
+2.0000000000+0.0000000000i
+> calc 1.2-3.4
+-2.2000000000+0.0000000000i
+> calc i*5.6i
+-5.5999999999+0.0000000000i
+> calc 1/3
+0.3333333333+0.0000000000i
+> calc 1*2+3*4
+14.0000000000+0.0000000000i
+> calc e^(i*pi)
+-1.0000000000+0.0000000000i
+> calc (1.2+3.4i)^(5.6+7.8i)
+-0.0327761387-0.0822909628i
+> calc sqrt(2)
+1.4142135623+0.0000000000i
+> calc sqrt(3)
+1.7320508075+0.0000000000i
+> calc sqrt(5)
+2.2360679774+0.0000000000i
+> calc sqrt(-1)
+0.0000000000+1.0000000000i
+> calc log(2, 1024)
+10.0000000000+0.0000000000i
+> calc log(10, 1000)
+3.0000000000+0.0000000000i
+> calc log(e, -1)
+0.0000000000+3.1415926535i
+> calc log(1.2+3.4i, 5.6+7.8i)
+1.2869697055-0.4965263194i
+> calc sin(pi/6)
+0.5000000000-0.0000000000i
+> calc cos(pi)
+-1.0000000000+0.0000000000i
+> calc tan(pi/4)
+1.0000000000+0.0000000000i
+> calc sinh(1)
+1.1752011936+0.0000000000i
+> calc cosh(1)
+1.5430806348+0.0000000000i
+> calc tanh(1)
+0.7615941559+0.0000000000i
+> calc asin(1/2)
+-0.5235987755+0.0000000000i
+> calc acos(0)
+1.5707963267+0.0000000000i
+> calc atan(1)
+-0.7853981633+0.0000000000i
+> calc asinh(1)
+-0.6154797086+0.5493061443i
+> calc acosh(2)
+1.3169578969+0.0000000000i
+> calc atanh(1/2)
+0.5493061443+0.0000000000i
+> 
+```
+
 #### cat
 fileを出力します．
+
+```
+```
 
 #### clear
 window上のconsoleに出力された文字列を消去します．
@@ -389,15 +465,24 @@ RS-232C上のconsoleでは効果はありません．
 #### date
 Unix時刻を出力します．
 
+```
+```
+
 #### deadbeef
 0xdeadbeef番地に0xdeadbeefを書き込みます．
 一般保護例外によるapplicationの強制終了を確認するためのものです．
+
+```
+```
 
 #### draw
 お絵描きできます．
 
 #### echo
 文字列を出力します．
+
+```
+```
 
 #### editor
 text編集できます．
@@ -409,14 +494,23 @@ RS-232C上のconsoleでは効果はありません．
 #### free
 空きmemory容量を表示します．
 
+```
+```
+
 #### hello
 `Hello, World!`という文字列を表示します．
+
+```
+```
 
 #### lines
 模様を表示します．
 
 #### ls
 file一覧を表示します．
+
+```
+```
 
 #### mandel
 mandelbrot集合を表示します．
@@ -426,11 +520,20 @@ mouse wheelでも拡大縮小できます．
 #### mrsntwst
 mersenne twisterによる乱数のtestです．
 
+```
+```
+
 #### nop
 何もせずに終了します．
 
+```
+```
+
 #### prntargs
 command line引数一覧を表示します．
+
+```
+```
 
 #### savedisk
 0x00100000番地に配置されたdisk imageをdiskに書き込みます．
@@ -444,6 +547,9 @@ OSを終了します．
 #### strtrnvl
 shell変数`$?`に値をsetします．
 
+```
+```
+
 #### timer
 時間経過を表示します．
 
@@ -452,6 +558,9 @@ windowを表示します．
 
 #### xxd
 fileをbinary形式で表示します．
+
+```
+```
 
 ## 開発者用メモ
 docker, VNC softwareに加え，git, makeを用いて開発しています．
