@@ -680,13 +680,21 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 char const *look_up_dictionary(Dictionary const *dictionary, char const *key)
 {
 	DictionaryElement const *element = dictionary->elements;
+	printf_serial("\nlook_up_dictionary\n");
+	show_dictionary(dictionary);
+	printf_serial("key=%s\n", key);
 	if(element)do
 	{
 		int comparison = strcmp(element->key, key);
-		if(!comparison)return element->value;
+		if(!comparison)
+		{
+			printf_serial("Found!\n");
+			return element->value;
+		}
 		else if(0 < comparison)break;
 		element = element->next;
 	} while(element != dictionary->elements);
+	printf_serial("Not found!\n");
 	return NULL;
 }
 
@@ -753,6 +761,7 @@ void set_dictionary_element(Dictionary *dictionary, char const *key, char const 
 		new_element->next = element;
 		element->previous->next = new_element;
 		element->previous = new_element;
+		if(element == dictionary->elements)dictionary->elements = new_element;
 	}
 	else
 	{
@@ -774,7 +783,7 @@ void show_dictionary(Dictionary const *dictionary)
 		if(shell->variables == dictionary)
 		{
 			DictionaryElement const *element = dictionary->elements;
-			do
+			if(element)do
 			{
 				printf_shell(shell, "$%s=%s\n", element->key, element->value);
 				element = element->next;
