@@ -75,8 +75,8 @@
 	.type	putchar_serial_16,		@function
 	.type	validate_sector_specifier_16,	@function
 
-	.code32
 	.text
+	.code32
 main:
 0:
 	lgdt	(gdtr)

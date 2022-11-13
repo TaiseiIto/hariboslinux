@@ -5,6 +5,12 @@
 
 BIOSDataArea const * const bios_data_area = MEMORY_MAP_BIOS_DATA_AREA;
 
+BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface arguments)
+{
+	printf_serial("int %#04.2x ax=%#06.4x, cx=%#06.4x, bx=%#06.4x, dx=%#06.4x, si=%#06.4x, di=%#06.4x, es=%#06.4x, fs=%#06.4x, gs=%#06.4x\n", interrupt_number, arguments.ax, arguments.cx, arguments.bx, arguments.dx, arguments.si, arguments.di, arguments.es, arguments.fs, arguments.gs);
+	return arguments;
+}
+
 BIOSDataArea const *get_bios_data_area(void)
 {
 	return bios_data_area;
@@ -102,11 +108,5 @@ void print_bios_data_area(BIOSDataArea const *bios_data_area)
 	printf_serial("bios_data_area->dos_dynamic_storage = %#06.4x\n", bios_data_area->dos_dynamic_storage);
 	for(unsigned int i = 0; i < _countof(bios_data_area->dos_diskette_initialization_table); i++)printf_serial("bios_data_area->dos_diskette_initialization_table[%#04.2x] = %#04.2x\n", i, bios_data_area->dos_diskette_initialization_table[i]);
 	printf_serial("bios_data_area->mode_command = %#010.8x\n", bios_data_area->mode_command);
-}
-
-BIOSInterface bios_interrupt(unsigned char interrupt_number, BIOSInterface arguments)
-{
-	printf_serial("int %#04.2x ax=%#06.4x, cx=%#06.4x, bx=%#06.4x, dx=%#06.4x, si=%#06.4x, di=%#06.4x, es=%#06.4x, fs=%#06.4x, gs=%#06.4x\n", interrupt_number, arguments.ax, arguments.cx, arguments.bx, arguments.dx, arguments.si, arguments.di, arguments.es, arguments.fs, arguments.gs);
-	return arguments;
 }
 

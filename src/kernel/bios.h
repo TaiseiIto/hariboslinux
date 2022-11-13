@@ -109,10 +109,10 @@ typedef struct _BIOSInterface
 	unsigned short gs;
 } BIOSInterface;
 
+BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface arguments);
 BIOSDataArea const *get_bios_data_area(void);
 void const *get_extended_bios_data_area(void);
 void print_bios_data_area(BIOSDataArea const *bios_data_area);
-BIOSInterface bios_interrupt(unsigned char interrupt_number, BIOSInterface arguments);
 
 #endif
 

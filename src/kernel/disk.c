@@ -424,6 +424,6 @@ void write_cluster(SectorSpecifier sector_specifier)
 	arguments.es = (unsigned short)((unsigned int)buffer_address >> 4 & 0x0000f000);
 	arguments.fs = 0x0000;
 	arguments.gs = 0x0000;
-	bios_interrupt(0x13, arguments);
+	call_bios(0x13, arguments);
 }
 
