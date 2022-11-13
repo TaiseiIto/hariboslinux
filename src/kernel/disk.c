@@ -66,6 +66,7 @@ void delete_file(char const *file_name)
 	if(file_information->flags & FILE_INFORMATION_FLAG_READ_ONLY_FILE)ERROR(); // The file is read only.
 	// Free the file information.
 	file_information->name[0] = '\0';
+	sector_flags[address2sector_number(file_information)] |= SECTOR_FLAG_CHANGED;
 	// Free the clusters.
 	free_cluster(file_information->cluster_number);
 }
@@ -78,11 +79,15 @@ void free_cluster(unsigned short cluster_number)
 	{
 		((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 2] = 0x00;
 		((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 1] &= 0x0f;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 2])] |= SECTOR_FLAG_CHANGED;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 1])] |= SECTOR_FLAG_CHANGED;
 	}
 	else
 	{
 		((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3 + 1] &= 0xf0;
 		((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3] = 0x00;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3 + 1])] |= SECTOR_FLAG_CHANGED;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3])] |= SECTOR_FLAG_CHANGED;
 	}
 }
 
@@ -307,10 +312,13 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 	file_information->date = ((time.year - 1980) << 9) + ((unsigned short)time.month << 5) + (unsigned short)time.day;
 	file_information->cluster_number = get_unused_cluster_number();
 	file_information->size = length;
+	sector_flags[address2sector_number(file_information)] |= SECTOR_FLAG_CHANGED;
 	cluster_number = file_information->cluster_number;
 	for(unsigned short i = 0; i < number_of_necessary_clusters; i++)
 	{
-		memcpy(get_cluster(cluster_number), content, cluster_size);
+		void *cluster_address = get_cluster(cluster_number);
+		memcpy(cluster_address, content, cluster_size);
+		sector_flags[address2sector_number(cluster_address)] |= SECTOR_FLAG_CHANGED;
 		content += cluster_size;
 		set_next_cluster_number(cluster_number, no_more_clusters);
 		if(i < number_of_necessary_clusters - 1){
@@ -364,6 +372,10 @@ void set_next_cluster_number(unsigned short cluster_number, unsigned short next_
 		((unsigned char **)file_allocation_tables)[1][(cluster_number - 1) / 2 * 3 + 2] = (unsigned char)(next_cluster_number >> 4);
 		((unsigned char **)file_allocation_tables)[1][(cluster_number - 1) / 2 * 3 + 1] &= 0x0f;
 		((unsigned char **)file_allocation_tables)[1][(cluster_number - 1) / 2 * 3 + 1] += (unsigned char)(next_cluster_number << 4);
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 2])] |= SECTOR_FLAG_CHANGED;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[0][(cluster_number - 1) / 2 * 3 + 1])] |= SECTOR_FLAG_CHANGED;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[1][(cluster_number - 1) / 2 * 3 + 2])] |= SECTOR_FLAG_CHANGED;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[1][(cluster_number - 1) / 2 * 3 + 1])] |= SECTOR_FLAG_CHANGED;
 	}
 	else
 	{
@@ -373,6 +385,10 @@ void set_next_cluster_number(unsigned short cluster_number, unsigned short next_
 		((unsigned char **)file_allocation_tables)[1][cluster_number / 2 * 3 + 1] &= 0xf0;
 		((unsigned char **)file_allocation_tables)[1][cluster_number / 2 * 3 + 1] += (unsigned char)(next_cluster_number >> 8 & 0x0f);
 		((unsigned char **)file_allocation_tables)[1][cluster_number / 2 * 3] = (unsigned char)next_cluster_number;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3 + 1])] |= SECTOR_FLAG_CHANGED;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[0][cluster_number / 2 * 3])] |= SECTOR_FLAG_CHANGED;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[1][cluster_number / 2 * 3 + 1])] |= SECTOR_FLAG_CHANGED;
+		sector_flags[address2sector_number(&((unsigned char **)file_allocation_tables)[1][cluster_number / 2 * 3])] |= SECTOR_FLAG_CHANGED;
 	}
 }
 
@@ -384,7 +400,12 @@ void write_entire_disk(void)
 		sector_specifier.cylinder = cylinder;
 		sector_specifier.head = head;
 		sector_specifier.sector = sector;
-		write_cluster(sector_specifier);
+		if(sector_flags[sector_specifier2sector_number(sector_specifier)] & SECTOR_FLAG_CHANGED)
+		{
+			write_cluster(sector_specifier);
+			sector_flags[sector_specifier2sector_number(sector_specifier)] &= ~SECTOR_FLAG_CHANGED;
+		}
+		else continue;
 	}
 }
 
