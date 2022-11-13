@@ -18,6 +18,7 @@
 #include "serial.h"
 #include "sheet.h"
 #include "stdio.h"
+#include "string.h"
 #include "task.h"
 #include "text_box.h"
 #include "timer.h"
@@ -79,6 +80,12 @@ int main(void)
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
 	init_file_system();
 	init_shells();
+	// Deploy callbios.bin
+	char const * const call_bios_bin_name = "callbios.bin";
+	unsigned int call_bios_bin_size = get_file_size(call_bios_bin_name);
+	void *call_bios_bin = load_file(call_bios_bin_name);
+	memcpy(MEMORY_MAP_CALL_BIOS, call_bios_bin, call_bios_bin_size);
+	free(call_bios_bin);
 	// Init background sheet
 	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;

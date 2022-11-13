@@ -4,11 +4,12 @@
 #include "stdlib.h"
 
 BIOSDataArea const * const bios_data_area = MEMORY_MAP_BIOS_DATA_AREA;
+BIOSInterface *(* const _call_bios)(unsigned char interrupt_number, BIOSInterface *arguments) = (BIOSInterface *(* const)(unsigned char, BIOSInterface *))MEMORY_MAP_CALL_BIOS;
 
 BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface arguments)
 {
 	printf_serial("int %#04.2x ax=%#06.4x, cx=%#06.4x, bx=%#06.4x, dx=%#06.4x, si=%#06.4x, di=%#06.4x, es=%#06.4x, fs=%#06.4x, gs=%#06.4x\n", interrupt_number, arguments.ax, arguments.cx, arguments.bx, arguments.dx, arguments.si, arguments.di, arguments.es, arguments.fs, arguments.gs);
-	return arguments;
+	return *_call_bios(interrupt_number, &arguments);
 }
 
 BIOSDataArea const *get_bios_data_area(void)

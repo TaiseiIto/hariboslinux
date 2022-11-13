@@ -242,7 +242,7 @@ void init_file_system(void)
 	}
 }
 
-void *load_file(char *file_name)
+void *load_file(char const *file_name)
 {
 	FileInformation const * file_information = get_file_information(file_name);
 	if(file_information)

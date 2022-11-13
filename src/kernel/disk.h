@@ -85,7 +85,7 @@ unsigned short get_next_cluster_number(unsigned short cluster_number);
 unsigned short get_unused_cluster_number(void);
 FileInformation *get_unused_file_information(void);
 void init_file_system(void);
-void *load_file(char *file_name);
+void *load_file(char const *file_name);
 void primary_ATA_hard_disk_interrupt_handler(void);
 void save_file(char const *file_name, unsigned char const *content, unsigned int length);
 void secondary_ATA_hard_disk_interrupt_handler(void);
