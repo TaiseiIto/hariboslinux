@@ -403,7 +403,6 @@ void delete_redirection(Task *command_task)
 	{
 		unsigned char *output = (unsigned char *)create_char_array_from_chain_string(redirection->output);
 		save_file(redirection->destination_file_name, output, redirection->output->length);
-		printf_shell(redirection->shell, "\n");
 		redirection->previous->next = redirection->next;
 		redirection->next->previous = redirection->previous;
 		if(redirection->shell->redirections == redirection)redirection->shell->redirections = redirection->next;
@@ -417,7 +416,6 @@ void delete_redirection(Task *command_task)
 
 void delete_shell(Shell *shell)
 {
-	printf_serial("Delete shell %p\n", shell);
 	prohibit_switch_task();
 	shell->previous->next = shell->next;
 	shell->next->previous = shell->previous;
@@ -680,21 +678,16 @@ void interpret_shell_variable_assignment(Shell *shell, char const *command)
 char const *look_up_dictionary(Dictionary const *dictionary, char const *key)
 {
 	DictionaryElement const *element = dictionary->elements;
-	printf_serial("\nlook_up_dictionary\n");
-	show_dictionary(dictionary);
-	printf_serial("key=%s\n", key);
 	if(element)do
 	{
 		int comparison = strcmp(element->key, key);
 		if(!comparison)
 		{
-			printf_serial("Found!\n");
 			return element->value;
 		}
 		else if(0 < comparison)break;
 		element = element->next;
 	} while(element != dictionary->elements);
-	printf_serial("Not found!\n");
 	return NULL;
 }
 
