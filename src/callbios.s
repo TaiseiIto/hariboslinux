@@ -9,21 +9,29 @@
 
 	.include	"global.s"
 
+	# 32bit mode functions
 	.globl	call_bios
+	.globl	return_2_32
 	.globl	new_line_serial
 	.globl	print_byte_hex_serial
 	.globl	print_dword_hex_serial
 	.globl	print_word_hex_serial
 	.globl	print_serial
 	.globl	putchar_serial
+	# 16bit mode functions
+	.globl	call_bios_16
 
+	# 32bit mode functions
 	.type	call_bios,		@function
+	.type	return_2_32,		@function
 	.type	new_line_serial,	@function
 	.type	print_byte_hex_serial,	@function
 	.type	print_dword_hex_serial,	@function
 	.type	print_word_hex_serial,	@function
 	.type	print_serial,		@function
 	.type	putchar_serial,		@function
+	# 16bit mode functions
+	.type	call_bios_16,		@function
 
 	.text
 stack_floor:
@@ -146,10 +154,19 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	pushal				# save registers
 	movl	%esp,	(esp_32)	# save esp
 	lgdt	(gdtr_16)		# switch GDT
+	jmp	$0x20,	$call_bios_16
+return_2_32:
+0:
+	movw	$0x08,	%ax
+	movw	%ax,	%ss
+	movw	%ax,	%ds
+	movw	%ax,	%es
+	movw	%ax,	%fs
+	movw	%ax,	%gs
 	lgdt	(gdtr_32)		# restore GDT
 	movl	(esp_32),%esp		# restore esp
 	popal				# restore registers
-4:
+2:
 	addl	$0x00000004,%esp
 	popl	%ebx
 	leave
@@ -279,6 +296,48 @@ putchar_serial:			# void putchar_serial(char c);
 3:
 	leave
 	ret
+
+	.code16
+
+call_bios_16:
+0:
+	# set 16bit protected mode data segment
+	movw	$0x0018,%ax
+	movw	%ax,	%ss
+	movw	%ax,	%ds
+	movw	%ax,	%es
+	movw	%ax,	%fs
+	movw	%ax,	%gs
+	# clear CR0 PE bit
+	movl	%cr0,	%eax
+	andl	$0x7ffffffe,%eax
+	movl	%eax,	%cr0
+	jmp	1f
+1:	# 16bit real mode
+	# set 16bit real mode data segment
+	movw	$0x0000,%ax
+	movw	%ax,	%ss
+	movw	%ax,	%ds
+	movw	%ax,	%es
+	movw	%ax,	%fs
+	movw	%ax,	%gs
+2:	# return to 16bit protected mode
+	# set CR0 PE bit
+	movl	%cr0,	%eax
+	andl	$0x7fffffff,%eax
+	orl	$0x00000001,%eax
+	movl	%eax,	%cr0
+	jmp	3f
+3:
+	# set 32bit protected mode data segment
+	movw	$0x0008,%ax
+	movw	%ax,	%ss
+	movw	%ax,	%ds
+	movw	%ax,	%es
+	movw	%ax,	%fs
+	movw	%ax,	%gs
+	# return to 32 bit protected mode
+	jmp	$0x0010,$return_2_32
 
 	.data
 	.align	0x8
