@@ -26,6 +26,7 @@
 	.type	putchar_serial,		@function
 
 	.text
+stack_floor:
 	.code32
 
 # typedef struct _BIOSInterface
@@ -70,6 +71,7 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	movw	%dx,	(argument_fs)
 	movw	0x10(%ebx),%dx
 	movw	%dx,	(argument_gs)
+2:
 	# print interrupt_number
 	movl	$interrupt_number_message,(%esp)
 	call	print_serial
@@ -140,7 +142,14 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-2:
+3:
+	pushal				# save registers
+	movl	%esp,	(esp_32)	# save esp
+	lgdt	(gdtr_16)		# switch GDT
+	lgdt	(gdtr_32)		# restore GDT
+	movl	(esp_32),%esp		# restore esp
+	popal				# restore registers
+4:
 	addl	$0x00000004,%esp
 	popl	%ebx
 	leave
@@ -272,6 +281,77 @@ putchar_serial:			# void putchar_serial(char c);
 	ret
 
 	.data
+	.align	0x8
+# GDT
+gdt_16:
+				# null segment
+				# selector 0x0000 null segment descriptor
+	.word	0x0000		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x00		#  access_right
+	.byte	0x00		#  limit_high
+	.byte	0x00		#  base_high
+
+				# data segment for 32bit protected mode
+				# selector 0x0008 whole memory is readable and writable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x409a
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x92		#  access_right
+	.byte	0xcf		#  limit_high
+	.byte	0x00		#  base_high
+
+				# code segment for 32bit protected mode
+				# selector 0x0010 whole memory is readable and executable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x4092
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x9a		#  access_right
+	.byte	0xcf		#  limit_high
+	.byte	0x00		#  base_high
+
+				# data segment for 16bit protected mode
+				# selector 0x0008 whole memory is readable and writable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x409a
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x92		#  access_right
+	.byte	0x0f		#  limit_high
+	.byte	0x00		#  base_high
+
+				# code segment for 16bit protected mode
+				# selector 0x0010 whole memory is readable and executable
+				# base	0x00000000
+				# limit	0xffffffff
+				# access_right 0x4092
+	.word	0xffff		#  limit_low
+	.word	0x0000		#  base_low
+	.byte	0x00		#  base_mid
+	.byte	0x9a		#  access_right
+	.byte	0x0f		#  limit_high
+	.byte	0x00		#  base_high
+
+gdtr_16:
+	.word	(gdtr_16) - (gdt_16) - 1	# limit of GDT
+	.long	gdt_16
+
+gdtr_32:
+	.word	0xffff
+	.long	0x00270000
+
+esp_32:
+	.long	0x00000000
+
 interrupt_number:
 	.byte	0x00
 argument_ax:
