@@ -55,11 +55,67 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	movb	%dl,	(%esp)
 	call	print_byte_hex_serial
 	call	new_line_serial
-	# print arguments
+	# print arguments->ax
 	movl	0x0c(%ebp),%ebx	# ebx = arguments;
 	movl	$arguments_ax_message,(%esp)
 	call	print_serial
 	movw	(%ebx),	%dx	# dx = arguments->ax;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print arguments->cx
+	movl	$arguments_cx_message,(%esp)
+	call	print_serial
+	movw	0x02(%ebx),	%dx	# dx = arguments->cx;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print arguments->bx
+	movl	$arguments_bx_message,(%esp)
+	call	print_serial
+	movw	0x04(%ebx),	%dx	# dx = arguments->cx;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print arguments->dx
+	movl	$arguments_dx_message,(%esp)
+	call	print_serial
+	movw	0x06(%ebx),	%dx	# dx = arguments->cx;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print arguments->si
+	movl	$arguments_si_message,(%esp)
+	call	print_serial
+	movw	0x08(%ebx),	%dx	# dx = arguments->cx;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print arguments->di
+	movl	$arguments_di_message,(%esp)
+	call	print_serial
+	movw	0x0a(%ebx),	%dx	# dx = arguments->cx;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print arguments->es
+	movl	$arguments_es_message,(%esp)
+	call	print_serial
+	movw	0x0c(%ebx),	%dx	# dx = arguments->cx;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print arguments->fs
+	movl	$arguments_fs_message,(%esp)
+	call	print_serial
+	movw	0x0e(%ebx),	%dx	# dx = arguments->cx;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
+	# print arguments->gs
+	movl	$arguments_gs_message,(%esp)
+	call	print_serial
+	movw	0x10(%ebx),	%dx	# dx = arguments->cx;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
@@ -199,4 +255,19 @@ interrupt_number_message:
 	.string "interrupt_num = 0x"
 arguments_ax_message:
 	.string "arguments->ax = 0x"
-
+arguments_cx_message:
+	.string "arguments->cx = 0x"
+arguments_bx_message:
+	.string "arguments->bx = 0x"
+arguments_dx_message:
+	.string "arguments->dx = 0x"
+arguments_si_message:
+	.string "arguments->si = 0x"
+arguments_di_message:
+	.string "arguments->di = 0x"
+arguments_es_message:
+	.string "arguments->es = 0x"
+arguments_fs_message:
+	.string "arguments->fs = 0x"
+arguments_gs_message:
+	.string "arguments->gs = 0x"
