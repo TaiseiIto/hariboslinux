@@ -48,74 +48,95 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	pushl	%ebx
 	subl	$0x00000004,%esp
 1:
+	# deploy arguments
+	movb	0x08(%ebp),%dl
+	movb	%dl,	(interrupt_number)
+	movl	0x0c(%ebp),%ebx	# ebx = arguments;
+	movw	(%ebx),	%dx
+	movw	%dx,	(argument_ax)
+	movw	0x02(%ebx),%dx
+	movw	%dx,	(argument_cx)
+	movw	0x04(%ebx),%dx
+	movw	%dx,	(argument_bx)
+	movw	0x06(%ebx),%dx
+	movw	%dx,	(argument_dx)
+	movw	0x08(%ebx),%dx
+	movw	%dx,	(argument_si)
+	movw	0x0a(%ebx),%dx
+	movw	%dx,	(argument_di)
+	movw	0x0c(%ebx),%dx
+	movw	%dx,	(argument_es)
+	movw	0x0e(%ebx),%dx
+	movw	%dx,	(argument_fs)
+	movw	0x10(%ebx),%dx
+	movw	%dx,	(argument_gs)
 	# print interrupt_number
 	movl	$interrupt_number_message,(%esp)
 	call	print_serial
-	movb	0x08(%ebp),%dl	# dl = interrupt_number;
+	movb	(interrupt_number),%dl	# dl = interrupt_number;
 	movb	%dl,	(%esp)
 	call	print_byte_hex_serial
 	call	new_line_serial
 	# print arguments->ax
-	movl	0x0c(%ebp),%ebx	# ebx = arguments;
 	movl	$arguments_ax_message,(%esp)
 	call	print_serial
-	movw	(%ebx),	%dx	# dx = arguments->ax;
+	movw	(argument_ax),%dx	# dx = arguments->ax;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print arguments->cx
 	movl	$arguments_cx_message,(%esp)
 	call	print_serial
-	movw	0x02(%ebx),	%dx	# dx = arguments->cx;
+	movw	(argument_cx),%dx	# dx = arguments->cx;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print arguments->bx
 	movl	$arguments_bx_message,(%esp)
 	call	print_serial
-	movw	0x04(%ebx),	%dx	# dx = arguments->cx;
+	movw	(argument_bx),%dx	# dx = arguments->bx;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print arguments->dx
 	movl	$arguments_dx_message,(%esp)
 	call	print_serial
-	movw	0x06(%ebx),	%dx	# dx = arguments->cx;
+	movw	(argument_dx),%dx	# dx = arguments->dx;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print arguments->si
 	movl	$arguments_si_message,(%esp)
 	call	print_serial
-	movw	0x08(%ebx),	%dx	# dx = arguments->cx;
+	movw	(argument_si),%dx	# dx = arguments->si;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print arguments->di
 	movl	$arguments_di_message,(%esp)
 	call	print_serial
-	movw	0x0a(%ebx),	%dx	# dx = arguments->cx;
+	movw	(argument_di),%dx	# dx = arguments->di;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print arguments->es
 	movl	$arguments_es_message,(%esp)
 	call	print_serial
-	movw	0x0c(%ebx),	%dx	# dx = arguments->cx;
+	movw	(argument_es),%dx	# dx = arguments->es;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print arguments->fs
 	movl	$arguments_fs_message,(%esp)
 	call	print_serial
-	movw	0x0e(%ebx),	%dx	# dx = arguments->cx;
+	movw	(argument_fs),%dx	# dx = arguments->fs;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
 	# print arguments->gs
 	movl	$arguments_gs_message,(%esp)
 	call	print_serial
-	movw	0x10(%ebx),	%dx	# dx = arguments->cx;
+	movw	(argument_gs),%dx	# dx = arguments->gs;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
@@ -251,6 +272,26 @@ putchar_serial:			# void putchar_serial(char c);
 	ret
 
 	.data
+interrupt_number:
+	.byte	0x00
+argument_ax:
+	.word	0x0000
+argument_cx:
+	.word	0x0000
+argument_bx:
+	.word	0x0000
+argument_dx:
+	.word	0x0000
+argument_si:
+	.word	0x0000
+argument_di:
+	.word	0x0000
+argument_es:
+	.word	0x0000
+argument_fs:
+	.word	0x0000
+argument_gs:
+	.word	0x0000
 interrupt_number_message:
 	.string "interrupt_num = 0x"
 arguments_ax_message:
