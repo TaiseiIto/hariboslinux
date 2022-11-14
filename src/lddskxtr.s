@@ -394,7 +394,7 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	subl	$0x00000004,%esp
+	subl	$0x00000008,%esp
 1:
 	movl	$0x00000001,%ecx	# if %ecx == 1, then print the digit of 0x10s place, else print the digit of 0x01s place.
 	movb	0x08(%ebp),%dl		# get the byte
@@ -410,16 +410,16 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 	subb	$0x0a,	%dl
 	addb	$0x61,	%dl
 5:					# print the digit
-	movl	%ecx,	%ebx
+	movl	%ecx,	0x04(%esp)
 	movl	%edx,	(%esp)
 	call	putchar_serial
-	movl	%ebx,	%ecx
+	movl	0x04(%esp),%ecx
 	jcxz	6f
 	movb	0x08(%ebp),%dl		# get the byte
 	decl	%ecx
 	jmp	2b
 6:
-	addl	$0x00000004,%esp
+	addl	$0x00000008,%esp
 	leave
 	ret
 

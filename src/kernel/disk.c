@@ -421,6 +421,8 @@ void write_cluster(SectorSpecifier sector_specifier)
 	arguments.cx = (sector_specifier.cylinder << 8) | sector_specifier.sector;
 	arguments.bx = (unsigned short)((unsigned int)buffer_address);
 	arguments.dx = sector_specifier.head << 8;
+	arguments.si = 0x0000;
+	arguments.di = 0x0000;
 	arguments.es = (unsigned short)((unsigned int)buffer_address >> 4 & 0x0000f000);
 	arguments.fs = 0x0000;
 	arguments.gs = 0x0000;
