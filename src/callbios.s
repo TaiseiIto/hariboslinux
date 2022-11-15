@@ -70,7 +70,7 @@ stack_floor:
 # 	unsigned short gs;
 # } BIOSInterface;
 
-call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInterface *arguments);
+call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInterface *arguments, unsigned short task_status_segment_selector);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
@@ -99,6 +99,8 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	movw	%dx,	(argument_fs)
 	movw	0x10(%ebx),%dx
 	movw	%dx,	(argument_gs)
+	movw	0x10(%ebp),%dx
+	movw	%dx,	(task_status_segment)
 2:
 	# print interrupt_number
 	movl	$interrupt_number_message,(%esp)
@@ -170,6 +172,13 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
+	# print task_status_segment
+	movl	$task_status_segment_message,(%esp)
+	call	print_serial
+	movw	(task_status_segment),%dx	# dx = task_status_segment;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
 3:
 	pushal				# save registers
 	movl	%cr0,	%eax
@@ -192,6 +201,7 @@ return_2_32:
 0:
 	lidt	(idtr_32)		# restore IDT
 	lgdt	(gdtr_32)		# restore GDT
+	ltr	(task_status_segment)	# restore TR
 jmp_2_origin_cs:
 0:
 	jmp	$0xffff,$origin_cs
@@ -788,6 +798,8 @@ argument_fs:
 	.word	0x0000
 argument_gs:
 	.word	0x0000
+task_status_segment:
+	.word	0x0000
 interrupt_number_message:
 	.string "interrupt_num = 0x"
 arguments_ax_message:
@@ -812,3 +824,5 @@ protected_mode_message:
 	.string "PROTECTED MODE NOW!"
 real_mode_message:
 	.string "REAL MODE NOW!"
+task_status_segment_message:
+	.string "task_status_segment = 0x"
