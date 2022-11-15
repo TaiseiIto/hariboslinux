@@ -294,8 +294,6 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	application_root_memory_section->size = (size_t)application_stack_floor - (size_t)application_root_memory_section - sizeof(*application_root_memory_section);
 	application_root_memory_section->flags = 0x00;
 	// Alloc application segments.
-	task->ldt = malloc(LDT_SIZE * sizeof(*task->ldt));
-	task->task_status_segment.ldtr = alloc_global_segment(task->ldt, LDT_SIZE * sizeof(*task->ldt), SEGMENT_DESCRIPTOR_LDT);
 	data_segment = alloc_local_segment(task->ldt, application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	executable_segment = alloc_local_segment(task->ldt, application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	// Call application.
@@ -499,6 +497,8 @@ void *execute_command(Shell *shell, char const *command)
 		// Execute the com file.
 		CommandTaskArgument *command_task_argument = malloc(sizeof(*command_task_argument));
 		Task *command_task = create_task(flags & EXECUTE_COMMAND_FLAG_BACKGROUND ? &main_task : get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
+		command_task->ldt = malloc(LDT_SIZE * sizeof(*command_task->ldt));
+		command_task->task_status_segment.ldtr = alloc_global_segment(command_task->ldt, LDT_SIZE * sizeof(*command_task->ldt), SEGMENT_DESCRIPTOR_LDT);
 		command_task_argument->com_file_name = com_file_name;
 		command_task_argument->com_file_binary = com_file_binary;
 		command_task_argument->com_file_size = com_file_size;
