@@ -377,7 +377,7 @@ gdt_16:
 	.byte	0x00		#  base_high
 
 				# data segment for 16bit protected mode
-				# selector 0x0008 whole memory is readable and writable
+				# selector 0x0018 whole memory is readable and writable
 				# base	0x00000000
 				# limit	0xffffffff
 				# access_right 0x409a
@@ -389,7 +389,7 @@ gdt_16:
 	.byte	0x00		#  base_high
 
 				# code segment for 16bit protected mode
-				# selector 0x0010 whole memory is readable and executable
+				# selector 0x0020 whole memory is readable and executable
 				# base	0x00000000
 				# limit	0xffffffff
 				# access_right 0x4092
