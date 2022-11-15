@@ -20,18 +20,32 @@
 	.globl	putchar_serial
 	# 16bit mode functions
 	.globl	call_bios_16
+	.globl	call_bios_16_real
+	.globl	new_line_serial_16
+	.globl	print_byte_hex_serial_16
+	.globl	print_dword_hex_serial_16
+	.globl	print_word_hex_serial_16
+	.globl	print_serial_16
+	.globl	putchar_serial_16
 
 	# 32bit mode functions
-	.type	call_bios,		@function
-	.type	return_2_32,		@function
-	.type	new_line_serial,	@function
-	.type	print_byte_hex_serial,	@function
-	.type	print_dword_hex_serial,	@function
-	.type	print_word_hex_serial,	@function
-	.type	print_serial,		@function
-	.type	putchar_serial,		@function
+	.type	call_bios,			@function
+	.type	return_2_32,			@function
+	.type	new_line_serial,		@function
+	.type	print_byte_hex_serial,		@function
+	.type	print_dword_hex_serial,		@function
+	.type	print_word_hex_serial,		@function
+	.type	print_serial,			@function
+	.type	putchar_serial,			@function
 	# 16bit mode functions
-	.type	call_bios_16,		@function
+	.type	call_bios_16,			@function
+	.type	call_bios_16_real,		@function
+	.type	new_line_serial_16,		@function
+	.type	print_byte_hex_serial_16,	@function
+	.type	print_dword_hex_serial_16,	@function
+	.type	print_word_hex_serial_16,	@function
+	.type	print_serial_16,		@function
+	.type	putchar_serial_16,		@function
 
 	.text
 stack_floor:
@@ -166,7 +180,7 @@ return_2_32:
 	lgdt	(gdtr_32)		# restore GDT
 	movl	(esp_32),%esp		# restore esp
 	popal				# restore registers
-2:
+1:
 	addl	$0x00000004,%esp
 	popl	%ebx
 	leave
@@ -321,14 +335,33 @@ call_bios_16:
 	movw	%ax,	%es
 	movw	%ax,	%fs
 	movw	%ax,	%gs
-2:	# return to 16bit protected mode
+	jmp	$0x0000,$call_bios_16_real
+call_bios_16_real:	# set real mode stack
+0:
+	movw	$stack_floor,%bp
+	movw	%bp,	%sp
+1:	# make new stack frame
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%bx
+	subw	$0x0004,%sp
+	movw	%sp,	%bx
+2:	# check arguments
+	movw	$real_mode_message,(%bx)
+	call	print_serial_16
+	call	new_line_serial_16
+3:	# clean stack frame
+	addw	$0x0004,%sp
+	popw	%bx
+	leave
+4:	# return to 16bit protected mode
 	# set CR0 PE bit
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
-	jmp	3f
-3:
+	jmp	5f
+5:
 	# set 32bit protected mode data segment
 	movw	$0x0008,%ax
 	movw	%ax,	%ss
@@ -338,6 +371,141 @@ call_bios_16:
 	movw	%ax,	%gs
 	# return to 32 bit protected mode
 	jmp	$0x0010,$return_2_32
+
+				# // print CRLF
+new_line_serial_16:		# void new_line_serial_16(void);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	$0x000a,(%di)
+	call	putchar_serial_16
+	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_byte_hex_serial_16:	# void print_byte_hex_serial_16(unsigned char value);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	$0x0001,%cx	# if %cx == 1, then print the digit of 0x10s place, else print the digit of 0x01s place.
+	movw	0x04(%bp),%dx	# get the byte
+	shrw	$0x0004,%dx
+1:
+	andw	$0x000f,%dx
+	cmpw	$0x000a,%dx
+	jae	3f
+2:				# the digit is less than 0x0a
+	addw	$0x0030,%dx
+	jmp	4f
+3:				# the digit is greater than or equal to 0x0a
+	subw	$0x000a,%dx
+	addw	$0x0061,%dx
+4:				# print the digit
+	movw	%cx,	0x02(%di)
+	movw	%dx,	(%di)
+	call	putchar_serial_16
+	movw	0x02(%di),%cx
+	jcxz	5f
+	movw	0x04(%bp),%dx	# get the byte
+	decw	%cx
+	jmp	1b
+5:				# finish printing
+	addw	$0x0004,%sp
+	popw	%di
+	leave
+	ret
+
+print_dword_hex_serial_16:	# void print_dword_hex_serial_16(unsigned short low, unsigned short high);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	0x06(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial_16
+	movw	0x04(%bp),%dx
+	movw	%dx,	(%di)
+	call	print_word_hex_serial_16
+	addw	$0x0002,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print value as hexadecimal
+print_word_hex_serial_16:	# void print_word_hex_serial_16(unsigned short value);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%di
+	subw	$0x0004,%sp
+	movw	%sp,	%di
+	movw	0x04(%bp),%dx
+	movw	%dx,	0x02(%di)
+	shr	$0x0008,%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex_serial_16
+	movw	0x02(%di),%dx
+	andw	$0x00ff,%dx
+	movw	%dx,	(%di)
+	call	print_byte_hex_serial_16
+	addw	$0x0004,%sp
+	popw	%di
+	leave
+	ret
+
+				# // print string to console
+print_serial_16:		# void print_serial_16(char *string);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+	pushw	%si
+	pushw	%di
+	subw	$0x0002,%sp
+	movw	%sp,	%di
+	movw	0x04(%bp),%si
+1:				# put loop
+	movzxb	(%si),	%ax
+	cmpb	$0x00,	%al
+	je	2f		# finish putting all characters
+	movw	%ax,	(%di)
+	call	putchar_serial_16
+	incw	%si
+	jmp	1b		# put next character
+2:
+	addw	$0x0002,%sp
+	popw	%di
+	popw	%si
+	leave
+	ret
+
+				# // print a character to console
+putchar_serial_16:		# void putchar_serial(char c);
+0:
+	pushw	%bp
+	movw	%sp,	%bp
+1:				# wait for device
+	movw	$com1,	%dx
+	addw	$0x0005,%dx
+	inb	%dx,	%al
+	andb	$0x20,	%al
+	jz	1b
+2:				# send the character
+	movb	0x04(%bp),%al
+	movw	$com1,	%dx
+	outb	%al,	%dx
+3:
+	leave
+	ret
 
 	.data
 	.align	0x8
@@ -451,3 +619,5 @@ arguments_fs_message:
 	.string "arguments->fs = 0x"
 arguments_gs_message:
 	.string "arguments->gs = 0x"
+real_mode_message:
+	.string "REAL MODE NOW!"
