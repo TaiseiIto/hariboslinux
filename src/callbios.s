@@ -459,26 +459,70 @@ call_bios_16_real:	# set real mode stack
 	movw	(argument_es),%es
 	movw	(argument_fs),%fs
 	movw	(argument_gs),%gs
+6:	# PIC setting
+	movb	$0x11,	%al
+	outb	%al,	$0x0020
+	movb	$0x08,	%al
+	outb	%al,	$0x0021
+	movb	$0x04,	%al
+	outb	%al,	$0x0021
+	movb	$0x01,	%al
+	outb	%al,	$0x0021
+	movb	$0x11,	%al
+	outb	%al,	$0x00a0
+	movb	$0x10,	%al
+	outb	%al,	$0x00a1
+	movb	$0x02,	%al
+	outb	%al,	$0x00a1
+	movb	$0x01,	%al
+	outb	%al,	$0x00a1
+	movb	$0xb8,	%al
+	outb	%al,	$0x0021
+	movb	$0xbf,	%al
+	outb	%al,	$0x00a1
+	sti
 call_int:
 0:
 	int	$0xff
-1:	# restore registers
+1:	# PIC setting
+	cli
+	movb	$0x11,	%al
+	outb	%al,	$0x0020
+	movb	$0x20,	%al
+	outb	%al,	$0x0021
+	movb	$0x04,	%al
+	outb	%al,	$0x0021
+	movb	$0x01,	%al
+	outb	%al,	$0x0021
+	movb	$0x11,	%al
+	outb	%al,	$0x00a0
+	movb	$0x28,	%al
+	outb	%al,	$0x00a1
+	movb	$0x02,	%al
+	outb	%al,	$0x00a1
+	movb	$0x01,	%al
+	outb	%al,	$0x00a1
+	movb	$0xe8,	%al
+	outb	%al,	$0x0021
+	movb	$0xee,	%al
+	outb	%al,	$0x00a1
+2:	# restore registers
 	popw	%gs
 	popw	%fs
 	popw	%es
 	popaw
-2:	# clean stack frame
+3:	# clean stack frame
 	addw	$0x0002,%sp
 	popw	%bx
 	leave
-3:	# return to 16bit protected mode
+4:	# return to 16bit protected mode
 	# set CR0 PE bit
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
-	jmp	4f
-4:
+	jmp	5f
+5:
 	# set 32bit protected mode data segment
 	movw	$0x0008,%ax
 	movw	%ax,	%ss
