@@ -196,6 +196,10 @@ return_2_32:
 	movl	%eax,	%cr0		# restore cr0
 	popal				# restore registers
 1:
+	movl	$protected_mode_message,(%esp)
+	call	print_serial
+	call	new_line_serial
+2:
 	addl	$0x00000004,%esp
 	popl	%ebx
 	leave
@@ -364,6 +368,76 @@ call_bios_16_real:	# set real mode stack
 2:	# check arguments
 	movw	$real_mode_message,(%bx)
 	call	print_serial_16
+	call	new_line_serial_16
+	# print interrupt_number
+	movl	$interrupt_number_message,(%bx)
+	call	print_serial_16
+	movb	(interrupt_number),%dl	# dl = interrupt_number;
+	movb	%dl,	(%bx)
+	call	print_byte_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->ax
+	movl	$arguments_ax_message,(%bx)
+	call	print_serial_16
+	movw	(argument_ax),%dx	# dx = arguments->ax;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->cx
+	movl	$arguments_cx_message,(%bx)
+	call	print_serial_16
+	movw	(argument_cx),%dx	# dx = arguments->cx;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->bx
+	movl	$arguments_bx_message,(%bx)
+	call	print_serial_16
+	movw	(argument_bx),%dx	# dx = arguments->bx;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->dx
+	movl	$arguments_dx_message,(%bx)
+	call	print_serial_16
+	movw	(argument_dx),%dx	# dx = arguments->dx;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->si
+	movl	$arguments_si_message,(%bx)
+	call	print_serial_16
+	movw	(argument_si),%dx	# dx = arguments->si;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->di
+	movl	$arguments_di_message,(%bx)
+	call	print_serial_16
+	movw	(argument_di),%dx	# dx = arguments->di;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->es
+	movl	$arguments_es_message,(%bx)
+	call	print_serial_16
+	movw	(argument_es),%dx	# dx = arguments->es;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->fs
+	movl	$arguments_fs_message,(%bx)
+	call	print_serial_16
+	movw	(argument_fs),%dx	# dx = arguments->fs;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
+	# print arguments->gs
+	movl	$arguments_gs_message,(%bx)
+	call	print_serial_16
+	movw	(argument_gs),%dx	# dx = arguments->gs;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
 	call	new_line_serial_16
 3:	# clean stack frame
 	addw	$0x0002,%sp
@@ -653,5 +727,7 @@ arguments_fs_message:
 	.string "arguments->fs = 0x"
 arguments_gs_message:
 	.string "arguments->gs = 0x"
+protected_mode_message:
+	.string "PROTECTED MODE NOW!"
 real_mode_message:
 	.string "REAL MODE NOW!"
