@@ -21,6 +21,7 @@
 	# 16bit mode functions
 	.globl	call_bios_16
 	.globl	call_bios_16_real
+	.globl	call_int
 	.globl	new_line_serial_16
 	.globl	print_byte_hex_serial_16
 	.globl	print_dword_hex_serial_16
@@ -40,6 +41,7 @@
 	# 16bit mode functions
 	.type	call_bios_16,			@function
 	.type	call_bios_16_real,		@function
+	.type	call_int,			@function
 	.type	new_line_serial_16,		@function
 	.type	print_byte_hex_serial_16,	@function
 	.type	print_dword_hex_serial_16,	@function
@@ -439,18 +441,44 @@ call_bios_16_real:	# set real mode stack
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-3:	# clean stack frame
+3:	# save registers
+	pushaw
+	pushw	%es
+	pushw	%fs
+	pushw	%gs
+5:	# call bios
+	movw	$call_int,%bx
+	movb	(interrupt_number),%dl
+	movb	%dl,	0x01(%bx)
+	movw	(argument_ax),%ax
+	movw	(argument_cx),%cx
+	movw	(argument_bx),%bx
+	movw	(argument_dx),%dx
+	movw	(argument_si),%si
+	movw	(argument_di),%di
+	movw	(argument_es),%es
+	movw	(argument_fs),%fs
+	movw	(argument_gs),%gs
+call_int:
+0:
+	int	$0xff
+1:	# restore registers
+	popw	%gs
+	popw	%fs
+	popw	%es
+	popaw
+2:	# clean stack frame
 	addw	$0x0002,%sp
 	popw	%bx
 	leave
-4:	# return to 16bit protected mode
+3:	# return to 16bit protected mode
 	# set CR0 PE bit
 	movl	%cr0,	%eax
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
-	jmp	5f
-5:
+	jmp	4f
+4:
 	# set 32bit protected mode data segment
 	movw	$0x0008,%ax
 	movw	%ax,	%ss
