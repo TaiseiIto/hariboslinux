@@ -479,9 +479,8 @@ call_bios_16_real:	# set real mode stack
 	outb	%al,	$0x00a1
 	sti
 5:	# call bios
-	movw	$call_int,%bx
 	movb	(interrupt_number),%dl
-	movb	%dl,	0x01(%bx)
+	movb	%dl,	(call_int + 1)
 	movw	(argument_ax),%ax
 	movw	(argument_cx),%cx
 	movw	(argument_bx),%bx
