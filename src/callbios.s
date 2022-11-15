@@ -446,19 +446,6 @@ call_bios_16_real:	# set real mode stack
 	pushw	%es
 	pushw	%fs
 	pushw	%gs
-5:	# call bios
-	movw	$call_int,%bx
-	movb	(interrupt_number),%dl
-	movb	%dl,	0x01(%bx)
-	movw	(argument_ax),%ax
-	movw	(argument_cx),%cx
-	movw	(argument_bx),%bx
-	movw	(argument_dx),%dx
-	movw	(argument_si),%si
-	movw	(argument_di),%di
-	movw	(argument_es),%es
-	movw	(argument_fs),%fs
-	movw	(argument_gs),%gs
 6:	# PIC setting
 	movb	$0x11,	%al
 	outb	%al,	$0x0020
@@ -481,6 +468,19 @@ call_bios_16_real:	# set real mode stack
 	movb	$0xbf,	%al
 	outb	%al,	$0x00a1
 	sti
+5:	# call bios
+	movw	$call_int,%bx
+	movb	(interrupt_number),%dl
+	movb	%dl,	0x01(%bx)
+	movw	(argument_ax),%ax
+	movw	(argument_cx),%cx
+	movw	(argument_bx),%bx
+	movw	(argument_dx),%dx
+	movw	(argument_si),%si
+	movw	(argument_di),%di
+	movw	(argument_es),%es
+	movw	(argument_fs),%fs
+	movw	(argument_gs),%gs
 call_int:
 0:
 	int	$0xff
