@@ -294,6 +294,8 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	application_root_memory_section->size = (size_t)application_stack_floor - (size_t)application_root_memory_section - sizeof(*application_root_memory_section);
 	application_root_memory_section->flags = 0x00;
 	// Alloc application segments.
+	task->ldt = malloc(LDT_SIZE * sizeof(*task->ldt));
+	task->task_status_segment.ldtr = alloc_global_segment(task->ldt, LDT_SIZE * sizeof(*task->ldt), SEGMENT_DESCRIPTOR_LDT);
 	data_segment = alloc_local_segment(task->ldt, application_memory, arguments->com_file_size + com_header->heap_and_stack_size, SEGMENT_DESCRIPTOR_WRITABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	executable_segment = alloc_local_segment(task->ldt, application_memory, com_header->rodata_base, SEGMENT_DESCRIPTOR_READABLE | SEGMENT_DESCRIPTOR_EXECUTABLE | SEGMENT_DESCRIPTOR_CODE_OR_DATA | SEGMENT_DESCRIPTOR_PRIVILEGE);
 	// Call application.

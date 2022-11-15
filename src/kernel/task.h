@@ -7,6 +7,8 @@ struct _Task;
 #include "gdt.h"
 #include "queue.h"
 
+#define LDT_SIZE	0x2000
+
 typedef struct _TaskStatusSegment
 {
 	unsigned int link;
