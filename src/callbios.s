@@ -344,14 +344,14 @@ call_bios_16_real:	# set real mode stack
 	pushw	%bp
 	movw	%sp,	%bp
 	pushw	%bx
-	subw	$0x0004,%sp
+	subw	$0x0002,%sp
 	movw	%sp,	%bx
 2:	# check arguments
 	movw	$real_mode_message,(%bx)
 	call	print_serial_16
 	call	new_line_serial_16
 3:	# clean stack frame
-	addw	$0x0004,%sp
+	addw	$0x0002,%sp
 	popw	%bx
 	leave
 4:	# return to 16bit protected mode
