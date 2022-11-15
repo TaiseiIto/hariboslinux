@@ -166,19 +166,34 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	call	new_line_serial
 3:
 	pushal				# save registers
+	movl	%cr0,	%eax
+	pushl	%eax			# save cr0
+	pushfl				# save eflags
+	cli				# prohibit interruption
 	movl	%esp,	(esp_32)	# save esp
+	sgdt	(gdtr_32)		# save GDT
 	lgdt	(gdtr_16)		# switch GDT
+	sidt	(idtr_32)		# save IDT
+	lidt	(idtr_16)		# switch IDT
+	movw	%ss,	(ss_32)		# save ss
+	movw	%ds,	(ds_32)		# save ds
+	movw	%es,	(es_32)		# save es
+	movw	%fs,	(fs_32)		# save fs
+	movw	%gs,	(gs_32)		# save gs
 	jmp	$0x20,	$call_bios_16
 return_2_32:
 0:
-	movw	$0x08,	%ax
-	movw	%ax,	%ss
-	movw	%ax,	%ds
-	movw	%ax,	%es
-	movw	%ax,	%fs
-	movw	%ax,	%gs
+	movw	(ss_32),%ss		# restore ss
+	movw	(ds_32),%ds		# restore ds
+	movw	(es_32),%es		# restore es
+	movw	(fs_32),%fs		# restore fs
+	movw	(gs_32),%gs		# restore gs
+	lidt	(idtr_32)		# restore IDT
 	lgdt	(gdtr_32)		# restore GDT
 	movl	(esp_32),%esp		# restore esp
+	popfl				# restore eflags
+	popl	%eax
+	movl	%eax,	%cr0		# restore cr0
 	popal				# restore registers
 1:
 	addl	$0x00000004,%esp
@@ -573,11 +588,30 @@ gdtr_16:
 	.long	gdt_16
 
 gdtr_32:
-	.word	0xffff
-	.long	0x00270000
+	.word	0x0000
+	.long	0x00000000
 
 esp_32:
 	.long	0x00000000
+
+idtr_16:
+	.word	0x03ff
+	.long	0x00000000
+
+idtr_32:
+	.word	0x0000
+	.long	0x00000000
+
+ss_32:
+	.word	0x0000
+ds_32:
+	.word	0x0000
+es_32:
+	.word	0x0000
+fs_32:
+	.word	0x0000
+gs_32:
+	.word	0x0000
 
 interrupt_number:
 	.byte	0x00
