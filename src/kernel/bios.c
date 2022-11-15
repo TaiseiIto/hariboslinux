@@ -5,13 +5,13 @@
 #include "task.h"
 
 BIOSDataArea const * const bios_data_area = MEMORY_MAP_BIOS_DATA_AREA;
-BIOSInterface *(* const _call_bios)(unsigned char interrupt_number, BIOSInterface *arguments, unsigned short task_status_segment_selector) = (BIOSInterface *(* const)(unsigned char, BIOSInterface *, unsigned short))MEMORY_MAP_CALL_BIOS;
+BIOSInterface *(* const _call_bios)(unsigned char interrupt_number, BIOSInterface *arguments) = (BIOSInterface *(* const)(unsigned char, BIOSInterface *))MEMORY_MAP_CALL_BIOS;
 
 BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface arguments)
 {
 	BIOSInterface result;
 	switch_polling_serial_mode();
-	result = *_call_bios(interrupt_number, &arguments, get_current_task()->segment_selector);
+	result = *_call_bios(interrupt_number, &arguments);
 	switch_interrupt_serial_mode();
 	return result;
 }
