@@ -12,6 +12,7 @@
 	# 32bit mode functions
 	.globl	call_bios
 	.globl	return_2_32
+	.globl	return_2_origin_cs
 	.globl	new_line_serial
 	.globl	print_byte_hex_serial
 	.globl	print_dword_hex_serial
@@ -32,6 +33,7 @@
 	# 32bit mode functions
 	.type	call_bios,			@function
 	.type	return_2_32,			@function
+	.type	return_2_origin_cs,		@function
 	.type	new_line_serial,		@function
 	.type	print_byte_hex_serial,		@function
 	.type	print_dword_hex_serial,		@function
@@ -173,25 +175,29 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	pushfl				# save eflags
 	cli				# prohibit interruption
 	movl	%esp,	(esp_32)	# save esp
-	sgdt	(gdtr_32)		# save GDT
-	lgdt	(gdtr_16)		# switch GDT
-	sidt	(idtr_32)		# save IDT
-	lidt	(idtr_16)		# switch IDT
+	movw	%cs,	(cs_32)		# save cs
 	movw	%ss,	(ss_32)		# save ss
 	movw	%ds,	(ds_32)		# save ds
 	movw	%es,	(es_32)		# save es
 	movw	%fs,	(fs_32)		# save fs
 	movw	%gs,	(gs_32)		# save gs
+	sgdt	(gdtr_32)		# save GDT
+	lgdt	(gdtr_16)		# switch GDT
+	sidt	(idtr_32)		# save IDT
+	lidt	(idtr_16)		# switch IDT
 	jmp	$0x20,	$call_bios_16
 return_2_32:
+0:
+	lidt	(idtr_32)		# restore IDT
+	lgdt	(gdtr_32)		# restore GDT
+	jmp	$0x10,$return_2_origin_cs
+return_2_origin_cs:
 0:
 	movw	(ss_32),%ss		# restore ss
 	movw	(ds_32),%ds		# restore ds
 	movw	(es_32),%es		# restore es
 	movw	(fs_32),%fs		# restore fs
 	movw	(gs_32),%gs		# restore gs
-	lidt	(idtr_32)		# restore IDT
-	lgdt	(gdtr_32)		# restore GDT
 	movl	(esp_32),%esp		# restore esp
 	popfl				# restore eflags
 	popl	%eax
@@ -748,6 +754,8 @@ idtr_32:
 	.word	0x0000
 	.long	0x00000000
 
+cs_32:
+	.word	0x0000
 ss_32:
 	.word	0x0000
 ds_32:
