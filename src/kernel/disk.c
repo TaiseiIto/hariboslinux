@@ -304,8 +304,8 @@ void save_file(char const *file_name, unsigned char const *content, unsigned int
 		delete_file(file_name);
 	}
 	else file_information = get_unused_file_information();
-	for(char *name = file_information->name; name != file_information->name + _countof(file_information->name); name++)*name = prefix_begin != prefix_end ? *prefix_begin++ : '\0';
-	for(char *extension = file_information->extension; extension != file_information->extension + _countof(file_information->extension); extension++)*extension = suffix_begin != suffix_end ? *suffix_begin++ : '\0';
+	for(char *name = file_information->name; name != file_information->name + _countof(file_information->name); name++)*name = prefix_begin != prefix_end ? *prefix_begin++ : ' ';
+	for(char *extension = file_information->extension; extension != file_information->extension + _countof(file_information->extension); extension++)*extension = suffix_begin != suffix_end ? *suffix_begin++ : ' ';
 	file_information->flags = FILE_INFORMATION_FLAG_NORMAL_FILE;
 	for(char *reserved = file_information->reserved; reserved != file_information->reserved + _countof(file_information->reserved); reserved++)*reserved = 0x00;
 	file_information->time = ((unsigned short)time.hour << 11) + ((unsigned short)time.minute << 5) + (unsigned short)time.second / 2;
