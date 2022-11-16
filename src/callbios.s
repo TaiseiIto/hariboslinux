@@ -93,11 +93,9 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	movw	0x0a(%ebx),%dx
 	movw	%dx,	(argument_di)
 	movw	0x0c(%ebx),%dx
-	movw	%dx,	(argument_es)
+	movw	%dx,	(argument_bp)
 	movw	0x0e(%ebx),%dx
-	movw	%dx,	(argument_fs)
-	movw	0x10(%ebx),%dx
-	movw	%dx,	(argument_gs)
+	movw	%dx,	(argument_es)
 2:
 	# print interrupt_number
 	movl	$interrupt_number_message,(%esp)
@@ -148,24 +146,17 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
+	# print arguments->bp
+	movl	$arguments_bp_message,(%esp)
+	call	print_serial
+	movw	(argument_bp),%dx	# dx = arguments->bp;
+	movw	%dx,	(%esp)
+	call	print_word_hex_serial
+	call	new_line_serial
 	# print arguments->es
 	movl	$arguments_es_message,(%esp)
 	call	print_serial
 	movw	(argument_es),%dx	# dx = arguments->es;
-	movw	%dx,	(%esp)
-	call	print_word_hex_serial
-	call	new_line_serial
-	# print arguments->fs
-	movl	$arguments_fs_message,(%esp)
-	call	print_serial
-	movw	(argument_fs),%dx	# dx = arguments->fs;
-	movw	%dx,	(%esp)
-	call	print_word_hex_serial
-	call	new_line_serial
-	# print arguments->gs
-	movl	$arguments_gs_message,(%esp)
-	call	print_serial
-	movw	(argument_gs),%dx	# dx = arguments->gs;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
@@ -429,6 +420,13 @@ call_bios_16_real:	# set real mode stack
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
+	# print arguments->bp
+	movl	$arguments_bp_message,(%bx)
+	call	print_serial_16
+	movw	(argument_bp),%dx	# dx = arguments->bp;
+	movw	%dx,	(%bx)
+	call	print_word_hex_serial_16
+	call	new_line_serial_16
 	# print arguments->es
 	movl	$arguments_es_message,(%bx)
 	call	print_serial_16
@@ -436,25 +434,8 @@ call_bios_16_real:	# set real mode stack
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->fs
-	movl	$arguments_fs_message,(%bx)
-	call	print_serial_16
-	movw	(argument_fs),%dx	# dx = arguments->fs;
-	movw	%dx,	(%bx)
-	call	print_word_hex_serial_16
-	call	new_line_serial_16
-	# print arguments->gs
-	movl	$arguments_gs_message,(%bx)
-	call	print_serial_16
-	movw	(argument_gs),%dx	# dx = arguments->gs;
-	movw	%dx,	(%bx)
-	call	print_word_hex_serial_16
-	call	new_line_serial_16
 3:	# save registers
 	pushaw
-	pushw	%es
-	pushw	%fs
-	pushw	%gs
 6:	# PIC setting
 	movb	$0x11,	%al
 	outb	%al,	$0x0020
@@ -486,9 +467,8 @@ call_bios_16_real:	# set real mode stack
 	movw	(argument_dx),%dx
 	movw	(argument_si),%si
 	movw	(argument_di),%di
+	movw	(argument_bp),%bp
 	movw	(argument_es),%es
-	movw	(argument_fs),%fs
-	movw	(argument_gs),%gs
 call_int:
 0:
 	int	$0xff
@@ -515,9 +495,6 @@ call_int:
 	movb	$0xee,	%al
 	outb	%al,	$0x00a1
 2:	# restore registers
-	popw	%gs
-	popw	%fs
-	popw	%es
 	popaw
 3:	# clean stack frame
 	addw	$0x0002,%sp
@@ -781,11 +758,9 @@ argument_si:
 	.word	0x0000
 argument_di:
 	.word	0x0000
+argument_bp:
+	.word	0x0000
 argument_es:
-	.word	0x0000
-argument_fs:
-	.word	0x0000
-argument_gs:
 	.word	0x0000
 interrupt_number_message:
 	.string "interrupt_num = 0x"
@@ -801,12 +776,10 @@ arguments_si_message:
 	.string "arguments->si = 0x"
 arguments_di_message:
 	.string "arguments->di = 0x"
+arguments_bp_message:
+	.string "arguments->bp = 0x"
 arguments_es_message:
 	.string "arguments->es = 0x"
-arguments_fs_message:
-	.string "arguments->fs = 0x"
-arguments_gs_message:
-	.string "arguments->gs = 0x"
 protected_mode_message:
 	.string "PROTECTED MODE NOW!"
 real_mode_message:

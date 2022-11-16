@@ -104,9 +104,8 @@ typedef struct _BIOSInterface
 	unsigned short dx;
 	unsigned short si;
 	unsigned short di;
+	unsigned short bp;
 	unsigned short es;
-	unsigned short fs;
-	unsigned short gs;
 } BIOSInterface;
 
 BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface arguments);
