@@ -201,19 +201,19 @@ origin_cs:
 	movl	$protected_mode_message,(%esp)
 	call	print_serial
 	call	new_line_serial
-	movl	0x0c(%ebp),%ebx		# ebx = input;
+	movl	0x0c(%ebp),%eax		# eax = input;
 	movw	(output_ax),%dx
-	movw	%dx,	(%ebx)		# input->ax = *output_ax;
+	movw	%dx,	(%eax)		# input->ax = *output_ax;
 	movw	(output_cx),%dx
-	movw	%dx,	0x02(%ebx)	# input->cx = *output_cx;
+	movw	%dx,	0x02(%eax)	# input->cx = *output_cx;
 	movw	(output_bx),%dx
-	movw	%dx,	0x04(%ebx)	# input->bx = *output_bx;
+	movw	%dx,	0x04(%eax)	# input->bx = *output_bx;
 	movw	(output_dx),%dx
-	movw	%dx,	0x06(%ebx)	# input->dx = *output_dx;
+	movw	%dx,	0x06(%eax)	# input->dx = *output_dx;
 	movw	(output_cx),%dx
-	movw	%dx,	0x02(%ebx)	# input->cx = *output_cx;
+	movw	%dx,	0x02(%eax)	# input->cx = *output_cx;
 	movw	(output_flags),%dx
-	movw	%dx,	0x10(%ebx)	# input->flags = *output_flags;
+	movw	%dx,	0x10(%eax)	# input->flags = *output_flags;
 2:
 	addl	$0x00000004,%esp
 	popl	%ebx

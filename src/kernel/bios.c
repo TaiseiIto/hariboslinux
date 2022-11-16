@@ -13,11 +13,11 @@ BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface input)
 	switch_polling_serial_mode();
 	result = *_call_bios(interrupt_number, &input);
 	switch_interrupt_serial_mode();
-	printf_serial("result.ax = %#04.2x\n", result.ax);
-	printf_serial("result.cx = %#04.2x\n", result.cx);
-	printf_serial("result.bx = %#04.2x\n", result.bx);
-	printf_serial("result.dx = %#04.2x\n", result.dx);
-	printf_serial("result.flags = %#04.2x\n", result.flags);
+	printf_serial("result.ax = %#06.4x\n", result.ax);
+	printf_serial("result.cx = %#06.4x\n", result.cx);
+	printf_serial("result.bx = %#06.4x\n", result.bx);
+	printf_serial("result.dx = %#06.4x\n", result.dx);
+	printf_serial("result.flags = %#06.4x\n", result.flags);
 	return result;
 }
 
