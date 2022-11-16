@@ -54,7 +54,6 @@
 	.type	putchar_serial_16,		@function
 
 	.text
-stack_floor:
 	.code32
 
 # typedef struct _BIOSInterface
@@ -369,7 +368,7 @@ call_bios_16:
 	jmp	$0x0000,$call_bios_16_real
 call_bios_16_real:	# set real mode stack
 0:
-	movw	$stack_floor,%bp
+	movw	$call_bios - 0x200,%bp
 	movw	%bp,	%sp
 1:	# make new stack frame
 	pushw	%bp
