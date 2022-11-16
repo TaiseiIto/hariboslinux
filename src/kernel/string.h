@@ -9,6 +9,7 @@ char const *strchr(char const *string, char character);
 int strcmp(char const *string1, char const *string2);
 int strncmp(char const *string1, char const *string2, size_t n);
 char *strcpy(char *destination, char const *source);
+char *strncpy(char *destination, char const *source, size_t n);
 unsigned int strlen(char const *string);
 
 #endif

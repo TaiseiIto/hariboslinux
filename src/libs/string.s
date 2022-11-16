@@ -10,6 +10,7 @@
 	.globl	strcmp
 	.globl	strncmp
 	.globl	strcpy
+	.globl	strncpy
 	.globl	strlen
 
 	.type	memcpy,	@function
@@ -18,6 +19,7 @@
 	.type	strcmp,	@function
 	.type	strncmp,@function
 	.type	strcpy,	@function
+	.type	strncpy,@function
 	.type	strlen,	@function
 
 	.text
@@ -256,6 +258,54 @@ strcpy:
 	pushl	0x08(%ebp)
 	call	memcpy
 3:	# End of the function.
+	leave
+	ret
+
+# char *strncpy
+# (
+#	char *destination,	// 0x08(%ebp)
+#	char const *source,	// 0x0c(%ebp)
+#	size_t n		// 0x10(%ebp)
+# );
+strncpy:
+0:	# Start of the function.
+	pushl	%ebp
+	movl	%esp,	%ebp
+	subl	$0x00000010,%esp
+1:
+	movl	0x0c(%ebp),%edx		# EDX = source;
+	movl	%edx,	(%esp)
+	call	strlen			# EAX = strlen(source);
+	incl	%eax			# EAX = strlen(source) + 1;
+	movl	%eax,	0x0c(%esp)	# ESP[0x0c] = strlen(source) + 1;
+	cmpl	0x10(%ebp),%eax		# strlen(source) + 1 - n;
+	jae	3f
+2:	# if(strlen(source) + 1 < n)
+	movl	0x08(%ebp),%edx		# EDX = destination;
+	movl	%edx,	(%esp)		# ESP[0x00] = destination;
+	movl	0x0c(%ebp),%edx		# EDX = source;
+	movl	%edx,	0x04(%esp)	# ESP[0x04] = source;
+	call	strcpy			# strcpy(destination, source);
+	movl	0x08(%ebp),%edx		# EDX = destination;
+	addl	0x0c(%esp),%edx		# EDX = destination + strlen(source) + 1;
+	movl	%edx,	(%esp)		# ESP[0x00] = destination + strlen(source) + 1;
+	movl	$0x00000000,0x04(%esp)	# ESP[0x04] = 0;
+	movl	0x10(%ebp),%edx		# EDX = n;
+	subl	0x0c(%esp),%edx		# EDX = n - (strlen(source) + 1);
+	movl	%edx,	0x08(%esp)	# ESP[0x08] = n - (strlen(source) + 1);
+	call	memset			# memset(destination + strlen(source) + 1, 0, n - (strlen(source) + 1));
+	jmp	4f
+3:	# if(strlen(source) + 1 >= n)
+	movl	0x08(%ebp),%edx		# EDX = destination;
+	movl	%edx,	(%esp)		# ESP[0x00] = destination;
+	movl	0x0c(%ebp),%edx		# EDX = source;
+	movl	%edx,	0x04(%esp)	# ESP[0x04] = source;
+	movl	0x10(%ebp),%edx		# EDX = n;
+	movl	%edx,	0x08(%esp)	# ESP[0x08] = n;
+	call	memcpy
+4:	# End of the function.
+	movl	0x0c(%ebp),%eax		# EAX = source;
+	addl	$0x00000010,%esp
 	leave
 	ret
 
