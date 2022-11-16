@@ -69,33 +69,33 @@
 # 	unsigned short gs;
 # } BIOSInterface;
 
-call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInterface *arguments, unsigned short task_status_segment_selector);
+call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInterface *input, unsigned short task_status_segment_selector);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
 	pushl	%ebx
 	subl	$0x00000004,%esp
 1:
-	# deploy arguments
+	# deploy input
 	movb	0x08(%ebp),%dl
 	movb	%dl,	(interrupt_number)
-	movl	0x0c(%ebp),%ebx	# ebx = arguments;
+	movl	0x0c(%ebp),%ebx	# ebx = input;
 	movw	(%ebx),	%dx
-	movw	%dx,	(argument_ax)
+	movw	%dx,	(input_ax)
 	movw	0x02(%ebx),%dx
-	movw	%dx,	(argument_cx)
+	movw	%dx,	(input_cx)
 	movw	0x04(%ebx),%dx
-	movw	%dx,	(argument_bx)
+	movw	%dx,	(input_bx)
 	movw	0x06(%ebx),%dx
-	movw	%dx,	(argument_dx)
+	movw	%dx,	(input_dx)
 	movw	0x08(%ebx),%dx
-	movw	%dx,	(argument_si)
+	movw	%dx,	(input_si)
 	movw	0x0a(%ebx),%dx
-	movw	%dx,	(argument_di)
+	movw	%dx,	(input_di)
 	movw	0x0c(%ebx),%dx
-	movw	%dx,	(argument_bp)
+	movw	%dx,	(input_bp)
 	movw	0x0e(%ebx),%dx
-	movw	%dx,	(argument_es)
+	movw	%dx,	(input_es)
 2:
 	# print interrupt_number
 	movl	$interrupt_number_message,(%esp)
@@ -104,59 +104,59 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	movb	%dl,	(%esp)
 	call	print_byte_hex_serial
 	call	new_line_serial
-	# print arguments->ax
-	movl	$arguments_ax_message,(%esp)
+	# print input->ax
+	movl	$input_ax_message,(%esp)
 	call	print_serial
-	movw	(argument_ax),%dx	# dx = arguments->ax;
+	movw	(input_ax),%dx	# dx = input->ax;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print arguments->cx
-	movl	$arguments_cx_message,(%esp)
+	# print input->cx
+	movl	$input_cx_message,(%esp)
 	call	print_serial
-	movw	(argument_cx),%dx	# dx = arguments->cx;
+	movw	(input_cx),%dx	# dx = input->cx;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print arguments->bx
-	movl	$arguments_bx_message,(%esp)
+	# print input->bx
+	movl	$input_bx_message,(%esp)
 	call	print_serial
-	movw	(argument_bx),%dx	# dx = arguments->bx;
+	movw	(input_bx),%dx	# dx = input->bx;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print arguments->dx
-	movl	$arguments_dx_message,(%esp)
+	# print input->dx
+	movl	$input_dx_message,(%esp)
 	call	print_serial
-	movw	(argument_dx),%dx	# dx = arguments->dx;
+	movw	(input_dx),%dx	# dx = input->dx;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print arguments->si
-	movl	$arguments_si_message,(%esp)
+	# print input->si
+	movl	$input_si_message,(%esp)
 	call	print_serial
-	movw	(argument_si),%dx	# dx = arguments->si;
+	movw	(input_si),%dx	# dx = input->si;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print arguments->di
-	movl	$arguments_di_message,(%esp)
+	# print input->di
+	movl	$input_di_message,(%esp)
 	call	print_serial
-	movw	(argument_di),%dx	# dx = arguments->di;
+	movw	(input_di),%dx	# dx = input->di;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print arguments->bp
-	movl	$arguments_bp_message,(%esp)
+	# print input->bp
+	movl	$input_bp_message,(%esp)
 	call	print_serial
-	movw	(argument_bp),%dx	# dx = arguments->bp;
+	movw	(input_bp),%dx	# dx = input->bp;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
-	# print arguments->es
-	movl	$arguments_es_message,(%esp)
+	# print input->es
+	movl	$input_es_message,(%esp)
 	call	print_serial
-	movw	(argument_es),%dx	# dx = arguments->es;
+	movw	(input_es),%dx	# dx = input->es;
 	movw	%dx,	(%esp)
 	call	print_word_hex_serial
 	call	new_line_serial
@@ -201,6 +201,19 @@ origin_cs:
 	movl	$protected_mode_message,(%esp)
 	call	print_serial
 	call	new_line_serial
+	movl	0x0c(%ebp),%ebx		# ebx = input;
+	movw	(output_ax),%dx
+	movw	%dx,	(%ebx)		# input->ax = *output_ax;
+	movw	(output_cx),%dx
+	movw	%dx,	0x02(%ebx)	# input->cx = *output_cx;
+	movw	(output_bx),%dx
+	movw	%dx,	0x04(%ebx)	# input->bx = *output_bx;
+	movw	(output_dx),%dx
+	movw	%dx,	0x06(%ebx)	# input->dx = *output_dx;
+	movw	(output_cx),%dx
+	movw	%dx,	0x02(%ebx)	# input->cx = *output_cx;
+	movw	(output_flags),%dx
+	movw	%dx,	0x10(%ebx)	# input->flags = *output_flags;
 2:
 	addl	$0x00000004,%esp
 	popl	%ebx
@@ -367,7 +380,7 @@ call_bios_16_real:	# set real mode stack
 	pushw	%bx
 	subw	$0x0002,%sp
 	movw	%sp,	%bx
-2:	# check arguments
+2:	# check input
 	movw	$real_mode_message,(%bx)
 	call	print_serial_16
 	call	new_line_serial_16
@@ -378,59 +391,59 @@ call_bios_16_real:	# set real mode stack
 	movb	%dl,	(%bx)
 	call	print_byte_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->ax
-	movl	$arguments_ax_message,(%bx)
+	# print input->ax
+	movl	$input_ax_message,(%bx)
 	call	print_serial_16
-	movw	(argument_ax),%dx	# dx = arguments->ax;
+	movw	(input_ax),%dx	# dx = input->ax;
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->cx
-	movl	$arguments_cx_message,(%bx)
+	# print input->cx
+	movl	$input_cx_message,(%bx)
 	call	print_serial_16
-	movw	(argument_cx),%dx	# dx = arguments->cx;
+	movw	(input_cx),%dx	# dx = input->cx;
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->bx
-	movl	$arguments_bx_message,(%bx)
+	# print input->bx
+	movl	$input_bx_message,(%bx)
 	call	print_serial_16
-	movw	(argument_bx),%dx	# dx = arguments->bx;
+	movw	(input_bx),%dx	# dx = input->bx;
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->dx
-	movl	$arguments_dx_message,(%bx)
+	# print input->dx
+	movl	$input_dx_message,(%bx)
 	call	print_serial_16
-	movw	(argument_dx),%dx	# dx = arguments->dx;
+	movw	(input_dx),%dx	# dx = input->dx;
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->si
-	movl	$arguments_si_message,(%bx)
+	# print input->si
+	movl	$input_si_message,(%bx)
 	call	print_serial_16
-	movw	(argument_si),%dx	# dx = arguments->si;
+	movw	(input_si),%dx	# dx = input->si;
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->di
-	movl	$arguments_di_message,(%bx)
+	# print input->di
+	movl	$input_di_message,(%bx)
 	call	print_serial_16
-	movw	(argument_di),%dx	# dx = arguments->di;
+	movw	(input_di),%dx	# dx = input->di;
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->bp
-	movl	$arguments_bp_message,(%bx)
+	# print input->bp
+	movl	$input_bp_message,(%bx)
 	call	print_serial_16
-	movw	(argument_bp),%dx	# dx = arguments->bp;
+	movw	(input_bp),%dx	# dx = input->bp;
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
-	# print arguments->es
-	movl	$arguments_es_message,(%bx)
+	# print input->es
+	movl	$input_es_message,(%bx)
 	call	print_serial_16
-	movw	(argument_es),%dx	# dx = arguments->es;
+	movw	(input_es),%dx	# dx = input->es;
 	movw	%dx,	(%bx)
 	call	print_word_hex_serial_16
 	call	new_line_serial_16
@@ -461,17 +474,25 @@ call_bios_16_real:	# set real mode stack
 5:	# call bios
 	movb	(interrupt_number),%dl
 	movb	%dl,	(call_int + 1)
-	movw	(argument_ax),%ax
-	movw	(argument_cx),%cx
-	movw	(argument_bx),%bx
-	movw	(argument_dx),%dx
-	movw	(argument_si),%si
-	movw	(argument_di),%di
-	movw	(argument_bp),%bp
-	movw	(argument_es),%es
+	movw	(input_ax),%ax
+	movw	(input_cx),%cx
+	movw	(input_bx),%bx
+	movw	(input_dx),%dx
+	movw	(input_si),%si
+	movw	(input_di),%di
+	movw	(input_bp),%bp
+	movw	(input_es),%es
 call_int:
 0:
 	int	$0xff
+2:	# save output
+	movw	%ax,	(output_ax)
+	movw	%cx,	(output_cx)
+	movw	%bx,	(output_bx)
+	movw	%dx,	(output_dx)
+	pushfw
+	popw	%ax
+	movw	%ax,	(output_flags)
 1:	# PIC setting
 	cli
 	movb	$0x11,	%al
@@ -746,40 +767,50 @@ gs_32:
 
 interrupt_number:
 	.byte	0x00
-argument_ax:
+input_ax:
 	.word	0x0000
-argument_cx:
+input_cx:
 	.word	0x0000
-argument_bx:
+input_bx:
 	.word	0x0000
-argument_dx:
+input_dx:
 	.word	0x0000
-argument_si:
+input_si:
 	.word	0x0000
-argument_di:
+input_di:
 	.word	0x0000
-argument_bp:
+input_bp:
 	.word	0x0000
-argument_es:
+input_es:
+	.word	0x0000
+output_ax:
+	.word	0x0000
+output_cx:
+	.word	0x0000
+output_bx:
+	.word	0x0000
+output_dx:
+	.word	0x0000
+output_flags:
 	.word	0x0000
 interrupt_number_message:
 	.string "interrupt_num = 0x"
-arguments_ax_message:
-	.string "arguments->ax = 0x"
-arguments_cx_message:
-	.string "arguments->cx = 0x"
-arguments_bx_message:
-	.string "arguments->bx = 0x"
-arguments_dx_message:
-	.string "arguments->dx = 0x"
-arguments_si_message:
-	.string "arguments->si = 0x"
-arguments_di_message:
-	.string "arguments->di = 0x"
-arguments_bp_message:
-	.string "arguments->bp = 0x"
-arguments_es_message:
-	.string "arguments->es = 0x"
+input_ax_message:
+	.string "input->ax = 0x"
+input_cx_message:
+	.string "input->cx = 0x"
+input_bx_message:
+	.string "input->bx = 0x"
+input_dx_message:
+	.string "input->dx = 0x"
+input_si_message:
+	.string "input->si = 0x"
+input_di_message:
+	.string "input->di = 0x"
+input_bp_message:
+	.string "input->bp = 0x"
+input_es_message:
+	.string "input->es = 0x"
 protected_mode_message:
 	.string "PROTECTED MODE NOW!"
 real_mode_message:

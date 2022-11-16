@@ -106,9 +106,10 @@ typedef struct _BIOSInterface
 	unsigned short di;
 	unsigned short bp;
 	unsigned short es;
+	unsigned short flags;
 } BIOSInterface;
 
-BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface arguments);
+BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface input);
 BIOSDataArea const *get_bios_data_area(void);
 void const *get_extended_bios_data_area(void);
 void print_bios_data_area(BIOSDataArea const *bios_data_area);

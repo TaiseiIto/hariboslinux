@@ -411,20 +411,21 @@ void write_entire_disk(void)
 
 void write_cluster(SectorSpecifier sector_specifier)
 {
-	BIOSInterface arguments;
+	BIOSInterface input;
 	unsigned char *source_address = sector_specifier2address(sector_specifier);
 	unsigned char *buffer_address = MEMORY_MAP_BIOS_BUFFER;
 	memcpy(buffer_address, source_address, boot_sector->sector_size);
 	printf_serial("Save cylinder %#04.2x, head %#04.2x, sector %#04.2x, source address %p\n", sector_specifier.cylinder, sector_specifier.head, sector_specifier.sector, source_address);
 	for(unsigned char *byte = buffer_address; byte != buffer_address + boot_sector->sector_size; byte++)printf_serial("%02.2x%c", *byte, (unsigned int)(byte+ 1) % 0x10 ? ' ' : '\n');
-	arguments.ax = 0x0301;
-	arguments.cx = (sector_specifier.cylinder << 8) | sector_specifier.sector;
-	arguments.bx = (unsigned short)((unsigned int)buffer_address);
-	arguments.dx = sector_specifier.head << 8;
-	arguments.si = 0x0000;
-	arguments.di = 0x0000;
-	arguments.bp = 0x0000;
-	arguments.es = (unsigned short)((unsigned int)buffer_address >> 4 & 0x0000f000);
-	call_bios(0x13, arguments);
+	input.ax = 0x0301;
+	input.cx = (sector_specifier.cylinder << 8) | sector_specifier.sector;
+	input.bx = (unsigned short)((unsigned int)buffer_address);
+	input.dx = sector_specifier.head << 8;
+	input.si = 0x0000;
+	input.di = 0x0000;
+	input.bp = 0x0000;
+	input.es = (unsigned short)((unsigned int)buffer_address >> 4 & 0x0000f000);
+	input.flags = 0x0002;
+	call_bios(0x13, input);
 }
 
