@@ -425,7 +425,7 @@ void write_cluster(SectorSpecifier sector_specifier)
 	input.di = 0x0000;
 	input.bp = 0x0000;
 	input.es = (unsigned short)((unsigned int)buffer_address >> 4 & 0x0000f000);
-	input.flags = 0x0002;
+	input.flags = 0x0202;
 	call_bios(0x13, input);
 }
 
