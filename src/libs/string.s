@@ -13,14 +13,14 @@
 	.globl	strncpy
 	.globl	strlen
 
-	.type	memcpy,	@function
-	.type	memset,	@function
-	.type	strchr,	@function
-	.type	strcmp,	@function
-	.type	strncmp,@function
-	.type	strcpy,	@function
-	.type	strncpy,@function
-	.type	strlen,	@function
+	.type	memcpy,		@function
+	.type	memset,		@function
+	.type	strchr,		@function
+	.type	strcmp,		@function
+	.type	strncmp,	@function
+	.type	strcpy,		@function
+	.type	strncpy,	@function
+	.type	strlen,		@function
 
 	.text
 
@@ -173,15 +173,15 @@ strcmp:
 	call	strlen			# EAX = strlen(string2);
 	addl	$0x00000008,%esp
 3:	# Choose shorter string length.
-	cmpl	%ebx,	%eax		# if(strlen(string2) < strlen(string1))EAX = strlen(string2);
-	jbe	4f			# if(strlen(string1) <= strlen(string2))goto 4;
-	movl	%ebx,	%eax		# EAX = strlen(string2);
+	cmpl	%ebx,	%eax		# if(strlen(string1) < strlen(string2))EAX = strlen(string1);
+	jbe	4f			# if(strlen(string2) <= strlen(string1))goto 4;
+	movl	%ebx,	%eax		# EAX = strlen(string1);
 4:	# Compare the strings.
 	movl	%eax,	%ecx		# ECX = min(strlen(string1), strlen(string2));
 	incl	%ecx			# ECX = min(strlen(string1), strlen(string2)) + 1;
 	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
 	jb	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
-	ja	6f			# if(*(char *)EDI < *(char *)ESI)
+	ja	6f			# if(*(char *)EDI < *(char *)ESI)goto 6f;
 	# if(*(char *)ESI == *(char *)EDI)return 0;
 	xorl	%eax,	%eax
 	jmp	7f
