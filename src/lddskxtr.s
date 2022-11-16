@@ -277,7 +277,7 @@ main:
 11:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
-	jmp	$0x0010,$0x00106e00
+	ljmp	$0x0010,$0x00106e00
 
 disk_address_2_sector_specifier:	# // void disk_address_2_sector_specifier(unsigned int disk_address, SectorSpecifier *sector_specifier);
 0:
@@ -313,7 +313,7 @@ load_sectors_32:			# // void load_sectors_32(void);
 	movl	%esp,	%ebp
 	pushal
 1:
-	jmp	$0x20,	$load_sectors_16
+	ljmp	$0x20,	$load_sectors_16
 return_2_32:
 0:
 	movw	$0x08,	%ax
@@ -608,7 +608,7 @@ load_sectors_16:	# 16bit protected mode
 	movw	%ax,	%es
 	movw	%ax,	%fs
 	movw	%ax,	%gs
-	jmp	$0x0000,$load_sectors
+	ljmp	$0x0000,$load_sectors
 load_sectors:		# 16bit real mode
 0:
 	pushw	%bp
@@ -713,7 +713,7 @@ load_sectors:		# 16bit real mode
 	movw	%ax,	%fs
 	movw	%ax,	%gs
 	# return to 32 bit protected mode
-	jmp	$0x0010,$return_2_32
+	ljmp	$0x0010,$return_2_32
 
 				# // load a sector from A drive
 				# // cylinder_number: 0x0000~0x004f

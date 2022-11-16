@@ -177,14 +177,14 @@ call_bios:			# BIOSInterface *call_bios(unsigned char interrupt_number, BIOSInte
 	lgdt	(gdtr_16)		# switch GDT
 	sidt	(idtr_32)		# save IDT
 	lidt	(idtr_16)		# switch IDT
-	jmp	$0x20,	$call_bios_16
+	ljmp	$0x20,	$call_bios_16
 return_2_32:
 0:
 	lidt	(idtr_32)		# restore IDT
 	lgdt	(gdtr_32)		# restore GDT
 jmp_2_origin_cs:
 0:
-	jmp	$0xffff,$origin_cs
+	ljmp	$0xffff,$origin_cs
 origin_cs:
 0:
 	movw	(ss_32),%ss		# restore ss
@@ -369,7 +369,7 @@ call_bios_16:
 	movw	%ax,	%es
 	movw	%ax,	%fs
 	movw	%ax,	%gs
-	jmp	$0x0000,$call_bios_16_real
+	ljmp	$0x0000,$call_bios_16_real
 call_bios_16_real:	# set real mode stack
 0:
 	movw	$call_bios - 0x200,%bp
@@ -537,7 +537,7 @@ call_int:
 	movw	%ax,	%fs
 	movw	%ax,	%gs
 	# return to 32 bit protected mode
-	jmp	$0x0010,$return_2_32
+	ljmp	$0x0010,$return_2_32
 
 				# // print CRLF
 new_line_serial_16:		# void new_line_serial_16(void);
