@@ -429,13 +429,10 @@ Complex complex_asin(Complex x)
 
 Complex complex_asinh(Complex x)
 {
-	Complex i;
 	Complex one;
-	i.real = 0.0;
-	i.imag = 1.0;
 	one.real = 1.0;
 	one.imag = 0.0;
-	return complex_multiplication(i, complex_log(complex_addition(complex_multiplication(x, i), complex_sqrt(complex_addition(one, complex_multiplication(x, x))))));
+	return complex_log(complex_addition(x, complex_sqrt(complex_addition(complex_multiplication(x, x), one))));
 }
 
 Complex complex_atan(Complex x)
@@ -2868,6 +2865,8 @@ Symbols syntactic_analysis(Symbols symbols)
 			break;
 		case i:
 			if(symbol->previous && symbol->previous->type == factor)break;
+			if(symbol->previous && symbol->previous->type == operand)break;
+			if(symbol->previous && symbol->previous->type == power)break;
 			if(symbol->previous && symbol->previous->type == numbers)break;
 			// <operand> ::= <i>
 			new_symbol = malloc(sizeof(*new_symbol));

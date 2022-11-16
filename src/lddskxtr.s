@@ -75,8 +75,8 @@
 	.type	putchar_serial_16,		@function
 	.type	validate_sector_specifier_16,	@function
 
-	.code32
 	.text
+	.code32
 main:
 0:
 	lgdt	(gdtr)
@@ -277,7 +277,7 @@ main:
 11:	# jump to kernel
 	movl	$0x00300000,%ebp
 	movl	$0x00300000,%esp
-	jmp	$0x0010,$0x00106e00
+	ljmp	$0x0010,$0x00106e00
 
 disk_address_2_sector_specifier:	# // void disk_address_2_sector_specifier(unsigned int disk_address, SectorSpecifier *sector_specifier);
 0:
@@ -313,7 +313,7 @@ load_sectors_32:			# // void load_sectors_32(void);
 	movl	%esp,	%ebp
 	pushal
 1:
-	jmp	$0x20,	$load_sectors_16
+	ljmp	$0x20,	$load_sectors_16
 return_2_32:
 0:
 	movw	$0x08,	%ax
@@ -394,7 +394,7 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 0:
 	pushl	%ebp
 	movl	%esp,	%ebp
-	subl	$0x00000004,%esp
+	subl	$0x00000008,%esp
 1:
 	movl	$0x00000001,%ecx	# if %ecx == 1, then print the digit of 0x10s place, else print the digit of 0x01s place.
 	movb	0x08(%ebp),%dl		# get the byte
@@ -410,16 +410,16 @@ print_byte_hex_serial:		# void print_byte_hex_serial(unsigned short value);
 	subb	$0x0a,	%dl
 	addb	$0x61,	%dl
 5:					# print the digit
-	movl	%ecx,	%ebx
+	movl	%ecx,	0x04(%esp)
 	movl	%edx,	(%esp)
 	call	putchar_serial
-	movl	%ebx,	%ecx
+	movl	0x04(%esp),%ecx
 	jcxz	6f
 	movb	0x08(%ebp),%dl		# get the byte
 	decl	%ecx
 	jmp	2b
 6:
-	addl	$0x00000004,%esp
+	addl	$0x00000008,%esp
 	leave
 	ret
 
@@ -608,7 +608,7 @@ load_sectors_16:	# 16bit protected mode
 	movw	%ax,	%es
 	movw	%ax,	%fs
 	movw	%ax,	%gs
-	jmp	$0x0000,$load_sectors
+	ljmp	$0x0000,$load_sectors
 load_sectors:		# 16bit real mode
 0:
 	pushw	%bp
@@ -713,7 +713,7 @@ load_sectors:		# 16bit real mode
 	movw	%ax,	%fs
 	movw	%ax,	%gs
 	# return to 32 bit protected mode
-	jmp	$0x0010,$return_2_32
+	ljmp	$0x0010,$return_2_32
 
 				# // load a sector from A drive
 				# // cylinder_number: 0x0000~0x004f
@@ -1016,7 +1016,7 @@ gdt:
 	.byte	0x00		#  base_high
 
 				# data segment for 16bit protected mode
-				# selector 0x0008 whole memory is readable and writable
+				# selector 0x0018 whole memory is readable and writable
 				# base	0x00000000
 				# limit	0xffffffff
 				# access_right 0x409a
@@ -1028,7 +1028,7 @@ gdt:
 	.byte	0x00		#  base_high
 
 				# code segment for 16bit protected mode
-				# selector 0x0010 whole memory is readable and executable
+				# selector 0x0020 whole memory is readable and executable
 				# base	0x00000000
 				# limit	0xffffffff
 				# access_right 0x4092

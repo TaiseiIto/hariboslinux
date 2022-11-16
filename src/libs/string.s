@@ -176,8 +176,8 @@ strcmp:
 	movl	%eax,	%ecx		# ECX = min(strlen(string1), strlen(string2));
 	incl	%ecx			# ECX = min(strlen(string1), strlen(string2)) + 1;
 	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
-	ja	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
-	jb	6f			# if(*(char *)EDI < *(char *)ESI)
+	jb	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
+	ja	6f			# if(*(char *)EDI < *(char *)ESI)
 	# if(*(char *)ESI == *(char *)EDI)return 0;
 	xorl	%eax,	%eax
 	jmp	7f

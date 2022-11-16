@@ -149,9 +149,15 @@ typedef struct _ConsoleCommand
 typedef struct _CPUCommand
 {
 	unsigned char type;
-	#define CPU_COMMAND_HLT		0x0
-	#define CPU_COMMAND_SHUTDOWN	0x1
+	#define CPU_COMMAND_HLT		0x00
+	#define CPU_COMMAND_SHUTDOWN	0x01
 } CPUCommand;
+
+typedef struct _DiskCommand
+{
+	unsigned char type;
+	#define DISK_COMMAND_SAVE	0x00
+} DiskCommand;
 
 typedef struct _MemoryCommand
 {
@@ -554,15 +560,21 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 		Shell *shell = get_current_shell();
 		switch((unsigned int)file_descriptor)
 		{
+			Redirection *redirection;
 		case STDOUT:
 		case STDERR:
+			redirection = get_redirection(task);
 			if(shell)for(void const *reader = buffer; reader != buffer + count; reader++)
 			{
-				Event event;
-				event.type = EVENT_TYPE_SHELL_PUT_CHARACTER;
-				event.event_union.shell_put_character_event.character = *(char const *)reader;
-				event.event_union.shell_put_character_event.shell = shell;
-				enqueue(shell->event_queue, &event);
+				if(redirection)put_char_redirection(redirection, *(char const *)reader);
+				else
+				{
+					Event event;
+					event.type = EVENT_TYPE_SHELL_PUT_CHARACTER;
+					event.event_union.shell_put_character_event.character = *(char const *)reader;
+					event.event_union.shell_put_character_event.shell = shell;
+					enqueue(shell->event_queue, &event);
+				}
 				counter++;
 			}
 			break;
@@ -739,6 +751,16 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					break;
 				default:
 					ERROR(); // Invalid CPU command.
+					break;
+				}
+			}
+			else if(!strcmp(file_descriptor->file_name, disk_file_name)) // Control the disk.
+			{
+				DiskCommand const * const command = buffer;
+				switch(command->type)
+				{
+				case DISK_COMMAND_SAVE:
+					write_entire_disk();
 					break;
 				}
 			}

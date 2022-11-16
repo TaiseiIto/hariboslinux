@@ -18,6 +18,7 @@
 #include "serial.h"
 #include "sheet.h"
 #include "stdio.h"
+#include "string.h"
 #include "task.h"
 #include "text_box.h"
 #include "timer.h"
@@ -79,6 +80,12 @@ int main(void)
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
 	init_file_system();
 	init_shells();
+	// Deploy callbios.bin
+	char const * const call_bios_bin_name = "callbios.bin";
+	unsigned int call_bios_bin_size = get_file_size(call_bios_bin_name);
+	void *call_bios_bin = load_file(call_bios_bin_name);
+	memcpy(MEMORY_MAP_CALL_BIOS, call_bios_bin, call_bios_bin_size);
+	free(call_bios_bin);
 	// Init background sheet
 	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;
@@ -318,7 +325,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			printf_serial("Detect console task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case TASK_TYPE_COMMAND:
-			clean_up_command_task(event->event_union.task_deletion_response_event.arguments);
+			clean_up_command_task(event->event_union.task_deletion_response_event.task, event->event_union.task_deletion_response_event.arguments);
 			break;
 		case TASK_TYPE_TEST:
 			printf_serial("Detect test task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);

@@ -96,6 +96,20 @@ typedef struct _BIOSDataArea
 	unsigned int mode_command;
 } __attribute__((packed)) BIOSDataArea;
 
+typedef struct _BIOSInterface
+{
+	unsigned short ax;
+	unsigned short cx;
+	unsigned short bx;
+	unsigned short dx;
+	unsigned short si;
+	unsigned short di;
+	unsigned short bp;
+	unsigned short es;
+	unsigned short flags;
+} BIOSInterface;
+
+BIOSInterface call_bios(unsigned char interrupt_number, BIOSInterface input);
 BIOSDataArea const *get_bios_data_area(void);
 void const *get_extended_bios_data_area(void);
 void print_bios_data_area(BIOSDataArea const *bios_data_area);

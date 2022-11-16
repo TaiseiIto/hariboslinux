@@ -42,7 +42,7 @@ char const *look_up_dictionary(Dictionary const *dictionary, char const *key);
 void set_dictionary_element(Dictionary *dictionary, char const *key, char const *value);
 void show_dictionary(Dictionary const *dictionary);
 
-void clean_up_command_task(CommandTaskArgument *command_task_argument)
+void clean_up_command_task(Task *command_task, CommandTaskArgument *command_task_argument)
 {
 	ConsoleEvent *console_event;
 	Event new_event;
@@ -54,6 +54,7 @@ void clean_up_command_task(CommandTaskArgument *command_task_argument)
 	for(unsigned int argv_index = 0; argv_index < command_task_argument->argc; argv_index++)free(command_task_argument->argv[argv_index]);
 	free(command_task_argument->argv);
 	free(command_task_argument->task_return->task_return);
+	delete_redirection(command_task);
 	switch(command_task_argument->shell->type)
 	{
 	case SHELL_TYPE_CONSOLE:
@@ -327,6 +328,30 @@ void command_task_procedure(CommandTaskArgument *arguments)
 	close_task(get_current_task());
 }
 
+Redirection *create_redirection(Shell *shell, Task *task, char *destination_file_name)
+{
+	Redirection *redirection = malloc(sizeof(*redirection));
+	redirection->shell = shell;
+	redirection->task = task;
+	redirection->destination_file_name = malloc(strlen(destination_file_name) + 1);
+	strcpy(redirection->destination_file_name, destination_file_name);
+	redirection->output = create_chain_string(NULL);
+	if(shell->redirections)
+	{
+		redirection->previous = shell->redirections->previous;
+		redirection->next = shell->redirections;
+		shell->redirections->previous->next = redirection;
+		shell->redirections->previous = redirection;
+	}
+	else
+	{
+		redirection->previous = redirection;
+		redirection->next = redirection;
+		shell->redirections = redirection;
+	}
+	return redirection;
+}
+
 Shell *create_shell(Console *console)
 {
 	Shell *shell;
@@ -348,6 +373,7 @@ Shell *create_shell(Console *console)
 	}
 	allow_switch_task();
 	shell->variables = create_dictionary();
+	shell->redirections = NULL;
 	if(console)
 	{
 		shell->event_queue = console->text_box->sheet->event_queue;
@@ -370,9 +396,26 @@ Dictionary *create_dictionary(void)
 	return dictionary;
 }
 
+void delete_redirection(Task *command_task)
+{
+	Redirection *redirection = get_redirection(command_task);
+	if(redirection)
+	{
+		unsigned char *output = (unsigned char *)create_char_array_from_chain_string(redirection->output);
+		save_file(redirection->destination_file_name, output, redirection->output->length);
+		redirection->previous->next = redirection->next;
+		redirection->next->previous = redirection->previous;
+		if(redirection->shell->redirections == redirection)redirection->shell->redirections = redirection->next;
+		if(redirection->shell->redirections == redirection)redirection->shell->redirections = NULL;
+		free(output);
+		free(redirection->destination_file_name);
+		delete_chain_string(redirection->output);
+		free(redirection);
+	}
+}
+
 void delete_shell(Shell *shell)
 {
-	printf_serial("Delete shell %p\n", shell);
 	prohibit_switch_task();
 	shell->previous->next = shell->next;
 	shell->next->previous = shell->previous;
@@ -418,6 +461,7 @@ void *execute_command(Shell *shell, char const *command)
 	unsigned int argc;
 	char **argv;
 	char *com_file_name;
+	char *redirection_destination_file_name = NULL;
 	void *com_file_binary;
 	unsigned int com_file_size;
 	unsigned char flags = 0;
@@ -435,6 +479,13 @@ void *execute_command(Shell *shell, char const *command)
 		free(argv[argc - 1]);
 		argc--;
 	}
+	// Redirection
+	if(2 < argc)if(!strcmp(argv[argc - 2], ">"))
+	{
+		redirection_destination_file_name = argv[argc - 1];
+		free(argv[argc - 2]);
+		argc -= 2;
+	}
 	// Load a file specified by argv[0].
 	com_file_name = create_format_char_array("%s.com", argv[0]);
 	com_file_binary = load_file(com_file_name);
@@ -446,6 +497,8 @@ void *execute_command(Shell *shell, char const *command)
 		// Execute the com file.
 		CommandTaskArgument *command_task_argument = malloc(sizeof(*command_task_argument));
 		Task *command_task = create_task(flags & EXECUTE_COMMAND_FLAG_BACKGROUND ? &main_task : get_current_task(), (void (*)(void *))command_task_procedure, 0x00010000, TASK_PRIORITY_USER);
+		command_task->ldt = malloc(LDT_SIZE * sizeof(*command_task->ldt));
+		command_task->task_status_segment.ldtr = alloc_global_segment(command_task->ldt, LDT_SIZE * sizeof(*command_task->ldt), SEGMENT_DESCRIPTOR_LDT);
 		command_task_argument->com_file_name = com_file_name;
 		command_task_argument->com_file_binary = com_file_binary;
 		command_task_argument->com_file_size = com_file_size;
@@ -475,6 +528,11 @@ void *execute_command(Shell *shell, char const *command)
 			break;
 		}
 		else shell->flags |= SHELL_FLAG_BUSY;
+		if(redirection_destination_file_name)
+		{
+			create_redirection(shell, command_task, redirection_destination_file_name);
+			free(redirection_destination_file_name);
+		}
 		start_task(command_task, command_task_argument, command_task_argument->task_return, 1);
 	}
 	else // The com file is not found.
@@ -519,6 +577,25 @@ Shell *get_current_shell(void)
 		shell = shell->next;
 	} while(shell != serial_shell);
 	return NULL; // The shell is not found.
+}
+
+Redirection *get_redirection(Task *task)
+{
+	Shell *shell = serial_shell;
+	do
+	{
+		if(shell->redirections)
+		{
+			Redirection *redirection = shell->redirections;
+			do
+			{
+				if(redirection->task == task)return redirection;
+				redirection = redirection->next;
+			} while(redirection != shell->redirections);
+		}
+		shell = shell->next;
+	} while(shell != serial_shell);
+	return NULL;
 }
 
 void init_shells(void)
@@ -606,7 +683,10 @@ char const *look_up_dictionary(Dictionary const *dictionary, char const *key)
 	if(element)do
 	{
 		int comparison = strcmp(element->key, key);
-		if(!comparison)return element->value;
+		if(!comparison)
+		{
+			return element->value;
+		}
 		else if(0 < comparison)break;
 		element = element->next;
 	} while(element != dictionary->elements);
@@ -625,6 +705,11 @@ void printf_shell(Shell *shell, char const *format, ...)
 	print_shell(shell, output_string);
 	free(output_string);
 	delete_chain_string(output_chain_string);
+}
+
+void put_char_redirection(Redirection *redirection, char character)
+{
+	insert_char_back(redirection->output, redirection->output->last_character, character);
 }
 
 void put_char_shell(Shell *shell, char character)
@@ -671,6 +756,7 @@ void set_dictionary_element(Dictionary *dictionary, char const *key, char const 
 		new_element->next = element;
 		element->previous->next = new_element;
 		element->previous = new_element;
+		if(strcmp(dictionary->elements->previous->key, dictionary->elements->key) < 0)dictionary->elements = dictionary->elements->previous;
 	}
 	else
 	{
@@ -692,7 +778,7 @@ void show_dictionary(Dictionary const *dictionary)
 		if(shell->variables == dictionary)
 		{
 			DictionaryElement const *element = dictionary->elements;
-			do
+			if(element)do
 			{
 				printf_shell(shell, "$%s=%s\n", element->key, element->value);
 				element = element->next;

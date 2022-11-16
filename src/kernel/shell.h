@@ -1,8 +1,10 @@
 #ifndef _SHELL_H_
 #define _SHELL_H_
 
+struct _ChainString;
 struct _Queue;
 struct _Shell;
+struct _Task;
 struct _TaskReturn;
 
 typedef struct _ShellPutCharacterEvent
@@ -24,11 +26,22 @@ typedef struct _Dictionary
 	DictionaryElement *elements;
 } Dictionary;
 
+typedef struct _Redirection
+{
+	struct _Shell *shell;
+	struct _Task *task;
+	char *destination_file_name;
+	struct _ChainString *output;
+	struct _Redirection *previous;
+	struct _Redirection *next;
+} Redirection;
+
 typedef struct _Shell
 {
 	struct _Console *console;
 	struct _Queue *event_queue;
 	Dictionary *variables;
+	Redirection *redirections;
 	struct _Shell *previous;
 	struct _Shell *next;
 	unsigned char type;
@@ -68,14 +81,18 @@ extern char const * const prompt;
 extern ChainString *serial_console_input_string;
 extern Shell *serial_shell;
 
-void clean_up_command_task(CommandTaskArgument *command_task_argument);
+void clean_up_command_task(Task *command_task, CommandTaskArgument *command_task_argument);
+Redirection *create_redirection(Shell *shell, Task *task, char *destination_file_name);
 Shell *create_shell(struct _Console *console);
+void delete_redirection(Task *command_task);
 void delete_shell(Shell *shell);
 void *execute_command(Shell *shell, char const *command);
 Shell *get_current_shell(void);
+Redirection *get_redirection(Task *task);
 void init_shells(void);
 void print_shell(Shell *shell, char const *string);
 void printf_shell(Shell *shell, char const *format, ...);
+void put_char_redirection(Redirection *redirection, char character);
 void put_char_shell(Shell *shell, char character);
 
 #endif

@@ -49,19 +49,31 @@ typedef struct _FileIntormation
 	unsigned int size;
 } FileInformation;
 
+typedef struct _SectorSpecifier
+{
+	unsigned char cylinder;
+	unsigned char head;
+	unsigned char sector;
+} SectorSpecifier;
+
 extern BootSector const * const boot_sector;
 
 extern char const * const root_directory_name;
 extern char const * const console_file_name;
 extern char const * const cpu_file_name;
+extern char const * const disk_file_name;
 extern char const * const memory_file_name;
 extern char const * const timer_file_name;
 extern char const * const window_file_name;
 
+unsigned int address2sector_number(void const *address);
+SectorSpecifier address2sector_specifier(void const *address);
 char *create_file_name(FileInformation const *file_information);
+void delete_file(char const *file_name);
 void disk_interrupt_handler(void);
-void const *get_cluster(unsigned short cluster_number);
-FileInformation const *get_file_information(char const *file_name);
+void free_cluster(unsigned short cluster_number);
+void *get_cluster(unsigned short cluster_number);
+FileInformation *get_file_information(char const *file_name);
 unsigned int get_file_size(char const *file_name);
 unsigned int get_file_updated_year(FileInformation const *file_information);
 unsigned char get_file_updated_month(FileInformation const *file_information);
@@ -70,10 +82,20 @@ unsigned char get_file_updated_hour(FileInformation const *file_information);
 unsigned char get_file_updated_minute(FileInformation const *file_information);
 unsigned char get_file_updated_second(FileInformation const *file_information);
 unsigned short get_next_cluster_number(unsigned short cluster_number);
+unsigned short get_unused_cluster_number(void);
+FileInformation *get_unused_file_information(void);
 void init_file_system(void);
-void *load_file(char *file_name);
+void *load_file(char const *file_name);
 void primary_ATA_hard_disk_interrupt_handler(void);
+void save_file(char const *file_name, unsigned char const *content, unsigned int length);
 void secondary_ATA_hard_disk_interrupt_handler(void);
+void *sector_number2address(unsigned int sector_number);
+SectorSpecifier sector_number2sector_specifier(unsigned int sector_number);
+void *sector_specifier2address(SectorSpecifier sector_specifier);
+unsigned int sector_specifier2sector_number(SectorSpecifier sector_specifier);
+void set_next_cluster_number(unsigned short cluster_number, unsigned short next_cluster_number);
+void write_entire_disk(void);
+void write_cluster(SectorSpecifier sector_specifier);
 
 #endif
 
