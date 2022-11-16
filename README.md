@@ -147,9 +147,9 @@ typedef struct
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table             |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area                     |
 | 0x00000500   | 0x00000514 |            |            | struct VbeInfoBlock                |
-| 0x00000522   | 0x00000600 |            |            | video mode list                    |
-| 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
-| 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
+| 0x00000522   | 0x000005ff |            |            | video mode list                    |
+| 0x00000600   | 0x000006ff |            |            | best vbe\_mode\_info\_structure    |
+| 0x00000700   | 0x000007ff |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
 | ?            | 0x00007bff |            |            | stack                              |
@@ -176,9 +176,9 @@ real modeからprotected modeに移行し，dplydisk.binに移行します．
 | ------------ | ---------- | ---------- | ---------- | ---------------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table             |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area                     |
-| 0x00000500   | 0x00000600 |            |            | struct VbeInfoBlock                |
-| 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
-| 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
+| 0x00000500   | 0x000005ff |            |            | struct VbeInfoBlock                |
+| 0x00000600   | 0x000006ff |            |            | best vbe\_mode\_info\_structure    |
+| 0x00000700   | 0x000007ff |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
 | ?            | 0x00007bff |            |            | stack                              |
@@ -211,9 +211,9 @@ real modeからprotected modeに移行し，dplydisk.binに移行します．
 | ------------ | ---------- | ---------- | ---------- | ---------------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table             |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area                     |
-| 0x00000500   | 0x00000600 |            |            | struct VbeInfoBlock                |
-| 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
-| 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
+| 0x00000500   | 0x000005ff |            |            | struct VbeInfoBlock                |
+| 0x00000600   | 0x000006ff |            |            | best vbe\_mode\_info\_structure    |
+| 0x00000700   | 0x000007ff |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
 | ?            | 0x00007bff |            |            | stack                              |
@@ -246,9 +246,9 @@ real modeからprotected modeに移行し，dplydisk.binに移行します．
 | ------------ | ---------- | ---------- | ---------- | ---------------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table             |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area                     |
-| 0x00000500   | 0x00000600 |            |            | reserved (for real mode execution) |
-| 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
-| 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
+| 0x00000500   | 0x000005ff |            |            | struct VbeInfoBlock                |
+| 0x00000600   | 0x000006ff |            |            | best vbe\_mode\_info\_structure    |
+| 0x00000700   | 0x000007ff |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
 | ?            | 0x00007bff |            |            | stack                              |
@@ -298,12 +298,15 @@ OS本体です．
 | ------------ | ---------- | ---------- | ---------- | ---------------------------------- |
 | 0x00000000   | 0x000003ff |            |            | interrupt vector table             |
 | 0x00000400   | 0x000004ff |            |            | BIOS data area                     |
-| 0x00000500   | 0x00000600 |            |            | reserved (for real mode execution) |
-| 0x00000600   | 0x00000700 |            |            | best vbe\_mode\_info\_structure    |
-| 0x00000700   | 0x00000800 |            |            | current vbe\_mode\_info\_structure |
+| 0x00000500   | 0x000005ff |            |            | struct VbeInfoBlock                |
+| 0x00000600   | 0x000006ff |            |            | best vbe\_mode\_info\_structure    |
+| 0x00000700   | 0x000007ff |            |            | current vbe\_mode\_info\_structure |
 | 0x00000800   | 0x00000805 |            |            | BootInformation structure          |
 | 0x00000900   | ?          |            |            | memory regions list                |
-| 0x00007c00   | 0x0009fbff |            |            | reserved (for real mode execution) |
+| ?            | 0x000079ff |            |            | stack for callbios.bin             |
+| 0x00007a00   | 0x00007bff |            |            | buffer for callbios.bin            |
+| 0x00007c00   | 0x000083ff |            |            | callbios.bin                       |
+| 0x00008400   | 0x0009fbff |            |            | reserved for real mode             |
 | 0x0009fc00   | 0x0009ffff |            |            | ACPI work area                     |
 | 0x000a0000   | 0x000bffff |            |            | unused VRAM                        |
 | 0x000c0000   | 0x000c7fff |            |            | Video BIOS                         |
