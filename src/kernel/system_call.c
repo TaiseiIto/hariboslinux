@@ -602,10 +602,13 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				switch(command->type)
 				{
 					AMLSubstring aml;
+					AMLSymbol *aml_syntax_tree;
 				case ACPI_COMMAND_DECODE_AML:
 					aml = command->arguments.decode_aml.aml;
 					aml.initial += application_memory;
-					for(unsigned int i = 0; i < aml.length; i++)printf_serial("%02.2x%c", aml.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+					aml_syntax_tree = analyse_aml_term_list(NULL, aml);
+					print_aml_symbol(aml_syntax_tree);
+					delete_aml_symbol(aml_syntax_tree);
 					break;
 				default:
 					ERROR(); // Invalid acpi command.
