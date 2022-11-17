@@ -601,8 +601,11 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				ACPICommand const * const command = buffer;
 				switch(command->type)
 				{
+					AMLSubstring aml;
 				case ACPI_COMMAND_DECODE_AML:
-					printf_serial("Decode AML!!!\n");
+					aml = command->arguments.decode_aml.aml;
+					aml.initial += application_memory;
+					for(unsigned int i = 0; i < aml.length; i++)printf_serial("%02.2x%c", aml.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
 					break;
 				default:
 					ERROR(); // Invalid acpi command.
