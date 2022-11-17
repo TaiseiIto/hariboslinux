@@ -607,7 +607,6 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					aml = command->arguments.decode_aml.aml;
 					aml.initial += application_memory;
 					aml_syntax_tree = analyse_aml_term_list(NULL, aml);
-					print_aml_symbol(aml_syntax_tree);
 					printf_serial("---------- next bytes ----------\n");
 					for(unsigned int i = 0; i < 0x10; i++)printf_serial(" %02.2x", aml.initial[aml_syntax_tree->string.length + i]);
 					printf_serial("\n");
