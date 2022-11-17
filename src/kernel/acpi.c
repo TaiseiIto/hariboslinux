@@ -304,6 +304,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_method_op_name = "MethodOp";
 	static char const * const aml_mid_obj_name = "MidObj";
 	static char const * const aml_mid_op_name = "MidOp";
+	static char const * const aml_msec_time_name = "MsecTime";
 	static char const * const aml_multi_name_path_name = "MultiNamePath";
 	static char const * const aml_multi_name_prefix_name = "MultiNamePrefix";
 	static char const * const aml_multiply_op_name = "MultiplyOp";
@@ -684,6 +685,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_mid_obj_name;
 	case aml_mid_op:
 		return aml_mid_op_name;
+	case aml_msec_time:
+		return aml_msec_time_name;
 	case aml_multi_name_path:
 		return aml_multi_name_path_name;
 	case aml_multi_name_prefix:
@@ -4530,6 +4533,21 @@ AMLSymbol *analyse_aml_mid_op(AMLSymbol *parent, AMLSubstring aml)
 	return mid_op;
 }
 
+// <msec_time> := <term_arg>
+AMLSymbol *analyse_aml_msec_time(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("msec_time aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *msec_time = malloc(sizeof(*msec_time));
+	msec_time->parent = parent;
+	msec_time->string.initial = aml.initial;
+	msec_time->string.length = 0;
+	msec_time->type = aml_msec_time;
+	msec_time->flags = 0;
+	msec_time->component.msec_time.term_arg = analyse_aml_term_arg(msec_time, aml);
+	msec_time->string.length += msec_time->component.msec_time.term_arg->string.length;
+	return msec_time;
+}
+
 // <multi_name_path> := <multi_name_prefix> <seg_count> <name_seg>*
 AMLSymbol *analyse_aml_multi_name_path(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -7726,6 +7744,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_mid_op:
 		break;
+	case aml_msec_time:
+		if(aml_symbol->component.msec_time.term_arg)delete_aml_symbol(aml_symbol->component.msec_time.term_arg);
+		break;
 	case aml_multi_name_path:
 		for(unsigned int i = 0; i < *aml_symbol->component.multi_name_path.seg_count->string.initial; i++)if(aml_symbol->component.multi_name_path.name_seg[i])delete_aml_symbol(aml_symbol->component.multi_name_path.name_seg[i]);
 		free(aml_symbol->component.multi_name_path.name_seg);
@@ -8796,6 +8817,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_mid_op:
 		break;
+	case aml_msec_time:
+		break;
 	case aml_multi_name_path:
 		printf_serial(" \"%s\"", aml_symbol->component.multi_name_path.string);
 		break;
@@ -9592,6 +9615,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.mid_obj.term_arg)print_aml_symbol(aml_symbol->component.mid_obj.term_arg);
 		break;
 	case aml_mid_op:
+		break;
+	case aml_msec_time:
+		if(aml_symbol->component.msec_time.term_arg)print_aml_symbol(aml_symbol->component.msec_time.term_arg);
 		break;
 	case aml_multi_name_path:
 		if(aml_symbol->component.multi_name_path.multi_name_prefix)print_aml_symbol(aml_symbol->component.multi_name_path.multi_name_prefix);
