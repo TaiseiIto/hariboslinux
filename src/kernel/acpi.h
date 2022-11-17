@@ -280,6 +280,7 @@ typedef enum _AMLSymbolType
 	aml_def_to_hex_string,
 	aml_def_to_integer,
 	aml_def_while,
+	aml_def_xor,
 	aml_deref_of_op,
 	aml_device_op,
 	aml_device_op_suffix,
@@ -978,6 +979,13 @@ typedef struct _AMLDefWhile
 	struct _AMLSymbol *term_list;
 } AMLDefWhile;
 
+typedef struct _AMLDefXor
+{
+	struct _AMLSymbol *xor_op;
+	struct _AMLSymbol *operand[2];
+	struct _AMLSymbol *target;
+} AMLDefXor;
+
 typedef struct _AMLDeviceOp
 {
 	struct _AMLSymbol *ext_op_prefix;
@@ -1562,6 +1570,7 @@ typedef union _AMLComponent
 	AMLDefToHexString def_to_hex_string;
 	AMLDefToInteger def_to_integer;
 	AMLDefWhile def_while;
+	AMLDefXor def_xor;
 	AMLDeviceOp device_op;
 	AMLDividend dividend;
 	AMLDivisor divisor;
@@ -1846,6 +1855,8 @@ AMLSymbol *analyse_aml_def_to_hex_string(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_to_integer(AMLSymbol *parent, AMLSubstring aml);
 // <def_while> := <while_op> <pkg_length> <predicate> <term_list>
 AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml);
+// <def_xor> := <xor_op> <operxor> <operxor> <target>
+AMLSymbol *analyse_aml_def_xor(AMLSymbol *parent, AMLSubstring aml);
 // <deref_of_op> := AML_BYTE_DEREF_OF_OP
 AMLSymbol *analyse_aml_deref_of_op(AMLSymbol *parent, AMLSubstring aml);
 // <device_op> := <ext_op_prefix> <device_op_suffix>

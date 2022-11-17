@@ -263,6 +263,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
 	static char const * const aml_def_to_integer_name = "DefToInteger";
 	static char const * const aml_def_while_name = "DefWhile";
+	static char const * const aml_def_xor_name = "DefXor";
 	static char const * const aml_deref_of_op_name = "DerefOfOp";
 	static char const * const aml_device_op_name = "DeviceOp";
 	static char const * const aml_device_op_suffix_name = "DeviceOpSuffix";
@@ -603,6 +604,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_to_integer_name;
 	case aml_def_while:
 		return aml_def_while_name;
+	case aml_def_xor:
+		return aml_def_xor_name;
 	case aml_deref_of_op:
 		return aml_deref_of_op_name;
 	case aml_device_op:
@@ -3472,6 +3475,34 @@ AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml)
 	aml.length -= def_while->component.def_while.term_list->string.length;
 	if((int)aml.length < 0)def_while->flags |= AML_SYMBOL_ERROR; // Length error
 	return def_while;
+}
+
+// <def_xor> := <xor_op> <operxor> <operxor> <target>
+AMLSymbol *analyse_aml_def_xor(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_xor aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_xor = malloc(sizeof(*def_xor));
+	def_xor->parent = parent;
+	def_xor->string.initial = aml.initial;
+	def_xor->string.length = 0;
+	def_xor->type = aml_def_xor;
+	def_xor->flags = 0;
+	def_xor->component.def_xor.xor_op = analyse_aml_xor_op(def_xor, aml);
+	def_xor->string.length += def_xor->component.def_xor.xor_op->string.length;
+	aml.initial += def_xor->component.def_xor.xor_op->string.length;
+	aml.length -= def_xor->component.def_xor.xor_op->string.length;
+	for(AMLSymbol **operand = def_xor->component.def_xor.operand; operand != def_xor->component.def_xor.operand + _countof(def_xor->component.def_xor.operand); operand++)
+	{
+		*operand = analyse_aml_operand(def_xor, aml);
+		def_xor->string.length += (*operand)->string.length;
+		aml.initial += (*operand)->string.length;
+		aml.length -= (*operand)->string.length;
+	}
+	def_xor->component.def_xor.target = analyse_aml_target(def_xor, aml);
+	def_xor->string.length += def_xor->component.def_xor.target->string.length;
+	aml.initial += def_xor->component.def_xor.target->string.length;
+	aml.length -= def_xor->component.def_xor.target->string.length;
+	return def_xor;
 }
 
 // <deref_of_op> := AML_BYTE_DEREF_OF_OP
@@ -7306,9 +7337,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_or.target)delete_aml_symbol(aml_symbol->component.def_or.target);
 		break;
 	case aml_def_and:
-		if(aml_symbol->component.def_or.or_op)delete_aml_symbol(aml_symbol->component.def_or.or_op);
-		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_or.operand); i++)if(aml_symbol->component.def_or.operand[i])delete_aml_symbol(aml_symbol->component.def_or.operand[i]);
-		if(aml_symbol->component.def_or.target)delete_aml_symbol(aml_symbol->component.def_or.target);
+		if(aml_symbol->component.def_and.and_op)delete_aml_symbol(aml_symbol->component.def_and.and_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_and.operand); i++)if(aml_symbol->component.def_and.operand[i])delete_aml_symbol(aml_symbol->component.def_and.operand[i]);
+		if(aml_symbol->component.def_and.target)delete_aml_symbol(aml_symbol->component.def_and.target);
 		break;
 	case aml_def_break:
 		if(aml_symbol->component.def_break.break_op)delete_aml_symbol(aml_symbol->component.def_break.break_op);
@@ -7594,6 +7625,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_while.pkg_length)delete_aml_symbol(aml_symbol->component.def_while.pkg_length);
 		if(aml_symbol->component.def_while.predicate)delete_aml_symbol(aml_symbol->component.def_while.predicate);
 		if(aml_symbol->component.def_while.term_list)delete_aml_symbol(aml_symbol->component.def_while.term_list);
+		break;
+	case aml_def_xor:
+		if(aml_symbol->component.def_xor.xor_op)delete_aml_symbol(aml_symbol->component.def_xor.xor_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_xor.operand); i++)if(aml_symbol->component.def_xor.operand[i])delete_aml_symbol(aml_symbol->component.def_xor.operand[i]);
+		if(aml_symbol->component.def_xor.target)delete_aml_symbol(aml_symbol->component.def_xor.target);
 		break;
 	case aml_deref_of_op:
 		break;
@@ -8740,6 +8776,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_while:
 		break;
+	case aml_def_xor:
+		break;
 	case aml_deref_of_op:
 		break;
 	case aml_device_op:
@@ -9461,6 +9499,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_to_integer.to_integer_op)print_aml_symbol(aml_symbol->component.def_to_integer.to_integer_op);
 		if(aml_symbol->component.def_to_integer.operand)print_aml_symbol(aml_symbol->component.def_to_integer.operand);
 		if(aml_symbol->component.def_to_integer.target)print_aml_symbol(aml_symbol->component.def_to_integer.target);
+		break;
+	case aml_def_xor:
+		if(aml_symbol->component.def_xor.xor_op)print_aml_symbol(aml_symbol->component.def_xor.xor_op);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_xor.operand); i++)if(aml_symbol->component.def_xor.operand[i])print_aml_symbol(aml_symbol->component.def_xor.operand[i]);
+		if(aml_symbol->component.def_xor.target)print_aml_symbol(aml_symbol->component.def_xor.target);
 		break;
 	case aml_def_while:
 		if(aml_symbol->component.def_while.while_op)print_aml_symbol(aml_symbol->component.def_while.while_op);
