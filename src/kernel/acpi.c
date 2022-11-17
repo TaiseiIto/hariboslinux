@@ -260,6 +260,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_subtract_name = "DefSubtract";
 	static char const * const aml_def_to_buffer_name = "DefToBuffer";
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
+	static char const * const aml_def_to_integer_name = "DefToInteger";
 	static char const * const aml_def_while_name = "DefWhile";
 	static char const * const aml_deref_of_op_name = "DerefOfOp";
 	static char const * const aml_device_op_name = "DeviceOp";
@@ -591,6 +592,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_to_buffer_name;
 	case aml_def_to_hex_string:
 		return aml_def_to_hex_string_name;
+	case aml_def_to_integer:
+		return aml_def_to_integer_name;
 	case aml_def_while:
 		return aml_def_while_name;
 	case aml_deref_of_op:
@@ -3378,6 +3381,22 @@ AMLSymbol *analyse_aml_def_to_hex_string(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_to_hex_string->component.def_to_hex_string.target->string.length;
 	aml.length -= def_to_hex_string->component.def_to_hex_string.target->string.length;
 	return def_to_hex_string;
+}
+
+// <def_to_integer> := <to_integer_op> <operand> <target>
+AMLSymbol *analyse_aml_def_to_integer(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_to_integer aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_to_integer = malloc(sizeof(*def_to_integer));
+	def_to_integer->parent = parent;
+	def_to_integer->string.initial = aml.initial;
+	def_to_integer->string.length = 0;
+	def_to_integer->type = aml_def_to_integer;
+	def_to_integer->flags = 0;
+	def_to_integer->component.def_to_integer.to_integer_op = NULL;
+	def_to_integer->component.def_to_integer.operand = NULL;
+	def_to_integer->component.def_to_integer.target = NULL;
+	return def_to_integer;
 }
 
 // <def_while> := <while_op> <pkg_length> <predicate> <term_list>
@@ -7429,6 +7448,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_to_hex_string.operand)delete_aml_symbol(aml_symbol->component.def_to_hex_string.operand);
 		if(aml_symbol->component.def_to_hex_string.target)delete_aml_symbol(aml_symbol->component.def_to_hex_string.target);
 		break;
+	case aml_def_to_integer:
+		if(aml_symbol->component.def_to_integer.to_integer_op)delete_aml_symbol(aml_symbol->component.def_to_integer.to_integer_op);
+		if(aml_symbol->component.def_to_integer.operand)delete_aml_symbol(aml_symbol->component.def_to_integer.operand);
+		if(aml_symbol->component.def_to_integer.target)delete_aml_symbol(aml_symbol->component.def_to_integer.target);
+		break;
 	case aml_def_while:
 		if(aml_symbol->component.def_while.while_op)delete_aml_symbol(aml_symbol->component.def_while.while_op);
 		if(aml_symbol->component.def_while.pkg_length)delete_aml_symbol(aml_symbol->component.def_while.pkg_length);
@@ -8563,6 +8587,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_to_hex_string:
 		break;
+	case aml_def_to_integer:
+		break;
 	case aml_def_while:
 		break;
 	case aml_deref_of_op:
@@ -9269,6 +9295,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_to_hex_string.to_hex_string_op)print_aml_symbol(aml_symbol->component.def_to_hex_string.to_hex_string_op);
 		if(aml_symbol->component.def_to_hex_string.operand)print_aml_symbol(aml_symbol->component.def_to_hex_string.operand);
 		if(aml_symbol->component.def_to_hex_string.target)print_aml_symbol(aml_symbol->component.def_to_hex_string.target);
+		break;
+	case aml_def_to_integer:
+		if(aml_symbol->component.def_to_integer.to_integer_op)print_aml_symbol(aml_symbol->component.def_to_integer.to_integer_op);
+		if(aml_symbol->component.def_to_integer.operand)print_aml_symbol(aml_symbol->component.def_to_integer.operand);
+		if(aml_symbol->component.def_to_integer.target)print_aml_symbol(aml_symbol->component.def_to_integer.target);
 		break;
 	case aml_def_while:
 		if(aml_symbol->component.def_while.while_op)print_aml_symbol(aml_symbol->component.def_while.while_op);
