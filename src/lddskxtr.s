@@ -275,8 +275,8 @@ main:
 	call	memcpy
 	jmp 5b
 11:	# jump to kernel
-	movl	$0x00300000,%ebp
-	movl	$0x00300000,%esp
+	movl	$0x00400000,%ebp
+	movl	$0x00400000,%esp
 	ljmp	$0x0010,$0x00106e00
 
 disk_address_2_sector_specifier:	# // void disk_address_2_sector_specifier(unsigned int disk_address, SectorSpecifier *sector_specifier);
