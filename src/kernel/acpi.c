@@ -372,6 +372,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_shift_right_op_name = "ShiftRightOp";
 	static char const * const aml_simple_name_name = "SimpleName";
 	static char const * const aml_size_of_op_name = "SizeOfOp";
+	static char const * const aml_sleep_op_name = "SleepOp";
+	static char const * const aml_sleep_op_suffix_name = "SleepOpSuffix";
 	static char const * const aml_source_buff_name = "SourceBuff";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_store_op_name = "StoreOp";
@@ -818,6 +820,10 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_simple_name_name;
 	case aml_size_of_op:
 		return aml_size_of_op_name;
+	case aml_sleep_op:
+		return aml_sleep_op_name;
+	case aml_sleep_op_suffix:
+		return aml_sleep_op_suffix_name;
 	case aml_source_buff:
 		return aml_source_buff_name;
 	case aml_statement_opcode:
@@ -6141,6 +6147,46 @@ AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml)
 	return size_of_op;
 }
 
+// <sleep_op> := <ext_op_prefix> <sleep_op_suffix>
+AMLSymbol *analyse_aml_sleep_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("sleep_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *sleep_op = malloc(sizeof(*sleep_op));
+	sleep_op->parent = parent;
+	sleep_op->string.initial = aml.initial;
+	sleep_op->string.length = 0;
+	sleep_op->type = aml_sleep_op;
+	sleep_op->flags = 0;
+	sleep_op->component.sleep_op.ext_op_prefix = analyse_aml_ext_op_prefix(sleep_op, aml);
+	sleep_op->string.length += sleep_op->component.sleep_op.ext_op_prefix->string.length;
+	aml.initial += sleep_op->component.sleep_op.ext_op_prefix->string.length;
+	aml.length -= sleep_op->component.sleep_op.ext_op_prefix->string.length;
+	sleep_op->component.sleep_op.sleep_op_suffix = analyse_aml_sleep_op_suffix(sleep_op, aml);
+	sleep_op->string.length += sleep_op->component.sleep_op.sleep_op_suffix->string.length;
+	aml.initial += sleep_op->component.sleep_op.sleep_op_suffix->string.length;
+	aml.length -= sleep_op->component.sleep_op.sleep_op_suffix->string.length;
+	return sleep_op;
+}
+
+// <sleep_op_suffix> := AML_BYTE_SLEEP_OP
+AMLSymbol *analyse_aml_sleep_op_suffix(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("sleep_op_suffix aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *sleep_op_suffix = malloc(sizeof(*sleep_op_suffix));
+	sleep_op_suffix->parent = parent;
+	sleep_op_suffix->string.initial = aml.initial;
+	sleep_op_suffix->string.length = 1;
+	sleep_op_suffix->type = aml_sleep_op_suffix;
+	sleep_op_suffix->flags = 0;
+	if(!aml.initial)
+	{
+		sleep_op_suffix->string.length = 0;
+		sleep_op_suffix->flags |= AML_SYMBOL_ERROR;
+	}
+	else if(*aml.initial != AML_BYTE_SLEEP_OP)sleep_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect sleep_op_suffix
+	return sleep_op_suffix;
+}
+
 // <source_buff> := <term_arg>
 AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -7905,6 +7951,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_size_of_op:
 		break;
+	case aml_sleep_op:
+		if(aml_symbol->component.sleep_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.sleep_op.ext_op_prefix);
+		if(aml_symbol->component.sleep_op.sleep_op_suffix)delete_aml_symbol(aml_symbol->component.sleep_op.sleep_op_suffix);
+		break;
+	case aml_sleep_op_suffix:
+		break;
 	case aml_source_buff:
 		if(aml_symbol->component.source_buff.term_arg)delete_aml_symbol(aml_symbol->component.source_buff.term_arg);
 		break;
@@ -8889,6 +8941,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_size_of_op:
 		break;
+	case aml_sleep_op:
+		break;
+	case aml_sleep_op_suffix:
+		break;
 	case aml_source_buff:
 		break;
 	case aml_statement_opcode:
@@ -9757,6 +9813,12 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.simple_name.local_obj)print_aml_symbol(aml_symbol->component.simple_name.local_obj);
 		break;
 	case aml_size_of_op:
+		break;
+	case aml_sleep_op:
+		if(aml_symbol->component.sleep_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.sleep_op.ext_op_prefix);
+		if(aml_symbol->component.sleep_op.sleep_op_suffix)print_aml_symbol(aml_symbol->component.sleep_op.sleep_op_suffix);
+		break;
+	case aml_sleep_op_suffix:
 		break;
 	case aml_source_buff:
 		if(aml_symbol->component.source_buff.term_arg)print_aml_symbol(aml_symbol->component.source_buff.term_arg);

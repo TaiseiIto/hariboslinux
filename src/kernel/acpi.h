@@ -389,6 +389,8 @@ typedef enum _AMLSymbolType
 	aml_shift_right_op,
 	aml_simple_name,
 	aml_size_of_op,
+	aml_sleep_op,
+	aml_sleep_op_suffix,
 	aml_source_buff,
 	aml_statement_opcode,
 	aml_store_op,
@@ -1376,6 +1378,12 @@ typedef struct _AMLSimpleName
 	struct _AMLSymbol *local_obj;
 } AMLSimpleName;
 
+typedef struct _AMLSleepOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *sleep_op_suffix;
+} AMLSleepOp;
+
 typedef struct _AMLSourceBuff
 {
 	struct _AMLSymbol *term_arg;
@@ -1601,6 +1609,7 @@ typedef union _AMLComponent
 	AMLRevisionOp revision_op;
 	AMLShiftCount shift_count;
 	AMLSimpleName simple_name;
+	AMLSleepOp sleep_op;
 	AMLSourceBuff source_buff;
 	AMLStatementOpcode statement_opcode;
 	AMLString string;
@@ -2048,6 +2057,10 @@ AMLSymbol *analyse_aml_shift_right_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml);
 // <size_of_op> := AML_BYTE_SIZE_OF_OP
 AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml);
+// <sleep_op> := <ext_op_prefix> <sleep_op_suffix>
+AMLSymbol *analyse_aml_sleep_op(AMLSymbol *parent, AMLSubstring aml);
+// <sleep_op_suffix> := AML_BYTE_SLEEP_OP
+AMLSymbol *analyse_aml_sleep_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <source_buff> := <term_arg>
 AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
