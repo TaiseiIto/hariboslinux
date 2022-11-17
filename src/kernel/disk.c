@@ -12,6 +12,7 @@
 
 BootSector const * const boot_sector = (BootSector const * const)MEMORY_MAP_LOADED_DISK_BEGIN;
 
+char const * const acpi_file_name = "acpi.dev";
 char const * const console_file_name = "console.dev";
 char const * const cpu_file_name = "cpu.dev";
 char const * const disk_file_name = "disk.dev";

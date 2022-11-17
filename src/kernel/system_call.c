@@ -139,6 +139,23 @@ typedef struct _SystemCallStatus
 	struct _SystemCallStatus *next;
 } SystemCallStatus;
 
+typedef struct _ACPICommandDecodeAML
+{
+	AMLSubstring aml;
+} ACPICommandDecodeAML;
+
+typedef union _ACPICommandArguments
+{
+	ACPICommandDecodeAML decode_aml;
+} ACPICommandArguments;
+
+typedef struct _ACPICommand
+{
+	ACPICommandArguments arguments;
+	unsigned char type;
+	#define ACPI_COMMAND_DECODE_AML	0x00
+} ACPICommand;
+
 typedef struct _ConsoleCommand
 {
 	unsigned char type;
@@ -579,7 +596,20 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			break;
 		default:
-			if(!strcmp(file_descriptor->file_name, console_file_name)) // Control the console.
+			if(!strcmp(file_descriptor->file_name, acpi_file_name)) // Control ACPI.
+			{
+				ACPICommand const * const command = buffer;
+				switch(command->type)
+				{
+				case ACPI_COMMAND_DECODE_AML:
+					printf_serial("Decode AML!!!\n");
+					break;
+				default:
+					ERROR(); // Invalid acpi command.
+					break;
+				}
+			}
+			else if(!strcmp(file_descriptor->file_name, console_file_name)) // Control the console.
 			{
 				Console *console;
 				TextBox *text_box;

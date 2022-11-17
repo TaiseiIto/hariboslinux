@@ -26,8 +26,7 @@ int main(int argc, char const * const * const argv)
 		unsigned int aml_file = fopen(aml_file_name, "r");
 		unsigned char *aml = malloc(aml_file_information.size);
 		fread(aml, 1, aml_file_information.size, aml_file);
-		for(unsigned int i = 0; i < aml_file_information.size; i++)printf("%2.2X%c", aml[i], (i + 1) % 0x10 ? ' ' : '\n');
-		printf("\n");
+		decode_aml(aml, aml_file_information.size);
 		free(aml);
 		fclose(aml_file);
 		break;
