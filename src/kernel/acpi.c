@@ -256,6 +256,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_shift_left_name = "DefShiftLeft";
 	static char const * const aml_def_shift_right_name = "DefShiftRight";
 	static char const * const aml_def_size_of_name = "DefSizeOf";
+	static char const * const aml_def_sleep_name = "DefSleep";
 	static char const * const aml_def_store_name = "DefStore";
 	static char const * const aml_def_subtract_name = "DefSubtract";
 	static char const * const aml_def_to_buffer_name = "DefToBuffer";
@@ -585,6 +586,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_shift_right_name;
 	case aml_def_size_of:
 		return aml_def_size_of_name;
+	case aml_def_sleep:
+		return aml_def_sleep_name;
 	case aml_def_store:
 		return aml_def_store_name;
 	case aml_def_subtract:
@@ -3281,6 +3284,21 @@ AMLSymbol *analyse_aml_def_size_of(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_size_of->component.def_size_of.super_name->string.length;
 	aml.length -= def_size_of->component.def_size_of.super_name->string.length;
 	return def_size_of;
+}
+
+// <def_sleep> := <sleep_op> <msec_time>
+AMLSymbol *analyse_aml_def_sleep(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_sleep aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_sleep = malloc(sizeof(*def_sleep));
+	def_sleep->parent = parent;
+	def_sleep->string.initial = aml.initial;
+	def_sleep->string.length = 0;
+	def_sleep->type = aml_def_sleep;
+	def_sleep->flags = 0;
+	def_sleep->component.def_sleep.sleep_op = NULL;
+	def_sleep->component.def_sleep.msec_time = NULL;
+	return def_sleep;
 }
 
 // <def_store> := <store_op> <term_arg> <super_name>
@@ -7467,6 +7485,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_size_of.size_of_op)delete_aml_symbol(aml_symbol->component.def_size_of.size_of_op);
 		if(aml_symbol->component.def_size_of.super_name)delete_aml_symbol(aml_symbol->component.def_size_of.super_name);
 		break;
+	case aml_def_sleep:
+		if(aml_symbol->component.def_sleep.sleep_op)delete_aml_symbol(aml_symbol->component.def_sleep.sleep_op);
+		if(aml_symbol->component.def_sleep.msec_time)delete_aml_symbol(aml_symbol->component.def_sleep.msec_time);
+		break;
 	case aml_def_store:
 		if(aml_symbol->component.def_store.store_op)delete_aml_symbol(aml_symbol->component.def_store.store_op);
 		if(aml_symbol->component.def_store.term_arg)delete_aml_symbol(aml_symbol->component.def_store.term_arg);
@@ -8620,6 +8642,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_size_of:
 		break;
+	case aml_def_sleep:
+		break;
 	case aml_def_store:
 		break;
 	case aml_def_subtract:
@@ -9318,6 +9342,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_def_size_of:
 		if(aml_symbol->component.def_size_of.size_of_op)print_aml_symbol(aml_symbol->component.def_size_of.size_of_op);
 		if(aml_symbol->component.def_size_of.super_name)print_aml_symbol(aml_symbol->component.def_size_of.super_name);
+		break;
+	case aml_def_sleep:
+		if(aml_symbol->component.def_sleep.sleep_op)print_aml_symbol(aml_symbol->component.def_sleep.sleep_op);
+		if(aml_symbol->component.def_sleep.msec_time)print_aml_symbol(aml_symbol->component.def_sleep.msec_time);
 		break;
 	case aml_def_store:
 		if(aml_symbol->component.def_store.store_op)print_aml_symbol(aml_symbol->component.def_store.store_op);
