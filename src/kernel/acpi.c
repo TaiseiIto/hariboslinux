@@ -387,6 +387,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_time_out_name = "TimeOut";
 	static char const * const aml_to_buffer_op_name = "ToBufferOp";
 	static char const * const aml_to_hex_string_op_name = "ToHexStringOp";
+	static char const * const aml_to_integer_op_name = "ToIntegerOp";
 	static char const * const aml_while_op_name = "WhileOp";
 	static char const * const aml_word_const_name = "WordConst";
 	static char const * const aml_word_data_name = "WordData";
@@ -846,6 +847,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_to_buffer_op_name;
 	case aml_to_hex_string_op:
 		return aml_to_hex_string_op_name;
+	case aml_to_integer_op:
+		return aml_to_integer_op_name;
 	case aml_while_op:
 		return aml_while_op_name;
 	case aml_word_const:
@@ -3393,9 +3396,18 @@ AMLSymbol *analyse_aml_def_to_integer(AMLSymbol *parent, AMLSubstring aml)
 	def_to_integer->string.length = 0;
 	def_to_integer->type = aml_def_to_integer;
 	def_to_integer->flags = 0;
-	def_to_integer->component.def_to_integer.to_integer_op = NULL;
-	def_to_integer->component.def_to_integer.operand = NULL;
-	def_to_integer->component.def_to_integer.target = NULL;
+	def_to_integer->component.def_to_integer.to_integer_op = analyse_aml_to_integer_op(def_to_integer, aml);
+	def_to_integer->string.length += def_to_integer->component.def_to_integer.to_integer_op->string.length;
+	aml.initial += def_to_integer->component.def_to_integer.to_integer_op->string.length;
+	aml.length -= def_to_integer->component.def_to_integer.to_integer_op->string.length;
+	def_to_integer->component.def_to_integer.operand = analyse_aml_operand(def_to_integer, aml);
+	def_to_integer->string.length += def_to_integer->component.def_to_integer.operand->string.length;
+	aml.initial += def_to_integer->component.def_to_integer.operand->string.length;
+	aml.length -= def_to_integer->component.def_to_integer.operand->string.length;
+	def_to_integer->component.def_to_integer.target = analyse_aml_target(def_to_integer, aml);
+	def_to_integer->string.length += def_to_integer->component.def_to_integer.target->string.length;
+	aml.initial += def_to_integer->component.def_to_integer.target->string.length;
+	aml.length -= def_to_integer->component.def_to_integer.target->string.length;
 	return def_to_integer;
 }
 
@@ -3887,6 +3899,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_TO_HEX_STRING_OP:
 		expression_opcode->component.expression_opcode.def_to_hex_string = analyse_aml_def_to_hex_string(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_hex_string->string.length;
+		break;
+	case AML_BYTE_TO_INTEGER_OP:
+		expression_opcode->component.expression_opcode.def_to_integer = analyse_aml_def_to_integer(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_integer->string.length;
 		break;
 	default:
 		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
@@ -6481,6 +6497,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_SUBTRACT_OP:
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
+	case AML_BYTE_TO_INTEGER_OP:
 		term_arg->component.term_arg.expression_opcode = analyse_aml_expression_opcode(term_arg, aml);
 		term_arg->string.length += term_arg->component.term_arg.expression_opcode->string.length;
 		break;
@@ -6641,6 +6658,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_SUBTRACT_OP:
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
+	case AML_BYTE_TO_INTEGER_OP:
 	case AML_BYTE_WORD_PREFIX:
 	case AML_BYTE_ZERO_OP:
 		term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(term_arg_list, aml);
@@ -6737,6 +6755,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_SUBTRACT_OP:
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
+	case AML_BYTE_TO_INTEGER_OP:
 	case AML_BYTE_WHILE_OP:
 		term_list->component.term_list.term_list = analyse_aml_term_list(term_list, aml);
 		term_list->string.length += term_list->component.term_list.term_list->string.length;
@@ -6803,6 +6822,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_SUBTRACT_OP:
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
+	case AML_BYTE_TO_INTEGER_OP:
 		term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(term_obj, aml);
 		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
 		break;
@@ -6907,6 +6927,25 @@ AMLSymbol *analyse_aml_to_hex_string_op(AMLSymbol *parent, AMLSubstring aml)
 	}
 	else if(*to_hex_string_op->string.initial != AML_BYTE_TO_HEX_STRING_OP)to_hex_string_op->flags |= AML_SYMBOL_ERROR;
 	return to_hex_string_op;
+}
+
+// <to_integer_op> := AML_BYTE_TO_INTEGER_OP
+AMLSymbol *analyse_aml_to_integer_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("to_integer_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *to_integer_op = malloc(sizeof(*to_integer_op));
+	to_integer_op->parent = parent;
+	to_integer_op->string.initial = aml.initial;
+	to_integer_op->string.length = 1;
+	to_integer_op->type = aml_to_integer_op;
+	to_integer_op->flags = 0;
+	if(!aml.length)
+	{
+		to_integer_op->string.length = 0;
+		to_integer_op->flags |= AML_SYMBOL_ERROR;
+	}
+	else if(*to_integer_op->string.initial != AML_BYTE_TO_INTEGER_OP)to_integer_op->flags |= AML_SYMBOL_ERROR;
+	return to_integer_op;
 }
 
 // <while_op> := AML_BYTE_WHILE_OP
@@ -7911,6 +7950,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_to_hex_string_op:
 		break;
+	case aml_to_integer_op:
+		break;
 	case aml_while_op:
 		break;
 	case aml_word_const:
@@ -8856,6 +8897,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_to_hex_string_op:
 		break;
+	case aml_to_integer_op:
+		break;
 	case aml_while_op:
 		break;
 	case aml_word_const:
@@ -9753,6 +9796,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_to_buffer_op:
 		break;
 	case aml_to_hex_string_op:
+		break;
+	case aml_to_integer_op:
 		break;
 	case aml_while_op:
 		break;
