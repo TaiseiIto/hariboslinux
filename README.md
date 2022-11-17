@@ -284,8 +284,7 @@ real modeからprotected modeに移行し，dplydisk.binに移行します．
 | 0x00268000   | 0x002687ff |            |            | IDT                                |
 | 0x00268800   | 0x0026ffff |            |            | reserved (alignment for GDT)       |
 | 0x00270000   | 0x0027ffff |            |            | GDT                                |
-| 0x00280000   | 0x002fffff |            |            | kernel stack                       |
-| 0x00300000   | 0x003fffff |            |            | reserved (for future expantion)    |
+| 0x00280000   | 0x003fffff |            |            | kernel stack                       |
 | 0x00400000   | ?          |            |            | kernel heap                        |
 
 ### kernel.bin
@@ -327,8 +326,7 @@ OS本体です．
 | 0x00268000   | 0x002687ff |            |            | IDT                                |
 | 0x00268800   | 0x0026ffff |            |            | reserved (alignment for GDT)       |
 | 0x00270000   | 0x0027ffff |            |            | GDT                                |
-| 0x00280000   | 0x002fffff |            |            | kernel stack                       |
-| 0x00300000   | 0x003fffff |            |            | reserved (for future expantion)    |
+| 0x00280000   | 0x003fffff |            |            | kernel stack                       |
 | 0x00400000   | ?          |            |            | kernel heap                        |
 
 ## OSの操作
