@@ -3305,8 +3305,14 @@ AMLSymbol *analyse_aml_def_sleep(AMLSymbol *parent, AMLSubstring aml)
 	def_sleep->string.length = 0;
 	def_sleep->type = aml_def_sleep;
 	def_sleep->flags = 0;
-	def_sleep->component.def_sleep.sleep_op = NULL;
-	def_sleep->component.def_sleep.msec_time = NULL;
+	def_sleep->component.def_sleep.sleep_op = analyse_aml_sleep_op(def_sleep, aml);
+	def_sleep->string.length += def_sleep->component.def_sleep.sleep_op->string.length;
+	aml.initial += def_sleep->component.def_sleep.sleep_op->string.length;
+	aml.length -= def_sleep->component.def_sleep.sleep_op->string.length;
+	def_sleep->component.def_sleep.msec_time = analyse_aml_msec_time(def_sleep, aml);
+	def_sleep->string.length += def_sleep->component.def_sleep.msec_time->string.length;
+	aml.initial += def_sleep->component.def_sleep.msec_time->string.length;
+	aml.length -= def_sleep->component.def_sleep.msec_time->string.length;
 	return def_sleep;
 }
 
@@ -6259,6 +6265,10 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 			statement_opcode->component.statement_opcode.def_release = analyse_aml_def_release(statement_opcode, aml);
 			statement_opcode->string.length += statement_opcode->component.statement_opcode.def_release->string.length;
 			break;
+		case AML_BYTE_SLEEP_OP:
+			statement_opcode->component.statement_opcode.def_sleep = analyse_aml_def_sleep(statement_opcode, aml);
+			statement_opcode->string.length += statement_opcode->component.statement_opcode.def_sleep->string.length;
+			break;
 		default:
 			ERROR(); // Syntax error or unimplemented pattern
 			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
@@ -6937,6 +6947,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 			term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
 			break;
 		case AML_BYTE_RELEASE_OP:
+		case AML_BYTE_SLEEP_OP:
 			term_obj->component.term_obj.statement_opcode = analyse_aml_statement_opcode(term_obj, aml);
 			term_obj->string.length += term_obj->component.term_obj.statement_opcode->string.length;
 			break;
