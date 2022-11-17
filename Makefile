@@ -17,7 +17,7 @@ BOOT_SECTORS = diskcontents/bootsector.bin
 APP_NAMES = $(shell for i in `ls -d src/apps/*/`; do basename $$i; done)
 APPS = $(shell for i in $(APP_NAMES); do echo diskcontents/$${i}.com; done)
 # files included in the floppy disk
-FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/lddskxtr.bin diskcontents/kernel.bin diskcontents/callbios.bin $(APPS)
+FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/lddskxtr.bin diskcontents/kernel.bin diskcontents/callbios.bin diskcontents/asusdsdt.aml $(APPS)
 
 # tcp ports
 DEBUG_PORT = 2159
@@ -93,6 +93,9 @@ diskcontents/%.bin: src/%.bin
 
 diskcontents/%.com: src/%.com
 	cp $^ $@
+
+diskcontents/asusdsdt.aml: diskcontents/asusdsdt.txt
+	xxd -p -r $^ > $@
 
 download-image:
 	$(DOCKER) cp $(DOCKER_CONTAINER):/root/hariboslinux/$(IMAGE_FILE) .
