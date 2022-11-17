@@ -397,6 +397,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_word_const_name = "WordConst";
 	static char const * const aml_word_data_name = "WordData";
 	static char const * const aml_word_prefix_name = "WordPrefix";
+	static char const * const aml_xor_op_name = "XorOp";
 	static char const * const aml_zero_op_name = "ZeroOp";
 	switch(aml_symbol_type)
 	{
@@ -872,6 +873,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_word_data_name;
 	case aml_word_prefix:
 		return aml_word_prefix_name;
+	case aml_xor_op:
+		return aml_xor_op_name;
 	case aml_zero_op:
 		return aml_zero_op_name;
 	}
@@ -3968,6 +3971,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_to_integer = analyse_aml_def_to_integer(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_to_integer->string.length;
 		break;
+	case AML_BYTE_XOR_OP:
+		expression_opcode->component.expression_opcode.def_xor = analyse_aml_def_xor(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_xor->string.length;
+		break;
 	default:
 		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
 		{
@@ -6621,6 +6628,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
 	case AML_BYTE_TO_INTEGER_OP:
+	case AML_BYTE_XOR_OP:
 		term_arg->component.term_arg.expression_opcode = analyse_aml_expression_opcode(term_arg, aml);
 		term_arg->string.length += term_arg->component.term_arg.expression_opcode->string.length;
 		break;
@@ -6783,6 +6791,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_TO_HEX_STRING_OP:
 	case AML_BYTE_TO_INTEGER_OP:
 	case AML_BYTE_WORD_PREFIX:
+	case AML_BYTE_XOR_OP:
 	case AML_BYTE_ZERO_OP:
 		term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(term_arg_list, aml);
 		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg->string.length;
@@ -6880,6 +6889,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_TO_HEX_STRING_OP:
 	case AML_BYTE_TO_INTEGER_OP:
 	case AML_BYTE_WHILE_OP:
+	case AML_BYTE_XOR_OP:
 		term_list->component.term_list.term_list = analyse_aml_term_list(term_list, aml);
 		term_list->string.length += term_list->component.term_list.term_list->string.length;
 		aml.initial += term_list->component.term_list.term_list->string.length;
@@ -6946,6 +6956,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
 	case AML_BYTE_TO_INTEGER_OP:
+	case AML_BYTE_XOR_OP:
 		term_obj->component.term_obj.expression_opcode = analyse_aml_expression_opcode(term_obj, aml);
 		term_obj->string.length += term_obj->component.term_obj.expression_opcode->string.length;
 		break;
@@ -7151,6 +7162,26 @@ AMLSymbol *analyse_aml_word_prefix(AMLSymbol *parent, AMLSubstring aml)
 	}
 	else if(*aml.initial != AML_BYTE_WORD_PREFIX)word_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect word prefix
 	return word_prefix;
+}
+
+// <xorl_op> := AML_BYTE_XOR_OP
+AMLSymbol *analyse_aml_xor_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("xor_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *xor_op = malloc(sizeof(*xor_op));
+	xor_op->parent = parent;
+	xor_op->parent = parent;
+	xor_op->string.initial = aml.initial;
+	xor_op->string.length = 1;
+	xor_op->type = aml_xor_op;
+	xor_op->flags = 0;
+	if(!aml.length)
+	{
+		xor_op->string.length = 0;
+		xor_op->flags |= AML_SYMBOL_ERROR;
+	}
+	else if(*xor_op->string.initial != AML_BYTE_XOR_OP)xor_op->flags |= AML_SYMBOL_ERROR; // Incorrect xor op
+	return xor_op;
 }
 
 // <zero_op> := AML_BYTE_ZERO_OP
@@ -8104,6 +8135,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		for(AMLSymbol **byte_data = aml_symbol->component.word_data.byte_data; byte_data != aml_symbol->component.word_data.byte_data + _countof(aml_symbol->component.word_data.byte_data); byte_data++)if(*byte_data)delete_aml_symbol(*byte_data);
 		break;
 	case aml_word_prefix:
+		break;
+	case aml_xor_op:
 		break;
 	case aml_zero_op:
 		break;
@@ -9061,6 +9094,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_word_prefix:
 		break;
+	case aml_xor_op:
+		break;
 	case aml_zero_op:
 		break;
 	}
@@ -9979,6 +10014,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.word_data.byte_data); i++)if(aml_symbol->component.word_data.byte_data[i])print_aml_symbol(aml_symbol->component.word_data.byte_data[i]);
 		break;
 	case aml_word_prefix:
+		break;
+	case aml_xor_op:
 		break;
 	case aml_zero_op:
 		break;

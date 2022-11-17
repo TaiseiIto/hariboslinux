@@ -414,6 +414,7 @@ typedef enum _AMLSymbolType
 	aml_word_const,
 	aml_word_data,
 	aml_word_prefix,
+	aml_xor_op,
 	aml_zero_op,
 } AMLSymbolType;
 
@@ -2123,6 +2124,8 @@ AMLSymbol *analyse_aml_word_const(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_word_data(AMLSymbol *parent, AMLSubstring aml);
 // <word_prefix> := AML_BYTE_WORD_PREFIX
 AMLSymbol *analyse_aml_word_prefix(AMLSymbol *parent, AMLSubstring aml);
+// <xorl_op> := AML_BYTE_XOR_OP
+AMLSymbol *analyse_aml_xor_op(AMLSymbol *parent, AMLSubstring aml);
 // <zero_op> := AML_BYTE_ZERO_OP
 AMLSymbol *analyse_aml_zero_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *create_dsdt_aml_syntax_tree(void);
