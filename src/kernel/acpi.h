@@ -396,6 +396,7 @@ typedef enum _AMLSymbolType
 	aml_sleep_op_suffix,
 	aml_source_buff,
 	aml_stall_op,
+	aml_stall_op_suffix,
 	aml_statement_opcode,
 	aml_store_op,
 	aml_string,
@@ -2104,6 +2105,8 @@ AMLSymbol *analyse_aml_sleep_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml);
 // <stall_op> := <ext_op_prefix> <stall_op_suffix>
 AMLSymbol *analyse_aml_stall_op(AMLSymbol *parent, AMLSubstring aml);
+// <stall_op_suffix> := AML_BYTE_STALL_OP
+AMLSymbol *analyse_aml_stall_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <store_op> := AML_BYTE_STORE_OP

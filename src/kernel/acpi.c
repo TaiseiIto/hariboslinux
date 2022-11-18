@@ -379,6 +379,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_sleep_op_suffix_name = "SleepOpSuffix";
 	static char const * const aml_source_buff_name = "SourceBuff";
 	static char const * const aml_stall_op_name = "StallOp";
+	static char const * const aml_stall_op_suffix_name = "StallOpSuffix";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_store_op_name = "StoreOp";
 	static char const * const aml_string_name = "String";
@@ -839,6 +840,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_source_buff_name;
 	case aml_stall_op:
 		return aml_stall_op_name;
+	case aml_stall_op_suffix:
+		return aml_stall_op_suffix_name;
 	case aml_statement_opcode:
 		return aml_statement_opcode_name;
 	case aml_store_op:
@@ -6314,6 +6317,25 @@ AMLSymbol *analyse_aml_stall_op(AMLSymbol *parent, AMLSubstring aml)
 	return stall_op;
 }
 
+// <stall_op_suffix> := AML_BYTE_STALL_OP
+AMLSymbol *analyse_aml_stall_op_suffix(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("stall_op_suffix aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *stall_op_suffix = malloc(sizeof(*stall_op_suffix));
+	stall_op_suffix->parent = parent;
+	stall_op_suffix->string.initial = aml.initial;
+	stall_op_suffix->string.length = 1;
+	stall_op_suffix->type = aml_stall_op_suffix;
+	stall_op_suffix->flags = 0;
+	if(!aml.initial)
+	{
+		stall_op_suffix->string.length = 0;
+		stall_op_suffix->flags |= AML_SYMBOL_ERROR;
+	}
+	else if(*aml.initial != AML_BYTE_STALL_OP)stall_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect stall_op_suffix
+	return stall_op_suffix;
+}
+
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -8115,6 +8137,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.stall_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.stall_op.ext_op_prefix);
 		if(aml_symbol->component.stall_op.stall_op_suffix)delete_aml_symbol(aml_symbol->component.stall_op.stall_op_suffix);
 		break;
+	case aml_stall_op_suffix:
+		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break);
 		if(aml_symbol->component.statement_opcode.def_break_point)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break_point);
@@ -9112,6 +9136,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_stall_op:
 		break;
+	case aml_stall_op_suffix:
+		break;
 	case aml_statement_opcode:
 		break;
 	case aml_store_op:
@@ -10005,6 +10031,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_stall_op:
 		if(aml_symbol->component.stall_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.stall_op.ext_op_prefix);
 		if(aml_symbol->component.stall_op.stall_op_suffix)print_aml_symbol(aml_symbol->component.stall_op.stall_op_suffix);
+		break;
+	case aml_stall_op_suffix:
 		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)print_aml_symbol(aml_symbol->component.statement_opcode.def_break);
