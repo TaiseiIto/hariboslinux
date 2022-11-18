@@ -396,6 +396,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_to_buffer_op_name = "ToBufferOp";
 	static char const * const aml_to_hex_string_op_name = "ToHexStringOp";
 	static char const * const aml_to_integer_op_name = "ToIntegerOp";
+	static char const * const aml_usec_time_name = "UsecTime";
 	static char const * const aml_while_op_name = "WhileOp";
 	static char const * const aml_word_const_name = "WordConst";
 	static char const * const aml_word_data_name = "WordData";
@@ -874,6 +875,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_to_hex_string_op_name;
 	case aml_to_integer_op:
 		return aml_to_integer_op_name;
+	case aml_usec_time:
+		return aml_usec_time_name;
 	case aml_while_op:
 		return aml_while_op_name;
 	case aml_word_const:
@@ -6377,6 +6380,10 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 			statement_opcode->component.statement_opcode.def_sleep = analyse_aml_def_sleep(statement_opcode, aml);
 			statement_opcode->string.length += statement_opcode->component.statement_opcode.def_sleep->string.length;
 			break;
+		case AML_BYTE_STALL_OP:
+			statement_opcode->component.statement_opcode.def_stall = analyse_aml_def_stall(statement_opcode, aml);
+			statement_opcode->string.length += statement_opcode->component.statement_opcode.def_stall->string.length;
+			break;
 		default:
 			ERROR(); // Syntax error or unimplemented pattern
 			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
@@ -7060,6 +7067,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 			break;
 		case AML_BYTE_RELEASE_OP:
 		case AML_BYTE_SLEEP_OP:
+		case AML_BYTE_STALL_OP:
 			term_obj->component.term_obj.statement_opcode = analyse_aml_statement_opcode(term_obj, aml);
 			term_obj->string.length += term_obj->component.term_obj.statement_opcode->string.length;
 			break;
@@ -7151,6 +7159,21 @@ AMLSymbol *analyse_aml_to_integer_op(AMLSymbol *parent, AMLSubstring aml)
 	}
 	else if(*to_integer_op->string.initial != AML_BYTE_TO_INTEGER_OP)to_integer_op->flags |= AML_SYMBOL_ERROR;
 	return to_integer_op;
+}
+
+// <usec_time> := <term_arg>
+AMLSymbol *analyse_aml_usec_time(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("usec_time aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *usec_time = malloc(sizeof(*usec_time));
+	usec_time->parent = parent;
+	usec_time->string.initial = aml.initial;
+	usec_time->string.length = 0;
+	usec_time->type = aml_usec_time;
+	usec_time->flags = 0;
+	usec_time->component.usec_time.term_arg = analyse_aml_term_arg(usec_time, aml);
+	usec_time->string.length += usec_time->component.usec_time.term_arg->string.length;
+	return usec_time;
 }
 
 // <while_op> := AML_BYTE_WHILE_OP
@@ -8205,6 +8228,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_to_integer_op:
 		break;
+	case aml_usec_time:
+		if(aml_symbol->component.usec_time.term_arg)delete_aml_symbol(aml_symbol->component.usec_time.term_arg);
+		break;
 	case aml_while_op:
 		break;
 	case aml_word_const:
@@ -9170,6 +9196,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_to_integer_op:
 		break;
+	case aml_usec_time:
+		break;
 	case aml_while_op:
 		break;
 	case aml_word_const:
@@ -10099,6 +10127,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_to_hex_string_op:
 		break;
 	case aml_to_integer_op:
+		break;
+	case aml_usec_time:
+		if(aml_symbol->component.usec_time.term_arg)print_aml_symbol(aml_symbol->component.usec_time.term_arg);
 		break;
 	case aml_while_op:
 		break;

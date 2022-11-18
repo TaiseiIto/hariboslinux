@@ -413,6 +413,7 @@ typedef enum _AMLSymbolType
 	aml_to_buffer_op,
 	aml_to_hex_string_op,
 	aml_to_integer_op,
+	aml_usec_time,
 	aml_while_op,
 	aml_word_const,
 	aml_word_data,
@@ -1489,6 +1490,11 @@ typedef struct _AMLTimeOut
 	struct _AMLSymbol *word_data;
 } AMLTimeOut;
 
+typedef struct _AMLUsecTime
+{
+	struct _AMLSymbol *term_arg;
+} AMLUsecTime;
+
 typedef struct _AMLWordConst
 {
 	struct _AMLSymbol *word_prefix;
@@ -1654,6 +1660,7 @@ typedef union _AMLComponent
 	AMLTermList term_list;
 	AMLTermObj term_obj;
 	AMLTimeOut time_out;
+	AMLUsecTime usec_time;
 	AMLWordConst word_const;
 	AMLWordData word_data;
 } AMLComponent;
@@ -2139,6 +2146,8 @@ AMLSymbol *analyse_aml_to_buffer_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_to_hex_string_op(AMLSymbol *parent, AMLSubstring aml);
 // <to_integer_op> := AML_BYTE_TO_INTEGER_OP
 AMLSymbol *analyse_aml_to_integer_op(AMLSymbol *parent, AMLSubstring aml);
+// <usec_time> := <term_arg>
+AMLSymbol *analyse_aml_usec_time(AMLSymbol *parent, AMLSubstring aml);
 // <while_op> := AML_BYTE_WHILE_OP
 AMLSymbol *analyse_aml_while_op(AMLSymbol *parent, AMLSubstring aml);
 // <word_const> := <word_prefix> <word_data>
