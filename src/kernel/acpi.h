@@ -274,6 +274,7 @@ typedef enum _AMLSymbolType
 	aml_def_shift_right,
 	aml_def_size_of,
 	aml_def_sleep,
+	aml_def_stall,
 	aml_def_store,
 	aml_def_subtract,
 	aml_def_to_buffer,
@@ -937,6 +938,12 @@ typedef struct _AMLDefSleep
 	struct _AMLSymbol *msec_time;
 } AMLDefSleep;
 
+typedef struct _AMLDefStall
+{
+	struct _AMLSymbol *stall_op;
+	struct _AMLSymbol *usec_time;
+} AMLDefStall;
+
 typedef struct _AMLDefStore
 {
 	struct _AMLSymbol *store_op;
@@ -1565,6 +1572,7 @@ typedef union _AMLComponent
 	AMLDefShiftRight def_shift_right;
 	AMLDefSizeOf def_size_of;
 	AMLDefSleep def_sleep;
+	AMLDefStall def_stall;
 	AMLDefStore def_store;
 	AMLDefSubtract def_subtract;
 	AMLDefToBuffer def_to_buffer;
@@ -1844,6 +1852,8 @@ AMLSymbol *analyse_aml_def_shift_right(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_size_of(AMLSymbol *parent, AMLSubstring aml);
 // <def_sleep> := <sleep_op> <msec_time>
 AMLSymbol *analyse_aml_def_sleep(AMLSymbol *parent, AMLSubstring aml);
+// <def_stall> := <stall_op> <usec_time>
+AMLSymbol *analyse_aml_def_stall(AMLSymbol *parent, AMLSubstring aml);
 // <def_store> := <store_op> <term_arg> <super_name>
 AMLSymbol *analyse_aml_def_store(AMLSymbol *parent, AMLSubstring aml);
 // <def_subtract> := <subtract_op> <operand> <operand> <target>
