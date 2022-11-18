@@ -946,7 +946,7 @@ AMLSymbol *analyse_aml_access_field_op(AMLSymbol *parent, AMLSubstring aml)
 	access_field_op->string.length = 1;
 	access_field_op->type = aml_access_field_op;
 	access_field_op->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		access_field_op->string.length = 0;
 		access_field_op->flags |= AML_SYMBOL_ERROR;
@@ -956,6 +956,7 @@ AMLSymbol *analyse_aml_access_field_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		access_field_op->flags |= AML_SYMBOL_ERROR; // Incorrect access_field_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return access_field_op;
 }
@@ -1008,7 +1009,7 @@ AMLSymbol *analyse_aml_acquire_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	acquire_op_suffix->string.length = 1;
 	acquire_op_suffix->type = aml_acquire_op_suffix;
 	acquire_op_suffix->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		acquire_op_suffix->string.length = 0;
 		acquire_op_suffix->flags |= AML_SYMBOL_ERROR;
@@ -1018,6 +1019,7 @@ AMLSymbol *analyse_aml_acquire_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		acquire_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect acquire_op_suffix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return acquire_op_suffix;
 }
@@ -1032,7 +1034,7 @@ AMLSymbol *analyse_aml_alias_op(AMLSymbol *parent, AMLSubstring aml)
 	alias_op->string.length = 1;
 	alias_op->type = aml_alias_op;
 	alias_op->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		alias_op->string.length = 0;
 		alias_op->flags |= AML_SYMBOL_ERROR;
@@ -1042,6 +1044,7 @@ AMLSymbol *analyse_aml_alias_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		alias_op->flags |= AML_SYMBOL_ERROR; // Incorrect alias_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return alias_op;
 }
@@ -1056,7 +1059,7 @@ AMLSymbol *analyse_aml_add_op(AMLSymbol *parent, AMLSubstring aml)
 	add_op->string.length = 1;
 	add_op->type = aml_add_op;
 	add_op->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		add_op->string.length = 0;
 		add_op->flags |= AML_SYMBOL_ERROR;
@@ -1066,6 +1069,7 @@ AMLSymbol *analyse_aml_add_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		add_op->flags |= AML_SYMBOL_ERROR; // Incorrect add_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return add_op;
 }
@@ -1080,7 +1084,7 @@ AMLSymbol *analyse_aml_and_op(AMLSymbol *parent, AMLSubstring aml)
 	and_op->string.length = 1;
 	and_op->type = aml_and_op;
 	and_op->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		and_op->string.length = 0;
 		and_op->flags |= AML_SYMBOL_ERROR;
@@ -1090,6 +1094,7 @@ AMLSymbol *analyse_aml_and_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		and_op->flags |= AML_SYMBOL_ERROR; // Incorrect and_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return and_op;
 }
@@ -1154,6 +1159,7 @@ AMLSymbol *analyse_aml_arg_op(AMLSymbol *parent, AMLSubstring aml)
 	default:
 		arg_op->flags |= AML_SYMBOL_ERROR; // Incorrect arg op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return arg_op;
@@ -1179,6 +1185,7 @@ AMLSymbol *analyse_aml_ascii_char(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ascii_char->flags |= AML_SYMBOL_ERROR; // Incorrect ascii char
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return ascii_char;
 }
@@ -1249,6 +1256,7 @@ AMLSymbol *analyse_aml_break_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		break_op->flags |= AML_SYMBOL_ERROR; // Incorrect break_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return break_op;
 }
@@ -1307,6 +1315,7 @@ AMLSymbol *analyse_aml_buffer_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		buffer_op->flags |= AML_SYMBOL_ERROR; // Incorrect buffer op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return buffer_op;
 }
@@ -1430,6 +1439,7 @@ AMLSymbol *analyse_aml_byte_prefix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		byte_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect byte prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return byte_prefix;
 }
@@ -1491,6 +1501,7 @@ AMLSymbol *analyse_aml_computational_data(AMLSymbol *parent, AMLSubstring aml)
 	default:
 		computational_data->flags |= AML_SYMBOL_ERROR; // Incorrect computational data
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return computational_data;
@@ -1516,6 +1527,7 @@ AMLSymbol *analyse_aml_concat_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		concat_op->flags |= AML_SYMBOL_ERROR; // Incorrect concat_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return concat_op;
 }
@@ -1540,6 +1552,7 @@ AMLSymbol *analyse_aml_concat_res_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		concat_res_op->flags |= AML_SYMBOL_ERROR;
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return concat_res_op;
 }
@@ -1585,6 +1598,7 @@ AMLSymbol *analyse_aml_cond_ref_of_op_suffix(AMLSymbol *parent, AMLSubstring aml
 	{
 		cond_ref_of_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect cond_ref_of_op_suffix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return cond_ref_of_op_suffix;
 }
@@ -1625,6 +1639,7 @@ AMLSymbol *analyse_aml_const_obj(AMLSymbol *parent, AMLSubstring aml)
 	default:
 		const_obj->flags |= AML_SYMBOL_ERROR; // Incorrect const obj
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return const_obj;
@@ -1650,6 +1665,7 @@ AMLSymbol *analyse_aml_create_bit_field_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		create_bit_field_op->flags |= AML_SYMBOL_ERROR; // Incorrect create_bit_field_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return create_bit_field_op;
 }
@@ -1674,6 +1690,7 @@ AMLSymbol *analyse_aml_create_byte_field_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		create_byte_field_op->flags |= AML_SYMBOL_ERROR; // Incorrect create_byte_field_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return create_byte_field_op;
 }
@@ -1698,6 +1715,7 @@ AMLSymbol *analyse_aml_create_dword_field_op(AMLSymbol *parent, AMLSubstring aml
 	{
 		create_dword_field_op->flags |= AML_SYMBOL_ERROR; // Incorrect create_dword_field_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return create_dword_field_op;
 }
@@ -1743,6 +1761,7 @@ AMLSymbol *analyse_aml_create_field_op_suffix(AMLSymbol *parent, AMLSubstring am
 	{
 		create_field_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect create_field_op_suffix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return create_field_op_suffix;
 }
@@ -1767,6 +1786,7 @@ AMLSymbol *analyse_aml_create_qword_field_op(AMLSymbol *parent, AMLSubstring aml
 	{
 		create_qword_field_op->flags |= AML_SYMBOL_ERROR; // Incorrect create_qword_field_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return create_qword_field_op;
 }
@@ -1791,6 +1811,7 @@ AMLSymbol *analyse_aml_create_word_field_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		create_word_field_op->flags |= AML_SYMBOL_ERROR; // Incorrect create_word_field_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return create_word_field_op;
 }
@@ -1847,6 +1868,7 @@ AMLSymbol *analyse_aml_data_object(AMLSymbol *parent, AMLSubstring aml)
 	default:
 		data_object->flags |= AML_SYMBOL_ERROR; // Incorrect data object
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return data_object;
@@ -1883,6 +1905,7 @@ AMLSymbol *analyse_aml_data_ref_object(AMLSymbol *parent, AMLSubstring aml)
 	default:
 		data_ref_object->flags |= AML_SYMBOL_ERROR; // Incorrect data ref object
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return data_ref_object;
@@ -1946,6 +1969,7 @@ AMLSymbol *analyse_aml_debug_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		debug_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect debug_op_suffix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return debug_op_suffix;
 }
@@ -1970,6 +1994,7 @@ AMLSymbol *analyse_aml_decrement_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		decrement_op->flags |= AML_SYMBOL_ERROR; // Incorrect decrement_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return decrement_op;
 }
@@ -1990,16 +2015,6 @@ AMLSymbol *analyse_aml_def_alias(AMLSymbol *parent, AMLSubstring aml)
 	aml.length -= def_alias->component.def_alias.alias_op->string.length;
 	for(AMLSymbol **name_string = def_alias->component.def_alias.name_string; name_string != def_alias->component.def_alias.name_string + _countof(def_alias->component.def_alias.name_string); name_string++)
 	{
-		switch(*aml.initial)
-		{
-		case AML_BYTE_PARENT_PREFIX_CHAR:
-		case AML_BYTE_ROOT_CHAR:
-			break;
-		default:
-			def_alias->flags |= AML_SYMBOL_ERROR; // Syntax error
-			ERROR();
-			break;
-		}
 		*name_string = analyse_aml_name_string(def_alias, aml);
 		def_alias->string.length += (*name_string)->string.length;
 		aml.initial += (*name_string)->string.length;
@@ -3163,6 +3178,7 @@ AMLSymbol *analyse_aml_def_object_type(AMLSymbol *parent, AMLSubstring aml)
 		{
 			def_object_type->flags |= AML_SYMBOL_ERROR;
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -3170,6 +3186,7 @@ AMLSymbol *analyse_aml_def_object_type(AMLSymbol *parent, AMLSubstring aml)
 	{
 		def_object_type->flags |= AML_SYMBOL_ERROR;
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return def_object_type;
 }
@@ -3717,6 +3734,7 @@ AMLSymbol *analyse_aml_deref_of_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		deref_of_op->flags |= AML_SYMBOL_ERROR; // Incorrect deref of op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return deref_of_op;
 }
@@ -3762,6 +3780,7 @@ AMLSymbol *analyse_aml_device_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		device_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect device op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return device_op_suffix;
 }
@@ -3786,6 +3805,7 @@ AMLSymbol *analyse_aml_digit_char(AMLSymbol *parent, AMLSubstring aml)
 	{
 		digit_char->flags |= AML_SYMBOL_ERROR; // Incorrect digit char
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return digit_char;
 }
@@ -3810,6 +3830,7 @@ AMLSymbol *analyse_aml_divide_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		divide_op->flags |= AML_SYMBOL_ERROR; // Incorrect dual name prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return divide_op;
 }
@@ -3892,6 +3913,7 @@ AMLSymbol *analyse_aml_dual_name_prefix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		dual_name_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect dual name prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return dual_name_prefix;
 }
@@ -3959,6 +3981,7 @@ AMLSymbol *analyse_aml_dword_prefix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		dword_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect dword prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return dword_prefix;
 }
@@ -3983,6 +4006,7 @@ AMLSymbol *analyse_aml_else_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		else_op->flags |= AML_SYMBOL_ERROR; // Incorrect else_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return else_op;
 }
@@ -4209,6 +4233,7 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 		{
 			expression_opcode->flags |= AML_SYMBOL_ERROR; // Syntax error
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -4235,6 +4260,7 @@ AMLSymbol *analyse_aml_ext_op_prefix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ext_op_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect ext op prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return ext_op_prefix;
 }
@@ -4280,6 +4306,7 @@ AMLSymbol *analyse_aml_field_element(AMLSymbol *parent, AMLSubstring aml)
 		{
 			field_element->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -4883,7 +4910,7 @@ AMLSymbol *analyse_aml_mid_op(AMLSymbol *parent, AMLSubstring aml)
 	mid_op->string.length = 1;
 	mid_op->type = aml_mid_op;
 	mid_op->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		mid_op->string.length = 0;
 		mid_op->flags |= AML_SYMBOL_ERROR;
@@ -4957,7 +4984,7 @@ AMLSymbol *analyse_aml_multi_name_prefix(AMLSymbol *parent, AMLSubstring aml)
 	multi_name_prefix->string.length = 1;
 	multi_name_prefix->type = aml_multi_name_prefix;
 	multi_name_prefix->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		multi_name_prefix->string.length = 0;
 		multi_name_prefix->flags |= AML_SYMBOL_ERROR;
@@ -5151,6 +5178,7 @@ AMLSymbol *analyse_aml_name_path(AMLSymbol *parent, AMLSubstring aml)
 		{
 			name_path->flags |= AML_SYMBOL_ERROR; // Syntax error
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -5215,6 +5243,7 @@ AMLSymbol *analyse_aml_name_space_modifier_obj(AMLSymbol *parent, AMLSubstring a
 	default:
 		name_space_modifier_obj->flags |= AML_SYMBOL_ERROR; // Syntax error
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return name_space_modifier_obj;
@@ -5371,6 +5400,7 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 		default:
 			named_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 			break;
 		}
 		break;
@@ -5381,6 +5411,7 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 	default:
 		named_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return named_obj;
@@ -5406,6 +5437,7 @@ AMLSymbol *analyse_aml_not_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		not_op->flags |= AML_SYMBOL_ERROR; // Incorrect not_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return not_op;
 }
@@ -5460,6 +5492,7 @@ AMLSymbol *analyse_aml_notify_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		notify_op->flags |= AML_SYMBOL_ERROR; // Incorrect notify_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return notify_op;
 }
@@ -5484,6 +5517,7 @@ AMLSymbol *analyse_aml_null_char(AMLSymbol *parent, AMLSubstring aml)
 	{
 		null_char->flags |= AML_SYMBOL_ERROR; // Incorrect null char
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return null_char;
 }
@@ -5508,6 +5542,7 @@ AMLSymbol *analyse_aml_null_name(AMLSymbol *parent, AMLSubstring aml)
 	{
 		null_name->flags |= AML_SYMBOL_ERROR; // Incorrect null name
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return null_name;
 }
@@ -5597,6 +5632,7 @@ AMLSymbol *analyse_aml_object(AMLSymbol *parent, AMLSubstring aml)
 	default:
 		object->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return object;
@@ -5622,6 +5658,7 @@ AMLSymbol *analyse_aml_object_type_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		object_type_op->flags |= AML_SYMBOL_ERROR; // Incorrect object_type op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return object_type_op;
 }
@@ -5646,6 +5683,7 @@ AMLSymbol *analyse_aml_one_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		one_op->flags |= AML_SYMBOL_ERROR; // Incorrect one op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return one_op;
 }
@@ -5670,6 +5708,7 @@ AMLSymbol *analyse_aml_ones_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		ones_op->flags |= AML_SYMBOL_ERROR; // Incorrect ones op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return ones_op;
 }
@@ -5715,6 +5754,7 @@ AMLSymbol *analyse_aml_op_region_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		op_region_op_suffix->flags |= AML_SYMBOL_ERROR;
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return op_region_op_suffix;
 }
@@ -5754,6 +5794,7 @@ AMLSymbol *analyse_aml_or_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		or_op->flags |= AML_SYMBOL_ERROR; // Incorrect or_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return or_op;
 }
@@ -5809,6 +5850,7 @@ AMLSymbol *analyse_aml_package_element(AMLSymbol *parent, AMLSubstring aml)
 		{
 			package_element->flags |= AML_SYMBOL_ERROR; // Syntax error
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -5869,6 +5911,7 @@ AMLSymbol *analyse_aml_package_element_list(AMLSymbol *parent, AMLSubstring aml)
 		{
 			package_element_list->flags |= AML_SYMBOL_ERROR; // Syntax error
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -5895,6 +5938,7 @@ AMLSymbol *analyse_aml_package_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		package_op->flags |= AML_SYMBOL_ERROR; // Incorrect package_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return package_op;
 }
@@ -5919,6 +5963,7 @@ AMLSymbol *analyse_aml_parent_prefix_char(AMLSymbol *parent, AMLSubstring aml)
 	{
 		parent_prefix_char->flags |= AML_SYMBOL_ERROR; // Incorrect parent prefix char
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return parent_prefix_char;
 }
@@ -6117,6 +6162,7 @@ AMLSymbol *analyse_aml_processor_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		processor_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect processor_op_suffix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return processor_op_suffix;
 }
@@ -6199,6 +6245,7 @@ AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		qword_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect qword prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return qword_prefix;
 }
@@ -6234,6 +6281,7 @@ AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml
 	default:
 		reference_type_opcode->flags |= AML_SYMBOL_ERROR; // DefRefOf and UserTermObj are unimplemented.
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return reference_type_opcode;
@@ -6329,6 +6377,7 @@ AMLSymbol *analyse_aml_release_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		release_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect release_op_suffix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return release_op_suffix;
 }
@@ -6368,6 +6417,7 @@ AMLSymbol *analyse_aml_return_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		return_op->flags |= AML_SYMBOL_ERROR; // Incorrect return_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return return_op;
 }
@@ -6413,6 +6463,7 @@ AMLSymbol *analyse_aml_reserved_field_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		reserved_field_op->flags |= AML_SYMBOL_ERROR; // Incorrect reserved_field_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return reserved_field_op;
 }
@@ -6458,6 +6509,7 @@ AMLSymbol *analyse_aml_revision_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		revision_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect revision op prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return revision_op_suffix;
 }
@@ -6482,6 +6534,7 @@ AMLSymbol *analyse_aml_root_char(AMLSymbol *parent, AMLSubstring aml)
 	{
 		root_char->flags |= AML_SYMBOL_ERROR; // Incorrect root_char
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return root_char;
 }
@@ -6506,6 +6559,7 @@ AMLSymbol *analyse_aml_scope_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		scope_op->flags |= AML_SYMBOL_ERROR; // Incorrect scope op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return scope_op;
 }
@@ -6530,6 +6584,7 @@ AMLSymbol *analyse_aml_seg_count(AMLSymbol *parent, AMLSubstring aml)
 	{
 		seg_count->flags |= AML_SYMBOL_ERROR; // SegCount can be from 1 to 255.
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return seg_count;
 }
@@ -6571,6 +6626,7 @@ AMLSymbol *analyse_aml_shift_left_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		shift_left_op->flags |= AML_SYMBOL_ERROR; // Incorrect shift_left_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return shift_left_op;
 }
@@ -6595,6 +6651,7 @@ AMLSymbol *analyse_aml_shift_right_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		shift_right_op->flags |= AML_SYMBOL_ERROR; // Incorrect shift_right_op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return shift_right_op;
 }
@@ -6659,6 +6716,7 @@ AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml)
 		{
 			simple_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -6685,6 +6743,7 @@ AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		size_of_op->flags |= AML_SYMBOL_ERROR; // Incorrect size of op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return size_of_op;
 }
@@ -6720,7 +6779,7 @@ AMLSymbol *analyse_aml_sleep_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	sleep_op_suffix->string.length = 1;
 	sleep_op_suffix->type = aml_sleep_op_suffix;
 	sleep_op_suffix->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		sleep_op_suffix->string.length = 0;
 		sleep_op_suffix->flags |= AML_SYMBOL_ERROR;
@@ -6730,6 +6789,7 @@ AMLSymbol *analyse_aml_sleep_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		sleep_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect sleep_op_suffix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return sleep_op_suffix;
 }
@@ -6782,7 +6842,7 @@ AMLSymbol *analyse_aml_stall_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	stall_op_suffix->string.length = 1;
 	stall_op_suffix->type = aml_stall_op_suffix;
 	stall_op_suffix->flags = 0;
-	if(!aml.initial)
+	if(!aml.length)
 	{
 		stall_op_suffix->string.length = 0;
 		stall_op_suffix->flags |= AML_SYMBOL_ERROR;
@@ -6792,6 +6852,7 @@ AMLSymbol *analyse_aml_stall_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		stall_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect stall_op_suffix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return stall_op_suffix;
 }
@@ -6867,6 +6928,7 @@ AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 	default:
 		statement_opcode->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
 	}
 	return statement_opcode;
@@ -6892,6 +6954,7 @@ AMLSymbol *analyse_aml_store_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		store_op->flags |= AML_SYMBOL_ERROR; // Incorrect store op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return store_op;
 }
@@ -6941,6 +7004,7 @@ AMLSymbol *analyse_aml_string_prefix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		string_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect string prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return string_prefix;
 }
@@ -6965,6 +7029,7 @@ AMLSymbol *analyse_aml_subtract_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		subtract_op->flags |= AML_SYMBOL_ERROR; // Incorrect subtract op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return subtract_op;
 }
@@ -6996,6 +7061,7 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 		default:
 			super_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 			break;
 		}
 		break;
@@ -7041,6 +7107,7 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 		{
 			super_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -7067,6 +7134,7 @@ AMLSymbol *analyse_aml_sync_flags(AMLSymbol *parent, AMLSubstring aml)
 	{
 		sync_flags->flags |= AML_SYMBOL_ERROR; // Incorrect sync flags
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return sync_flags;
 }
@@ -7127,6 +7195,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 		{
 			target->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -7226,6 +7295,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 		default:
 			term_arg->flags |= AML_SYMBOL_ERROR;
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 			break;
 		}
 		break;
@@ -7250,6 +7320,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 		{
 			term_arg->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -7484,6 +7555,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 		{
 			term_list->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -7591,6 +7663,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 		{
 			term_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
+			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		}
 		break;
 	}
@@ -7632,6 +7705,7 @@ AMLSymbol *analyse_aml_to_buffer_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		to_buffer_op->flags |= AML_SYMBOL_ERROR;
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return to_buffer_op;
 }
@@ -7656,6 +7730,7 @@ AMLSymbol *analyse_aml_to_hex_string_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		to_hex_string_op->flags |= AML_SYMBOL_ERROR;
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return to_hex_string_op;
 }
@@ -7680,6 +7755,7 @@ AMLSymbol *analyse_aml_to_integer_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		to_integer_op->flags |= AML_SYMBOL_ERROR;
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return to_integer_op;
 }
@@ -7719,6 +7795,7 @@ AMLSymbol *analyse_aml_while_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		while_op->flags |= AML_SYMBOL_ERROR; // Incorrect while op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return while_op;
 }
@@ -7786,6 +7863,7 @@ AMLSymbol *analyse_aml_word_prefix(AMLSymbol *parent, AMLSubstring aml)
 	{
 		word_prefix->flags |= AML_SYMBOL_ERROR; // Incorrect word prefix
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return word_prefix;
 }
@@ -7811,6 +7889,7 @@ AMLSymbol *analyse_aml_xor_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		xor_op->flags |= AML_SYMBOL_ERROR; // Incorrect xor op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return xor_op;
 }
@@ -7836,6 +7915,7 @@ AMLSymbol *analyse_aml_zero_op(AMLSymbol *parent, AMLSubstring aml)
 	{
 		zero_op->flags |= AML_SYMBOL_ERROR; // Incorrect zero op
 		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
 	return zero_op;
 }
