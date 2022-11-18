@@ -13,11 +13,14 @@ endif
 # floppy disk image file of the built operating system
 IMAGE_FILE = haribos.img
 BOOT_SECTORS = diskcontents/bootsector.bin
+# AMLS
+AML_SOURCES = $(wildcard diskcontents/*dsdt.txt)
+AMLS = $(AML_SOURCES:.txt=.aml)
 # Applications
 APP_NAMES = $(shell for i in `ls -d src/apps/*/`; do basename $$i; done)
 APPS = $(shell for i in $(APP_NAMES); do echo diskcontents/$${i}.com; done)
 # files included in the floppy disk
-FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/lddskxtr.bin diskcontents/kernel.bin diskcontents/callbios.bin diskcontents/asusdsdt.aml $(APPS)
+FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/lddskxtr.bin diskcontents/kernel.bin diskcontents/callbios.bin $(AMLS) $(APPS)
 
 # tcp ports
 DEBUG_PORT = 2159
@@ -94,7 +97,7 @@ diskcontents/%.bin: src/%.bin
 diskcontents/%.com: src/%.com
 	cp $^ $@
 
-diskcontents/asusdsdt.aml: diskcontents/asusdsdt.txt
+diskcontents/%.aml: diskcontents/%.txt
 	xxd -p -r $^ > $@
 
 download-image:
