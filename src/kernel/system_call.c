@@ -609,7 +609,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					aml_syntax_tree = analyse_aml_term_list(NULL, aml);
 					if(aml_syntax_tree->string.length < aml.length)
 					{
-						printf_serial("---------- unread bytes ----------\n");
+						printf_serial("---------- read bytes ----------\n");
+						for(unsigned int i = 0; i < aml_syntax_tree->string.length; i++)printf_serial("%02.2x%c", aml.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+						printf_serial("\n---------- unread bytes ----------\n");
 						for(unsigned int i = aml_syntax_tree->string.length; i < aml.length; i++)printf_serial("%02.2x%c", aml.initial[i], (i - aml_syntax_tree->string.length + 1) % 0x10 ? ' ' : '\n');
 						printf_serial("\n");
 					}
