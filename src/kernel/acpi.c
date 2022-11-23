@@ -2941,6 +2941,7 @@ AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml)
 		def_method->flags |= AML_SYMBOL_ERROR; // Length error
 		ERROR();
 	}
+	printf_serial("Method \"%s\" is defined.\n", def_method->component.def_method.name_string->component.name_string.string);
 	return def_method;
 }
 
@@ -4850,7 +4851,6 @@ AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 	else
 	{
 		WARNING();
-		printf_serial("free memory space = %#010.8x\n", get_free_memory_space_size());
 		printf_serial("Undefined method \"%s\" is called.\n", method_invocation->component.method_invocation.name_string->component.name_string.string);
 		num_of_args = -1;
 	}
