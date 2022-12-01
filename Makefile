@@ -73,7 +73,7 @@ all: build $(ASLS)
 build: $(IMAGE_FILE)
 
 clean:
-	rm -f diskcontents/*.bin diskcontents/*.com $(IMAGE_PACKER) *.bin *.o *.img
+	rm -f $(AMLS) $(ASLS) $(IMAGE_PACKER) diskcontents/*.bin diskcontents/*.com *.bin *.o *.img
 	make clean -C src
 
 # Clean docker environment
