@@ -119,7 +119,7 @@ unsigned int get_file_size(char const *file_name)
 {
 	FileInformation const *file_information = get_file_information(file_name);
 	if(file_information)return file_information->size; // Return file size.
-	else if(!strcmp(file_name, dsdt_file_name))return get_dsdt_aml().length; // Return size of DSDT AML.
+	else if(!strcmp(file_name, dsdt_file_name))return get_dsdt_header()->length; // Return size of DSDT AML.
 	else if(!strcmp(file_name, root_directory_name))return boot_sector->number_of_root_directory_entries * sizeof(FileInformation); // Return size of root directory entries.
 	else return 0; // File is not found.
 }
@@ -262,9 +262,9 @@ void *load_file(char const *file_name)
 	}
 	else if(!strcmp(file_name, dsdt_file_name)) // Load DSDT AML.
 	{
-		AMLSubstring dsdt_aml = get_dsdt_aml();
-		FileInformation *loaded_address = malloc(dsdt_aml.length);
-		memcpy(loaded_address, dsdt_aml.initial, dsdt_aml.length);
+		ACPITableHeader const *dsdt_header = get_dsdt_header();
+		FileInformation *loaded_address = malloc(dsdt_header->length);
+		memcpy(loaded_address, dsdt_header, dsdt_header->length);
 		return loaded_address;
 	}
 	else if(!strcmp(file_name, root_directory_name)) // Load root directory entries.

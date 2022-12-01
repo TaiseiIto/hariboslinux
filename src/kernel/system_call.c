@@ -606,6 +606,8 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 				case ACPI_COMMAND_DECODE_AML:
 					aml = command->arguments.decode_aml.aml;
 					aml.initial += application_memory;
+					aml.initial += sizeof(ACPITableHeader);
+					aml.length -= sizeof(ACPITableHeader);
 					aml_syntax_tree = analyse_aml_term_list(NULL, aml);
 					if(aml_syntax_tree->string.length < aml.length)
 					{
