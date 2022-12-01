@@ -4,6 +4,7 @@ serialout.txt
 *.aml
 *.bin
 *.com
+*.dsl
 *.exe
 *.img
 *.map

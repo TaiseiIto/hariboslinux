@@ -16,6 +16,7 @@ BOOT_SECTORS = diskcontents/bootsector.bin
 # AMLS
 AML_SOURCES = $(wildcard diskcontents/*dsdt.txt)
 AMLS = $(AML_SOURCES:.txt=.aml)
+ASLS = $(AMLS:.aml=.dsl)
 # Applications
 APP_NAMES = $(shell for i in `ls -d src/apps/*/`; do basename $$i; done)
 APPS = $(shell for i in $(APP_NAMES); do echo diskcontents/$${i}.com; done)
@@ -65,7 +66,9 @@ IMAGE_PACKER = imagepacker/imagepacker
 MAKE_OUT = makeout.txt
 
 # build the operating system
-all: build
+all: build $(ASLS)
+
+# convert from AML to ASL
 
 build: $(IMAGE_FILE)
 
@@ -96,6 +99,9 @@ diskcontents/%.bin: src/%.bin
 
 diskcontents/%.com: src/%.com
 	cp $^ $@
+
+diskcontents/%.dsl: diskcontents/%.aml
+	iasl $^
 
 diskcontents/%.aml: diskcontents/%.txt
 	xxd -p -r $^ > $@
