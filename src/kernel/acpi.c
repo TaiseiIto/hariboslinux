@@ -7557,6 +7557,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
 	case AML_BYTE_MID_OP:
+	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
