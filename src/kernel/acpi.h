@@ -1483,6 +1483,7 @@ typedef struct _AMLTermObj
 	struct _AMLSymbol *object;
 	struct _AMLSymbol *statement_opcode;
 	struct _AMLSymbol *expression_opcode;
+	struct _AMLSymbol *wrong_term_arg;
 } AMLTermObj;
 
 typedef struct _AMLTimeOut

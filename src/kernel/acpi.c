@@ -7536,6 +7536,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	term_obj->component.term_obj.object = NULL;
 	term_obj->component.term_obj.statement_opcode = NULL;
 	term_obj->component.term_obj.expression_opcode = NULL;
+	term_obj->component.term_obj.wrong_term_arg = NULL;
 	// Analyse term_obj
 	switch(*aml.initial)
 	{
@@ -7613,6 +7614,25 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 			term_obj->string.length += term_obj->component.term_obj.object->string.length;
 			break;
 		}
+		break;
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_LOCAL_0_OP:
+	case AML_BYTE_LOCAL_1_OP:
+	case AML_BYTE_LOCAL_2_OP:
+	case AML_BYTE_LOCAL_3_OP:
+	case AML_BYTE_LOCAL_4_OP:
+	case AML_BYTE_LOCAL_5_OP:
+	case AML_BYTE_LOCAL_6_OP:
+	case AML_BYTE_LOCAL_7_OP:
+	case AML_BYTE_STRING_PREFIX:
+		term_obj->component.term_obj.wrong_term_arg = analyse_aml_term_arg(term_obj, aml);
+		term_obj->string.length += term_obj->component.term_obj.wrong_term_arg->string.length;
 		break;
 	default:
 		if(('A' <= *aml.initial && *aml.initial <= 'Z') || *aml.initial == '_')
@@ -8802,6 +8822,7 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.term_obj.object)delete_aml_symbol(aml_symbol->component.term_obj.object);
 		if(aml_symbol->component.term_obj.statement_opcode)delete_aml_symbol(aml_symbol->component.term_obj.statement_opcode);
 		if(aml_symbol->component.term_obj.expression_opcode)delete_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
+		if(aml_symbol->component.term_obj.wrong_term_arg)delete_aml_symbol(aml_symbol->component.term_obj.wrong_term_arg);
 		break;
 	case aml_time_out:
 		if(aml_symbol->component.time_out.word_data)delete_aml_symbol(aml_symbol->component.time_out.word_data);
@@ -10702,6 +10723,7 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.term_obj.object)print_aml_symbol(aml_symbol->component.term_obj.object);
 		if(aml_symbol->component.term_obj.statement_opcode)print_aml_symbol(aml_symbol->component.term_obj.statement_opcode);
 		if(aml_symbol->component.term_obj.expression_opcode)print_aml_symbol(aml_symbol->component.term_obj.expression_opcode);
+		if(aml_symbol->component.term_obj.wrong_term_arg)print_aml_symbol(aml_symbol->component.term_obj.wrong_term_arg);
 		break;
 	case aml_time_out:
 		if(aml_symbol->component.time_out.word_data)print_aml_symbol(aml_symbol->component.time_out.word_data);
