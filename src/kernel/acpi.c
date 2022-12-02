@@ -6278,8 +6278,13 @@ AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml
 		aml.initial += reference_type_opcode->component.reference_type_opcode.def_index->string.length;
 		aml.length -= reference_type_opcode->component.reference_type_opcode.def_index->string.length;
 		break;
+	case AML_BYTE_REF_OF_OP:
+		reference_type_opcode->flags |= AML_SYMBOL_ERROR; // DefRefOf is unimplemented.
+		ERROR();
+		break;
 	default:
-		reference_type_opcode->flags |= AML_SYMBOL_ERROR; // DefRefOf and UserTermObj are unimplemented.
+		// UserTermObj
+		reference_type_opcode->flags |= AML_SYMBOL_ERROR; // UserTermObj is unimplemented.
 		ERROR();
 		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 		break;
@@ -7067,6 +7072,7 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_INDEX_OP:
+	case AML_BYTE_REF_OF_OP:
 		super_name->component.super_name.reference_type_opcode = analyse_aml_reference_type_opcode(super_name, aml);
 		super_name->string.length += super_name->component.super_name.reference_type_opcode->string.length;
 		aml.initial += super_name->component.super_name.reference_type_opcode->string.length;
@@ -7105,9 +7111,11 @@ AMLSymbol *analyse_aml_super_name(AMLSymbol *parent, AMLSubstring aml)
 		}
 		else
 		{
-			super_name->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			ERROR();
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+			// UserTermObj
+			super_name->component.super_name.reference_type_opcode = analyse_aml_reference_type_opcode(super_name, aml);
+			super_name->string.length += super_name->component.super_name.reference_type_opcode->string.length;
+			aml.initial += super_name->component.super_name.reference_type_opcode->string.length;
+			aml.length -= super_name->component.super_name.reference_type_opcode->string.length;
 		}
 		break;
 	}
@@ -7177,6 +7185,7 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_LOCAL_6_OP:
 	case AML_BYTE_LOCAL_7_OP:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_REF_OF_OP:
 	case AML_BYTE_ROOT_CHAR:
 		target->component.target.super_name = analyse_aml_super_name(target, aml);
 		target->string.length += target->component.target.super_name->string.length;
@@ -7193,9 +7202,11 @@ AMLSymbol *analyse_aml_target(AMLSymbol *parent, AMLSubstring aml)
 		}
 		else
 		{
-			target->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
-			ERROR();
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+			// UserTermObj
+			target->component.target.super_name = analyse_aml_super_name(target, aml);
+			target->string.length += target->component.target.super_name->string.length;
+			aml.initial += target->component.target.super_name->string.length;
+			aml.length -= target->component.target.super_name->string.length;
 		}
 		break;
 	}
