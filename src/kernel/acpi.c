@@ -7452,8 +7452,15 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	switch(*aml.initial)
 	{
 	case AML_BYTE_ADD_OP:
-	case AML_BYTE_AND_OP:
 	case AML_BYTE_ALIAS_OP:
+	case AML_BYTE_AND_OP:
+	case AML_BYTE_ARG_0_OP:
+	case AML_BYTE_ARG_1_OP:
+	case AML_BYTE_ARG_2_OP:
+	case AML_BYTE_ARG_3_OP:
+	case AML_BYTE_ARG_4_OP:
+	case AML_BYTE_ARG_5_OP:
+	case AML_BYTE_ARG_6_OP:
 	case AML_BYTE_BREAK_OP:
 	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_CONCAT_RES_OP:
@@ -7470,6 +7477,14 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_IF_OP:
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
+	case AML_BYTE_LOCAL_0_OP:
+	case AML_BYTE_LOCAL_1_OP:
+	case AML_BYTE_LOCAL_2_OP:
+	case AML_BYTE_LOCAL_3_OP:
+	case AML_BYTE_LOCAL_4_OP:
+	case AML_BYTE_LOCAL_5_OP:
+	case AML_BYTE_LOCAL_6_OP:
+	case AML_BYTE_LOCAL_7_OP:
 	case AML_BYTE_L_AND_OP:
 	case AML_BYTE_L_EQUAL_OP:
 	case AML_BYTE_L_GREATER_OP:
@@ -7480,8 +7495,8 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_MID_OP:
 	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NAME_OP:
-	case AML_BYTE_NOT_OP:
 	case AML_BYTE_NOTIFY_OP:
+	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
@@ -7493,6 +7508,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_SHIFT_RIGHT_OP:
 	case AML_BYTE_SIZE_OF_OP:
 	case AML_BYTE_STORE_OP:
+	case AML_BYTE_STRING_PREFIX:
 	case AML_BYTE_SUBTRACT_OP:
 	case AML_BYTE_TO_BUFFER_OP:
 	case AML_BYTE_TO_HEX_STRING_OP:
