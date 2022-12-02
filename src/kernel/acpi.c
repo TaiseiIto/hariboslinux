@@ -250,6 +250,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_or_name = "DefOr";
 	static char const * const aml_def_package_name = "DefPackage";
 	static char const * const aml_def_processor_name = "DefProcessor";
+	static char const * const aml_def_ref_of_name = "DefRefOf";
 	static char const * const aml_def_release_name = "DefRelease";
 	static char const * const aml_def_return_name = "DefReturn";
 	static char const * const aml_def_scope_name = "DefScope";
@@ -583,6 +584,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_package_name;
 	case aml_def_processor:
 		return aml_def_processor_name;
+	case aml_def_ref_of:
+		return aml_def_ref_of_name;
 	case aml_def_release:
 		return aml_def_release_name;
 	case aml_def_return:
@@ -3326,6 +3329,21 @@ AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_processor->component.def_processor.term_list->string.length;
 	aml.length -= def_processor->component.def_processor.term_list->string.length;
 	return def_processor;
+}
+
+// <def_ref_of> := <ref_of_op> <super_name>
+AMLSymbol *analyse_aml_def_ref_of(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_ref_of aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_ref_of = malloc(sizeof(*def_ref_of));
+	def_ref_of->parent = parent;
+	def_ref_of->string.initial = aml.initial;
+	def_ref_of->string.length = 0;
+	def_ref_of->type = aml_def_ref_of;
+	def_ref_of->flags = 0;
+	def_ref_of->component.def_ref_of.ref_of_op = NULL;
+	def_ref_of->component.def_ref_of.super_name = NULL;
+	return def_ref_of;
 }
 
 // <def_release> := <release_op> <mutex_object>
@@ -8333,6 +8351,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_processor.pblk_len)delete_aml_symbol(aml_symbol->component.def_processor.pblk_len);
 		if(aml_symbol->component.def_processor.term_list)delete_aml_symbol(aml_symbol->component.def_processor.term_list);
 		break;
+	case aml_def_ref_of:
+		if(aml_symbol->component.def_ref_of.ref_of_op)delete_aml_symbol(aml_symbol->component.def_ref_of.ref_of_op);
+		if(aml_symbol->component.def_ref_of.super_name)delete_aml_symbol(aml_symbol->component.def_ref_of.super_name);
+		break;
 	case aml_def_release:
 		if(aml_symbol->component.def_release.release_op)delete_aml_symbol(aml_symbol->component.def_release.release_op);
 		if(aml_symbol->component.def_release.mutex_object)delete_aml_symbol(aml_symbol->component.def_release.mutex_object);
@@ -9538,6 +9560,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_processor:
 		break;
+	case aml_def_ref_of:
+		break;
 	case aml_def_release:
 		break;
 	case aml_def_return:
@@ -10238,6 +10262,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_processor.pblk_addr)print_aml_symbol(aml_symbol->component.def_processor.pblk_addr);
 		if(aml_symbol->component.def_processor.pblk_len)print_aml_symbol(aml_symbol->component.def_processor.pblk_len);
 		if(aml_symbol->component.def_processor.term_list)print_aml_symbol(aml_symbol->component.def_processor.term_list);
+		break;
+	case aml_def_ref_of:
+		if(aml_symbol->component.def_ref_of.ref_of_op)print_aml_symbol(aml_symbol->component.def_ref_of.ref_of_op);
+		if(aml_symbol->component.def_ref_of.super_name)print_aml_symbol(aml_symbol->component.def_ref_of.super_name);
 		break;
 	case aml_def_release:
 		if(aml_symbol->component.def_release.release_op)print_aml_symbol(aml_symbol->component.def_release.release_op);

@@ -267,6 +267,7 @@ typedef enum _AMLSymbolType
 	aml_def_or,
 	aml_def_package,
 	aml_def_processor,
+	aml_def_ref_of,
 	aml_def_release,
 	aml_def_return,
 	aml_def_scope,
@@ -892,6 +893,12 @@ typedef struct _AMLDefProcessor
 	struct _AMLSymbol *pblk_len;
 	struct _AMLSymbol *term_list;
 } AMLDefProcessor;
+
+typedef struct _AMLDefRefOf
+{
+	struct _AMLSymbol *ref_of_op;
+	struct _AMLSymbol *super_name;
+} AMLDefRefOf;
 
 typedef struct _AMLDefRelease
 {
@@ -1580,6 +1587,7 @@ typedef union _AMLComponent
 	AMLDefOr def_or;
 	AMLDefPackage def_package;
 	AMLDefProcessor def_processor;
+	AMLDefRefOf def_ref_of;
 	AMLDefRelease def_release;
 	AMLDefReturn def_return;
 	AMLDefScope def_scope;
@@ -1855,6 +1863,8 @@ AMLSymbol *analyse_aml_def_or(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml);
 // <def_processor> := <processor_op> <pkg_length> <name_string> <proc_id> <pblk_addr> <pblk_len> <term_list>
 AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml);
+// <def_ref_of> := <ref_of_op> <super_name>
+AMLSymbol *analyse_aml_def_ref_of(AMLSymbol *parent, AMLSubstring aml);
 // <def_release> := <release_op> <mutex_object>
 AMLSymbol *analyse_aml_def_release(AMLSymbol *parent, AMLSubstring aml);
 // <def_return> := <return_op> <arg_object>
