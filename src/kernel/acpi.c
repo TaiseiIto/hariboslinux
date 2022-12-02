@@ -7462,6 +7462,8 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_ARG_5_OP:
 	case AML_BYTE_ARG_6_OP:
 	case AML_BYTE_BREAK_OP:
+	case AML_BYTE_BUFFER_OP:
+	case AML_BYTE_BYTE_PREFIX:
 	case AML_BYTE_CONCAT_OP:
 	case AML_BYTE_CONCAT_RES_OP:
 	case AML_BYTE_CREATE_BIT_FIELD_OP:
@@ -7472,6 +7474,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_DIVIDE_OP:
+	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_EXT_OP_PREFIX:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 	case AML_BYTE_IF_OP:
@@ -7498,9 +7501,12 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_NOTIFY_OP:
 	case AML_BYTE_NOT_OP:
 	case AML_BYTE_OBJECT_TYPE_OP:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_ONE_OP:
 	case AML_BYTE_OR_OP:
 	case AML_BYTE_PACKAGE_OP:
 	case AML_BYTE_PARENT_PREFIX_CHAR:
+	case AML_BYTE_QWORD_PREFIX:
 	case AML_BYTE_RETURN_OP:
 	case AML_BYTE_ROOT_CHAR:
 	case AML_BYTE_SCOPE_OP:
@@ -7514,7 +7520,9 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_TO_HEX_STRING_OP:
 	case AML_BYTE_TO_INTEGER_OP:
 	case AML_BYTE_WHILE_OP:
+	case AML_BYTE_WORD_PREFIX:
 	case AML_BYTE_XOR_OP:
+	case AML_BYTE_ZERO_OP:
 		term_list->component.term_list.term_list = analyse_aml_term_list(term_list, aml);
 		term_list->string.length += term_list->component.term_list.term_list->string.length;
 		aml.initial += term_list->component.term_list.term_list->string.length;
@@ -7639,6 +7647,9 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_ARG_4_OP:
 	case AML_BYTE_ARG_5_OP:
 	case AML_BYTE_ARG_6_OP:
+	case AML_BYTE_BUFFER_OP:
+	case AML_BYTE_BYTE_PREFIX:
+	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_LOCAL_0_OP:
 	case AML_BYTE_LOCAL_1_OP:
 	case AML_BYTE_LOCAL_2_OP:
@@ -7647,7 +7658,12 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_LOCAL_5_OP:
 	case AML_BYTE_LOCAL_6_OP:
 	case AML_BYTE_LOCAL_7_OP:
+	case AML_BYTE_ONES_OP:
+	case AML_BYTE_ONE_OP:
+	case AML_BYTE_QWORD_PREFIX:
 	case AML_BYTE_STRING_PREFIX:
+	case AML_BYTE_WORD_PREFIX:
+	case AML_BYTE_ZERO_OP:
 		term_obj->component.term_obj.wrong_term_arg = analyse_aml_term_arg(term_obj, aml);
 		term_obj->string.length += term_obj->component.term_obj.wrong_term_arg->string.length;
 		break;
