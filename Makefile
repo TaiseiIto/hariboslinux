@@ -66,7 +66,7 @@ IMAGE_PACKER = imagepacker/imagepacker
 MAKE_OUT = makeout.txt
 
 # build the operating system
-all: build $(ASLS)
+all: build
 
 # convert from AML to ASL
 

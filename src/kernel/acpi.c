@@ -4852,7 +4852,7 @@ AMLSymbol *analyse_aml_method_invocation(AMLSymbol *parent, AMLSubstring aml)
 	{
 		WARNING();
 		printf_serial("Undefined method \"%s\" is called.\n", method_invocation->component.method_invocation.name_string->component.name_string.string);
-		num_of_args = -1;
+		num_of_args = 0;
 	}
 	method_invocation->component.method_invocation.term_arg_list = analyse_aml_term_arg_list(method_invocation, aml, num_of_args);
 	method_invocation->string.length += method_invocation->component.method_invocation.term_arg_list->string.length;
@@ -7344,46 +7344,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	term_arg_list->flags = 0;
 	term_arg_list->component.term_arg_list.term_arg = NULL;
 	term_arg_list->component.term_arg_list.term_arg_list = NULL;
-	if(num_of_term_args == -1)switch(*aml.initial)
-	{
-	case AML_BYTE_ARG_0_OP:
-	case AML_BYTE_ARG_1_OP:
-	case AML_BYTE_ARG_2_OP:
-	case AML_BYTE_ARG_3_OP:
-	case AML_BYTE_ARG_4_OP:
-	case AML_BYTE_ARG_5_OP:
-	case AML_BYTE_ARG_6_OP:
-	case AML_BYTE_BUFFER_OP:
-	case AML_BYTE_BYTE_PREFIX:
-	case AML_BYTE_DWORD_PREFIX:
-	case AML_BYTE_LOCAL_0_OP:
-	case AML_BYTE_LOCAL_1_OP:
-	case AML_BYTE_LOCAL_2_OP:
-	case AML_BYTE_LOCAL_3_OP:
-	case AML_BYTE_LOCAL_4_OP:
-	case AML_BYTE_LOCAL_5_OP:
-	case AML_BYTE_LOCAL_6_OP:
-	case AML_BYTE_LOCAL_7_OP:
-	case AML_BYTE_MULTIPLY_OP:
-	case AML_BYTE_ONE_OP:
-	case AML_BYTE_ONES_OP:
-	case AML_BYTE_QWORD_PREFIX:
-	case AML_BYTE_STRING_PREFIX:
-	case AML_BYTE_WORD_PREFIX:
-	case AML_BYTE_ZERO_OP:
-		term_arg_list->component.term_arg_list.term_arg = analyse_aml_term_arg(term_arg_list, aml);
-		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg->string.length;
-		aml.initial += term_arg_list->component.term_arg_list.term_arg->string.length;
-		aml.length -= term_arg_list->component.term_arg_list.term_arg->string.length;
-		term_arg_list->component.term_arg_list.term_arg_list = analyse_aml_term_arg_list(term_arg_list, aml, num_of_term_args);
-		term_arg_list->string.length += term_arg_list->component.term_arg_list.term_arg_list->string.length;
-		aml.initial += term_arg_list->component.term_arg_list.term_arg_list->string.length;
-		aml.length -= term_arg_list->component.term_arg_list.term_arg_list->string.length;
-		break;
-	default:
-		break;
-	}
-	else if(num_of_term_args)switch(*aml.initial)
+	if(num_of_term_args)switch(*aml.initial)
 	{
 	case AML_BYTE_ADD_OP:
 	case AML_BYTE_AND_OP:
