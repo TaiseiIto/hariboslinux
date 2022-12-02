@@ -184,8 +184,8 @@ typedef enum _AMLSymbolType
 	aml_access_type,
 	aml_acquire_op,
 	aml_acquire_op_suffix,
-	aml_alias_op,
 	aml_add_op,
+	aml_alias_op,
 	aml_and_op,
 	aml_arg_obj,
 	aml_arg_object,
@@ -223,9 +223,9 @@ typedef enum _AMLSymbolType
 	aml_debug_op,
 	aml_debug_op_suffix,
 	aml_decrement_op,
-	aml_def_alias,
 	aml_def_acquire,
 	aml_def_add,
+	aml_def_alias,
 	aml_def_and,
 	aml_def_break,
 	aml_def_buffer,
@@ -310,13 +310,13 @@ typedef enum _AMLSymbolType
 	aml_index_field_op_suffix,
 	aml_index_op,
 	aml_index_value,
-	aml_lead_name_char,
 	aml_l_and_op,
 	aml_l_equal_op,
 	aml_l_greater_op,
 	aml_l_less_op,
 	aml_l_not_op,
 	aml_l_or_op,
+	aml_lead_name_char,
 	aml_local_obj,
 	aml_local_op,
 	aml_method_flags,
@@ -341,8 +341,8 @@ typedef enum _AMLSymbolType
 	aml_named_obj,
 	aml_not_op,
 	aml_notify_object,
-	aml_notify_value,
 	aml_notify_op,
+	aml_notify_value,
 	aml_null_char,
 	aml_null_name,
 	aml_num_bits,
@@ -373,6 +373,7 @@ typedef enum _AMLSymbolType
 	aml_qword_const,
 	aml_qword_data,
 	aml_qword_prefix,
+	aml_ref_of_op,
 	aml_reference_type_opcode,
 	aml_region_len,
 	aml_region_offset,
@@ -2075,6 +2076,8 @@ AMLSymbol *analyse_aml_qword_const(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_qword_data(AMLSymbol *parent, AMLSubstring aml);
 // <qword_prefix> := AML_BYTE_QWORD_PREFIX
 AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml);
+// <ref_of_op> := AML_BYTE_REF_OF_OP
+AMLSymbol *analyse_aml_ref_of_op(AMLSymbol *parent, AMLSubstring aml);
 // <reference_type_opcode> := <DefRefOf> <DefDerefOf> <DefIndex> <UserTermObj>
 AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <region_len> := <term_arg>

@@ -356,6 +356,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_qword_const_name = "QWordConst";
 	static char const * const aml_qword_data_name = "QWordData";
 	static char const * const aml_qword_prefix_name = "QWordPrefix";
+	static char const * const aml_ref_of_op_name = "RefOfOp";
 	static char const * const aml_reference_type_opcode_name = "ReferenceTypeOpcode";
 	static char const * const aml_region_len_name = "RegionLen";
 	static char const * const aml_region_offset_name = "RegionOffset";
@@ -796,6 +797,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_qword_data_name;
 	case aml_qword_prefix:
 		return aml_qword_prefix_name;
+	case aml_ref_of_op:
+		return aml_ref_of_op_name;
 	case aml_reference_type_opcode:
 		return aml_reference_type_opcode_name;
 	case aml_region_len:
@@ -3341,8 +3344,14 @@ AMLSymbol *analyse_aml_def_ref_of(AMLSymbol *parent, AMLSubstring aml)
 	def_ref_of->string.length = 0;
 	def_ref_of->type = aml_def_ref_of;
 	def_ref_of->flags = 0;
-	def_ref_of->component.def_ref_of.ref_of_op = NULL;
-	def_ref_of->component.def_ref_of.super_name = NULL;
+	def_ref_of->component.def_ref_of.ref_of_op = analyse_aml_ref_of_op(def_ref_of, aml);
+	def_ref_of->string.length += def_ref_of->component.def_ref_of.ref_of_op->string.length;
+	aml.initial += def_ref_of->component.def_ref_of.ref_of_op->string.length;
+	aml.length -= def_ref_of->component.def_ref_of.ref_of_op->string.length;
+	def_ref_of->component.def_ref_of.super_name = analyse_aml_super_name(def_ref_of, aml);
+	def_ref_of->string.length += def_ref_of->component.def_ref_of.super_name->string.length;
+	aml.initial += def_ref_of->component.def_ref_of.super_name->string.length;
+	aml.length -= def_ref_of->component.def_ref_of.super_name->string.length;
 	return def_ref_of;
 }
 
@@ -6243,6 +6252,31 @@ AMLSymbol *analyse_aml_qword_data(AMLSymbol *parent, AMLSubstring aml)
 	return qword_data;
 }
 
+// <ref_of_op> := AML_BYTE_REF_OF_OP
+AMLSymbol *analyse_aml_ref_of_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("ref_of_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *ref_of_op = malloc(sizeof(*ref_of_op));
+	ref_of_op->parent = parent;
+	ref_of_op->string.initial = aml.initial;
+	ref_of_op->string.length = 1;
+	ref_of_op->type = aml_ref_of_op;
+	ref_of_op->flags = 0;
+	if(!aml.length)
+	{
+		ref_of_op->string.length = 0;
+		ref_of_op->flags |= AML_SYMBOL_ERROR;
+		ERROR();
+	}
+	else if(*ref_of_op->string.initial != AML_BYTE_REF_OF_OP)
+	{
+		ref_of_op->flags |= AML_SYMBOL_ERROR; // Incorrect qword prefix
+		ERROR();
+		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+	}
+	return ref_of_op;
+}
+
 // <qword_prefix> := AML_BYTE_QWORD_PREFIX
 AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -6297,8 +6331,10 @@ AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml
 		aml.length -= reference_type_opcode->component.reference_type_opcode.def_index->string.length;
 		break;
 	case AML_BYTE_REF_OF_OP:
-		reference_type_opcode->flags |= AML_SYMBOL_ERROR; // DefRefOf is unimplemented.
-		ERROR();
+		reference_type_opcode->component.reference_type_opcode.def_ref_of = analyse_aml_def_ref_of(reference_type_opcode, aml);
+		reference_type_opcode->string.length += reference_type_opcode->component.reference_type_opcode.def_ref_of->string.length;
+		aml.initial += reference_type_opcode->component.reference_type_opcode.def_ref_of->string.length;
+		aml.length -= reference_type_opcode->component.reference_type_opcode.def_ref_of->string.length;
 		break;
 	default:
 		// UserTermObj
@@ -8760,6 +8796,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_qword_prefix:
 		break;
+	case aml_ref_of_op:
+		break;
 	case aml_reference_type_opcode:
 		if(aml_symbol->component.reference_type_opcode.def_ref_of)delete_aml_symbol(aml_symbol->component.reference_type_opcode.def_ref_of);
 		if(aml_symbol->component.reference_type_opcode.def_deref_of)delete_aml_symbol(aml_symbol->component.reference_type_opcode.def_deref_of);
@@ -9787,6 +9825,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_qword_prefix:
 		break;
+	case aml_ref_of_op:
+		break;
 	case aml_reference_type_opcode:
 		break;
 	case aml_region_len:
@@ -10666,6 +10706,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.qword_data.dword_data); i++)if(aml_symbol->component.qword_data.dword_data[i])print_aml_symbol(aml_symbol->component.qword_data.dword_data[i]);
 		break;
 	case aml_qword_prefix:
+		break;
+	case aml_ref_of_op:
 		break;
 	case aml_reference_type_opcode:
 		if(aml_symbol->component.reference_type_opcode.def_ref_of)print_aml_symbol(aml_symbol->component.reference_type_opcode.def_ref_of);
