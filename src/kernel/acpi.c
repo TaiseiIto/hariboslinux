@@ -7864,15 +7864,9 @@ AMLSymbol *analyse_aml_user_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	AMLSymbol *user_term_obj = malloc(sizeof(*user_term_obj));
 	user_term_obj->parent = parent;
 	user_term_obj->string.initial = aml.initial;
-	user_term_obj->string.length = 1;
+	user_term_obj->string.length = 0;
 	user_term_obj->type = aml_user_term_obj;
 	user_term_obj->flags = 0;
-	if(!aml.length)
-	{
-		user_term_obj->string.length = 0;
-		user_term_obj->flags |= AML_SYMBOL_ERROR;
-		ERROR();
-	}
 	return user_term_obj;
 }
 
