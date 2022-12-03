@@ -375,6 +375,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_revision_op_suffix_name = "RevisionOpSuffix";
 	static char const * const aml_root_char_name = "RootChar";
 	static char const * const aml_scope_op_name = "ScopeOp";
+	static char const * const aml_search_pkg_name = "SearchPkg";
 	static char const * const aml_seg_count_name = "SegCount";
 	static char const * const aml_shift_count_name = "ShiftCount";
 	static char const * const aml_shift_left_op_name = "ShiftLeftOp";
@@ -840,6 +841,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_root_char_name;
 	case aml_scope_op:
 		return aml_scope_op_name;
+	case aml_search_pkg:
+		return aml_search_pkg_name;
 	case aml_seg_count:
 		return aml_seg_count_name;
 	case aml_shift_count:
@@ -2964,7 +2967,10 @@ AMLSymbol *analyse_aml_def_match(AMLSymbol *parent, AMLSubstring aml)
 	def_match->string.initial += def_match->component.def_match.match_op->string.length;
 	aml.initial += def_match->component.def_match.match_op->string.length;
 	aml.length -= def_match->component.def_match.match_op->string.length;
-	def_match->component.def_match.search_pkg = NULL;
+	def_match->component.def_match.search_pkg = analyse_aml_search_pkg(def_match, aml);
+	def_match->string.initial += def_match->component.def_match.search_pkg->string.length;
+	aml.initial += def_match->component.def_match.search_pkg->string.length;
+	aml.length -= def_match->component.def_match.search_pkg->string.length;
 	def_match->component.def_match.match_opcode[0] = NULL;
 	def_match->component.def_match.operand[0] = NULL;
 	def_match->component.def_match.match_opcode[1] = NULL;
@@ -6741,6 +6747,23 @@ AMLSymbol *analyse_aml_scope_op(AMLSymbol *parent, AMLSubstring aml)
 	return scope_op;
 }
 
+// <search_pkg> := <term_arg>
+AMLSymbol *analyse_aml_search_pkg(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("search_pkg aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *search_pkg = malloc(sizeof(*search_pkg));
+	search_pkg->parent = parent;
+	search_pkg->string.initial = aml.initial;
+	search_pkg->string.length = 0;
+	search_pkg->type = aml_search_pkg;
+	search_pkg->flags = 0;
+	search_pkg->component.search_pkg.term_arg = analyse_aml_term_arg(search_pkg, aml);
+	search_pkg->string.length += search_pkg->component.search_pkg.term_arg->string.length;
+	aml.initial += search_pkg->component.search_pkg.term_arg->string.length;
+	aml.length -= search_pkg->component.search_pkg.term_arg->string.length;
+	return search_pkg;
+}
+
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -8994,6 +9017,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_scope_op:
 		break;
+	case aml_search_pkg:
+		if(aml_symbol->component.search_pkg.term_arg)delete_aml_symbol(aml_symbol->component.search_pkg.term_arg);
+		break;
 	case aml_seg_count:
 		break;
 	case aml_shift_count:
@@ -10020,6 +10046,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_scope_op:
 		break;
+	case aml_search_pkg:
+		break;
 	case aml_seg_count:
 		break;
 	case aml_shift_count:
@@ -10932,6 +10960,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_root_char:
 		break;
 	case aml_scope_op:
+		break;
+	case aml_search_pkg:
+		if(aml_symbol->component.search_pkg.term_arg)print_aml_symbol(aml_symbol->component.search_pkg.term_arg);
 		break;
 	case aml_seg_count:
 		break;

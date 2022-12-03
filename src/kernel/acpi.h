@@ -392,6 +392,7 @@ typedef enum _AMLSymbolType
 	aml_revision_op_suffix,
 	aml_root_char,
 	aml_scope_op,
+	aml_search_pkg,
 	aml_seg_count,
 	aml_shift_count,
 	aml_shift_left_op,
@@ -1420,6 +1421,11 @@ typedef struct _AMLRevisionOp
 	struct _AMLSymbol *revision_op_suffix;
 } AMLRevisionOp;
 
+typedef struct _AMLSearchPkg
+{
+	struct _AMLSymbol *term_arg;
+} AMLSearchPkg;
+
 typedef struct _AMLShiftCount
 {
 	struct _AMLSymbol *term_arg;
@@ -1679,6 +1685,7 @@ typedef union _AMLComponent
 	AMLRemainder remainder;
 	AMLReservedField reserved_field;
 	AMLRevisionOp revision_op;
+	AMLSearchPkg search_pkg;
 	AMLShiftCount shift_count;
 	AMLSimpleName simple_name;
 	AMLSleepOp sleep_op;
@@ -2137,6 +2144,8 @@ AMLSymbol *analyse_aml_revision_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_root_char(AMLSymbol *parent, AMLSubstring aml);
 // <scope_op> := AML_TYPE_SCOPE_OP
 AMLSymbol *analyse_aml_scope_op(AMLSymbol *parent, AMLSubstring aml);
+// <search_pkg> := <term_arg>
+AMLSymbol *analyse_aml_search_pkg(AMLSymbol *parent, AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSymbol *parent, AMLSubstring aml);
 // <shift_count> := <term_arg>
