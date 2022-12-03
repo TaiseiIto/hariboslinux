@@ -280,6 +280,7 @@ typedef enum _AMLSymbolType
 	aml_def_stall,
 	aml_def_store,
 	aml_def_subtract,
+	aml_def_thermal_zone,
 	aml_def_to_buffer,
 	aml_def_to_hex_string,
 	aml_def_to_integer,
@@ -993,6 +994,14 @@ typedef struct _AMLDefSubtract
 	struct _AMLSymbol *target;
 } AMLDefSubtract;
 
+typedef struct _AMLDefThermalZone
+{
+	struct _AMLSymbol *thermal_zone_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *term_list;
+} AMLDefThermalZone;
+
 typedef struct _AMLDefToBuffer
 {
 	struct _AMLSymbol *to_buffer_op;
@@ -1635,6 +1644,7 @@ typedef union _AMLComponent
 	AMLDefStall def_stall;
 	AMLDefStore def_store;
 	AMLDefSubtract def_subtract;
+	AMLDefThermalZone def_thermal_zone;
 	AMLDefToBuffer def_to_buffer;
 	AMLDefToHexString def_to_hex_string;
 	AMLDefToInteger def_to_integer;
@@ -1928,6 +1938,8 @@ AMLSymbol *analyse_aml_def_stall(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_store(AMLSymbol *parent, AMLSubstring aml);
 // <def_subtract> := <subtract_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_subtract(AMLSymbol *parent, AMLSubstring aml);
+// <def_thermal_zone> := <thermal_zone_op> <pkg_length> <name_string> <term_list>
+AMLSymbol *analyse_aml_def_thermal_zone(AMLSymbol *parent, AMLSubstring aml);
 // <def_to_buffer> := <to_buffer_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_buffer(AMLSymbol *parent, AMLSubstring aml);
 // <def_to_hex_string> := <to_hex_string_op> <operand> <target>

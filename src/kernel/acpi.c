@@ -263,6 +263,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_stall_name = "DefStall";
 	static char const * const aml_def_store_name = "DefStore";
 	static char const * const aml_def_subtract_name = "DefSubtract";
+	static char const * const aml_def_thermal_zone_name = "DefThermalZone";
 	static char const * const aml_def_to_buffer_name = "DefToBuffer";
 	static char const * const aml_def_to_hex_string_name = "DefToHexString";
 	static char const * const aml_def_to_integer_name = "DefToInteger";
@@ -619,6 +620,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_store_name;
 	case aml_def_subtract:
 		return aml_def_subtract_name;
+	case aml_def_thermal_zone:
+		return aml_def_thermal_zone_name;
 	case aml_def_to_buffer:
 		return aml_def_to_buffer_name;
 	case aml_def_to_hex_string:
@@ -3691,6 +3694,23 @@ AMLSymbol *analyse_aml_def_subtract(AMLSymbol *parent, AMLSubstring aml)
 	aml.initial += def_subtract->component.def_subtract.target->string.length;
 	aml.length -= def_subtract->component.def_subtract.target->string.length;
 	return def_subtract;
+}
+
+// <def_thermal_zone> := <thermal_zone_op> <pkg_length> <name_string> <term_list>
+AMLSymbol *analyse_aml_def_thermal_zone(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_thermal_zone aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_thermal_zone = malloc(sizeof(*def_thermal_zone));
+	def_thermal_zone->parent = parent;
+	def_thermal_zone->string.initial = aml.initial;
+	def_thermal_zone->string.length = 0;
+	def_thermal_zone->type = aml_def_thermal_zone;
+	def_thermal_zone->flags = 0;
+	def_thermal_zone->component.def_thermal_zone.thermal_zone_op = NULL;
+	def_thermal_zone->component.def_thermal_zone.pkg_length = NULL;
+	def_thermal_zone->component.def_thermal_zone.name_string = NULL;
+	def_thermal_zone->component.def_thermal_zone.term_list = NULL;
+	return def_thermal_zone;
 }
 
 // <def_to_buffer> := <to_buffer_op> <operand> <target>
@@ -8662,6 +8682,12 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_subtract.operand); i++)if(aml_symbol->component.def_subtract.operand[i])delete_aml_symbol(aml_symbol->component.def_subtract.operand[i]);
 		if(aml_symbol->component.def_subtract.target)delete_aml_symbol(aml_symbol->component.def_subtract.target);
 		break;
+	case aml_def_thermal_zone:
+		if(aml_symbol->component.def_thermal_zone.thermal_zone_op)delete_aml_symbol(aml_symbol->component.def_thermal_zone.thermal_zone_op);
+		if(aml_symbol->component.def_thermal_zone.pkg_length)delete_aml_symbol(aml_symbol->component.def_thermal_zone.pkg_length);
+		if(aml_symbol->component.def_thermal_zone.name_string)delete_aml_symbol(aml_symbol->component.def_thermal_zone.name_string);
+		if(aml_symbol->component.def_thermal_zone.term_list)delete_aml_symbol(aml_symbol->component.def_thermal_zone.term_list);
+		break;
 	case aml_def_to_buffer:
 		if(aml_symbol->component.def_to_buffer.to_buffer_op)delete_aml_symbol(aml_symbol->component.def_to_buffer.to_buffer_op);
 		if(aml_symbol->component.def_to_buffer.operand)delete_aml_symbol(aml_symbol->component.def_to_buffer.operand);
@@ -9861,6 +9887,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_subtract:
 		break;
+	case aml_def_thermal_zone:
+		break;
 	case aml_def_to_buffer:
 		break;
 	case aml_def_to_hex_string:
@@ -10619,6 +10647,12 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_subtract.subtract_op)print_aml_symbol(aml_symbol->component.def_subtract.subtract_op);
 		for(unsigned i = 0; i < _countof(aml_symbol->component.def_subtract.operand); i++)if(aml_symbol->component.def_subtract.operand[i])print_aml_symbol(aml_symbol->component.def_subtract.operand[i]);
 		if(aml_symbol->component.def_subtract.target)print_aml_symbol(aml_symbol->component.def_subtract.target);
+		break;
+	case aml_def_thermal_zone:
+		if(aml_symbol->component.def_thermal_zone.thermal_zone_op)print_aml_symbol(aml_symbol->component.def_thermal_zone.thermal_zone_op);
+		if(aml_symbol->component.def_thermal_zone.pkg_length)print_aml_symbol(aml_symbol->component.def_thermal_zone.pkg_length);
+		if(aml_symbol->component.def_thermal_zone.name_string)print_aml_symbol(aml_symbol->component.def_thermal_zone.name_string);
+		if(aml_symbol->component.def_thermal_zone.term_list)print_aml_symbol(aml_symbol->component.def_thermal_zone.term_list);
 		break;
 	case aml_def_to_buffer:
 		if(aml_symbol->component.def_to_buffer.to_buffer_op)print_aml_symbol(aml_symbol->component.def_to_buffer.to_buffer_op);
