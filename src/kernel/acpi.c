@@ -306,6 +306,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_local_obj_name = "LocalObj";
 	static char const * const aml_local_op_name = "LocalOp";
 	static char const * const aml_match_op_name = "MatchOp";
+	static char const * const aml_match_opcode_name = "MatchOpcode";
 	static char const * const aml_method_flags_name = "MethodFlags";
 	static char const * const aml_method_invocation_name = "MethodInvocation";
 	static char const * const aml_method_op_name = "MethodOp";
@@ -703,6 +704,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_local_op_name;
 	case aml_match_op:
 		return aml_match_op_name;
+	case aml_match_opcode:
+		return aml_match_opcode_name;
 	case aml_method_flags:
 		return aml_method_flags_name;
 	case aml_method_invocation:
@@ -2971,10 +2974,22 @@ AMLSymbol *analyse_aml_def_match(AMLSymbol *parent, AMLSubstring aml)
 	def_match->string.initial += def_match->component.def_match.search_pkg->string.length;
 	aml.initial += def_match->component.def_match.search_pkg->string.length;
 	aml.length -= def_match->component.def_match.search_pkg->string.length;
-	def_match->component.def_match.match_opcode[0] = NULL;
-	def_match->component.def_match.operand[0] = NULL;
-	def_match->component.def_match.match_opcode[1] = NULL;
-	def_match->component.def_match.operand[1] = NULL;
+	def_match->component.def_match.match_opcode[0] = analyse_aml_match_opcode(def_match, aml);
+	def_match->string.initial += def_match->component.def_match.match_opcode[0]->string.length;
+	aml.initial += def_match->component.def_match.match_opcode[0]->string.length;
+	aml.length -= def_match->component.def_match.match_opcode[0]->string.length;
+	def_match->component.def_match.operand[0] = analyse_aml_operand(def_match, aml);
+	def_match->string.initial += def_match->component.def_match.operand[0]->string.length;
+	aml.initial += def_match->component.def_match.operand[0]->string.length;
+	aml.length -= def_match->component.def_match.operand[0]->string.length;
+	def_match->component.def_match.match_opcode[1] = analyse_aml_match_opcode(def_match, aml);
+	def_match->string.initial += def_match->component.def_match.match_opcode[1]->string.length;
+	aml.initial += def_match->component.def_match.match_opcode[1]->string.length;
+	aml.length -= def_match->component.def_match.match_opcode[1]->string.length;
+	def_match->component.def_match.operand[1] = analyse_aml_operand(def_match, aml);
+	def_match->string.initial += def_match->component.def_match.operand[1]->string.length;
+	aml.initial += def_match->component.def_match.operand[1]->string.length;
+	aml.length -= def_match->component.def_match.operand[1]->string.length;
 	def_match->component.def_match.start_index = NULL;
 	ERROR(); // Unimplemented
 	return def_match;
@@ -4951,6 +4966,19 @@ AMLSymbol *analyse_aml_match_op(AMLSymbol *parent, AMLSubstring aml)
 		ERROR();
 	}
 	return match_op;
+}
+
+// <match_opcode> := <byte_data>
+AMLSymbol *analyse_aml_match_opcode(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("match_opcode aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *match_opcode = malloc(sizeof(*match_opcode));
+	match_opcode->parent = parent;
+	match_opcode->string.initial = aml.initial;
+	match_opcode->string.length = 1;
+	match_opcode->type = aml_match_opcode;
+	match_opcode->flags = 0;
+	return match_opcode;
 }
 
 // <method_flags>
@@ -8790,6 +8818,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_match_op:
 		break;
+	case aml_match_opcode:
+		break;
 	case aml_method_flags:
 		break;
 	case aml_method_invocation:
@@ -9898,6 +9928,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_match_op:
 		break;
+	case aml_match_opcode:
+		break;
 	case aml_method_flags:
 		printf_serial(" arg_count = %d, %s, sync_level = %d", aml_symbol->component.method_flags.arg_count, aml_symbol->component.method_flags.serialize_flag ? "Serialized" : "NotSerialized", aml_symbol->component.method_flags.sync_level);
 		break;
@@ -10737,6 +10769,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_local_op:
 		break;
 	case aml_match_op:
+		break;
+	case aml_match_opcode:
 		break;
 	case aml_method_flags:
 		break;
