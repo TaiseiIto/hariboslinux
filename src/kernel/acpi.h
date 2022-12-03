@@ -322,6 +322,7 @@ typedef enum _AMLSymbolType
 	aml_lead_name_char,
 	aml_local_obj,
 	aml_local_op,
+	aml_match_op,
 	aml_method_flags,
 	aml_method_invocation,
 	aml_method_op,
@@ -1996,6 +1997,8 @@ AMLSymbol *analyse_aml_l_or_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_local_obj(AMLSymbol *parent, AMLSubstring aml);
 // <local_op> := 0x60 - 0x67
 AMLSymbol *analyse_aml_local_op(AMLSymbol *parent, AMLSubstring aml);
+// <match_op> := AML_BYTE_MATCH_OP
+AMLSymbol *analyse_aml_match_op(AMLSymbol *parent, AMLSubstring aml);
 // <method_flags>
 AMLSymbol *analyse_aml_method_flags(AMLSymbol *parent, AMLSubstring aml);
 // <method_invocation> := <name_string> <term_arg_list>

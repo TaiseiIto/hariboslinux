@@ -305,6 +305,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_l_or_op_name = "LOrOp";
 	static char const * const aml_local_obj_name = "LocalObj";
 	static char const * const aml_local_op_name = "LocalOp";
+	static char const * const aml_match_op_name = "MatchOp";
 	static char const * const aml_method_flags_name = "MethodFlags";
 	static char const * const aml_method_invocation_name = "MethodInvocation";
 	static char const * const aml_method_op_name = "MethodOp";
@@ -699,6 +700,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_local_obj_name;
 	case aml_local_op:
 		return aml_local_op_name;
+	case aml_match_op:
+		return aml_match_op_name;
 	case aml_method_flags:
 		return aml_method_flags_name;
 	case aml_method_invocation:
@@ -2957,7 +2960,10 @@ AMLSymbol *analyse_aml_def_match(AMLSymbol *parent, AMLSubstring aml)
 	def_match->string.initial = aml.initial;
 	def_match->string.length = 0;
 	def_match->type = aml_def_match;
-	def_match->component.def_match.match_op = NULL;
+	def_match->component.def_match.match_op = analyse_aml_match_op(def_match, aml);
+	def_match->string.initial += def_match->component.def_match.match_op->string.length;
+	aml.initial += def_match->component.def_match.match_op->string.length;
+	aml.length -= def_match->component.def_match.match_op->string.length;
 	def_match->component.def_match.search_pkg = NULL;
 	def_match->component.def_match.match_opcode[0] = NULL;
 	def_match->component.def_match.operand[0] = NULL;
@@ -4246,6 +4252,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 		expression_opcode->component.expression_opcode.def_l_or = analyse_aml_def_l_or(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_l_or->string.length;
 		break;
+	case AML_BYTE_MATCH_OP:
+		expression_opcode->component.expression_opcode.def_match = analyse_aml_def_match(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_match->string.length;
+		break;
 	case AML_BYTE_MID_OP:
 		expression_opcode->component.expression_opcode.def_mid = analyse_aml_def_mid(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_mid->string.length;
@@ -4911,6 +4921,30 @@ AMLSymbol *analyse_aml_local_op(AMLSymbol *parent, AMLSubstring aml)
 		break;
 	}
 	return local_op;
+}
+
+// <match_op> := AML_BYTE_MATCH_OP
+AMLSymbol *analyse_aml_match_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("match_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *match_op = malloc(sizeof(*match_op));
+	match_op->parent = parent;
+	match_op->string.initial = aml.initial;
+	match_op->string.length = 1;
+	match_op->type = aml_match_op;
+	match_op->flags = 0;
+	if(!aml.length)
+	{
+		match_op->string.length = 0;
+		match_op->flags |= AML_SYMBOL_ERROR;
+		ERROR();
+	}
+	else if(*match_op->string.initial != AML_BYTE_MATCH_OP)
+	{
+		match_op->flags |= AML_SYMBOL_ERROR; // Incorrect match op
+		ERROR();
+	}
+	return match_op;
 }
 
 // <method_flags>
@@ -7399,6 +7433,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_MATCH_OP:
 	case AML_BYTE_MID_OP:
 	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NOT_OP:
@@ -7532,6 +7567,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_MATCH_OP:
 	case AML_BYTE_MID_OP:
 	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NOT_OP:
@@ -7646,6 +7682,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_MATCH_OP:
 	case AML_BYTE_METHOD_OP:
 	case AML_BYTE_MID_OP:
 	case AML_BYTE_MULTIPLY_OP:
@@ -7733,6 +7770,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_L_LESS_OP:
 	case AML_BYTE_L_NOT_OP:
 	case AML_BYTE_L_OR_OP:
+	case AML_BYTE_MATCH_OP:
 	case AML_BYTE_MID_OP:
 	case AML_BYTE_MULTIPLY_OP:
 	case AML_BYTE_NOT_OP:
@@ -8726,6 +8764,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.local_obj.local_op)delete_aml_symbol(aml_symbol->component.local_obj.local_op);
 		break;
 	case aml_local_op:
+		break;
+	case aml_match_op:
 		break;
 	case aml_method_flags:
 		break;
@@ -9830,6 +9870,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_local_op:
 		break;
+	case aml_match_op:
+		break;
 	case aml_method_flags:
 		printf_serial(" arg_count = %d, %s, sync_level = %d", aml_symbol->component.method_flags.arg_count, aml_symbol->component.method_flags.serialize_flag ? "Serialized" : "NotSerialized", aml_symbol->component.method_flags.sync_level);
 		break;
@@ -10665,6 +10707,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.local_obj.local_op)print_aml_symbol(aml_symbol->component.local_obj.local_op);
 		break;
 	case aml_local_op:
+		break;
+	case aml_match_op:
 		break;
 	case aml_method_flags:
 		break;
