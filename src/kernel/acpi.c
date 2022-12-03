@@ -5584,7 +5584,8 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 		default:
 			named_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
-			printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
+			printf_serial("aml.initial[0] = %#04.2x\n", aml.initial[0]);
+			printf_serial("aml.initial[1] = %#04.2x\n", aml.initial[1]);
 			break;
 		}
 		break;
