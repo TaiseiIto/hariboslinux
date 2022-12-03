@@ -751,25 +751,9 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					dsdt_header = get_dsdt_header();
 					PRINT_ACPI_TABLE_HEADER_P(dsdt_header);
 					dsdt_aml = get_dsdt_aml();
-					printf_serial("---------- DSDT AML SYNTAX TREE ----------\n");
 					dsdt_aml_syntax_tree = create_dsdt_aml_syntax_tree();
-					print_aml_symbol(dsdt_aml_syntax_tree);
 					printf_serial("dsdt_aml.length = %#010.8x\n", dsdt_aml.length);
 					printf_serial("number of read bytes = %#010.8x\n", dsdt_aml_syntax_tree->string.length);
-					printf_serial("---------- read bytes ----------\n");
-					for(unsigned int row = 0; row <= (dsdt_aml_syntax_tree->string.length - 1) / 0x10; row++)
-					{
-						unsigned int aml_index_begin = 0x10 * row;
-						unsigned int aml_index_end = min(0x10 * (row + 1), dsdt_aml_syntax_tree->string.length);
-						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)printf_serial("%02.2x ", dsdt_aml_syntax_tree->string.initial[aml_index]);
-						printf_serial("\n");
-						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)
-						{
-							unsigned char aml_byte = dsdt_aml_syntax_tree->string.initial[aml_index];
-							printf_serial(" %c ", 0x20 <= aml_byte && aml_byte < 0x7f ? aml_byte : ' ');
-						}
-						printf_serial("\n");
-					}
 					if(dsdt_aml_syntax_tree->string.length == dsdt_aml.length)
 					{
 						unsigned short pm1_cnt_slp_typ = get_aml_s5_pm1_cnt_slp_typ(dsdt_aml_syntax_tree);
