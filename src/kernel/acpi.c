@@ -388,6 +388,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_source_buff_name = "SourceBuff";
 	static char const * const aml_stall_op_name = "StallOp";
 	static char const * const aml_stall_op_suffix_name = "StallOpSuffix";
+	static char const * const aml_start_index_name = "StartIndex";
 	static char const * const aml_statement_opcode_name = "StatementOpcode";
 	static char const * const aml_store_op_name = "StoreOp";
 	static char const * const aml_string_name = "String";
@@ -868,6 +869,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_stall_op_name;
 	case aml_stall_op_suffix:
 		return aml_stall_op_suffix_name;
+	case aml_start_index:
+		return aml_start_index_name;
 	case aml_statement_opcode:
 		return aml_statement_opcode_name;
 	case aml_store_op:
@@ -2990,8 +2993,10 @@ AMLSymbol *analyse_aml_def_match(AMLSymbol *parent, AMLSubstring aml)
 	def_match->string.initial += def_match->component.def_match.operand[1]->string.length;
 	aml.initial += def_match->component.def_match.operand[1]->string.length;
 	aml.length -= def_match->component.def_match.operand[1]->string.length;
-	def_match->component.def_match.start_index = NULL;
-	ERROR(); // Unimplemented
+	def_match->component.def_match.start_index = analyse_aml_start_index(def_match, aml);
+	def_match->string.initial += def_match->component.def_match.start_index->string.length;
+	aml.initial += def_match->component.def_match.start_index->string.length;
+	aml.length -= def_match->component.def_match.start_index->string.length;
 	return def_match;
 }
 
@@ -7085,6 +7090,21 @@ AMLSymbol *analyse_aml_stall_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 	return stall_op_suffix;
 }
 
+// <start_index> := <term_arg>
+AMLSymbol *analyse_aml_start_index(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("start_index aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *start_index = malloc(sizeof(*start_index));
+	start_index->parent = parent;
+	start_index->string.initial = aml.initial;
+	start_index->string.length = 0;
+	start_index->type = aml_start_index;
+	start_index->flags = 0;
+	start_index->component.start_index.term_arg = analyse_aml_term_arg(start_index, aml);
+	start_index->string.length += start_index->component.start_index.term_arg->string.length;
+	return start_index;
+}
+
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -9081,6 +9101,9 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		break;
 	case aml_stall_op_suffix:
 		break;
+	case aml_start_index:
+		if(aml_symbol->component.start_index.term_arg)delete_aml_symbol(aml_symbol->component.start_index.term_arg);
+		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break);
 		if(aml_symbol->component.statement_opcode.def_break_point)delete_aml_symbol(aml_symbol->component.statement_opcode.def_break_point);
@@ -10102,6 +10125,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_stall_op_suffix:
 		break;
+	case aml_start_index:
+		break;
 	case aml_statement_opcode:
 		break;
 	case aml_store_op:
@@ -11028,6 +11053,9 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.stall_op.stall_op_suffix)print_aml_symbol(aml_symbol->component.stall_op.stall_op_suffix);
 		break;
 	case aml_stall_op_suffix:
+		break;
+	case aml_start_index:
+		if(aml_symbol->component.start_index.term_arg)print_aml_symbol(aml_symbol->component.start_index.term_arg);
 		break;
 	case aml_statement_opcode:
 		if(aml_symbol->component.statement_opcode.def_break)print_aml_symbol(aml_symbol->component.statement_opcode.def_break);

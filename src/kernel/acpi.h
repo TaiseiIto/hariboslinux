@@ -405,6 +405,7 @@ typedef enum _AMLSymbolType
 	aml_source_buff,
 	aml_stall_op,
 	aml_stall_op_suffix,
+	aml_start_index,
 	aml_statement_opcode,
 	aml_store_op,
 	aml_string,
@@ -1456,6 +1457,11 @@ typedef struct _AMLStallOp
 	struct _AMLSymbol *stall_op_suffix;
 } AMLStallOp;
 
+typedef struct _AMLStartIndex
+{
+	struct _AMLSymbol *term_arg;
+} AMLStartIndex;
+
 typedef struct _AMLStatementOpcode
 {
 	struct _AMLSymbol *def_break;
@@ -1692,6 +1698,7 @@ typedef union _AMLComponent
 	AMLSleepOp sleep_op;
 	AMLSourceBuff source_buff;
 	AMLStallOp stall_op;
+	AMLStartIndex start_index;
 	AMLStatementOpcode statement_opcode;
 	AMLString string;
 	AMLSuperName super_name;
@@ -2171,6 +2178,8 @@ AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_stall_op(AMLSymbol *parent, AMLSubstring aml);
 // <stall_op_suffix> := AML_BYTE_STALL_OP
 AMLSymbol *analyse_aml_stall_op_suffix(AMLSymbol *parent, AMLSubstring aml);
+// <start_index> := <term_arg>
+AMLSymbol *analyse_aml_start_index(AMLSymbol *parent, AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <store_op> := AML_BYTE_STORE_OP
