@@ -403,6 +403,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_term_list_name = "TermList";
 	static char const * const aml_term_obj_name = "TermObj";
 	static char const * const aml_thermal_zone_op_name = "ThermalZoneOp";
+	static char const * const aml_thermal_zone_op_suffix_name = "ThermalZoneOpSuffix";
 	static char const * const aml_time_out_name = "TimeOut";
 	static char const * const aml_to_buffer_op_name = "ToBufferOp";
 	static char const * const aml_to_hex_string_op_name = "ToHexStringOp";
@@ -901,6 +902,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_term_obj_name;
 	case aml_thermal_zone_op:
 		return aml_thermal_zone_op_name;
+	case aml_thermal_zone_op_suffix:
+		return aml_thermal_zone_op_suffix_name;
 	case aml_time_out:
 		return aml_time_out_name;
 	case aml_to_buffer_op:
@@ -5616,6 +5619,10 @@ AMLSymbol *analyse_aml_named_obj(AMLSymbol *parent, AMLSubstring aml)
 			named_obj->component.named_obj.def_op_region = analyse_aml_def_op_region(named_obj, aml);
 			named_obj->string.length += named_obj->component.named_obj.def_op_region->string.length;
 			break;
+		case AML_BYTE_THERMAL_ZONE_OP:
+			named_obj->component.named_obj.def_thermal_zone = analyse_aml_def_thermal_zone(named_obj, aml);
+			named_obj->string.length += named_obj->component.named_obj.def_thermal_zone->string.length;
+			break;
 		default:
 			named_obj->flags |= AML_SYMBOL_ERROR; // Syntax error or unimplemented pattern
 			ERROR();
@@ -7982,29 +7989,50 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	return term_obj;
 }
 
-// <thermal_zone_op> := AML_BYTE_THERMAL_ZONE_OP
+// <thermal_zone_op> := <ext_op_prefix> <thermal_zone_op_suffix>
 AMLSymbol *analyse_aml_thermal_zone_op(AMLSymbol *parent, AMLSubstring aml)
 {
 	printf_serial("thermal_zone_op aml.length = %#010.8x\n", aml.length);
 	AMLSymbol *thermal_zone_op = malloc(sizeof(*thermal_zone_op));
 	thermal_zone_op->parent = parent;
 	thermal_zone_op->string.initial = aml.initial;
-	thermal_zone_op->string.length = 1;
+	thermal_zone_op->string.length = 0;
 	thermal_zone_op->type = aml_thermal_zone_op;
 	thermal_zone_op->flags = 0;
+	thermal_zone_op->component.thermal_zone_op.ext_op_prefix = analyse_aml_ext_op_prefix(thermal_zone_op, aml);
+	thermal_zone_op->string.length += thermal_zone_op->component.thermal_zone_op.ext_op_prefix->string.length;
+	aml.initial += thermal_zone_op->component.thermal_zone_op.ext_op_prefix->string.length;
+	aml.length -= thermal_zone_op->component.thermal_zone_op.ext_op_prefix->string.length;
+	thermal_zone_op->component.thermal_zone_op.thermal_zone_op_suffix = analyse_aml_thermal_zone_op_suffix(thermal_zone_op, aml);
+	thermal_zone_op->string.length += thermal_zone_op->component.thermal_zone_op.thermal_zone_op_suffix->string.length;
+	aml.initial += thermal_zone_op->component.thermal_zone_op.thermal_zone_op_suffix->string.length;
+	aml.length -= thermal_zone_op->component.thermal_zone_op.thermal_zone_op_suffix->string.length;
+	return thermal_zone_op;
+}
+
+// <thermal_zone_op_suffix> := AML_BYTE_THERMAL_ZONE_OP
+AMLSymbol *analyse_aml_thermal_zone_op_suffix(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("thermal_zone_op_suffix aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *thermal_zone_op_suffix = malloc(sizeof(*thermal_zone_op_suffix));
+	thermal_zone_op_suffix->parent = parent;
+	thermal_zone_op_suffix->string.initial = aml.initial;
+	thermal_zone_op_suffix->string.length = 1;
+	thermal_zone_op_suffix->type = aml_thermal_zone_op_suffix;
+	thermal_zone_op_suffix->flags = 0;
 	if(!aml.length)
 	{
-		thermal_zone_op->string.length = 0;
-		thermal_zone_op->flags |= AML_SYMBOL_ERROR;
+		thermal_zone_op_suffix->string.length = 0;
+		thermal_zone_op_suffix->flags |= AML_SYMBOL_ERROR;
 		ERROR();
 	}
 	else if(*aml.initial != AML_BYTE_THERMAL_ZONE_OP)
 	{
-		thermal_zone_op->flags |= AML_SYMBOL_ERROR; // Incorrect thermal_zone_op
+		thermal_zone_op_suffix->flags |= AML_SYMBOL_ERROR; // Incorrect thermal_zone_op_suffix
 		ERROR();
 		printf_serial("*aml.initial = %#04.2x\n", *aml.initial);
 	}
-	return thermal_zone_op;
+	return thermal_zone_op_suffix;
 }
 
 // <time_out> := <word_data>
@@ -9230,6 +9258,10 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.term_obj.wrong_term_arg)delete_aml_symbol(aml_symbol->component.term_obj.wrong_term_arg);
 		break;
 	case aml_thermal_zone_op:
+		if(aml_symbol->component.thermal_zone_op.ext_op_prefix)delete_aml_symbol(aml_symbol->component.thermal_zone_op.ext_op_prefix);
+		if(aml_symbol->component.thermal_zone_op.thermal_zone_op_suffix)delete_aml_symbol(aml_symbol->component.thermal_zone_op.thermal_zone_op_suffix);
+		break;
+	case aml_thermal_zone_op_suffix:
 		break;
 	case aml_time_out:
 		if(aml_symbol->component.time_out.word_data)delete_aml_symbol(aml_symbol->component.time_out.word_data);
@@ -10224,6 +10256,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_thermal_zone_op:
 		break;
+	case aml_thermal_zone_op_suffix:
+		break;
 	case aml_time_out:
 		break;
 	case aml_to_buffer_op:
@@ -11195,6 +11229,10 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.term_obj.wrong_term_arg)print_aml_symbol(aml_symbol->component.term_obj.wrong_term_arg);
 		break;
 	case aml_thermal_zone_op:
+		if(aml_symbol->component.thermal_zone_op.ext_op_prefix)print_aml_symbol(aml_symbol->component.thermal_zone_op.ext_op_prefix);
+		if(aml_symbol->component.thermal_zone_op.thermal_zone_op_suffix)print_aml_symbol(aml_symbol->component.thermal_zone_op.thermal_zone_op_suffix);
+		break;
+	case aml_thermal_zone_op_suffix:
 		break;
 	case aml_time_out:
 		if(aml_symbol->component.time_out.word_data)print_aml_symbol(aml_symbol->component.time_out.word_data);

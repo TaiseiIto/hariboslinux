@@ -420,6 +420,7 @@ typedef enum _AMLSymbolType
 	aml_term_list,
 	aml_term_obj,
 	aml_thermal_zone_op,
+	aml_thermal_zone_op_suffix,
 	aml_time_out,
 	aml_to_buffer_op,
 	aml_to_hex_string_op,
@@ -1538,6 +1539,12 @@ typedef struct _AMLTermObj
 	struct _AMLSymbol *wrong_term_arg;
 } AMLTermObj;
 
+typedef struct _AMLThermalZoneOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *thermal_zone_op_suffix;
+} AMLThermalZoneOp;
+
 typedef struct _AMLTimeOut
 {
 	struct _AMLSymbol *word_data;
@@ -1718,6 +1725,7 @@ typedef union _AMLComponent
 	AMLTermArgList term_arg_list;
 	AMLTermList term_list;
 	AMLTermObj term_obj;
+	AMLThermalZoneOp thermal_zone_op;
 	AMLTimeOut time_out;
 	AMLUsecTime usec_time;
 	AMLWordConst word_const;
@@ -2217,8 +2225,10 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
 AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml);
-// <thermal_zone_op> := AML_BYTE_THERMAL_ZONE_OP
+// <thermal_zone_op> := <ext_op_prefix> <thermal_zone_op_suffix>
 AMLSymbol *analyse_aml_thermal_zone_op(AMLSymbol *parent, AMLSubstring aml);
+// <thermal_zone_op_suffix> := AML_BYTE_THERMAL_ZONE_OP
+AMLSymbol *analyse_aml_thermal_zone_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <time_out> := <word_data>
 AMLSymbol *analyse_aml_time_out(AMLSymbol *parent, AMLSubstring aml);
 // <to_buffer_op> := AML_BYTE_TO_BUFFER_OP
