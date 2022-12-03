@@ -256,6 +256,7 @@ typedef enum _AMLSymbolType
 	aml_def_l_less,
 	aml_def_l_not,
 	aml_def_l_or,
+	aml_def_match,
 	aml_def_method,
 	aml_def_mid,
 	aml_def_multiply,
@@ -807,6 +808,15 @@ typedef struct _AMLDefLOr
 	struct _AMLSymbol *l_or_op;
 	struct _AMLSymbol *operand[2];
 } AMLDefLOr;
+
+typedef struct _AMLDefMatch
+{
+	struct _AMLSymbol *match_op;
+	struct _AMLSymbol *search_pkg;
+	struct _AMLSymbol *match_opcode[2];
+	struct _AMLSymbol *operand[2];
+	struct _AMLSymbol *start_index;
+} AMLDefMatch;
 
 typedef struct _AMLDefMethod
 {
@@ -1587,6 +1597,7 @@ typedef union _AMLComponent
 	AMLDefLLess def_l_less;
 	AMLDefLNot def_l_not;
 	AMLDefLOr def_l_or;
+	AMLDefMatch def_match;
 	AMLDefMethod def_method;
 	AMLDefMid def_mid;
 	AMLDefMultiply def_multiply;
@@ -1853,6 +1864,8 @@ AMLSymbol *analyse_aml_def_l_less(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_or> := <l_or_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_or(AMLSymbol *parent, AMLSubstring aml);
+// <def_match> := <match_op> <serach_pkg> <match_opcode> <operand> <match_opcode> <operand> <start_index>
+AMLSymbol *analyse_aml_def_match(AMLSymbol *parent, AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml);
 // <def_mid> := <mid_op> <mid_obj> <term_arg> <term_arg> <target>

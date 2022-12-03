@@ -239,6 +239,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_l_less_name = "DefLLess";
 	static char const * const aml_def_l_not_name = "DefLNot";
 	static char const * const aml_def_l_or_name = "DefLOr";
+	static char const * const aml_def_match_name = "DefMatch";
 	static char const * const aml_def_method_name = "DefMethod";
 	static char const * const aml_def_mid_name = "DefMid";
 	static char const * const aml_def_multiply_name = "DefMultiply";
@@ -566,6 +567,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_l_not_name;
 	case aml_def_l_or:
 		return aml_def_l_or_name;
+	case aml_def_match:
+		return aml_def_match_name;
 	case aml_def_method:
 		return aml_def_method_name;
 	case aml_def_mid:
@@ -2943,6 +2946,26 @@ AMLSymbol *analyse_aml_def_l_or(AMLSymbol *parent, AMLSubstring aml)
 		aml.length -= def_l_or->component.def_l_or.operand[i]->string.length;
 	}
 	return def_l_or;
+}
+
+// <def_match> := <match_op> <serach_pkg> <match_opcode> <operand> <match_opcode> <operand> <start_index>
+AMLSymbol *analyse_aml_def_match(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_match aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_match = malloc(sizeof(*def_match));
+	def_match->parent = parent;
+	def_match->string.initial = aml.initial;
+	def_match->string.length = 0;
+	def_match->type = aml_def_match;
+	def_match->component.def_match.match_op = NULL;
+	def_match->component.def_match.search_pkg = NULL;
+	def_match->component.def_match.match_opcode[0] = NULL;
+	def_match->component.def_match.operand[0] = NULL;
+	def_match->component.def_match.match_opcode[1] = NULL;
+	def_match->component.def_match.operand[1] = NULL;
+	def_match->component.def_match.start_index = NULL;
+	ERROR(); // Unimplemented
+	return def_match;
 }
 
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
@@ -8397,6 +8420,13 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_l_or.l_or_op)delete_aml_symbol(aml_symbol->component.def_l_or.l_or_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_or.operand); i++)if(aml_symbol->component.def_l_or.operand[i])delete_aml_symbol(aml_symbol->component.def_l_or.operand[i]);
 		break;
+	case aml_def_match:
+		if(aml_symbol->component.def_match.match_op)delete_aml_symbol(aml_symbol->component.def_match.match_op);
+		if(aml_symbol->component.def_match.search_pkg)delete_aml_symbol(aml_symbol->component.def_match.search_pkg);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_match.match_opcode); i++)if(aml_symbol->component.def_match.match_opcode)delete_aml_symbol(aml_symbol->component.def_match.match_opcode[i]);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_match.operand); i++)if(aml_symbol->component.def_match.operand)delete_aml_symbol(aml_symbol->component.def_match.operand[i]);
+		if(aml_symbol->component.def_match.start_index)delete_aml_symbol(aml_symbol->component.def_match.start_index);
+		break;
 	case aml_def_method:
 		if(aml_symbol->component.def_method.method_op)delete_aml_symbol(aml_symbol->component.def_method.method_op);
 		if(aml_symbol->component.def_method.pkg_length)delete_aml_symbol(aml_symbol->component.def_method.pkg_length);
@@ -9663,6 +9693,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_l_or:
 		break;
+	case aml_def_match:
+		break;
 	case aml_def_method:
 		break;
 	case aml_def_mid:
@@ -10327,6 +10359,13 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_def_l_or:
 		if(aml_symbol->component.def_l_or.l_or_op)print_aml_symbol(aml_symbol->component.def_l_or.l_or_op);
 		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_l_or.operand); i++)if(aml_symbol->component.def_l_or.operand[i])print_aml_symbol(aml_symbol->component.def_l_or.operand[i]);
+		break;
+	case aml_def_match:
+		if(aml_symbol->component.def_match.match_op)print_aml_symbol(aml_symbol->component.def_match.match_op);
+		if(aml_symbol->component.def_match.search_pkg)print_aml_symbol(aml_symbol->component.def_match.search_pkg);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_match.match_opcode); i++)if(aml_symbol->component.def_match.match_opcode)print_aml_symbol(aml_symbol->component.def_match.match_opcode[i]);
+		for(unsigned int i = 0; i < _countof(aml_symbol->component.def_match.operand); i++)if(aml_symbol->component.def_match.operand)print_aml_symbol(aml_symbol->component.def_match.operand[i]);
+		if(aml_symbol->component.def_match.start_index)print_aml_symbol(aml_symbol->component.def_match.start_index);
 		break;
 	case aml_def_method:
 		if(aml_symbol->component.def_method.method_op)print_aml_symbol(aml_symbol->component.def_method.method_op);
