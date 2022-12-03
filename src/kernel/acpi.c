@@ -227,6 +227,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_def_divide_name = "DefDivide";
 	static char const * const aml_def_else_name = "DefElse";
 	static char const * const aml_def_field_name = "DefField";
+	static char const * const aml_def_find_set_left_bit_name = "DefFindSetLeftBit";
 	static char const * const aml_def_find_set_right_bit_name = "DefFindSetRightBit";
 	static char const * const aml_def_if_else_name = "DefIfElse";
 	static char const * const aml_def_increment_name = "DefIncrement";
@@ -286,6 +287,7 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 	static char const * const aml_field_list_name = "FieldList";
 	static char const * const aml_field_op_name = "FieldOp";
 	static char const * const aml_field_op_suffix_name = "FieldOpSuffix";
+	static char const * const aml_find_set_left_bit_op_name = "FindSetLeftBitOp";
 	static char const * const aml_find_set_right_bit_op_name = "FindSetRightBitOp";
 	static char const * const aml_if_op_name = "IfOp";
 	static char const * const aml_increment_op_name = "IncrementOp";
@@ -540,6 +542,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_def_else_name;
 	case aml_def_field:
 		return aml_def_field_name;
+	case aml_def_find_set_left_bit:
+		return aml_def_find_set_left_bit_name;
 	case aml_def_find_set_right_bit:
 		return aml_def_find_set_right_bit_name;
 	case aml_def_if_else:
@@ -658,6 +662,8 @@ char const *aml_symbol_type_name(AMLSymbolType aml_symbol_type)
 		return aml_field_op_name;
 	case aml_field_op_suffix:
 		return aml_field_op_suffix_name;
+	case aml_find_set_left_bit_op:
+		return aml_find_set_left_bit_op_name;
 	case aml_find_set_right_bit_op:
 		return aml_find_set_right_bit_op_name;
 	case aml_if_op:
@@ -2606,6 +2612,30 @@ AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml)
 	return def_field;
 }
 
+// <def_find_set_left_bit> := <find_set_left_bitop> <operand> <target>
+AMLSymbol *analyse_aml_def_find_set_left_bit(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("def_find_set_left_bit aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *def_find_set_left_bit = malloc(sizeof(*def_find_set_left_bit));
+	def_find_set_left_bit->parent = parent;
+	def_find_set_left_bit->string.initial = aml.initial;
+	def_find_set_left_bit->string.length = 0;
+	def_find_set_left_bit->flags = 0;
+	def_find_set_left_bit->component.def_find_set_left_bit.find_set_left_bit_op = analyse_aml_find_set_left_bit_op(def_find_set_left_bit, aml);
+	def_find_set_left_bit->string.length += def_find_set_left_bit->component.def_find_set_left_bit.find_set_left_bit_op->string.length;
+	aml.initial += def_find_set_left_bit->component.def_find_set_left_bit.find_set_left_bit_op->string.length;
+	aml.length -= def_find_set_left_bit->component.def_find_set_left_bit.find_set_left_bit_op->string.length;
+	def_find_set_left_bit->component.def_find_set_left_bit.operand = analyse_aml_operand(def_find_set_left_bit, aml);
+	def_find_set_left_bit->string.length += def_find_set_left_bit->component.def_find_set_left_bit.operand->string.length;
+	aml.initial += def_find_set_left_bit->component.def_find_set_left_bit.operand->string.length;
+	aml.length -= def_find_set_left_bit->component.def_find_set_left_bit.operand->string.length;
+	def_find_set_left_bit->component.def_find_set_left_bit.target = analyse_aml_target(def_find_set_left_bit, aml);
+	def_find_set_left_bit->string.length += def_find_set_left_bit->component.def_find_set_left_bit.target->string.length;
+	aml.initial += def_find_set_left_bit->component.def_find_set_left_bit.target->string.length;
+	aml.length -= def_find_set_left_bit->component.def_find_set_left_bit.target->string.length;
+	return def_find_set_left_bit;
+}
+
 // <def_find_set_right_bit> := <find_set_right_bitop> <operand> <target>
 AMLSymbol *analyse_aml_def_find_set_right_bit(AMLSymbol *parent, AMLSubstring aml)
 {
@@ -4153,6 +4183,10 @@ AMLSymbol *analyse_aml_expression_opcode(AMLSymbol *parent, AMLSubstring aml)
 			break;
 		}
 		break;
+	case AML_BYTE_FIND_SET_LEFT_BIT_OP:
+		expression_opcode->component.expression_opcode.def_find_set_left_bit = analyse_aml_def_find_set_left_bit(expression_opcode, aml);
+		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_find_set_left_bit->string.length;
+		break;
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 		expression_opcode->component.expression_opcode.def_find_set_right_bit = analyse_aml_def_find_set_right_bit(expression_opcode, aml);
 		expression_opcode->string.length += expression_opcode->component.expression_opcode.def_find_set_right_bit->string.length;
@@ -4453,6 +4487,30 @@ AMLSymbol *analyse_aml_field_op_suffix(AMLSymbol *parent, AMLSubstring aml)
 		ERROR();
 	}
 	return field_op_suffix;
+}
+
+// <find_set_left_bit_op> := AML_BYTE_FIND_SET_LEFT_BIT
+AMLSymbol *analyse_aml_find_set_left_bit_op(AMLSymbol *parent, AMLSubstring aml)
+{
+	printf_serial("find_set_left_bit_op aml.length = %#010.8x\n", aml.length);
+	AMLSymbol *find_set_left_bit_op = malloc(sizeof(*find_set_left_bit_op));
+	find_set_left_bit_op->parent = parent;
+	find_set_left_bit_op->string.initial = aml.initial;
+	find_set_left_bit_op->string.length = 1;
+	find_set_left_bit_op->type = aml_find_set_left_bit_op;
+	find_set_left_bit_op->flags = 0;
+	if(!aml.length)
+	{
+		find_set_left_bit_op->string.length = 0;
+		find_set_left_bit_op->flags |= AML_SYMBOL_ERROR;
+		ERROR();
+	}
+	else if(*aml.initial != AML_BYTE_FIND_SET_LEFT_BIT_OP)
+	{
+		find_set_left_bit_op->flags |= AML_SYMBOL_ERROR; // Incorrect find_set_left_bit_op
+		ERROR();
+	}
+	return find_set_left_bit_op;
 }
 
 // <find_set_right_bit_op> := AML_BYTE_FIND_SET_RIGHT_BIT
@@ -7308,6 +7366,7 @@ AMLSymbol *analyse_aml_term_arg(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_DIVIDE_OP:
+	case AML_BYTE_FIND_SET_LEFT_BIT_OP:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
@@ -7432,6 +7491,7 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 	case AML_BYTE_DIVIDE_OP:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_EXT_OP_PREFIX:
+	case AML_BYTE_FIND_SET_LEFT_BIT_OP:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
@@ -7544,6 +7604,7 @@ AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_DIVIDE_OP:
 	case AML_BYTE_DWORD_PREFIX:
 	case AML_BYTE_EXT_OP_PREFIX:
+	case AML_BYTE_FIND_SET_LEFT_BIT_OP:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 	case AML_BYTE_IF_OP:
 	case AML_BYTE_INCREMENT_OP:
@@ -7639,6 +7700,7 @@ AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml)
 	case AML_BYTE_DECREMENT_OP:
 	case AML_BYTE_DEREF_OF_OP:
 	case AML_BYTE_DIVIDE_OP:
+	case AML_BYTE_FIND_SET_LEFT_BIT_OP:
 	case AML_BYTE_FIND_SET_RIGHT_BIT_OP:
 	case AML_BYTE_INCREMENT_OP:
 	case AML_BYTE_INDEX_OP:
@@ -8277,6 +8339,11 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.def_field.field_flags)delete_aml_symbol(aml_symbol->component.def_field.field_flags);
 		if(aml_symbol->component.def_field.field_list)delete_aml_symbol(aml_symbol->component.def_field.field_list);
 		break;
+	case aml_def_find_set_left_bit:
+		if(aml_symbol->component.def_find_set_left_bit.find_set_left_bit_op)delete_aml_symbol(aml_symbol->component.def_find_set_left_bit.find_set_left_bit_op);
+		if(aml_symbol->component.def_find_set_left_bit.operand)delete_aml_symbol(aml_symbol->component.def_find_set_left_bit.operand);
+		if(aml_symbol->component.def_find_set_left_bit.target)delete_aml_symbol(aml_symbol->component.def_find_set_left_bit.target);
+		break;
 	case aml_def_find_set_right_bit:
 		if(aml_symbol->component.def_find_set_right_bit.find_set_right_bit_op)delete_aml_symbol(aml_symbol->component.def_find_set_right_bit.find_set_right_bit_op);
 		if(aml_symbol->component.def_find_set_right_bit.operand)delete_aml_symbol(aml_symbol->component.def_find_set_right_bit.operand);
@@ -8591,6 +8658,8 @@ void delete_aml_symbol(AMLSymbol *aml_symbol)
 		if(aml_symbol->component.field_op.field_op_suffix)delete_aml_symbol(aml_symbol->component.field_op.field_op_suffix);
 		break;
 	case aml_field_op_suffix:
+		break;
+	case aml_find_set_left_bit_op:
 		break;
 	case aml_find_set_right_bit_op:
 		break;
@@ -9570,6 +9639,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		break;
 	case aml_def_field:
 		break;
+	case aml_def_find_set_left_bit:
+		break;
 	case aml_def_find_set_right_bit:
 		break;
 	case aml_def_if_else:
@@ -9690,6 +9761,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 	case aml_field_op:
 		break;
 	case aml_field_op_suffix:
+		break;
+	case aml_find_set_left_bit_op:
 		break;
 	case aml_find_set_right_bit_op:
 		break;
@@ -10197,6 +10270,11 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.def_field.field_flags)print_aml_symbol(aml_symbol->component.def_field.field_flags);
 		if(aml_symbol->component.def_field.field_list)print_aml_symbol(aml_symbol->component.def_field.field_list);
 		break;
+	case aml_def_find_set_left_bit:
+		if(aml_symbol->component.def_find_set_left_bit.find_set_left_bit_op)print_aml_symbol(aml_symbol->component.def_find_set_left_bit.find_set_left_bit_op);
+		if(aml_symbol->component.def_find_set_left_bit.operand)print_aml_symbol(aml_symbol->component.def_find_set_left_bit.operand);
+		if(aml_symbol->component.def_find_set_left_bit.target)print_aml_symbol(aml_symbol->component.def_find_set_left_bit.target);
+		break;
 	case aml_def_find_set_right_bit:
 		if(aml_symbol->component.def_find_set_right_bit.find_set_right_bit_op)print_aml_symbol(aml_symbol->component.def_find_set_right_bit.find_set_right_bit_op);
 		if(aml_symbol->component.def_find_set_right_bit.operand)print_aml_symbol(aml_symbol->component.def_find_set_right_bit.operand);
@@ -10511,6 +10589,8 @@ void print_aml_symbol(AMLSymbol const *aml_symbol)
 		if(aml_symbol->component.field_op.field_op_suffix)print_aml_symbol(aml_symbol->component.field_op.field_op_suffix);
 		break;
 	case aml_field_op_suffix:
+		break;
+	case aml_find_set_left_bit_op:
 		break;
 	case aml_find_set_right_bit_op:
 		break;
