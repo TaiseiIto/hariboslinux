@@ -419,6 +419,7 @@ typedef enum _AMLSymbolType
 	aml_term_arg_list,
 	aml_term_list,
 	aml_term_obj,
+	aml_thermal_zone_op,
 	aml_time_out,
 	aml_to_buffer_op,
 	aml_to_hex_string_op,
@@ -2216,6 +2217,8 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
 AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml);
+// <thermal_zone_op> := AML_BYTE_THERMAL_ZONE_OP
+AMLSymbol *analyse_aml_thermal_zone_op(AMLSymbol *parent, AMLSubstring aml);
 // <time_out> := <word_data>
 AMLSymbol *analyse_aml_time_out(AMLSymbol *parent, AMLSubstring aml);
 // <to_buffer_op> := AML_BYTE_TO_BUFFER_OP
