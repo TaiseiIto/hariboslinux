@@ -54,3 +54,29 @@ Operand Pointer:     0x00:0x00000000
 Opcode:              0x0000
 ```
 
+# Cause investigation
+
+```
+~/hariboslinux/test_os # make debug
+(gdb) break i387_print_float_info
+(gdb) continue
+~/binutils-gdb/gdb/i387-tdep.c : 206 i387_print_float_info
+(gdb) break 285
+(gdb) continue
+(gdb) p/x fpreg
+= 0x7 // means R7
+(gdb) p/x regnum
+= 0x16
+(gdb) break 289
+(gdb) continue
+(gdb) x/10bx raw // print content of R7
+0x5652f25f90f0: 0xfe    0x8a    0x1b    0xcd    0x4b    0x78    0x9a    0xd4
+0x5652f25f90f8: 0x00    0x40
+(gdb) delete
+(gdb) break print_i387_status_word
+(gdb) continue
+~/binutils-gdb/gdb/i387-tdep.c : 108 print_i387_status_word
+(gdb) p/x status
+= 0x800 // It means TOP = 1, ST0 = R1
+```
+
