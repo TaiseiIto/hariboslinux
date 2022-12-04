@@ -15,6 +15,11 @@ debug: $(TEST_OS_IMG) stop-qemu
 stop-qemu:
 	for i in $$(ps ax | grep qemu | grep -v grep | awk '{print $$1}'); do kill $$i; done
 
+test: $(TEST_OS_IMG) stop-qemu
+	(qemu-system-i386 -boot order=a -drive file=$<,format=raw,if=floppy -S -gdb tcp::2159 -vnc localhost:0 &) && \
+	gdb < debuggee_input.txt && \
+	make stop-qemu
+
 $(TEST_OS_IMG): $(TEST_OS_OBJ) $(TEST_OS_LNK)
 	ld $< -Map $(TEST_OS_MAP) -o $@ -T $(word 2, $^)
 
