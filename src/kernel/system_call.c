@@ -671,7 +671,6 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					ACPITableHeader const *dsdt_header;
 					ACPITableHeader const *rsdt_header;
 					AMLSubstring dsdt_aml;
-					AMLSymbol *dsdt_aml_syntax_tree;
 					FADT const *fadt;
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
@@ -751,32 +750,17 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					dsdt_header = get_dsdt_header();
 					PRINT_ACPI_TABLE_HEADER_P(dsdt_header);
 					dsdt_aml = get_dsdt_aml();
-					dsdt_aml_syntax_tree = create_dsdt_aml_syntax_tree();
 					printf_serial("dsdt_aml.length = %#010.8x\n", dsdt_aml.length);
-					printf_serial("number of read bytes = %#010.8x\n", dsdt_aml_syntax_tree->string.length);
-					if(dsdt_aml_syntax_tree->string.length == dsdt_aml.length)
-					{
-						unsigned short pm1_cnt_slp_typ = get_aml_s5_pm1_cnt_slp_typ(dsdt_aml_syntax_tree);
-						unsigned short pm1a_cnt_slp_typ = pm1_cnt_slp_typ & 0x00ff;
-						unsigned short pm1b_cnt_slp_typ = pm1_cnt_slp_typ >> 8;
-						printf_serial("pm1a_cnt_slp_typ = %#06.4x\n", pm1a_cnt_slp_typ);
-						printf_serial("pm1b_cnt_slp_typ = %#06.4x\n", pm1b_cnt_slp_typ);
-						// Shutdown command
-						outw(fadt->pm1a_cnt_blk, pm1a_cnt_slp_typ << 10 | 0x2000);
-						if(fadt->pm1b_cnt_blk)outw(fadt->pm1b_cnt_blk, pm1b_cnt_slp_typ << 10 | 0x2000);
-						// Shutdown wait
-						while(true);
-					}
-					else
-					{
-						printf_serial("next bytes\n");
-						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_serial(" %02.2x", *aml_byte);
-						printf_serial("\n");
-						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_serial(" %c ", 0x20 <= *aml_byte && *aml_byte < 0x7f ? *aml_byte : ' ');
-						printf_serial("\n");
-					}
-					delete_aml_symbol(dsdt_aml_syntax_tree);
-					printf_serial("DSDT AML syntax tree is deleted.\n");
+					unsigned short pm1_cnt_slp_typ = get_aml_s5_pm1_cnt_slp_typ(dsdt_aml);
+					unsigned short pm1a_cnt_slp_typ = pm1_cnt_slp_typ & 0x00ff;
+					unsigned short pm1b_cnt_slp_typ = pm1_cnt_slp_typ >> 8;
+					printf_serial("pm1a_cnt_slp_typ = %#06.4x\n", pm1a_cnt_slp_typ);
+					printf_serial("pm1b_cnt_slp_typ = %#06.4x\n", pm1b_cnt_slp_typ);
+					// Shutdown command
+					outw(fadt->pm1a_cnt_blk, pm1a_cnt_slp_typ << 10 | 0x2000);
+					if(fadt->pm1b_cnt_blk)outw(fadt->pm1b_cnt_blk, pm1b_cnt_slp_typ << 10 | 0x2000);
+					// Shutdown wait
+					while(true);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.

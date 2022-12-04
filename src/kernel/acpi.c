@@ -9309,82 +9309,18 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 	return acpi_memory_region_descriptor;
 }
 
-AMLSymbol const *get_aml_def_name(char const *name, AMLSymbol const *aml_symbol)
+AMLSymbol const *get_aml_def_name(char const *name, AMLSubstring aml)
 {
-	AMLSymbol const *def_name = NULL;
-	AMLSymbol const *def_name_in_def_device = NULL;
-	AMLSymbol const *def_name_in_def_else = NULL;
-	AMLSymbol const *def_name_in_def_if_else = NULL;
-	AMLSymbol const *def_name_in_def_method = NULL;
-	AMLSymbol const *def_name_in_def_scope = NULL;
-	AMLSymbol const *def_name_in_def_while = NULL;
-	AMLSymbol const *def_name_in_name_space_modifier_obj = NULL;
-	AMLSymbol const *def_name_in_named_obj = NULL;
-	AMLSymbol const *def_name_in_object = NULL;
-	AMLSymbol const *def_name_in_statement_opcode = NULL;
-	AMLSymbol const *def_name_in_term_list = NULL;
-	AMLSymbol const *def_name_in_term_obj = NULL;
-	if(!name || !aml_symbol)return NULL;
-	switch(aml_symbol->type)
+	for(unsigned char const *name_string_initial = aml.initial; name_string_initial != aml.initial + aml.length; name_string_initial++)if(strncmp(name, (char const *)name_string_initial, strlen(name)))
 	{
-	case aml_def_device:
-		return get_aml_def_name(name, aml_symbol->component.def_device.term_list);
-	case aml_def_else:
-		return get_aml_def_name(name, aml_symbol->component.def_else.term_list);
-	case aml_def_if_else:
-		def_name_in_term_list = get_aml_def_name(name, aml_symbol->component.def_if_else.term_list);
-		def_name_in_def_else = get_aml_def_name(name, aml_symbol->component.def_if_else.def_else);
-		if(def_name_in_term_list)return def_name_in_term_list;
-		if(def_name_in_def_else)return def_name_in_def_else;
-		return NULL;
-	case aml_def_method:
-		return get_aml_def_name(name, aml_symbol->component.def_method.term_list);
-	case aml_def_name:
-		if(!strcmp(name, aml_symbol->component.def_name.name_string->component.name_string.string))return aml_symbol;
-		else return NULL;
-	case aml_def_scope:
-		return get_aml_def_name(name, aml_symbol->component.def_scope.term_list);
-	case aml_def_while:
-		return get_aml_def_name(name, aml_symbol->component.def_while.term_list);
-	case aml_name_space_modifier_obj:
-		def_name = get_aml_def_name(name, aml_symbol->component.name_space_modifier_obj.def_name);
-		def_name_in_def_scope = get_aml_def_name(name, aml_symbol->component.name_space_modifier_obj.def_scope);
-		if(def_name)return def_name;
-		if(def_name_in_def_scope)return def_name_in_def_scope;
-		return NULL;
-	case aml_named_obj:
-		def_name_in_def_device = get_aml_def_name(name, aml_symbol->component.named_obj.def_device);
-		def_name_in_def_method = get_aml_def_name(name, aml_symbol->component.named_obj.def_method);
-		if(def_name_in_def_device)return def_name_in_def_device;
-		if(def_name_in_def_method)return def_name_in_def_method;
-		return NULL;
-	case aml_object:
-		def_name_in_named_obj = get_aml_def_name(name, aml_symbol->component.object.named_obj);
-		def_name_in_name_space_modifier_obj = get_aml_def_name(name, aml_symbol->component.object.name_space_modifier_obj);
-		if(def_name_in_named_obj)return def_name_in_named_obj;
-		if(def_name_in_name_space_modifier_obj)return def_name_in_name_space_modifier_obj;
-		return NULL;
-	case aml_statement_opcode:
-		def_name_in_def_if_else = get_aml_def_name(name, aml_symbol->component.statement_opcode.def_if_else);
-		def_name_in_def_while = get_aml_def_name(name, aml_symbol->component.statement_opcode.def_while);
-		if(def_name_in_def_if_else)return def_name_in_def_if_else;
-		if(def_name_in_def_while)return def_name_in_def_while;
-		return NULL;
-	case aml_term_list:
-		def_name_in_term_list = get_aml_def_name(name, aml_symbol->component.term_list.term_list);
-		def_name_in_term_obj = get_aml_def_name(name, aml_symbol->component.term_list.term_obj);
-		if(def_name_in_term_list)return def_name_in_term_list;
-		if(def_name_in_term_obj)return def_name_in_term_obj;
-		return NULL;
-	case aml_term_obj:
-		def_name_in_object = get_aml_def_name(name, aml_symbol->component.term_obj.object);
-		def_name_in_statement_opcode = get_aml_def_name(name, aml_symbol->component.term_obj.statement_opcode);
-		if(def_name_in_object)return def_name_in_object;
-		if(def_name_in_statement_opcode)return def_name_in_statement_opcode;
-		return NULL;
-	default:
-		return NULL;
+		unsigned char const *def_name_initial = name_string_initial - 1;
+		if(*def_name_initial != AML_BYTE_NAME_OP)continue;
+		AMLSubstring def_name_aml;
+		def_name_aml.initial = def_name_initial;
+		def_name_aml.length = (unsigned int)aml.initial + aml.length - (unsigned int)def_name_initial;
+		return analyse_aml_def_name(NULL, def_name_aml);
 	}
+	return NULL;
 }
 
 AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_symbol, AMLSymbol const *searched)
@@ -9466,9 +9402,9 @@ AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_sy
 	else return NULL;
 }
 
-AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol)
+AMLSymbol const *get_aml_s5_package(AMLSubstring aml)
 {
-	AMLSymbol const *s5_def_name = get_aml_def_name("_S5_", aml_symbol);
+	AMLSymbol const *s5_def_name = get_aml_def_name("_S5_", aml);
 	AMLSymbol const *s5_data_ref_object = s5_def_name->component.def_name.data_ref_object;
 	AMLSymbol const *s5_data_object;
 	if(!s5_data_ref_object)return NULL;
@@ -9477,11 +9413,11 @@ AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol)
 	return s5_data_object->component.data_object.def_package;
 }
 
-unsigned short get_aml_s5_pm1_cnt_slp_typ(AMLSymbol const *aml_symbol)
+unsigned short get_aml_s5_pm1_cnt_slp_typ(AMLSubstring aml)
 {
 	unsigned char pm1a_cnt_slp_typ = 0;
 	unsigned char pm1b_cnt_slp_typ = 0;
-	AMLSymbol const *s5_package = get_aml_s5_package(aml_symbol);
+	AMLSymbol const *s5_package = get_aml_s5_package(aml);
 	AMLSymbol const *s5_package_element_list = s5_package->component.def_package.package_element_list;
 	AMLSymbol const *s5_pm1a_cnt_slp_typ_package_element = s5_package_element_list->component.package_element_list.package_element;
 	AMLSymbol const *s5_pm1a_cnt_slp_typ_data_ref_object = s5_pm1a_cnt_slp_typ_package_element->component.package_element.data_ref_object;
