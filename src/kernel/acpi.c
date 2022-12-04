@@ -9311,7 +9311,7 @@ MemoryRegionDescriptor get_acpi_memory_region_descriptor(void)
 
 AMLSymbol const *get_aml_def_name(char const *name, AMLSubstring aml)
 {
-	for(unsigned char const *name_string_initial = aml.initial; name_string_initial != aml.initial + aml.length; name_string_initial++)if(strncmp(name, (char const *)name_string_initial, strlen(name)))
+	for(unsigned char const *name_string_initial = aml.initial; name_string_initial != aml.initial + aml.length; name_string_initial++)if(!strncmp(name, (char const *)name_string_initial, strlen(name)))
 	{
 		unsigned char const *def_name_initial = name_string_initial - 1;
 		if(*def_name_initial != AML_BYTE_NAME_OP)continue;
