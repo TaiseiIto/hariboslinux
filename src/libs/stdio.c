@@ -55,6 +55,17 @@ int printf(const char *format, ...)
 	return length;
 }
 
+char putc(char c, unsigned int file_descriptor)
+{
+	system_call_write(file_descriptor, &c, 1);
+	return c;
+}
+
+char putchar(char c)
+{
+	return putc(c, STDOUT);
+}
+
 int puts(char const *string)
 {
 	return fputs(string, STDOUT);

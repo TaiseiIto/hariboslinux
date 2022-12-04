@@ -3,7 +3,7 @@
 
 typedef struct
 {
-	unsigned short memory_size;	// MiB
+	unsigned short highest_memory_segment; // highest usable memory segment on 16bit mode
 	unsigned char keyboard_state;
 	unsigned char last_loaded_cylinder;
 	unsigned char last_loaded_head;

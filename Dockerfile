@@ -1,10 +1,14 @@
 FROM ubuntu
-RUN apt update
 
-# gcc, git, ld, make, etc.
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt update
+# gcc, ld, make, etc.
 RUN apt install build-essential -y
 # bison
 RUN apt install bison -y
+# dejagnu
+RUN apt install dejagnu -y
 # expat
 RUN apt install libexpat-dev -y
 # flex
@@ -18,6 +22,8 @@ RUN mkdir /root/.ssh
 RUN apt install libglib2.0-dev -y
 # gmp
 RUN apt install libgmp-dev -y
+# iasl
+RUN apt install iasl -y
 # pixman
 RUN apt install libpixman-1-dev -y
 # ninja
@@ -30,6 +36,9 @@ RUN apt install pkg-config -y
 RUN apt install texinfo -y
 # tmux
 RUN apt install tmux -y
+# tzdata
+RUN apt install tzdata -y
+RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 # editor
 RUN apt install vim -y
 # wget

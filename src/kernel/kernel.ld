@@ -1,7 +1,7 @@
 ENTRY(main);
 OUTPUT_FORMAT("binary");
 
-BASE = 0x00106000;
+BASE = 0x00106e00;
 
 SECTIONS
 {
@@ -9,7 +9,9 @@ SECTIONS
 	.text :
 	{
 		main.o(.text)
+		acpi.o(.text)
 		beep.o(.text)
+		bios.o(.text)
 		chain_string.o(.text)
 		cmos.o(.text)
 		console.o(.text)
@@ -52,7 +54,9 @@ SECTIONS
 	.rodata :
 	{
 		main.o(.rodata)
+		acpi.o(.rodata)
 		beep.o(.rodata)
+		bios.o(.rodata)
 		chain_string.o(.rodata)
 		cmos.o(.rodata)
 		console.o(.rodata)
@@ -95,7 +99,9 @@ SECTIONS
 	.data :
 	{
 		main.o(.data)
+		acpi.o(.data)
 		beep.o(.data)
+		bios.o(.data)
 		chain_string.o(.data)
 		cmos.o(.data)
 		console.o(.data)
@@ -138,7 +144,9 @@ SECTIONS
 	.bss :
 	{
 		main.o(.bss)
+		acpi.o(.bss)
 		beep.o(.bss)
+		bios.o(.bss)
 		chain_string.o(.bss)
 		cmos.o(.bss)
 		console.o(.bss)
@@ -181,7 +189,9 @@ SECTIONS
 	COMMON :
 	{
 		main.o(COMMON)
+		acpi.o(COMMON)
 		beep.o(COMMON)
+		bios.o(COMMON)
 		chain_string.o(COMMON)
 		cmos.o(COMMON)
 		console.o(COMMON)

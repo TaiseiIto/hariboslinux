@@ -77,6 +77,8 @@ main:
 	andl	$0x7fffffff,%eax
 	orl	$0x00000001,%eax
 	movl	%eax,	%cr0
+	jmp	5f
+5:
 	movw	$0x0008,%dx
 	movw	%dx,	%ds
 	movw	%dx,	%es
@@ -85,7 +87,7 @@ main:
 	movw	%dx,	%ss
 	movl	$0x00007c00,%ebp
 	movl	$0x00007c00,%esp
-	jmp	$0x10,	$dplydisk
+	ljmp	$0x0010,$dplydisk
 
 				# // print LF
 new_line_serial:		# void new_line_serial(void);
@@ -113,8 +115,7 @@ print_serial:			# void print_serial(char *string);
 	movw	%sp,	%di
 	movw	0x04(%bp),%si
 1:				# put loop
-	xorb	%ah,	%ah
-	movb	(%si),	%al
+	movzxb	(%si),	%ax
 	cmpb	$0x00,	%al
 	je	2f		# finish putting all characters
 	movw	%ax,	(%di)
@@ -203,7 +204,7 @@ gdt:
 	.byte	0xcf		#  limit_high
 	.byte	0x00		#  base_high
 gdtr:
-	.word	0x0017		# 3 segment descriptors * 8 bytes per segment descriptor - 1
+	.word	(gdtr) - (gdt) - 1	# limit of GDT
 	.long	gdt
 disable_interrupts_message:
 	.string "disable interrupts\n"

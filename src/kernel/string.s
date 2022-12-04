@@ -8,15 +8,19 @@
 	.globl	memset
 	.globl	strchr
 	.globl	strcmp
+	.globl	strncmp
 	.globl	strcpy
+	.globl	strncpy
 	.globl	strlen
 
-	.type	memcpy,	@function
-	.type	memset,	@function
-	.type	strchr,	@function
-	.type	strcmp,	@function
-	.type	strcpy,	@function
-	.type	strlen,	@function
+	.type	memcpy,		@function
+	.type	memset,		@function
+	.type	strchr,		@function
+	.type	strcmp,		@function
+	.type	strncmp,	@function
+	.type	strcpy,		@function
+	.type	strncpy,	@function
+	.type	strlen,		@function
 
 	.text
 
@@ -169,15 +173,15 @@ strcmp:
 	call	strlen			# EAX = strlen(string2);
 	addl	$0x00000008,%esp
 3:	# Choose shorter string length.
-	cmpl	%ebx,	%eax		# if(strlen(string2) < strlen(string1))EAX = strlen(string2);
-	jbe	4f			# if(strlen(string1) <= strlen(string2))goto 4;
-	movl	%ebx,	%eax		# EAX = strlen(string2);
+	cmpl	%ebx,	%eax		# if(strlen(string1) < strlen(string2))EAX = strlen(string1);
+	jbe	4f			# if(strlen(string2) <= strlen(string1))goto 4;
+	movl	%ebx,	%eax		# EAX = strlen(string1);
 4:	# Compare the strings.
 	movl	%eax,	%ecx		# ECX = min(strlen(string1), strlen(string2));
 	incl	%ecx			# ECX = min(strlen(string1), strlen(string2)) + 1;
 	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
-	ja	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
-	jb	6f			# if(*(char *)EDI < *(char *)ESI)
+	jb	5f			# if(*(char *)ESI < *(char *)EDI)goto 5f;
+	ja	6f			# if(*(char *)EDI < *(char *)ESI)goto 6f;
 	# if(*(char *)ESI == *(char *)EDI)return 0;
 	xorl	%eax,	%eax
 	jmp	7f
@@ -191,6 +195,47 @@ strcmp:
 	popl	%edi
 	popl	%ebx
 8:	# End of the function.
+	leave
+	ret
+
+# int strncmp
+# (
+# 	char const *string1,	// 0x08(%ebp)
+# 	char const *string2,	// 0x0c(%ebp)
+# 	size_t     n		// 0x10(%ebp)
+# );
+strncmp:
+0:	# Start of the function.
+	pushl	%ebp
+	movl	%esp,	%ebp
+1:	# Save preserved registers.
+	pushl	%ebx
+	pushl	%edi
+	pushl	%esi
+2:	# Load the arguments.
+	movl	0x08(%ebp),%esi		# ESI = string1;
+	movl	0x0c(%ebp),%edi		# EDI = string2;
+	movl	0x10(%ebp),%ecx		# ECX = n;
+3:	# if(n == 0)return 0;
+	testl	%ecx,	%ecx
+	jz	5f
+4:	# Compare the strings.
+	repe	cmpsb			# while(ECX--)if(*((char *)ESI)++ != *((char *)EDI)++)break;
+	jb	6f			# if(*(char *)ESI < *(char *)EDI)goto 4f;
+	ja	7f			# if(*(char *)EDI < *(char *)ESI)goto 5f;
+5:	# if(*(char *)ESI == *(char *)EDI)return 0;
+	xorl	%eax,	%eax
+	jmp	8f
+6:	# if(*(char *)ESI < *(char *)EDI)return -1;
+	movl	$0xffffffff,%eax
+	jmp	8f
+7:	# if(*(char *)EDI < *(char *)ESI)return 1;
+	movl	$0x00000001,%eax
+8:	# Restore preserved registers.
+	popl	%esi
+	popl	%edi
+	popl	%ebx
+9:	# End of the function.
 	leave
 	ret
 
@@ -213,6 +258,54 @@ strcpy:
 	pushl	0x08(%ebp)
 	call	memcpy
 3:	# End of the function.
+	leave
+	ret
+
+# char *strncpy
+# (
+#	char *destination,	// 0x08(%ebp)
+#	char const *source,	// 0x0c(%ebp)
+#	size_t n		// 0x10(%ebp)
+# );
+strncpy:
+0:	# Start of the function.
+	pushl	%ebp
+	movl	%esp,	%ebp
+	subl	$0x00000010,%esp
+1:
+	movl	0x0c(%ebp),%edx		# EDX = source;
+	movl	%edx,	(%esp)
+	call	strlen			# EAX = strlen(source);
+	incl	%eax			# EAX = strlen(source) + 1;
+	movl	%eax,	0x0c(%esp)	# ESP[0x0c] = strlen(source) + 1;
+	cmpl	0x10(%ebp),%eax		# strlen(source) + 1 - n;
+	jae	3f
+2:	# if(strlen(source) + 1 < n)
+	movl	0x08(%ebp),%edx		# EDX = destination;
+	movl	%edx,	(%esp)		# ESP[0x00] = destination;
+	movl	0x0c(%ebp),%edx		# EDX = source;
+	movl	%edx,	0x04(%esp)	# ESP[0x04] = source;
+	call	strcpy			# strcpy(destination, source);
+	movl	0x08(%ebp),%edx		# EDX = destination;
+	addl	0x0c(%esp),%edx		# EDX = destination + strlen(source) + 1;
+	movl	%edx,	(%esp)		# ESP[0x00] = destination + strlen(source) + 1;
+	movl	$0x00000000,0x04(%esp)	# ESP[0x04] = 0;
+	movl	0x10(%ebp),%edx		# EDX = n;
+	subl	0x0c(%esp),%edx		# EDX = n - (strlen(source) + 1);
+	movl	%edx,	0x08(%esp)	# ESP[0x08] = n - (strlen(source) + 1);
+	call	memset			# memset(destination + strlen(source) + 1, 0, n - (strlen(source) + 1));
+	jmp	4f
+3:	# if(strlen(source) + 1 >= n)
+	movl	0x08(%ebp),%edx		# EDX = destination;
+	movl	%edx,	(%esp)		# ESP[0x00] = destination;
+	movl	0x0c(%ebp),%edx		# EDX = source;
+	movl	%edx,	0x04(%esp)	# ESP[0x04] = source;
+	movl	0x10(%ebp),%edx		# EDX = n;
+	movl	%edx,	0x08(%esp)	# ESP[0x08] = n;
+	call	memcpy
+4:	# End of the function.
+	movl	0x0c(%ebp),%eax		# EAX = source;
+	addl	$0x00000010,%esp
 	leave
 	ret
 

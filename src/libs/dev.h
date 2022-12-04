@@ -1,6 +1,8 @@
 #ifndef _DEV_H_
 #define _DEV_H_
 
+#include "stddef.h"
+
 #define CHAR_WIDTH 0x08
 #define CHAR_HEIGHT 0x10
 
@@ -230,6 +232,7 @@ typedef struct
 void clear_console(void);
 unsigned int create_timer(unsigned long long estimated_count, unsigned long long interval_count);
 unsigned int create_window(char const *title, short x, short y, unsigned short width, unsigned short height);
+void decode_aml(unsigned char const *aml, size_t length);
 ApplicationEvent dequeue_application_event(void);
 void draw_line_window(unsigned int window, short x1, short y1, short x2, short y2, Color color);
 void exit_console(void);
@@ -241,6 +244,8 @@ void print_window(unsigned int window, short x, short y, Color foreground, Color
 void printf_window(unsigned int window, short x, short y, Color foreground, Color background, char const *string, ...);
 void process_event(void);
 void put_dot_window(unsigned int window, unsigned short x, unsigned short y, Color color);
+void save_disk(void);
+void shutdown(void);
 
 #endif
 

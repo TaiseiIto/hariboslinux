@@ -161,7 +161,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 	printf_serial("Hello, Console Task!\n");
 	task = get_current_task();
 	event_queue = create_event_queue(task);
-	window = create_window("Console", console_task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0200, 0x0200, event_queue);
+	window = create_window("Console", console_task_argument->background_sheet, 8 * task->segment_selector, 8 * task->segment_selector, 0x0400, 0x0400, event_queue);
 	make_sheet_console(window->client_sheet, foreground_color, background_color);
 	while(true)
 	{
@@ -212,7 +212,7 @@ void console_task_procedure(ConsoleTaskArgument *console_task_argument)
 			switch(task_return->task_type)
 			{
 			case TASK_TYPE_COMMAND:
-				clean_up_command_task(event->event_union.task_deletion_response_event.arguments);
+				clean_up_command_task(event->event_union.task_deletion_response_event.task, event->event_union.task_deletion_response_event.arguments);
 				break;
 			default:
 				ERROR(); // Invalid task type

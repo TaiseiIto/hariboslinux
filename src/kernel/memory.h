@@ -2,9 +2,12 @@
 #define _MEMORY_H_
 
 #include "stddef.h"
-
+#define MEMORY_MAP_BIOS_DATA_AREA	((void*)0x00000400)
 #define MEMORY_MAP_VIDEO_INFORMATION	((void*)0x00000600)
 #define MEMORY_MAP_BOOT_INFORMATION	((void*)0x00000800)
+#define MEMORY_MAP_MEMORY_INFORMATION	((void*)0x00000900)
+#define MEMORY_MAP_BIOS_BUFFER		((void*)0x00007a00)
+#define MEMORY_MAP_CALL_BIOS		((void*)0x00007c00)
 #define MEMORY_MAP_LOADED_DISK_BEGIN	((void*)0x00100000)
 #define MEMORY_MAP_BOOT_SECTOR_BEGIN	((void*)0x00100000)
 #define MEMORY_MAP_BOOT_SECTOR_END	((void*)0x00100200)
@@ -24,7 +27,7 @@
 #define MEMORY_MAP_MV2PRTMD_BIN_END	((void*)0x00105c00)
 #define MEMORY_MAP_DPLYDISK_BIN_BEGIN	((void*)0x00105c00)
 #define MEMORY_MAP_DPLYDISK_BIN_END	((void*)0x00106000)
-#define MEMORY_MAP_KERNEL_BIN_BEGIN	((void*)0x00106000)
+#define MEMORY_MAP_KERNEL_BIN_BEGIN	((void*)0x00106e00)
 #define MEMORY_MAP_LOADED_DISK_END	((void*)0x00268000)
 #define MEMORY_MAP_IDT_BEGIN		((void*)0x00268000)
 #define MEMORY_MAP_IDT_END		((void*)0x00268800)
@@ -43,11 +46,13 @@ typedef struct _MemorySection
 	#define MEMORY_SECTION_ALLOCATED 0x01
 } MemorySection;
 
-typedef struct
+typedef struct _MemoryRegionDescriptor
 {
 	unsigned long long base;
 	unsigned long long length;
 	unsigned int type;
+	#define MEMORY_REGION_AVAILABLE	0x01
+	#define MEMORY_REGION_ACPI	0x03
 	unsigned int attribute;
 } MemoryRegionDescriptor;
 

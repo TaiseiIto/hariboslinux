@@ -6,7 +6,7 @@
 
 #define _STRING(x) #x
 #define _STRING2(x) _STRING(x)
-#define ERROR() puts("ERROR " __FILE__ " : " _STRING2(__LINE__) "\n")
+#define ERROR() puts("ERROR " __FILE__ " : " _STRING2(__LINE__))
 
 typedef struct _FileIntormation
 {
@@ -38,6 +38,8 @@ size_t fread(void *buffer, size_t size, size_t number, unsigned int file_descrip
 int fputs(char const *string, unsigned int file_descriptor);
 size_t fwrite(void const *buffer, size_t size, size_t number, unsigned int file_descriptor);
 int printf(const char *format, ...);
+char putc(char c, unsigned int file_descriptor);
+char putchar(char c);
 int puts(char const *string);
 
 #endif

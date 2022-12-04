@@ -1,8 +1,10 @@
 gdb/i386-32bit.xml
 makeout.txt
 serialout.txt
+*.aml
 *.bin
 *.com
+*.dsl
 *.exe
 *.img
 *.map

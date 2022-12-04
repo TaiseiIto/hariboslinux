@@ -10,6 +10,9 @@ SECTIONS
 	.text :
 	{
 		loaddisk.o(.text)
+	}
+	.data :
+	{
 		loaddisk.o(.data)
 	}
 	/DISCARD/ :

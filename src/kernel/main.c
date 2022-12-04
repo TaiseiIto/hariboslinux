@@ -18,6 +18,7 @@
 #include "serial.h"
 #include "sheet.h"
 #include "stdio.h"
+#include "string.h"
 #include "task.h"
 #include "text_box.h"
 #include "timer.h"
@@ -79,6 +80,12 @@ int main(void)
 	print_serial("finish init_serial_interrupt() and sti_task()\n\n");
 	init_file_system();
 	init_shells();
+	// Deploy callbios.bin
+	char const * const call_bios_bin_name = "callbios.bin";
+	unsigned int call_bios_bin_size = get_file_size(call_bios_bin_name);
+	void *call_bios_bin = load_file(call_bios_bin_name);
+	memcpy(MEMORY_MAP_CALL_BIOS, call_bios_bin, call_bios_bin_size);
+	free(call_bios_bin);
 	// Init background sheet
 	init_sheets(&background_sheet, background_sheet_procedure, &mouse_cursor_sheet, event_queue);
 	background_color.red = 0x00;
@@ -100,7 +107,7 @@ int main(void)
 	do
 	{
 		memory_region_descriptor = get_memory_region_descriptor(memory_region_descriptor_index);
-		printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "base = %#018llx, length = %#018llx, type = %#010x, attribute = %#010x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
+		printf_sheet(background_sheet, 0x0000, screen_text_row++ * CHAR_HEIGHT, foreground_color, background_color, "base = %#018.16llx, length = %#018.16llx, type = %#010.8x, attribute = %#010.8x\n", memory_region_descriptor.base, memory_region_descriptor.length, memory_region_descriptor.type, memory_region_descriptor.attribute);
 		memory_region_descriptor_index++;
 	} while(memory_region_descriptor.base != 0 || memory_region_descriptor.length != 0 || memory_region_descriptor.type != 0 || memory_region_descriptor.attribute != 0);
 	checking_free_memory_space_size_timer = create_timer(0, 100, event_queue, NULL, NULL, NULL);
@@ -253,7 +260,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			break;
 		case KEY_C:
 			// Open a new console by pressing 'c'
-			console_task = create_task(get_current_task(), (void (*)(void *))console_task_procedure, 0x00010000, TASK_PRIORITY_SHELL);
+			console_task = create_task(get_current_task(), (void (*)(void *))console_task_procedure, 0x00100000, TASK_PRIORITY_SHELL);
 			console_task_argument = malloc(sizeof(*console_task_argument));
 			console_task_argument->background_sheet = sheet;
 			console_task_return = malloc(sizeof(*console_task_return));
@@ -319,7 +326,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			printf_serial("Detect console task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
 			break;
 		case TASK_TYPE_COMMAND:
-			clean_up_command_task(event->event_union.task_deletion_response_event.arguments);
+			clean_up_command_task(event->event_union.task_deletion_response_event.task, event->event_union.task_deletion_response_event.arguments);
 			break;
 		case TASK_TYPE_TEST:
 			printf_serial("Detect test task deletion response, segment selector = %#06x.\n", event->event_union.task_deletion_response_event.segment_selector);
