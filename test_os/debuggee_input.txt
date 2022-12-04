@@ -1,0 +1,8 @@
+target remote localhost:2159
+break *0x7c10
+continue
+delete 1
+info float
+quit
+y
+

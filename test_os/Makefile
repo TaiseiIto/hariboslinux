@@ -7,9 +7,9 @@ TEST_OS_OBJ = $(TEST_OS_NAME).o
 
 all: $(TEST_OS_IMG)
 
-test: $(TEST_OS_IMG) stop-qemu
+debug: $(TEST_OS_IMG) stop-qemu
 	(qemu-system-i386 -boot order=a -drive file=$<,format=raw,if=floppy -S -gdb tcp::2159 -vnc localhost:0 &) && \
-	gdb && \
+	gdb gdb && \
 	make stop-qemu
 
 stop-qemu:

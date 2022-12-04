@@ -72,6 +72,7 @@ RUN cat ash/.profile >> /root/.bashrc
 
 # gdb setting
 RUN echo add-auto-load-safe-path `pwd`/gdb/.gdbinit > /root/.gdbinit
+RUN echo add-auto-load-safe-path `pwd`/test_os/.gdbinit > /root/.gdbinit
 RUN echo set print elements 0 >> /root/.gdbinit
 
 # gdb real mode disassemble
