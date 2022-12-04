@@ -139,6 +139,23 @@ typedef struct _SystemCallStatus
 	struct _SystemCallStatus *next;
 } SystemCallStatus;
 
+typedef struct _ACPICommandDecodeAML
+{
+	AMLSubstring aml;
+} ACPICommandDecodeAML;
+
+typedef union _ACPICommandArguments
+{
+	ACPICommandDecodeAML decode_aml;
+} ACPICommandArguments;
+
+typedef struct _ACPICommand
+{
+	ACPICommandArguments arguments;
+	unsigned char type;
+	#define ACPI_COMMAND_DECODE_AML	0x00
+} ACPICommand;
+
 typedef struct _ConsoleCommand
 {
 	unsigned char type;
@@ -579,7 +596,35 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 			}
 			break;
 		default:
-			if(!strcmp(file_descriptor->file_name, console_file_name)) // Control the console.
+			if(!strcmp(file_descriptor->file_name, acpi_file_name)) // Control ACPI.
+			{
+				ACPICommand const * const command = buffer;
+				switch(command->type)
+				{
+					AMLSubstring aml;
+					AMLSymbol *aml_syntax_tree;
+				case ACPI_COMMAND_DECODE_AML:
+					aml = command->arguments.decode_aml.aml;
+					aml.initial += application_memory;
+					aml.initial += sizeof(ACPITableHeader);
+					aml.length -= sizeof(ACPITableHeader);
+					aml_syntax_tree = analyse_aml_term_list(NULL, aml);
+					if(aml_syntax_tree->string.length < aml.length)
+					{
+						printf_serial("---------- read bytes ----------\n");
+						for(unsigned int i = 0; i < aml_syntax_tree->string.length; i++)printf_serial("%02.2x%c", aml.initial[i], (i + 1) % 0x10 ? ' ' : '\n');
+						printf_serial("\n---------- unread bytes ----------\n");
+						for(unsigned int i = aml_syntax_tree->string.length; i < aml.length; i++)printf_serial("%02.2x%c", aml.initial[i], (i - aml_syntax_tree->string.length + 1) % 0x10 ? ' ' : '\n');
+						printf_serial("\n");
+					}
+					delete_aml_symbol(aml_syntax_tree);
+					break;
+				default:
+					ERROR(); // Invalid acpi command.
+					break;
+				}
+			}
+			else if(!strcmp(file_descriptor->file_name, console_file_name)) // Control the console.
 			{
 				Console *console;
 				TextBox *text_box;
@@ -626,7 +671,6 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					ACPITableHeader const *dsdt_header;
 					ACPITableHeader const *rsdt_header;
 					AMLSubstring dsdt_aml;
-					AMLSymbol *dsdt_aml_syntax_tree;
 					FADT const *fadt;
 				case CPU_COMMAND_HLT:
 					if(!task->event_queue->read_head)sleep_task(task);
@@ -706,48 +750,17 @@ int system_call_write(FileDescriptor *file_descriptor, void const *buffer, size_
 					dsdt_header = get_dsdt_header();
 					PRINT_ACPI_TABLE_HEADER_P(dsdt_header);
 					dsdt_aml = get_dsdt_aml();
-					printf_serial("---------- DSDT AML SYNTAX TREE ----------\n");
-					dsdt_aml_syntax_tree = create_dsdt_aml_syntax_tree();
-					print_aml_symbol(dsdt_aml_syntax_tree);
 					printf_serial("dsdt_aml.length = %#010.8x\n", dsdt_aml.length);
-					printf_serial("number of read bytes = %#010.8x\n", dsdt_aml_syntax_tree->string.length);
-					printf_serial("---------- read bytes ----------\n");
-					for(unsigned int row = 0; row <= (dsdt_aml_syntax_tree->string.length - 1) / 0x10; row++)
-					{
-						unsigned int aml_index_begin = 0x10 * row;
-						unsigned int aml_index_end = min(0x10 * (row + 1), dsdt_aml_syntax_tree->string.length);
-						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)printf_serial("%02.2x ", dsdt_aml_syntax_tree->string.initial[aml_index]);
-						printf_serial("\n");
-						for(unsigned int aml_index = aml_index_begin; aml_index < aml_index_end; aml_index++)
-						{
-							unsigned char aml_byte = dsdt_aml_syntax_tree->string.initial[aml_index];
-							printf_serial(" %c ", 0x20 <= aml_byte && aml_byte < 0x7f ? aml_byte : ' ');
-						}
-						printf_serial("\n");
-					}
-					if(dsdt_aml_syntax_tree->string.length == dsdt_aml.length)
-					{
-						unsigned short pm1_cnt_slp_typ = get_aml_s5_pm1_cnt_slp_typ(dsdt_aml_syntax_tree);
-						unsigned short pm1a_cnt_slp_typ = pm1_cnt_slp_typ & 0x00ff;
-						unsigned short pm1b_cnt_slp_typ = pm1_cnt_slp_typ >> 8;
-						printf_serial("pm1a_cnt_slp_typ = %#06.4x\n", pm1a_cnt_slp_typ);
-						printf_serial("pm1b_cnt_slp_typ = %#06.4x\n", pm1b_cnt_slp_typ);
-						// Shutdown command
-						outw(fadt->pm1a_cnt_blk, pm1a_cnt_slp_typ << 10 | 0x2000);
-						if(fadt->pm1b_cnt_blk)outw(fadt->pm1b_cnt_blk, pm1b_cnt_slp_typ << 10 | 0x2000);
-						// Shutdown wait
-						while(true);
-					}
-					else
-					{
-						printf_serial("next bytes\n");
-						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_serial(" %02.2x", *aml_byte);
-						printf_serial("\n");
-						for(unsigned char const *aml_byte = dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length; aml_byte != dsdt_aml_syntax_tree->string.initial + dsdt_aml_syntax_tree->string.length + 0x10; aml_byte++)printf_serial(" %c ", 0x20 <= *aml_byte && *aml_byte < 0x7f ? *aml_byte : ' ');
-						printf_serial("\n");
-					}
-					delete_aml_symbol(dsdt_aml_syntax_tree);
-					printf_serial("DSDT AML syntax tree is deleted.\n");
+					unsigned short pm1_cnt_slp_typ = get_aml_s5_pm1_cnt_slp_typ(dsdt_aml);
+					unsigned short pm1a_cnt_slp_typ = pm1_cnt_slp_typ & 0x00ff;
+					unsigned short pm1b_cnt_slp_typ = pm1_cnt_slp_typ >> 8;
+					printf_serial("pm1a_cnt_slp_typ = %#06.4x\n", pm1a_cnt_slp_typ);
+					printf_serial("pm1b_cnt_slp_typ = %#06.4x\n", pm1b_cnt_slp_typ);
+					// Shutdown command
+					outw(fadt->pm1a_cnt_blk, pm1a_cnt_slp_typ << 10 | 0x2000);
+					if(fadt->pm1b_cnt_blk)outw(fadt->pm1b_cnt_blk, pm1b_cnt_slp_typ << 10 | 0x2000);
+					// Shutdown wait
+					while(true);
 					break;
 				default:
 					ERROR(); // Invalid CPU command.

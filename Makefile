@@ -13,11 +13,15 @@ endif
 # floppy disk image file of the built operating system
 IMAGE_FILE = haribos.img
 BOOT_SECTORS = diskcontents/bootsector.bin
+# AMLS
+AML_SOURCES = $(wildcard diskcontents/*dsdt.txt)
+AMLS = $(AML_SOURCES:.txt=.aml)
+ASLS = $(AMLS:.aml=.dsl)
 # Applications
 APP_NAMES = $(shell for i in `ls -d src/apps/*/`; do basename $$i; done)
 APPS = $(shell for i in $(APP_NAMES); do echo diskcontents/$${i}.com; done)
 # files included in the floppy disk
-FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/lddskxtr.bin diskcontents/kernel.bin diskcontents/callbios.bin $(APPS) diskcontents/test0.txt diskcontents/test1.txt diskcontents/test2.txt diskcontents/test3.txt diskcontents/test4.txt
+FLOPPY_FILES = diskcontents/loaddisk.bin diskcontents/getmemmp.bin diskcontents/initscrn.bin diskcontents/mv2prtmd.bin diskcontents/dplydisk.bin diskcontents/lddskxtr.bin diskcontents/kernel.bin diskcontents/callbios.bin $(AMLS) $(APPS)
 
 # tcp ports
 DEBUG_PORT = 2159
@@ -64,10 +68,12 @@ MAKE_OUT = makeout.txt
 # build the operating system
 all: build
 
+# convert from AML to ASL
+
 build: $(IMAGE_FILE)
 
 clean:
-	rm -f diskcontents/*.bin diskcontents/*.com $(IMAGE_PACKER) *.bin *.o *.img
+	rm -f $(AMLS) $(ASLS) $(IMAGE_PACKER) diskcontents/*.bin diskcontents/*.com *.bin *.o *.img
 	make clean -C src
 
 # Clean docker environment
@@ -93,6 +99,12 @@ diskcontents/%.bin: src/%.bin
 
 diskcontents/%.com: src/%.com
 	cp $^ $@
+
+diskcontents/%.dsl: diskcontents/%.aml
+	iasl $^
+
+diskcontents/%.aml: diskcontents/%.txt
+	xxd -p -r $^ > $@
 
 download-image:
 	$(DOCKER) cp $(DOCKER_CONTAINER):/root/hariboslinux/$(IMAGE_FILE) .

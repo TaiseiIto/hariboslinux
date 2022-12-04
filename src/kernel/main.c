@@ -259,7 +259,7 @@ void *background_sheet_procedure(Sheet *sheet, struct _Event const *event)
 			break;
 		case KEY_C:
 			// Open a new console by pressing 'c'
-			console_task = create_task(get_current_task(), (void (*)(void *))console_task_procedure, 0x00010000, TASK_PRIORITY_SHELL);
+			console_task = create_task(get_current_task(), (void (*)(void *))console_task_procedure, 0x00100000, TASK_PRIORITY_SHELL);
 			console_task_argument = malloc(sizeof(*console_task_argument));
 			console_task_argument->background_sheet = sheet;
 			console_task_return = malloc(sizeof(*console_task_return));

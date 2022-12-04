@@ -184,8 +184,8 @@ typedef enum _AMLSymbolType
 	aml_access_type,
 	aml_acquire_op,
 	aml_acquire_op_suffix,
-	aml_alias_op,
 	aml_add_op,
+	aml_alias_op,
 	aml_and_op,
 	aml_arg_obj,
 	aml_arg_object,
@@ -223,9 +223,9 @@ typedef enum _AMLSymbolType
 	aml_debug_op,
 	aml_debug_op_suffix,
 	aml_decrement_op,
-	aml_def_alias,
 	aml_def_acquire,
 	aml_def_add,
+	aml_def_alias,
 	aml_def_and,
 	aml_def_break,
 	aml_def_buffer,
@@ -244,6 +244,7 @@ typedef enum _AMLSymbolType
 	aml_def_divide,
 	aml_def_else,
 	aml_def_field,
+	aml_def_find_set_left_bit,
 	aml_def_find_set_right_bit,
 	aml_def_if_else,
 	aml_def_increment,
@@ -255,6 +256,7 @@ typedef enum _AMLSymbolType
 	aml_def_l_less,
 	aml_def_l_not,
 	aml_def_l_or,
+	aml_def_match,
 	aml_def_method,
 	aml_def_mid,
 	aml_def_multiply,
@@ -267,17 +269,23 @@ typedef enum _AMLSymbolType
 	aml_def_or,
 	aml_def_package,
 	aml_def_processor,
+	aml_def_ref_of,
 	aml_def_release,
 	aml_def_return,
 	aml_def_scope,
 	aml_def_shift_left,
 	aml_def_shift_right,
 	aml_def_size_of,
+	aml_def_sleep,
+	aml_def_stall,
 	aml_def_store,
 	aml_def_subtract,
+	aml_def_thermal_zone,
 	aml_def_to_buffer,
 	aml_def_to_hex_string,
+	aml_def_to_integer,
 	aml_def_while,
+	aml_def_xor,
 	aml_deref_of_op,
 	aml_device_op,
 	aml_device_op_suffix,
@@ -298,6 +306,7 @@ typedef enum _AMLSymbolType
 	aml_field_list,
 	aml_field_op,
 	aml_field_op_suffix,
+	aml_find_set_left_bit_op,
 	aml_find_set_right_bit_op,
 	aml_if_op,
 	aml_increment_op,
@@ -305,20 +314,23 @@ typedef enum _AMLSymbolType
 	aml_index_field_op_suffix,
 	aml_index_op,
 	aml_index_value,
-	aml_lead_name_char,
 	aml_l_and_op,
 	aml_l_equal_op,
 	aml_l_greater_op,
 	aml_l_less_op,
 	aml_l_not_op,
 	aml_l_or_op,
+	aml_lead_name_char,
 	aml_local_obj,
 	aml_local_op,
+	aml_match_op,
+	aml_match_opcode,
 	aml_method_flags,
 	aml_method_invocation,
 	aml_method_op,
 	aml_mid_obj,
 	aml_mid_op,
+	aml_msec_time,
 	aml_multi_name_path,
 	aml_multi_name_prefix,
 	aml_multiply_op,
@@ -335,8 +347,8 @@ typedef enum _AMLSymbolType
 	aml_named_obj,
 	aml_not_op,
 	aml_notify_object,
-	aml_notify_value,
 	aml_notify_op,
+	aml_notify_value,
 	aml_null_char,
 	aml_null_name,
 	aml_num_bits,
@@ -367,6 +379,7 @@ typedef enum _AMLSymbolType
 	aml_qword_const,
 	aml_qword_data,
 	aml_qword_prefix,
+	aml_ref_of_op,
 	aml_reference_type_opcode,
 	aml_region_len,
 	aml_region_offset,
@@ -381,13 +394,19 @@ typedef enum _AMLSymbolType
 	aml_revision_op_suffix,
 	aml_root_char,
 	aml_scope_op,
+	aml_search_pkg,
 	aml_seg_count,
 	aml_shift_count,
 	aml_shift_left_op,
 	aml_shift_right_op,
 	aml_simple_name,
 	aml_size_of_op,
+	aml_sleep_op,
+	aml_sleep_op_suffix,
 	aml_source_buff,
+	aml_stall_op,
+	aml_stall_op_suffix,
+	aml_start_index,
 	aml_statement_opcode,
 	aml_store_op,
 	aml_string,
@@ -400,13 +419,19 @@ typedef enum _AMLSymbolType
 	aml_term_arg_list,
 	aml_term_list,
 	aml_term_obj,
+	aml_thermal_zone_op,
+	aml_thermal_zone_op_suffix,
 	aml_time_out,
 	aml_to_buffer_op,
 	aml_to_hex_string_op,
+	aml_to_integer_op,
+	aml_usec_time,
+	aml_user_term_obj,
 	aml_while_op,
 	aml_word_const,
 	aml_word_data,
 	aml_word_prefix,
+	aml_xor_op,
 	aml_zero_op,
 } AMLSymbolType;
 
@@ -709,6 +734,13 @@ typedef struct _AMLDefField
 	struct _AMLSymbol *field_list;
 } AMLDefField;
 
+typedef struct _AMLDefFindSetLeftBit
+{
+	struct _AMLSymbol *find_set_left_bit_op;
+	struct _AMLSymbol *operand;
+	struct _AMLSymbol *target;
+} AMLDefFindSetLeftBit;
+
 typedef struct _AMLDefFindSetRightBit
 {
 	struct _AMLSymbol *find_set_right_bit_op;
@@ -783,6 +815,15 @@ typedef struct _AMLDefLOr
 	struct _AMLSymbol *l_or_op;
 	struct _AMLSymbol *operand[2];
 } AMLDefLOr;
+
+typedef struct _AMLDefMatch
+{
+	struct _AMLSymbol *match_op;
+	struct _AMLSymbol *search_pkg;
+	struct _AMLSymbol *match_opcode[2];
+	struct _AMLSymbol *operand[2];
+	struct _AMLSymbol *start_index;
+} AMLDefMatch;
 
 typedef struct _AMLDefMethod
 {
@@ -881,6 +922,12 @@ typedef struct _AMLDefProcessor
 	struct _AMLSymbol *term_list;
 } AMLDefProcessor;
 
+typedef struct _AMLDefRefOf
+{
+	struct _AMLSymbol *ref_of_op;
+	struct _AMLSymbol *super_name;
+} AMLDefRefOf;
+
 typedef struct _AMLDefRelease
 {
 	struct _AMLSymbol *release_op;
@@ -923,6 +970,18 @@ typedef struct _AMLDefSizeOf
 	struct _AMLSymbol *super_name;
 } AMLDefSizeOf;
 
+typedef struct _AMLDefSleep
+{
+	struct _AMLSymbol *sleep_op;
+	struct _AMLSymbol *msec_time;
+} AMLDefSleep;
+
+typedef struct _AMLDefStall
+{
+	struct _AMLSymbol *stall_op;
+	struct _AMLSymbol *usec_time;
+} AMLDefStall;
+
 typedef struct _AMLDefStore
 {
 	struct _AMLSymbol *store_op;
@@ -936,6 +995,14 @@ typedef struct _AMLDefSubtract
 	struct _AMLSymbol *operand[2];
 	struct _AMLSymbol *target;
 } AMLDefSubtract;
+
+typedef struct _AMLDefThermalZone
+{
+	struct _AMLSymbol *thermal_zone_op;
+	struct _AMLSymbol *pkg_length;
+	struct _AMLSymbol *name_string;
+	struct _AMLSymbol *term_list;
+} AMLDefThermalZone;
 
 typedef struct _AMLDefToBuffer
 {
@@ -951,6 +1018,13 @@ typedef struct _AMLDefToHexString
 	struct _AMLSymbol *target;
 } AMLDefToHexString;
 
+typedef struct _AMLDefToInteger
+{
+	struct _AMLSymbol *to_integer_op;
+	struct _AMLSymbol *operand;
+	struct _AMLSymbol *target;
+} AMLDefToInteger;
+
 typedef struct _AMLDefWhile
 {
 	struct _AMLSymbol *while_op;
@@ -958,6 +1032,13 @@ typedef struct _AMLDefWhile
 	struct _AMLSymbol *predicate;
 	struct _AMLSymbol *term_list;
 } AMLDefWhile;
+
+typedef struct _AMLDefXor
+{
+	struct _AMLSymbol *xor_op;
+	struct _AMLSymbol *operand[2];
+	struct _AMLSymbol *target;
+} AMLDefXor;
 
 typedef struct _AMLDeviceOp
 {
@@ -1107,6 +1188,11 @@ typedef struct _AMLMidObj
 {
 	struct _AMLSymbol *term_arg;
 } AMLMidObj;
+
+typedef struct _AMLMsecTime
+{
+	struct _AMLSymbol *term_arg;
+} AMLMsecTime;
 
 typedef struct _AMLMultiNamePath
 {
@@ -1348,6 +1434,11 @@ typedef struct _AMLRevisionOp
 	struct _AMLSymbol *revision_op_suffix;
 } AMLRevisionOp;
 
+typedef struct _AMLSearchPkg
+{
+	struct _AMLSymbol *term_arg;
+} AMLSearchPkg;
+
 typedef struct _AMLShiftCount
 {
 	struct _AMLSymbol *term_arg;
@@ -1360,10 +1451,27 @@ typedef struct _AMLSimpleName
 	struct _AMLSymbol *local_obj;
 } AMLSimpleName;
 
+typedef struct _AMLSleepOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *sleep_op_suffix;
+} AMLSleepOp;
+
 typedef struct _AMLSourceBuff
 {
 	struct _AMLSymbol *term_arg;
 } AMLSourceBuff;
+
+typedef struct _AMLStallOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *stall_op_suffix;
+} AMLStallOp;
+
+typedef struct _AMLStartIndex
+{
+	struct _AMLSymbol *term_arg;
+} AMLStartIndex;
 
 typedef struct _AMLStatementOpcode
 {
@@ -1428,12 +1536,24 @@ typedef struct _AMLTermObj
 	struct _AMLSymbol *object;
 	struct _AMLSymbol *statement_opcode;
 	struct _AMLSymbol *expression_opcode;
+	struct _AMLSymbol *wrong_term_arg;
 } AMLTermObj;
+
+typedef struct _AMLThermalZoneOp
+{
+	struct _AMLSymbol *ext_op_prefix;
+	struct _AMLSymbol *thermal_zone_op_suffix;
+} AMLThermalZoneOp;
 
 typedef struct _AMLTimeOut
 {
 	struct _AMLSymbol *word_data;
 } AMLTimeOut;
+
+typedef struct _AMLUsecTime
+{
+	struct _AMLSymbol *term_arg;
+} AMLUsecTime;
 
 typedef struct _AMLWordConst
 {
@@ -1496,6 +1616,7 @@ typedef union _AMLComponent
 	AMLDefDivide def_divide;
 	AMLDefElse def_else;
 	AMLDefField def_field;
+	AMLDefFindSetLeftBit def_find_set_left_bit;
 	AMLDefFindSetRightBit def_find_set_right_bit;
 	AMLDefIfElse def_if_else;
 	AMLDefIncrement def_increment;
@@ -1507,6 +1628,7 @@ typedef union _AMLComponent
 	AMLDefLLess def_l_less;
 	AMLDefLNot def_l_not;
 	AMLDefLOr def_l_or;
+	AMLDefMatch def_match;
 	AMLDefMethod def_method;
 	AMLDefMid def_mid;
 	AMLDefMultiply def_multiply;
@@ -1519,17 +1641,23 @@ typedef union _AMLComponent
 	AMLDefOr def_or;
 	AMLDefPackage def_package;
 	AMLDefProcessor def_processor;
+	AMLDefRefOf def_ref_of;
 	AMLDefRelease def_release;
 	AMLDefReturn def_return;
 	AMLDefScope def_scope;
 	AMLDefShiftLeft def_shift_left;
 	AMLDefShiftRight def_shift_right;
 	AMLDefSizeOf def_size_of;
+	AMLDefSleep def_sleep;
+	AMLDefStall def_stall;
 	AMLDefStore def_store;
 	AMLDefSubtract def_subtract;
+	AMLDefThermalZone def_thermal_zone;
 	AMLDefToBuffer def_to_buffer;
 	AMLDefToHexString def_to_hex_string;
+	AMLDefToInteger def_to_integer;
 	AMLDefWhile def_while;
+	AMLDefXor def_xor;
 	AMLDeviceOp device_op;
 	AMLDividend dividend;
 	AMLDivisor divisor;
@@ -1544,6 +1672,7 @@ typedef union _AMLComponent
 	AMLMethodFlags method_flags;
 	AMLMethodInvocation method_invocation;
 	AMLMidObj mid_obj;
+	AMLMsecTime msec_time;
 	AMLMultiNamePath multi_name_path;
 	AMLMutexObject mutex_object;
 	AMLMutexOp mutex_op;
@@ -1581,9 +1710,13 @@ typedef union _AMLComponent
 	AMLRemainder remainder;
 	AMLReservedField reserved_field;
 	AMLRevisionOp revision_op;
+	AMLSearchPkg search_pkg;
 	AMLShiftCount shift_count;
 	AMLSimpleName simple_name;
+	AMLSleepOp sleep_op;
 	AMLSourceBuff source_buff;
+	AMLStallOp stall_op;
+	AMLStartIndex start_index;
 	AMLStatementOpcode statement_opcode;
 	AMLString string;
 	AMLSuperName super_name;
@@ -1592,7 +1725,9 @@ typedef union _AMLComponent
 	AMLTermArgList term_arg_list;
 	AMLTermList term_list;
 	AMLTermObj term_obj;
+	AMLThermalZoneOp thermal_zone_op;
 	AMLTimeOut time_out;
+	AMLUsecTime usec_time;
 	AMLWordConst word_const;
 	AMLWordData word_data;
 } AMLComponent;
@@ -1740,6 +1875,8 @@ AMLSymbol *analyse_aml_def_divide(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_else(AMLSymbol *parent, AMLSubstring aml);
 // <def_field> := <field_op> <pkg_length> <name_string> <field_flags> <field_list>
 AMLSymbol *analyse_aml_def_field(AMLSymbol *parent, AMLSubstring aml);
+// <def_find_set_left_bit> := <find_set_left_bitop> <operand> <target>
+AMLSymbol *analyse_aml_def_find_set_left_bit(AMLSymbol *parent, AMLSubstring aml);
 // <def_find_set_right_bit> := <find_set_right_bitop> <operand> <target>
 AMLSymbol *analyse_aml_def_find_set_right_bit(AMLSymbol *parent, AMLSubstring aml);
 // <def_if_else> := <if_op> <pkg_length> <predicate> <term_list> <def_else>
@@ -1762,6 +1899,8 @@ AMLSymbol *analyse_aml_def_l_less(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_l_not(AMLSymbol *parent, AMLSubstring aml);
 // <def_l_or> := <l_or_op> <operand> <operand>
 AMLSymbol *analyse_aml_def_l_or(AMLSymbol *parent, AMLSubstring aml);
+// <def_match> := <match_op> <serach_pkg> <match_opcode> <operand> <match_opcode> <operand> <start_index>
+AMLSymbol *analyse_aml_def_match(AMLSymbol *parent, AMLSubstring aml);
 // <def_method> := <method_op> <pkg_length> <name_string> <method_flags> <term_list>
 AMLSymbol *analyse_aml_def_method(AMLSymbol *parent, AMLSubstring aml);
 // <def_mid> := <mid_op> <mid_obj> <term_arg> <term_arg> <target>
@@ -1786,6 +1925,8 @@ AMLSymbol *analyse_aml_def_or(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_package(AMLSymbol *parent, AMLSubstring aml);
 // <def_processor> := <processor_op> <pkg_length> <name_string> <proc_id> <pblk_addr> <pblk_len> <term_list>
 AMLSymbol *analyse_aml_def_processor(AMLSymbol *parent, AMLSubstring aml);
+// <def_ref_of> := <ref_of_op> <super_name>
+AMLSymbol *analyse_aml_def_ref_of(AMLSymbol *parent, AMLSubstring aml);
 // <def_release> := <release_op> <mutex_object>
 AMLSymbol *analyse_aml_def_release(AMLSymbol *parent, AMLSubstring aml);
 // <def_return> := <return_op> <arg_object>
@@ -1798,16 +1939,26 @@ AMLSymbol *analyse_aml_def_shift_left(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_def_shift_right(AMLSymbol *parent, AMLSubstring aml);
 // <def_size_of> := <size_of_op> <super_name>
 AMLSymbol *analyse_aml_def_size_of(AMLSymbol *parent, AMLSubstring aml);
+// <def_sleep> := <sleep_op> <msec_time>
+AMLSymbol *analyse_aml_def_sleep(AMLSymbol *parent, AMLSubstring aml);
+// <def_stall> := <stall_op> <usec_time>
+AMLSymbol *analyse_aml_def_stall(AMLSymbol *parent, AMLSubstring aml);
 // <def_store> := <store_op> <term_arg> <super_name>
 AMLSymbol *analyse_aml_def_store(AMLSymbol *parent, AMLSubstring aml);
 // <def_subtract> := <subtract_op> <operand> <operand> <target>
 AMLSymbol *analyse_aml_def_subtract(AMLSymbol *parent, AMLSubstring aml);
+// <def_thermal_zone> := <thermal_zone_op> <pkg_length> <name_string> <term_list>
+AMLSymbol *analyse_aml_def_thermal_zone(AMLSymbol *parent, AMLSubstring aml);
 // <def_to_buffer> := <to_buffer_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_buffer(AMLSymbol *parent, AMLSubstring aml);
 // <def_to_hex_string> := <to_hex_string_op> <operand> <target>
 AMLSymbol *analyse_aml_def_to_hex_string(AMLSymbol *parent, AMLSubstring aml);
+// <def_to_integer> := <to_integer_op> <operand> <target>
+AMLSymbol *analyse_aml_def_to_integer(AMLSymbol *parent, AMLSubstring aml);
 // <def_while> := <while_op> <pkg_length> <predicate> <term_list>
 AMLSymbol *analyse_aml_def_while(AMLSymbol *parent, AMLSubstring aml);
+// <def_xor> := <xor_op> <operxor> <operxor> <target>
+AMLSymbol *analyse_aml_def_xor(AMLSymbol *parent, AMLSubstring aml);
 // <deref_of_op> := AML_BYTE_DEREF_OF_OP
 AMLSymbol *analyse_aml_deref_of_op(AMLSymbol *parent, AMLSubstring aml);
 // <device_op> := <ext_op_prefix> <device_op_suffix>
@@ -1848,6 +1999,8 @@ AMLSymbol *analyse_aml_field_list(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_field_op(AMLSymbol *parent, AMLSubstring aml);
 // <field_op_suffix> := AML_BYTE_FIELD_OP_PREFIX
 AMLSymbol *analyse_aml_field_op_suffix(AMLSymbol *parent, AMLSubstring aml);
+// <find_set_left_bit_op> := AML_BYTE_FIND_SET_LEFT_BIT
+AMLSymbol *analyse_aml_find_set_left_bit_op(AMLSymbol *parent, AMLSubstring aml);
 // <find_set_right_bit_op> := AML_BYTE_FIND_SET_RIGHT_BIT
 AMLSymbol *analyse_aml_find_set_right_bit_op(AMLSymbol *parent, AMLSubstring aml);
 // <if_op> := AML_BYTE_IF_OP
@@ -1880,6 +2033,10 @@ AMLSymbol *analyse_aml_l_or_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_local_obj(AMLSymbol *parent, AMLSubstring aml);
 // <local_op> := 0x60 - 0x67
 AMLSymbol *analyse_aml_local_op(AMLSymbol *parent, AMLSubstring aml);
+// <match_op> := AML_BYTE_MATCH_OP
+AMLSymbol *analyse_aml_match_op(AMLSymbol *parent, AMLSubstring aml);
+// <match_opcode> := <byte_data>
+AMLSymbol *analyse_aml_match_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <method_flags>
 AMLSymbol *analyse_aml_method_flags(AMLSymbol *parent, AMLSubstring aml);
 // <method_invocation> := <name_string> <term_arg_list>
@@ -1890,6 +2047,8 @@ AMLSymbol *analyse_aml_method_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_mid_obj(AMLSymbol *parent, AMLSubstring aml);
 // <mid_op> := AML_BYTE_MID_OP
 AMLSymbol *analyse_aml_mid_op(AMLSymbol *parent, AMLSubstring aml);
+// <msec_time> := <term_arg>
+AMLSymbol *analyse_aml_msec_time(AMLSymbol *parent, AMLSubstring aml);
 // <multi_name_path> := <multi_name_prefix> <seg_count> <name_seg>*
 AMLSymbol *analyse_aml_multi_name_path(AMLSymbol *parent, AMLSubstring aml);
 // <mult_name_prefix> := AML_BYTE_MULTI_NAME_PREFIX
@@ -1986,6 +2145,8 @@ AMLSymbol *analyse_aml_qword_const(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_qword_data(AMLSymbol *parent, AMLSubstring aml);
 // <qword_prefix> := AML_BYTE_QWORD_PREFIX
 AMLSymbol *analyse_aml_qword_prefix(AMLSymbol *parent, AMLSubstring aml);
+// <ref_of_op> := AML_BYTE_REF_OF_OP
+AMLSymbol *analyse_aml_ref_of_op(AMLSymbol *parent, AMLSubstring aml);
 // <reference_type_opcode> := <DefRefOf> <DefDerefOf> <DefIndex> <UserTermObj>
 AMLSymbol *analyse_aml_reference_type_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <region_len> := <term_arg>
@@ -2014,6 +2175,8 @@ AMLSymbol *analyse_aml_revision_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_root_char(AMLSymbol *parent, AMLSubstring aml);
 // <scope_op> := AML_TYPE_SCOPE_OP
 AMLSymbol *analyse_aml_scope_op(AMLSymbol *parent, AMLSubstring aml);
+// <search_pkg> := <term_arg>
+AMLSymbol *analyse_aml_search_pkg(AMLSymbol *parent, AMLSubstring aml);
 // <seg_count> := 0x01 - 0xff
 AMLSymbol *analyse_aml_seg_count(AMLSymbol *parent, AMLSubstring aml);
 // <shift_count> := <term_arg>
@@ -2026,8 +2189,18 @@ AMLSymbol *analyse_aml_shift_right_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_simple_name(AMLSymbol *parent, AMLSubstring aml);
 // <size_of_op> := AML_BYTE_SIZE_OF_OP
 AMLSymbol *analyse_aml_size_of_op(AMLSymbol *parent, AMLSubstring aml);
+// <sleep_op> := <ext_op_prefix> <sleep_op_suffix>
+AMLSymbol *analyse_aml_sleep_op(AMLSymbol *parent, AMLSubstring aml);
+// <sleep_op_suffix> := AML_BYTE_SLEEP_OP
+AMLSymbol *analyse_aml_sleep_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <source_buff> := <term_arg>
 AMLSymbol *analyse_aml_source_buff(AMLSymbol *parent, AMLSubstring aml);
+// <stall_op> := <ext_op_prefix> <stall_op_suffix>
+AMLSymbol *analyse_aml_stall_op(AMLSymbol *parent, AMLSubstring aml);
+// <stall_op_suffix> := AML_BYTE_STALL_OP
+AMLSymbol *analyse_aml_stall_op_suffix(AMLSymbol *parent, AMLSubstring aml);
+// <start_index> := <term_arg>
+AMLSymbol *analyse_aml_start_index(AMLSymbol *parent, AMLSubstring aml);
 // <statement_opcode> := <def_break> | <def_breakpoint> | <def_continue> | <def_fatal> | <def_if_else> | <def_noop> | <def_notify> | <def_release> | <def_reset> | <def_return> | <def_signal> | <def_sleep> | <def_stall> | <def_while>
 AMLSymbol *analyse_aml_statement_opcode(AMLSymbol *parent, AMLSubstring aml);
 // <store_op> := AML_BYTE_STORE_OP
@@ -2052,12 +2225,22 @@ AMLSymbol *analyse_aml_term_arg_list(AMLSymbol *parent, AMLSubstring aml, int nu
 AMLSymbol *analyse_aml_term_list(AMLSymbol *parent, AMLSubstring aml);
 // <term_obj> := <object> | <statement_opcode> | <expression_opcode>
 AMLSymbol *analyse_aml_term_obj(AMLSymbol *parent, AMLSubstring aml);
+// <thermal_zone_op> := <ext_op_prefix> <thermal_zone_op_suffix>
+AMLSymbol *analyse_aml_thermal_zone_op(AMLSymbol *parent, AMLSubstring aml);
+// <thermal_zone_op_suffix> := AML_BYTE_THERMAL_ZONE_OP
+AMLSymbol *analyse_aml_thermal_zone_op_suffix(AMLSymbol *parent, AMLSubstring aml);
 // <time_out> := <word_data>
 AMLSymbol *analyse_aml_time_out(AMLSymbol *parent, AMLSubstring aml);
 // <to_buffer_op> := AML_BYTE_TO_BUFFER_OP
 AMLSymbol *analyse_aml_to_buffer_op(AMLSymbol *parent, AMLSubstring aml);
 // <to_hex_string_op> := AML_BYTE_TO_HEX_STRING_OP
 AMLSymbol *analyse_aml_to_hex_string_op(AMLSymbol *parent, AMLSubstring aml);
+// <to_integer_op> := AML_BYTE_TO_INTEGER_OP
+AMLSymbol *analyse_aml_to_integer_op(AMLSymbol *parent, AMLSubstring aml);
+// <usec_time> := <term_arg>
+AMLSymbol *analyse_aml_usec_time(AMLSymbol *parent, AMLSubstring aml);
+// <user_term_obj> := <byte_data>
+AMLSymbol *analyse_aml_user_term_obj(AMLSymbol *parent, AMLSubstring aml);
 // <while_op> := AML_BYTE_WHILE_OP
 AMLSymbol *analyse_aml_while_op(AMLSymbol *parent, AMLSubstring aml);
 // <word_const> := <word_prefix> <word_data>
@@ -2066,15 +2249,17 @@ AMLSymbol *analyse_aml_word_const(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *analyse_aml_word_data(AMLSymbol *parent, AMLSubstring aml);
 // <word_prefix> := AML_BYTE_WORD_PREFIX
 AMLSymbol *analyse_aml_word_prefix(AMLSymbol *parent, AMLSubstring aml);
+// <xorl_op> := AML_BYTE_XOR_OP
+AMLSymbol *analyse_aml_xor_op(AMLSymbol *parent, AMLSubstring aml);
 // <zero_op> := AML_BYTE_ZERO_OP
 AMLSymbol *analyse_aml_zero_op(AMLSymbol *parent, AMLSubstring aml);
 AMLSymbol *create_dsdt_aml_syntax_tree(void);
 void delete_aml_symbol(AMLSymbol *aml_symbol);
 MemoryRegionDescriptor get_acpi_memory_region_descriptor(void);
-AMLSymbol const *get_aml_def_name(char const *name, AMLSymbol const *aml_symbol);
+AMLSymbol const *get_aml_def_name(char const *name, AMLSubstring aml);
 AMLSymbol const *get_aml_method(char const *method_name, AMLSymbol const *aml_symbol, AMLSymbol const *searched);
-AMLSymbol const *get_aml_s5_package(AMLSymbol const *aml_symbol);
-unsigned short get_aml_s5_pm1_cnt_slp_typ(AMLSymbol const *aml_symbol);
+AMLSymbol const *get_aml_s5_package(AMLSubstring aml);
+unsigned short get_aml_s5_pm1_cnt_slp_typ(AMLSubstring aml);
 unsigned int get_aml_symbol_depth(AMLSymbol const *aml_symbol);
 AMLSubstring get_dsdt_aml(void);
 ACPITableHeader const *get_dsdt_header(void);

@@ -22,6 +22,8 @@ RUN mkdir /root/.ssh
 RUN apt install libglib2.0-dev -y
 # gmp
 RUN apt install libgmp-dev -y
+# iasl
+RUN apt install iasl -y
 # pixman
 RUN apt install libpixman-1-dev -y
 # ninja
