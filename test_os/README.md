@@ -371,6 +371,88 @@ $5 = 0x4
 | FOOFF    | 0x1e |                0x1e |               0xcc |
 | FOP      | 0x1f |                0x1f |               0xd0 |
 
+Each register offset in g packet is defined at function `map_regcache_remote_table` in `~/binutils-gdb/gdb/remote.c` line from 1437 to 1442.
+
+```
+  for (regnum = 0, offset = 0; regnum < num_remote_regs; regnum++)
+    {
+      remote_regs[regnum]->in_g_packet = 1;
+      remote_regs[regnum]->offset = offset;
+      offset += register_size (gdbarch, remote_regs[regnum]->regnum);
+    }
+```
+
+```
+~/hariboslinux/test_os # make debug
+(gdb) break map_regcache_remote_table
+(gdb) continue
+(gdb) continue
+(gdb) break 1441
+(gdb) continue
+(gdb) p/x regnum
+$0 = 0x0
+(gdb) p/x remote_regs[regnum]->regnum
+$1 = 0x0
+(gdb) p/x remote_regs[regnum]->offset
+$2 = 0x0
+(gdb) p/x register_size(gdbarch, remote_regs[regnum]->regnum)
+$3 = 0x4
+...
+```
+
+| Register    | regnum | remote_regs[regnum]->regnum | remote_regs[regnum]->offset | register_size(gdbarch, remote_regs[regnum]->regnum) |
+| :---------- | -----: | --------------------------: | --------------------------: | --------------------------------------------------: |
+| EAX         |   0x00 |                        0x00 |                      0x0000 |                                                0x04 |
+| ECX         |   0x01 |                        0x01 |                      0x0004 |                                                0x04 |
+| EDX         |   0x02 |                        0x02 |                      0x0008 |                                                0x04 |
+| EBX         |   0x03 |                        0x03 |                      0x000c |                                                0x04 |
+| ESP         |   0x04 |                        0x04 |                      0x0010 |                                                0x04 |
+| EBP         |   0x05 |                        0x05 |                      0x0014 |                                                0x04 |
+| ESI         |   0x06 |                        0x06 |                      0x0018 |                                                0x04 |
+| EDI         |   0x07 |                        0x07 |                      0x001c |                                                0x04 |
+| EIP         |   0x08 |                        0x08 |                      0x0020 |                                                0x04 |
+| EFLAGS      |   0x09 |                        0x09 |                      0x0024 |                                                0x04 |
+| CS          |   0x0a |                        0x0a |                      0x0028 |                                                0x04 |
+| SS          |   0x0b |                        0x0b |                      0x002c |                                                0x04 |
+| DS          |   0x0c |                        0x0c |                      0x0030 |                                                0x04 |
+| ES          |   0x0d |                        0x0d |                      0x0034 |                                                0x04 |
+| FS          |   0x0e |                        0x0e |                      0x0038 |                                                0x04 |
+| GS          |   0x0f |                        0x0f |                      0x003c |                                                0x04 |
+| FS\_BASE    |   0x10 |                        0x49 |                      0x0040 |                                                0x04 |
+| GS\_BASE    |   0x11 |                        0x4a |                      0x0044 |                                                0x04 |
+| K\_GS\_BASE |   0x12 |                        0x4b |                      0x0048 |                                                0x04 |
+| CR0         |   0x13 |                        0x4c |                      0x004c |                                                0x04 |
+| CR2         |   0x14 |                        0x4d |                      0x0050 |                                                0x04 |
+| CR3         |   0x15 |                        0x4e |                      0x0054 |                                                0x04 |
+| CR4         |   0x16 |                        0x4f |                      0x0058 |                                                0x04 |
+| CR8         |   0x17 |                        0x50 |                      0x005c |                                                0x04 |
+| EFER        |   0x18 |                        0x51 |                      0x0060 |                                                0x04 |
+| ST0         |   0x19 |                        0x10 |                      0x0064 |                                                0x0a |
+| ST1         |   0x1a |                        0x11 |                      0x006e |                                                0x0a |
+| ST2         |   0x1b |                        0x12 |                      0x0078 |                                                0x0a |
+| ST3         |   0x1c |                        0x13 |                      0x0082 |                                                0x0a |
+| ST4         |   0x1d |                        0x14 |                      0x008c |                                                0x0a |
+| ST5         |   0x1e |                        0x15 |                      0x0096 |                                                0x0a |
+| ST6         |   0x1f |                        0x16 |                      0x00a0 |                                                0x0a |
+| ST7         |   0x20 |                        0x17 |                      0x00aa |                                                0x0a |
+| FCTRL       |   0x21 |                        0x18 |                      0x00b4 |                                                0x04 |
+| FSTAT       |   0x22 |                        0x19 |                      0x00b8 |                                                0x04 |
+| FTAG        |   0x23 |                        0x1a |                      0x00bc |                                                0x04 |
+| FISEG       |   0x24 |                        0x1b |                      0x00c0 |                                                0x04 |
+| FIOFF       |   0x25 |                        0x1c |                      0x00c4 |                                                0x04 |
+| FOSEG       |   0x26 |                        0x1d |                      0x00c8 |                                                0x04 |
+| FOOFF       |   0x27 |                        0x1e |                      0x00cc |                                                0x04 |
+| FOP         |   0x28 |                        0x1f |                      0x00d0 |                                                0x04 |
+| XMM0        |   0x29 |                        0x52 |                      0x00d4 |                                                0x10 |
+| XMM1        |   0x2a |                        0x53 |                      0x00e4 |                                                0x10 |
+| XMM2        |   0x2b |                        0x54 |                      0x00f4 |                                                0x10 |
+| XMM3        |   0x2c |                        0x55 |                      0x0104 |                                                0x10 |
+| XMM4        |   0x2d |                        0x56 |                      0x0114 |                                                0x10 |
+| XMM5        |   0x2e |                        0x57 |                      0x0124 |                                                0x10 |
+| XMM6        |   0x2f |                        0x58 |                      0x0134 |                                                0x10 |
+| XMM7        |   0x30 |                        0x59 |                      0x0144 |                                                0x10 |
+| MXCSR       |   0x31 |                        0x5a |                      0x0154 |                                                0x04 |
+
 ## Where does status word come from ?
 
 The status word is gotten as `fstat` in `~/binutils-gdb/gdb/i387-tdep.c` line 232 and its bits from 11 to 13 means stack top pointer x where `ST0` is `Rx`.
