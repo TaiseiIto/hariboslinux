@@ -80,3 +80,26 @@ Opcode:              0x0000
 = 0x800 // It means TOP = 1, ST0 = R1
 ```
 
+In function `i387_print_float_info` in `~/binutils-gdb/gdb/i387-tdep.c`, register numbers of `STx` are converted to register number of `Rx`.
+
+In `~/binutils-gdb/gdb/i387-tdep.c` line 231, get status word.
+
+```
+  fstat_p = read_frame_register_unsigned (frame,
+					  I387_FSTAT_REGNUM (tdep), &fstat);
+```
+
+In `~/binutils-gdb/gdb/i387-tdep.c` line 248, get stack top position from status word.
+
+```
+      top = ((fstat >> 11) & 7);
+```
+
+In `~/binutils-gdb/gdb/i387-tdep.c` line 248, get `Rx` register number.
+
+```
+	  regnum = (fpreg + 8 - top) % 8 + I387_ST0_REGNUM (tdep);
+```
+
+It seems `I387_ST0_REGNUM` is already pointing `R0` and has applied map from `STx` wo `Rx` double times.
+
