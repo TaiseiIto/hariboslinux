@@ -268,6 +268,45 @@ $2 = 0x7c
 0x560476f54d30: 0x0000000000000000      0x0000000000000000
 ```
 
+According to `i386-tdep.h` line 275, `i387-tdep.h` line 56 and the above result, registers are deployed on memory as bellow.
+
+| Register name | Register number | Register offset |
+| :------------ | --------------: | --------------: |
+| EAX           |            0x00 |            0x00 |
+| ECX           |            0x01 |            0x04 |
+| EDX           |            0x02 |            0x08 |
+| EBX           |            0x03 |            0x0c |
+| ESP           |            0x04 |            0x10 |
+| EBP           |            0x05 |            0x14 |
+| ESI           |            0x06 |            0x18 |
+| EDI           |            0x07 |            0x1c |
+| EIP           |            0x08 |            0x20 |
+| EFLAGS        |            0x09 |            0x24 |
+| CS            |            0x0a |            0x28 |
+| SS            |            0x0b |            0x2c |
+| DS            |            0x0c |            0x30 |
+| ES            |            0x0d |            0x34 |
+| FS            |            0x0e |            0x38 |
+| GS            |            0x0f |            0x3c |
+| ST0           |            0x10 |            0x40 |
+| ST1           |            0x11 |            0x4a |
+| ST2           |            0x12 |            0x54 |
+| ST3           |            0x13 |            0x5e |
+| ST4           |            0x14 |            0x68 |
+| ST5           |            0x15 |            0x72 |
+| ST6           |            0x16 |            0x7c |
+| ST7           |            0x17 |            0x86 |
+| FCTRL         |            0x18 |            0x90 |
+| FSTAT         |            0x19 |            0x94 |
+| FTAG          |            0x1a |            0x98 |
+| FISEG         |            0x1b |            0x9c |
+| FIOFF         |            0x1c |            0xa0 |
+| FOSEG         |            0x1d |            0xa4 |
+| FOOFF         |            0x1e |            0xa8 |
+| FOP           |            0x1f |            0xac |
+
+`m_descr->register_offset` is defined at function `init_regcache_descr` in `~/binutils-gdb/gdb/regcache.c` line 79.
+
 ## Where does status word come from ?
 
 The status word is gotten as `fstat` in `~/binutils-gdb/gdb/i387-tdep.c` line 232 and its bits from 11 to 13 means stack top pointer x where `ST0` is `Rx`.
