@@ -17,7 +17,7 @@ stop-qemu:
 
 test: $(TEST_OS_IMG) stop-qemu
 	(qemu-system-i386 -boot order=a -drive file=$<,format=raw,if=floppy -S -gdb tcp::2159 -vnc localhost:0 &) && \
-	gdb < debuggee_input.txt && \
+	gdb < gdb_input.txt && \
 	make stop-qemu
 
 $(TEST_OS_IMG): $(TEST_OS_OBJ) $(TEST_OS_LNK)
