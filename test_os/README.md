@@ -126,6 +126,24 @@ It seems `I387_ST0_REGNUM` is already pointing `R0` and has applied map from `ST
 
 ### What does `I387_ST0_REGNUM(tdep)` in `~/binutils-gdb/gdb/i387-tdep.c` line 282 return?
 
+`I387_ST0_REGNUM` is defined in `~/binutils-gdb/gdb/i387-tdep.h` line 32.
+
+```
+#define I387_ST0_REGNUM(tdep) ((tdep)->st0_regnum)
+```
+
+#### What is `tdep` in `~/binutils-gdb/gdb/i387-tdep.c` line 207? It seems a register number map.
+
+`tdep` is `(i386_gdbarch_tdep*)gdbarch->tdep`.
+
+```
+~/hariboslinux/test_os # make debug
+(gdb) break i387-tdep.c : 207
+(gdb) continue
+(gdb) p/x ((i386_gdbarch_tdep*)gdbarch->tdep)->st0_regnum
+0x10
+```
+
 ### What does `get_frame_register_value (frame, regnum)` in `~/binutils-gdb/gdb/i387-tdep.c` line 283 return?
 
 ### What does `value_contents (regval).data ()` in `~/binutils-gdb/gdb/i387-tdep.c` line 287 return?
