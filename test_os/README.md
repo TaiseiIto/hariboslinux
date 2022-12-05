@@ -103,3 +103,39 @@ In `~/binutils-gdb/gdb/i387-tdep.c` line 248, get `Rx` register number.
 
 It seems `I387_ST0_REGNUM` is already pointing `R0` and has applied map from `STx` wo `Rx` double times.
 
+## Where does ST0 come from ? It seems R0.
+
+`Rx` is gotten in `~/binutils-gdb/gdb/i387-tdep.c` line 282 and 283.
+
+```
+	  regnum = (fpreg + 8 - top) % 8 + I387_ST0_REGNUM (tdep);
+	  regval = get_frame_register_value (frame, regnum);
+```
+
+10 bytes (80 bits) value of `Rx` is gotten in `~/binutils-gdb/gdb/i387-tdep.c` line from 287 to 291.
+
+```
+	      const gdb_byte *raw = value_contents (regval).data ();
+
+	      gdb_puts ("0x", file);
+	      for (i = 9; i >= 0; i--)
+		gdb_printf (file, "%02x", raw[i]);
+```
+
+`Rx` is gotten where `fpreg` is equal to x, `Rx` is equal to `STy` and `(fpreg + 8 - top) % 8` is equal to `y`.
+
+### What does `I387_ST0_REGNUM(tdep)` in `~/binutils-gdb/gdb/i387-tdep.c` line 282 return?
+
+### What does `get_frame_register_value (frame, regnum)` in `~/binutils-gdb/gdb/i387-tdep.c` line 283 return?
+
+### What does `value_contents (regval).data ()` in `~/binutils-gdb/gdb/i387-tdep.c` line 287 return?
+
+## Where does status word come from ?
+
+The status word is gotten as `fstat` in `~/binutils-gdb/gdb/i387-tdep.c` line 232 and its bits from 11 to 13 means stack top pointer x where `ST0` is `Rx`.
+
+```
+  fstat_p = read_frame_register_unsigned (frame,
+					  I387_FSTAT_REGNUM (tdep), &fstat);
+```
+
