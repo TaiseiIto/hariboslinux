@@ -200,6 +200,21 @@ i387-tdep.c : 282
 
 ### What does `get_frame_register_value (frame, regnum)` in `~/binutils-gdb/gdb/i387-tdep.c` line 283 return?
 
+```
+~/hariboslinux/test_os # make debug
+(gdb) break i387-tdep.c : 285
+(gdb) continue
+(gdb) p/x regnum
+$1 = 0x16
+(gdb) x/10bx regval->contents.get()
+0x565528ce9110: 0xfe    0x8a    0x1b    0xcd    0x4b    0x78    0x9a    0xd4
+0x565528ce9118: 0x00    0x40
+```
+
+Correctly, R6 is equal to ST5 and has this value.
+Actually, R7 is equal to ST6 and has this value.
+I think gdb thinks this register is ST6 what is actually R6.
+
 ### What does `value_contents (regval).data ()` in `~/binutils-gdb/gdb/i387-tdep.c` line 287 return?
 
 ## Where does status word come from ?
