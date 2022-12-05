@@ -336,6 +336,41 @@ $5 = 0x4
 ...
 ```
 
+| Register | i    | rsa->regs[i].regnum | rsa->regs[i].offset|
+| :------- | ---: | ------------------: | -----------------: |
+| EAX      | 0x00 |                0x00 |               0x00 |
+| ECX      | 0x01 |                0x01 |               0x04 |
+| EDX      | 0x02 |                0x02 |               0x08 |
+| EBX      | 0x03 |                0x03 |               0x0c |
+| ESP      | 0x04 |                0x04 |               0x10 |
+| EBP      | 0x05 |                0x05 |               0x14 |
+| ESI      | 0x06 |                0x06 |               0x18 |
+| EDI      | 0x07 |                0x07 |               0x1c |
+| EIP      | 0x08 |                0x08 |               0x20 |
+| EFLAGS   | 0x09 |                0x09 |               0x24 |
+| CS       | 0x0a |                0x0a |               0x28 |
+| SS       | 0x0b |                0x0b |               0x2c |
+| DS       | 0x0c |                0x0c |               0x30 |
+| ES       | 0x0d |                0x0d |               0x34 |
+| FS       | 0x0e |                0x0e |               0x38 |
+| GS       | 0x0f |                0x0f |               0x3c |
+| ST0      | 0x10 |                0x10 |               0x64 |
+| ST1      | 0x11 |                0x11 |               0x6e |
+| ST2      | 0x12 |                0x12 |               0x78 |
+| ST3      | 0x13 |                0x13 |               0x82 |
+| ST4      | 0x14 |                0x14 |               0x8c |
+| ST5      | 0x15 |                0x15 |               0x96 |
+| ST6      | 0x16 |                0x16 |               0xa0 |
+| ST7      | 0x17 |                0x17 |               0xaa |
+| FCTRL    | 0x18 |                0x18 |               0xb4 |
+| FSTAT    | 0x19 |                0x19 |               0xb8 |
+| FTAG     | 0x1a |                0x1a |               0xbc |
+| FISEG    | 0x1b |                0x1b |               0xc0 |
+| FIOFF    | 0x1c |                0x1c |               0xc4 |
+| FOSEG    | 0x1d |                0x1d |               0xc8 |
+| FOOFF    | 0x1e |                0x1e |               0xcc |
+| FOP      | 0x1f |                0x1f |               0xd0 |
+
 ## Where does status word come from ?
 
 The status word is gotten as `fstat` in `~/binutils-gdb/gdb/i387-tdep.c` line 232 and its bits from 11 to 13 means stack top pointer x where `ST0` is `Rx`.
