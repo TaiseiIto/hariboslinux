@@ -215,7 +215,27 @@ Correctly, R6 is equal to ST5 and has this value.
 Actually, R7 is equal to ST6 and has this value.
 I think gdb thinks this register is ST6 what is actually R6.
 
-### What does `value_contents (regval).data ()` in `~/binutils-gdb/gdb/i387-tdep.c` line 287 return?
+Bellow seems to try to get value of R7 which is ST6 and has gotten R6 which is ST5.
+
+```
+~/hariboslinux/test_os # make debug
+(gdb) break i387-tdep.c : 283
+	  regval = get_frame_register_value (frame, regnum);
+(gdb) continue 
+(gdb) break regcache.c : 613
+    memcpy (buf, register_buffer (regnum),
+	    m_descr->sizeof_register[regnum]);
+(gdb) continue
+(gdb) p/x regnum
+$1 = 0x16
+(gdb) p/x register_buffer(regnum)
+$2 = 0x5640e37abcbc
+(gdb) p/x m_descr->sizeof_register[regnum]
+$3 = 0xa
+(gdb) x/10bx register_buffer(regnum)
+0x5640e37abcbc: 0xfe    0x8a    0x1b    0xcd    0x4b    0x78    0x9a    0xd4
+0x5640e37abcc4: 0x00    0x40
+```
 
 ## Where does status word come from ?
 
