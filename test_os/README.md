@@ -307,6 +307,35 @@ According to `i386-tdep.h` line 275, `i387-tdep.h` line 56 and the above result,
 
 `m_descr->register_offset` is defined at function `init_regcache_descr` in `~/binutils-gdb/gdb/regcache.c` line 79.
 
+### Where register offset in g packet is defined in?
+
+Each register offset in g packet is defined at function `remote_target::process_g_packet` in `~/binutils-gdb/gdb/remote.c` line 8551.
+
+```
+~/hariboslinux/test_os # make debug
+(gdb) break remote_target::process_g_packet
+(gdb) continue
+break at ~/binutils-gdb/gdb/remote.c : 8467
+(gdb) continue
+break at ~/binutils-gdb/gdb/remote.c : 8467
+(gdb) break 8551
+(gdb) continue
+(gdb) p/x i
+$0 = 0x0
+(gdb) p/x rsa->regs[i].regnum
+$1 = 0x0
+(gdb) p/x rsa->regs[i].offset
+$2 = 0x0
+(gdb) continue
+(gdb) p/x i
+$3 = 0x1
+(gdb) p/x rsa->regs[i].regnum
+$4 = 0x1
+(gdb) p/x rsa->regs[i].offset
+$5 = 0x4
+...
+```
+
 ## Where does status word come from ?
 
 The status word is gotten as `fstat` in `~/binutils-gdb/gdb/i387-tdep.c` line 232 and its bits from 11 to 13 means stack top pointer x where `ST0` is `Rx`.
