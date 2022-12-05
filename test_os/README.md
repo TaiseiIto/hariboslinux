@@ -3,7 +3,7 @@
 ## Correct output
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break i387_print_float_info
 (gdb) continue
 (gdb) finish
@@ -30,7 +30,7 @@ Opcode:              0x0000
 ## Actual output
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break i387_print_float_info
 (gdb) continue
 (gdb) finish
@@ -57,7 +57,7 @@ Opcode:              0x0000
 # Cause investigation in GDB
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break i387_print_float_info
 (gdb) continue
 ~/binutils-gdb/gdb/i387-tdep.c : 206 i387_print_float_info
@@ -178,7 +178,7 @@ enum i386_regnum
 ```
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break i386-tdep.c : 8477
 (gdb) break i387-tdep.c : 282
 (gdb) continue
@@ -201,7 +201,7 @@ i387-tdep.c : 282
 ### What does `get_frame_register_value (frame, regnum)` in `~/binutils-gdb/gdb/i387-tdep.c` line 283 return?
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break i387-tdep.c : 285
 (gdb) continue
 (gdb) p/x regnum
@@ -218,7 +218,7 @@ I think gdb thinks this register is ST6 what is actually R6.
 Bellow seems to try to get value of R7 which is ST6 and has gotten R6 which is ST5.
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break i387-tdep.c : 283
 	  regval = get_frame_register_value (frame, regnum);
 (gdb) continue 
@@ -240,7 +240,7 @@ $3 = 0xa
 `reg_buffer::register_buffer` returns register value.
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break i387-tdep.c : 283
 (gdb) continue
 (gdb) break reg_buffer::register_buffer if regnum == 0x16
@@ -312,7 +312,7 @@ According to `i386-tdep.h` line 275, `i387-tdep.h` line 56 and the above result,
 Each register offset in g packet is defined at function `remote_target::process_g_packet` in `~/binutils-gdb/gdb/remote.c` line 8551.
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break remote_target::process_g_packet
 (gdb) continue
 break at ~/binutils-gdb/gdb/remote.c : 8467
@@ -383,7 +383,7 @@ Each register offset in g packet is defined at function `map_regcache_remote_tab
 ```
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break map_regcache_remote_table
 (gdb) continue
 (gdb) continue
@@ -456,7 +456,7 @@ $3 = 0x4
 ### Where are g packet contents?
 
 ```
-~/hariboslinux/test_os # make debug
+~/hariboslinux/test_os # make debug-gdb
 (gdb) break remote_target::process_g_packet
 (gdb) continue
 (gdb) continue
