@@ -468,4 +468,13 @@ $1 = 0x556580e950a0 "55aa0000000000000000000000000000046f00000000000000000000000
 
 I think QEMU sends Rx registers pretended as STx on g packets to GDB.
 As a result, GDB misunderstands received registers are STx which is actually Rx.
+A structure definition of g packet `~/qemu/gdb-xml/i386-32bit.xml` is refered from `~/qemu/target/i386/cpu.c`
+
+```
+root@5dd9991eb6d5:~/qemu# git grep i386-32bit\.xml
+configs/targets/i386-bsd-user.mak:TARGET_XML_FILES= gdb-xml/i386-32bit.xml
+configs/targets/i386-linux-user.mak:TARGET_XML_FILES= gdb-xml/i386-32bit.xml
+configs/targets/i386-softmmu.mak:TARGET_XML_FILES= gdb-xml/i386-32bit.xml
+target/i386/cpu.c:    cc->gdb_core_xml_file = "i386-32bit.xml";
+```
 
