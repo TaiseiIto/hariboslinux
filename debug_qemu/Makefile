@@ -8,6 +8,7 @@ TEST_OS_OBJ = $(TEST_OS_NAME).o
 all: $(TEST_OS_IMG)
 
 debug-qemu: $(TEST_OS_IMG)
+	gdb < gdb_input.txt > /dev/null 2>&1 &
 	gdb qemu-system-i386
 
 stop-qemu:
