@@ -125,3 +125,7 @@ FPU stack is read at lines from 123 to 138 in `~/qemu/target/i386/gdbstub.c`.
     } else if (n >= IDX_XMM_REGS && n < IDX_XMM_REGS + CPU_NB_REGS) {
 ```
 
+The above `env` is declared at `~/qemu/target/i386/gdbstub.c` line 102 and has emulated CPU states and its type is `CPUX86State` defined at `~/qemu/target/i386/cpu.h` line 1814.
+`CPUX86State.fpregs` defined at `~/qemu/target/i386/cpu.h` line 1579 means x87 FPU stack.
+`CPUX86State.fpstt` defined at `~/qemu/target/i386/cpu.h` line 1575 means top of stack index.
+
