@@ -7,9 +7,8 @@ TEST_OS_OBJ = $(TEST_OS_NAME).o
 
 all: $(TEST_OS_IMG)
 
-debug-qemu: $(TEST_OS_IMG) stop-qemu
-	gdb qemu-system-i386 && \
-	make stop-qemu
+debug-qemu: $(TEST_OS_IMG)
+	gdb qemu-system-i386
 
 stop-qemu:
 	for i in $$(ps ax | grep qemu | grep -v grep | awk '{print $$1}'); do kill $$i; done
