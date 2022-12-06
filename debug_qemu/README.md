@@ -91,3 +91,37 @@ $1 = (gchar *) 0x5642e482c800 "55aa0000000000000000000000000000046f0000000000000
 0x5574ddeaf350: 0x00001f8000000000
 ```
 
+## Where does QEMU read `Rx` registers?
+
+```
+~/hariboslinux/debug_qemu # make debug-qemu
+(gdb) break x86_cpu_gdb_read_register if n == 0x19
+(gdb) continue
+~/qemu/target/i386/gdbstub.c : 100
+```
+
+`n` is a register number.
+
+| Sent register from QEMU | Received register to GDB | Register number |
+| :---------------------- | :----------------------- | --------------: |
+| R0                      | ST0                      |            0x19 |
+| R1                      | ST1                      |            0x1a |
+| R2                      | ST2                      |            0x1b |
+| R3                      | ST3                      |            0x1c |
+| R4                      | ST4                      |            0x1d |
+| R5                      | ST5                      |            0x1e |
+| R6                      | ST6                      |            0x1f |
+| R7                      | ST7                      |            0x20 |
+| FSTAT                   | FSTAT                    |            0x22 |
+
+FPU stack is read at lines from 123 to 138 in `~/qemu/target/i386/gdbstub.c`.
+
+```
+    } else if (n >= IDX_FP_REGS && n < IDX_FP_REGS + 8) {
+        floatx80 *fp = (floatx80 *) &env->fpregs[n - IDX_FP_REGS];
+        int len = gdb_get_reg64(mem_buf, cpu_to_le64(fp->low));
+        len += gdb_get_reg16(mem_buf, cpu_to_le16(fp->high));
+        return len;
+    } else if (n >= IDX_XMM_REGS && n < IDX_XMM_REGS + CPU_NB_REGS) {
+```
+
