@@ -33,8 +33,6 @@ $1 = 0x5581fb0a238c "i386-32bit.xml"
 
 ```
 ~/hariboslinux/debug_qemu # make debug-qemu
-(gdb) break gdb_read_register
-(gdb) continue
 (gdb) backtrace
 #0  gdb_read_register (cpu=0x55df000f5b70, buf=0x55df00f6f380, reg=0) at ../gdbstub/gdbstub.c:942
 #1  0x000055defeab8df1 in handle_read_all_regs (params=<optimized out>, user_ctx=<optimized out>)
