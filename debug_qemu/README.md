@@ -31,32 +31,10 @@ $1 = 0x5581fb0a238c "i386-32bit.xml"
 
 ## Where does QEMU send "g" packet to GDB?
 
-QEMU read all registers at function `handle_read_all_regs` in `~/qemu/gdbstub/gdbstub.c` line 1744.
+QEMU reads all registers at function `handle_read_all_regs` in `~/qemu/gdbstub/gdbstub.c` line 1744.
 
 ```
 ~/hariboslinux/debug_qemu # make debug-qemu
-(gdb) backtrace
-#0  handle_read_all_regs (params=0x55c8f3f23130, user_ctx=0x0) at ../gdbstub/gdbstub.c:1737
-#1  0x000055c8f09cadce in process_string_cmd (data=data@entry=0x55c8f13cba84 <gdbserver_state+36> "g",
-    cmds=cmds@entry=0x55c8f100ee60 <read_all_regs_cmd_desc>, num_cmds=num_cmds@entry=1, user_ctx=0x0)
-    at ../gdbstub/gdbstub.c:1394
-#2  0x000055c8f09cf100 in run_cmd_parser (data=0x55c8f13cba84 <gdbserver_state+36> "g",
-    cmd=0x55c8f100ee60 <read_all_regs_cmd_desc>) at ../gdbstub/gdbstub.c:1412
-#3  gdb_handle_packet (line_buf=0x55c8f13cba84 <gdbserver_state+36> "g") at ../gdbstub/gdbstub.c:2677
-#4  gdb_read_byte (ch=55 '7') at ../gdbstub/gdbstub.c:3013
-#5  gdb_chr_receive (opaque=<optimized out>, buf=<optimized out>, size=<optimized out>) at ../gdbstub/gdbstub.c:3314
-#6  0x000055c8f0b3bb27 in tcp_chr_read (chan=<optimized out>, cond=<optimized out>, opaque=<optimized out>)
-    at ../chardev/char-socket.c:508
-#7  0x00007f7de1313c44 in g_main_context_dispatch () from /lib/x86_64-linux-gnu/libglib-2.0.so.0
-#8  0x000055c8f0be8b50 in glib_pollfds_poll () at ../util/main-loop.c:297
-#9  os_host_main_loop_wait (timeout=90361000) at ../util/main-loop.c:320
-#10 main_loop_wait (nonblocking=nonblocking@entry=0) at ../util/main-loop.c:606
-#11 0x000055c8f08634a3 in qemu_main_loop () at ../softmmu/runstate.c:739
-#12 0x000055c8f06af0bb in qemu_default_main () at ../softmmu/main.c:37
-#13 0x00007f7de0fafd90 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
-#14 0x00007f7de0fafe40 in __libc_start_main () from /lib/x86_64-linux-gnu/libc.so.6
-#15 0x000055c8f06aefe5 in _start ()
-(gdb) continue
 (gdb) backtrace
 #0  handle_read_all_regs (params=0x55c8f2e506a0, user_ctx=0x0) at ../gdbstub/gdbstub.c:1737
 #1  0x000055c8f09cadce in process_string_cmd (data=data@entry=0x55c8f13cba84 <gdbserver_state+36> "g",
@@ -78,5 +56,16 @@ QEMU read all registers at function `handle_read_all_regs` in `~/qemu/gdbstub/gd
 #13 0x00007f7de0fafd90 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
 #14 0x00007f7de0fafe40 in __libc_start_main () from /lib/x86_64-linux-gnu/libc.so.6
 #15 0x000055c8f06aefe5 in _start ()
+```
+
+And makes "g" packet string.
+
+```
+~/hariboslinux/debug_qemu # make debug-qemu
+(gdb) break 1751
+(gdb) continue
+(gdb) print *gdbserver_state.str_buf
+(gdb) print gdbserver_state.str_buf->str
+$1 = (gchar *) 0x5642e482c800 "55aa0000000000000000000000000000046f0000000000000000000000000000107c0000020200000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ac79cfd1f71772b1fe3f99f7cffb849a209afd3f35c26821a2da0fc90040bcf0175c293baab8ff3ffe8a1bcd4b789ad400400000000000000080ff3f7f030000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000801f0000"
 ```
 
