@@ -129,3 +129,24 @@ The above `env` is declared at `~/qemu/target/i386/gdbstub.c` line 102 and has e
 `CPUX86State.fpregs` defined at `~/qemu/target/i386/cpu.h` line 1579 means x87 FPU stack.
 `CPUX86State.fpstt` defined at `~/qemu/target/i386/cpu.h` line 1575 means top of stack index.
 
+# Patch
+
+```
+root@5dd9991eb6d5:~/qemu# git diff
+diff --git a/target/i386/gdbstub.c b/target/i386/gdbstub.c
+index c3a2cf6f28..6109ad166d 100644
+--- a/target/i386/gdbstub.c
++++ b/target/i386/gdbstub.c
+@@ -121,7 +121,9 @@ int x86_cpu_gdb_read_register(CPUState *cs, GByteArray *mem_buf, int n)
+             return gdb_get_reg32(mem_buf, env->regs[gpr_map32[n]]);
+         }
+     } else if (n >= IDX_FP_REGS && n < IDX_FP_REGS + 8) {
+-        floatx80 *fp = (floatx80 *) &env->fpregs[n - IDX_FP_REGS];
++        int st_index = n - IDX_FP_REGS;
++        int r_index = (st_index + env->fpstt) % 8;
++        floatx80 *fp = (floatx80 *) &env->fpregs[r_index];
+         int len = gdb_get_reg64(mem_buf, cpu_to_le64(fp->low));
+         len += gdb_get_reg16(mem_buf, cpu_to_le16(fp->high));
+         return len;
+```
+
