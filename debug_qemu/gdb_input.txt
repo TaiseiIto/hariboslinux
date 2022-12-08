@@ -1,7 +1,22 @@
 target remote localhost:2159
-break *0x7c10
+break *0x7c00
 continue
 delete 1
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
 info float
 quit
 y
