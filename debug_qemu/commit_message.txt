@@ -6,9 +6,9 @@ The packets have values of registers of machine emulated by QEMU containing FPU 
 There are 2 ways to specify a x87 FPU stack register.
 The first is specifying by absolute indexed register names (R0, ..., R7).
 The second is specifying by stack top relative indexed register names (ST0, ..., ST7).
-Values of the FPU stack registers should be located in 'g' packet ordered by the relative index.
+Values of the FPU stack registers should be located in 'g' packet and be ordered by the relative index.
 But QEMU had located these registers ordered by the absolute index.
-After this commit, when QEMU reads registers to make a 'g' packet, QEMU specifies FPU stack registers by the relative indexed register names.
-And the registers are located in the packet ordered correctly.
+After this commit, when QEMU reads registers to make a 'g' packet, QEMU specifies FPU stack registers by the relative index.
+Then, the registers are ordered correctly in the packet.
 As a result, GDB, the packet receiver, can print FPU stack registers in the correct order.
 
