@@ -1,7 +1,7 @@
 target/i386/gdbstub: Fix a bug about order of FPU stack registers in 'g' packets.
 
 Before this commit, when GDB attached an OS working on QEMU, order of FPU stack registers printed by GDB command 'info float' was wrong.
-There was a bug causing the problem in 'g' packets sent by QEMU.
+There was a bug causing the problem in 'g' packets sent by QEMU to GDB.
 The packets have values of registers of machine emulated by QEMU containing FPU stack registers.
 There are 2 ways to specify a x87 FPU stack register.
 The first is specifying by absolute indexed register names (R0, ..., R7).
