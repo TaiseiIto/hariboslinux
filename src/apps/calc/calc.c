@@ -419,12 +419,15 @@ Complex complex_acosh(Complex x)
 Complex complex_asin(Complex x)
 {
 	Complex i;
+	Complex minus_i;
 	Complex one;
 	i.real = 0.0;
 	i.imag = 1.0;
+	minus_i.real = 0.0;
+	minus_i.imag = -1.0;
 	one.real = 1.0;
 	one.imag = 0.0;
-	return complex_multiplication(i, complex_log(complex_addition(complex_multiplication(x, i), complex_sqrt(complex_subtraction(one, complex_multiplication(x, x))))));
+	return complex_multiplication(minus_i, complex_log(complex_addition(complex_multiplication(x, i), complex_sqrt(complex_subtraction(one, complex_multiplication(x, x))))));
 }
 
 Complex complex_asinh(Complex x)

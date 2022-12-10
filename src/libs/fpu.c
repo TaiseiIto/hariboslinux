@@ -51,7 +51,7 @@ double fpu_asin(double x)
 	if(x == 1.0)return fpu_pi() / 2.0;
 	if(x == -1.0)return -fpu_pi() / 2.0;
 	else if(0.0 <= x && x < 1.0)return fpu_atan(fpu_sqrt(x * x / (1.0 - x * x)));
-	else if(1.0 < x && x < 0.0)return -fpu_atan(fpu_sqrt(x * x / (1.0 - x * x)));
+	else if(-1.0 < x && x < 0.0)return -fpu_atan(fpu_sqrt(x * x / (1.0 - x * x)));
 	else return 0.0 / 0.0; // Return NaN
 }
 
