@@ -320,17 +320,18 @@ to print them. Then, QEMU picks registers in the function to form 'g' packet
 to send to GDB. In line 124 of the c source file, absolute indexed FPU stack
 registers, namely, R0, ... and R7 , are picked and inserted in 'g' packet.
 However, GDB, the packet receiver, extracts FPU stack registers from the
-packet and interpret these registers are relative indexed, namely, ST0, ...
-and ST7. As a result, GDB can't print FPU stack correctly.
+packet and interpret these registers are stack top relative indexed, namely,
+ST0, ... and ST7. As a result, GDB can't print FPU stack correctly.
 
 3. Modification
 
 In added lines of this patch, "n" is a register number of a register to
 read. And "IDX_FP_REGS" is register number of the first FPU stack register
 "R0". So, "r_index" is absolute index of FPU stack register to read. And
-"env->fpstt" is a pointer to top of FPU stack. So, "st_index" is relative
-index of FPU stack register to read. By applying this modification, QEMU
-inserts FPU stack registers ordered by relative index in 'g' packet.
+"env->fpstt" is a pointer to top of FPU stack. So, "st_index" is stack top
+relative index of FPU stack register to read. By applying this modification,
+QEMU inserts FPU stack registers ordered by stack top relative index in 'g'
+packet.
 
 4. After this patch
 
