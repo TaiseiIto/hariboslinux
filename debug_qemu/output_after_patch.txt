@@ -1,0 +1,206 @@
+GNU gdb (GDB) 13.0.50.20221204-git
+Copyright (C) 2022 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-pc-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word".
+(gdb) target remote localhost:2159
+Remote debugging using localhost:2159
+warning: No executable has been specified and target does not support
+determining executable automatically.  Try using the "file" command.
+0x0000fff0 in ?? ()
+(gdb) break *0x7c00
+Breakpoint 1 at 0x7c00
+(gdb) continue
+Continuing.
+
+Breakpoint 1, 0x00007c00 in ?? ()
+(gdb) x/10i $eip
+=> 0x7c00:      fninit
+   0x7c02:      fld1
+   0x7c04:      fldl2t
+   0x7c06:      fldl2e
+   0x7c08:      fldpi
+   0x7c0a:      fldlg2
+   0x7c0c:      fldln2
+   0x7c0e:      fldz
+   0x7c10:      hlt
+   0x7c11:      jmp    0x7c10
+(gdb) stepi
+0x00007c02 in ?? ()
+(gdb) info float
+  R7: Valid   0x00000000000000000000 +0
+  R6: Valid   0x00000000000000000000 +0
+  R5: Valid   0x00000000000000000000 +0
+  R4: Valid   0x00000000000000000000 +0
+  R3: Valid   0x00000000000000000000 +0
+  R2: Valid   0x00000000000000000000 +0
+  R1: Valid   0x00000000000000000000 +0
+=>R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x0000
+                       TOP: 0
+Control Word:        0x037f   IM DM ZM OM UM PM
+                       PC: Extended Precision (64-bits)
+                       RC: Round to nearest
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+(gdb) stepi
+0x00007c04 in ?? ()
+(gdb) info float
+=>R7: Valid   0x3fff8000000000000000 +1
+  R6: Valid   0x00000000000000000000 +0
+  R5: Valid   0x00000000000000000000 +0
+  R4: Valid   0x00000000000000000000 +0
+  R3: Valid   0x00000000000000000000 +0
+  R2: Valid   0x00000000000000000000 +0
+  R1: Valid   0x00000000000000000000 +0
+  R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x3800
+                       TOP: 7
+Control Word:        0x037f   IM DM ZM OM UM PM
+                       PC: Extended Precision (64-bits)
+                       RC: Round to nearest
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+(gdb) stepi
+0x00007c06 in ?? ()
+(gdb) info float
+  R7: Valid   0x3fff8000000000000000 +1
+=>R6: Valid   0x4000d49a784bcd1b8afe +3.321928094887362348
+  R5: Valid   0x00000000000000000000 +0
+  R4: Valid   0x00000000000000000000 +0
+  R3: Valid   0x00000000000000000000 +0
+  R2: Valid   0x00000000000000000000 +0
+  R1: Valid   0x00000000000000000000 +0
+  R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x3000
+                       TOP: 6
+Control Word:        0x037f   IM DM ZM OM UM PM
+                       PC: Extended Precision (64-bits)
+                       RC: Round to nearest
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+(gdb) stepi
+0x00007c08 in ?? ()
+(gdb) info float
+  R7: Valid   0x3fff8000000000000000 +1
+  R6: Valid   0x4000d49a784bcd1b8afe +3.321928094887362348
+=>R5: Valid   0x3fffb8aa3b295c17f0bc +1.442695040888963407
+  R4: Valid   0x00000000000000000000 +0
+  R3: Valid   0x00000000000000000000 +0
+  R2: Valid   0x00000000000000000000 +0
+  R1: Valid   0x00000000000000000000 +0
+  R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x2800
+                       TOP: 5
+Control Word:        0x037f   IM DM ZM OM UM PM
+                       PC: Extended Precision (64-bits)
+                       RC: Round to nearest
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+(gdb) stepi
+0x00007c0a in ?? ()
+(gdb) info float
+  R7: Valid   0x3fff8000000000000000 +1
+  R6: Valid   0x4000d49a784bcd1b8afe +3.321928094887362348
+  R5: Valid   0x3fffb8aa3b295c17f0bc +1.442695040888963407
+=>R4: Valid   0x4000c90fdaa22168c235 +3.141592653589793239
+  R3: Valid   0x00000000000000000000 +0
+  R2: Valid   0x00000000000000000000 +0
+  R1: Valid   0x00000000000000000000 +0
+  R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x2000
+                       TOP: 4
+Control Word:        0x037f   IM DM ZM OM UM PM
+                       PC: Extended Precision (64-bits)
+                       RC: Round to nearest
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+(gdb) stepi
+0x00007c0c in ?? ()
+(gdb) info float
+  R7: Valid   0x3fff8000000000000000 +1
+  R6: Valid   0x4000d49a784bcd1b8afe +3.321928094887362348
+  R5: Valid   0x3fffb8aa3b295c17f0bc +1.442695040888963407
+  R4: Valid   0x4000c90fdaa22168c235 +3.141592653589793239
+=>R3: Valid   0x3ffd9a209a84fbcff799 +0.3010299956639811952
+  R2: Valid   0x00000000000000000000 +0
+  R1: Valid   0x00000000000000000000 +0
+  R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x1800
+                       TOP: 3
+Control Word:        0x037f   IM DM ZM OM UM PM
+                       PC: Extended Precision (64-bits)
+                       RC: Round to nearest
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+(gdb) stepi
+0x00007c0e in ?? ()
+(gdb) info float
+  R7: Valid   0x3fff8000000000000000 +1
+  R6: Valid   0x4000d49a784bcd1b8afe +3.321928094887362348
+  R5: Valid   0x3fffb8aa3b295c17f0bc +1.442695040888963407
+  R4: Valid   0x4000c90fdaa22168c235 +3.141592653589793239
+  R3: Valid   0x3ffd9a209a84fbcff799 +0.3010299956639811952
+=>R2: Valid   0x3ffeb17217f7d1cf79ac +0.6931471805599453094
+  R1: Valid   0x00000000000000000000 +0
+  R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x1000
+                       TOP: 2
+Control Word:        0x037f   IM DM ZM OM UM PM
+                       PC: Extended Precision (64-bits)
+                       RC: Round to nearest
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+(gdb) stepi
+0x00007c10 in ?? ()
+(gdb) info float
+  R7: Valid   0x3fff8000000000000000 +1
+  R6: Valid   0x4000d49a784bcd1b8afe +3.321928094887362348
+  R5: Valid   0x3fffb8aa3b295c17f0bc +1.442695040888963407
+  R4: Valid   0x4000c90fdaa22168c235 +3.141592653589793239
+  R3: Valid   0x3ffd9a209a84fbcff799 +0.3010299956639811952
+  R2: Valid   0x3ffeb17217f7d1cf79ac +0.6931471805599453094
+=>R1: Valid   0x00000000000000000000 +0
+  R0: Valid   0x00000000000000000000 +0
+
+Status Word:         0x0800
+                       TOP: 1
+Control Word:        0x037f   IM DM ZM OM UM PM
+                       PC: Extended Precision (64-bits)
+                       RC: Round to nearest
+Tag Word:            0x0000
+Instruction Pointer: 0x00:0x00000000
+Operand Pointer:     0x00:0x00000000
+Opcode:              0x0000
+
