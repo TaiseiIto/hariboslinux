@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This program gives the push access right.
 # Only the developer can execute it.
@@ -7,12 +7,20 @@
 
 currentdir=$(pwd)
 cd $(dirname $0)
-echo -n "Your GitHub email:"
-read email
-echo -n "Your GitHub name:"
-read name
+read -p "Your GitHub email:" email
+read -p "Your GitHub name:" name
 echo -n "Password of ${email}:"
-read password
+unset password
+prompt="Password of ${email}:"
+while true ; do
+	read -n 1 -p "$prompt" -r -s char
+	if [[ $char == $'\0' ]]; then
+		break
+	fi
+	prompt="*"
+	password+="$char"
+done
+echo
 git config --global sendemail.confirm auto
 git config --global sendemail.smtpserver smtp.office365.com
 git config --global sendemail.smtpencryption tls
@@ -21,7 +29,7 @@ git config --global sendemail.smtpserverport 587
 git config --global sendemail.smtppass $password
 git config --global user.email $email
 git config --global user.name $name
-git config --global user.signingkey 5F1ABB3B591CCA48
+git config --global user.signingkey $(head -n1 /root/.gnupg/signingkey.txt)
 git config --global --add commit.gpgsign true
 git remote set-url origin git@github.com:TaiseiIto/hariboslinux.git
 cat gitconfig >> /root/.gitconfig
