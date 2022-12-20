@@ -9,7 +9,6 @@ currentdir=$(pwd)
 cd $(dirname $0)
 read -p "Your GitHub email:" email
 read -p "Your GitHub name:" name
-echo -n "Password of ${email}:"
 unset password
 prompt="Password of ${email}:"
 while true ; do
