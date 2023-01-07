@@ -1,4 +1,8 @@
-target/i386/gdbstub: Fix a bug about order of FPU stack in 'g' packets.
+[PING] target/i386/gdbstub: Fix a bug about order of FPU stack in 'g' packets.
+
+This is a ping to the patch below.
+
+https://patchew.org/QEMU/TY0PR0101MB42855925D8414E4773D6FA36A41D9@TY0PR0101MB4285.apcprd01.prod.exchangelabs.com/
 
 Before this commit, when GDB attached an OS working on QEMU, order of FPU
 stack registers printed by GDB command 'info float' was wrong. There was a
