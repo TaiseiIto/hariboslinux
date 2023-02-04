@@ -1,0 +1,22 @@
+break *0x7c00
+continue
+x/10i $eip
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+stepi
+info float
+quit
+y
+
