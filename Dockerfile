@@ -48,7 +48,7 @@ RUN apt install wget -y
 
 # GDB
 WORKDIR /root
-RUN git clone --branch gdb-14.1-release --depth 1 --recursive --shallow-submodules --single-branch git://sourceware.org/git/binutils-gdb.git
+RUN git clone --branch gdb-14.1-release --depth 1 --recursive --shallow-submodules --single-branch https://sourceware.org/git/binutils-gdb.git
 WORKDIR /root/binutils-gdb
 RUN ./configure --with-expat CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-inline"
 RUN make
