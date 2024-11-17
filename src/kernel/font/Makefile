@@ -8,7 +8,7 @@ TRANSLATOR = ./translator
 all: $(OUTPUT)
 
 clean:
-	rm $(OUTPUT) $(TRANSLATOR)
+	rm -f $(OUTPUT) $(TRANSLATOR)
 
 rebuild: clean
 	make

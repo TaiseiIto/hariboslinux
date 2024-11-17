@@ -22,7 +22,7 @@ OBJECTS = acpi.o beep.o bios.o chain_string.o cmos.o console.o ctype.o disk.o ex
 all: kernel.bin
 
 clean:
-	rm -f $$(ls *.bin *.o *.s | grep -v "^interrupt_gates.s$$\|^io.s$$\|^string.s$$")
+	rm -f $$(ls | grep -E "^.*\.(bin|o|s)$$" | grep -v "^interrupt_gates.s$$\|^io.s$$\|^string.s$$")
 	make clean -C font
 
 kernel.bin: $(OBJECTS) interrupt_gates.o io.o string.o
