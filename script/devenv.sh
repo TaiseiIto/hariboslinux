@@ -6,7 +6,7 @@
 
 currentdir=$(pwd)
 cd $(dirname $0)
-if [ $# -eq 4 ]; then
+if [ $# -eq 5 ]; then
 	docker=$1
 	image=$2
 	tag=$3
@@ -24,7 +24,7 @@ if [ $# -eq 4 ]; then
 		$docker attach $container
 	fi
 else
-	echo There should be 4 arguments.
+	echo There should be 5 arguments.
 fi
 cd $currentdir
 

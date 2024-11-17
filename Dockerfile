@@ -22,6 +22,8 @@ RUN mkdir /root/.ssh
 RUN apt install libglib2.0-dev -y
 # gmp
 RUN apt install libgmp-dev -y
+# mpfr
+RUN apt install libmpfr-dev -y
 # iasl
 RUN apt install iasl -y
 # pixman
@@ -46,7 +48,7 @@ RUN apt install wget -y
 
 # GDB
 WORKDIR /root
-RUN git clone git://sourceware.org/git/binutils-gdb.git
+RUN git clone --branch gdb-14.1-release --depth 1 --recursive --shallow-submodules --single-branch git://sourceware.org/git/binutils-gdb.git
 WORKDIR /root/binutils-gdb
 RUN ./configure --with-expat CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-inline"
 RUN make
@@ -54,7 +56,7 @@ RUN make install
 
 # QEMU
 WORKDIR /root
-RUN git clone https://gitlab.com/qemu-project/qemu.git
+RUN git clone --branch v8.0.0 --depth 1 --recursive --shallow-submodules --single-branch https://gitlab.com/qemu-project/qemu.git
 WORKDIR /root/qemu
 RUN ./configure --target-list=i386-softmmu CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-inline"
 RUN make
@@ -64,7 +66,7 @@ RUN make install
 WORKDIR /root
 RUN git clone https://github.com/TaiseiIto/hariboslinux.git
 WORKDIR /root/hariboslinux
-RUN make
+# RUN make
 
 # ash setting
 RUN cat ash/.profile >> /root/.bashrc
