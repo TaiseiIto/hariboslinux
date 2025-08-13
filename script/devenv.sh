@@ -13,7 +13,7 @@ if [ $# -eq 5 ]; then
 	container=$4
 	vnc_port=$5
 	if [ -z "$($docker images | grep $image)" ]; then
-		$docker build --no-cache -t $image:$tag ..
+		$docker build -t $image:$tag ..
 	fi
 	if [ -z "$($docker ps -a | grep $container)" ]; then
 		$docker run --name $container -p $vnc_port:$vnc_port -i -t $image
