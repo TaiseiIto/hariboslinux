@@ -808,16 +808,16 @@ break pointに到達すると，gdbはSIGTRAP信号を受信して一時停止�
 1. Haribos Linuxのフロッピーディスクのイメージファイル`haribos.img`を生成．
     1. このディレクトリで`make`を実行する．
 1. VirtualBoxで仮想マシンを新規作成．
-    1. VirtualBoxを開き，ツールバーの`Machine->New`をクリック．
-        1. Nameは任意．
-        1. Folderも任意．
-        1. ISO imageは`<not selected>`．
-        1. Typeは`Other`．
-        1. Versionは`Other/Unknown`．
+    1. VirtualBoxを開き，ツールバーの`Machine -> New`をクリック．
+        1. `Name`は任意．
+        1. `Folder`も任意．
+        1. `ISO image`は`<not selected>`．
+        1. `Type`は`Other`．
+        1. `Version`は`Other/Unknown`．
     1. `Next`をクリックし，ハードウェアの設定に進む．
-        1. Base Memoryは1GiBくらい．
-        1. Processorsは1．
-        1. Enable EFIはチェックを外す．
+        1. `Base Memory`は1GiBくらい．
+        1. `Processors`は1．
+        1. `Enable EFI`はチェックを外す．
     1. `Next`をクリックし，仮想ハードディスクの設定に進む．
         1. `Do Not Add a Virtual Hard Disk`を選択．
     1. `Next`をクリック．Summaryに進む．
@@ -853,6 +853,41 @@ $ for module in $(lsmod | awk '{print $1}' | grep kvm); do sudo rmmod $module; d
 これでエラーは解消します．
 
 ## VMwareでの動かし方
+1. Haribos Linuxのフロッピーディスクのイメージファイル`haribos.img`を生成．
+    1. このディレクトリで`make`を実行する．
+1. VMwareで仮想マシンを新規作成．
+    1. VMwareを開き，ツールバーの`File -> New Virtual Machine`をクリック．
+    1. `Custom (advanced)`を選択して`Next`をクリック．
+    1. `Hardware compatibility`で`Workstation 5.x`を選択して`Next`をクリック．
+    1. `Install operating system from`で`I will install the operating system later.`を選択して`Next`をクリック．
+    1. `Guest Operating System`で`Other`を選択．
+    1. `Version`で`Other`を選択．
+    1. `Next`をクリック．
+    1. `Name`と`Location`を任意に設定し`Next`をクリック．
+    1. `Number of Processor`を`1`に設定し`Next`をクリック．
+    1. `Memory`を1GiB程度に設定し`Next`をクリック．
+    1. `Network Connection`で`Do not use network connection`を選択し`Next`をクリック．
+    1. `I/O Controller Types`で`BusLogic (Recommended)`を選択し`Next`をクリック．
+    1. `Virtual Disk Type`で`IDE (Recommended)`を選択し`Next`をクリック．
+    1. `Disk`で`Create a new virtual disk`を選択し`Next`をクリック．
+        1. ただし，ここで作成する仮想ディスクは後に削除する．
+    1. `Maximum disk size (in GB)`に`0.001`を設定．
+    1. `Allocate all disk space now`にチェックを入れる．
+    1. `Store virtual disk as a single file`を選択して`Next`をクリック．
+    1. `File name`に任意の名前を設定して`Next`をクリック．
+    1. `Finish`をクリックし仮想マシンを作成．
+1. 仮想フロッピーディスクを追加．
+    1. 作成した仮想マシンを選択．
+    1. `Edit virtual machine settings`をクリック．
+    1. `Hard Disk (IDE)`を選択し`Remove`で削除．
+    1. `Add`をクリック．
+    1. `Floppy Drive`を選択して`Finish`をクリック．
+    1. 作成した仮想フロッピーを選択し，`Use floppy image`を選択．
+    1. `Browse`をクリックし，生成した`haribos.img`を選択して`Open`をクリック．
+    1. `Save`をクリック．
+1. 仮想マシンを起動
+    1. 作成した仮想マシンを選択．
+    1. `Start up this guest operating system`をクリックして起動．
 
 ## 実機(Legacy BIOS対応ASUS)での動かし方memo
 1. bootable USBの用意
