@@ -804,6 +804,56 @@ break pointに到達すると，gdbはSIGTRAP信号を受信して一時停止�
 ```
 で実行を再開します．
 
+## VirtualBoxでの動かし方
+1. Haribos Linuxのフロッピーディスクのイメージファイル`haribos.img`を生成．
+    1. このディレクトリで`make`を実行する．
+1. VirtualBoxで仮想マシンを新規作成．
+    1. VirtualBoxを開き，ツールバーの`Machine->New`をクリック．
+        1. Nameは任意．
+        1. Folderも任意．
+        1. ISO imageは`<not selected>`．
+        1. Typeは`Other`．
+        1. Versionは`Other/Unknown`．
+    1. `Next`をクリックし，ハードウェアの設定に進む．
+        1. Base Memoryは1GiBくらい．
+        1. Processorsは1．
+        1. Enable EFIはチェックを外す．
+    1. `Next`をクリックし，仮想ハードディスクの設定に進む．
+        1. `Do Not Add a Virtual Hard Disk`を選択．
+    1. `Next`をクリック．Summaryに進む．
+    1. `Finish`をクリック．
+1. 仮想フロッピーディスクを追加．
+    1. 作成した仮想マシンを選択．
+    1. `Settings`をクリックして設定画面を開く．
+    1. `Storage`を選択．
+    1. `Controller: IDE`を右クリックし，削除．
+    1. 下のアイコン`Add Controller`をクリックし，`I82078 (Floppy)`を追加．
+    1. 追加したフロッピーコントローラの右のアイコン`Adds floppy drive.`をクリック．
+    1. `Add`をクリックし，生成した仮想フロッピーイメージ`haribos.img`を選択．
+    1. `Choose`をクリック．
+    1. `OK`をクリック．
+1. 仮想マシンを起動
+    1. 作成した仮想マシンを選択．
+    1. `Start`をクリックして起動．
+
+### VirtualBoxにおける起動時のエラーについて
+Linux上でVirtualBoxを起動した際に以下のようなエラーが発生する場合があります．
+
+```
+VirtualBox can't operate in VMX root mode. Please disable the KVM kernel extension, recompile your kernel and reboot (VERR_VMX_IN_VMX_ROOT_MODE).
+```
+
+この場合，まず再起動してDocker desktopとQEMUが起動していない状態にします．
+次に，以下のコマンドでKVMを一時的に無効化します．
+
+```
+$ for module in $(lsmod | awk '{print $1}' | grep kvm); do sudo rmmod $module; done
+```
+
+これでエラーは解消します．
+
+## VMwareでの動かし方
+
 ## 実機(Legacy BIOS対応ASUS)での動かし方memo
 1. bootable USBの用意
 	1. explorerでboot用USBを右クリックし，Formatして空の状態にする．
