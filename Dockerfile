@@ -16,6 +16,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install iasl -y
 RUN apt-get update && apt-get upgrade -y && apt-get install libpixman-1-dev -y
 RUN apt-get update && apt-get upgrade -y && apt-get install ninja-build -y
 RUN apt-get update && apt-get upgrade -y && apt-get install python3 -y
+RUN apt-get update && apt-get upgrade -y && apt-get install python3-venv -y
 RUN apt-get update && apt-get upgrade -y && apt-get install pkg-config -y
 RUN apt-get update && apt-get upgrade -y && apt-get install texinfo -y
 RUN apt-get update && apt-get upgrade -y && apt-get install tmux -y
@@ -41,7 +42,7 @@ RUN make install
 
 # QEMU
 WORKDIR /root
-RUN git clone --branch v8.2.0 --depth 1 --recursive --shallow-submodules --single-branch https://gitlab.com/qemu-project/qemu.git
+RUN git clone --branch v8.1.0 --depth 1 --recursive --shallow-submodules --single-branch https://gitlab.com/qemu-project/qemu.git
 WORKDIR /root/qemu
 RUN ./configure --target-list=i386-softmmu CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-inline"
 RUN make
