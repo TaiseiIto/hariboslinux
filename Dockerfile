@@ -1,50 +1,36 @@
-FROM ubuntu
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update
-# gcc, ld, make, etc.
-RUN apt install build-essential -y
-# bison
-RUN apt install bison -y
-# dejagnu
-RUN apt install dejagnu -y
-# expat
-RUN apt install libexpat-dev -y
-# flex
-RUN apt install flex -y
-# git
-RUN apt install git -y
-RUN apt install git-email -y
-RUN git config --global pull.rebase false
-RUN mkdir /root/.ssh
-# glib
-RUN apt install libglib2.0-dev -y
-# gmp
-RUN apt install libgmp-dev -y
-# mpfr
-RUN apt install libmpfr-dev -y
-# iasl
-RUN apt install iasl -y
-# pixman
-RUN apt install libpixman-1-dev -y
-# ninja
-RUN apt install ninja-build -y
-# python
-RUN apt install python3 -y
-# pkg-config
-RUN apt install pkg-config -y
-# texinfo
-RUN apt install texinfo -y
-# tmux
-RUN apt install tmux -y
-# tzdata
-RUN apt install tzdata -y
+RUN apt-get update && apt-get upgrade -y && apt-get install build-essential -y
+RUN apt-get update && apt-get upgrade -y && apt-get install bison -y
+RUN apt-get update && apt-get upgrade -y && apt-get install dejagnu -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libexpat-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install flex -y
+RUN apt-get update && apt-get upgrade -y && apt-get install git -y
+RUN apt-get update && apt-get upgrade -y && apt-get install git-email -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libglib2.0-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libgmp-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libmpfr-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install iasl -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libpixman-1-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install ninja-build -y
+RUN apt-get update && apt-get upgrade -y && apt-get install python3 -y
+RUN apt-get update && apt-get upgrade -y && apt-get install python3-venv -y
+RUN apt-get update && apt-get upgrade -y && apt-get install pkg-config -y
+RUN apt-get update && apt-get upgrade -y && apt-get install texinfo -y
+RUN apt-get update && apt-get upgrade -y && apt-get install tmux -y
+RUN apt-get update && apt-get upgrade -y && apt-get install tzdata -y
+RUN apt-get update && apt-get upgrade -y && apt-get install vim -y
+RUN apt-get update && apt-get upgrade -y && apt-get install wget -y
+
+# Put git settings.
+WORKDIR /root
+RUN mkdir .ssh
+RUN mkdir .github
+
+# Set local time.
 RUN cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-# editor
-RUN apt install vim -y
-# wget
-RUN apt install wget -y
 
 # GDB
 WORKDIR /root
@@ -56,7 +42,7 @@ RUN make install
 
 # QEMU
 WORKDIR /root
-RUN git clone --branch v8.0.0 --depth 1 --recursive --shallow-submodules --single-branch https://gitlab.com/qemu-project/qemu.git
+RUN git clone --branch v8.1.0 --depth 1 --recursive --shallow-submodules --single-branch https://gitlab.com/qemu-project/qemu.git
 WORKDIR /root/qemu
 RUN ./configure --target-list=i386-softmmu CFLAGS="-O0 -g -fno-inline" CXXFLAGS="-O0 -g -fno-inline"
 RUN make
