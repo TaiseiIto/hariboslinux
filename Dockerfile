@@ -2,26 +2,26 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get upgrade -y && aapt-get install build-essential -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install bison -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install dejagnu -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install libexpat-dev -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install flex -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install git -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install git-email -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install libglib2.0-dev -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install libgmp-dev -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install libmpfr-dev -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install iasl -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install libpixman-1-dev -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install ninja-build -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install python3 -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install pkg-config -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install texinfo -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install tmux -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install tzdata -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install vim -y
-RUN apt-get update && apt-get upgrade -y && aapt-get install wget -y
+RUN apt-get update && apt-get upgrade -y && apt-get install build-essential -y
+RUN apt-get update && apt-get upgrade -y && apt-get install bison -y
+RUN apt-get update && apt-get upgrade -y && apt-get install dejagnu -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libexpat-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install flex -y
+RUN apt-get update && apt-get upgrade -y && apt-get install git -y
+RUN apt-get update && apt-get upgrade -y && apt-get install git-email -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libglib2.0-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libgmp-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libmpfr-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install iasl -y
+RUN apt-get update && apt-get upgrade -y && apt-get install libpixman-1-dev -y
+RUN apt-get update && apt-get upgrade -y && apt-get install ninja-build -y
+RUN apt-get update && apt-get upgrade -y && apt-get install python3 -y
+RUN apt-get update && apt-get upgrade -y && apt-get install pkg-config -y
+RUN apt-get update && apt-get upgrade -y && apt-get install texinfo -y
+RUN apt-get update && apt-get upgrade -y && apt-get install tmux -y
+RUN apt-get update && apt-get upgrade -y && apt-get install tzdata -y
+RUN apt-get update && apt-get upgrade -y && apt-get install vim -y
+RUN apt-get update && apt-get upgrade -y && apt-get install wget -y
 
 # Put git settings.
 WORKDIR /root
